@@ -1,33 +1,51 @@
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px;
-    background: linear-gradient(to right, #1a202c, #2d3748);
-    color: white;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
-  
-  .logo {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: #90cdf4;
-    text-decoration: none;
-  }
-  
-  .nav {
-    display: flex;
-    gap: 20px;
-    nav-left: auto;
-  }
-  
-  .navLink {
-    color: white;
-    text-decoration: none;
-    font-size: 1rem;
-    transition: color 0.2s;
-  }
-  
-  .navLink:hover {
-    color: #90cdf4;
-  }
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background: rgba(0, 0, 0, 0.8); /* Translucent black */
+  backdrop-filter: blur(10px); /* Glassy effect */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  font-family: 'Poppins', sans-serif;
+  color: #f39c12; /* Golden yellow */
+  text-decoration: none;
+}
+
+.nav {
+  display: flex;
+  gap: 30px;
+}
+
+.navLink {
+  font-size: 1rem;
+  color: white;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+.navLink:hover {
+  color: #3498db; /* Blue highlight */
+}
+
+.loginButton {
+  font-size: 1rem;
+  padding: 8px 15px;
+  color: white;
+  background: linear-gradient(135deg, #8e44ad, #3498db);
+  border-radius: 5px;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.loginButton:hover {
+  background: linear-gradient(135deg, #3498db, #8e44ad);
+}
