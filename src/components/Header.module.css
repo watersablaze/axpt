@@ -1,51 +1,117 @@
+/* Header Styling */
 .header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  justify-content: space-between;
   padding: 20px 40px;
-  background: rgba(0, 0, 0, 0.8); /* Translucent black */
-  backdrop-filter: blur(10px); /* Glassy effect */
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-  position: fixed;
-  top: 0;
-  width: 100%;
-  z-index: 1000;
+  background: rgba(0, 0, 0, 0.8); /* Transparent black background */
+  color: #ffffff;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+/* Logo Styling */
+.logoContainer {
+  flex: 0 0 auto;
 }
 
 .logo {
-  font-size: 1.8rem;
-  font-weight: bold;
-  font-family: 'Poppins', sans-serif;
-  color: #f39c12; /* Golden yellow */
-  text-decoration: none;
+  height: 300px; /* Adjust for semi-large size */
+  width: auto;
+  transition: transform 0.3s ease;
 }
 
+.logo:hover {
+  transform: scale(1.1);
+}
+
+/* Header Title Styling */
+.title {
+  flex: 1; /* Fills the space between the logo and nav */
+  text-align: center;
+  font-size: 5.5rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: #ffffff;
+  text-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
+  margin: 0;
+  letter-spacing: 1.5rem;
+}
+
+/* Navigation Styling */
 .nav {
   display: flex;
-  gap: 30px;
+  align-items: center;
+  position: relative;
 }
 
-.navLink {
+/* Dropdown Menu Styling */
+.navDropdown {
+  position: relative;
+}
+
+.navButton {
+  background: #333;
+  color: #ffffff;
+  border: none;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-radius: 5px;
   font-size: 1rem;
-  color: white;
-  text-decoration: none;
-  transition: color 0.3s;
+  transition: background 0.3s ease, transform 0.3s ease;
 }
 
-.navLink:hover {
-  color: #3498db; /* Blue highlight */
+.navButton:hover {
+  background: #555;
+  transform: scale(1.05);
 }
 
-.loginButton {
-  font-size: 1rem;
+.navContent {
+  display: none;
+  position: absolute;
+  top: 40px;
+  right: 0;
+  background: rgba(0, 0, 0, 0.9); /* Transparent dropdown */
+  border-radius: 5px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  padding: 10px;
+  z-index: 20;
+  flex-direction: column;
+}
+
+.navContent a {
+  display: block;
+  color: #ffffff;
   padding: 8px 15px;
-  color: white;
-  background: linear-gradient(135deg, #8e44ad, #3498db);
+  text-decoration: none;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.navContent a:hover {
+  background: #333;
+  color: #ffcc00; /* Bright yellow on hover */
+}
+
+.navDropdown:hover .navContent {
+  display: flex;
+}
+
+/* Login Button Styling */
+.loginButton {
+  margin-left: 20px;
+  margin-top: -250px;
+  background: #007bff;
+  color: #ffffff;
+  padding: 10px 20px;
   border-radius: 5px;
   text-decoration: none;
-  transition: all 0.3s;
+  font-size: 1rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .loginButton:hover {
-  background: linear-gradient(135deg, #3498db, #8e44ad);
+  background-color: #0056b3;
+  transform: scale(1.1);
 }
