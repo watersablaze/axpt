@@ -7,10 +7,14 @@ const HeroSection = () => {
   return (
     <section className={styles.hero}>
       <div className={styles.content}>
-        <h2 className={styles.heading}>PLANETARY XCHANGE PLATFORM</h2>
-        <p className={styles.tagline}>
-          Currency Exchange Portal Stimulating the Global Melanted and Indigenous Community through Sustainable Devleopment"
-        </p>
+        <h2 className={styles.heading}>
+          PLANETARY
+          <br />
+          XCHANGE
+          <br />
+          PLATFORM
+        </h2>
+       
         <form className={styles.form}>
           <input
             type="text"

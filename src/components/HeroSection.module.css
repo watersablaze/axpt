@@ -2,7 +2,7 @@
 .hero {
   display: flex;
   position: relative;
-  height: 100vh;
+  height: 60vh;
   background: linear-gradient(
     135deg,
     rgba(10, 25, 47, 0.9),
@@ -21,6 +21,7 @@
   width: 100%;
   height: 100%;
   padding: 40px;
+  gap: 20px;
 }
 
 /* H2 Styling */
@@ -32,26 +33,16 @@
   text-align: left;
   white-space: pre-line; /* Ensures one word per line */
   margin: 0;
+  margin-left: 400px;
+  margin-top: 60px;
   flex: 1;
   color: #00ffcc; /* Highlight color */
   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
-/* Paragraph Styling */
-.tagline {
-  flex: 1;
-  text-align: right;
-  font-size: 1.2rem;
-  font-weight: 400;
-  color: #dddddd;
-  margin: 10px 0;
-  padding-top: 40px;
-}
-
 /* Form Styling */
 .form {
-  flex: 1;
-  background: rgba(0, 0, 0, 0.6); /* Translucent background */
+  background: rgba(0, 0, 0, 0.3); /* Translucent background */
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
@@ -59,13 +50,17 @@
   flex-direction: column;
   align-items: center;
   margin-top: 20px;
-  width: 350px; /* Adjust as needed */
+  margin-right: 400px;
+  width: 400px; /* Adjust as needed */
+  height: 300px;
+  max-width: 100%;
 }
 
 .input {
   width: 80%;
   padding: 10px;
   margin: 10px 0;
+  margin-top: 40px;
   border: none;
   border-radius: 5px;
   font-size: 1rem;
@@ -78,7 +73,7 @@
 }
 
 .submitButton {
-  background: #00ffcc;
+  background: #00ffcc82;
   color: #ffffff;
   padding: 10px 20px;
   border: none;
@@ -86,7 +81,8 @@
   font-size: 1.2rem;
   cursor: pointer;
   transition: all 0.3s ease-in-out;
-  width: 50%;
+  width: 80%;
+  margin-top: 20px;
 }
 
 .submitButton:hover {

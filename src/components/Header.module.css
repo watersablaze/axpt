@@ -9,15 +9,19 @@
   position: relative;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
   z-index: 10;
+  height: 300px; /* Adjust header height */
+  box-sizing: border-box;
 }
 
 /* Logo Styling */
 .logoContainer {
-  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
 }
 
 .logo {
-  height: 300px; /* Adjust for semi-large size */
+  height: 100px; /* Large size for logo */
   width: auto;
   transition: transform 0.3s ease;
 }
@@ -26,27 +30,130 @@
   transform: scale(1.1);
 }
 
-/* Header Title Styling */
+/* Title Styling with logo replacing "O" */
 .title {
-  flex: 1; /* Fills the space between the logo and nav */
-  text-align: center;
-  font-size: 5.5rem;
+  display: flex;
+  align-items: center;
+  font-size: 8rem; /* Larger title font size */
   font-weight: bold;
   text-transform: uppercase;
   color: #ffffff;
   text-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
   margin: 0;
-  letter-spacing: 1.5rem;
+  letter-spacing: 0.4rem;
+  margin-left: 50px;
+}
+
+.title span {
+  margin: 0 0.3rem;
+}
+
+.logoO {
+  width: 8rem; /* Match large title size */
+  height: 8rem;
+  border-radius: 50%; /* Ensure circular shape */
+  margin: 0 0.5rem;
+  vertical-align: middle;
+  transition: transform 0.3s ease;
+}
+
+.logoO:hover {
+  transform: scale(1.2);
+}
+
+/* Tagline Styling */
+.tagline {
+  position: absolute;
+  bottom: -25px; /* Adjust position under title */
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.3rem;
+  font-weight: 400;
+  color: #dddddd;
+  text-align: center;
+  border-top: 1px solid #ffffff; /* Thin border above tagline */
+  padding-top: 5px;
+  width: fit-content;
+  margin-left: -350px;
+  margin-bottom: 80px;
+  display: inline-block; /* Aligns size to text */
+  overflow: hidden; /* Prevents content overflow */
+  white-space: nowrap; /* Prevents wrapping */
+  animation: typing 3.5s steps(50, end), blink 0.75s step-end infinite;
+}
+
+/* Border Above Tagline */
+.tagline::before {
+  content: ''; /* Creates a visual element */
+  display: block;
+  height: 1px; /* Thin border */
+  background: #ffffff; /* Border color */
+  margin-bottom: 5px; /* Space between border and text */
+  width: 100%; /* Matches text width */
+  animation: typingBorder 3.5s steps(50, end); /* Sync border width */
+}
+
+
+/* Typewriter Effect */
+.typewriter {
+  overflow: hidden; /* Ensures text doesn't go beyond container */
+  border-right: 3px solid #ffffff; /* Cursor effect */
+  white-space: nowrap; /* Prevents text wrapping */
+  animation: typing 3.5s steps(50, end), blink 0.75s step-end infinite;
+}
+
+/* Glitch Effect */
+.typewriter:hover {
+  text-shadow: 0 0 5px #ff0000, 0 0 10px #00ff00;
+  animation: typing 3.5s steps(50, end), glitch 0.5s infinite;
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%; /* Fully reveal the text */
+  }
+}
+
+/* Sync Border Width with Typing */
+@keyframes typingBorder {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%; /* Matches text growth */
+  }
+}
+
+@keyframes blink {
+  from {
+    border-right-color: #ffffff;
+  }
+  to {
+    border-right-color: transparent;
+  }
+}
+
+@keyframes glitch {
+  0% {
+    text-shadow: 1px 1px 2px #ff0000, -1px -1px 0 #00ff00;
+  }
+  50% {
+    text-shadow: -1px -1px 0 #ff0000, 1px 1px 2px #00ff00;
+  }
+  100% {
+    text-shadow: 1px -1px 0 #ff0000, -1px 1px 2px #00ff00;
+  }
 }
 
 /* Navigation Styling */
 .nav {
   display: flex;
   align-items: center;
-  position: relative;
 }
 
-/* Dropdown Menu Styling */
 .navDropdown {
   position: relative;
 }
@@ -99,16 +206,15 @@
 
 /* Login Button Styling */
 .loginButton {
-  margin-left: 20px;
-  margin-top: -250px;
   background: #007bff;
   color: #ffffff;
   padding: 10px 20px;
   border-radius: 5px;
   text-decoration: none;
-  font-size: 1rem;
+  font-size: 1.2rem; /* Slightly larger button */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
   transition: background-color 0.3s ease, transform 0.3s ease;
+  margin-left: 20px;
 }
 
 .loginButton:hover {

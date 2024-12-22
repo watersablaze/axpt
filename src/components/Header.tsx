@@ -6,15 +6,10 @@ import styles from './Header.module.css';
 const Header = () => {
   return (
     <header className={styles.header}>
-      {/* Logo Section */}
-      <div className={styles.logoContainer}>
-        <a href="/">
-          <img src="/AXI.png" alt="Axis Point Logo" className={styles.logo} />
-        </a>
-      </div>
-
-      {/* Header Title */}
-      <h1 className={styles.title}>AXIS POINT</h1>
+      {/* Title with logo replacing "O" */}
+      <h1 className={styles.title}>
+        AXIS P<img src="/AXI.png" alt="Axis Point Logo" className={styles.logoO} />INT
+      </h1>
 
       {/* Navigation Section */}
       <nav className={styles.nav}>
@@ -28,6 +23,11 @@ const Header = () => {
         </div>
         <a href="/login" className={styles.loginButton}>Login</a>
       </nav>
+
+{/* Tagline Section with Typewriter and Glitch Effect */}
+<p className={`${styles.tagline} ${styles.typewriter}`}>
+        Currency Exchange Portal Stimulating the Global Melanated and Indigenous Community
+      </p>
     </header>
   );
 };
