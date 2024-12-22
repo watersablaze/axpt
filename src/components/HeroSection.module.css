@@ -1,65 +1,134 @@
+/* Hero Section Styling */
 .hero {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  height: 100vh;
-  background: radial-gradient(circle, #1a2b34, #0a0f12); /* Planetary theme */
-  color: white;
   position: relative;
-}
-
-.content {
-  max-width: 600px;
+  height: 100vh;
+  background: linear-gradient(
+    135deg,
+    rgba(10, 25, 47, 0.9),
+    rgba(25, 40, 65, 0.8)
+  );
+  color: #ffffff;
   padding: 20px;
+  box-sizing: border-box;
 }
 
+/* Content Container */
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  padding: 40px;
+}
+
+/* H2 Styling */
 .heading {
-  font-size: 2.5rem;
+  font-size: 3.5rem;
   font-weight: bold;
-  margin-bottom: 10px;
-  color: #f39c12;
-  text-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+  text-transform: uppercase;
+  line-height: 1.5;
+  text-align: left;
+  white-space: pre-line; /* Ensures one word per line */
+  margin: 0;
+  flex: 1;
+  color: #00ffcc; /* Highlight color */
+  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
 }
 
+/* Paragraph Styling */
 .tagline {
+  flex: 1;
+  text-align: right;
   font-size: 1.2rem;
-  margin-bottom: 20px;
+  font-weight: 400;
+  color: #dddddd;
+  margin: 10px 0;
+  padding-top: 40px;
 }
 
+/* Form Styling */
 .form {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.6); /* Translucent background */
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  align-items: center;
   margin-top: 20px;
+  width: 350px; /* Adjust as needed */
 }
 
 .input {
+  width: 80%;
   padding: 10px;
-  font-size: 1rem;
+  margin: 10px 0;
   border: none;
   border-radius: 5px;
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  outline: none;
-  text-align: center;
+  font-size: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
+.input:focus {
+  outline: none;
+  border: 2px solid #00ffcc;
 }
 
 .submitButton {
-  background: linear-gradient(135deg, #8e44ad, #3498db);
-  color: #fff;
-  padding: 10px 15px;
-  font-size: 1rem;
+  background: #00ffcc;
+  color: #ffffff;
+  padding: 10px 20px;
   border: none;
   border-radius: 5px;
+  font-size: 1.2rem;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: all 0.3s ease-in-out;
+  width: 50%;
 }
 
 .submitButton:hover {
-  background: linear-gradient(135deg, #3498db, #8e44ad);
+  background: #007a66;
+  transform: scale(1.05);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .heading {
+    font-size: 2.5rem;
+  }
+
+  .tagline {
+    font-size: 1rem;
+    padding-top: 20px;
+  }
+
+  .form {
+    width: 90%;
+  }
+
+  .input {
+    width: 90%;
+  }
+
+  .submitButton {
+    width: 70%;
+  }
+}
+
+@media (max-width: 480px) {
+  .heading {
+    font-size: 2rem;
+  }
+
+  .tagline {
+    font-size: 0.9rem;
+  }
+
+  .form {
+    padding: 15px;
+  }
 }

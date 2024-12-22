@@ -7,9 +7,9 @@ const HeroSection = () => {
   return (
     <section className={styles.hero}>
       <div className={styles.content}>
-        <h2 className={styles.heading}>Welcome to the Axis Point</h2>
+        <h2 className={styles.heading}>PLANETARY XCHANGE PLATFORM</h2>
         <p className={styles.tagline}>
-          Join PXP to explore the new age of digital platforms.
+          Currency Exchange Portal Stimulating the Global Melanted and Indigenous Community through Sustainable Devleopment"
         </p>
         <form className={styles.form}>
           <input
