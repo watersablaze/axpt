@@ -1,0 +1,26 @@
+/* Wallet Page Styling */
+.walletContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: linear-gradient(135deg, #0a192f, #172a45); /* Gradient background */
+    color: #ffffff;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  
+  .title {
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+    text-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
+  }
+  
+  .description {
+    font-size: 1.2rem;
+    margin-bottom: 40px;
+    text-align: center;
+    color: #ddd;
+  }

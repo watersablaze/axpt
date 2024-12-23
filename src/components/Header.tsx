@@ -1,31 +1,34 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import styles from './Header.module.css';
 
 const Header = () => {
   return (
     <header className={styles.header}>
-      {/* Title with logo replacing "O" */}
       <h1 className={styles.title}>
         AXIS P<img src="/AXI.png" alt="Axis Point Logo" className={styles.logoO} />INT
       </h1>
-
-      {/* Navigation Section */}
       <nav className={styles.nav}>
         <div className={styles.navDropdown}>
           <button className={styles.navButton}>Menu</button>
           <div className={styles.navContent}>
-            <a href="/about">About</a>
-            <a href="/services">Services</a>
-            <a href="/contact">Contact</a>
+            <Link href="/about">About</Link>
+            <Link href="/services">Services</Link>
+            <Link href="/contact">Contact</Link>
           </div>
         </div>
-        <a href="/login" className={styles.loginButton}>Login</a>
+        <Link href="/wallet" className={styles.loginButton}>
+          Wallet
+        </Link>
+        <Link href="/login" className={styles.loginButton}>
+          Login
+        </Link>
       </nav>
 
-{/* Tagline Section with Typewriter and Glitch Effect */}
-<p className={`${styles.tagline} ${styles.typewriter}`}>
+ {/* Tagline Section */}
+ <p className={styles.tagline}>
         Currency Exchange Portal Stimulating the Global Melanated and Indigenous Community
       </p>
     </header>
