@@ -15,15 +15,17 @@ const Header = () => {
           <button className={styles.navButton}>Menu</button>
           <div className={styles.navContent}>
             <Link href="/about">About</Link>
-            <Link href="/services">Services</Link>
             <Link href="/contact">Contact</Link>
           </div>
         </div>
-        <Link href="/wallet" className={styles.loginButton}>
+        <Link href="/wallet" className={styles.walletButton}>
           Wallet
         </Link>
         <Link href="/login" className={styles.loginButton}>
           Login
+        </Link>
+        <Link href="/PXP" className={styles.pxpButton}>
+          PXP
         </Link>
       </nav>
 
