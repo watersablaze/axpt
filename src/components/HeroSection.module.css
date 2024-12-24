@@ -1,15 +1,43 @@
-/* Hero Section Styling */
 .hero {
   display: flex;
+  flex-direction: column;
   position: relative;
-  height: 60vh;
-  background: radial-gradient(circle at center, #567395, #065435b4); /* Updated gradient */
+  height: 70vh;
+  background: radial-gradient(circle at center, #567395, #065435b4);
   color: #ffffff;
   padding: 20px;
   box-sizing: border-box;
 }
 
-/* Content Container */
+/* Rolling Banner Styling */
+.banner {
+  width: 100%;
+  background: #003b5b;
+  color: #ffffff;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+}
+
+.bannerText {
+  display: inline-block;
+  padding-left: 100%;
+  animation: scrollRight 10s linear infinite;
+}
+
+@keyframes scrollRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+/* Content Styling */
 .content {
   display: flex;
   justify-content: space-between;
@@ -17,110 +45,46 @@
   width: 100%;
   height: 100%;
   padding: 40px;
-  gap: 20px;
 }
 
-/* H2 Styling */
-.heading {
-  font-size: 3.5rem;
+/* Left Section */
+.leftSection {
+  flex: 1;
+}
+
+.pxp {
+  font-size: 5rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.description {
+  font-size: 1.2rem;
+  line-height: 1.5;
+}
+
+/* Right Section */
+.rightSection {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.signupButton {
+  padding: 15px 25px;
+  background: #00b4d8;
+  color: #ffffff;
+  font-size: 1.2rem;
   font-weight: bold;
   text-transform: uppercase;
-  line-height: 1.5;
-  text-align: left;
-  white-space: pre-line; /* Ensures one word per line */
-  margin: 0;
-  margin-left: 400px;
-  margin-top: 60px;
-  flex: 1;
-  color: #00ffcc; /* Highlight color */
-  text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
-}
-
-/* Form Styling */
-.form {
-  background: rgba(0, 0, 0, 0.3); /* Translucent background */
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 20px;
-  margin-right: 400px;
-  width: 400px; /* Adjust as needed */
-  height: 300px;
-  max-width: 100%;
-}
-
-.input {
-  width: 80%;
-  padding: 10px;
-  margin: 10px 0;
-  margin-top: 40px;
   border: none;
   border-radius: 5px;
-  font-size: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.input:focus {
-  outline: none;
-  border: 2px solid #00ffcc;
-}
-
-.submitButton {
-  background: #00ffcc82;
-  color: #ffffff;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  font-size: 1.2rem;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  width: 80%;
-  margin-top: 20px;
+  transition: transform 0.3s ease, background-color 0.3s ease;
 }
 
-.submitButton:hover {
-  background: #007a66;
-  transform: scale(1.05);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .heading {
-    font-size: 2.5rem;
-  }
-
-  .tagline {
-    font-size: 1rem;
-    padding-top: 20px;
-  }
-
-  .form {
-    width: 90%;
-  }
-
-  .input {
-    width: 90%;
-  }
-
-  .submitButton {
-    width: 70%;
-  }
-}
-
-@media (max-width: 480px) {
-  .heading {
-    font-size: 2rem;
-  }
-
-  .tagline {
-    font-size: 0.9rem;
-  }
-
-  .form {
-    padding: 15px;
-  }
+.signupButton:hover {
+  background: #0077b6;
+  transform: scale(1.1);
 }

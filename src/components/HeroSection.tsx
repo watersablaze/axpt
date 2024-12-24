@@ -2,36 +2,31 @@
 
 import React from 'react';
 import styles from './HeroSection.module.css';
+import Link from 'next/link';
 
 const HeroSection = () => {
   return (
     <section className={styles.hero}>
+      {/* Rolling Banner */}
+      <div className={styles.banner}>
+        <p className={styles.bannerText}>Planetary Exchange Platform</p>
+      </div>
+
       <div className={styles.content}>
-        <h2 className={styles.heading}>
-          PLANETARY
-          <br />
-          XCHANGE
-          <br />
-          PLATFORM
-        </h2>
-       
-        <form className={styles.form}>
-          <input
-            type="text"
-            placeholder="Enter your name"
-            className={styles.input}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Enter your email"
-            className={styles.input}
-            required
-          />
-          <button type="submit" className={styles.submitButton}>
-            Get Started
-          </button>
-        </form>
+        {/* Left Section */}
+        <div className={styles.leftSection}>
+          <h2 className={styles.pxp}>PXP</h2>
+          <p className={styles.description}>
+            A portal designed to stimulate global melanated and indigenous communities through sustainable development.
+          </p>
+        </div>
+
+        {/* Right Section */}
+        <div className={styles.rightSection}>
+          <Link href="/signup" className={styles.signupButton}>
+            Sign Up Now
+          </Link>
+        </div>
       </div>
     </section>
   );
