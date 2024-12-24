@@ -4,12 +4,12 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px 40px;
-  background: rgba(0, 0, 0, 0.8); /* Transparent black background */
+  background: rgba(45, 10, 79, 0.162); 
   color: #ffffff;
   position: relative;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 10px 14px rgba(65, 66, 1, 0.29);
   z-index: 10;
-  height: 300px; /* Adjust header height */
+  height: 160px; /* Adjust header height */
   box-sizing: border-box;
 }
 
@@ -34,14 +34,18 @@
 .title {
   display: flex;
   align-items: center;
-  font-size: 8rem; /* Larger title font size */
+  font-size: 7rem; /* Larger title font size */
   font-weight: bold;
+  font-family: 'LTSoul', sans-serif;
   text-transform: uppercase;
   color: #ffffff;
   text-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
   margin: 0;
-  letter-spacing: 0.4rem;
-  margin-left: 50px;
+  letter-spacing: 0.6rem;
+  margin-left: 65px;
+  margin-bottom: 10px;
+  overflow: hidden; /* Prevent overflow of the text */
+
 }
 
 .title span {
@@ -75,7 +79,7 @@
   padding-top: 5px;
   width: fit-content;
   margin-left: -350px;
-  margin-bottom: 80px;
+  margin-bottom: 30px;
   white-space: nowrap; /* Prevent wrapping */
   opacity: 0; /* Start invisible */
   animation: swooshIn 1.5s ease-out forwards; /* `forwards` ensures it stays in place */
@@ -93,100 +97,78 @@
   }
 }
 
-/* Navigation Styling */
-.nav {
+/* Button Section Styling */
+.buttonSection {
   display: flex;
+  flex-direction: row;
   align-items: center;
-}
-
-.navDropdown {
-  position: relative;
-}
-
-.navButton {
-  background: #333;
-  color: #ffffff;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 5px;
-  font-size: 1rem;
-  transition: background 0.3s ease, transform 0.3s ease;
-  margin-right: -70px;
-  margin-bottom: 200px;
-}
-
-.navButton:hover {
-  background: #555;
-  transform: scale(1.05);
-}
-
-.navContent {
-  display: none;
-  position: absolute;
-  top: 40px;
-  right: 0;
-  background: rgba(0, 0, 0, 0.9); /* Transparent dropdown */
-  border-radius: 5px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+  gap: 15px; /* Space between buttons */
   padding: 10px;
-  z-index: 20;
-  flex-direction: column;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  width: 300px;
+  margin: 0 auto;
+  margin-right: 60px;
+  margin-bottom: 10px;
 }
 
-.navContent a {
-  display: block;
+/* Shared Button Styling */
+.button {
+  display: inline-block;
+  width: 60%; /* Full width in column layout */
+  font-size: 1.1rem;
+  font-weight: bold;
   color: #ffffff;
-  padding: 8px 15px;
-  text-decoration: none;
-  transition: background 0.3s ease, color 0.3s ease;
-}
-
-.navContent a:hover {
-  background: #333;
-  color: #ffcc00; /* Bright yellow on hover */
-}
-
-.navDropdown:hover .navContent {
-  display: flex;
-}
-
-/* Wallet Button Styling */
-.walletButton {
-  background: linear-gradient(90deg, #28a745, #34d058); /* Gradient green */
-  color: #ffffff;
+  text-align: center;
   border: none;
-  margin-left: -70px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: linear-gradient(90deg, #b8b807, #b8b807); /* Ocean-blue gradient */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Wallet Button Specific */
+.walletButton {
+  background: linear-gradient(90deg, #303004, #b8b807); /* Ocean-blue gradient */
 }
 
 .walletButton:hover {
-  background: linear-gradient(90deg, #218838, #2ea043); /* Darker gradient */
-  transform: translateY(-2px); /* Slight lift effect */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(90deg, #004c99, #008fbf); /* Darker gradient */
+  transform: translateY(-3px); /* Lift effect */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
-/* Login Button Styling */
+/* Login Button Specific */
 .loginButton {
-  background: linear-gradient(90deg, #007bff, #0056b3); /* Gradient blue */
-  color: #ffffff;
-  border: none;
+  background: linear-gradient(90deg, #303004, #b8b807); /* Ocean-blue gradient */
 }
 
 .loginButton:hover {
-  background: linear-gradient(90deg, #0056b3, #004494); /* Darker gradient */
-  transform: translateY(-2px); /* Slight lift effect */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(90deg, #004c99, #008fbf); /* Darker gradient */
+  transform: translateY(-3px); /* Lift effect */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
 }
 
-/* PXP Button Styling */
+/* PXP Button Specific */
 .pxpButton {
-  background: linear-gradient(90deg, #6f42c1, #8a63d2); /* Gradient purple */
-  color: #ffffff;
-  border: none;
+  background: linear-gradient(90deg, #303004, #b8b807); /* Ocean-blue gradient */
 }
 
 .pxpButton:hover {
-  background: linear-gradient(90deg, #5a32a3, #743db6); /* Darker gradient */
-  transform: translateY(-2px); /* Slight lift effect */
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  background: linear-gradient(90deg, #004c99, #008fbf); /* Darker gradient */
+  transform: translateY(-3px); /* Lift effect */
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .buttonSection {
+    width: 100%;
+  }
+
+  .button {
+    font-size: 1rem;
+    padding: 12px 15px;
+  }
 }

@@ -10,25 +10,11 @@ const Header = () => {
       <h1 className={styles.title}>
         AXIS P<img src="/AXI.png" alt="Axis Point Logo" className={styles.logoO} />INT
       </h1>
-      <nav className={styles.nav}>
-        <div className={styles.navDropdown}>
-          <button className={styles.navButton}>Menu</button>
-          <div className={styles.navContent}>
-            <Link href="/about">About</Link>
-            <Link href="/contact">Contact</Link>
-          </div>
-        </div>
-        <Link href="/wallet" className={styles.walletButton}>
-          Wallet
-        </Link>
-        <Link href="/login" className={styles.loginButton}>
-          Login
-        </Link>
-        <Link href="/PXP" className={styles.pxpButton}>
-          PXP
-        </Link>
-      </nav>
-
+      <div className={styles.buttonSection}>
+  <button className={`${styles.button} ${styles.walletButton}`}>Wallet</button>
+  <button className={`${styles.button} ${styles.loginButton}`}>Login</button>
+  <button className={`${styles.button} ${styles.pxpButton}`}>PXP</button>
+</div>
  {/* Tagline Section */}
  <p className={styles.tagline}>
         Currency Exchange Portal Stimulating the Global Melanated and Indigenous Community

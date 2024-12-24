@@ -3,11 +3,7 @@
   display: flex;
   position: relative;
   height: 60vh;
-  background: linear-gradient(
-    135deg,
-    rgba(10, 25, 47, 0.9),
-    rgba(25, 40, 65, 0.8)
-  );
+  background: radial-gradient(circle at center, #567395, #065435b4); /* Updated gradient */
   color: #ffffff;
   padding: 20px;
   box-sizing: border-box;
