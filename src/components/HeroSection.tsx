@@ -7,11 +7,6 @@ import Link from 'next/link';
 const HeroSection = () => {
   return (
     <section className={styles.hero}>
-      {/* Rolling Banner */}
-      <div className={styles.banner}>
-        <p className={styles.bannerText}>Planetary Exchange Platform</p>
-      </div>
-
       <div className={styles.content}>
         {/* Left Section */}
         <div className={styles.leftSection}>

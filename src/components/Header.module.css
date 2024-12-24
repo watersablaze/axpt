@@ -1,63 +1,37 @@
 /* Header Styling */
 .header {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  padding: 20px 40px;
-  background: rgba(45, 10, 79, 0.162); 
+  justify-content: center;
+  padding: 20px;
   color: #ffffff;
   position: relative;
-  box-shadow: 0 10px 14px rgba(65, 66, 1, 0.29);
   z-index: 10;
-  height: 160px; /* Adjust header height */
+  height: 450px;
   box-sizing: border-box;
+  text-align: center;
 }
 
-/* Logo Styling */
-.logoContainer {
-  display: flex;
-  align-items: center;
-  margin-right: 20px;
-}
-
-.logo {
-  height: 100px; /* Large size for logo */
-  width: auto;
-  transition: transform 0.3s ease;
-}
-
-.logo:hover {
-  transform: scale(1.1);
-}
-
-/* Title Styling with logo replacing "O" */
+/* Title Styling with Logo replacing "O" */
 .title {
   display: flex;
   align-items: center;
-  font-size: 7rem; /* Larger title font size */
+  justify-content: center;
+  font-size: 8rem;
   font-weight: bold;
-  font-family: 'LTSoul', sans-serif;
   text-transform: uppercase;
   color: #ffffff;
   text-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
-  margin: 0;
-  letter-spacing: 0.6rem;
-  margin-left: 65px;
-  margin-bottom: 10px;
-  overflow: hidden; /* Prevent overflow of the text */
-
-}
-
-.title span {
-  margin: 0 0.3rem;
+  margin: 0 0 10px 0;
 }
 
 .logoO {
-  width: 8rem; /* Match large title size */
-  height: 8rem;
-  border-radius: 50%; /* Ensure circular shape */
-  margin: 0 0.5rem;
+  width: 11rem;
+  height: 11rem;
+  border-radius: 50%;
   vertical-align: middle;
+  margin: 0 0.5rem;
   transition: transform 0.3s ease;
 }
 
@@ -65,110 +39,120 @@
   transform: scale(1.2);
 }
 
-/* Tagline Styling */
-.tagline {
-  position: absolute;
-  bottom: -25px; /* Adjust position under title */
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 1.3rem;
-  font-weight: 400;
-  color: #dddddd;
-  text-align: center;
-  border-top: 1px solid #ffffff; /* Thin border above tagline */
-  padding-top: 5px;
-  width: fit-content;
-  margin-left: -350px;
-  margin-bottom: 30px;
-  white-space: nowrap; /* Prevent wrapping */
-  opacity: 0; /* Start invisible */
-  animation: swooshIn 1.5s ease-out forwards; /* `forwards` ensures it stays in place */
-}
-
-/* Animation for Swoosh-In */
-@keyframes swooshIn {
-  0% {
-    opacity: 0;
-    transform: translate(-150%, 0); /* Start far to the left */
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(-50%); /* Align with title (centered below) */
-  }
-}
-
-/* Button Section Styling */
-.buttonSection {
+/* Button Container */
+.buttonContainer {
   display: flex;
-  flex-direction: row;
-  align-items: center;
-  gap: 15px; /* Space between buttons */
-  padding: 10px;
-  border-radius: 10px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  width: 300px;
-  margin: 0 auto;
-  margin-right: 60px;
-  margin-bottom: 10px;
+  gap: 10px; /* Reduced space between buttons */
+  margin-top: 10px;
 }
 
-/* Shared Button Styling */
-.button {
+/* Digital-Styled Button */
+.walletButton,
+.loginButton {
   display: inline-block;
-  width: 60%; /* Full width in column layout */
+  padding: 10px 20px;
+  background: linear-gradient(90deg, #0d3b66, #3087c7); /* Digital gradient */
+  color: #ffffff;
+  text-transform: uppercase;
   font-size: 1.1rem;
   font-weight: bold;
-  color: #ffffff;
   text-align: center;
-  border: none;
-  border-radius: 5px;
+  border: 2px solid #1f538d;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  background: linear-gradient(90deg, #b8b807, #b8b807); /* Ocean-blue gradient */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  text-decoration: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
 }
 
-/* Wallet Button Specific */
-.walletButton {
-  background: linear-gradient(90deg, #303004, #b8b807); /* Ocean-blue gradient */
-}
-
-.walletButton:hover {
-  background: linear-gradient(90deg, #004c99, #008fbf); /* Darker gradient */
-  transform: translateY(-3px); /* Lift effect */
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
-}
-
-/* Login Button Specific */
-.loginButton {
-  background: linear-gradient(90deg, #303004, #b8b807); /* Ocean-blue gradient */
-}
-
+.walletButton:hover,
 .loginButton:hover {
-  background: linear-gradient(90deg, #004c99, #008fbf); /* Darker gradient */
-  transform: translateY(-3px); /* Lift effect */
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+  transform: scale(1.05); /* Slight lift effect */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(90deg, #1a5f94, #4ea7d6); /* Brighter hover gradient */
 }
 
-/* PXP Button Specific */
-.pxpButton {
-  background: linear-gradient(90deg, #303004, #b8b807); /* Ocean-blue gradient */
-}
-
-.pxpButton:hover {
-  background: linear-gradient(90deg, #004c99, #008fbf); /* Darker gradient */
-  transform: translateY(-3px); /* Lift effect */
-  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
+/* Tagline Styling */
+.tagline {
+  font-size: 1.2rem;
+  color: #dddddd;
+  margin-top: 15px;
+  text-align: center;
+  border-top: 1px solid #ffffff;
+  padding-top: 5px;
+  max-width: 80%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 70px;
 }
 
 /* Responsive Design */
 @media (max-width: 480px) {
-  .buttonSection {
-    width: 100%;
+  .title {
+    font-size: 4rem;
   }
 
-  .button {
+  .walletButton,
+  .loginButton {
+    padding: 8px 15px;
     font-size: 1rem;
-    padding: 12px 15px;
+  }
+
+  .tagline {
+    font-size: 1rem;
+  }
+}
+
+/* Rolling Banner Styling */
+.banner {
+  width: 100vw;
+  background: #003b5b44;
+  color: #ffffff;
+  text-align: center;
+  font-size: 1.5rem;
+  font-weight: bold;
+  overflow: hidden;
+  white-space: nowrap;
+  position: relative;
+  margin-top: 20px;
+}
+
+/* Rolling Animation */
+.banner span {
+  display: inline-block;
+  animation: rollingText 25s linear infinite; /* Rolling animation */
+}
+
+@keyframes rollingText {
+  0% {
+    transform: translateX(100%); /* Start off the screen */
+  }
+  100% {
+    transform: translateX(-100%); /* Move across and exit left */
+  }
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+  .banner {
+    font-size: 1.2rem; /* Adjust font size for smaller screens */
+    padding: 8px 0; /* Adjust padding */
+  }
+}
+
+.bannerText {
+  display: inline-block;
+  padding-left: 100%;
+  animation: scrollRight 15s linear infinite;
+  text-transform: uppercase;
+}
+
+@keyframes scrollRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
   }
 }

@@ -12,6 +12,7 @@ const nextConfig: NextConfig = {
   images: {
     domains: ["example.com"], // Add domains for external images, if needed
   },
+  productionBrowserSourceMaps: true, // Enables source maps for better debugging
 };
 
 export default nextConfig;
