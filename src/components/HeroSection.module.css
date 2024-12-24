@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  height: 70vh;
+  height: 90vh;
   color: #ffffff;
   padding: 20px;
   box-sizing: border-box;
@@ -15,47 +15,74 @@
   align-items: flex-start;
   width: 100%;
   height: 100%;
-  padding: 40px;
+  padding: 10px;
 }
 
-/* Left Section */
+/* Left Section Styling */
 .leftSection {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0px;
 }
 
-.pxp {
-  font-size: 5rem;
-  font-weight: bold;
-  margin-bottom: 20px;
+.logo {
+  width: 500px; /* Adjust logo size */
+  height: auto;
+  object-fit: contain;
+  margin-left: 170px;
 }
+
 
 .description {
   font-size: 1.2rem;
   line-height: 1.5;
+  color: #e8e8e8;
+  margin: 0;
 }
 
-/* Right Section */
+
+/* Right Section Styling */
 .rightSection {
   flex: 1;
   display: flex;
-  align-items: center;
   justify-content: flex-end;
+  align-items: center;
 }
 
 .signupButton {
-  padding: 15px 25px;
-  background: #00b4d8;
+  padding: 15px 30px;
+  background: linear-gradient(90deg, #00b4d8, #0077b6);
   color: #ffffff;
   font-size: 1.2rem;
   font-weight: bold;
   text-transform: uppercase;
-  border: none;
+  text-decoration: none;
   border-radius: 5px;
-  cursor: pointer;
-  transition: transform 0.3s ease, background-color 0.3s ease;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .signupButton:hover {
-  background: #0077b6;
-  transform: scale(1.1);
+  background: linear-gradient(90deg, #0096c7, #005f8a);
+  transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .content {
+    flex-direction: column;
+    align-items: center;
+    gap: 30px;
+  }
+
+  .leftSection {
+    align-items: center;
+    text-align: center;
+  }
+
+  .description {
+    font-size: 1rem;
+  }
 }

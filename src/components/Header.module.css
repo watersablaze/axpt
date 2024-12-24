@@ -4,11 +4,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 10px 20px; /* Reduced padding */
   color: #ffffff;
   position: relative;
   z-index: 10;
-  height: 450px;
+  height: 300px; /* Reduced header height */
   box-sizing: border-box;
   text-align: center;
 }
@@ -18,17 +18,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 8rem;
+  font-size: 6rem; /* Adjusted title size */
   font-weight: bold;
   text-transform: uppercase;
   color: #ffffff;
   text-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
-  margin: 0 0 10px 0;
+  margin: 0;
 }
 
 .logoO {
-  width: 11rem;
-  height: 11rem;
+  width: 7rem; /* Adjusted logo size */
+  height: 7rem;
   border-radius: 50%;
   vertical-align: middle;
   margin: 0 0.5rem;
@@ -39,14 +39,74 @@
   transform: scale(1.2);
 }
 
-/* Button Container */
-.buttonContainer {
-  display: flex;
-  gap: 10px; /* Reduced space between buttons */
-  margin-top: 10px;
+/* Tagline Styling */
+.tagline {
+  font-size: 1.2rem;
+  color: #dddddd;
+  margin-top: 10px; /* Adjusted spacing */
+  text-align: center;
+  border-top: 1px solid #ffffff;
+  padding-top: 5px;
+  max-width: 80%; /* Control the span of the tagline */
+  margin: 0 auto; /* Center the tagline */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  z-index: 1; /* Ensure above other elements */
 }
 
-/* Digital-Styled Button */
+/* Rolling Banner Styling */
+.banner {
+  width: 100vw; /* Full viewport width */
+  background: rgba(0, 59, 91, 0.8); /* Semi-transparent banner */
+  color: #ffffff; /* Text color */
+  text-transform: uppercase; /* Convert text to uppercase */
+  text-align: center;
+  font-size: 1.2rem;
+  font-weight: bold;
+  overflow: hidden; /* Hide text outside of the visible area */
+  white-space: nowrap; /* Prevent wrapping of text */
+  position: relative; /* Positioned below header */
+  margin: 0; /* No margin */
+  padding: 10px 0; /* Vertical padding */
+  z-index: 1; /* Ensure it stays on top */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+}
+
+/* Text inside the banner */
+.banner span {
+  display: inline-block;
+  animation: rollingText 30s linear infinite; /* Slow scrolling animation */
+}
+
+/* Rolling Animation */
+@keyframes rollingText {
+  0% {
+    transform: translateX(100%); /* Start off-screen (right side) */
+  }
+  100% {
+    transform: translateX(-100%); /* Scroll to off-screen (left side) */
+  }
+}
+
+/* Responsive Styling */
+@media (max-width: 768px) {
+  .banner {
+    font-size: 1rem; /* Adjust font size for smaller screens */
+  }
+}
+
+
+@keyframes rollingText {
+  0% {
+    transform: translateX(100%); /* Start off-screen */
+  }
+  100% {
+    transform: translateX(-100%); /* Move across the screen */
+  }
+}
+
+/* Button Styling */
 .walletButton,
 .loginButton {
   display: inline-block;
@@ -63,6 +123,7 @@
   text-decoration: none;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+  margin: 10px 5px; /* Spacing between buttons */
 }
 
 .walletButton:hover,
@@ -72,87 +133,24 @@
   background: linear-gradient(90deg, #1a5f94, #4ea7d6); /* Brighter hover gradient */
 }
 
-/* Tagline Styling */
-.tagline {
-  font-size: 1.2rem;
-  color: #dddddd;
-  margin-top: 15px;
-  text-align: center;
-  border-top: 1px solid #ffffff;
-  padding-top: 5px;
-  max-width: 80%;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 70px;
-}
-
 /* Responsive Design */
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .title {
-    font-size: 4rem;
-  }
-
-  .walletButton,
-  .loginButton {
-    padding: 8px 15px;
-    font-size: 1rem;
+    font-size: 4rem; /* Adjust title size for smaller screens */
   }
 
   .tagline {
     font-size: 1rem;
+    padding-top: 3px; /* Reduced padding */
   }
-}
 
-/* Rolling Banner Styling */
-.banner {
-  width: 100vw;
-  background: #003b5b44;
-  color: #ffffff;
-  text-align: center;
-  font-size: 1.5rem;
-  font-weight: bold;
-  overflow: hidden;
-  white-space: nowrap;
-  position: relative;
-  margin-top: 20px;
-}
-
-/* Rolling Animation */
-.banner span {
-  display: inline-block;
-  animation: rollingText 25s linear infinite; /* Rolling animation */
-}
-
-@keyframes rollingText {
-  0% {
-    transform: translateX(100%); /* Start off the screen */
-  }
-  100% {
-    transform: translateX(-100%); /* Move across and exit left */
-  }
-}
-
-/* Responsive Styling */
-@media (max-width: 768px) {
   .banner {
-    font-size: 1.2rem; /* Adjust font size for smaller screens */
-    padding: 8px 0; /* Adjust padding */
+    font-size: 1rem; /* Adjust banner font size */
   }
-}
 
-.bannerText {
-  display: inline-block;
-  padding-left: 100%;
-  animation: scrollRight 15s linear infinite;
-  text-transform: uppercase;
-}
-
-@keyframes scrollRight {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-100%);
+  .walletButton,
+  .loginButton {
+    font-size: 1rem;
+    padding: 8px 12px;
   }
 }

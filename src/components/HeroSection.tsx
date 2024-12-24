@@ -10,7 +10,11 @@ const HeroSection = () => {
       <div className={styles.content}>
         {/* Left Section */}
         <div className={styles.leftSection}>
-          <h2 className={styles.pxp}>PXP</h2>
+          <img
+            src="/PXP.logo.png"
+            alt="PXP Logo"
+            className={styles.logo}
+          />
           <p className={styles.description}>
             A portal designed to stimulate global melanated and indigenous communities through sustainable development.
           </p>
