@@ -93,24 +93,6 @@
   }
 }
 
-/* Wallet Button Styling */
-.walletButton {
-  background: #28a745; /* Green color */
-  color: #ffffff;
-  padding: 10px 20px;
-  border-radius: 5px;
-  text-decoration: none;
-  font-size: 1.2rem;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  margin-left: 20px;
-}
-
-.walletButton:hover {
-  background-color: #218838; /* Darker green */
-  transform: scale(1.1);
-}
-
 /* Navigation Styling */
 .nav {
   display: flex;
@@ -125,11 +107,13 @@
   background: #333;
   color: #ffffff;
   border: none;
-  padding: 10px 15px;
+  padding: 5px 10px;
   cursor: pointer;
   border-radius: 5px;
   font-size: 1rem;
   transition: background 0.3s ease, transform 0.3s ease;
+  margin-right: -70px;
+  margin-bottom: 200px;
 }
 
 .navButton:hover {
@@ -167,20 +151,42 @@
   display: flex;
 }
 
+/* Wallet Button Styling */
+.walletButton {
+  background: linear-gradient(90deg, #28a745, #34d058); /* Gradient green */
+  color: #ffffff;
+  border: none;
+  margin-left: -70px;
+}
+
+.walletButton:hover {
+  background: linear-gradient(90deg, #218838, #2ea043); /* Darker gradient */
+  transform: translateY(-2px); /* Slight lift effect */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
 /* Login Button Styling */
 .loginButton {
-  background: #007bff;
+  background: linear-gradient(90deg, #007bff, #0056b3); /* Gradient blue */
   color: #ffffff;
-  padding: 10px 20px;
-  border-radius: 5px;
-  text-decoration: none;
-  font-size: 1.2rem; /* Slightly larger button */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  margin-left: 20px;
+  border: none;
 }
 
 .loginButton:hover {
-  background-color: #0056b3;
-  transform: scale(1.1);
+  background: linear-gradient(90deg, #0056b3, #004494); /* Darker gradient */
+  transform: translateY(-2px); /* Slight lift effect */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* PXP Button Styling */
+.pxpButton {
+  background: linear-gradient(90deg, #6f42c1, #8a63d2); /* Gradient purple */
+  color: #ffffff;
+  border: none;
+}
+
+.pxpButton:hover {
+  background: linear-gradient(90deg, #5a32a3, #743db6); /* Darker gradient */
+  transform: translateY(-2px); /* Slight lift effect */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
