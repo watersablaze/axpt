@@ -2,17 +2,31 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  height: 90vh;
+  height: 70vh;
   color: #ffffff;
   padding: 20px;
   box-sizing: border-box;
+}
+
+/* Glow Effect - Responsive */
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 10%;
+  right: 10%; /* Use percentages for responsiveness */
+  width: 200px;
+  height: 200px;
+  background: rgba(255, 255, 255, 0.213);
+  border-radius: 50%;
+  filter: blur(40px);
+  z-index: -1; /* Ensure it stays behind content */
 }
 
 /* Content Styling */
 .content {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   width: 100%;
   height: 100%;
   padding: 10px;
@@ -22,46 +36,58 @@
 .leftSection {
   flex: 1;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: flex-start;
   justify-content: center;
-  gap: 0px;
+  gap: 15px; /* Increased spacing for better alignment */
+  padding: 0 5px; /* Remove fixed margins, add padding */
+  margin-left: 275px;
+  opacity: 0;
+  animation: fadeIn 5.5s ease-out forwards;
 }
 
 .logo {
-  width: 500px; /* Adjust logo size */
+  width: 400px; /* Scales down for smaller screens */
   height: auto;
   object-fit: contain;
-  margin-left: 170px;
 }
-
 
 .description {
-  font-size: 1.2rem;
-  line-height: 1.5;
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.4;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
   color: #e8e8e8;
   margin: 0;
+  max-width: 80%; /* Keep text from spanning too wide */
+  margin-top: 90px;
 }
-
 
 /* Right Section Styling */
 .rightSection {
   flex: 1;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
   align-items: center;
+  margin-right: 100px;
 }
 
 .signupButton {
   padding: 15px 30px;
-  background: linear-gradient(90deg, #00b4d8, #0077b6);
+  background: linear-gradient(90deg, #ff6b6b, #f06595);
   color: #ffffff;
   font-size: 1.2rem;
   font-weight: bold;
   text-transform: uppercase;
   text-decoration: none;
   border-radius: 5px;
+  border: none;
+  cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.75);
+  transform: translateY(50px);
+  opacity: 0;
+  animation: fadeInUp 1s ease-out forwards;
 }
 
 .signupButton:hover {
@@ -69,20 +95,71 @@
   transform: scale(1.05);
 }
 
+.signupButton:focus {
+  outline: 3px dashed #00b4d8;
+  outline-offset: 5px;
+}
+
 /* Responsive Design */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   .content {
-    flex-direction: column;
-    align-items: center;
-    gap: 30px;
+    flex-direction: column; /* Stack content vertically */
+    align-items: center; /* Center align content */
+    gap: 20px; /* Add spacing between sections */
   }
 
   .leftSection {
     align-items: center;
     text-align: center;
+    padding: 0;
+  }
+
+  .logo {
+    width: 150px; /* Smaller logo for medium screens */
   }
 
   .description {
-    font-size: 1rem;
+    font-size: 1.4rem;
+    max-width: 90%; /* Ensure description fits */
+  }
+
+  .signupButton {
+    width: 80%; /* Make button wider for smaller screens */
+    margin-top: 20px; /* Add spacing above button */
+  }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    height: auto; /* Allow dynamic height for smaller screens */
+  }
+
+  .description {
+    font-size: 1.2rem;
+    line-height: 1.3;
+  }
+
+  .signupButton {
+    padding: 12px 20px; /* Smaller button padding */
+  }
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

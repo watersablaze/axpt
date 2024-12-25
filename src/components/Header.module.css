@@ -4,13 +4,14 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 10px 20px; /* Reduced padding */
+  padding: 10px 20px;
   color: #ffffff;
   position: relative;
   z-index: 10;
-  height: 300px; /* Reduced header height */
+  height: 325px; /* Adjusted header height */
   box-sizing: border-box;
   text-align: center;
+  background: radial-gradient(circle at center, #5673956d, #065435b4); /* Updated gradient */
 }
 
 /* Title Styling with Logo replacing "O" */
@@ -18,7 +19,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 6rem; /* Adjusted title size */
+  font-size: 7rem;
   font-weight: bold;
   text-transform: uppercase;
   color: #ffffff;
@@ -27,7 +28,7 @@
 }
 
 .logoO {
-  width: 7rem; /* Adjusted logo size */
+  width: 7rem;
   height: 7rem;
   border-radius: 50%;
   vertical-align: middle;
@@ -43,67 +44,56 @@
 .tagline {
   font-size: 1.2rem;
   color: #dddddd;
-  margin-top: 10px; /* Adjusted spacing */
+  margin-top: 10px;
   text-align: center;
-  border-top: 1px solid #ffffff;
+  border-top: 2px solid #ffffff; /* Bold underline */
+  width: fit-content; /* Match text width */
   padding-top: 5px;
-  max-width: 80%; /* Control the span of the tagline */
-  margin: 0 auto; /* Center the tagline */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  z-index: 1; /* Ensure above other elements */
 }
 
 /* Rolling Banner Styling */
 .banner {
-  width: 100vw; /* Full viewport width */
-  background: rgba(0, 59, 91, 0.8); /* Semi-transparent banner */
+  width: 100vw; /* Ensure full viewport width */
+  background: rgba(0, 59, 91, 0.9); /* Semi-transparent dark blue */
   color: #ffffff; /* Text color */
-  text-transform: uppercase; /* Convert text to uppercase */
+  text-transform: uppercase; /* Uppercase text */
   text-align: center;
   font-size: 1.2rem;
   font-weight: bold;
-  overflow: hidden; /* Hide text outside of the visible area */
-  white-space: nowrap; /* Prevent wrapping of text */
-  position: relative; /* Positioned below header */
+  overflow: hidden; /* Hide text outside visible area */
+  white-space: nowrap; /* Prevent text wrapping */
+  position: absolute; /* Positioned at the bottom of the header */
+  bottom: 0;
   margin: 0; /* No margin */
-  padding: 10px 0; /* Vertical padding */
-  z-index: 1; /* Ensure it stays on top */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  padding: 10px 0;
+  z-index: 1; /* Ensure visibility */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow */
 }
 
-/* Text inside the banner */
-.banner span {
+/* Banner Scrolling Text */
+.bannerText {
   display: inline-block;
-  animation: rollingText 30s linear infinite; /* Slow scrolling animation */
+  animation: rollingText 30s linear infinite; /* Slow scrolling */
 }
 
 /* Rolling Animation */
 @keyframes rollingText {
   0% {
-    transform: translateX(100%); /* Start off-screen (right side) */
+    transform: translateX(100%); /* Start off-screen to the right */
   }
   100% {
-    transform: translateX(-100%); /* Scroll to off-screen (left side) */
+    transform: translateX(-100%); /* Move across to the left */
   }
 }
 
-/* Responsive Styling */
-@media (max-width: 768px) {
-  .banner {
-    font-size: 1rem; /* Adjust font size for smaller screens */
-  }
-}
-
-
-@keyframes rollingText {
-  0% {
-    transform: translateX(100%); /* Start off-screen */
-  }
-  100% {
-    transform: translateX(-100%); /* Move across the screen */
-  }
+/* Button Container */
+.buttonContainer {
+  display: flex;
+  gap: 15px; /* Space between buttons */
+  margin-top: 15px; /* Adjust spacing below tagline */
 }
 
 /* Button Styling */
@@ -111,7 +101,7 @@
 .loginButton {
   display: inline-block;
   padding: 10px 20px;
-  background: linear-gradient(90deg, #0d3b66, #3087c7); /* Digital gradient */
+  background: linear-gradient(90deg, #0d3b66, #3087c7); /* Gradient effect */
   color: #ffffff;
   text-transform: uppercase;
   font-size: 1.1rem;
@@ -123,34 +113,33 @@
   text-decoration: none;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
-  margin: 10px 5px; /* Spacing between buttons */
 }
 
 .walletButton:hover,
 .loginButton:hover {
-  transform: scale(1.05); /* Slight lift effect */
+  transform: scale(1.05); /* Lift effect on hover */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-  background: linear-gradient(90deg, #1a5f94, #4ea7d6); /* Brighter hover gradient */
+  background: linear-gradient(90deg, #1a5f94, #4ea7d6); /* Brighter gradient */
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .title {
-    font-size: 4rem; /* Adjust title size for smaller screens */
+    font-size: 5rem; /* Adjust title size for smaller screens */
   }
 
   .tagline {
     font-size: 1rem;
-    padding-top: 3px; /* Reduced padding */
-  }
-
-  .banner {
-    font-size: 1rem; /* Adjust banner font size */
+    padding-top: 3px;
   }
 
   .walletButton,
   .loginButton {
     font-size: 1rem;
     padding: 8px 12px;
+  }
+
+  .banner {
+    font-size: 1rem; /* Adjust banner font size */
   }
 }
