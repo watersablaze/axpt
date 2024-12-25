@@ -16,18 +16,22 @@ const handler = NextAuth({
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error("Missing email or password");
+        }
+
         const user = await prisma.user.findUnique({
-          where: { email: credentials?.email },
+          where: { email: credentials.email },
         });
 
         if (!user) {
-          throw new Error('No user found');
+          throw new Error("No user found");
         }
 
-        const isValidPassword = await bcrypt.compare(credentials!.password, user.password);
+        const isValidPassword = await bcrypt.compare(credentials.password, user.password);
 
         if (!isValidPassword) {
-          throw new Error('Invalid credentials');
+          throw new Error("Invalid credentials");
         }
 
         return {
@@ -38,14 +42,8 @@ const handler = NextAuth({
       },
     }),
   ],
-  secret: process.env.JWT_SECRET,
+  secret: process.env.NEXTAUTH_SECRET, // Ensure this is set in your .env.local file
   session: {
-    strategy: 'jwt',
-  },
-  pages: {
-    signIn: '/auth/signin',
-    error: '/auth/error',
+    strategy: "jwt",
   },
 });
-
-export { handler as GET, handler as POST };
