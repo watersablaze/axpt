@@ -3,6 +3,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  position: relative;
   justify-content: center;
   padding: 10px 20px;
   color: #ffffff;
@@ -57,8 +58,8 @@
 
 /* Rolling Banner Styling */
 .banner {
-  width: 100vw; /* Ensure full viewport width */
-  background: rgba(0, 59, 91, 0.664); /* Semi-transparent dark blue */
+  width: 100%; /* Ensure full width */
+  background: rgba(0, 6, 9, 0.963); /* Semi-transparent dark blue */
   color: #ffffff; /* Text color */
   text-transform: uppercase; /* Uppercase text */
   text-align: center;
@@ -66,26 +67,34 @@
   font-weight: bold;
   overflow: hidden; /* Hide text outside visible area */
   white-space: nowrap; /* Prevent text wrapping */
-  position: absolute; /* Positioned at the bottom of the header */
-  bottom: 0;
+  position: absolute; /* Positioned relative to the header */
+  bottom: 0; /* Place at the bottom of the header */
   margin: 0; /* No margin */
-  padding: 10px 0;
-  z-index: 1; /* Ensure visibility */
+  padding: 10px 0; /* Padding inside the banner */
+  z-index: 2; /* Ensure it is above other elements */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow */
 }
 
+/* Rolling Banner Text */
 .bannerText {
   display: inline-block;
-  animation: scrollText 30s linear infinite;
-  white-space: nowrap;
+  animation: rollingText 40s linear infinite; /* Rolling animation */
+  line-height: 1.5; /* Align flags with text */
 }
 
-@keyframes scrollText {
-  from {
-    transform: translateX(100%);
+.bannerText span {
+  display: inline-block;
+  vertical-align: middle; /* Align text with flags */
+  margin: 0 10px; /* Space between flags */
+}
+
+/* Rolling Animation Keyframes */
+@keyframes rollingText {
+  0% {
+    transform: translateX(100%); /* Start off-screen (right side) */
   }
-  to {
-    transform: translateX(-100%);
+  100% {
+    transform: translateX(-100%); /* Scroll off-screen (left side) */
   }
 }
 
@@ -98,8 +107,7 @@
 
 /* Button Styling */
 .walletButton,
-.loginButton,
-.signOutButton {
+.loginButton {
   display: inline-block;
   padding: 10px 20px;
   background: linear-gradient(90deg, #0d3b66, #3087c7); /* Gradient effect */
@@ -118,8 +126,7 @@
 }
 
 .walletButton:hover,
-.loginButton:hover,
-.signOutButton {
+.loginButton:hover {
   transform: scale(1.05); /* Lift effect on hover */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
   background: linear-gradient(90deg, #1a5f94, #4ea7d6); /* Brighter gradient */
@@ -128,7 +135,7 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .title {
-    font-size: 5rem; /* Adjust title size for smaller screens */
+    font-size: 4rem; /* Adjust title size for smaller screens */
   }
 
   .tagline {

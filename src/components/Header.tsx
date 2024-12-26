@@ -26,19 +26,20 @@ const Header = () => {
       </div>
       <div className={styles.banner}>
         <span className={styles.bannerText}>
-          Planetary Exchange Platform |{' '}
-          {countryCodes.map((code) => (
+          P X P {' '}
+          {countryCodes.map((code, index) => (
             <CountryFlag
-              key={code}
-              countryCode={code}
+              key={index}
+              code={code}
               style={{
                 width: '1.5em',
                 height: '1.5em',
                 margin: '0 10px', // Space between flags
+                verticalAlign: 'middle',
               }}
             />
           ))}
-          | Cultural Exchange | Community Empowerment
+           PXP
         </span>
       </div>
     </header>
