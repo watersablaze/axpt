@@ -1,4 +1,4 @@
-import NextAuth from 'next-auth';
+import NextAuth, { AuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { PrismaAdapter } from '@next-auth/prisma-adapter';
 import { PrismaClient } from '@prisma/client';
@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient();
 
-const handler = NextAuth({
+export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
@@ -17,7 +17,7 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          throw new Error("Missing email or password");
+          throw new Error('Missing email or password');
         }
 
         const user = await prisma.user.findUnique({
@@ -25,13 +25,13 @@ const handler = NextAuth({
         });
 
         if (!user) {
-          throw new Error("No user found");
+          throw new Error('No user found');
         }
 
         const isValidPassword = await bcrypt.compare(credentials.password, user.password);
 
         if (!isValidPassword) {
-          throw new Error("Invalid credentials");
+          throw new Error('Invalid credentials');
         }
 
         return {
@@ -44,6 +44,14 @@ const handler = NextAuth({
   ],
   secret: process.env.NEXTAUTH_SECRET, // Ensure this is set in your .env.local file
   session: {
-    strategy: "jwt",
+    strategy: 'jwt',
   },
-});
+  pages: {
+    signIn: '/login', // Custom login page
+    error: '/login', // Error page
+  },
+};
+
+const handler = NextAuth(authOptions);
+
+export { handler as GET, handler as POST };
