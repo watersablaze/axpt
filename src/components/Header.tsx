@@ -3,8 +3,11 @@
 import React from 'react';
 import Link from 'next/link';
 import styles from './Header.module.css';
+import CountryFlag from 'react-world-flags';
 
 const Header = () => {
+  const countryCodes = ['US', 'NG', 'IN', 'JP', 'BR', 'FR', 'ZA', 'CN', 'RU', 'CA'];
+
   return (
     <header className={styles.header}>
       <h1 className={styles.title}>
@@ -21,9 +24,22 @@ const Header = () => {
           Login
         </Link>
       </div>
-            {/* Rolling Banner */}
-            <div className={styles.banner}>
-        <p className={styles.bannerText}>Planetary Exchange Platform - Cultural Exchange - Community Empowerment - Trade</p>
+      <div className={styles.banner}>
+        <span className={styles.bannerText}>
+          Planetary Exchange Platform |{' '}
+          {countryCodes.map((code) => (
+            <CountryFlag
+              key={code}
+              countryCode={code}
+              style={{
+                width: '1.5em',
+                height: '1.5em',
+                margin: '0 10px', // Space between flags
+              }}
+            />
+          ))}
+          | Cultural Exchange | Community Empowerment
+        </span>
       </div>
     </header>
   );

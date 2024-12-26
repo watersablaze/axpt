@@ -58,7 +58,7 @@
 /* Rolling Banner Styling */
 .banner {
   width: 100vw; /* Ensure full viewport width */
-  background: rgba(0, 59, 91, 0.9); /* Semi-transparent dark blue */
+  background: rgba(0, 59, 91, 0.664); /* Semi-transparent dark blue */
   color: #ffffff; /* Text color */
   text-transform: uppercase; /* Uppercase text */
   text-align: center;
@@ -74,19 +74,18 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow */
 }
 
-/* Banner Scrolling Text */
 .bannerText {
   display: inline-block;
-  animation: rollingText 30s linear infinite; /* Slow scrolling */
+  animation: scrollText 30s linear infinite;
+  white-space: nowrap;
 }
 
-/* Rolling Animation */
-@keyframes rollingText {
-  0% {
-    transform: translateX(100%); /* Start off-screen to the right */
+@keyframes scrollText {
+  from {
+    transform: translateX(100%);
   }
-  100% {
-    transform: translateX(-100%); /* Move across to the left */
+  to {
+    transform: translateX(-100%);
   }
 }
 
