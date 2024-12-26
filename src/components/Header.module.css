@@ -99,7 +99,8 @@
 
 /* Button Styling */
 .walletButton,
-.loginButton {
+.loginButton,
+.signOutButton {
   display: inline-block;
   padding: 10px 20px;
   background: linear-gradient(90deg, #0d3b66, #3087c7); /* Gradient effect */
@@ -118,7 +119,8 @@
 }
 
 .walletButton:hover,
-.loginButton:hover {
+.loginButton:hover,
+.signOutButton {
   transform: scale(1.05); /* Lift effect on hover */
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
   background: linear-gradient(90deg, #1a5f94, #4ea7d6); /* Brighter gradient */

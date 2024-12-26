@@ -23,7 +23,7 @@ const HeroSection = () => {
         {/* Right Section */}
         <div className={styles.rightSection}>
           <Link href="/signup" className={styles.signupButton}>
-            Sign Up Now
+            Enter Here
           </Link>
         </div>
       </div>

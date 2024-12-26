@@ -73,26 +73,27 @@
 }
 
 .signupButton {
-  padding: 15px 30px;
-  background: linear-gradient(90deg, #ff6b6b, #f06595);
+  display: inline-block;
+  padding: 10px 20px;
+  background: linear-gradient(90deg, #0d3b66, #3087c7); /* Gradient effect */
   color: #ffffff;
-  font-size: 1.2rem;
-  font-weight: bold;
   text-transform: uppercase;
-  text-decoration: none;
-  border-radius: 5px;
-  border: none;
+  font-size: 1.1rem;
+  font-weight: bold;
+  text-align: center;
+  border: 2px solid #1f538d;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.3s ease;
-  box-shadow: 0 4px 15px rgba(255, 107, 107, 0.75);
-  transform: translateY(50px);
-  opacity: 0;
-  animation: fadeInUp 1s ease-out forwards;
+  text-decoration: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+  margin-bottom: 40px;
 }
 
 .signupButton:hover {
-  background: linear-gradient(90deg, #0096c7, #005f8a);
-  transform: scale(1.05);
+  transform: scale(1.05); /* Lift effect on hover */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(90deg, #1a5f94, #4ea7d6); /* Brighter gradient */
 }
 
 .signupButton:focus {
