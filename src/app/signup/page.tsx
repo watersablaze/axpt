@@ -1,93 +1,66 @@
 'use client';
 
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import bcrypt from 'bcryptjs';
+import { useState } from 'react';
 
 export default function SignupPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const router = useRouter();
+  const [success, setSuccess] = useState('');
 
-  const handleSignup = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(''); // Clear previous errors
 
     try {
-      const res = await fetch('/api/auth/signup', {
+      const res = await fetch('/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-        }),
+        body: JSON.stringify({ name, email, password }),
       });
 
-      if (res.ok) {
-        router.push('/login'); // Redirect to login after successful sign-up
-      } else {
-        const data = await res.json();
-        setError(data.error || 'Failed to sign up');
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Something went wrong');
       }
-    } catch (err) {
-      setError('An unexpected error occurred.');
+
+      setSuccess('User created successfully');
+      setError('');
+    } catch (err: any) {
+      setError(err.message);
+      setSuccess('');
     }
   };
 
   return (
-    <div style={{ textAlign: 'center', padding: '20px' }}>
+    <div>
       <h1>Sign Up</h1>
-      <form onSubmit={handleSignup}>
-        <div>
-          <input
-            type="text"
-            placeholder="Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-            style={{ margin: '10px', padding: '10px', width: '300px' }}
-          />
-        </div>
-        <div>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ margin: '10px', padding: '10px', width: '300px' }}
-          />
-        </div>
-        <div>
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ margin: '10px', padding: '10px', width: '300px' }}
-          />
-        </div>
-        <button
-          type="submit"
-          style={{
-            marginTop: '10px',
-            padding: '10px 20px',
-            backgroundColor: '#007bff',
-            color: '#ffffff',
-            border: 'none',
-            borderRadius: '5px',
-          }}
-        >
-          Sign Up
-        </button>
-      </form>
       {error && <p style={{ color: 'red' }}>{error}</p>}
+      {success && <p style={{ color: 'green' }}>{success}</p>}
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="submit">Sign Up</button>
+      </form>
     </div>
   );
 }
