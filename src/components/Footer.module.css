@@ -1,8 +1,16 @@
 .footer {
-    background: #2d3748;
-    color: white;
-    padding: 20px;
-    text-align: center;
+  display: flex;     
+  flex-direction: column;
+  align-items: center;
+  position: absolute;
+  justify-content: center;
+  padding: 10px 20px;
+  color: #ffffff;
+  z-index: 10;
+  height: 50px;
+  width: 400px;
+  text-align: center;
+  background: radial-gradient(circle at center, #5673956d, #065435b4);
   }
   
   .link {

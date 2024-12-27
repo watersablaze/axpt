@@ -1,31 +1,26 @@
-'use client';
-
 import React from 'react';
+import GlobeAnimation from './GlobeAnimation'; // Import the GlobeAnimation component
+import MatrixEffect from './MatrixEffect'; // If applicable
 import styles from './HeroSection.module.css';
-import Link from 'next/link';
 
 const HeroSection = () => {
   return (
     <section className={styles.hero}>
-      <div className={styles.content}>
-        {/* Left Section */}
-        <div className={styles.leftSection}>
-          <img
-            src="/PXP.logo.png"
-            alt="PXP Logo"
-            className={styles.logo}
-          />
-          <p className={styles.description}>
-            A portal designed to stimulate global melanated and indigenous communities through sustainable development.
-          </p>
-        </div>
+      {/* Globe Animation */}
+      <GlobeAnimation />
 
-        {/* Right Section */}
-        <div className={styles.rightSection}>
-          <Link href="/signup" className={styles.signupButton}>
-            Enter Here
-          </Link>
-        </div>
+      {/* Matrix Effect */}
+      <MatrixEffect />
+
+      {/* Hero Content */}
+      <div className={styles.content}>
+        <h1 className={styles.title}>Welcome to the Future of Exchange</h1>
+        <p className={styles.description}>
+          Empowering communities worldwide through cultural and financial collaboration.
+        </p>
+        <a href="/signup" className={styles.signupButton}>
+          Access
+        </a>
       </div>
     </section>
   );

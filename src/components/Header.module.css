@@ -1,6 +1,6 @@
 /* Header Styling */
 .header {
-  display: flex;
+  display: flex;     
   flex-direction: column;
   align-items: center;
   position: relative;
@@ -58,7 +58,7 @@
 .banner {
   width: 100%; /* Ensure banner spans full width of the header */
   height: 30px; /* Restrict banner height */
-  background: rgba(0, 59, 91, 0.8); /* Semi-transparent dark blue */
+  background: rgba(41, 33, 1, 0.884); /* Semi-transparent dark blue */
   color: #ffffff; /* Text color */
   text-transform: uppercase; /* Uppercase text */
   text-align: center;
@@ -80,8 +80,8 @@
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
-  margin-top: -10px;
-  animation: rollingText 40s linear infinite; /* Rolling animation */
+  margin-top: -5px;
+  animation: rollingText 100s linear infinite; /* Rolling animation */
 }
 
 /* Flag Styling */

@@ -1,166 +1,74 @@
+/* Hero Section */
 .hero {
+  position: relative;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  position: relative;
-  height: 70vh;
+  justify-content: center;
+  align-items: center;
+  background: url('/PXP-Background2.jpg') no-repeat center center fixed;
+  background-size: cover;
+  overflow: hidden;
   color: #ffffff;
-  padding: 20px;
-  box-sizing: border-box;
-}
-
-/* Glow Effect - Responsive */
-.hero::after {
-  content: '';
-  position: absolute;
-  top: 10%;
-  right: 10%; /* Use percentages for responsiveness */
-  width: 200px;
-  height: 200px;
-  background: rgba(255, 255, 255, 0.213);
-  border-radius: 50%;
-  filter: blur(40px);
-  z-index: -1; /* Ensure it stays behind content */
+  text-align: center;
 }
 
 /* Content Styling */
 .content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  padding: 10px;
+  position: relative;
+  z-index: 1; /* Above matrix effect */
+  text-align: center;
+  max-width: 800px;   
+  padding: 20px;
+  margin-bottom: 400px;
 }
 
-/* Left Section Styling */
-.leftSection {
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-  align-items: flex-start;
-  justify-content: center;
-  gap: 15px; /* Increased spacing for better alignment */
-  padding: 0 5px; /* Remove fixed margins, add padding */
-  margin-left: 275px;
-  opacity: 0;
-  animation: fadeIn 5.5s ease-out forwards;
-}
-
-.logo {
-  width: 400px; /* Scales down for smaller screens */
-  height: auto;
-  object-fit: contain;
+.title {
+  font-size: 3rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #00ffcc; /* Digital green */
+  text-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
 }
 
 .description {
-  font-size: 1.8rem;
-  font-weight: 700;
-  line-height: 1.4;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
-  color: #e8e8e8;
-  margin: 0;
-  max-width: 80%; /* Keep text from spanning too wide */
-  margin-top: 90px;
-}
-
-/* Right Section Styling */
-.rightSection {
-  flex: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 100px;
+  font-size: 1.2rem;
+  color: #d8e1e8;
+  line-height: 1.8;
+  margin-bottom: 20px;
 }
 
 .signupButton {
-  display: inline-block;
-  padding: 10px 20px;
-  background: linear-gradient(90deg, #0d3b66, #3087c7); /* Gradient effect */
-  color: #ffffff;
-  text-transform: uppercase;
+  padding: 12px 24px;
   font-size: 1.1rem;
   font-weight: bold;
-  text-align: center;
-  border: 2px solid #1f538d;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: linear-gradient(90deg, #0077ff, #00d4ff);
+  border: none;
   border-radius: 8px;
   cursor: pointer;
   text-decoration: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
-  margin-bottom: 40px;
 }
 
 .signupButton:hover {
-  transform: scale(1.05); /* Lift effect on hover */
+  transform: scale(1.05);
+  background: linear-gradient(90deg, #00d4ff, #0077ff);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-  background: linear-gradient(90deg, #1a5f94, #4ea7d6); /* Brighter gradient */
 }
 
-.signupButton:focus {
-  outline: 3px dashed #00b4d8;
-  outline-offset: 5px;
-}
-
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .content {
-    flex-direction: column; /* Stack content vertically */
-    align-items: center; /* Center align content */
-    gap: 20px; /* Add spacing between sections */
-  }
-
-  .leftSection {
-    align-items: center;
-    text-align: center;
-    padding: 0;
-  }
-
-  .logo {
-    width: 150px; /* Smaller logo for medium screens */
-  }
-
-  .description {
-    font-size: 1.4rem;
-    max-width: 90%; /* Ensure description fits */
-  }
-
-  .signupButton {
-    width: 80%; /* Make button wider for smaller screens */
-    margin-top: 20px; /* Add spacing above button */
-  }
-}
-
-@media (max-width: 768px) {
-  .hero {
-    height: auto; /* Allow dynamic height for smaller screens */
-  }
-
-  .description {
-    font-size: 1.2rem;
-    line-height: 1.3;
-  }
-
-  .signupButton {
-    padding: 12px 20px; /* Smaller button padding */
-  }
-}
-
-@keyframes fadeInUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes fadeIn {
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slideIn {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Globe Animation Container */
+.globe {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  height: 300px;
+  transform: translate(-50%, -50%);
+  z-index: 0; /* Behind content */
+  pointer-events: none; /* Prevent interaction */
+  opacity: 0.6; /* Slight transparency */
 }

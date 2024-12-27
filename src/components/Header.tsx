@@ -7,9 +7,11 @@ import CountryFlag from 'react-world-flags';
 
 const Header = () => {
   const countryCodes = [
-    'US', 'NG', 'IN', 'JP', 'BR', 'FR', 'ZA', 'CN', 'RU', 'CA', 
-    'DE', 'KE', 'EG', 'IT',
-  ]; // Added a total of 14 flags
+    'US', 'CA', 'DE', 'JP', 'KR', 'IN', 'ZA',
+    'AE', 'BR', 'GB', 'FR', 'ET', 'CN', 'RU',
+    'IT', 'AU', 'NZ', 'SE', 'FI', 'NO', 'SG',
+    'AR', 'CL', 'KE', 'EG', 'TR', 'SA',
+  ];
 
   return (
     <header className={styles.header}>
@@ -28,7 +30,18 @@ const Header = () => {
         </Link>
       </div>
       <div className={styles.banner}>
-        <span className={styles.bannerText}>
+        <div className={styles.bannerText}>
+          <img
+            src="/PXP.logo.png"
+            alt="PXP Logo"
+            className={styles.pxpLogo}
+            style={{
+              width: '2em',
+              height: '2em',
+              margin: '0 10px',
+              verticalAlign: 'middle',
+            }}
+          />
           {countryCodes.map((code, index) => (
             <React.Fragment key={index}>
               <CountryFlag
@@ -40,16 +53,23 @@ const Header = () => {
                   verticalAlign: 'middle',
                 }}
               />
+              {/* Insert PXP logo after every 7 flags */}
               {(index + 1) % 7 === 0 && (
                 <img
                   src="/PXP.logo.png"
                   alt="PXP Logo"
                   className={styles.pxpLogo}
+                  style={{
+                    width: '2em',
+                    height: '2em',
+                    margin: '0 10px',
+                    verticalAlign: 'middle',
+                  }}
                 />
               )}
             </React.Fragment>
           ))}
-        </span>
+        </div>
       </div>
     </header>
   );
