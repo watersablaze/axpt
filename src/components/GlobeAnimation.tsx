@@ -4,7 +4,7 @@ import React, { useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry';
-import styles from './HeroSection.module.css'; // Update this path as needed
+import styles from './HeroSection.module.css';
 
 const GlobeAnimation = () => {
   const globeRef = useRef<HTMLDivElement>(null);
@@ -22,15 +22,20 @@ const GlobeAnimation = () => {
     renderer.setSize(width, height);
     globeRef.current.appendChild(renderer.domElement);
 
-    // Texture for Globe
+    // Texture Loader
     const textureLoader = new THREE.TextureLoader();
-    const earthTexture = textureLoader.load('/earth-texture.jpg'); // Provide the path to the texture file
+    const earthTexture = textureLoader.load(
+      '/textures/globe.transparent.jpg',
+      () => console.log('Earth texture loaded successfully'),
+      undefined,
+      (err) => console.error('Error loading Earth texture', err)
+    );
 
     // Globe Geometry and Material
     const geometry = new THREE.SphereGeometry(5, 32, 32);
     const material = new THREE.MeshStandardMaterial({
-      map: earthTexture,
-      emissive: 0x00ffcc, // Glow effect
+      map: earthTexture, // Apply the Earth texture
+      emissive: 0x00ffcc, // Optional glow
       emissiveIntensity: 0.2,
     });
     const globe = new THREE.Mesh(geometry, material);
@@ -44,35 +49,34 @@ const GlobeAnimation = () => {
     pointLight.position.set(10, 10, 10);
     scene.add(pointLight);
 
-    // Add Orbiting Currency Symbols
+    // Orbiting Currency Symbols
     const fontLoader = new FontLoader();
-    fontLoader.load('/font.json', (font) => {
+    fontLoader.load('/fonts/helvetiker_regular.typeface.json', (font) => {
+      console.log('Font loaded successfully');
       const symbols = ['$', '€', '¥', '£'];
-      const radius = 7; // Distance from globe
+      const radius = 7;
 
       symbols.forEach((symbol, index) => {
-        const angle = (index / symbols.length) * Math.PI * 2; // Spread symbols evenly
+        const angle = (index / symbols.length) * Math.PI * 2;
         const x = radius * Math.cos(angle);
         const z = radius * Math.sin(angle);
 
-        // Create Text Geometry
         const textGeometry = new TextGeometry(symbol, {
           font: font,
           size: 0.5,
           height: 0.2,
         });
-        const textMaterial = new THREE.MeshStandardMaterial({
-          color: 0xffff00,
-        });
+        const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffff00 });
         const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-        textMesh.position.set(x, 0, z); // Set position on orbit
-        textMesh.lookAt(globe.position); // Face the globe
+
+        textMesh.position.set(x, 0, z);
+        textMesh.lookAt(globe.position);
         scene.add(textMesh);
 
-        // Animate Orbit
+        // Orbit Animation
         let t = 0;
         const animateOrbit = () => {
-          t += 0.01; // Increment angle
+          t += 0.01;
           textMesh.position.x = radius * Math.cos(angle + t);
           textMesh.position.z = radius * Math.sin(angle + t);
           textMesh.lookAt(globe.position);
@@ -87,13 +91,13 @@ const GlobeAnimation = () => {
 
     // Animation Loop
     const animate = () => {
-      globe.rotation.y += 0.01; // Spin the globe
+      globe.rotation.y += 0.01;
       renderer.render(scene, camera);
       requestAnimationFrame(animate);
     };
     animate();
 
-    // Cleanup on Unmount
+    // Cleanup
     return () => {
       if (globeRef.current) {
         globeRef.current.removeChild(renderer.domElement);
