@@ -7,12 +7,10 @@
   justify-content: center;
   padding: 10px 20px;
   color: #ffffff;
-  position: relative;
   z-index: 10;
-  height: 350px; /* Adjusted header height */
-  box-sizing: border-box;
+  height: 350px;
   text-align: center;
-  background: radial-gradient(circle at center, #5673956d, #065435b4); /* Updated gradient */
+  background: radial-gradient(circle at center, #5673956d, #065435b4);
 }
 
 /* Title Styling with Logo replacing "O" */
@@ -47,8 +45,8 @@
   color: #dddddd;
   margin-top: 10px;
   text-align: center;
-  border-top: 2px solid #ffffff; /* Bold underline */
-  width: fit-content; /* Match text width */
+  border-top: 2px solid #ffffff;
+  width: fit-content;
   padding-top: 5px;
   white-space: nowrap;
   overflow: hidden;
@@ -58,34 +56,49 @@
 
 /* Rolling Banner Styling */
 .banner {
-  width: 100%; /* Ensure full width */
-  background: rgba(0, 6, 9, 0.963); /* Semi-transparent dark blue */
+  width: 100%; /* Ensure banner spans full width of the header */
+  height: 30px; /* Restrict banner height */
+  background: rgba(0, 59, 91, 0.8); /* Semi-transparent dark blue */
   color: #ffffff; /* Text color */
   text-transform: uppercase; /* Uppercase text */
   text-align: center;
   font-size: 1.2rem;
   font-weight: bold;
-  overflow: hidden; /* Hide text outside visible area */
-  white-space: nowrap; /* Prevent text wrapping */
-  position: absolute; /* Positioned relative to the header */
-  bottom: 0; /* Place at the bottom of the header */
+  overflow: hidden; /* Hide text outside the visible area */
+  white-space: nowrap; /* Prevent wrapping of text */
+  position: absolute; /* Position within the header */
+  bottom: 0; /* Align at the bottom of the header */
+  left: 0;
   margin: 0; /* No margin */
-  padding: 10px 0; /* Padding inside the banner */
-  z-index: 2; /* Ensure it is above other elements */
+  padding: 0; /* Vertical padding */
+  z-index: 2; /* Ensure visibility */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow */
 }
 
-/* Rolling Banner Text */
+/* Banner Text and Flag Styling */
 .bannerText {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  margin-top: -10px;
   animation: rollingText 40s linear infinite; /* Rolling animation */
-  line-height: 1.5; /* Align flags with text */
 }
 
-.bannerText span {
+/* Flag Styling */
+.flag {
+  width: 1.3em; /* Slightly smaller flags */
+  height: 1.3em; /* Ensure consistent flag size */
+  margin: 0 8px; /* Space between flags */
+  vertical-align: middle; /* Align flags with text */
+}
+
+/* PXP Logo Styling */
+.pxpLogo {
   display: inline-block;
-  vertical-align: middle; /* Align text with flags */
-  margin: 0 10px; /* Space between flags */
+  vertical-align: middle;
+  width: 2em; /* Adjust logo size */
+  height: auto; /* Maintain aspect ratio */
+  margin: 0 10px; /* Space around the logo */
 }
 
 /* Rolling Animation Keyframes */
@@ -94,15 +107,15 @@
     transform: translateX(100%); /* Start off-screen (right side) */
   }
   100% {
-    transform: translateX(-100%); /* Scroll off-screen (left side) */
+    transform: translateX(-100%); /* Scroll to off-screen (left side) */
   }
 }
 
 /* Button Container */
 .buttonContainer {
   display: flex;
-  gap: 15px; /* Space between buttons */
-  margin-top: 15px; /* Adjust spacing below tagline */
+  gap: 15px;
+  margin-top: 15px;
 }
 
 /* Button Styling */
@@ -110,7 +123,7 @@
 .loginButton {
   display: inline-block;
   padding: 10px 20px;
-  background: linear-gradient(90deg, #0d3b66, #3087c7); /* Gradient effect */
+  background: linear-gradient(90deg, #0d3b66, #3087c7);
   color: #ffffff;
   text-transform: uppercase;
   font-size: 1.1rem;
@@ -122,20 +135,19 @@
   text-decoration: none;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
-  margin-bottom: 40px;
 }
 
 .walletButton:hover,
 .loginButton:hover {
-  transform: scale(1.05); /* Lift effect on hover */
+  transform: scale(1.05);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-  background: linear-gradient(90deg, #1a5f94, #4ea7d6); /* Brighter gradient */
+  background: linear-gradient(90deg, #1a5f94, #4ea7d6);
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .title {
-    font-size: 4rem; /* Adjust title size for smaller screens */
+    font-size: 4rem;
   }
 
   .tagline {
@@ -143,13 +155,13 @@
     padding-top: 3px;
   }
 
+  .banner {
+    font-size: 1rem;
+  }
+
   .walletButton,
   .loginButton {
     font-size: 1rem;
     padding: 8px 12px;
-  }
-
-  .banner {
-    font-size: 1rem; /* Adjust banner font size */
   }
 }
