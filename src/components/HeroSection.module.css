@@ -59,16 +59,3 @@
   background: linear-gradient(90deg, #00d4ff, #0077ff);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
-
-/* Globe Container */
-.globeContainer {
-  position: absolute;
-  top: -40%; /* Position the globe above the title */
-  left: 50%;
-  transform: translate(-50%, 0); /* Center horizontally */
-  width: 300px; /* Adjust size */
-  height: 300px;
-  z-index: 1; /* Place above the background but below the text */
-  pointer-events: none; /* Prevent interaction */
-  opacity: 0.8; /* Optional transparency */
-}

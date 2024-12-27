@@ -1,16 +1,11 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import GlobeAnimation from './GlobeAnimation'; // Ensure only one import
 import MatrixEffect from './MatrixEffect';
 import styles from './HeroSection.module.css';
 
 const HeroSection = () => {
   return (
     <section className={styles.hero}>
-      {/* Globe Animation: Above the Title */}
-      <div className={styles.globeContainer}>
-        <GlobeAnimation />
-      </div>
 
       {/* Matrix Effect */}
       <MatrixEffect />
