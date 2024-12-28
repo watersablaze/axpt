@@ -17,7 +17,7 @@ const HeroSection = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.5 }}
       >
-        <h1 className={styles.title}>Welcome to the Future of Exchange</h1>
+        <h1 className={styles.title}>The Planetary Exchange Platform is a Green Investor's Portal of Tomorrow</h1>
         <p className={styles.description}>
           Empowering communities worldwide through cultural and financial collaboration.
         </p>

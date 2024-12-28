@@ -18,16 +18,16 @@
   position: relative;
   z-index: 1; /* Above matrix effect */
   text-align: center;
-  max-width: 800px;   
+  max-width: 500px;   
   padding: 20px;
   margin-bottom: 300px;
 }
 
 .title {
-  font-size: 3rem;
+  font-size: 2.1rem;
   font-weight: bold;
   text-transform: uppercase;
-  letter-spacing: 2px;
+  letter-spacing: 3px;
   color: #00ffcc; /* Digital green */
   text-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
 }
@@ -58,4 +58,13 @@
   transform: scale(1.05);
   background: linear-gradient(90deg, #00d4ff, #0077ff);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+.globeContainer {
+  position: absolute;
+  top: 20%; /* Adjust position as needed */
+  width: 300px;
+  height: 300px;
+  z-index: 0; /* Place behind the content */
+  pointer-events: none; /* Prevent interaction */
 }
