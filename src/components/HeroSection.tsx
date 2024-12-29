@@ -1,25 +1,21 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import MatrixEffect from './MatrixEffect';
 import styles from './HeroSection.module.css';
 
 const HeroSection = () => {
   return (
     <section className={styles.hero}>
-
-      {/* Matrix Effect */}
-      <MatrixEffect />
-
-      {/* Hero Content */}
+      {/* Left Content Section */}
       <motion.div
         className={styles.content}
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.5 }}
       >
-        <h1 className={styles.title}>The Planetary Exchange Platform is a Green Investor's Portal of Tomorrow</h1>
-        <p className={styles.description}>
-          Empowering communities worldwide through cultural and financial collaboration.
+        <img src="/PXP.logo.png" alt="PXP Logo" className={styles.logo} />
+        <h1 className={styles.title}>Planetary Xchange Platform</h1>
+        <p className={styles.tagline}>
+          At the crossroads of <strong>technology</strong>, <strong>trade</strong>, and <strong>culture</strong>, PXP redefines global exchange into a harmonious symphony of progress and innovation.
         </p>
         <motion.a
           href="/signup"
@@ -27,8 +23,19 @@ const HeroSection = () => {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.95 }}
         >
-          Access
+          Access Here
         </motion.a>
+      </motion.div>
+
+      {/* Right Placeholder Section */}
+      <motion.div
+        className={styles.emptyVisual}
+        initial={{ opacity: 0, x: 50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 1.5 }}
+      >
+        {/* Placeholder for future animation */}
+        Placeholder for Animation
       </motion.div>
     </section>
   );

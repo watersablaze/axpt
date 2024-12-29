@@ -1,168 +1,79 @@
 /* Header Styling */
 .header {
-  display: flex;     
-  flex-direction: column;
+  display: flex;
+  justify-content: space-between; /* Space between title/tagline and buttons */
   align-items: center;
-  position: relative;
-  justify-content: center;
   padding: 10px 20px;
   color: #ffffff;
-  z-index: 10;
-  height: 350px;
-  text-align: center;
-  background: radial-gradient(circle at center, #5673956d, #065435b4);
+  height: 80px; /* Thin header */
+  background: 
+    radial-gradient(circle at center, rgba(86, 115, 149, 0.127), rgba(6, 84, 53, 0.316)), 
+    url('/PXP-Background2.jpg') no-repeat center center fixed;
+  background-size: cover;
+  backdrop-filter: blur(8px); /* Adds subtle blur */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.844); /* Subtle shadow */
 }
 
-/* Title Styling with Logo replacing "O" */
 .title {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 8rem;
+  align-items: center; /* Align text and logo */
+  font-size: 3.5rem; /* Increased title size */
   font-weight: bold;
-  text-transform: uppercase;
   color: #ffffff;
-  text-shadow: 0 3px 5px rgba(0, 0, 0, 0.5);
   margin: 0;
+  gap: 0.2em; /* Reduce spacing between elements */
 }
 
-.logoO {
-  width: 10rem;
-  height: 10rem;
-  border-radius: 50%;
-  vertical-align: middle;
-  margin: 0 0.5rem;
-  transition: transform 0.3s ease;
-}
-
-.logoO:hover {
-  transform: scale(1.2);
-}
 
 /* Tagline Styling */
 .tagline {
-  font-size: 1.2rem;
-  color: #dddddd;
-  margin-top: 10px;
-  text-align: center;
-  border-top: 2px solid #ffffff;
-  width: fit-content;
-  padding-top: 5px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  margin-bottom: 30px;
+  font-size: 1.1rem; /* Slightly larger for better emphasis */
+  color: #f0f0f0; /* Brightened text color */
+  font-style: italic; /* Italic for a distinct style */
+  margin: 10px 0 0 0; /* Add spacing from the title */
+  letter-spacing: 0.05em; /* Slightly spaced out letters */
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+  border-top: 1px solid rgba(255, 255, 255, 0.5); /* Separator line for emphasis */
+  padding-top: 5px; /* Spacing between text and border */
 }
 
-/* Rolling Banner Styling */
-.banner {
-  width: 100%; /* Ensure banner spans full width of the header */
-  height: 30px; /* Restrict banner height */
-  background: rgba(41, 33, 1, 0.884); /* Semi-transparent dark blue */
-  color: #ffffff; /* Text color */
-  text-transform: uppercase; /* Uppercase text */
-  text-align: center;
-  font-size: 1.2rem;
-  font-weight: bold;
-  overflow: hidden; /* Hide text outside the visible area */
-  white-space: nowrap; /* Prevent wrapping of text */
-  position: absolute; /* Position within the header */
-  bottom: 0; /* Align at the bottom of the header */
-  left: 0;
-  margin: 0; /* No margin */
-  padding: 0; /* Vertical padding */
-  z-index: 2; /* Ensure visibility */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+.logoO {
+  width: 1.7em; /* Proportional size to match new font-size */
+  height: 1.7em;
+  border-radius: 50%; /* Circular shape */
+  object-fit: cover; /* Ensures proper scaling */
+  transition: transform 0.5s ease; /* Hover animation */
 }
 
-/* Banner Text and Flag Styling */
-.bannerText {
-  display: inline-flex;
-  align-items: center;
-  white-space: nowrap;
-  margin-top: -5px;
-  animation: rollingText 100s linear infinite; /* Rolling animation */
-}
-
-/* Flag Styling */
-.flag {
-  width: 1.3em; /* Slightly smaller flags */
-  height: 1.3em; /* Ensure consistent flag size */
-  margin: 0 8px; /* Space between flags */
-  vertical-align: middle; /* Align flags with text */
-}
-
-/* PXP Logo Styling */
-.pxpLogo {
-  display: inline-block;
-  vertical-align: middle;
-  width: 2em; /* Adjust logo size */
-  height: auto; /* Maintain aspect ratio */
-  margin: 0 10px; /* Space around the logo */
-}
-
-/* Rolling Animation Keyframes */
-@keyframes rollingText {
-  0% {
-    transform: translateX(100%); /* Start off-screen (right side) */
-  }
-  100% {
-    transform: translateX(-100%); /* Scroll to off-screen (left side) */
-  }
+.logoO:hover {
+  transform: scale(1.2); /* Slight hover enlargement */
 }
 
 /* Button Container */
 .buttonContainer {
   display: flex;
-  gap: 15px;
-  margin-top: 15px;
+  gap: 10px; /* Space between buttons */
 }
 
 /* Button Styling */
 .walletButton,
 .loginButton {
-  display: inline-block;
-  padding: 10px 20px;
-  background: linear-gradient(90deg, #0d3b66, #3087c7);
+  padding: 8px 16px;
+  background: linear-gradient(90deg, #718413, #119b3f);
   color: #ffffff;
-  text-transform: uppercase;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
   font-weight: bold;
-  text-align: center;
-  border: 2px solid #1f538d;
-  border-radius: 8px;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
   text-decoration: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
-  margin-bottom: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+  transition: transform 0.3s, background 0.3s;
 }
 
 .walletButton:hover,
 .loginButton:hover {
-  transform: scale(1.05);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
   background: linear-gradient(90deg, #1a5f94, #4ea7d6);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-  .title {
-    font-size: 4rem;
-  }
-
-  .tagline {
-    font-size: 1rem;
-    padding-top: 3px;
-  }
-
-  .banner {
-    font-size: 1rem;
-  }
-
-  .walletButton,
-  .loginButton {
-    font-size: 1rem;
-    padding: 8px 12px;
-  }
+  transform: scale(1.05); /* Slight enlargement */
 }

@@ -1,70 +1,103 @@
 /* Hero Section */
 .hero {
-  position: relative;
-  height: 100vh;
   display: flex;
-  flex-direction: column;
+  justify-content: space-between; /* Space between text and placeholder */
+  align-items: flex-start; /* Align content closer to the top */
+  height: 100vh; /* Full viewport height */
+  padding: 20px;
+  background: linear-gradient(to bottom, #d0e8ff, #b3d9ff); /* Light blue gradient */
+  color: #000000; /* Default dark text color */
+  overflow: hidden;
+}
+
+/* Left Content Section */
+.content {
+  flex: 1;
+  max-width: 50%; /* Limit content width */
+  margin-top: 40px; /* Position closer to the top */
+  z-index: 1; /* Ensure content is above other elements */
+}
+
+/* PXP Logo Styling */
+.logo {
+  width: 250px; /* Adjust size proportionally */
+  margin-bottom: -80px; /* Space between logo and title */
+  margin-left: -10px;
+}
+
+/* Title Styling */
+.title {
+  font-size: 3.5rem; /* Larger title for emphasis */
+  font-weight: 900; /* Extra bold font */
+  color: #004080; /* Dark blue for contrast */
+  text-transform: uppercase;
+  margin-bottom: 10px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* Subtle shadow for emphasis */
+}
+
+/* Tagline Styling */
+.tagline {
+  font-size: 1.2rem; /* Moderate size for tagline */
+  color: #002a4d; /* Darker blue for better contrast */
+  margin-bottom: 20px;
+  line-height: 1.6; /* Improve readability */
+  font-weight: 500; /* Medium weight for emphasis */
+}
+
+/* Right Placeholder Section */
+.emptyVisual {
+  flex: 1;
+  height: 100%; /* Full height of the section */
+  display: flex;
   justify-content: center;
   align-items: center;
-  background: url('/PXP-Background2.jpg') no-repeat center center fixed;
-  background-size: cover;
-  overflow: hidden;
-  color: #ffffff;
-  text-align: center;
+  background-color: rgba(255, 255, 255, 0.1); /* Placeholder color */
+  border: 2px dashed #004080; /* Dashed border for placeholder */
+  font-size: 1rem; /* Placeholder text size */
+  color: #004080;
+  z-index: 1; /* Ensure it's above other background elements */
 }
 
-/* Content Styling */
-.content {
-  position: relative;
-  z-index: 1; /* Above matrix effect */
-  text-align: center;
-  max-width: 500px;   
-  padding: 20px;
-  margin-bottom: 300px;
-}
-
-.title {
-  font-size: 2.1rem;
-  font-weight: bold;
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  color: #00ffcc; /* Digital green */
-  text-shadow: 0 4px 6px rgba(0, 0, 0, 0.4);
-}
-
-.description {
-  font-size: 1.2rem;
-  color: #d8e1e8;
-  line-height: 1.8;
-  margin-bottom: 20px;
-}
-
+/* Signup Button */
 .signupButton {
   padding: 12px 24px;
-  font-size: 1.1rem;
+  font-size: 1.1rem; /* Slightly larger font for button */
   font-weight: bold;
   text-transform: uppercase;
   color: #ffffff;
-  background: linear-gradient(90deg, #0077ff, #00d4ff);
+  background: linear-gradient(90deg, #0077ff, #0056b3);
   border: none;
   border-radius: 8px;
   cursor: pointer;
   text-decoration: none;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s, box-shadow 0.3s, background 0.3s;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s, background 0.3s;
 }
 
 .signupButton:hover {
   transform: scale(1.05);
-  background: linear-gradient(90deg, #00d4ff, #0077ff);
+  background: linear-gradient(90deg, #0056b3, #0077ff);
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
 }
 
-.globeContainer {
-  position: absolute;
-  top: 20%; /* Adjust position as needed */
-  width: 300px;
-  height: 300px;
-  z-index: 0; /* Place behind the content */
-  pointer-events: none; /* Prevent interaction */
+/* Responsive Design */
+@media (max-width: 768px) {
+  .hero {
+    flex-direction: column; /* Stack content vertically */
+  }
+
+  .content {
+    max-width: 100%; /* Full width for content */
+    text-align: center; /* Center-align text */
+    margin-top: 20px; /* Reduced spacing */
+  }
+
+  .logo {
+    margin: 0 auto 10px; /* Center logo */
+  }
+
+  .emptyVisual {
+    width: 100%; /* Full width for placeholder */
+    height: 200px; /* Reduce height for smaller screens */
+  }
 }
