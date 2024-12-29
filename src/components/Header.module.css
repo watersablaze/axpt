@@ -8,11 +8,11 @@
   color: #ffffff;
   height: auto; /* Adjust height dynamically based on content */
   background: 
-    radial-gradient(circle at center, rgba(86, 115, 149, 0.127), rgba(6, 84, 53, 0.316)), 
+    radial-gradient(circle at center, rgba(63, 125, 197, 0.708), rgba(6, 84, 53, 0.819)), 
     url('/PXP-Background2.jpg') no-repeat center center fixed;
   background-size: cover;
-  backdrop-filter: blur(8px); /* Adds subtle blur */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.844); /* Subtle shadow */
+  backdrop-filter: blur(4px); /* Adds subtle blur */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.913); /* Subtle shadow */
   gap: 1rem; /* Add spacing between child elements */
 }
 
