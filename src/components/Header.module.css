@@ -3,43 +3,53 @@
   display: flex;
   justify-content: space-between; /* Space between title/tagline and buttons */
   align-items: center;
-  padding: 10px 20px;
+  flex-wrap: wrap; /* Allow wrapping for smaller screens */
+  padding: 1rem 2rem; /* Use responsive padding */
   color: #ffffff;
-  height: 80px; /* Thin header */
+  height: auto; /* Adjust height dynamically based on content */
   background: 
     radial-gradient(circle at center, rgba(86, 115, 149, 0.127), rgba(6, 84, 53, 0.316)), 
     url('/PXP-Background2.jpg') no-repeat center center fixed;
   background-size: cover;
   backdrop-filter: blur(8px); /* Adds subtle blur */
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.844); /* Subtle shadow */
+  gap: 1rem; /* Add spacing between child elements */
 }
 
+/* Title Styling */
 .title {
   display: flex;
   align-items: center; /* Align text and logo */
-  font-size: 3.5rem; /* Increased title size */
+  font-size: 2.5vw; /* Responsive font size */
   font-weight: bold;
   color: #ffffff;
   margin: 0;
-  gap: 0.2em; /* Reduce spacing between elements */
+  gap: 0.1em; /* Reduced spacing between elements */
+  flex: 1; /* Allow title to take available space */
+  min-width: 200px; /* Prevent title from shrinking too much */
+  text-align: left; /* Align text to the left */
+  white-space: nowrap; /* Prevent wrapping */
 }
-
 
 /* Tagline Styling */
 .tagline {
-  font-size: 1.1rem; /* Slightly larger for better emphasis */
+  font-size: 1vw; /* Responsive font size */
   color: #f0f0f0; /* Brightened text color */
   font-style: italic; /* Italic for a distinct style */
   margin: 10px 0 0 0; /* Add spacing from the title */
   letter-spacing: 0.05em; /* Slightly spaced out letters */
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
-  border-top: 1px solid rgba(255, 255, 255, 0.5); /* Separator line for emphasis */
-  padding-top: 5px; /* Spacing between text and border */
+  padding-top: 0; /* Removed border and extra padding */
+  flex: 1; /* Allow tagline to scale */
+  min-width: 150px; /* Prevent tagline from shrinking too much */
+  text-align: left; /* Align text to the left */
+  white-space: nowrap; /* Prevent wrapping */
 }
 
+/* Logo Styling */
 .logoO {
-  width: 1.7em; /* Proportional size to match new font-size */
-  height: 1.7em;
+  width: 3vw; /* Responsive size */
+  height: 3vw;
   border-radius: 50%; /* Circular shape */
   object-fit: cover; /* Ensures proper scaling */
   transition: transform 0.5s ease; /* Hover animation */
@@ -52,23 +62,27 @@
 /* Button Container */
 .buttonContainer {
   display: flex;
-  gap: 10px; /* Space between buttons */
+  gap: 0.5rem; /* Reduced space between buttons */
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+  justify-content: flex-end; /* Align buttons to the right */
+  flex: 1; /* Allow buttons to take available space */
+  min-width: 150px; /* Prevent shrinking too much */
 }
 
 /* Button Styling */
 .walletButton,
 .loginButton {
-  padding: 8px 16px;
+  padding: 0.5rem 1rem; /* Smaller padding for sleek buttons */
   background: linear-gradient(90deg, #718413, #119b3f);
   color: #ffffff;
-  font-size: 0.9rem;
+  font-size: 0.8rem; /* Smaller font size */
   font-weight: bold;
   text-transform: uppercase;
   border: none;
-  border-radius: 5px;
+  border-radius: 3px; /* Sleeker border radius */
   cursor: pointer;
   text-decoration: none;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* Subtle shadow */
   transition: transform 0.3s, background 0.3s;
 }
 
@@ -76,4 +90,53 @@
 .loginButton:hover {
   background: linear-gradient(90deg, #1a5f94, #4ea7d6);
   transform: scale(1.05); /* Slight enlargement */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column; /* Stack header content vertically */
+    align-items: flex-start; /* Align elements to the left */
+    padding: 1rem; /* Adjust padding for smaller screens */
+    gap: 1rem;
+  }
+
+  .title {
+    font-size: 4vw; /* Adjust title size */
+    text-align: center; /* Center-align title on smaller screens */
+    margin: 0 auto; /* Center the title */
+  }
+
+  .tagline {
+    font-size: 1.5vw; /* Adjust tagline size */
+    text-align: center; /* Center-align tagline */
+    margin: 0 auto; /* Center the tagline */
+  }
+
+  .buttonContainer {
+    justify-content: center; /* Center-align buttons */
+    width: 100%; /* Make buttons span full width */
+  }
+
+  .walletButton,
+  .loginButton {
+    font-size: 0.7rem; /* Adjust button font size */
+    padding: 0.4rem 0.8rem; /* Adjust padding */
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 5vw; /* Further reduce title size */
+  }
+
+  .tagline {
+    font-size: 2vw; /* Further reduce tagline size */
+  }
+
+  .walletButton,
+  .loginButton {
+    font-size: 0.6rem; /* Smaller button font size */
+    padding: 0.3rem 0.6rem;
+  }
 }
