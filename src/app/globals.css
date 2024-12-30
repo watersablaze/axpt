@@ -20,6 +20,13 @@ body {
   overflow-x: hidden;
 }
 
+@font-face {
+  font-family: 'LoyalBold';
+  src: url('/fonts/LoyalBoldv1.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
 * {
   box-sizing: inherit;
   padding: 0;

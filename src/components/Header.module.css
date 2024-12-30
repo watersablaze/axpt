@@ -1,4 +1,22 @@
 /* Header Styling */
+@font-face {
+  font-family: 'LoyalBold';
+  src: url('/fonts/LoyalBoldv1.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.title {
+  font-family: 'LoyalBold', sans-serif;
+  font-size: 2.5vw; /* Responsive font size */
+  font-weight: bold; /* Ensure bold rendering */
+  color: #ffffff;
+  margin: 0;
+  gap: 0.1em; /* Reduced spacing between elements */
+  text-transform: uppercase; /* Optional: Transform text to uppercase */
+}
+
+
 .header {
   display: flex;
   justify-content: space-between; /* Space between title/tagline and buttons */
