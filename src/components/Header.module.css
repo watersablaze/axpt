@@ -16,7 +16,6 @@
   text-transform: uppercase; /* Optional: Transform text to uppercase */
 }
 
-
 .header {
   display: flex;
   justify-content: space-between; /* Space between title/tagline and buttons */
