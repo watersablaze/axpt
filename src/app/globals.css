@@ -14,6 +14,7 @@ html,
 body {
   height: 100%; /* Ensure it covers the viewport */
   background-size: cover;
+  background: radial-gradient(circle at center, rgba(1, 13, 27, 0.84), rgba(0, 9, 6, 0.819));
   color: #ffffff; /* Text contrast */
   margin: 0;
   padding: 0;
@@ -42,4 +43,26 @@ a {
   html {
     color-scheme: dark;
   }
+}
+
+/* Custom Scrollbar Styling */
+body {
+  scrollbar-width: thin; /* Firefox: Makes the scrollbar thinner */
+  scrollbar-color: #005f73 #0a9396; /* Firefox: Thumb and track colors */
+}
+
+/* Chrome, Edge, and Safari */
+body::-webkit-scrollbar {
+  width: 10px; /* Width of the scrollbar */
+}
+
+body::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #005f73, #0a9396); /* Thumb color */
+  border-radius: 10px; /* Rounded corners */
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5); /* Optional shadow for depth */
+}
+
+body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1); /* Track color */
+  border-radius: 10px; /* Match track corners to thumb */
 }

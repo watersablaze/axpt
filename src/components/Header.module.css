@@ -18,18 +18,18 @@
 
 .header {
   display: flex;
+  position: fixed;
   justify-content: space-between; /* Space between title/tagline and buttons */
   align-items: center;
+  width: 100%;
+  z-index: 1000; /*Ensures the header spans the full width */
   flex-wrap: wrap; /* Allow wrapping for smaller screens */
   padding: 1rem 2rem; /* Use responsive padding */
   color: #ffffff;
   height: auto; /* Adjust height dynamically based on content */
-  background: 
-    radial-gradient(circle at center, rgba(63, 125, 197, 0.708), rgba(6, 84, 53, 0.819)), 
-    url('/PXP-Background2.jpg') no-repeat center center fixed;
   background-size: cover;
+  background: radial-gradient(circle at center, #5673956d, #065435b4);
   backdrop-filter: blur(4px); /* Adds subtle blur */
-  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.913); /* Subtle shadow */
   gap: 1rem; /* Add spacing between child elements */
 }
 
@@ -84,6 +84,7 @@
   justify-content: flex-end; /* Align buttons to the right */
   flex: 1; /* Allow buttons to take available space */
   min-width: 150px; /* Prevent shrinking too much */
+  margin-right: 100px;
 }
 
 /* Button Styling */

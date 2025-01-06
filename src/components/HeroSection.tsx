@@ -1,42 +1,36 @@
 import React from 'react';
-import { motion } from 'framer-motion';
 import styles from './HeroSection.module.css';
 
 const HeroSection = () => {
   return (
     <section className={styles.hero}>
       {/* Left Content Section */}
-      <motion.div
-        className={styles.content}
-        initial={{ opacity: 0, y: 50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1.5 }}
-      >
-        <img src="/PXP.logo.png" alt="PXP Logo" className={styles.logo} />
-        <h1 className={styles.title}>Planetary Xchange Platform</h1>
+      <div className={styles.content}>
+        <h1 className={styles.title}>AXIS POINT</h1>
         <p className={styles.tagline}>
-          At the crossroads of <strong>technology</strong>, <strong>trade</strong>, and <strong>culture</strong>, PXP redefines global exchange into a harmonious symphony of progress and innovation.
-        </p>
-        <motion.a
-          href="/signup"
-          className={styles.signupButton}
-          whileHover={{ scale: 1.1 }}
-          whileTap={{ scale: 0.95 }}
-        >
-          Access Here
-        </motion.a>
-      </motion.div>
+        One Platform: Infinite Pathways. The crossroads of <strong>technology</strong>, <strong>trade</strong>, and <strong>cultural exchange</strong>, bridging borders and timelines.
+        <br /> Sustainble Investor's portal.</p>
+      </div>
 
-      {/* Right Placeholder Section */}
-      <motion.div
-        className={styles.emptyVisual}
-        initial={{ opacity: 0, x: 50 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 1.5 }}
-      >
-        {/* Placeholder for future animation */}
-        Placeholder for Animation
-      </motion.div>
+      {/* Signup Form Section */}
+      <div className={styles.signupForm}>
+        <h2 className={styles.formTitle}>Register Here</h2>
+        <form>
+          <div className={styles.inputGroup}>
+            <label htmlFor="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Enter your name" required />
+          </div>
+          <div className={styles.inputGroup}>
+            <label htmlFor="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required />
+          </div>
+          <div className={styles.inputGroup}>
+            <label htmlFor="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required />
+          </div>
+          <button type="submit" className={styles.submitButton}>AcCess</button>
+        </form>
+      </div>
     </section>
   );
 };
