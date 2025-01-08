@@ -9,7 +9,7 @@ const Header = () => {
   return (
     <header className={styles.header}>
       <h1 className={styles.title}>
-        AXIS POINT
+        AXIS P<img src="/AXI.png" alt="Axis Point Logo" className={styles.logoO} />INT
       </h1>
       <p className={styles.tagline}>
         Currency Exchange Portal Stimulating the Global Melanated and Indigenous Community

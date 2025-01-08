@@ -8,6 +8,28 @@
   color: #ffffff;
 }
 
+/* AXI Logo in Top Left */
+.logoTopLeft {
+  position: absolute;
+  top: 170px;
+  left: 250px;
+  width: 230px; /* Adjust size as needed */
+  height: auto; /* Maintain aspect ratio */
+  z-index: 10; /* Ensure it's above the content */
+}
+
+/* Globe PNG in Bottom Right */
+.globeBottomRight {
+  position: absolute;
+  bottom: -50px; /* Slightly offset to blend into the layout */
+  right: -50px; /* Slightly offset for positioning */
+  width: 300px; /* Adjust size as needed */
+  height: auto; /* Maintain aspect ratio */
+  opacity: 0.7; /* Subtle transparency */
+  z-index: 5; /* Ensure it's below the content */
+}
+
+
 /* Left Content Section */
 .content {
   flex: 1; /* Take up half of the width */
@@ -18,11 +40,12 @@
 }
 
 .title {
-  font-size: 4rem;
+  font-size: 7.5rem;
   font-weight: bold;
-  color: #ffffff;
-  margin-bottom: 260px;
-  margin-left: 300px;
+  letter-spacing: 6px;
+  color: #4572437a;
+  margin-bottom: 20px;
+  margin-left: 350px;
   line-height: 1.2; /* Tight spacing for a bold look */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
@@ -30,8 +53,8 @@
 .tagline {
   font-size: 1.5rem;
   line-height: 1.8;
-  color: #d8f3dc;
-  margin-bottom: 30px;
+  color: #6a5118ba;
+  margin-top: 50px;
 }
 
 /* Signup Form Section */
@@ -48,7 +71,7 @@
 .formTitle {
   font-size: 2rem;
   font-weight: bold;
-  color: #ffffff;
+  color: #6a3818;
   margin-bottom: 20px;
   text-align: center;
 }
@@ -61,8 +84,8 @@
 .inputGroup label {
   display: block;
   font-size: 1rem;
-  color: #ffffff;
-  margin-bottom: 5px;
+  color: #6a3818;
+  margin-bottom: 3px;
 }
 
 .inputGroup input {
@@ -71,8 +94,8 @@
   font-size: 1rem;
   border: none;
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.084);
-  color: #ffffff;
+  background: rgba(70, 177, 195, 0.413);
+  color: #6a3818;
   box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.3);
 }
 
@@ -88,7 +111,7 @@
   font-weight: bold;
   text-transform: uppercase;
   color: #ffffff;
-  background: linear-gradient(90deg, #0077ff, #0056b3);
+  background: linear-gradient(90deg, #6a3818, #b386005f);
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -98,7 +121,7 @@
 }
 
 .submitButton:hover {
-  background: linear-gradient(90deg, #0056b3, #0077ff);
+  background: linear-gradient(90deg, #175a25, #9db42d);
   transform: scale(1.05);
   box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.4);
 }

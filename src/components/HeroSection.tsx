@@ -4,12 +4,16 @@ import styles from './HeroSection.module.css';
 const HeroSection = () => {
   return (
     <section className={styles.hero}>
+      {/* AXI Logo in Top Left Corner */}
+      <img src="/AXI.png" alt="AXI Logo" className={styles.logoTopLeft} />
+
       {/* Left Content Section */}
       <div className={styles.content}>
-        <h1 className={styles.title}>AXIS POINT</h1>
+        <h1 className={styles.title}>AP</h1>
         <p className={styles.tagline}>
-        One Platform: Infinite Pathways. The crossroads of <strong>technology</strong>, <strong>trade</strong>, and <strong>cultural exchange</strong>, bridging borders and timelines.
-        <br /> Sustainble Investor's portal.</p>
+          One Platform: Infinite Pathways. <br /> The crossroads of <strong>technology</strong>, <strong>trade</strong>, <br /> and <strong>cultural exchange</strong>, <br /> bridging borders and timelines.
+          <br />
+        </p>
       </div>
 
       {/* Signup Form Section */}
@@ -31,6 +35,9 @@ const HeroSection = () => {
           <button type="submit" className={styles.submitButton}>AcCess</button>
         </form>
       </div>
+
+      {/* Globe PNG in Bottom Right Corner */}
+      <img src="/globe.png" alt="Globe" className={styles.globeBottomRight} />
     </section>
   );
 };

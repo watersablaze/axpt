@@ -6,16 +6,6 @@
   font-style: normal;
 }
 
-.title {
-  font-family: 'LoyalBold', sans-serif;
-  font-size: 2.5vw; /* Responsive font size */
-  font-weight: bold; /* Ensure bold rendering */
-  color: #ffffff;
-  margin: 0;
-  gap: 0.1em; /* Reduced spacing between elements */
-  text-transform: uppercase; /* Optional: Transform text to uppercase */
-}
-
 .header {
   display: flex;
   position: fixed;
@@ -39,7 +29,9 @@
   align-items: center; /* Align text and logo */
   font-size: 2.5vw; /* Responsive font size */
   font-weight: bold;
-  color: #ffffff;
+  font-family: 'LoyalBold', sans-serif;
+  color: #6a3818;
+  letter-spacing: 10px;
   margin: 0;
   gap: 0.1em; /* Reduced spacing between elements */
   flex: 1; /* Allow title to take available space */
@@ -55,6 +47,7 @@
   font-style: italic; /* Italic for a distinct style */
   margin: 10px 0 0 0; /* Add spacing from the title */
   letter-spacing: 0.05em; /* Slightly spaced out letters */
+  color: #6a3818;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
   padding-top: 0; /* Removed border and extra padding */
   flex: 1; /* Allow tagline to scale */
@@ -70,6 +63,7 @@
   border-radius: 50%; /* Circular shape */
   object-fit: cover; /* Ensures proper scaling */
   transition: transform 0.5s ease; /* Hover animation */
+  margin-left: -13px;
 }
 
 .logoO:hover {
@@ -91,7 +85,7 @@
 .walletButton,
 .loginButton {
   padding: 0.5rem 1rem; /* Smaller padding for sleek buttons */
-  background: linear-gradient(90deg, #718413, #119b3f);
+  background: linear-gradient(90deg, #6a3818, #b386005f);
   color: #ffffff;
   font-size: 0.8rem; /* Smaller font size */
   font-weight: bold;
@@ -106,7 +100,7 @@
 
 .walletButton:hover,
 .loginButton:hover {
-  background: linear-gradient(90deg, #1a5f94, #4ea7d6);
+  background: linear-gradient(90deg, #175a25, #9db42d);
   transform: scale(1.05); /* Slight enlargement */
 }
 
