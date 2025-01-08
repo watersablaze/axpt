@@ -12,7 +12,6 @@
   height: 50px;
   width: 100%; /* Stretch to full width */
   text-align: center;
-  background: radial-gradient(circle at center, #5673956d, #065435b4);
 }
   
   .link {

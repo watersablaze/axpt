@@ -28,8 +28,8 @@
   color: #ffffff;
   height: auto; /* Adjust height dynamically based on content */
   background-size: cover;
-  background: radial-gradient(circle at center, #5673956d, #065435b4);
-  backdrop-filter: blur(4px); /* Adds subtle blur */
+  background: radial-gradient(circle at center, #56739526, #06543532);
+  backdrop-filter: blur(1px); /* Adds subtle blur */
   gap: 1rem; /* Add spacing between child elements */
 }
 

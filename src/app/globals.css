@@ -12,13 +12,15 @@
 
 html,
 body {
-  height: 100%; /* Ensure it covers the viewport */
-  background-size: cover;
-  background: radial-gradient(circle at center, rgba(1, 13, 27, 0.84), rgba(0, 9, 6, 0.819));
-  color: #ffffff; /* Text contrast */
+  height: 100%;
   margin: 0;
   padding: 0;
-  overflow-x: hidden;
+  color: #ffffff; /* Ensure text is visible against the background */
+  background: url('/APBG.png') no-repeat center center fixed; /* Add the background image */
+  background-size: cover; /* Ensure the image covers the entire viewport */
+  backdrop-filter: blur(4px); /* Adds subtle blur */
+  font-family: 'LoyalBold', sans-serif; /* Keep your font styling */
+  scroll-behavior: smooth; /* Optional: Add smooth scrolling */
 }
 
 @font-face {

@@ -21,7 +21,8 @@
   font-size: 4rem;
   font-weight: bold;
   color: #ffffff;
-  margin-bottom: 20px;
+  margin-bottom: 260px;
+  margin-left: 300px;
   line-height: 1.2; /* Tight spacing for a bold look */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
@@ -41,7 +42,7 @@
   padding: 20px 50px;
   border-radius: 9px;
   margin-right: 150px;
-  margin-bottom: 70px;
+  margin-bottom: 200px;
 }
 
 .formTitle {
