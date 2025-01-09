@@ -44,7 +44,6 @@
 .tagline {
   font-size: 1vw; /* Responsive font size */
   color: #f0f0f0; /* Brightened text color */
-  font-style: italic; /* Italic for a distinct style */
   margin: 10px 0 0 0; /* Add spacing from the title */
   letter-spacing: 0.05em; /* Slightly spaced out letters */
   color: #6a3818;
@@ -54,6 +53,7 @@
   min-width: 150px; /* Prevent tagline from shrinking too much */
   text-align: left; /* Align text to the left */
   white-space: nowrap; /* Prevent wrapping */
+  margin-left: 100px;
 }
 
 /* Logo Styling */
