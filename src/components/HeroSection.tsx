@@ -1,18 +1,27 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import styles from './HeroSection.module.css';
 
 const HeroSection = () => {
   return (
     <section className={styles.hero}>
-      {/* AXI Logo in Top Left Corner */}
-      <img src="/AXI.png" alt="AXI Logo" className={styles.logoTopLeft} />
+      {/* Animated AXI Logo in Top Left Corner */}
+      <motion.img
+        src="/AXI.png"
+        alt="AXI Logo"
+        className={styles.logoTopLeft}
+        initial={{ opacity: 0, x: -50 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 1.5 }}
+      />
 
       {/* Left Content Section */}
       <div className={styles.content}>
-        <h1 className={styles.title}>AP</h1>
         <p className={styles.tagline}>
-          One Platform: Infinite Pathways. <br /> The crossroads of <strong>technology</strong>, <strong>trade</strong>, <br /> and <strong>cultural exchange</strong>, <br /> bridging borders and timelines.
-          <br />
+          One Platform: Infinite Pathways. 
+        </p>
+        <p className={styles.tagline}>
+          The Crossroads of <strong>Technology</strong>, <br /> <strong>Trade</strong>, and <strong>Cultural Exchange</strong>.
         </p>
       </div>
 
@@ -32,12 +41,37 @@ const HeroSection = () => {
             <label htmlFor="password">Password</label>
             <input type="password" id="password" name="password" placeholder="Enter your password" required />
           </div>
-          <button type="submit" className={styles.submitButton}>AcCess</button>
+          <motion.button
+            type="submit"
+            className={styles.submitButton}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Access
+          </motion.button>
         </form>
       </div>
 
-      {/* Globe PNG in Bottom Right Corner */}
-      <img src="/globe.png" alt="Globe" className={styles.globeBottomRight} />
+      {/* Animated Arrow Map PNG in Center */}
+      <motion.img
+        src="/large-map.png"
+        alt="Arrow Map"
+        className={styles.LargeMap}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 8, ease: 'easeOut' }}
+      />
+
+      {/* Animated Globe PNG in Bottom Right Corner */}
+      <motion.img
+        src="/globe.png"
+        alt="Globe"
+        className={styles.globeBottomRight}
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1.5, delay: 0.5 }}
+        whileHover={{ scale: 1.1 }}
+      />
     </section>
   );
 };
