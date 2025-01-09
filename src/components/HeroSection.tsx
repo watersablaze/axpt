@@ -18,7 +18,7 @@ const HeroSection = () => {
       {/* Left Content Section */}
       <div className={styles.content}>
         <p className={styles.tagline}>
-Currency Exchange Portal Stimulating the Global Melanted < br/> and Indigenous Community through <u>Sustainable Development.</u></p>
+        The currency exchange portal connecting < br/> technology, trade, and culture into a < br/> global symphony of progress.</p>
       </div>
 
    {/* Signup Form Section */}

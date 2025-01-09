@@ -7,28 +7,23 @@ import styles from './Footer.module.css';
 const Footer = () => {
   return (
     <footer className={styles.footer}>
-      <div className={styles.footerContainer}>
-        {/* Left Column */}
-        <div className={styles.column}>
-          <h4>About Us</h4>
-          <p>
-            Axis Point connects technology, trade, and culture into a global symphony of progress.
-          </p>
-          <p>Email: contact@axispoint.com</p>
-        </div>
-
-        {/* Right Column */}
-        <div className={styles.column}>
-          <h4>Quick Links</h4>
-          <ul>
-            <li><a href="/register">Register</a></li>
-            <li><a href="/login">Login</a></li>
-            <li><a href="/wallet">Wallet</a></li>
-          </ul>
-        </div>
+      {/* Left Section - All Rights Reserved */}
+      <div className={styles.leftSection}>
+        <p>&copy; 2024 Axis Point. All rights reserved. < br/> One Platform. Infinite Pathways.</p>
       </div>
 
-      {/* Animated Globe in Bottom Right */}
+      {/* Right Section - Combined Content */}
+      <div className={styles.rightSection}>
+        <h4>About Us</h4>
+        <p></p>
+        <ul>
+          <li><a href="/register">Register</a></li>
+          <li><a href="/login">Login</a></li>
+          <li><a href="/wallet">Wallet</a></li>
+        </ul>
+      </div>
+
+      {/* Animated Globe */}
       <motion.img
         src="/globe.png"
         alt="Globe"
@@ -38,11 +33,6 @@ const Footer = () => {
         transition={{ duration: 1.5, delay: 0.5 }}
         whileHover={{ scale: 1.1 }}
       />
-
-      {/* Centered Copyright */}
-      <p className={styles.copyright}>
-        &copy; 2025 Axis Point. All rights reserved.
-      </p>
     </footer>
   );
 };

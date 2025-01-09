@@ -6,25 +6,22 @@
   font-style: normal;
 }
 
-/* Header Styling */
 .header {
   display: flex;
-  position: fixed; /* Fixes the header to the top of the viewport */
+  position: fixed;
   justify-content: space-between; /* Space between title/tagline and buttons */
   align-items: center;
-  top: 0; /* Ensure it's always at the top */
-  width: 100%; /* Stretch to full width */
-  z-index: 1000; /* Ensure it's above other content */
+  width: 100%;
+  z-index: 1000; /*Ensures the header spans the full width */
   flex-wrap: wrap; /* Allow wrapping for smaller screens */
   padding: 1rem 2rem; /* Use responsive padding */
   color: #ffffff;
   height: auto; /* Adjust height dynamically based on content */
-  background: radial-gradient(circle at center, rgba(86, 115, 149, 0.15), rgba(6, 84, 53, 0.2));
-  backdrop-filter: blur(5px); /* Adds subtle blur */
+  background-size: cover;
+  background: radial-gradient(circle at center, #56739526, #06543532);
+  backdrop-filter: blur(1px); /* Adds subtle blur */
   gap: 1rem; /* Add spacing between child elements */
-  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1); /* Optional subtle shadow */
 }
-
 
 /* Title Styling */
 .title {

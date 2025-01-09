@@ -8,7 +8,7 @@
     --background: #0a0a0a;
     --foreground: #ededed;
   }
-}   
+}
 
 html,
 body {
@@ -16,19 +16,18 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  overflow-x: hidden;
-  color: #ffffff; /* Ensure text is visible against the background */
-  background: url('/APBG.png') no-repeat center center fixed; /* Add the background image */
-  background-size: cover; /* Ensure the image covers the entire viewport */
-  backdrop-filter: blur(4px); /* Adds subtle blur */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  color: #ffffff;
+  background: url('/APBG.png') no-repeat center center fixed; /* Background image */
+  background-size: cover; /* Ensure the image covers the viewport */
   font-family: 'LoyalBold', sans-serif; /* Keep your font styling */
   scroll-behavior: smooth; /* Optional: Add smooth scrolling */
 }
 
 .content-wrapper {
-  padding-top: 70px; /* Space to prevent header overlap */
-  padding-bottom: 60px; /* Space to prevent footer overlap */
-  min-height: 100vh; /* Ensure full-page height for scrollable content */
+  padding-top: 70px; /* Space for fixed header */
+  padding-bottom: 60px; /* Space for fixed footer */
+  min-height: 100vh; /* Full-page height */
 }
 
 @font-face {
@@ -38,11 +37,7 @@ body {
   font-style: normal;
 }
 
-* {
-  box-sizing: inherit;
-  padding: 0;
-  margin: 0;
-}
+
 
 a {
   color: inherit;
@@ -61,9 +56,8 @@ body {
   scrollbar-color: #005f73 #0a9396; /* Firefox: Thumb and track colors */
 }
 
-/* Chrome, Edge, and Safari */
 body::-webkit-scrollbar {
-  width: 10px; /* Width of the scrollbar */
+  width: 10px; /* Scrollbar width */
 }
 
 body::-webkit-scrollbar-thumb {
@@ -74,5 +68,6 @@ body::-webkit-scrollbar-thumb {
 
 body::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.1); /* Track color */
-  border-radius: 10px; /* Match track corners to thumb */
+  border-radius: 10px;
 }
+

@@ -30,9 +30,9 @@
 /* Centered Arrow-Map PNG */
 .LargeMap {
   position: absolute;
-  top: 14%;
-  left: 12%;
-  width: 1300px; /* Adjust size for visibility */
+  top: 10%;
+  left: 8%;
+  width: 1400px; /* Adjust size for visibility */
   height: auto; /* Maintain aspect ratio */
   transform: translate(-50%, -50%); /* Center horizontally and vertically */
   opacity: 0.6; /* Lower opacity for a subtle background feel */
@@ -64,8 +64,9 @@
   line-height: 1.8;
   color: #6a5118ba;
   margin-top: 50px;
-  margin-left: -230px;
+  margin-left: -170px;
   text-transform: capitalize;
+  text-align: left;
 }
 
 /* Signup Form Section */

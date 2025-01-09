@@ -1,71 +1,73 @@
-/* Footer Styling */
-/* Footer Styling */
+/* Fixed Footer */
 .footer {
-  position: fixed; /* Fix the footer to the bottom of the viewport */
+  position: fixed;
   bottom: 0;
   left: 0;
-  width: 100%; /* Full width */
-  background: radial-gradient(circle, rgba(86, 115, 149, 0.15), rgba(6, 84, 53, 0.2));
+  width: 100%;
+  z-index: 1000; /* High z-index to stay above other content */
+  background: rgba(0, 0, 0, 0.748); /* Semi-transparent background */
   color: #ffffff;
-  padding: 20px;
-  box-shadow: 0px -2px 8px rgba(0, 0, 0, 0.1); /* Optional shadow */
-  z-index: 1000; /* High z-index to stay above content */
+  padding: 15px 20px;
+  box-shadow: 0px -2px 5px rgba(0, 0, 0, 0.3); /* Optional shadow */
+  height: 10%;
 }
 
-/* Footer Container */
-.footerContainer {
-  display: flex;
-  justify-content: space-between; /* Space between the left and right columns */
-  align-items: flex-start;
-  padding: 0 20px; /* Default padding for left and right */
-}
 
-/* Left Column */
-.column:nth-child(1) {
-  flex: 1; /* Default behavior */
-}
-
-/* Right Column (Quick Links) */
-.column:nth-child(2) { /* Targets the second column */
-  margin-left: 470px; /* Push the Quick Links column to the right */
-  padding-right: 20px; /* Add padding closer to the right edge */
-}
-
-/* Footer Column */
-.column {
-  flex: 1; /* Each column takes equal space */
-  margin: 0 20px;
-}
-
-.column h4 {
-  font-size: 1.2rem;
-  color: #6a3818;
-  margin-bottom: 10px;
-}
-
-.column p {
+/* Left Section - All Rights Reserved */
+.leftSection {
+  flex: 1;
+  text-align: center; /* Center-align the text */
+  color: #476644;
   font-size: 0.9rem;
-  color: #2c7c75;
-  margin: 5px 0;
+  margin-right: 30px;
+  margin-top: 60px;
 }
 
-.column ul {
+.rightSection {
+  flex: 1;
+  text-align: right; /* Align everything to the right */
+  color: #ffffff;
+  margin-right: 400px;
+  margin-top: -100px;
+}
+
+.rightSection h4 {
+  margin-bottom: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-right: 40px;
+  color: #476644;
+}
+
+.rightSection p {
+  margin-bottom: 10px;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.rightSection ul {
   list-style: none;
   padding: 0;
+  margin: 0;
+  display: flex; /* Change to flex to align items in a row */
+  gap: 15px; /* Add space between links */
+  justify-content: flex-end; /* Align links to the right */
 }
 
-.column ul li {
-  margin-bottom: 5px;
+.rightSection ul li {
+  margin: 0; /* Remove bottom margin */
 }
 
-.column ul li a {
-  color: #2c7c75;
+.rightSection ul li a {
+  color: #4766448e;
   text-decoration: none;
+  font-size: 0.9rem;
 }
 
-.column ul li a:hover {
+.rightSection ul li a:hover {
   text-decoration: underline;
 }
+
 
 /* Globe Animation */
 .globeBottomRight {
@@ -83,17 +85,6 @@
 .globeBottomRight:hover {
   transform: scale(1.1); /* Slightly enlarge on hover */
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6); /* Add shadow effect */
-}
-
-/* Centered Copyright Text */
-.copyright {
-  position: absolute;
-  bottom: 10px;
-  left: 50%; /* Center horizontally */
-  transform: translateX(-50%); /* Adjust to true center */
-  font-size: 0.9rem;
-  color: #865d437d;
-  text-align: center;
 }
 
 /* Combined Animation */
