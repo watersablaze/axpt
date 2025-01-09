@@ -15,12 +15,20 @@ body {
   height: 100%;
   margin: 0;
   padding: 0;
+  width: 100%;
+  overflow-x: hidden;
   color: #ffffff; /* Ensure text is visible against the background */
   background: url('/APBG.png') no-repeat center center fixed; /* Add the background image */
   background-size: cover; /* Ensure the image covers the entire viewport */
   backdrop-filter: blur(4px); /* Adds subtle blur */
   font-family: 'LoyalBold', sans-serif; /* Keep your font styling */
   scroll-behavior: smooth; /* Optional: Add smooth scrolling */
+}
+
+.content-wrapper {
+  padding-top: 70px; /* Space to prevent header overlap */
+  padding-bottom: 60px; /* Space to prevent footer overlap */
+  min-height: 100vh; /* Ensure full-page height for scrollable content */
 }
 
 @font-face {

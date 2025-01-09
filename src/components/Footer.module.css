@@ -1,27 +1,110 @@
+/* Footer Styling */
+/* Footer Styling */
 .footer {
-  display: flex;     
-  flex-direction: column;
-  align-items: center;
-  position: fixed;
+  position: fixed; /* Fix the footer to the bottom of the viewport */
   bottom: 0;
   left: 0;
-  justify-content: center;
-  padding: 10px 20px;
+  width: 100%; /* Full width */
+  background: radial-gradient(circle, rgba(86, 115, 149, 0.15), rgba(6, 84, 53, 0.2));
   color: #ffffff;
-  z-index: 10;
-  height: 50px;
-  width: 100%; /* Stretch to full width */
+  padding: 20px;
+  box-shadow: 0px -2px 8px rgba(0, 0, 0, 0.1); /* Optional shadow */
+  z-index: 1000; /* High z-index to stay above content */
+}
+
+/* Footer Container */
+.footerContainer {
+  display: flex;
+  justify-content: space-between; /* Space between the left and right columns */
+  align-items: flex-start;
+  padding: 0 20px; /* Default padding for left and right */
+}
+
+/* Left Column */
+.column:nth-child(1) {
+  flex: 1; /* Default behavior */
+}
+
+/* Right Column (Quick Links) */
+.column:nth-child(2) { /* Targets the second column */
+  margin-left: 470px; /* Push the Quick Links column to the right */
+  padding-right: 20px; /* Add padding closer to the right edge */
+}
+
+/* Footer Column */
+.column {
+  flex: 1; /* Each column takes equal space */
+  margin: 0 20px;
+}
+
+.column h4 {
+  font-size: 1.2rem;
+  color: #6a3818;
+  margin-bottom: 10px;
+}
+
+.column p {
+  font-size: 0.9rem;
+  color: #2c7c75;
+  margin: 5px 0;
+}
+
+.column ul {
+  list-style: none;
+  padding: 0;
+}
+
+.column ul li {
+  margin-bottom: 5px;
+}
+
+.column ul li a {
+  color: #2c7c75;
+  text-decoration: none;
+}
+
+.column ul li a:hover {
+  text-decoration: underline;
+}
+
+/* Globe Animation */
+.globeBottomRight {
+  position: fixed; /* Fixed at the bottom-right corner */
+  bottom: -10px;
+  right: -10px;
+  width: 150px;
+  height: auto;
+  opacity: 0.8;
+  z-index: 1000;
+  animation: spinAndFloatGlobe 30s linear infinite; /* Combine spin and float */
+  transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth hover */
+}
+
+.globeBottomRight:hover {
+  transform: scale(1.1); /* Slightly enlarge on hover */
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.6); /* Add shadow effect */
+}
+
+/* Centered Copyright Text */
+.copyright {
+  position: absolute;
+  bottom: 10px;
+  left: 50%; /* Center horizontally */
+  transform: translateX(-50%); /* Adjust to true center */
+  font-size: 0.9rem;
+  color: #865d437d;
   text-align: center;
 }
-  
-  .link {
-    color: #90cdf4;
-    text-decoration: none;
-  }
 
-  @media (max-width: 768px) {
-    .footer {
-      flex-direction: row; /* Adjust layout for smaller screens */
-      justify-content: space-between;
-    }
+/* Combined Animation */
+@keyframes spinAndFloatGlobe {
+  0% {
+    transform: rotate(0deg) translateY(0);
   }
+  50% {
+    transform: rotate(180deg) translateY(-10px); /* Halfway spin and float */
+  }
+  100% {
+    transform: rotate(360deg) translateY(0); /* Full spin and reset float */
+  }
+}

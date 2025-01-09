@@ -12,7 +12,7 @@ const Header = () => {
         AXIS P<img src="/AXI.png" alt="Axis Point Logo" className={styles.logoO} />INT
       </h1>
       <p className={styles.tagline}>
-        Currency Exchange Portal Stimulating the Global Melanated and Indigenous Community
+       <strong>One Platform, Inifinite Pathways:</strong>  The Crossroads of Technology, Trade, and Cultural Exchange
       </p>
       <div className={styles.buttonContainer}>
         <Link href="/wallet" className={styles.walletButton}>
