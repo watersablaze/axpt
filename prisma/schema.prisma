@@ -8,16 +8,14 @@ datasource db {
 }
 
 model User {
-  id                String   @id @default(auto()) @map("_id") @db.ObjectId
-  name              String?
-  email             String   @unique
-  emailVerified     DateTime?
-  password          String
-  image             String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
-  sessions          Session[]
-  accounts          Account[] // Relation to accounts
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  name      String
+  email     String   @unique
+  password  String
+  industry  String
+  interests String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Session {

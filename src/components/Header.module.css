@@ -83,7 +83,8 @@
 
 /* Button Styling */
 .walletButton,
-.loginButton {
+.loginButton,
+.dashboardButton {
   padding: 0.5rem 1rem; /* Smaller padding for sleek buttons */
   background: linear-gradient(90deg, #6a3818, #b386005f);
   color: #ffffff;
@@ -99,7 +100,8 @@
 }
 
 .walletButton:hover,
-.loginButton:hover {
+.loginButton:hover,
+.dashboardButton:hover {
   background: linear-gradient(90deg, #175a25, #9db42d);
   transform: scale(1.05); /* Slight enlargement */
 }

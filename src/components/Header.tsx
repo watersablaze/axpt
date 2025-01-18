@@ -5,16 +5,18 @@ import Link from 'next/link';
 import styles from './Header.module.css';
 
 const Header = () => {
-
   return (
     <header className={styles.header}>
       <h1 className={styles.title}>
         AXIS P<img src="/AXI.png" alt="Axis Point Logo" className={styles.logoO} />INT
       </h1>
       <p className={styles.tagline}>
-     <strong>The Crossroads of Technology, Trade, and Cultural Exchange.</strong> 
+        <strong>The Crossroads of Technology, Trade, and Cultural Exchange.</strong>
       </p>
       <div className={styles.buttonContainer}>
+        <Link href="/dashboard" className={styles.dashboardButton}>
+          Dashboard
+        </Link>
         <Link href="/wallet" className={styles.walletButton}>
           Wallet
         </Link>
@@ -22,7 +24,6 @@ const Header = () => {
           Login
         </Link>
       </div>
-
     </header>
   );
 };

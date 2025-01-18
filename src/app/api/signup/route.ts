@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-import bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs';        
 
 export async function POST(request: Request) {
   try {
@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
     // Create the user
     const user = await prisma.user.create({
-      data: { name, email, password: hashedPassword },
+      data: { name, email, password: hashedPassword, industry, interests, },
     });
 
     // Send welcome email
