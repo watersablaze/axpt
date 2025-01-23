@@ -1,27 +1,27 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import nodemailer from 'nodemailer';
-import bcrypt from 'bcryptjs';        
+import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
   try {
-    const { name, email, password } = await request.json();
+    const { name, email, password, industry, interests } = await request.json();
 
-    // Check if user already exists
+    console.log('Received data:', { name, email, password, industry, interests }); // Log input
+
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json({ success: false, message: 'User already exists' }, { status: 400 });
     }
 
-    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Create the user
     const user = await prisma.user.create({
-      data: { name, email, password: hashedPassword, industry, interests, },
+      data: { name, email, password: hashedPassword, industry, interests },
     });
 
-    // Send welcome email
+    console.log('User created successfully:', user);
+
     const transporter = nodemailer.createTransport({
       host: process.env.EMAIL_HOST,
       port: parseInt(process.env.EMAIL_PORT || '587'),
@@ -39,11 +39,12 @@ export async function POST(request: Request) {
       text: `Hi ${name},\n\nThank you for signing up! We're thrilled to have you on board.\n\nBest,\nThe Axis Point Team`,
     });
 
+    console.log('Welcome email sent successfully');
     return NextResponse.json({ success: true, message: 'User created and email sent!', user });
   } catch (error) {
-    console.error('Error during signup:', error);
+    console.error('Error during signup:', error.message || error);
     return NextResponse.json(
-      { success: false, message: 'Signup failed' },
+      { success: false, message: 'Signup failed. Please check server logs for details.' },
       { status: 500 }
     );
   }

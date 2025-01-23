@@ -12,9 +12,15 @@ model User {
   name      String
   email     String   @unique
   password  String
-  industry  String
-  interests String
-  createdAt DateTime @default(now())
+  industry  String   // Add this field
+  interests String   // Add this field (if not already added)
+  role     String   @default("user") // Default role is 'user'
+ 
+    // Relations
+  accounts  Account[]
+  sessions  Session[]
+
+   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
@@ -27,21 +33,10 @@ model Session {
 }
 
 model Account {
-  id                 String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId             String   @db.ObjectId
-  type               String
-  provider           String
-  providerAccountId  String
-  refresh_token      String?
-  access_token       String?
-  expires_at         Int?
-  token_type         String?
-  scope              String?
-  id_token           String?
-  session_state      String?
-  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([provider, providerAccountId])
+  id                String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String   @db.ObjectId
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session_state     String?
 }
 
 model VerificationToken {
