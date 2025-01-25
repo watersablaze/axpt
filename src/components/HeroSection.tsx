@@ -4,27 +4,24 @@ import styles from './HeroSection.module.css';
 
 const HeroSection = () => {
   const [formMessage, setFormMessage] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false); // Add a state for disabling the submit button
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent default form submission behavior
 
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-    setFormMessage(''); // Reset message
+    setIsSubmitting(true); // Disable the button while processing
 
     const form = e.currentTarget;
     const formData = {
-      name: (form.elements.namedItem('name') as HTMLInputElement).value,
-      email: (form.elements.namedItem('email') as HTMLInputElement).value,
-      password: (form.elements.namedItem('password') as HTMLInputElement).value,
-      industry: (form.elements.namedItem('industry') as HTMLSelectElement).value,
-      interests: (form.elements.namedItem('interests') as HTMLSelectElement).value,
+      name: (form.elements.namedItem("name") as HTMLInputElement).value,
+      email: (form.elements.namedItem("email") as HTMLInputElement).value,
+      password: (form.elements.namedItem("password") as HTMLInputElement).value,
+      industry: (form.elements.namedItem("industry") as HTMLSelectElement).value,
+      interests: (form.elements.namedItem("interests") as HTMLSelectElement).value,
     };
 
-    console.log('Submitting form data:', formData); // Log form data
-
     try {
+      // Submit to API
       const response = await fetch('/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -34,20 +31,18 @@ const HeroSection = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setFormMessage('Signup successful! Redirecting...');
-        form.reset(); // Clear the form
-        setTimeout(() => {
-          window.location.href = '/dashboard';
-        }, 2000);
+        setFormMessage(data.message || 'Signup successful!');
+        form.reset(); // Clear the form fields
       } else {
-        console.error('Signup Error Response:', data.message);
         setFormMessage(data.message || 'Signup failed!');
       }
-    } catch (error) {
-      console.error('Signup Error:', error.message || error);
-      setFormMessage('An error occurred. Please try again later.');
+    } catch (err) {
+      // Explicitly cast the `err` variable to `Error` and handle it
+      const errorMessage = (err as Error).message || 'An error occurred during signup.';
+      console.error('Signup Error:', errorMessage);
+      setFormMessage(errorMessage);
     } finally {
-      setIsSubmitting(false); // Re-enable button
+      setIsSubmitting(false); // Re-enable the button after processing
     }
   };
 
@@ -109,16 +104,16 @@ const HeroSection = () => {
           <motion.button
             type="submit"
             className={styles.submitButton}
-            disabled={isSubmitting}
+            disabled={isSubmitting} // Disable the button while submitting
             whileHover={{
-              scale: isSubmitting ? 1 : 1.05,
+              scale: 1.05,
               background: isSubmitting
-                ? 'gray'
+                ? 'linear-gradient(90deg, #cccccc, #cccccc)'
                 : 'linear-gradient(90deg, #175a25, #9db42d)',
-              boxShadow: isSubmitting ? 'none' : '0px 6px 12px rgba(0, 0, 0, 0.4)',
+              boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.4)',
             }}
             whileTap={{
-              scale: isSubmitting ? 1 : 0.95,
+              scale: 0.95,
             }}
           >
             {isSubmitting ? 'Processing...' : 'Access'}
