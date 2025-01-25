@@ -1,9 +1,4 @@
-.profilePage {
-    padding: 20px;
-    font-family: 'Arial', sans-serif;
-  }
-  
-  h1 {
+.profilePage h1 {
     font-size: 2rem;
     color: #175a25;
     margin-bottom: 20px;

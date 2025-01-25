@@ -1,9 +1,12 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
+import { useSession } from 'next-auth/react';
+import { useRouter } from 'next/navigation';
+import { ethers } from 'ethers';
 import styles from './Wallet.module.css';
 
 const stripePromise = loadStripe('your_publishable_key_here'); // Replace with your Stripe publishable key
@@ -65,12 +68,48 @@ const PaymentForm = () => {
 };
 
 const WalletPage = () => {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+  const [wallet, setWallet] = useState<{ address: string; balance: string } | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (status === 'unauthenticated') {
+      router.push('/login');
+    } else if (status === 'authenticated') {
+      const fetchWallet = async () => {
+        try {
+          const res = await fetch('/api/wallet');
+          const data = await res.json();
+          if (res.ok) {
+            setWallet(data.wallet);
+          } else {
+            console.error('Failed to load wallet:', data.message);
+          }
+        } catch (error) {
+          console.error('Error fetching wallet:', error);
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      fetchWallet();
+    }
+  }, [status, router]);
+
+  if (loading) return <p>Loading...</p>;
+  if (!wallet) return <p>Wallet could not be loaded.</p>;
+
   return (
     <div className={styles.walletContainer}>
       <h1 className={styles.title}>Wallet</h1>
       <p className={styles.description}>
-        Manage your transactions securely with our platform.
+        Welcome, {session?.user?.name || 'User'}! Here is your wallet:
       </p>
+      <div className={styles.walletInfo}>
+        <p><strong>Wallet Address:</strong> {wallet.address}</p>
+        <p><strong>Balance:</strong> {wallet.balance} ETH</p>
+      </div>
       <Elements stripe={stripePromise}>
         <PaymentForm />
       </Elements>

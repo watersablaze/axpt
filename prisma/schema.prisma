@@ -8,20 +8,25 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  name      String
-  email     String   @unique
-  password  String
-  industry  String   // Add this field
-  interests String   // Add this field (if not already added)
-  role     String   @default("user") // Default role is 'user'
- 
-    // Relations
-  accounts  Account[]
-  sessions  Session[]
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  name                String
+  email               String   @unique
+  password            String
+  industry            String?   // Add this field for user industry
+  interests           String?   // Add this field for user interests
+  encryptedPrivateKey String   // Stores the encrypted wallet private key
+  iv                  String   // Initialization vector for AES encryption
+  role                String   @default("user") // Default role is 'user'
 
-   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  // Relations
+  accounts            Account[]
+  sessions            Session[]
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  walletAddress       String?  @unique(map: "walletAddress_unique") // Optional wallet address
+  walletBalance       Float    @default(0)
 }
 
 model Session {

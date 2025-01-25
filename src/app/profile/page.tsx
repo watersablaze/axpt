@@ -12,8 +12,8 @@ export default function ProfilePage() {
   const [formData, setFormData] = useState({
     name: session?.user?.name || '',
     email: session?.user?.email || '',
-    industry: '', // Placeholder for industry
-    interests: '', // Placeholder for interests
+    industry: '',
+    interests: '',
   });
 
   if (status === 'loading') {
@@ -36,7 +36,6 @@ export default function ProfilePage() {
 
   const handleSave = async () => {
     try {
-      // Submit updated data to API
       const response = await fetch('/api/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
