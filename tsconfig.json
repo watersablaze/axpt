@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "ES2020", // Modern JavaScript features
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
@@ -21,14 +21,15 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "typeRoots": ["./node_modules/@types", "./src/types"] // Add typeRoots for custom types
+    "typeRoots": ["./node_modules/@types", "./src/types"] // For custom types
   },
   "include": [
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/types/**/*.d.ts" // Include the custom type definitions
+    "src/types/**/*.d.ts",
+    "*.config.ts" // Include custom config files
   ],
   "exclude": ["node_modules"]
 }

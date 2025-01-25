@@ -1,24 +1,32 @@
-import { NextResponse } from "next/server";
-import { MongoClient } from "mongodb";
+import { MongoClient } from 'mongodb';
+
+// Ensure the environment variable is correctly defined
+const uri = process.env.MONGODB_URI;
+
+if (!uri) {
+  throw new Error('Environment variable MONGODB_URI is not defined');
+}
+
+// Initialize MongoDB client
+const client = new MongoClient(uri);
 
 export async function GET() {
-  const uri = process.env.MONGODB_URI; // Ensure this is set in your .env file
-  const client = new MongoClient(uri);
-
   try {
     await client.connect();
-    const db = client.db("yourDatabaseName");
-    const collection = db.collection("test");
+    const db = client.db(); // Connect to the default database
+    const testCollection = db.collection('test'); // Example collection
 
-    const data = await collection.find({}).toArray();
-    return NextResponse.json({ success: true, data });
-  } catch (error) {
-    console.error("MongoDB connection error:", error);
-    return NextResponse.json(
-      { success: false, message: "Database connection failed" },
-      { status: 500 }
-    );
+    // Fetch some data for testing
+    const data = await testCollection.find({}).toArray();
+
+    return new Response(JSON.stringify({ success: true, data }), { status: 200 });
+  } catch (err) {
+    // Explicitly cast `err` to `Error` to avoid the `unknown` type issue
+    const errorMessage = (err as Error).message || 'An unknown error occurred';
+    console.error('MongoDB Connection Error:', errorMessage);
+
+    return new Response(JSON.stringify({ success: false, error: errorMessage }), { status: 500 });
   } finally {
-    await client.close();
+    await client.close(); // Always close the client after the operation
   }
 }
