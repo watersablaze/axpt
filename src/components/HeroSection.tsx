@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
+import { Visibility, VisibilityOff } from '@mui/icons-material'; // Material Icons
 import styles from './HeroSection.module.css';
 
 const HeroSection = () => {
@@ -93,29 +94,20 @@ const HeroSection = () => {
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="password">Password</label>
-            <div style={{ position: 'relative' }}>
+            <div className={styles.passwordWrapper}>
               <input
                 type={passwordVisible ? 'text' : 'password'}
                 id="password"
                 name="password"
                 placeholder="Enter your password"
                 required
-                style={{ paddingRight: '30px' }}
               />
               <button
                 type="button"
                 onClick={() => setPasswordVisible(!passwordVisible)}
-                style={{
-                  position: 'absolute',
-                  right: '5px',
-                  top: '50%',
-                  transform: 'translateY(-50%)',
-                  background: 'transparent',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
+                aria-label="Toggle password visibility"
               >
-                {passwordVisible ? '👁️' : '🙈'}
+                {passwordVisible ? <Visibility /> : <VisibilityOff />}
               </button>
             </div>
           </div>

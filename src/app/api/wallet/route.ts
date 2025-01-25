@@ -22,8 +22,8 @@ export async function GET(request: Request) {
   // Example: Retrieve balance using ethers.js
   const provider = new ethers.providers.JsonRpcProvider('http://localhost:3000'); // Replace with your provider URL
   const balance = await provider.getBalance(user.walletAddress);
-  const formattedBalance = ethers.utils.formatEther(balance);
-
+  const formattedBalance = ethers.utils.formatEther('1000000000000000000'); // Formatting balance
+  
   return NextResponse.json({
     wallet: {
       address: user.walletAddress,

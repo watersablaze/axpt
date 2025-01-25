@@ -31,7 +31,7 @@ export default function Dashboard() {
 
   async function connectWallet() {
     if (typeof window.ethereum !== 'undefined') {
-      const provider = new ethers.providers.Web3Provider(window.ethereum); // Use ethers.providers
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
       const accounts = await provider.send('eth_requestAccounts', []);
       console.log('Connected account:', accounts[0]);
     } else {
