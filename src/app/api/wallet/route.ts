@@ -1,6 +1,7 @@
-import { authOptions } from '@/lib/auth'; // Adjust this path to match your project structure
-import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { ethers } from 'ethers'; // Correct import for ethers.js
+import { authOptions } from '@/lib/auth';
 import { getServerSession } from 'next-auth';
 
 export async function GET(request: Request) {
@@ -18,13 +19,15 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Wallet not found' }, { status: 404 });
   }
 
-  // Placeholder for balance from blockchain logic
-  const balance = '0.00';
+  // Example: Retrieve balance using ethers.js
+  const provider = new ethers.providers.JsonRpcProvider('http://localhost:3000'); // Replace with your provider URL
+  const balance = await provider.getBalance(user.walletAddress);
+  const formattedBalance = ethers.utils.formatEther(balance);
 
   return NextResponse.json({
     wallet: {
       address: user.walletAddress,
-      balance,
+      balance: formattedBalance,
     },
   });
 }
