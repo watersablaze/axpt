@@ -4,24 +4,23 @@ import styles from './HeroSection.module.css';
 
 const HeroSection = () => {
   const [formMessage, setFormMessage] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false); // Add a state for disabling the submit button
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false); // For password visibility toggle
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault(); // Prevent default form submission behavior
-
-    setIsSubmitting(true); // Disable the button while processing
+    e.preventDefault();
+    setIsSubmitting(true);
 
     const form = e.currentTarget;
     const formData = {
-      name: (form.elements.namedItem("name") as HTMLInputElement).value,
-      email: (form.elements.namedItem("email") as HTMLInputElement).value,
-      password: (form.elements.namedItem("password") as HTMLInputElement).value,
-      industry: (form.elements.namedItem("industry") as HTMLSelectElement).value,
-      interests: (form.elements.namedItem("interests") as HTMLSelectElement).value,
+      name: (form.elements.namedItem('name') as HTMLInputElement).value,
+      email: (form.elements.namedItem('email') as HTMLInputElement).value,
+      password: (form.elements.namedItem('password') as HTMLInputElement).value,
+      industry: (form.elements.namedItem('industry') as HTMLSelectElement).value,
+      interests: (form.elements.namedItem('interests') as HTMLSelectElement).value,
     };
 
     try {
-      // Submit to API
       const response = await fetch('/api/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -37,17 +36,17 @@ const HeroSection = () => {
         setFormMessage(data.message || 'Signup failed!');
       }
     } catch (err) {
-      // Explicitly cast the `err` variable to `Error` and handle it
       const errorMessage = (err as Error).message || 'An error occurred during signup.';
       console.error('Signup Error:', errorMessage);
       setFormMessage(errorMessage);
     } finally {
-      setIsSubmitting(false); // Re-enable the button after processing
+      setIsSubmitting(false);
     }
   };
 
   return (
     <section className={styles.hero}>
+      {/* Animated AXI Logo in Top Left Corner */}
       <motion.img
         src="/AXI.png"
         alt="AXI Logo"
@@ -57,6 +56,7 @@ const HeroSection = () => {
         transition={{ duration: 1.5 }}
       />
 
+      {/* Left Content Section */}
       <div className={styles.content}>
         <p className={styles.tagline}>
           The currency exchange portal connecting <br />
@@ -65,20 +65,59 @@ const HeroSection = () => {
         </p>
       </div>
 
+      {/* Signup Form Section */}
       <div className={styles.signupForm}>
         <h2 className={styles.formTitle}>Register Here</h2>
-        <form onSubmit={handleSignup}>
+        <form onSubmit={handleSignup} autoComplete="off">
           <div className={styles.inputGroup}>
             <label htmlFor="name">Name</label>
-            <input type="text" id="name" name="name" placeholder="Enter your name" required />
+            <input
+              type="text"
+              id="name"
+              name="name"
+              placeholder="Enter your name"
+              required
+              autoComplete="off"
+            />
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="email">Email</label>
-            <input type="email" id="email" name="email" placeholder="Enter your email" required />
+            <input
+              type="email"
+              id="email"
+              name="email"
+              placeholder="Enter your email"
+              required
+              autoComplete="off"
+            />
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="password">Password</label>
-            <input type="password" id="password" name="password" placeholder="Enter your password" required />
+            <div style={{ position: 'relative' }}>
+              <input
+                type={passwordVisible ? 'text' : 'password'}
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+                required
+                style={{ paddingRight: '30px' }}
+              />
+              <button
+                type="button"
+                onClick={() => setPasswordVisible(!passwordVisible)}
+                style={{
+                  position: 'absolute',
+                  right: '5px',
+                  top: '50%',
+                  transform: 'translateY(-50%)',
+                  background: 'transparent',
+                  border: 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                {passwordVisible ? '👁️' : '🙈'}
+              </button>
+            </div>
           </div>
           <div className={styles.inputGroup}>
             <label htmlFor="industry">Industry</label>
@@ -104,17 +143,15 @@ const HeroSection = () => {
           <motion.button
             type="submit"
             className={styles.submitButton}
-            disabled={isSubmitting} // Disable the button while submitting
+            disabled={isSubmitting}
             whileHover={{
-              scale: 1.05,
+              scale: isSubmitting ? 1 : 1.05,
               background: isSubmitting
                 ? 'linear-gradient(90deg, #cccccc, #cccccc)'
                 : 'linear-gradient(90deg, #175a25, #9db42d)',
               boxShadow: '0px 6px 12px rgba(0, 0, 0, 0.4)',
             }}
-            whileTap={{
-              scale: 0.95,
-            }}
+            whileTap={{ scale: 0.95 }}
           >
             {isSubmitting ? 'Processing...' : 'Access'}
           </motion.button>

@@ -1,0 +1,98 @@
+/* Overall Dashboard Container */
+.dashboard {
+    padding: 20px;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+  }
+  
+  /* Welcome Banner */
+  .welcomeBanner {
+    background: linear-gradient(90deg, #175a25, #9db42d);
+    color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  
+  .welcomeBanner h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+  }
+  
+  .welcomeBanner p {
+    font-size: 1rem;
+    margin: 0;
+  }
+  
+  /* Quick Links Section */
+  .quickLinks {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+  }
+  
+  .linkButton,
+  .logoutButton {
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .linkButton {
+    background: linear-gradient(90deg, #0070f3, #005bb5);
+    color: #fff;
+  }
+  
+  .linkButton:hover {
+    background: linear-gradient(90deg, #005bb5, #003f8c);
+  }
+  
+  .logoutButton {
+    background: #f44336;
+    color: #fff;
+  }
+  
+  .logoutButton:hover {
+    background: #d32f2f;
+  }
+  
+  /* Activity Section */
+  .activitySection {
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .activitySection h2 {
+    margin-bottom: 10px;
+    color: #175a25;
+  }
+  
+  .activitySection ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .activitySection ul li {
+    font-size: 1rem;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  
+  .activitySection ul li:last-child {
+    border-bottom: none;
+  }
+  
+  /* Loading State */
+  .loading {
+    text-align: center;
+    font-size: 1.5rem;
+    color: #0070f3;
+  }
