@@ -36,6 +36,7 @@
   height: auto; /* Maintain aspect ratio */
   transform: translate(-50%, -50%); /* Center horizontally and vertically */
   opacity: 0.6; /* Lower opacity for a subtle background feel */
+  margin-top: 40px;
   z-index: 5; /* Below the form and content */
 }
 
@@ -49,7 +50,7 @@
 }
 
 .title {
-  font-size: 7.5rem;
+  font-size: 3.5rem;
   font-weight: bold;
   letter-spacing: 6px;
   color: #45724312;
@@ -79,7 +80,7 @@
   z-index: 10;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
   margin-right: 250px;
-  margin-bottom: 140px;
+  margin-bottom: -40px;
 }
 
 .signupForm .formTitle {

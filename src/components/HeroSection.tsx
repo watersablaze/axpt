@@ -11,6 +11,7 @@ const HeroSection = () => {
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setFormMessage('Processing your signup...'); // Show loading message
 
     const form = e.currentTarget;
     const formData = {
@@ -27,19 +28,19 @@ const HeroSection = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
       const data = await response.json();
-
       if (response.ok) {
-        setFormMessage(data.message || 'Signup successful!');
-        form.reset(); // Clear the form fields
+        setFormMessage('Signup successful! Redirecting...');
+        form.reset(); // Clear the form
+        setTimeout(() => {
+          window.location.href = '/dashboard'; // Redirect after success
+        }, 2000); // Redirect after 2 seconds
       } else {
-        setFormMessage(data.message || 'Signup failed!');
+        setFormMessage(data.message || 'Signup failed. Please try again.');
       }
     } catch (err) {
-      const errorMessage = (err as Error).message || 'An error occurred during signup.';
-      console.error('Signup Error:', errorMessage);
-      setFormMessage(errorMessage);
+      console.error('Signup Error:', err);
+      setFormMessage('An error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -65,6 +66,15 @@ const HeroSection = () => {
           global symphony of progress.
         </p>
       </div>
+
+      <motion.img
+  src="/large-map.png"
+  alt="Arrow Map"
+  className={styles.LargeMap}
+  initial={{ opacity: 0, scale: 0.8 }}
+  animate={{ opacity: 1, scale: 1 }}
+  transition={{ duration: 8, ease: 'easeOut' }}
+/>
 
       {/* Signup Form Section */}
       <div className={styles.signupForm}>
