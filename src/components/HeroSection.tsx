@@ -28,7 +28,9 @@ const HeroSection = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
+
       const data = await response.json();
+      
       if (response.ok) {
         setFormMessage('Signup successful! Redirecting...');
         form.reset(); // Clear the form

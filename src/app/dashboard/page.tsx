@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { ethers } from 'ethers'; // Import ethers
+import { ethers } from 'ethers';
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -12,6 +12,16 @@ export default function Dashboard() {
 
   useEffect(() => {
     if (status === 'authenticated') {
+      // Clear any stale session data
+      if (!session?.user) {
+        console.error('Session data is invalid. Redirecting to login.');
+        router.push('/login');
+        return;
+      }
+
+      console.log('Current session user:', session.user);
+
+      // Fetch the wallet data for the logged-in user
       fetch('/api/wallet')
         .then((res) => res.json())
         .then((data) => {
@@ -25,21 +35,34 @@ export default function Dashboard() {
           console.error('Error fetching wallet info:', err);
         });
     } else if (status === 'unauthenticated') {
-      router.push('/login');
+      router.push('/login'); // Redirect unauthenticated users
     }
-  }, [status, router]);
+  }, [status, session, router]);
 
   if (status === 'loading') {
-    return <p>Loading...</p>;
+    return <p>Loading...</p>; // Show a loading state while session data is being fetched
   }
 
+  // Function to connect MetaMask wallet
   async function connectWallet() {
-    if (typeof window.ethereum !== 'undefined') {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const accounts = await provider.send('eth_requestAccounts', []);
-      console.log('Connected account:', accounts[0]);
-    } else {
-      console.error('MetaMask not detected');
+    try {
+      if (typeof window.ethereum !== 'undefined') {
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const accounts = await provider.send('eth_requestAccounts', []);
+        const balance = await provider.getBalance(accounts[0]);
+        const balanceInEther = ethers.utils.formatEther(balance);
+
+        setWallet({
+          address: accounts[0],
+          balance: balanceInEther,
+        });
+
+        console.log('Connected account:', accounts[0]);
+      } else {
+        console.error('MetaMask not detected');
+      }
+    } catch (error) {
+      console.error('Error connecting wallet:', error);
     }
   }
 
@@ -49,8 +72,12 @@ export default function Dashboard() {
       <p>Your email: {session?.user?.email}</p>
       <div style={{ marginTop: '20px' }}>
         <h2>Wallet Information</h2>
-        <p><strong>Address:</strong> {wallet.address || 'Not available'}</p>
-        <p><strong>Balance:</strong> {wallet.balance} ETH</p>
+        <p>
+          <strong>Address:</strong> {wallet.address || 'Not available'}
+        </p>
+        <p>
+          <strong>Balance:</strong> {wallet.balance} ETH
+        </p>
       </div>
       <button
         onClick={connectWallet}
@@ -70,7 +97,7 @@ export default function Dashboard() {
         onClick={() => router.push('/api/auth/signout')}
         style={{
           padding: '10px 20px',
-          backgroundColor: '#0070f3',
+          backgroundColor: '#e74c3c',
           color: '#fff',
           border: 'none',
           borderRadius: '5px',
