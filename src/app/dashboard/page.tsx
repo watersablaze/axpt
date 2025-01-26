@@ -29,6 +29,10 @@ export default function Dashboard() {
     }
   }, [status, router]);
 
+  if (status === 'loading') {
+    return <p>Loading...</p>;
+  }
+
   async function connectWallet() {
     if (typeof window.ethereum !== 'undefined') {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -37,10 +41,6 @@ export default function Dashboard() {
     } else {
       console.error('MetaMask not detected');
     }
-  }
-
-  if (status === 'loading') {
-    return <p>Loading...</p>;
   }
 
   return (

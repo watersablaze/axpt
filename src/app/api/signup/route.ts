@@ -1,50 +1,45 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
-import nodemailer from 'nodemailer';
 import bcrypt from 'bcryptjs';
 import { Wallet } from 'ethers';
 import { encryptPrivateKey } from '@/utils/crypto-utils';
+import { signIn, signOut } from 'next-auth/react'; // Import signIn and signOut from NextAuth
 
 export async function POST(request: Request) {
   try {
-    console.log("Starting signup process...");
     const { name, email, password, industry, interests } = await request.json();
-    console.log("Received data:", { name, email, industry, interests });
+    console.log("Starting signup process...");
 
-    // Validation: Ensure required fields are provided
+    // Ensure all fields are provided
     if (!name || !email || !password || !industry || !interests) {
       return NextResponse.json(
-        { success: false, message: 'All fields are required' },
+        { success: false, message: 'All fields are required.' },
         { status: 400 }
       );
     }
-    // Check if user exists
-    console.log("Checking for existing user...");
+
+    // Check if the user already exists
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
-    console.log("User already exists.");
-    return NextResponse.json(
-      { success: false, message: 'User already exists' },
-      { status: 400 }
-    );
-  }
+      return NextResponse.json(
+        { success: false, message: 'User already exists.' },
+        { status: 400 }
+      );
+    }
 
-  // Hash password
-  console.log("Hashing password...");
-  const hashedPassword = await bcrypt.hash(password, 8);
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
 
     // Generate wallet
-    console.log("Creating wallet...");
     const wallet = Wallet.createRandom();
+    const userSecretKey = process.env.USER_SECRET_KEY || 'default_secret_key';
+    const encryptedWallet = encryptPrivateKey(wallet.privateKey, userSecretKey);
 
-   // Encrypt wallet private key
-   console.log("Encrypting private key...");
-   const userSecretKey = process.env.USER_SECRET_KEY || 'default_secret_key';
-   const encryptedWallet = encryptPrivateKey(wallet.privateKey, userSecretKey);
+    // Clear any existing session before signing in the new user
+    console.log("Clearing existing session...");
+    await signOut({ redirect: false }); // Clear session without redirecting
 
-
-    // Save user to database
-    console.log("Saving user to database...");
+    // Create user in the database
     const user = await prisma.user.create({
       data: {
         name,
@@ -58,35 +53,25 @@ export async function POST(request: Request) {
       },
     });
 
-    // Send welcome email
-    console.log("Sending welcome email...");
-    const transporter = nodemailer.createTransport({
-      host: process.env.EMAIL_HOST,
-      port: parseInt(process.env.EMAIL_PORT || '587'),
-      secure: false,
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
+    console.log('User created successfully:', user);
+
+    // Automatically log in the new user
+    console.log("Signing in the new user...");
+    await signIn('credentials', {
+      email,
+      password,
+      redirect: true,
+      callbackUrl: '/dashboard', // Redirect to the dashboard after signing in
     });
 
-    await transporter.sendMail({
-      from: `"Axis Point" <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: 'Welcome to the Axis Point!',
-      text: `Hi ${name},\n\nThank you for signing up! Your wallet address is ${wallet.address}.\n\nBest,\nThe Axis Point Team`,
-    });
-
-    console.log("Signup process complete.");
     return NextResponse.json({
       success: true,
-      message: 'User created and email sent!',
+      message: 'User created and signed in!',
       user,
     });
   } catch (error) {
     console.error("Error during signup:", error);
 
-    // Handle specific errors like Prisma or Nodemailer errors
     if (error instanceof Error && error.message.includes('Unique constraint failed')) {
       return NextResponse.json(
         { success: false, message: 'Email is already in use' },
@@ -94,7 +79,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // General error response
     return NextResponse.json(
       { success: false, message: 'Signup failed. Please try again later.' },
       { status: 500 }
