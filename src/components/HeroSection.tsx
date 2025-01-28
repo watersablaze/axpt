@@ -11,7 +11,7 @@ const HeroSection = () => {
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setFormMessage('Processing your signup...'); // Show loading message
+    setFormMessage('Processing your signup...');
 
     const form = e.currentTarget;
     const formData = {
@@ -28,21 +28,29 @@ const HeroSection = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-
-      const data = await response.json();
       
+      console.log(await response.text()); // Log raw response for debugging
+
+      // Safely handle potential non-JSON responses
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error('The server returned an invalid response. Please contact support.');
+      }
+
       if (response.ok) {
         setFormMessage('Signup successful! Redirecting...');
-        form.reset(); // Clear the form
+        form.reset();
         setTimeout(() => {
-          window.location.href = '/dashboard'; // Redirect after success
-        }, 2000); // Redirect after 2 seconds
+          window.location.href = '/dashboard';
+        }, 2000);
       } else {
         setFormMessage(data.message || 'Signup failed. Please try again.');
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error('Signup Error:', err);
-      setFormMessage('An error occurred. Please try again.');
+      setFormMessage(err.message || 'An error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -70,13 +78,13 @@ const HeroSection = () => {
       </div>
 
       <motion.img
-  src="/large-map.png"
-  alt="Arrow Map"
-  className={styles.LargeMap}
-  initial={{ opacity: 0, scale: 0.8 }}
-  animate={{ opacity: 1, scale: 1 }}
-  transition={{ duration: 8, ease: 'easeOut' }}
-/>
+        src="/large-map.png"
+        alt="Arrow Map"
+        className={styles.LargeMap}
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 8, ease: 'easeOut' }}
+      />
 
       {/* Signup Form Section */}
       <div className={styles.signupForm}>

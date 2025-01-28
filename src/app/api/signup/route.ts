@@ -1,6 +1,8 @@
 import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import { Wallet } from 'ethers';
+import { encryptPrivateKey } from '@/utils/crypto-utils';
 
 export async function POST(request: Request) {
   try {
@@ -8,10 +10,10 @@ export async function POST(request: Request) {
 
     console.log("Starting signup process...");
 
-    // Input Validation
+    // Input validation
     if (!name || !email || !password || !industry || !interests) {
       return NextResponse.json(
-        { success: false, message: 'All fields are required' },
+        { success: false, message: 'All fields are required.' },
         { status: 400 }
       );
     }
@@ -20,7 +22,7 @@ export async function POST(request: Request) {
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json(
-        { success: false, message: 'User already exists' },
+        { success: false, message: 'User already exists.' },
         { status: 400 }
       );
     }
@@ -28,12 +30,12 @@ export async function POST(request: Request) {
     // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Simulate wallet creation (replace with actual logic if needed)
-    const simulatedWallet = {
-      address: '0xFakeWalletAddress',
-      encryptedPrivateKey: 'fakeEncryptedPrivateKey',
-      iv: 'fakeIV',
-    };
+    // Generate wallet
+    const wallet = Wallet.createRandom();
+    console.log(`Generated Wallet Address: ${wallet.address}`);
+
+    // Encrypt private key
+    const { encryptedData, iv } = encryptPrivateKey(wallet.privateKey);
 
     // Save the user in the database
     const user = await prisma.user.create({
@@ -43,23 +45,21 @@ export async function POST(request: Request) {
         password: hashedPassword,
         industry,
         interests,
-        walletAddress: simulatedWallet.address,
-        encryptedPrivateKey: simulatedWallet.encryptedPrivateKey,
-        iv: simulatedWallet.iv,
+        walletAddress: wallet.address,
+        encryptedPrivateKey: encryptedData,
+        iv,
       },
     });
-
-    console.log("User created successfully:", user);
 
     return NextResponse.json({
       success: true,
       message: 'Signup successful!',
       user,
     });
-  } catch (error) {
-    console.error("Error during signup:", error);
+  } catch (error: any) {
+    console.error('Error during signup:', error);
     return NextResponse.json(
-      { success: false, message: 'Signup failed. Please try again later.' },
+      { success: false, message: 'Signup failed due to a server error.' },
       { status: 500 }
     );
   }
