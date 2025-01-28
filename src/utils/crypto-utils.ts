@@ -1,13 +1,21 @@
 import crypto from 'crypto';
 
-// Encryption and decryption key (securely load from env variable)
-const ENCRYPTION_KEY = process.env.USER_SECRET_KEY || 'default_secret_key'; // Must be 32 bytes for AES-256
-const IV_LENGTH = 16; // AES block size for initialization vector (IV)
+// Load USER_SECRET_KEY from the environment
+const ENCRYPTION_KEY_HEX = process.env.USER_SECRET_KEY || 'default_secret_key';
+
+// Convert the hex key into a Buffer
+const ENCRYPTION_KEY = Buffer.from(process.env.USER_SECRET_KEY || '', 'hex');
+if (ENCRYPTION_KEY.length !== 32) {
+  throw new Error('Invalid USER_SECRET_KEY: Ensure it is a 64-character hexadecimal string.');
+}
 
 // Validate encryption key length
-if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length !== 32) {
-  throw new Error('Invalid USER_SECRET_KEY: Ensure it is 32 bytes.');
+if (ENCRYPTION_KEY.length !== 32) {
+  console.error('USER_SECRET_KEY is invalid or not 32 bytes:', ENCRYPTION_KEY_HEX);
+  throw new Error('Invalid USER_SECRET_KEY: Ensure it is a 64-character hexadecimal string.');
 }
+
+const IV_LENGTH = 16; // AES block size for initialization vector (IV)
 
 /**
  * Encrypts a private key using AES-256.
@@ -16,8 +24,8 @@ if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length !== 32) {
  */
 export function encryptPrivateKey(privateKey: string) {
   const iv = crypto.randomBytes(IV_LENGTH); // Generate random IV
-  const cipher = crypto.createCipheriv('aes-256-cbc', Buffer.from(ENCRYPTION_KEY, 'utf-8'), iv);
-  
+  const cipher = crypto.createCipheriv('aes-256-cbc', ENCRYPTION_KEY, iv);
+
   let encrypted = cipher.update(privateKey, 'utf-8', 'hex');
   encrypted += cipher.final('hex');
 
@@ -36,7 +44,7 @@ export function encryptPrivateKey(privateKey: string) {
 export function decryptPrivateKey(encryptedData: string, iv: string) {
   const decipher = crypto.createDecipheriv(
     'aes-256-cbc',
-    Buffer.from(ENCRYPTION_KEY, 'utf-8'),
+    ENCRYPTION_KEY,
     Buffer.from(iv, 'hex')
   );
 
