@@ -8,25 +8,25 @@ datasource db {
 }
 
 model User {
-  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  id                  String  @id @default(auto()) @map("_id") @db.ObjectId
   name                String
-  email               String   @unique
+  email               String  @unique
   password            String
-  industry            String?   // Add this field for user industry
-  interests           String?   // Add this field for user interests
-  encryptedPrivateKey String   // Stores the encrypted wallet private key
-  iv                  String   // Initialization vector for AES encryption
-  role                String   @default("user") // Default role is 'user'
+  industry            String?
+  interests           String?
+  encryptedPrivateKey String
+  iv                  String
+  role                String  @default("user")
 
   // Relations
-  accounts            Account[]
-  sessions            Session[]
+  accounts     Account[]
+  sessions     Session[]
+  transactions Transaction[] // ✅ Add this line for the relation
 
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-
-  walletAddress       String?  @unique(map: "walletAddress_unique") // Optional wallet address
-  walletBalance       Float    @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  walletAddress String?  @unique(map: "walletAddress_unique")
+  walletBalance Float    @default(0)
 }
 
 model Session {
@@ -38,10 +38,10 @@ model Session {
 }
 
 model Account {
-  id                String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId            String   @db.ObjectId
-  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  session_state     String?
+  id            String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId        String  @db.ObjectId
+  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  session_state String?
 }
 
 model VerificationToken {
@@ -51,4 +51,12 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+model Transaction {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  userEmail   String
+  amount      Float
+  to          String
+  createdAt   DateTime @default(now())
 }

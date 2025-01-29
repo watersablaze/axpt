@@ -13,28 +13,28 @@ export async function GET(request: Request) {
 
     console.log("👤 Authenticated user:", session.user.email);
 
-    // Fetch user from the database
+    // ✅ Fetch user from the database (custodial wallet setup)
     const user = await prisma.user.findUnique({
       where: { email: session.user.email },
       select: {
         walletAddress: true,
-        walletBalance: true, // Balance now managed in the database
+        walletBalance: true, // ✅ Balance is now managed in the database
       },
     });
 
     if (!user) {
-      console.warn("⚠️ User not found.");
+      console.warn("⚠️ User not found in database.");
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     if (!user.walletAddress) {
-      console.warn("⚠️ Wallet not found.");
+      console.warn("⚠️ Wallet not assigned to user.");
       return NextResponse.json({ error: "Wallet not found" }, { status: 404 });
     }
 
     console.log("✅ Returning wallet data:", {
       address: user.walletAddress,
-      balance: user.walletBalance.toFixed(6), // Ensure readable format
+      balance: user.walletBalance.toFixed(6), // Ensure formatted balance
     });
 
     return NextResponse.json({
@@ -46,7 +46,7 @@ export async function GET(request: Request) {
     });
 
   } catch (err: unknown) {
-    console.error("❌ Unexpected error:", err);
+    console.error("❌ Unexpected error in /api/dashboard:", err);
     return NextResponse.json({ error: "Failed to fetch wallet information" }, { status: 500 });
   }
 }
