@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Visibility, VisibilityOff } from '@mui/icons-material'; // Material Icons
+import { signIn } from 'next-auth/react'; // For immediate login post-signup
 import styles from './HeroSection.module.css';
 
 const HeroSection = () => {
   const [formMessage, setFormMessage] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [passwordVisible, setPasswordVisible] = useState(false); // For password visibility toggle
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,29 +29,35 @@ const HeroSection = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(formData),
       });
-      
-      console.log(await response.text()); // Log raw response for debugging
 
-      // Safely handle potential non-JSON responses
-      let data;
-      try {
-        data = await response.json();
-      } catch {
-        throw new Error('The server returned an invalid response. Please contact support.');
-      }
+      const data = await response.json();
 
-      if (response.ok) {
-        setFormMessage('Signup successful! Redirecting...');
+      if (response.ok && data.success) {
+        setFormMessage('Signup successful! Logging you in...');
+
+        // Auto-login after successful signup
+        const loginResponse = await signIn('credentials', {
+          redirect: false,
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (loginResponse?.ok) {
+          setFormMessage('Welcome! Redirecting to your dashboard...');
+          setTimeout(() => {
+            window.location.href = '/dashboard';
+          }, 2000);
+        } else {
+          setFormMessage('Signup succeeded, but auto-login failed. Please login manually.');
+        }
+
         form.reset();
-        setTimeout(() => {
-          window.location.href = '/dashboard';
-        }, 2000);
       } else {
         setFormMessage(data.message || 'Signup failed. Please try again.');
       }
-    } catch (err: any) {
-      console.error('Signup Error:', err);
-      setFormMessage(err.message || 'An error occurred. Please try again.');
+    } catch (err) {
+      console.error('❌ Signup Error:', err);
+      setFormMessage('An unexpected error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -58,7 +65,7 @@ const HeroSection = () => {
 
   return (
     <section className={styles.hero}>
-      {/* Animated AXI Logo in Top Left Corner */}
+      {/* Animated AXI Logo */}
       <motion.img
         src="/AXI.png"
         alt="AXI Logo"
@@ -77,6 +84,7 @@ const HeroSection = () => {
         </p>
       </div>
 
+      {/* Background Map */}
       <motion.img
         src="/large-map.png"
         alt="Arrow Map"
@@ -86,7 +94,7 @@ const HeroSection = () => {
         transition={{ duration: 8, ease: 'easeOut' }}
       />
 
-      {/* Signup Form Section */}
+      {/* Signup Form */}
       <div className={styles.signupForm}>
         <h2 className={styles.formTitle}>Register Here</h2>
         <form onSubmit={handleSignup} autoComplete="off">
@@ -98,7 +106,6 @@ const HeroSection = () => {
               name="name"
               placeholder="Enter your name"
               required
-              autoComplete="off"
             />
           </div>
           <div className={styles.inputGroup}>
@@ -109,7 +116,6 @@ const HeroSection = () => {
               name="email"
               placeholder="Enter your email"
               required
-              autoComplete="off"
             />
           </div>
           <div className={styles.inputGroup}>
