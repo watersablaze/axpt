@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
-import { ethers } from 'ethers';
 
 interface Wallet {
   address: string;
@@ -20,28 +19,31 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [recipientAddress, setRecipientAddress] = useState('');
   const [sendAmount, setSendAmount] = useState('');
+  const [isSending, setIsSending] = useState(false);
 
+  // Fetch wallet data when user is authenticated
   useEffect(() => {
-    if (status === 'authenticated' && session?.user?.email) {
+    if (status === 'authenticated') {
       fetchWalletData();
     } else if (status === 'unauthenticated') {
       router.push('/login');
     }
-  }, [status, session, router]);
+  }, [status]);
 
+  // Fetch wallet data from backend
   const fetchWalletData = async () => {
     try {
       setLoading(true);
       setError(null);
-  
-      console.log('✅ Fetching wallet data for:', session?.user?.email);
-  
+      console.log('🔄 Fetching wallet data for:', session?.user?.email);
+      
       const response = await fetch('/api/dashboard', { cache: 'no-store' });
-  
+
       if (!response.ok) {
-        throw new Error(`Error fetching wallet data: ${response.status}`);
+        const errorData = await response.json();
+        throw new Error(errorData.error || `API Error: ${response.status}`);
       }
-  
+      
       const data = await response.json();
       if (data.success && data.wallet) {
         console.log('✅ Wallet data fetched:', data.wallet);
@@ -58,52 +60,50 @@ export default function Dashboard() {
     }
   };
 
-  const connectWallet = async () => {
-    try {
-      if (typeof window.ethereum !== 'undefined') {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const accounts = await provider.send('eth_requestAccounts', []);
-        const balance = await provider.getBalance(accounts[0]);
-        const balanceInEther = ethers.utils.formatEther(balance);
-
-        setWallet({
-          address: accounts[0],
-          balance: balanceInEther,
-        });
-      } else {
-        throw new Error('MetaMask is not installed.');
-      }
-    } catch (err) {
-      console.error('❌ Error connecting wallet:', err);
-      setError(err instanceof Error ? err.message : 'Failed to connect wallet.');
+  // Copy wallet address to clipboard
+  const copyToClipboard = (text: string) => {
+    if (text) {
+      navigator.clipboard.writeText(text);
+      alert('Wallet address copied to clipboard!');
     }
   };
 
+  // Send funds via backend API
   const sendFunds = async () => {
     try {
-      if (!window.ethereum || !wallet?.address) {
-        throw new Error('Please connect your wallet first.');
+      if (!recipientAddress || !sendAmount) {
+        throw new Error('Recipient address and amount are required.');
       }
 
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const signer = provider.getSigner();
-      const transaction = await signer.sendTransaction({
-        to: recipientAddress,
-        value: ethers.utils.parseEther(sendAmount),
+      setIsSending(true);
+      setError(null);
+
+      const response = await fetch('/api/transactions/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          to: recipientAddress,
+          amount: sendAmount,
+        }),
       });
 
-      alert(`Transaction sent! Hash: ${transaction.hash}`);
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to send transaction.');
+      }
+      
+      alert(`✅ Transaction successful! Hash: ${result.txHash}`);
       setSendAmount('');
       setRecipientAddress('');
+      fetchWalletData(); // Refresh wallet balance
     } catch (err) {
       console.error('❌ Transaction error:', err);
       setError(err instanceof Error ? err.message : 'Failed to send transaction.');
+    } finally {
+      setIsSending(false);
     }
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    alert('Wallet address copied to clipboard!');
   };
 
   if (loading) return <Skeleton count={3} height={30} />;
@@ -114,16 +114,33 @@ export default function Dashboard() {
       <h1>Welcome, {session?.user?.name || 'User'}!</h1>
       <p>Your email: {session?.user?.email}</p>
 
-      <h2>Wallet</h2>
-      <p><strong>Address:</strong> {wallet?.address || 'N/A'} <button onClick={() => copyToClipboard(wallet?.address || '')}>Copy</button></p>
-      <p><strong>Balance:</strong> {wallet?.balance} ETH</p>
-
-      <button onClick={connectWallet}>Connect Wallet</button>
+      <h2>Wallet Details</h2>
+      <p>
+        <strong>Address:</strong> {wallet?.address || 'N/A'} 
+        <button onClick={() => copyToClipboard(wallet?.address || '')}>Copy</button>
+      </p>
+      <p>
+        <strong>Balance:</strong> {wallet?.balance === '0.00' ? 'No funds available' : `${wallet?.balance} ETH`}
+      </p>
 
       <h2>Send Funds</h2>
-      <input type="text" placeholder="Recipient Address" value={recipientAddress} onChange={(e) => setRecipientAddress(e.target.value)} />
-      <input type="text" placeholder="Amount (ETH)" value={sendAmount} onChange={(e) => setSendAmount(e.target.value)} />
-      <button onClick={sendFunds}>Send</button>
+      <input 
+        type="text" 
+        placeholder="Recipient Address" 
+        value={recipientAddress} 
+        onChange={(e) => setRecipientAddress(e.target.value)} 
+        disabled={isSending}
+      />
+      <input 
+        type="text" 
+        placeholder="Amount (ETH)" 
+        value={sendAmount} 
+        onChange={(e) => setSendAmount(e.target.value)} 
+        disabled={isSending}
+      />
+      <button onClick={sendFunds} disabled={isSending}>
+        {isSending ? 'Sending...' : 'Send'}
+      </button>
     </div>
   );
 }
