@@ -4,7 +4,6 @@
   flex-direction: column;
   align-items: center;
   padding: 40px 20px;
-  background: #f4f4f4;
   min-height: 100vh;
   font-family: 'Inter', sans-serif;
 }
@@ -12,13 +11,14 @@
 /* 🎨 Welcome Banner */
 .welcomeBanner {
   width: 100%;
-  max-width: 900px;
+  max-width: 2000px;
   background: linear-gradient(90deg, #175a25, #9db42d);
   color: #fff;
   padding: 30px;
   border-radius: 10px;
   text-align: center;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  margin-top: -40px;
 }
 
 .welcomeBanner h1 {
