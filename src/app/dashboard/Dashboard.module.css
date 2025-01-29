@@ -1,113 +1,165 @@
-/* Overall Dashboard Container */
+/* 🔷 General Dashboard Styles */
 .dashboard {
-    padding: 20px;
-    font-family: 'Arial', sans-serif;
-    color: #333;
-  }
-  
-  /* Welcome Banner */
-  .welcomeBanner {
-    background: linear-gradient(90deg, #175a25, #9db42d);
-    color: #fff;
-    padding: 20px;
-    border-radius: 8px;
-    margin-bottom: 20px;
-    text-align: center;
-  }
-  
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  background: #f4f4f4;
+  min-height: 100vh;
+  font-family: 'Inter', sans-serif;
+}
+
+/* 🎨 Welcome Banner */
+.welcomeBanner {
+  width: 100%;
+  max-width: 900px;
+  background: linear-gradient(90deg, #175a25, #9db42d);
+  color: #fff;
+  padding: 30px;
+  border-radius: 10px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.welcomeBanner h1 {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.welcomeBanner p {
+  font-size: 1.1rem;
+}
+
+/* 💳 Wallet Section */
+.walletSection {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 700px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.walletAddress {
+  font-size: 1rem;
+  font-weight: bold;
+  word-wrap: break-word;
+}
+
+.copyButton {
+  background: #0070f3;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  margin-left: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+}
+
+.copyButton:hover {
+  background: #005bb5;
+}
+
+.balance {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #175a25;
+}
+
+/* 📜 Transactions Section */
+.transactionsSection {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 700px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.transactionsSection h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.transactionsList {
+  list-style: none;
+  padding: 0;
+}
+
+.transactionItem {
+  padding: 10px;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.9rem;
+}
+
+.transactionItem:last-child {
+  border-bottom: none;
+}
+
+.transactionItem strong {
+  color: #175a25;
+}
+
+/* 💸 Send Funds Section */
+.sendFundsSection {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 20px;
+  width: 100%;
+  max-width: 700px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.sendFundsSection h2 {
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.inputField {
+  width: 90%;
+  max-width: 500px;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.sendButton {
+  background: linear-gradient(90deg, #0070f3, #005bb5);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s ease-in-out;
+  margin-top: 10px;
+}
+
+.sendButton:hover {
+  background: linear-gradient(90deg, #005bb5, #003f8c);
+}
+
+/* 🌟 Responsive Design */
+@media (max-width: 768px) {
   .welcomeBanner h1 {
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-  }
-  
-  .welcomeBanner p {
-    font-size: 1rem;
-    margin: 0;
-  }
-  
-  /* Quick Links Section */
-  .quickLinks {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 30px;
-  }
-  
-  .linkButton,
-  .logoutButton {
-    padding: 10px 20px;
-    font-size: 1rem;
-    font-weight: bold;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .linkButton {
-    background: linear-gradient(90deg, #0070f3, #005bb5);
-    color: #fff;
-  }
-  
-  .linkButton:hover {
-    background: linear-gradient(90deg, #005bb5, #003f8c);
-  }
-  
-  .logoutButton {
-    background: #f44336;
-    color: #fff;
-  }
-  
-  .logoutButton:hover {
-    background: #d32f2f;
-  }
-  
-  /* Activity Section */
-  .activitySection {
-    padding: 20px;
-    background: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  .activitySection h2 {
-    margin-bottom: 10px;
-    color: #175a25;
-  }
-  
-  .activitySection ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .activitySection ul li {
-    font-size: 1rem;
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-  }
-  
-  .activitySection ul li:last-child {
-    border-bottom: none;
-  }
-  
-  /* Loading State */
-  .loading {
-    text-align: center;
-    font-size: 1.5rem;
-    color: #0070f3;
+    font-size: 1.8rem;
   }
 
-  .skeleton {
-    background-color: #e0e0e0;
-    border-radius: 4px;
-    animation: shimmer 1.5s infinite;
+  .walletSection,
+  .transactionsSection,
+  .sendFundsSection {
+    max-width: 100%;
   }
-  
-  @keyframes shimmer {
-    0% {
-      background-position: -1000px 0;
-    }
-    100% {
-      background-position: 1000px 0;
-    }
+
+  .inputField {
+    width: 100%;
   }
+}
