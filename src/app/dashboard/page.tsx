@@ -12,7 +12,6 @@ import { Copy, Send, Wallet as WalletIcon } from 'lucide-react';
 import toast from 'react-hot-toast';
 import styles from './Dashboard.module.css';
 
-
 interface Wallet {
   address: string;
   balance: string;
