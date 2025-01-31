@@ -1,116 +1,114 @@
-/* Dashboard Container */
+/* ========== General Layout ========== */
 .dashboard {
-  padding: 20px;
-  font-family: 'Arial', sans-serif;
-  max-width: 900px;
-  margin: 0 auto;
-  background: #f9fafb;
-  border-radius: 10px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Welcome Banner */
-.welcomeBanner {
-  background: linear-gradient(90deg, #175a25, #9db42d);
-  color: white;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  font-size: 1.2rem;
-}
-
-/* Wallet Section */
-.walletSection {
-  background: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  margin-top: 20px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.copyButton {
-  background: #0070f3;
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  margin-left: 10px;
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.copyButton:hover {
-  background: #005bb5;
-}
-
-/* Transactions Section */
-.transactionsSection {
-  background: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  margin-top: 20px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.transactionsList {
-  list-style: none;
-  padding: 0;
-}
-
-.transactionItem {
   display: flex;
-  justify-content: space-between;
-  padding: 10px;
-  border-bottom: 1px solid #ddd;
-}
-
-.transactionItem.success {
-  color: green;
-}
-
-.transactionItem.failed {
-  color: red;
-}
-
-/* View All Transactions Button */
-.viewAllButton {
+  flex-direction: column;
   width: 100%;
-  margin-top: 15px;
-  padding: 10px;
-  background: #175a25;
-  color: white;
-  border: none;
-  cursor: pointer;
-  border-radius: 5px;
+  height: 100vh;
+  background: url('/pxp-background.jpg') no-repeat center center fixed;
+  background-size: cover;
 }
 
-/* Send Funds Section */
-.sendFundsSection {
-  background: #fff;
-  padding: 15px;
-  border-radius: 10px;
-  margin-top: 20px;
-  box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+/* ✅ Main Content Area */
+.mainContent {
+  flex: 1;
+  padding: 20px;
+  background: rgba(16, 1, 1, 0.9);
+  border-radius: 30px;
+  margin: 30px;
 }
 
-.inputField {
-  width: 100%;
-  padding: 10px;
-  margin-top: 8px;
+/* Left Section */
+.left h1 {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.left p {
+  font-size: 1rem;
+  color: #444;
+}
+
+/* Wallet Container */
+.walletContainer {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Wallet Box */
+.walletBox {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 5px 10px;
   border-radius: 5px;
   border: 1px solid #ccc;
+  width: fit-content;
+  font-size: 1rem;
+  transition: background 0.3s ease-in-out;
 }
 
-.sendButton {
-  width: 100%;
-  margin-top: 15px;
-  padding: 10px;
-  background: #0070f3;
-  color: white;
+.walletBox:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+/* Hidden Text */
+.hiddenText {
+  letter-spacing: 3px;
+  font-weight: bold;
+  color: #777;
+}
+
+/* Visibility Button */
+.visibilityButton {
+  margin-left: 10px;
+  background: none;
   border: none;
   cursor: pointer;
-  border-radius: 5px;
+  color: #333;
 }
 
-.sendButton:hover {
-  background: #005bb5;
+/* Center Section - Date & Time */
+.center p {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Right Section - Navigation */
+.right ul {
+  display: flex;
+  gap: 15px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.right a {
+  text-decoration: none;
+  color: #222;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.right a:hover {
+  color: #0070f3;
+}
+
+/* ========== Sidebar ========== */
+.container {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  height: calc(100vh - 60px); /* Adjusted for fixed header */
+  margin-top: 60px; /* Ensures sidebar starts below header */
+}
+
+/* Sidebar Fix */
+.sidebar {
+  height: 100%;
+  position: fixed;
+  top: 60px; /* Aligns to bottom of header */
 }

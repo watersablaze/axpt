@@ -1,7 +1,13 @@
-import { NextAuthOptions } from 'next-auth';
+import { NextAuthOptions, User } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { prisma } from './prisma'; // Assuming your Prisma client is in this file
+import { prisma } from './prisma';
 import bcrypt from 'bcryptjs';
+
+// ✅ Extend NextAuth's User type to include `image`
+interface CustomUser extends User {
+  image?: string;
+  walletAddress?: string;
+} 
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -15,30 +21,54 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
-        const { email, password } = credentials as { email: string; password: string };
-
-        // Find the user by email
-        const user = await prisma.user.findUnique({ where: { email } });
-        if (!user) {
-          throw new Error('No user found with the email');
+        if (!credentials?.email || !credentials?.password) {
+          throw new Error('Missing email or password');
         }
 
-        // Validate the password
-        const isValid = await bcrypt.compare(password, user.password);
+        // Fetch user from database (including `image`)
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email },
+          select: { id: true, name: true, email: true, walletAddress: true, password: true },
+        });
+
+        if (!user) {
+          throw new Error('No user found with this email');
+        }
+
+        // Validate password
+        const isValid = await bcrypt.compare(credentials.password, user.password);
         if (!isValid) {
           throw new Error('Invalid password');
         }
 
-        return {
+        // ✅ Ensure image exists or provide a default
+        const authUser: CustomUser = {
           id: user.id,
           name: user.name,
           email: user.email,
+          walletAddress: user.walletAddress || undefined, 
         };
+
+        return authUser;
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (user) {
+        token.walletAddress = (user as CustomUser).walletAddress || undefined;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.walletAddress = token.walletAddress as string | undefined;
+      }
+      return session;
+    },
+  },
   pages: {
-    signIn: '/login', // Redirect here for login
-    error: '/login',  // Redirect here on error
+    signIn: '/login',
+    error: '/login',
   },
 };
