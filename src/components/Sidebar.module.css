@@ -1,6 +1,6 @@
 /* ✅ Sidebar Styling */
 .sidebar {
-  width: 250px;
+  width: 300px;
   height: 100vh; /* ✅ Full browser height */
   background: rgba(192, 192, 192, 0.8); /* ✅ Translucent Silver */
   backdrop-filter: blur(10px); /* ✅ Frosty effect */
@@ -24,7 +24,7 @@
   right: -15px;
   width: 30px;
   height: 30px;
-  background: rgba(0, 0, 0, 0.2);
+  background: #766403;
   border: none;
   border-radius: 50%;
   color: #fff;
