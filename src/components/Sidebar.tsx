@@ -11,8 +11,9 @@ export default function Sidebar() {
   const [showWallet, setShowWallet] = useState(false);
   const user = session?.user;
 
-  // ✅ Handle Wallet Address Copying
-  const walletAddress = user?.walletAddress || "N/A";
+  // ✅ Ensure correct wallet address is displayed
+  const walletAddress = session?.user?.walletAddress || "N/A";
+
   const copyToClipboard = () => {
     if (walletAddress !== "N/A") {
       navigator.clipboard.writeText(walletAddress);
@@ -38,29 +39,26 @@ export default function Sidebar() {
         </div>
       )}
 
-      {/* ✅ Wallet Address Section */}
-      {!collapsed && (
-        <div className={styles.walletSection}>
-          <h4>Wallet Address:</h4>
-          <div className={styles.walletBox}>
-            {showWallet ? (
-              <span>{walletAddress}</span>
-            ) : (
-              <span className={styles.hiddenText}>•••••••••••••••••••••••••••</span>
-            )}
-            <button
-              className={styles.visibilityButton}
-              onClick={() => setShowWallet(!showWallet)}
-              aria-label="Toggle wallet visibility"
-            >
-              {showWallet ? <EyeOff size={18} /> : <Eye size={18} />}
-            </button>
+          {/* ✅ Wallet Address Section */}
+          <div className={styles.walletSection}>
+            <h4>Wallet Address:</h4>
+            <div className={styles.walletBox}>
+              {showWallet ? (
+                <span>{walletAddress}</span>
+              ) : (
+                <span className={styles.hiddenText}>•••••••••••••••••••••••••••</span>
+              )}
+              <button
+                className={styles.visibilityButton}
+                onClick={() => setShowWallet(!showWallet)}
+                aria-label="Toggle wallet visibility"
+              >
+                {showWallet ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            <button className={styles.copyButton} onClick={copyToClipboard}>Copy Address</button>
           </div>
-          <button className={styles.copyButton} onClick={copyToClipboard}>
-            Copy Address
-          </button>
-        </div>
-      )}
+      {""}
 
       {/* Profile Link */}
       {!collapsed && (

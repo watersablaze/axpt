@@ -10,11 +10,11 @@ import styles from "./Dashboard.module.css";
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
-  const [currentDate, setCurrentDate] = useState("");
+  const [currentDateTime, setCurrentDateTime] = useState("");
 
   // ✅ Update date & time dynamically
   useEffect(() => {
-    const updateDateTime = () => setCurrentDate(new Date().toLocaleString());
+    const updateDateTime = () => setCurrentDateTime(new Date().toLocaleString());
     updateDateTime();
     const interval = setInterval(updateDateTime, 1000);
     return () => clearInterval(interval);
@@ -27,19 +27,24 @@ export default function Dashboard() {
     }
   }, [status]);
 
+
   return (
     <div className={styles.dashboard}>
-      {/* ✅ Reusable Header Component */}
       <Header />
 
-      {/* ✅ Layout with Sidebar */}
       <div className={styles.container}>
         <Sidebar />
-        
-        {/* ✅ Placeholder for Main Content (Can be expanded later) */}
+
+        {/* ✅ Main Content with Date & Time */}
         <main className={styles.mainContent}>
           <h2>Dashboard Overview</h2>
           <p>Welcome to your secure portal.</p>
+
+          {/* ✅ Display Date & Time */}
+          <div className={styles.dateTimeContainer}>
+            <h3>Current Date & Time</h3>
+            <p>{currentDateTime}</p>
+          </div>
         </main>
       </div>
     </div>
