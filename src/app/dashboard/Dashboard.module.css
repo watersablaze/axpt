@@ -26,11 +26,13 @@
 
 /* ✅ Stablecoin Section */
 .stablecoinSection {
-  margin-top: 30px;
+  margin-top: -190px;
   padding: 20px;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
+  background: rgba(8, 8, 8, 0.881);
+  border-radius: 30px;
   text-align: center;
+  width: 300px;
+  margin-left: 900px;
 }
 
 .mintSection, .redeemSection {
