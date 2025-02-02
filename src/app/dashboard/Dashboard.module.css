@@ -17,6 +17,55 @@
   margin: 30px;
 }
 
+/* ✅ Date & Time */
+.dateTimeContainer {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* ✅ Stablecoin Section */
+.stablecoinSection {
+  margin-top: 30px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  text-align: center;
+}
+
+.mintSection, .redeemSection {
+  margin-top: 20px;
+}
+
+.inputField {
+  width: 80%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.mintButton, .redeemButton {
+  background: #28a745;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.redeemButton {
+  background: #dc3545;
+}
+
+.mintButton:hover {
+  background: #218838;
+}
+
+.redeemButton:hover {
+  background: #c82333;
+}
+
 /* Left Section */
 .left h1 {
   font-size: 1.4rem;
