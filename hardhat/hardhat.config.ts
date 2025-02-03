@@ -4,12 +4,9 @@ import "dotenv/config";
 
 const config: HardhatUserConfig = {
   solidity: {
-    version: "0.8.20",  // ✅ Matches OpenZeppelin’s requirement
+    version: "0.8.20",
     settings: {
-      optimizer: {
-        enabled: true,
-        runs: 200,
-      },
+      optimizer: { enabled: true, runs: 200 },
     },
   },
   networks: {
@@ -19,7 +16,7 @@ const config: HardhatUserConfig = {
     },
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY || "", // ✅ Etherscan API Key for verification
+    apiKey: process.env.ETHERSCAN_API_KEY,
   },
 };
 
