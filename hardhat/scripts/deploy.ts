@@ -1,16 +1,19 @@
 import { ethers } from "hardhat";
 
 async function main() {
-  const Contract = await ethers.getContractFactory(“Gold”PeggedStablecoin); // Replace with actual contract name
-  const contract = await Contract.deploy();
+  const goldPriceFeed = "0xYOUR_CHAINLINK_GOLD_PRICE_FEED"; // Replace with Sepolia Chainlink oracle address
 
-  await contract.deployed();
-  console.log("✅ Contract deployed at:", contract.address);
+  console.log("Deploying GoldPeggedStablecoin...");
+
+  const Stablecoin = await ethers.getContractFactory("GoldPeggedStablecoin");
+  const stablecoin = await Stablecoin.deploy(goldPriceFeed);
+
+  await stablecoin.waitForDeployment();
+
+  console.log("GoldPeggedStablecoin deployed to:", await stablecoin.getAddress());
 }
 
-main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error("❌ Deployment failed:", error);
-    process.exit(1);
-  });
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

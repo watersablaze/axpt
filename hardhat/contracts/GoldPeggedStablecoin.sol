@@ -12,7 +12,8 @@ contract GoldPeggedStablecoin is ERC20, Ownable {
 
     mapping(address => uint256) public depositedETH;
 
-    constructor(address _goldPriceFeed) ERC20("Gold Stablecoin", "GLDUSD") {
+    // ✅ Fix: Pass required parameters to ERC20 and Ownable
+    constructor(address _goldPriceFeed) ERC20("Gold Stablecoin", "GLDUSD") Ownable(msg.sender) {
         goldPriceFeed = AggregatorV3Interface(_goldPriceFeed);
     }
 
@@ -24,21 +25,27 @@ contract GoldPeggedStablecoin is ERC20, Ownable {
 
     function mintStablecoin() external payable {
         require(msg.value > 0, "Must deposit ETH");
+
         uint256 goldPriceUSD = getGoldPrice();
         uint256 stablecoinAmount = (msg.value * goldPriceUSD) / (10 ** GOLD_DECIMALS);
+
         require(
             address(this).balance >= (stablecoinAmount * COLLATERALIZATION_RATIO) / 100,
             "Insufficient collateralization"
         );
+
         depositedETH[msg.sender] += msg.value;
         _mint(msg.sender, stablecoinAmount);
     }
 
     function redeemStablecoin(uint256 stablecoinAmount) external {
         require(balanceOf(msg.sender) >= stablecoinAmount, "Insufficient balance");
+
         uint256 goldPriceUSD = getGoldPrice();
         uint256 ethAmount = (stablecoinAmount * (10 ** GOLD_DECIMALS)) / goldPriceUSD;
+
         require(address(this).balance >= ethAmount, "Insufficient ETH reserves");
+
         _burn(msg.sender, stablecoinAmount);
         payable(msg.sender).transfer(ethAmount);
     }
