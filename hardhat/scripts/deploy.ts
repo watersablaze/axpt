@@ -14,8 +14,7 @@ async function main() {
   await goldStablecoin.waitForDeployment(); // 🔹 Ensure deployment completes
 
   // ✅ Use `.address` instead of `getAddress()`
-  console.log(`GoldPeggedStablecoin deployed to: ${goldStablecoin.address}`);
-}
+  console.log(`GoldPeggedStablecoin deployed to: ${await goldStablecoin.getAddress()}`);}
 
 // ✅ Handle errors properly
 main().catch((error) => {
