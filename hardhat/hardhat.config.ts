@@ -1,14 +1,9 @@
-import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
+import "@nomicfoundation/hardhat-ethers";
+import "@nomicfoundation/hardhat-verify"; // ✅ Ensure verification works
 import "dotenv/config";
 
-const config: HardhatUserConfig = {
-  solidity: {
-    version: "0.8.20",
-    settings: {
-      optimizer: { enabled: true, runs: 200 },
-    },
-  },
+const config = {
+  solidity: "0.8.20",
   networks: {
     sepolia: {
       url: process.env.SEPOLIA_RPC_URL || "",
