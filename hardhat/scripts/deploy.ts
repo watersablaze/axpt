@@ -1,4 +1,5 @@
-import { ethers } from "hardhat";
+import hre from "hardhat";
+const { ethers } = hre;
 
 async function main() {
   console.log("Deploying GoldPeggedStablecoin...");
@@ -7,14 +8,15 @@ async function main() {
   const [deployer] = await ethers.getSigners();
   console.log(`Deploying with account: ${deployer.address}`);
 
-  // ✅ Deploy contract
-  const GoldStablecoin = await ethers.getContractFactory("GoldPeggedStablecoin");
+  // ✅ Deploy contract with deployer's signer
+  const GoldStablecoin = await ethers.getContractFactory("GoldPeggedStablecoin", deployer);
   const goldStablecoin = await GoldStablecoin.deploy("0xYourChainlinkPriceFeedAddress");
 
   await goldStablecoin.waitForDeployment(); // 🔹 Ensure deployment completes
 
   // ✅ Use `.address` instead of `getAddress()`
-  console.log(`GoldPeggedStablecoin deployed to: ${await goldStablecoin.getAddress()}`);}
+  console.log(`GoldPeggedStablecoin deployed to: ${await goldStablecoin.getAddress()}`);
+}
 
 // ✅ Handle errors properly
 main().catch((error) => {
