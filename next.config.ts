@@ -1,18 +1,25 @@
-import type { NextConfig } from "next";
+import { ethers } from "hardhat";
 
-const nextConfig: NextConfig = {
-  reactStrictMode: true, // Enables React's Strict Mode for better debugging
-  typescript: {
-    ignoreBuildErrors: false, // Ensure TypeScript errors don't block your builds
-  },
-  eslint: {
-    ignoreDuringBuilds: false, // Ensure linting errors don't block your builds
-  },
-  output: "standalone", // Prepares the app for deployment as a standalone server
-  images: {
-    domains: ["example.com"], // Add domains for external images, if needed
-  },
-  productionBrowserSourceMaps: true, // Enables source maps for better debugging
-};
+async function main() {
+  console.log("🚀 Deploying GoldPeggedStablecoin...");
 
-export default nextConfig;
+  // ✅ Explicitly set provider (Fix for HardhatEthersProvider issue)
+  const provider = new ethers.JsonRpcProvider(process.env.SEPOLIA_RPC_URL);
+  const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
+
+  console.log(`📜 Deploying with account: ${await wallet.getAddress()}`);
+
+  // ✅ Deploy contract using explicitly connected wallet
+  const GoldStablecoin = await ethers.getContractFactory("GoldPeggedStablecoin", wallet);
+  const goldStablecoin = await GoldStablecoin.deploy("0xYourChainlinkPriceFeedAddress");
+
+  console.log("⏳ Waiting for deployment confirmation...");
+  await goldStablecoin.waitForDeployment();
+
+  console.log(`✅ GoldPeggedStablecoin deployed to: ${await goldStablecoin.getAddress()}`);
+}
+
+main().catch((error) => {
+  console.error("❌ Deployment failed:", error);
+  process.exitCode = 1;
+});

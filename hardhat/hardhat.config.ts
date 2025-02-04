@@ -1,11 +1,16 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-ethers";
-import "@nomicfoundation/hardhat-verify";  // Only if you plan to verify contracts
+import "@nomicfoundation/hardhat-verify";
 import "@typechain/hardhat";
 import "dotenv/config";
 
 const config: HardhatUserConfig = {
-  solidity: "0.8.20",
+  solidity: {
+    compilers: [
+      { version: "0.8.20" }, // Primary compiler version
+      { version: "0.8.28" }  // Added support for Lock.sol and others
+    ],
+  },
   networks: {
     sepolia: {
       url: process.env.SEPOLIA_RPC_URL || "",
@@ -17,7 +22,7 @@ const config: HardhatUserConfig = {
   },
   typechain: {
     outDir: "typechain-types",
-    target: "ethers-v6", // 🔹 Ensures ethers v6 compatibility
+    target: "ethers-v6", // Ensures compatibility with Ethers v6
   },
 };
 
