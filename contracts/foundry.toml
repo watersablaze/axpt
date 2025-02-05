@@ -4,7 +4,7 @@ out = "out"
 libs = ["lib"]
 remappings = [
     "@openzeppelin/=lib/openzeppelin-contracts/",  # If using OpenZeppelin
-    "chainlink-contracts/=lib/chainlink-contracts/"         # If using Chainlink
+    "chainlink-contracts/=lib/chainlink-contracts/src/"         # If using Chainlink
 ]
 
 # See more config options at:
