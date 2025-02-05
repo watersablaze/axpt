@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "target": "ES2020", // Modern JavaScript features
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["frontend/src/*"]
+    },
+    "typeRoots": ["./node_modules/@types", "frontend/src/types"] // For custom types
+  },
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "frontend/src/types/**/*.d.ts",
+    "*.config.ts" // Include custom config files
+  ],
+  "exclude": ["node_modules"]
+}

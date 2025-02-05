@@ -1,0 +1,40 @@
+.settingsPage h1 {
+  font-size: 2rem;
+  color: #175a25;
+  margin-bottom: 20px;
+}
+
+.settingsForm {
+  display: grid;
+  gap: 15px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.settingsForm label {
+  font-weight: bold;
+  color: #333;
+}
+
+.settingsForm input,
+.settingsForm select {
+  padding: 10px;
+  font-size: 1rem;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+
+.settingsForm button {
+  padding: 10px 15px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #0070f3;
+  color: #fff;
+  transition: all 0.3s ease;
+}
+
+.settingsForm button:hover {
+  background-color: #005bb5;
+}
