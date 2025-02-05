@@ -1,20 +1,39 @@
-import { NextResponse } from "next/server";
-import { stablecoinContract } from "@/lib/ethers";
 import { ethers } from "ethers";
+import dotenv from "dotenv";
+dotenv.config();
 
-export async function POST(req: Request) {
+// ✅ Set up provider and signer
+const provider = new ethers.JsonRpcProvider(process.env.SEPOLIA_RPC_URL);
+const wallet = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
+
+// ✅ Contract details
+const contractAddress = "0xYourStablecoinContractAddress"; // Replace with actual deployed contract address
+const contractABI = [
+  // Replace with actual ABI for GoldPeggedStablecoin contract
+  "function redeemStablecoin(uint256 stablecoinAmount) external",
+];
+
+const stablecoinContract = new ethers.Contract(contractAddress, contractABI, wallet);
+
+async function redeemStablecoin(amount: number) {
   try {
-    const { userAddress, stablecoinAmount } = await req.json();
+    console.log(`🔄 Redeeming ${amount} GLDUSD...`);
 
-    if (!userAddress || !stablecoinAmount) {
-      return NextResponse.json({ success: false, message: "Missing parameters" }, { status: 400 });
-    }
+    // ✅ Call `redeemStablecoin` function on the contract
+    const tx = await stablecoinContract.redeemStablecoin(ethers.parseUnits(amount.toString(), 18));
 
-    const tx = await stablecoinContract.redeemStablecoin(ethers.utils.parseUnits(stablecoinAmount, 18));
+    console.log("⏳ Waiting for transaction confirmation...");
     await tx.wait();
 
-    return NextResponse.json({ success: true, message: "Stablecoin redeemed for ETH!" });
+    console.log(`✅ Successfully redeemed ${amount} GLDUSD!`);
   } catch (error) {
-    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    if (error instanceof Error) {
+      console.error("❌ Redemption failed:", error.message);
+    } else {
+      console.error("❌ Redemption failed with unknown error:", error);
+    }
   }
 }
+
+// ✅ Call the function with an example amount
+redeemStablecoin(10).catch(console.error);
