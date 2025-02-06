@@ -3,7 +3,7 @@ pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "chainlink-contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 
 contract GoldPeggedStablecoin is ERC20, Ownable {
     AggregatorV3Interface internal goldPriceFeed;
@@ -12,8 +12,7 @@ contract GoldPeggedStablecoin is ERC20, Ownable {
 
     mapping(address => uint256) public depositedETH;
 
-    // ✅ Fix: Pass required parameters to ERC20 and Ownable
-    constructor(address _goldPriceFeed) ERC20("Gold Stablecoin", "GLDUSD") Ownable(msg.sender) {
+    constructor(address _goldPriceFeed) ERC20("Gold Stablecoin", "GLDUSD") {
         goldPriceFeed = AggregatorV3Interface(_goldPriceFeed);
     }
 
@@ -29,8 +28,10 @@ contract GoldPeggedStablecoin is ERC20, Ownable {
         uint256 goldPriceUSD = getGoldPrice();
         uint256 stablecoinAmount = (msg.value * goldPriceUSD) / (10 ** GOLD_DECIMALS);
 
+        // ✅ Fix: Adjust collateralization logic to **include deposit**
+        uint256 requiredCollateral = (stablecoinAmount * COLLATERALIZATION_RATIO) / 100;
         require(
-            address(this).balance >= (stablecoinAmount * COLLATERALIZATION_RATIO) / 100,
+            address(this).balance - msg.value >= requiredCollateral,
             "Insufficient collateralization"
         );
 

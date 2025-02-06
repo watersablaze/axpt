@@ -3,8 +3,8 @@ src = "src"
 out = "out"
 libs = ["lib"]
 remappings = [
-    "@openzeppelin/=lib/openzeppelin-contracts/",  # If using OpenZeppelin
-    "chainlink-contracts/=lib/chainlink-contracts/src/"         # If using Chainlink
+    "@openzeppelin/=lib/openzeppelin-contracts/contracts/",  # OpenZeppelin
+    "@chainlink/=lib/chainlink-contracts/contracts/src/v0.8/"  # Chainlink (Ensure this path exists!)
 ]
 
 # See more config options at:
