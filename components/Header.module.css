@@ -1,0 +1,156 @@
+/* Header Styling */
+@font-face {
+  font-family: 'LoyalBold';
+  src: url('/fonts/LoyalBoldv1.otf') format('opentype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.header {
+  display: flex;
+  position: fixed;
+  justify-content: space-between; /* Space between title/tagline and buttons */
+  align-items: center;
+  width: 100%;
+  z-index: 1000; /*Ensures the header spans the full width */
+  flex-wrap: wrap; /* Allow wrapping for smaller screens */
+  padding: 1rem 2rem; /* Use responsive padding */
+  color: #ffffff;
+  height: auto; /* Adjust height dynamically based on content */
+  background-size: cover;
+  background: radial-gradient(circle at center, #56739526, #06543532);
+  backdrop-filter: blur(1px); /* Adds subtle blur */
+  gap: 1rem; /* Add spacing between child elements */
+}
+
+/* Title Styling */
+.title {
+  display: flex;
+  align-items: center; /* Align text and logo */
+  font-size: 2.5vw; /* Responsive font size */
+  font-weight: bold;
+  font-family: 'LoyalBold', sans-serif;
+  color: #6a3818;
+  letter-spacing: 10px;
+  margin: 0;
+  gap: 0.1em; /* Reduced spacing between elements */
+  flex: 1; /* Allow title to take available space */
+  min-width: 200px; /* Prevent title from shrinking too much */
+  text-align: left; /* Align text to the left */
+  white-space: nowrap; /* Prevent wrapping */
+}
+
+/* Tagline Styling */
+.tagline {
+  font-size: 1vw; /* Responsive font size */
+  color: #f0f0f0; /* Brightened text color */
+  margin: 10px 0 0 0; /* Add spacing from the title */
+  letter-spacing: 0.05em; /* Slightly spaced out letters */
+  color: #6a3818;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5); /* Subtle shadow for depth */
+  padding-top: 0; /* Removed border and extra padding */
+  flex: 1; /* Allow tagline to scale */
+  min-width: 150px; /* Prevent tagline from shrinking too much */
+  text-align: left; /* Align text to the left */
+  white-space: nowrap; /* Prevent wrapping */
+  margin-left: 100px;
+}
+
+/* Logo Styling */
+.logoO {
+  width: 3vw; /* Responsive size */
+  height: 3vw;
+  border-radius: 50%; /* Circular shape */
+  object-fit: cover; /* Ensures proper scaling */
+  transition: transform 0.5s ease; /* Hover animation */
+  margin-left: -13px;
+}
+
+.logoO:hover {
+  transform: scale(1.2); /* Slight hover enlargement */
+}
+
+/* Button Container */
+.buttonContainer {
+  display: flex;
+  gap: 0.5rem; /* Reduced space between buttons */
+  flex-wrap: wrap; /* Allow buttons to wrap on smaller screens */
+  justify-content: flex-end; /* Align buttons to the right */
+  flex: 1; /* Allow buttons to take available space */
+  min-width: 150px; /* Prevent shrinking too much */
+  margin-right: 100px;
+}
+
+/* Button Styling */
+.walletButton,
+.loginButton,
+.dashboardButton {
+  padding: 0.5rem 1rem; /* Smaller padding for sleek buttons */
+  background: linear-gradient(90deg, #6a3818, #b386005f);
+  color: #ffffff;
+  font-size: 0.8rem; /* Smaller font size */
+  font-weight: bold;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 3px; /* Sleeker border radius */
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3); /* Subtle shadow */
+  transition: transform 0.3s, background 0.3s;
+}
+
+.walletButton:hover,
+.loginButton:hover,
+.dashboardButton:hover {
+  background: linear-gradient(90deg, #175a25, #9db42d);
+  transform: scale(1.05); /* Slight enlargement */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column; /* Stack header content vertically */
+    align-items: flex-start; /* Align elements to the left */
+    padding: 1rem; /* Adjust padding for smaller screens */
+    gap: 1rem;
+  }
+
+  .title {
+    font-size: 4vw; /* Adjust title size */
+    text-align: center; /* Center-align title on smaller screens */
+    margin: 0 auto; /* Center the title */
+  }
+
+  .tagline {
+    font-size: 1.5vw; /* Adjust tagline size */
+    text-align: center; /* Center-align tagline */
+    margin: 0 auto; /* Center the tagline */
+  }
+
+  .buttonContainer {
+    justify-content: center; /* Center-align buttons */
+    width: 100%; /* Make buttons span full width */
+  }
+
+  .walletButton,
+  .loginButton {
+    font-size: 0.7rem; /* Adjust button font size */
+    padding: 0.4rem 0.8rem; /* Adjust padding */
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 5vw; /* Further reduce title size */
+  }
+
+  .tagline {
+    font-size: 2vw; /* Further reduce tagline size */
+  }
+
+  .walletButton,
+  .loginButton {
+    font-size: 0.6rem; /* Smaller button font size */
+    padding: 0.3rem 0.6rem;
+  }
+}

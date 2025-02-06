@@ -1,3 +1,2 @@
-
-@chainlink/contracts/=lib/chainlink-contracts/
-@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/
+@openzeppelin/=contracts/lib/openzeppelin-contracts/contracts/
+@chainlink/=contracts/lib/chainlink-contracts/contracts/src/v0.8/
