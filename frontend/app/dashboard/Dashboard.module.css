@@ -1,0 +1,165 @@
+/* ========== General Layout ========== */
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh; /* ✅ Ensure full coverage */
+  background: url('/PXP-background2.jpg') no-repeat center center fixed;
+  background-size: cover;
+}
+
+/* ✅ Main Content Area */
+.mainContent {
+  flex: 1;
+  padding: 20px;
+  background: rgba(161, 196, 217, 0.386);
+  border-radius: 30px;
+  margin: 30px;
+}
+
+/* ✅ Date & Time */
+.dateTimeContainer {
+  margin-top: 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* ✅ Stablecoin Section */
+.stablecoinSection {
+  margin-top: -190px;
+  padding: 20px;
+  background: rgba(8, 8, 8, 0.881);
+  border-radius: 30px;
+  text-align: center;
+  width: 300px;
+  margin-left: 900px;
+}
+
+.mintSection, .redeemSection {
+  margin-top: 20px;
+}
+
+.inputField {
+  width: 80%;
+  padding: 10px;
+  margin: 10px 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.mintButton, .redeemButton {
+  background: #28a745;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.redeemButton {
+  background: #dc3545;
+}
+
+.mintButton:hover {
+  background: #218838;
+}
+
+.redeemButton:hover {
+  background: #c82333;
+}
+
+/* Left Section */
+.left h1 {
+  font-size: 1.4rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.left p {
+  font-size: 1rem;
+  color: #444;
+}
+
+/* Wallet Container */
+.walletContainer {
+  margin-top: 10px;
+  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Wallet Box */
+.walletBox {
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.8);
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: fit-content;
+  font-size: 1rem;
+  transition: background 0.3s ease-in-out;
+}
+
+.walletBox:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+/* Hidden Text */
+.hiddenText {
+  letter-spacing: 3px;
+  font-weight: bold;
+  color: #777;
+}
+
+/* Visibility Button */
+.visibilityButton {
+  margin-left: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+}
+
+/* Center Section - Date & Time */
+.center p {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* Right Section - Navigation */
+.right ul {
+  display: flex;
+  gap: 15px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.right a {
+  text-decoration: none;
+  color: #222;
+  font-size: 1rem;
+  font-weight: 500;
+  transition: color 0.3s ease;
+}
+
+.right a:hover {
+  color: #0070f3;
+}
+
+/* ========== Sidebar ========== */
+.container {
+  display: flex;
+  width: 100%;
+  flex-grow: 1;
+  min-height: calc(100vh - 60px); /* ✅ Ensure content extends below 100vh */
+  margin-top: 60px; /* Ensures sidebar starts below header */
+}
+
+/* Sidebar Fix */
+.sidebar {
+  height: 100vh; /* ✅ Ensures full-height sidebar */
+  position: fixed;
+  top: 60px; /* Aligns to bottom of header */
+}

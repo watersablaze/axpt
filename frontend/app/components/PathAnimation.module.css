@@ -1,0 +1,62 @@
+/* Main container for the animation */
+.pathsContainer {
+    position: relative;
+    width: 400px;
+    height: 400px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: radial-gradient(circle, #005f73, #0a9396); /* Geometric background */
+    border-radius: 50%;
+    overflow: hidden;
+  }
+  
+  /* Geometric lines radiating outward */
+  .line {
+    position: absolute;
+    width: 1px; /* Thickness of the lines */
+    height: 80%; /* Lines extend halfway out */
+    background: linear-gradient(to bottom, #00ffcc, transparent); /* Gradient effect */
+    transform-origin: center bottom; /* Rotate from the center */
+    border-radius: 1px; /* Slight rounding for smoother look */
+  }
+  
+  /* Central glowing point */
+  .centerGlow {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    background: radial-gradient(circle, rgba(0, 255, 204, 1), rgba(0, 255, 204, 0.5));
+    border-radius: 50%;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.8);
+    animation: pulse 2s infinite ease-in-out;
+  }
+  
+  /* Central glow pulse effect */
+  @keyframes pulse {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.2);
+      opacity: 0.7;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  /* Responsive Design */
+  @media (max-width: 768px) {
+    .pathsContainer {
+      width: 300px;
+      height: 300px;
+    }
+  
+    .centerGlow {
+      width: 20px;
+      height: 20px;
+    }
+  }
