@@ -1,8 +1,16 @@
 import { ethers } from "ethers";
-import stablecoinABI from "@/contracts/GoldPeggedStablecoin.json";
 
-const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_PROVIDER_URL);
-const wallet = new ethers.Wallet(process.env.NEXT_PUBLIC_WALLET_PRIVATE_KEY, provider);
-const stablecoinContract = new ethers.Contract(process.env.NEXT_PUBLIC_CONTRACT_ADDRESS, stablecoinABI, wallet);
+// Load from environment variables
+const provider = new ethers.JsonRpcProvider(process.env.NEXT_PUBLIC_PROVIDER_URL);
 
-export { provider, wallet, stablecoinContract };
+// MetaMask connection
+export function getSigner() {
+  if (typeof window !== "undefined" && (window as any).ethereum) {
+    const provider = new ethers.BrowserProvider((window as any).ethereum);
+    return provider.getSigner();
+  } else {
+    throw new Error("MetaMask not found");
+  }
+}
+
+export { provider };

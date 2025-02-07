@@ -2,12 +2,20 @@
 pragma solidity ^0.8.19;
 
 import "forge-std/Script.sol";
-import "../src/YourContract.sol";
+import "../src/GoldPeggedStablecoin.sol";
 
-contract DeployYourContract is Script {
+contract DeployGoldPeggedStablecoin is Script {
     function run() external {
         vm.startBroadcast();
-        YourContract contractInstance = new YourContract();
+
+        // Replace this with the actual Chainlink gold price feed address
+        address goldPriceFeed = vm.envAddress("CHAINLINK_PRICE_FEED");
+
+        // Deploy the contract
+        GoldPeggedStablecoin stablecoin = new GoldPeggedStablecoin(goldPriceFeed);
+
+        console.log("✅ GoldPeggedStablecoin deployed at:", address(stablecoin));
+
         vm.stopBroadcast();
     }
 }
