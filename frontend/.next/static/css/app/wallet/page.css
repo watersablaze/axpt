@@ -1,0 +1,84 @@
+/*!**************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ../node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[2]!../node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[5].use[3]!./app/wallet/Wallet.module.css ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************/
+/* Wallet Page Container */
+.Wallet_walletContainer__5693y {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    background: radial-gradient(circle, #e8f1fc, #d4e1f5); /* Light gradient */
+    padding: 20px;
+  }
+  
+  /* Title Styling */
+  .Wallet_title__F2QUL {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #003b5b;
+  }
+  
+  /* Description Styling */
+  .Wallet_description__THHBJ {
+    font-size: 1.2rem;
+    color: #555555;
+    margin-bottom: 30px;
+    text-align: center;
+  }
+  
+  /* Payment Form Container */
+  .Wallet_paymentForm__fE89n {
+    width: 100%;
+    max-width: 400px;
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* Form Title Styling */
+  .Wallet_formTitle__jeJJb {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #003b5b;
+    text-align: center;
+  }
+  
+  /* Card Input Styling */
+  .Wallet_cardInput__gaReN {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    background: #f9f9f9;
+  }
+  
+  /* Submit Button Styling */
+  .Wallet_submitButton__xdbp8 {
+    width: 100%;
+    padding: 10px 15px;
+    background: linear-gradient(90deg, #007bff, #0056b3); /* Gradient blue */
+    color: white;
+    font-size: 1rem;
+    font-weight: bold;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+  }
+  
+  .Wallet_submitButton__xdbp8:hover {
+    background: linear-gradient(90deg, #0056b3, #004494); /* Darker gradient */
+    transform: scale(1.05);
+  }
+  
+  /* Message Styling */
+  .Wallet_message__SmEPh {
+    margin-top: 15px;
+    font-size: 1rem;
+    text-align: center;
+    color: green;
+  }
