@@ -1,40 +1,39 @@
-import { ethers } from "ethers";
-import { NextResponse } from "next/server";
+import { Contract, JsonRpcProvider, parseEther, Wallet } from "ethers";
 import dotenv from "dotenv";
+
 dotenv.config();
 
-// ✅ Ensure environment variables are loaded
-if (!process.env.SEPOLIA_RPC_URL || !process.env.PRIVATE_KEY) {
-  throw new Error("Missing environment variables: Check .env file");
+// ✅ Ensure environment variables are set
+if (!process.env.SEPOLIA_RPC_URL || !process.env.PRIVATE_KEY || !process.env.DEPLOYED_CONTRACT_ADDRESS) {
+  throw new Error("❌ Missing environment variables. Check .env file.");
 }
 
-// ✅ Set up provider and signer
-const provider = new ethers.providers.JsonRpcProvider(process.env.SEPOLIA_RPC_URL);
-const wallet = new ethers.Wallet(process.env.PRIVATE_KEY, provider);
+// ✅ Provider and Wallet
+const provider = new JsonRpcProvider(process.env.SEPOLIA_RPC_URL);
+const wallet = new Wallet(process.env.PRIVATE_KEY, provider);
 
-// ✅ Define the contract address & ABI
-const contractAddress = "0xYourStablecoinContractAddress"; // 🔹 Replace with actual contract address
+// ✅ Define Contract ABI & Address
+const contractAddress = process.env.DEPLOYED_CONTRACT_ADDRESS!;
 const contractABI = [
   "function mintStablecoin() external payable",
 ];
 
-const stablecoinContract = new ethers.Contract(contractAddress, contractABI, wallet);
+const stablecoinContract = new Contract(contractAddress, contractABI, wallet);
 
-export async function POST(req: Request) {
+async function mintStablecoin(ethAmount: number) {
   try {
-    const { userAddress, ethAmount } = await req.json();
+    console.log(`🔄 Minting ${ethAmount} ETH worth of stablecoins...`);
 
-    if (!userAddress || !ethAmount) {
-      return NextResponse.json({ success: false, message: "Missing parameters" }, { status: 400 });
-    }
+    const tx = await stablecoinContract.mintStablecoin({ value: parseEther(ethAmount.toString()) });
 
-    // ✅ Fix: Use correct ethers v5 syntax
-    const tx = await stablecoinContract.mintStablecoin({ value: ethers.utils.parseEther(ethAmount.toString()) });
+    console.log("⏳ Waiting for transaction confirmation...");
     await tx.wait();
 
-    return NextResponse.json({ success: true, message: "Stablecoin minted successfully!" });
+    console.log(`✅ Successfully minted ${ethAmount} GLDUSD!`);
   } catch (error) {
     console.error("❌ Minting failed:", error instanceof Error ? error.message : error);
-    return NextResponse.json({ success: false, message: "Minting failed" }, { status: 500 });
   }
 }
+
+// ✅ Example Usage:
+mintStablecoin(0.1).catch(console.error);
