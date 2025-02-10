@@ -8,10 +8,10 @@ contract DeployGoldPeggedStablecoin is Script {
     function run() external {
         vm.startBroadcast();
 
-        // Replace this with the actual Chainlink gold price feed address
+        // ✅ Replace with actual Chainlink Price Feed address
         address goldPriceFeed = vm.envAddress("CHAINLINK_PRICE_FEED");
 
-        // Deploy the contract
+        // ✅ Deploy contract
         GoldPeggedStablecoin stablecoin = new GoldPeggedStablecoin(goldPriceFeed);
 
         console.log("✅ GoldPeggedStablecoin deployed at:", address(stablecoin));
