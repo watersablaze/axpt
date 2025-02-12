@@ -11,7 +11,7 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
  *      1 GLDUSD = 1 gram of gold (price derived from ETH/USD oracle)
  */
 contract GoldPeggedStablecoin is ERC20, Ownable {
-    AggregatorV3Interface internal goldPriceFeed;  // Chainlink Oracle
+    AggregatorV3Interface internal goldPriceFeed; // Chainlink Oracle
     uint256 public constant COLLATERALIZATION_RATIO = 150; // 150% over-collateralization
     uint256 public constant GOLD_DECIMALS = 8; // Chainlink price feed decimals
 
@@ -20,8 +20,9 @@ contract GoldPeggedStablecoin is ERC20, Ownable {
     event Mint(address indexed user, uint256 ethAmount, uint256 stablecoinAmount);
     event Redeem(address indexed user, uint256 stablecoinAmount, uint256 ethAmount);
     event CollateralWithdrawn(address indexed owner, uint256 amount);
+    event GoldPriceFeedUpdated(address indexed newPriceFeed);
 
-    constructor(address _goldPriceFeed) ERC20("Gold Stablecoin", "GLDUSD") {
+    constructor(address _goldPriceFeed) ERC20("Gold Stablecoin", "GLDUSD") Ownable(msg.sender) {
         goldPriceFeed = AggregatorV3Interface(_goldPriceFeed);
     }
 
@@ -44,7 +45,10 @@ contract GoldPeggedStablecoin is ERC20, Ownable {
         uint256 stablecoinAmount = (msg.value * goldPriceUSD) / (10 ** GOLD_DECIMALS);
 
         uint256 requiredCollateral = (stablecoinAmount * COLLATERALIZATION_RATIO) / 100;
-        require(address(this).balance >= requiredCollateral, "Insufficient collateral");
+        require(
+            (depositedETH[msg.sender] + msg.value) * goldPriceUSD / (10 ** GOLD_DECIMALS) >= requiredCollateral,
+            "Insufficient collateral"
+        );
 
         depositedETH[msg.sender] += msg.value;
         _mint(msg.sender, stablecoinAmount);
@@ -74,6 +78,7 @@ contract GoldPeggedStablecoin is ERC20, Ownable {
      */
     function updateGoldPriceFeed(address newPriceFeed) external onlyOwner {
         goldPriceFeed = AggregatorV3Interface(newPriceFeed);
+        emit GoldPriceFeedUpdated(newPriceFeed);
     }
 
     /**
