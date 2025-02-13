@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getGoldPrice } from "../lib/contract";
+import { getGoldPrice } from "@/lib/contract";
 
 export default function GoldPrice() {
   const [price, setPrice] = useState(null);

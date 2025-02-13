@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { mintStablecoin } from "../lib/contract";
+import { mintStablecoin } from "@/lib/contract";
 
 export default function MintStablecoin() {
   const [amount, setAmount] = useState("");

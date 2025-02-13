@@ -1,4 +1,5 @@
 import { NextConfig } from 'next';
+import path from 'path';
 
 /** @type {NextConfig} */
 const nextConfig: NextConfig = {
@@ -9,6 +10,14 @@ const nextConfig: NextConfig = {
   },
   serverRuntimeConfig: {
     PRIVATE_KEY: process.env.PRIVATE_KEY, // ✅ Kept secure on the server
+  },
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.json$/,
+      type: "javascript/auto",
+      include: [path.resolve(__dirname, "abi")], // ✅ Adjusted to match `frontend/abi`
+    });
+    return config;
   },
 };
 

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { redeemStablecoin } from "../lib/contract";
+import { redeemStablecoin } from "@/lib/contract";
 
 export default function RedeemStablecoin() {
   const [amount, setAmount] = useState("");
