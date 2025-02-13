@@ -3,42 +3,17 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Sidebar from "../components/Sidebar"; // ✅ Import Sidebar
-import Header from "../components/Header"; // ✅ Import Reusable Header Component
+import Sidebar from "../../../components/Sidebar"; // ✅ Import Sidebar
+import Header from "../../../components/Header"; // ✅ Import Reusable Header Component
+import GoldPrice from "../../../components/GoldPrice"; // ✅ Added Gold Price Component
+import MintStablecoin from "../../../components/MintStablecoin"; // ✅ Moved to separate component
+import RedeemStablecoin from "../../../components/RedeemStablecoin"; // ✅ Moved to separate component
 import styles from "./Dashboard.module.css";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [currentDateTime, setCurrentDateTime] = useState("");
-  const [ethAmount, setEthAmount] = useState(""); // ✅ Fixed missing ethAmount state
-  const [stablecoinAmount, setStablecoinAmount] = useState("");
-
-  // ✅ Function: Mint Stablecoins
-  const mintStablecoin = async () => {
-    if (!ethAmount) return alert("Enter ETH amount to mint.");
-    const response = await fetch("/api/stablecoin/mint", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userAddress: session?.user?.walletAddress, ethAmount }),
-    });
-
-    const data = await response.json();
-    alert(data.message);
-  };
-
-  // ✅ Function: Redeem Stablecoins
-  const redeemStablecoin = async () => {
-    if (!stablecoinAmount) return alert("Enter stablecoin amount to redeem.");
-    const response = await fetch("/api/stablecoin/redeem", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userAddress: session?.user?.walletAddress, stablecoinAmount }),
-    });
-
-    const data = await response.json();
-    alert(data.message);
-  };
 
   // ✅ Update date & time dynamically
   useEffect(() => {
@@ -48,13 +23,12 @@ export default function Dashboard() {
     return () => clearInterval(interval);
   }, []);
 
-  // ✅ Redirect unauthenticated users
+  // ✅ Redirect unauthenticated users to login
   useEffect(() => {
     if (status === "unauthenticated") {
       router.push("/login");
     }
   }, [status]);
-
 
   return (
     <div className={styles.dashboard}>
@@ -74,39 +48,17 @@ export default function Dashboard() {
             <p>{currentDateTime}</p>
           </div>
 
+          {/* ✅ Display Live Gold Price */}
+          <div className={styles.goldPriceSection}>
+            <h3>Live Gold Price</h3>
+            <GoldPrice /> {/* ✅ Now part of the dashboard */}
+          </div>
+
           {/* ✅ Stablecoin Interaction */}
           <div className={styles.stablecoinSection}>
             <h3>Stablecoin Management</h3>
-
-            {/* ✅ Mint Stablecoins */}
-            <div className={styles.mintSection}>
-              <h4>Mint Stablecoins</h4>
-              <input
-                type="text"
-                placeholder="Enter ETH amount"
-                value={ethAmount}
-                onChange={(e) => setEthAmount(e.target.value)}
-                className={styles.inputField}
-              />
-              <button className={styles.mintButton} onClick={mintStablecoin}>
-                Mint GLDUSD
-              </button>
-            </div>
-
-            {/* ✅ Redeem Stablecoins */}
-            <div className={styles.redeemSection}>
-              <h4>Redeem Stablecoins</h4>
-              <input
-                type="text"
-                placeholder="Enter GLDUSD amount"
-                value={stablecoinAmount}
-                onChange={(e) => setStablecoinAmount(e.target.value)}
-                className={styles.inputField}
-              />
-              <button className={styles.redeemButton} onClick={redeemStablecoin}>
-                Redeem for ETH
-              </button>
-            </div>
+            <MintStablecoin />
+            <RedeemStablecoin />
           </div>
         </main>
       </div>
