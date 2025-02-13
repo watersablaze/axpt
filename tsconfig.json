@@ -15,15 +15,18 @@
     "jsx": "preserve",
     "baseUrl": ".", 
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["frontend/*"], 
+      "@/lib/*": ["frontend/lib/*"],  // ✅ Fixed path 
+      "@/abi/*": ["frontend/abi/*"] 
     },
     "plugins": [
-      {
-        "name": "next"
-      }
+      { "name": "next" }
     ]
   },
   "include": [
+    "frontend",
+    "frontend/lib",
+    "frontend/abi",
     "next-env.d.ts",
     ".next/types/**/*.ts",
     "**/*.ts",
