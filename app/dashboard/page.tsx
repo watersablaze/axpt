@@ -9,7 +9,6 @@ import GoldPrice from "@/components/GoldPrice";
 import MintStablecoin from "@/components/MintStablecoin";
 import RedeemStablecoin from "@/components/RedeemStablecoin";
 import Wallet from "@/components/Wallet";
-import ParticlesBackground from "@/components/ParticlesBackground"; 
 import styles from "@/app/dashboard/Dashboard.module.css"; // ✅ Corrected Path
 
 export default function Dashboard() {
@@ -47,7 +46,7 @@ export default function Dashboard() {
 
   return (
     <div className={styles.dashboard}>
-      <ParticlesBackground /> {/* ✅ Background Effect */}
+   
       <Header />
 
       <div className={styles.container}>
