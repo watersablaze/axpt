@@ -1,0 +1,85 @@
+/* ==========================
+   📌 Dashboard Header Styles 
+   ========================== */
+
+   .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 30px;
+    background: rgba(0, 0, 0, 0.6); /* Glassmorphism effect */
+    backdrop-filter: blur(15px);
+    border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+  }
+  
+  /* Logo */
+  .logo img {
+    height: 40px;
+  }
+  
+  /* Navigation */
+  .nav {
+    display: flex;
+    gap: 20px;
+  }
+  
+  .nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: opacity 0.3s ease;
+  }
+  
+  .nav a:hover {
+    opacity: 0.7;
+  }
+  
+  /* User Section */
+  .userSection {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .greeting {
+    color: #fff;
+    font-size: 1rem;
+    font-weight: 500;
+  }
+  
+  .avatar {
+    border-radius: 50%;
+    border: 2px solid #fff;
+  }
+  
+  .logoutBtn {
+    color: white;
+    background: #ff4d4d;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+  }
+  
+  .logoutBtn:hover {
+    background: #e60000;
+  }
+  
+  /* Login Button */
+  .loginBtn {
+    color: white;
+    background: #0070f3;
+    padding: 8px 15px;
+    border-radius: 8px;
+    text-decoration: none;
+  }
+  
+  .loginBtn:hover {
+    background: #005ecb;
+  }

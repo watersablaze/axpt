@@ -15,7 +15,7 @@
   width: 100%;
   min-height: 100vh;
   position: relative;
-  background: linear-gradient(135deg, #0a0a0a 30%, #1c1c1e 100%);
+  background: url('/app/public/dashboard-bg.png') no-repeat center center fixed;
   overflow: hidden;
   color: white;
 }

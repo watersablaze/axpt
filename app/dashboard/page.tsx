@@ -3,12 +3,12 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Sidebar from "@/components/Sidebar";
+import Sidebar from "./Sidebar";
 import Header from "@/components/Header";
+import MintStablecoin from "./MintStablecoin";
+import RedeemStablecoin from "./RedeemStablecoin";
 import GoldPrice from "@/components/GoldPrice";
-import MintStablecoin from "@/components/MintStablecoin";
-import RedeemStablecoin from "@/components/RedeemStablecoin";
-import Wallet from "@/components/Wallet";
+import Wallet from "./Wallet";
 import styles from "@/app/dashboard/Dashboard.module.css"; // ✅ Corrected Path
 
 export default function Dashboard() {
