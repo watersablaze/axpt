@@ -1,73 +1,24 @@
 .walletContainer {
-    max-width: 400px;
-    margin: auto;
-    padding: 20px;
-    background: #1a1a1a;
-    border-radius: 10px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    color: white;
-    text-align: center;
-  }
-  
-  .heading {
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  
-  .address {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 8px;
-    border-radius: 5px;
-  }
-  
-  button {
-    width: 100%;
-    margin-top: 10px;
-    padding: 10px;
-    font-size: 16px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  padding: 15px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
 
-  h2 {
-    font-size: 22px;
-    font-weight: bold;
-  }
-  
-  button {
-    padding: 12px;
-    font-size: 16px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: 0.2s ease;
-  }
-  
-  .mintButton:hover {
-    background: #00a86b;
-  }
-  
-  .redeemButton:hover {
-    background: #e63946;
-  }
-  
-  .connectButton {
-    background: #0070f3;
-    color: white;
-  }
-  
-  .mintButton {
-    background: #00b894;
-    color: white;
-  }
-  
-  .redeemButton {
-    background: #d63031;
-    color: white;
-  }
-  
-  button:hover {
-    opacity: 0.8;
-  }
+.walletBox {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.visibilityButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+}

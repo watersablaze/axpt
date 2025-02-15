@@ -15,22 +15,14 @@
     "jsx": "preserve",
     "baseUrl": ".", 
     "paths": {
-      "@/*": ["frontend/*"], 
-      "@/lib/*": ["frontend/lib/*"],  // ✅ Fixed path 
-      "@/abi/*": ["frontend/abi/*"] 
+      "@/*": ["./*"],  
+      "@/components/*": ["components/*"], 
+      "@/lib/*": ["lib/*"],
+      "@/styles/*": ["styles/*"],  
+      "@/config/*": ["config/*"]
     },
-    "plugins": [
-      { "name": "next" }
-    ]
+    "plugins": [{ "name": "next" }]
   },
-  "include": [
-    "frontend",
-    "frontend/lib",
-    "frontend/abi",
-    "next-env.d.ts",
-    ".next/types/**/*.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ],
+  "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
   "exclude": ["node_modules"]
 }

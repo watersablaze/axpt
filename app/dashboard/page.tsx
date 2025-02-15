@@ -3,17 +3,31 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Sidebar from "../../../components/Sidebar"; // ✅ Import Sidebar
-import Header from "../../../components/Header"; // ✅ Import Reusable Header Component
-import GoldPrice from "../../../components/GoldPrice"; // ✅ Added Gold Price Component
-import MintStablecoin from "../../../components/MintStablecoin"; // ✅ Moved to separate component
-import RedeemStablecoin from "../../../components/RedeemStablecoin"; // ✅ Moved to separate component
-import styles from "./Dashboard.module.css";
+import Sidebar from "@/components/Sidebar";
+import Header from "@/components/Header";
+import GoldPrice from "@/components/GoldPrice";
+import MintStablecoin from "@/components/MintStablecoin";
+import RedeemStablecoin from "@/components/RedeemStablecoin";
+import Wallet from "@/components/Wallet";
+import ParticlesBackground from "@/components/ParticlesBackground"; 
+import styles from "@/app/dashboard/Dashboard.module.css"; // ✅ Corrected Path
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [currentDateTime, setCurrentDateTime] = useState("");
+
+  // ✅ Logs Ethereum provider detection
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      console.log("Window object detected.");
+      if (window.ethereum) {
+        console.log("✅ Ethereum provider detected:", window.ethereum);
+      } else {
+        console.warn("⚠️ No Ethereum provider found. Using fallback JSON-RPC provider.");
+      }
+    }
+  }, []);
 
   // ✅ Update date & time dynamically
   useEffect(() => {
@@ -26,18 +40,19 @@ export default function Dashboard() {
   // ✅ Redirect unauthenticated users to login
   useEffect(() => {
     if (status === "unauthenticated") {
+      console.warn("⚠️ Unauthenticated user, redirecting to login...");
       router.push("/login");
     }
   }, [status]);
 
   return (
     <div className={styles.dashboard}>
+      <ParticlesBackground /> {/* ✅ Background Effect */}
       <Header />
 
       <div className={styles.container}>
         <Sidebar />
 
-        {/* ✅ Main Content */}
         <main className={styles.mainContent}>
           <h2>Dashboard Overview</h2>
           <p>Welcome to your secure portal.</p>
@@ -51,10 +66,16 @@ export default function Dashboard() {
           {/* ✅ Display Live Gold Price */}
           <div className={styles.goldPriceSection}>
             <h3>Live Gold Price</h3>
-            <GoldPrice /> {/* ✅ Now part of the dashboard */}
+            <GoldPrice />
           </div>
 
-          {/* ✅ Stablecoin Interaction */}
+          {/* ✅ Wallet Overview */}
+          <div className={styles.walletSection}>
+            <h3>Wallet Overview</h3>
+            <Wallet />
+          </div>
+
+          {/* ✅ Stablecoin Management */}
           <div className={styles.stablecoinSection}>
             <h3>Stablecoin Management</h3>
             <MintStablecoin />
