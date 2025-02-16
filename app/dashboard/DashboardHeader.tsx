@@ -12,7 +12,7 @@ export default function DashboardHeader() {
     <header className={styles.header}>
       {/* Left: Branding */}
       <div className={styles.logo}>
-        <Image src="/public/assets/logo.png" alt="Platform Logo" width={120} height={40} />
+      <Image src="/AXI.png" alt="Platform Logo" width={120} height={40} />
       </div>
 
       {/* Center: Dashboard Navigation */}
@@ -29,7 +29,7 @@ export default function DashboardHeader() {
           <>
             <span className={styles.greeting}>Hello, {session.user.name}!</span>
             <Image
-              src="/public/assets/user-avatar.png"
+              src="/africanPro.jpg"
               alt="User Avatar"
               width={40}
               height={40}

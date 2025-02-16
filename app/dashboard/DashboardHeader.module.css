@@ -59,7 +59,7 @@
   
   .logoutBtn {
     color: white;
-    background: #ff4d4d;
+    background: #130668;
     border: none;
     padding: 8px 15px;
     border-radius: 8px;
@@ -68,7 +68,7 @@
   }
   
   .logoutBtn:hover {
-    background: #e60000;
+    background: #0f00e6;
   }
   
   /* Login Button */

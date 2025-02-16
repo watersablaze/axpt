@@ -3,8 +3,8 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import DashboardHeader from "./DashboardHeader";
 import Sidebar from "./Sidebar";
-import Header from "@/components/Header";
 import MintStablecoin from "./MintStablecoin";
 import RedeemStablecoin from "./RedeemStablecoin";
 import GoldPrice from "@/components/GoldPrice";
@@ -46,8 +46,8 @@ export default function Dashboard() {
 
   return (
     <div className={styles.dashboard}>
-   
-      <Header />
+
+      <DashboardHeader />
 
       <div className={styles.container}>
         <Sidebar />
