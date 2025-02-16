@@ -46,12 +46,14 @@ export default function Dashboard() {
 
   return (
     <div className={styles.dashboard}>
-
+      {/* ✅ Header remains at the top */}
       <DashboardHeader />
 
-      <div className={styles.container}>
-        <Sidebar />
+      {/* ✅ Sidebar is placed OUTSIDE of .container */}
+      <Sidebar />
 
+      {/* ✅ Main Content Area (adjusts based on sidebar state) */}
+      <div className={styles.container}>
         <main className={styles.mainContent}>
           <h2>Dashboard Overview</h2>
           <p>Welcome to your secure portal.</p>

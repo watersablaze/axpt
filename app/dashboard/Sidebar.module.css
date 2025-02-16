@@ -1,116 +1,180 @@
-/* ✅ Sidebar Styling */
-.sidebar {
-  width: 300px;
-  height: 100vh; /* ✅ Full browser height */
-  background: rgba(192, 192, 192, 0.8); /* ✅ Translucent Silver */
-  backdrop-filter: blur(10px); /* ✅ Frosty effect */
-  color: #222;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  transition: width 0.3s ease-in-out;
-}
+/* ==========================
+   📌 Sidebar Styles 
+   ========================== */
 
-/* ✅ Collapsed Sidebar */
-.sidebar.closed {
-  width: 60px;
-  overflow: hidden;
-}
-
+   .sidebar {
+    position: relative;
+    left: 0;
+    top: 60px; /* Below the header */
+    height: calc(100vh - 80px);
+    width: 250px;
+    background: rgba(255, 255, 255, 0.08); /* Glassmorphism Effect */
+    backdrop-filter: blur(20px);
+    border-right: 2px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  /* ✅ Collapsed Sidebar */
+  .closed {
+    width: 70px;
+    padding: 10px;
+    transform: translateX(-100%);
+    overflow: hidden;
+    text-align: center;
+  }
+  
+  .closed .welcomeSection,
+  .closed .navMenu,
+  .closed .walletSection {
+    display: none; /* Hide content when collapsed */
+  }
+  
 /* ✅ Sidebar Toggle Button */
 .toggleButton {
-  position: absolute;
-  top: 20px;
-  right: -15px;
-  width: 30px;
-  height: 30px;
-  background: #766403;
+  position: fixed;
+  top: -50px;
+  left: 50px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
   border: none;
+  padding: 5px 8px;
   border-radius: 50%;
-  color: #fff;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
+  z-index: 600;
+}
+
+.toggleButton:hover {
+  transform: scale(1.1);
+}
+  
+  /* ✅ Welcome Section */
+  .welcomeSection {
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  
+  .welcomeSection h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: white;
+  }
+  
+  .email {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  
+  /* ✅ Navigation */
+  .navMenu {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .navItem {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    cursor: pointer;
+    color: white;
+    transition: background 0.2s ease-in-out;
+  }
+  
+  .navItem:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 5px;
+  }
+
+  /* ✅ Icon Styling */
+.navIcon {
   font-size: 18px;
-  cursor: pointer;
 }
 
-/* ✅ Welcome Message */
-.welcomeMessage {
-  font-size: 1.6rem;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 10px;
+/* ✅ Text Visibility in Collapsed Mode */
+.closed .navText {
+  display: none;
 }
 
-/* ✅ User Info */
-.userInfo {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-/* ✅ User Name */
-.name {
-  font-size: 1.4rem;
-  font-weight: bold;
-}
-
-/* ✅ User Email */
-.email {
-  font-size: 0.9rem;
-  color: #333;
-}
-
-/* ✅ Wallet Section */
-.walletSection {
-  margin-top: 20px;
-  text-align: center;
-}
-
-/* ✅ Wallet Box */
-.walletBox {
-  display: flex;
-  align-items: center;
+.closed .navItem {
   justify-content: center;
-  background: #3a310186;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 0.7rem;
 }
-
-/* ✅ Hidden Wallet Text */
-.hiddenText {
-  font-weight: bold;
-  letter-spacing: 3px;
-}
-
-/* ✅ Copy & Toggle Buttons */
-.copyButton,
-.visibilityButton {
-  background: #341c01f2;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  cursor: pointer;
-  border-radius: 5px;
-  margin-top: 10px;
-}
-
-.copyButton:hover,
-.visibilityButton:hover {
-  background: #766403;
-}
-
-/* ✅ Profile Link */
-.profileLink {
-  display: inline-block;
-  margin-top: 15px;
-  padding: 8px 15px;
-  background: #341c01f2;
-  color: white;
-  border-radius: 5px;
-  text-decoration: none;
-  text-align: center;
-  font-size: 0.9rem;
-}
-
-.profileLink:hover {
-  background: #766403;
-}
+  
+  /* ✅ Wallet Section */
+  .walletSection {
+    text-align: center;
+    margin-top: 10px;
+  }
+  
+  .walletSection h4 {
+    color: white;
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+  
+  .walletBox {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.15);
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 0.9rem;
+    color: white;
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .hiddenText {
+    letter-spacing: 3px;
+    font-weight: bold;
+    color: rgba(255, 255, 255, 0.6);
+  }
+  
+  .visibilityButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: white;
+  }
+  
+  .copyButton {
+    background: #0070f3;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    margin-top: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .copyButton:hover {
+    background: #005ecb;
+  }
+  
+  /* ✅ Responsive Sidebar */
+  @media (max-width: 768px) {
+    .sidebar {
+      width: 250px;
+      height: 100vh;
+      top: 0;
+      padding: 15px;
+    }
+  
+    .closed {
+      width: 60px;
+    }
+  
+    .toggleButton {
+      right: -25px;
+    }
+  }

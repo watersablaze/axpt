@@ -2,16 +2,15 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { Eye, EyeOff } from "lucide-react"; // ✅ Import visibility toggle icons
-import styles from "./Sidebar.module.css";
+import { Eye, EyeOff, Menu, User, Wallet, Settings, List } from "lucide-react"; 
+import styles from "./Sidebar.module.css";   
 
 export default function Sidebar() {
   const { data: session } = useSession();
-  const [collapsed, setCollapsed] = useState(false);
+  const [collapsed, setCollapsed] = useState(true);
   const [showWallet, setShowWallet] = useState(false);
   const user = session?.user;
 
-  // ✅ Ensure correct wallet address is displayed
   const walletAddress = session?.user?.walletAddress || "N/A";
 
   const copyToClipboard = () => {
@@ -25,11 +24,11 @@ export default function Sidebar() {
     <aside className={`${styles.sidebar} ${collapsed ? styles.closed : ""}`}>
       {/* Sidebar Toggle Button */}
       <button className={styles.toggleButton} onClick={() => setCollapsed(!collapsed)}>
-        {collapsed ? "→" : "←"}
+        {collapsed ? <Menu size={18} /> : "←"}
       </button>
 
       {/* Welcome Message */}
-      {!collapsed && <h2 className={styles.welcomeMessage}>Welcome to your Dashboard!</h2>}
+      {!collapsed && <h2 className={styles.welcomeMessage}>Welcome!</h2>}
 
       {/* User Info */}
       {!collapsed && (
@@ -39,33 +38,48 @@ export default function Sidebar() {
         </div>
       )}
 
-          {/* ✅ Wallet Address Section */}
-          <div className={styles.walletSection}>
-            <h4>Wallet Address:</h4>
-            <div className={styles.walletBox}>
-              {showWallet ? (
-                <span>{walletAddress}</span>
-              ) : (
-                <span className={styles.hiddenText}>•••••••••••••••••••••••••••</span>
-              )}
-              <button
-                className={styles.visibilityButton}
-                onClick={() => setShowWallet(!showWallet)}
-                aria-label="Toggle wallet visibility"
-              >
-                {showWallet ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            <button className={styles.copyButton} onClick={copyToClipboard}>Copy Address</button>
-          </div>
-      {""}
+      {/* ✅ Navigation Links */}
+      <nav className={styles.nav}>
+        <div className={styles.navItem}>
+          <User className={styles.navIcon} />
+          {!collapsed && <span className={styles.navText}>View Profile</span>}
+        </div>
 
-      {/* Profile Link */}
-      {!collapsed && (
-        <a href="/profile" className={styles.profileLink}>
-          View Full Profile
-        </a>
-      )}
+        <div className={styles.navItem}>
+          <Wallet className={styles.navIcon} />
+          {!collapsed && <span className={styles.navText}>Wallet</span>}
+        </div>
+
+        <div className={styles.navItem}>
+          <List className={styles.navIcon} />
+          {!collapsed && <span className={styles.navText}>Transaction History</span>}
+        </div>
+
+        <div className={styles.navItem}>
+          <Settings className={styles.navIcon} />
+          {!collapsed && <span className={styles.navText}>Settings</span>}
+        </div>
+      </nav>
+
+      {/* ✅ Wallet Address Section */}
+      <div className={styles.walletSection}>
+        <h4>Wallet Address:</h4>
+        <div className={styles.walletBox}>
+          {showWallet ? (
+            <span>{walletAddress}</span>
+          ) : (
+            <span className={styles.hiddenText}>•••••••••••••••••••••••••••</span>
+          )}
+          <button
+            className={styles.visibilityButton}
+            onClick={() => setShowWallet(!showWallet)}
+            aria-label="Toggle wallet visibility"
+          >
+            {showWallet ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
+        <button className={styles.copyButton} onClick={copyToClipboard}>Copy</button>
+      </div>
     </aside>
   );
 }
