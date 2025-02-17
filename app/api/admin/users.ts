@@ -1,16 +1,17 @@
 import { NextResponse } from "next/server";
+import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
 
 export async function GET() {
   try {
-    // ✅ Mock user data (Replace with real database fetch)
-    const users = [
-      { id: "1", name: "Admin User", email: "admin@example.com", isAdmin: true },
-      { id: "2", name: "Test User", email: "user@example.com", isAdmin: false }
-    ];
+    const users = await prisma.user.findMany({
+      select: { id: true, name: true, email: true, isAdmin: true },
+    });
 
     return NextResponse.json(users);
   } catch (error) {
-    console.error("❌ Error fetching users:", error);
+    console.error("Error fetching users:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

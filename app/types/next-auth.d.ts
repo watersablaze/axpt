@@ -1,21 +1,21 @@
-import NextAuth from 'next-auth';
+import NextAuth from "next-auth";
 
-declare module 'next-auth' {
-  interface Session {
-    user: {
-      id: string;
-      name: string;
-      email: string;
-      isAdmin?: boolean; // ✅ Add isAdmin property
-      walletAddress?: string; // ✅ Add walletAddress to Session User
-    };
-  }
-
+declare module "next-auth" {
   interface User {
     id: string;
     name: string;
     email: string;
-    user: User;
-    walletAddress?: string; // ✅ Add walletAddress to User
+    isAdmin: boolean; // ✅ Ensures isAdmin is always present
+    walletAddress?: string; // ✅ Optional wallet address
+  }
+
+  interface Session {
+    user: User; // ✅ Now references the correct structure
+  }
+
+  interface JWT {
+    id: string;
+    isAdmin: boolean;
+    walletAddress?: string; // ✅ Keep it consistent across session & JWT
   }
 }

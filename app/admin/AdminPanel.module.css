@@ -1,0 +1,38 @@
+/* 🔥 Cyberpunk Admin Panel UI */
+.userList {
+    list-style: none;
+    padding: 0;
+  }
+  
+  .userItem {
+    background: rgba(0, 255, 255, 0.1);
+    border: 1px solid rgba(0, 255, 255, 0.4);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
+  }
+  
+  .actions {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .editButton, .deleteButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: 0.3s;
+  }
+  
+  .editButton:hover {
+    color: cyan;
+  }
+  
+  .deleteButton:hover {
+    color: red;
+  }
