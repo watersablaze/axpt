@@ -1,139 +1,95 @@
-/* ==========================
-   📌 Dashboard Header Styles 
-   ========================== */
+/* ✅ Slim & Floating HUD Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background: rgba(0, 0, 0, 0.4); /* ✅ Sleek transparency */
+  backdrop-filter: blur(10px);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+  width: 100%;
+  height: 50px; /* ✅ Thin header */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+}
 
-   .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 40px;
-    background: rgba(0, 0, 0, 0); /* Glassmorphism effect */
-    backdrop-filter: blur(15px);
-    border-bottom: 2px solid rgba(255, 255, 255, 0.15);
-    width: 100%;
-    position: relative;
-    z-index: 1000;
-  }
+/* ✅ Logo - Subtle Animation */
+.logo img {
+  width: 80px;
+  height: auto;
+  margin-top: 10px;
+  animation: subtleGlow 5s infinite alternate ease-in-out;
+}
 
-  /* ✅ Prevent Overlap */
-  .header + .dashboardContainer {
-  margin-top: 80px; /* Adds space below the header */
-  }
-  
-  /* ✅ Pulsating Logo */
-  .logo img {
-    height: 120px; /* Bigger Logo */
-    width: 120px;
-    padding: 10px;
-    animation: pulse 2s infinite alternate;
-  }
-  
-  /* 🌟 Pulsating Animation */
-  @keyframes pulse {
-    0% {
-      transform: scale(1);
-      opacity: 1;
-    }
-    100% {
-      transform: scale(1.1);
-      opacity: 0.9;
-    }
-  }
-  
-  /* ✅ Navigation */
-  .nav {
-    display: flex;
-    gap: 25px;
-  }
-  
-  .nav a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: 500;
-    transition: opacity 0.3s ease;
-  }
-  
-  .nav a:hover {
-    opacity: 0.7;
-  }
-  
-  /* ✅ User Section */
-  .userSection {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-  }
-  
-  /* ✅ Greeting Text */
-  .greeting {
-    color: #fff;
-    font-size: 1.6rem;
-    font-weight: 500;
-    margin-right: 70px;
-  }
-  
-  /* ✅ Profile Avatar */
-  .avatar {
-    border-radius: 50%;
-    border: 2px solid #fff;
-    width: 45px;
-    height: 45px;
-    margin-right: 80px;
-  }
-  
-  /* ✅ Logout Button */
-  .logoutBtn {
-    color: white;
-    background: #130668;
-    border: none;
-    padding: 10px 18px;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: background 0.3s ease-in-out;
-    margin-right: 80px;
-  }
-  
-  .logoutBtn:hover {
-    background: #0f00e6;
-  }
-  
-  /* ✅ Login Button */
-  .loginBtn {
-    color: white;
-    background: #0070f3;
-    padding: 10px 18px;
-    border-radius: 10px;
-    text-decoration: none;
-    transition: background 0.3s ease-in-out;
-  }
-  
-  .loginBtn:hover {
-    background: #005ecb;
-  }
-  
-  /* ✅ Responsive Fix */
-  @media (max-width: 768px) {
-    .header {
-      flex-direction: column;
-      align-items: center;
-      padding: 10px 20px;
-    }
-  
-    .logo img {
-      height: 90px;
-      width: 90px;
-    }
-  
-    .nav {
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 15px;
-    }
-  
-    .userSection {
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 10px;
-    }
-  }
+@keyframes subtleGlow {
+  from { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.4)); }
+  to { filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.7)); }
+}
+
+/* ✅ Investment Insights */
+.infoDisplay {
+  font-size: 1.1rem;  /* ✅ Increased size */
+  font-weight: bold;
+  color: #f0d061;
+  text-align: center;
+  width: 70%;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  overflow: hidden;
+  transition: transform 0.3s ease, text-shadow 0.3s ease;
+}
+
+/* 🔥 Glitch Effect */
+.glitch {
+  animation: glitch 0.3s steps(2, end) 2;
+}
+
+@keyframes glitch {
+  0% { text-shadow: 2px 2px rgb(15, 120, 4), -2px -2px rgb(164, 103, 153); }
+  100% { text-shadow: none; }
+}
+
+/* ✅ Hover Effect: Slight Zoom & Glow */
+.infoDisplay:hover {
+  transform: scale(1.05);
+  text-shadow: 0px 0px 10px rgba(255, 255, 255, 0.8);
+}
+
+/* ✅ User Section */
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+/* ✅ User Greeting */
+.greeting {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #f0d061;
+}
+
+/* ✅ Avatar */
+.avatar {
+  border-radius: 50%;
+  border: 2px solid rgba(240, 208, 97, 0.8);
+}
+
+/* ✅ Logout Button */
+.logoutBtn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: #f0d16198;
+  color: rgba(0, 0, 0, 0.8);
+  font-size: 0.8rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.3s ease;
+  margin-right: 40px;
+}
+
+.logoutBtn:hover {
+  background: #0b046e;
+}

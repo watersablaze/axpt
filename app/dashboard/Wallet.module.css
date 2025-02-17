@@ -1,0 +1,161 @@
+/* ========== Cyberpunk Wallet UI ========== */
+.walletContainer {
+  width: 100%; /* ✅ Takes full width of its parent container */
+  max-width: 600px; /* ✅ Prevents excessive stretching */
+  background: rgba(15, 15, 20, 0.9);
+  backdrop-filter: blur(12px);
+  padding: 20px;
+  border-radius: 15px;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+  transition: box-shadow 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.walletContainer:hover {
+  box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+}
+
+/* ========== Toggle Buttons ========== */
+.toggleContainer {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.239);
+  padding: 8px;
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+.toggleContainer button {
+  flex: 1;
+  background: none;
+  border: none;
+  color: rgba(0, 255, 255, 0.8);
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.toggleContainer button:hover {
+  color: cyan;
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.8);
+}
+
+.toggleContainer .active {
+  border-bottom: 3px solid cyan;
+}
+
+/* ========== Wallet Balance Box ========== */
+.walletBox {
+  width: 100%;
+  margin-top: 15px;
+  padding: 8px;
+  background: rgba(0, 0, 0, 0.288);
+  border-radius: 2px;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+}
+
+.walletBox h3 {
+  font-size: 1.2rem;
+  color: rgba(0, 255, 255, 0.9);
+  text-transform: uppercase;
+}
+
+.balanceDisplay {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: #0ff;
+  text-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
+  margin-top: 10px;
+}
+
+/* ========== Visibility & Copy Buttons ========== */
+.visibilityButton,
+.copyButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 12px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.visibilityButton:hover,
+.copyButton:hover {
+  transform: scale(1.2);
+  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.8));
+}
+
+/* ========== Wallet Address Box ========== */
+.walletAddressContainer {
+  width: 100%;
+  margin-top: 15px;
+}
+
+.walletAddressContainer h4 {
+  color: rgba(0, 255, 255, 0.9);
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.walletAddressBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.288);
+  padding: 8px;
+  border-radius: 2px;
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
+  color: cyan;
+  font-weight: bold;
+}
+
+.walletAddressBox span {
+  font-size: 1rem;
+}
+
+.copyButton {
+  margin-left: 10px;
+  color: cyan;
+}
+
+/* ========== Hidden Text (for balance hiding) ========== */
+.hiddenText {
+  letter-spacing: 3px;
+  font-weight: bold;
+  color: rgba(0, 255, 255, 0.6);
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
+}
+
+/* ✅ Mobile Optimization */
+@media (max-width: 768px) {
+  .walletContainer {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .mainContent {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .walletBox h3 {
+    font-size: 1rem;
+  }
+
+  .balanceDisplay {
+    font-size: 1.2rem;
+  }
+
+  .walletAddressBox span {
+    font-size: 0.9rem;
+  }
+}

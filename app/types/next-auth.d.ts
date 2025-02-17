@@ -6,6 +6,7 @@ declare module 'next-auth' {
       id: string;
       name: string;
       email: string;
+      isAdmin?: boolean; // ✅ Add isAdmin property
       walletAddress?: string; // ✅ Add walletAddress to Session User
     };
   }
@@ -14,6 +15,7 @@ declare module 'next-auth' {
     id: string;
     name: string;
     email: string;
+    user: User;
     walletAddress?: string; // ✅ Add walletAddress to User
   }
 }

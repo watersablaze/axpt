@@ -1,49 +1,60 @@
-.profilePage h1 {
-    font-size: 2rem;
-    color: #175a25;
-    margin-bottom: 20px;
-  }
-  
-  .profileDetails {
-    display: grid;
-    gap: 10px;
-  }
-  
-  .profileDetails label {
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .profileDetails p {
-    font-size: 1rem;
-    color: #666;
-  }
-  
-  .profileDetails input,
-  .profileDetails select {
-    padding: 10px;
-    font-size: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-  }
-  
-  .actions {
-    margin-top: 20px;
-    display: flex;
-    gap: 10px;
-  }
-  
-  .actions button {
-    padding: 10px 15px;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    background-color: #0070f3;
-    color: #fff;
-    transition: all 0.3s ease;
-  }
-  
-  .actions button:hover {
-    background-color: #005bb5;
-  }
+.profileContainer {
+  background: rgba(15, 15, 20, 0.9);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+  text-align: center;
+  width: 60%;
+  margin: auto;
+}
+
+.sectionTitle {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: cyan;
+  margin-bottom: 15px;
+}
+
+.avatarContainer {
+  margin-bottom: 15px;
+}
+
+.avatar {
+  border-radius: 50%;
+  border: 3px solid cyan;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.7);
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  margin: 10px 0;
+  color: white;
+}
+
+.inputGroup label {
+  font-size: 1rem;
+  margin-bottom: 5px;
+}
+
+.inputGroup input {
+  padding: 8px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.saveButton {
+  background: cyan;
+  color: black;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.saveButton:hover {
+  background: rgba(0, 255, 255, 0.7);
+}

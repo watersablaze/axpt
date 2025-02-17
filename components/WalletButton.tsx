@@ -6,7 +6,7 @@ import { getStablecoinContract } from "../lib/stablecoin";
 export default function WalletButton() {
   const [walletAddress, setWalletAddress] = useState<string | null>(null);
 
-  async function connectWallet() {
+  async function connectWallet() { 
     if (typeof window !== "undefined" && (window as any).ethereum) {
       const provider = new ethers.BrowserProvider((window as any).ethereum);
       const signer = await provider.getSigner();

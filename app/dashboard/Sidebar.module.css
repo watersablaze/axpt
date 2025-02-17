@@ -1,180 +1,87 @@
-/* ==========================
-   📌 Sidebar Styles 
-   ========================== */
-
-   .sidebar {
-    position: relative;
-    left: 0;
-    top: 60px; /* Below the header */
-    height: calc(100vh - 80px);
-    width: 250px;
-    background: rgba(255, 255, 255, 0.08); /* Glassmorphism Effect */
-    backdrop-filter: blur(20px);
-    border-right: 2px solid rgba(255, 255, 255, 0.1);
-    transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    z-index: 1000;
-  }
-  
-  /* ✅ Collapsed Sidebar */
-  .closed {
-    width: 70px;
-    padding: 10px;
-    transform: translateX(-100%);
-    overflow: hidden;
-    text-align: center;
-  }
-  
-  .closed .welcomeSection,
-  .closed .navMenu,
-  .closed .walletSection {
-    display: none; /* Hide content when collapsed */
-  }
-  
-/* ✅ Sidebar Toggle Button */
-.toggleButton {
+/* ✅ Sidebar Base */
+.sidebar {
   position: fixed;
-  top: -50px;
-  left: 50px;
-  background: rgba(0, 0, 0, 0.7);
+  top: 72px;
+  left: 0;
+  height: calc(100vh - 60px);
+  width: 250px;
+  background: rgba(0, 0, 0, 0.4); /* ✅ Sleek transparency */
+  backdrop-filter: blur(10px);
   color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  transition: width 0.3s ease-in-out;
+  z-index: 1000;
+}
+
+/* ✅ Collapsed Sidebar */
+.sidebar.closed {
+  width: 60px;
+  overflow: hidden;
+}
+
+/* ✅ Toggle Button */
+.toggleButton {
+  position: absolute;
+  top: 15px;
+  left: 15px;
+  background: transparent;
   border: none;
-  padding: 5px 8px;
-  border-radius: 50%;
   cursor: pointer;
-  transition: transform 0.2s ease-in-out;
-  z-index: 600;
+  color: white;
+  transition: transform 0.3s;
 }
 
-.toggleButton:hover {
-  transform: scale(1.1);
-}
-  
-  /* ✅ Welcome Section */
-  .welcomeSection {
-    text-align: center;
-    margin-bottom: 15px;
-  }
-  
-  .welcomeSection h2 {
-    font-size: 1.2rem;
-    font-weight: 600;
-    color: white;
-  }
-  
-  .email {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.8);
-  }
-  
-  /* ✅ Navigation */
-  .navMenu {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    gap: 10px;
-    text-align: center;
-  }
-  
-  .navItem {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 10px;
-    cursor: pointer;
-    color: white;
-    transition: background 0.2s ease-in-out;
-  }
-  
-  .navItem:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 5px;
-  }
-
-  /* ✅ Icon Styling */
-.navIcon {
-  font-size: 18px;
+.sidebar.closed .toggleButton {
+  transform: rotate(180deg);
 }
 
-/* ✅ Text Visibility in Collapsed Mode */
-.closed .navText {
-  display: none;
+/* ✅ User Info */
+.userInfo {
+  margin-top: 15px;
+  text-align: center;
 }
 
-.closed .navItem {
+.name {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+/* ✅ Wallet Section */
+.walletSection {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.walletBox {
+  display: flex;
   justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 0.9rem;
 }
-  
-  /* ✅ Wallet Section */
-  .walletSection {
-    text-align: center;
-    margin-top: 10px;
-  }
-  
-  .walletSection h4 {
-    color: white;
-    font-size: 1rem;
-    margin-bottom: 8px;
-  }
-  
-  .walletBox {
-    display: flex;
-    align-items: center;
-    background: rgba(255, 255, 255, 0.15);
-    padding: 8px 12px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    font-size: 0.9rem;
-    color: white;
-    width: 100%;
-    justify-content: space-between;
-  }
-  
-  .hiddenText {
-    letter-spacing: 3px;
-    font-weight: bold;
-    color: rgba(255, 255, 255, 0.6);
-  }
-  
-  .visibilityButton {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: white;
-  }
-  
-  .copyButton {
-    background: #0070f3;
-    color: white;
-    border: none;
-    padding: 6px 12px;
-    margin-top: 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background 0.3s ease;
-  }
-  
-  .copyButton:hover {
-    background: #005ecb;
-  }
-  
-  /* ✅ Responsive Sidebar */
-  @media (max-width: 768px) {
-    .sidebar {
-      width: 250px;
-      height: 100vh;
-      top: 0;
-      padding: 15px;
-    }
-  
-    .closed {
-      width: 60px;
-    }
-  
-    .toggleButton {
-      right: -25px;
-    }
-  }
+
+.hiddenText {
+  letter-spacing: 3px;
+}
+
+/* ✅ Navigation */
+.nav {
+  display: flex;
+  flex-direction: column;
+  margin-top: 15px;
+}
+
+.nav a {
+  padding: 10px;
+  color: white;
+  text-decoration: none;
+  transition: opacity 0.3s;
+}
+
+.nav a:hover {
+  opacity: 0.7;
+}

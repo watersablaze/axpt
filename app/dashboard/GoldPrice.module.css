@@ -1,0 +1,34 @@
+/* ========== Cyberpunk Gold Price UI ========== */
+.goldPriceContainer {
+    background: rgba(10, 10, 15, 0.9);
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+    transition: box-shadow 0.3s ease-in-out;
+  }
+  
+  .goldPriceContainer:hover {
+    box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
+  }
+  
+  .title {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: gold;
+    text-transform: uppercase;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
+  }
+  
+  .price {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #ffd700;
+    text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
+  }
+  
+  .loading, .error {
+    font-size: 1rem;
+    color: #ff4444;
+    font-style: italic;
+  }

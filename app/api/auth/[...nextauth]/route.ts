@@ -44,20 +44,37 @@ export const authOptions: AuthOptions = {
           id: user.id,
           name: user.name,
           email: user.email,
+          isAdmin: user.isAdmin, // ✅ Ensure this exists in your database schema
         };
       },
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET, // Ensure this is set in your .env.local file
+  secret: process.env.NEXTAUTH_SECRET, // ✅ Ensure this is set in your .env.local file
   session: {
     strategy: "jwt",
   },
   pages: {
-    signIn: "/login", // Custom login page
-    error: "/login", // Error page
+    signIn: "/login", // ✅ Custom login page
+    error: "/login", // ✅ Redirect to login on error
+  },
+  callbacks: {
+    async session({ session, token }) {
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.isAdmin = token.isAdmin; // ✅ Attach isAdmin to session
+      }
+      return session;
+    },
+    async jwt({ token, user }) {
+      if (user) {
+        token.id = user.id;
+        token.isAdmin = user.isAdmin; // ✅ Attach isAdmin to JWT token
+      }
+      return token;
+    },
   },
 };
 
 const handler = NextAuth(authOptions);
 
-export { handler as GET, handler as POST };   
+export { handler as GET, handler as POST };

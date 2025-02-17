@@ -12,6 +12,7 @@ model User {
   name                String
   email               String  @unique
   password            String
+  isAdmin  Boolean @default(false)
   industry            String?
   interests           String?
   encryptedPrivateKey String

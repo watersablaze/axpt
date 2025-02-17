@@ -1,40 +1,39 @@
-.settingsPage h1 {
-  font-size: 2rem;
-  color: #175a25;
-  margin-bottom: 20px;
+.settingsContainer {
+  background: rgba(15, 15, 20, 0.9);
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
+  text-align: center;
+  width: 60%;
+  margin: auto;
 }
 
-.settingsForm {
-  display: grid;
-  gap: 15px;
-  max-width: 500px;
-  margin: 0 auto;
-}
-
-.settingsForm label {
+.sectionTitle {
+  font-size: 1.8rem;
   font-weight: bold;
-  color: #333;
+  color: cyan;
+  margin-bottom: 15px;
 }
 
-.settingsForm input,
-.settingsForm select {
-  padding: 10px;
+.settingOption {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
   font-size: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+  color: white;
 }
 
-.settingsForm button {
-  padding: 10px 15px;
-  font-size: 1rem;
-  border: none;
-  border-radius: 5px;
+.saveButton {
+  background: cyan;
+  color: black;
+  padding: 10px 20px;
+  border-radius: 8px;
   cursor: pointer;
-  background-color: #0070f3;
-  color: #fff;
-  transition: all 0.3s ease;
+  font-weight: bold;
+  margin-top: 20px;
 }
 
-.settingsForm button:hover {
-  background-color: #005bb5;
+.saveButton:hover {
+  background: rgba(0, 255, 255, 0.7);
 }
