@@ -4,65 +4,54 @@ generator client {
 
 datasource db {
   provider = "mongodb"
-  url      = env("MONGODB_URI")
-}
-
-model User {
-  id                  String  @id @default(auto()) @map("_id") @db.ObjectId
-  name                String
-  email               String  @unique
-  password            String
-  isAdmin             Boolean @default(false) // ✅ Corrected formatting
-  industry            String?
-  interests           String?
-  encryptedPrivateKey String
-  iv                  String
-  role                String  @default("user")
-  walletAddress       String? @unique // ✅ Ensure uniqueness
-  walletBalance       Float   @default(0)
-
-  transactions        Transaction[] // ✅ Transactions relation
-
-  // Relations
-  accounts            Account[]
-  sessions            Session[]
-
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
-}
-
-model Session {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  sessionToken String   @unique
-  userId       String   @db.ObjectId
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  expires      DateTime
+  url      = env("DATABASE_URL")
 }
 
 model Account {
-  id            String  @id @default(auto()) @map("_id") @db.ObjectId
-  userId        String  @db.ObjectId
-  user          User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  session_state String?
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+}
+
+model Session {
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String @unique
+}
+
+model Transaction {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId
+
+  @@index([userId])
+}
+
+model User {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt           DateTime @default(now()) @map("createdAt") @db.Date
+  email               String   @unique
+  encryptedPrivateKey String
+  industry            String?
+  interests           String?
+  isAdmin             Boolean  @default(false)
+  iv                  String
+  name                String
+  password            String
+  role                String   @default("user")
+  updatedAt           DateTime @updatedAt @map("updatedAt") @db.Date
+  walletAddress       String?  @unique
+  walletBalance       Float    @default(0)
 }
 
 model VerificationToken {
-  id         String   @id @default(auto()) @map("_id") @db.ObjectId
-  identifier String
-  token      String   @unique
-  expires    DateTime
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String @unique
+  token      String @unique
 
   @@unique([identifier, token])
 }
 
-model Transaction {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  amount    Float
-  to        String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([userId]) // ✅ Correct way to create an index in MongoDB
+model users {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  email    String  @unique
+  isAdmin  Boolean @default(false)
+  name     String
+  password String
 }

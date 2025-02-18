@@ -22,24 +22,26 @@ export default function DashboardHeader() {
   // ✅ Handle text transition with glitch effect
   useEffect(() => {
     setGlitch(true);
-
     const timer = setTimeout(() => {
       setGlitch(false);
-
       setTimeout(() => {
         setFactIndex((prev) => (prev + 1) % investmentFacts.length);
         setGlitch(true);
-      }, 500); // Small glitch delay
-    }, 10000); // Each fact stays for 10 seconds
-
+      }, 500);
+    }, 10000);
     return () => clearTimeout(timer);
   }, [factIndex]);
 
   return (
     <header className={styles.header}>
-      {/* ✅ Platform Logo */}
       <div className={styles.logo}>
-        <Image src="/AXI.png" alt="Platform Logo" width={100} height={50} />
+        <Image 
+          src="/AXI.png" 
+          alt="Platform Logo" 
+          width={100} 
+          height={50} 
+          priority // ✅ Prioritizes loading
+        />
       </div>
 
       {/* ✅ Dynamic Investment Insights */}

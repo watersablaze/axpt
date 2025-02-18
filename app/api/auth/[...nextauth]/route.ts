@@ -29,18 +29,19 @@ export const authOptions: AuthOptions = {
           throw new Error("Missing email or password");
         }
 
+        console.log("🔍 Querying Prisma for user...");
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
           select: {
             id: true,
             name: true,
             email: true,
-            isAdmin: true, // ✅ Explicitly select isAdmin
+            isAdmin: true,
             password: true, // ✅ Needed for bcrypt comparison
           },
         });
 
-        console.log("🔍 Prisma Query Result for User:", user); // ✅ Debugging Log
+        console.log("🔍 Prisma Query Result for User:", user);
 
         if (!user) {
           console.log("❌ No user found with email:", credentials.email);
@@ -49,12 +50,19 @@ export const authOptions: AuthOptions = {
 
         console.log("✅ User found:", user);
 
-        const isValidPassword = await bcrypt.compare(credentials.password, user.password);
-        console.log("🔑 Password match:", isValidPassword);
+        // ✅ Verify password
+        console.log("🔑 Verifying password...");
+        try {
+          const isValidPassword = await bcrypt.compare(credentials.password, user.password);
+          console.log("🔑 Password match:", isValidPassword);
 
-        if (!isValidPassword) {
-          console.log("❌ Invalid password for:", credentials.email);
-          throw new Error("Invalid credentials");
+          if (!isValidPassword) {
+            console.log("❌ Invalid password for:", credentials.email);
+            throw new Error("Invalid credentials");
+          }
+        } catch (error) {
+          console.error("❌ Bcrypt error:", error);
+          throw new Error("Password verification failed");
         }
 
         console.log("✅ Login successful:", user.email);
@@ -73,23 +81,25 @@ export const authOptions: AuthOptions = {
     strategy: "jwt",
   },
   pages: {
-    signIn: "/login", // ✅ Custom login page
-    error: "/login", // ✅ Redirect to login on error
+    signIn: "/login",
+    error: "/login",
   },
   callbacks: {
     async session({ session, token }) {
+      console.log("🟢 Creating session for:", token);
       if (session.user) {
-        session.user.id = String(token.id); // ✅ Convert unknown to string
-        session.user.isAdmin = Boolean(token.isAdmin); // ✅ Convert unknown to boolean
+        session.user.id = String(token.id);
+        session.user.isAdmin = Boolean(token.isAdmin);
       }
+      console.log("🟢 Final session object:", session);
       return session;
     },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.isAdmin = user.isAdmin; // ✅ Attach isAdmin to JWT token
+        token.isAdmin = user.isAdmin;
       }
-      console.log("🟢 JWT Token Data:", token); // ✅ Debugging Log
+      console.log("🟢 JWT Token Data:", token);
       return token;
     },
   },
