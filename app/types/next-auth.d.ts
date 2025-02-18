@@ -7,6 +7,7 @@ declare module "next-auth" {
     email: string;
     isAdmin: boolean; // ✅ Ensures isAdmin is always present
     walletAddress?: string; // ✅ Optional wallet address
+    avatar?: string;
   }
 
   interface Session {
@@ -17,5 +18,6 @@ declare module "next-auth" {
     id: string;
     isAdmin: boolean;
     walletAddress?: string; // ✅ Keep it consistent across session & JWT
+    avatar?: string;
   }
 }

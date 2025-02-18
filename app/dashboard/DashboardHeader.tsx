@@ -9,6 +9,13 @@ export default function DashboardHeader() {
   const { data: session } = useSession();
   const [factIndex, setFactIndex] = useState(0);
   const [glitch, setGlitch] = useState(false);
+  const [userAvatar, setUserAvatar] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (session?.user) {
+      setUserAvatar(session.user.avatar || "/comet.admin.default.png"); // ✅ Default for regular users
+    }
+  }, [session]);
 
   // ✅ Investment insights list
   const investmentFacts = [
@@ -34,13 +41,14 @@ export default function DashboardHeader() {
 
   return (
     <header className={styles.header}>
+      {/* ✅ Platform Logo */}
       <div className={styles.logo}>
         <Image 
           src="/AXI.png" 
           alt="Platform Logo" 
           width={100} 
           height={50} 
-          priority // ✅ Prioritizes loading
+          priority 
         />
       </div>
 
@@ -49,12 +57,20 @@ export default function DashboardHeader() {
         <p>{investmentFacts[factIndex]}</p>
       </div>
 
-      {/* ✅ User Info & Logout */}
+      {/* ✅ Admin & User Section */}
       <div className={styles.userSection}>
         {session?.user ? (
           <>
-            <span className={styles.greeting}>Hello, {session.user.name}</span>
-            <Image src="/africanPro.jpg" alt="User Avatar" width={40} height={40} className={styles.avatar} />
+            <span className={styles.greeting}>
+              {session.user.isAdmin ? "Admin Dashboard" : `Hello, ${session.user.name}`}
+            </span>
+            <Image
+              src={session.user.isAdmin ? "/comet.admin.default" : userAvatar || "/africanPro.jpg"}
+              alt="User Avatar"
+              width={40}
+              height={40}
+              className={styles.avatar}
+            />
             <button className={styles.logoutBtn} onClick={() => signOut()}>Logout</button>
           </>
         ) : (
