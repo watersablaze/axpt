@@ -1,23 +1,22 @@
-import NextAuth from "next-auth";
+import NextAuth, { DefaultSession, DefaultUser, DefaultJWT } from "next-auth";
 
+// ✅ Extend User type
 declare module "next-auth" {
-  interface User {
+  interface User extends DefaultUser {
     id: string;
-    name: string;
-    email: string;
     isAdmin: boolean; // ✅ Ensures isAdmin is always present
-    walletAddress?: string; // ✅ Optional wallet address
+    walletAddress?: string; // ✅ Optional
     avatar?: string;
   }
 
-  interface Session {
-    user: User; // ✅ Now references the correct structure
+  interface Session extends DefaultSession {
+    user: User; // ✅ Ensures `user` structure matches the extended User type
   }
 
-  interface JWT {
+  interface JWT extends DefaultJWT {
     id: string;
     isAdmin: boolean;
-    walletAddress?: string; // ✅ Keep it consistent across session & JWT
+    walletAddress?: string;
     avatar?: string;
   }
 }

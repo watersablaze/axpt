@@ -1,20 +1,20 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react';
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import styles from './PaymentForm.module.css';
+import React, { useState } from "react";
+import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import styles from "./PaymentForm.module.css";
 
 const PaymentForm = () => {
   const stripe = useStripe();
   const elements = useElements();
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
     if (!stripe || !elements) {
-      setMessage('Stripe has not loaded yet.');
+      setMessage("❌ Stripe has not loaded yet.");
       return;
     }
 
@@ -22,7 +22,7 @@ const PaymentForm = () => {
 
     try {
       const { error, paymentIntent } = await stripe.confirmCardPayment(
-        'client_secret_from_api',
+        process.env.NEXT_PUBLIC_STRIPE_CLIENT_SECRET || "",
         {
           payment_method: {
             card: elements.getElement(CardElement)!,
@@ -31,12 +31,13 @@ const PaymentForm = () => {
       );
 
       if (error) {
-        setMessage(error.message || 'An error occurred.');
-      } else if (paymentIntent?.status === 'succeeded') {
-        setMessage('Payment successful!');
+        setMessage(error.message || "❌ An error occurred.");
+      } else if (paymentIntent?.status === "succeeded") {
+        setMessage("✅ Payment successful!");
       }
-    } catch (err) {
-      setMessage('An error occurred.');
+    } catch (err: unknown) {
+      console.error("❌ Payment error:", err);
+      setMessage("❌ Payment failed.");
     } finally {
       setIsProcessing(false);
     }
@@ -47,12 +48,8 @@ const PaymentForm = () => {
       <div className={styles.cardInput}>
         <CardElement />
       </div>
-      <button
-        className={styles.submitButton}
-        type="submit"
-        disabled={!stripe || !elements || isProcessing}
-      >
-        {isProcessing ? 'Processing...' : 'Pay'}
+      <button className={styles.submitButton} type="submit" disabled={isProcessing}>
+        {isProcessing ? "Processing..." : "Pay"}
       </button>
       {message && <div className={styles.message}>{message}</div>}
     </form>

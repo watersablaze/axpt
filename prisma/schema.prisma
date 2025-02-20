@@ -17,15 +17,23 @@ model Session {
 }
 
 model Transaction {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
-  userId String @db.ObjectId
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @db.ObjectId
+  amount    Float // ✅ Amount of the transaction
+  type      String // ✅ Type (e.g., "deposit", "withdrawal")
+  createdAt DateTime @default(now()) @map("createdAt") @db.Date // ✅ Timestamp
+
+  // ✅ Explicitly name the relation
+  user User @relation(name: "UserTransactions", fields: [userId], references: [id])
 
   @@index([userId])
+  @@index([createdAt]) // ✅ Index for sorting transactions by date
 }
 
 model User {
   id                  String   @id @default(auto()) @map("_id") @db.ObjectId
   createdAt           DateTime @default(now()) @map("createdAt") @db.Date
+  updatedAt           DateTime @updatedAt @map("updatedAt") @db.Date
   email               String   @unique
   encryptedPrivateKey String
   industry            String?
@@ -35,10 +43,12 @@ model User {
   name                String
   password            String
   role                String   @default("user")
-  updatedAt           DateTime @updatedAt @map("updatedAt") @db.Date
   walletAddress       String?  @unique
   walletBalance       Float    @default(0)
   avatar              String?
+
+  // ✅ Explicitly name the relation
+  transactions Transaction[] @relation(name: "UserTransactions")
 }
 
 model VerificationToken {
@@ -47,12 +57,4 @@ model VerificationToken {
   token      String @unique
 
   @@unique([identifier, token])
-}
-
-model users {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  email    String  @unique
-  isAdmin  Boolean @default(false)
-  name     String
-  password String
 }

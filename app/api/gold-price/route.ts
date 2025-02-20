@@ -7,6 +7,7 @@ export async function GET() {
     const mockPrice = 65.32; // 1g Gold price in USD
     return NextResponse.json({ price: mockPrice });
   } catch (error) {
+    console.error("❌ Failed to fetch gold price:", error);
     return NextResponse.json({ error: "Failed to fetch price" }, { status: 500 });
   }
 }

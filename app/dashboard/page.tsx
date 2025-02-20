@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import DashboardHeader from "./DashboardHeader";
 import Sidebar from "./Sidebar";
 import Wallet from "./Wallet";
@@ -14,22 +14,28 @@ import BulletinBoard from "./BulletinBoard";
 import styles from "@/app/dashboard/Dashboard.module.css";
 
 export default function Dashboard() {
-  const { data: session, status } = useSession();
+  const { data: session, status } = useSession(); // ✅ session is now used
   const router = useRouter();
   const [currentDateTime, setCurrentDateTime] = useState("");
 
+  // ✅ Memoized function for updating time
+  const updateDateTime = useCallback(() => {
+    setCurrentDateTime(new Date().toLocaleString());
+  }, []);
+
+  // ✅ Ensures time updates every second and cleans up properly
   useEffect(() => {
-    const updateDateTime = () => setCurrentDateTime(new Date().toLocaleString());
     updateDateTime();
     const interval = setInterval(updateDateTime, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [updateDateTime]);
 
+  // ✅ Redirect unauthenticated users
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push("/login");
+      router.replace("/login"); // 🔄 Used `replace()` to avoid back navigation issue
     }
-  }, [status]);
+  }, [status, router]);
 
   return (
     <div className={styles.dashboard}>
@@ -43,14 +49,24 @@ export default function Dashboard() {
             <h2 className={styles.sectionTitle}>Finance Hub</h2>
             <p className={styles.sectionDescription}>Manage your assets seamlessly.</p>
 
+            {/* ✅ Display User Info (Fixes Unused Session Warning) */}
+            {session?.user && (
+              <p className={styles.userInfo}>
+                Welcome, <strong>{session.user.name || "User"}</strong>! ({session.user.email})
+              </p>
+            )}
+
+            {/* ✅ Display Current Time */}
+            <p className={styles.dateTime}>
+              <strong>Current Time:</strong> {currentDateTime}
+            </p>
+
             <BulletinBoard /> {/* ✅ Integrating the Bulletin Board */}
 
-
-          {/* ✅ Live Gold Price Section */}
+            {/* ✅ Live Gold Price Section */}
             <div className={styles.goldPriceSection}>
-            <GoldPrice />
-              </div>
-
+              <GoldPrice />
+            </div>
 
             {/* ✅ Sleek Stablecoin Management Section */}
             <div className={styles.stablecoinManagement}>

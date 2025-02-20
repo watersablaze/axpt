@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import { prisma } from "@/lib/prisma"; // ✅ Use the global Prisma instance
+import { Prisma } from "@prisma/client"; // ✅ Import Prisma types
 
 export async function GET(req: Request) {
   try {
@@ -11,26 +10,42 @@ export async function GET(req: Request) {
     const maxAmount = parseFloat(url.searchParams.get("maxAmount") || "1000000");
     const date = url.searchParams.get("date");
 
-    const filters: any = {
-      amount: { gte: minAmount, lte: maxAmount },
+    // ✅ Construct the AND array dynamically
+    const filters: Prisma.TransactionWhereInput = {
+      AND: [],
     };
 
-    if (type && type !== "all") filters.type = type;
+    if (!isNaN(minAmount) && !isNaN(maxAmount)) {
+      (filters.AND as Prisma.TransactionWhereInput[]).push(
+        { amount: { gte: minAmount } },
+        { amount: { lte: maxAmount } }
+      );
+    }
+
+    if (type && type !== "all") {
+      (filters.AND as Prisma.TransactionWhereInput[]).push({ type: { equals: type } });
+    }
+
     if (date) {
-      filters.createdAt = {
-        gte: new Date(date), 
-        lte: new Date(`${date}T23:59:59`) // End of the selected day
-      };
+      (filters.AND as Prisma.TransactionWhereInput[]).push({
+        createdAt: {
+          gte: new Date(date),
+          lte: new Date(`${date}T23:59:59`),
+        },
+      });
     }
 
     const transactions = await prisma.transaction.findMany({
       where: filters,
-      orderBy: { createdAt: "desc" }, // ✅ Corrected field name
+      orderBy: { createdAt: "desc" as Prisma.SortOrder }, // ✅ Corrected orderBy typing
     });
 
     return NextResponse.json(transactions);
-  } catch (error) {
-    console.error("❌ Error fetching transactions:", error);
-    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
+  } catch (error: any) {
+    console.error("❌ Error fetching transactions:", error.message || error);
+    return NextResponse.json(
+      { error: error.message || "Unknown error fetching transactions" },
+      { status: 500 }
+    );
   }
 }

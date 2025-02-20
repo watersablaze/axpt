@@ -4,9 +4,18 @@ import bcrypt from "bcryptjs";
 import { Wallet } from "ethers";
 import { encryptPrivateKey } from "../../utils/crypto-utils";
 
+interface SignupRequest {
+  name: string;
+  email: string;
+  password: string;
+  industry: string;
+  interests: string;
+}
+
 export async function POST(request: Request) {
   try {
-    const { name, email, password, industry, interests } = await request.json();
+    const { name, email, password, industry, interests }: SignupRequest =
+      await request.json();
 
     if (!name || !email || !password || !industry || !interests) {
       return NextResponse.json(
@@ -50,10 +59,16 @@ export async function POST(request: Request) {
       message: "Signup successful!",
       user: { email: user.email, walletAddress: user.walletAddress },
     });
-  } catch (error: any) {
-    console.error("Signup error:", error);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Signup error:", error);
+      return NextResponse.json(
+        { success: false, message: error.message },
+        { status: 500 }
+      );
+    }
     return NextResponse.json(
-      { success: false, message: "Signup failed due to a server error." },
+      { success: false, message: "Unknown signup error" },
       { status: 500 }
     );
   }

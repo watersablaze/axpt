@@ -1,42 +1,65 @@
+/* Login.module.css */
 .loginContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  background: #f7f9fc;
+  max-width: 400px;
+  margin: 50px auto;
+  text-align: center;
+  padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .title {
-  font-size: 2rem;
-  font-weight: bold;
-  margin-bottom: 20px;
-  color: #333;
+  font-size: 24px;
+  margin-bottom: 15px;
 }
 
 .loginForm {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  max-width: 400px;
+  gap: 12px;
+}
+
+.label {
+  font-size: 14px;
+  text-align: left;
+  font-weight: bold;
 }
 
 .input {
   padding: 10px;
-  margin: 10px 0;
-  border: 1px solid #ccc;
   border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
 }
 
 .submitButton {
   padding: 10px;
   background-color: #007bff;
-  color: #fff;
+  color: white;
+  font-size: 16px;
   border: none;
   border-radius: 5px;
   cursor: pointer;
 }
 
-.submitButton:hover {
-  background-color: #0056b3;
+.submitButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.errorMessage {
+  color: red;
+  font-size: 14px;
+}
+
+.signupText {
+  margin-top: 15px;
+  font-size: 14px;
+}
+
+.signupLink {
+  color: #007bff;
+  text-decoration: underline;
+  font-weight: bold;
 }

@@ -14,19 +14,26 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (status === "loading") return;
+    
     if (status === "unauthenticated" || !session?.user?.isAdmin) {
       router.push("/login");
     } else {
       setLoading(false);
     }
-  }, [session, status]);
+  }, [session?.user?.isAdmin, status, router]); // ✅ Added `router` to dependencies
 
-  if (loading) return <p className={styles.loading}><Loader className={styles.loader} /> Loading admin panel...</p>;
+  if (loading) {
+    return (
+      <p className={styles.loading}>
+        <Loader className={styles.loader} /> Loading admin panel...
+      </p>
+    );
+  }
 
   return (
     <div className={styles.adminContainer}>
       <h2 className={styles.title}>Admin Dashboard</h2>
-
       <div className={styles.gridContainer}>
         {/* User Management Section */}
         <section className={styles.section}>

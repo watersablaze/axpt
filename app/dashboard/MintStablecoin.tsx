@@ -10,21 +10,22 @@ export default function MintStablecoin() {
 
   const handleMint = async () => {
     if (!ethAmount || parseFloat(ethAmount) <= 0) {
-      setMessage("Please enter a valid ETH amount.");
+      setMessage("Please enter a valid ETH amount."); 
       return;
     }
-    
+
     setLoading(true);
     setMessage("");
-    
+
     try {
-      // TODO: Integrate contract function for minting stablecoins
-      await new Promise((resolve) => setTimeout(resolve, 1500)); // Simulate transaction delay
-      setMessage(`Successfully minted stablecoins for ${ethAmount} ETH.`);
-    } catch (error) {
-      setMessage("Transaction failed. Please try again.");
+      // Simulated delay for transaction processing
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      setMessage(`✅ Minted stablecoins for ${ethAmount} ETH.`);
+    } catch (error: unknown) {
+      console.error("❌ Transaction failed:", error);
+      setMessage("❌ Transaction failed. Please try again.");
     }
-    
+
     setLoading(false);
     setEthAmount("");
   };
@@ -40,7 +41,7 @@ export default function MintStablecoin() {
         className={styles.input}
       />
       <button className={styles.mintButton} onClick={handleMint} disabled={loading}>
-        {loading ? "Minting..." : "Mint Stablecoin"}
+        {loading ? "Processing..." : "Mint Stablecoin"}
       </button>
       {message && <p className={styles.message}>{message}</p>}
     </div>

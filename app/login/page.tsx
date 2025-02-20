@@ -1,76 +1,83 @@
-'use client';
+"use client";
 
 import { signIn } from "next-auth/react";
-import React, { useState } from 'react';
-import styles from './Login.module.css';
+import { useState } from "react";
+import { useRouter } from "next/navigation"; // ✅ Use Next.js Router for navigation
+import styles from "./Login.module.css";
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false); // ✅ Added loading state
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError(""); // Reset error on submit
+    setLoading(true); // Prevent multiple submissions
+
+    if (!email || !password) {
+      setError("❌ Email and password are required.");
+      setLoading(false);
+      return;
+    }
 
     const result = await signIn("credentials", {
-      redirect: false, // Avoid redirecting for now
+      redirect: false, // ✅ Prevent full-page reload
       email,
       password,
     });
 
     if (result?.error) {
-      setError("Invalid email or password. Please try again.");
+      setError("❌ Invalid email or password. Please try again.");
+      setLoading(false);
     } else {
-      window.location.href = "/dashboard"; // Redirect to the dashboard
+      router.push("/dashboard"); // ✅ Next.js navigation (better UX)
     }
   };
 
   return (
-    <div style={{ maxWidth: "400px", margin: "0 auto", textAlign: "center" }}>
-      <h1>Login</h1>
-      <form onSubmit={handleSignIn} style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+    <div className={styles.loginContainer}>
+      <h1 className={styles.title}>Login</h1>
+
+      <form onSubmit={handleSignIn} className={styles.loginForm}>
+        <label htmlFor="email" className={styles.label}>
+          Email
+        </label>
         <input
+          id="email"
           type="email"
-          placeholder="Email"
+          placeholder="Enter your email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
-          style={{
-            padding: "10px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
+          className={styles.input}
         />
+
+        <label htmlFor="password" className={styles.label}>
+          Password
+        </label>
         <input
+          id="password"
           type="password"
-          placeholder="Password"
+          placeholder="Enter your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
-          style={{
-            padding: "10px",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
+          className={styles.input}
         />
-        {error && <p style={{ color: "red" }}>{error}</p>}
-        <button
-          type="submit"
-          style={{
-            padding: "10px",
-            backgroundColor: "#007bff",
-            color: "#fff",
-            border: "none",
-            borderRadius: "5px",
-            cursor: "pointer",
-          }}
-        >
-          Sign In
+
+        {error && <p className={styles.errorMessage}>{error}</p>}
+
+        <button type="submit" className={styles.submitButton} disabled={loading}>
+          {loading ? "Signing In..." : "Sign In"}
         </button>
       </form>
-      <p style={{ marginTop: "10px" }}>
+
+      <p className={styles.signupText}>
         Don’t have an account?{" "}
-        <a href="/signup" style={{ color: "#007bff", textDecoration: "underline" }}>
+        <a href="/signup" className={styles.signupLink}>
           Sign Up
         </a>
       </p>

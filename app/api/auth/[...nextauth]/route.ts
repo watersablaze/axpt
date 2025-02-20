@@ -1,16 +1,8 @@
 import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/lib/prisma"; // ✅ Import global Prisma instance
 import bcrypt from "bcryptjs";
-
-// ✅ Prevent multiple PrismaClient instances in development
-declare global {
-  var prisma: PrismaClient | undefined;
-}
-
-const prisma = global.prisma || new PrismaClient();
-if (process.env.NODE_ENV !== "production") global.prisma = prisma;
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -97,7 +89,7 @@ export const authOptions: AuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
-        token.isAdmin = user.isAdmin;
+        token.isAdmin = Boolean(user.isAdmin); // ✅ Ensure correct typing
       }
       console.log("🟢 JWT Token Data:", token);
       return token;

@@ -13,6 +13,15 @@ const nextConfig: NextConfig = {
     };
     return config;
   },
+  async redirects() {
+    return [
+      {
+        source: "/", // Redirect visitors from "/"
+        destination: "/landing", // Send them to "/landing"
+        permanent: true, // Marks as a permanent redirect (SEO friendly)
+      },
+    ];
+  },
 };
 
 export default nextConfig;
