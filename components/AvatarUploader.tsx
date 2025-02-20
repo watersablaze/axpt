@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 
 interface AvatarUploaderProps {
   updateSession: () => void; // Ensures proper type safety
@@ -11,6 +12,22 @@ export default function AvatarUploader({ updateSession }: AvatarUploaderProps) {
   const [uploading, setUploading] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // ✅ Fetch existing avatar on mount
+  useEffect(() => {
+    const fetchAvatar = async () => {
+      try {
+        const res = await fetch("/api/user/avatar");
+        const data = await res.json();
+        if (res.ok && data.avatar) {
+          setAvatarUrl(data.avatar);
+        }
+      } catch (err) {
+        console.error("Failed to fetch avatar:", err);
+      }
+    };
+    fetchAvatar();
+  }, []);
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -67,18 +84,33 @@ export default function AvatarUploader({ updateSession }: AvatarUploaderProps) {
 
   return (
     <div>
-      <input type="file" accept="image/*" onChange={handleFileChange} disabled={uploading} />
-      <button onClick={uploadAvatar} disabled={uploading || !selectedFile}>
+      <input 
+        type="file" 
+        accept="image/*" 
+        onChange={handleFileChange} 
+        disabled={uploading} 
+      />
+      <button 
+        onClick={uploadAvatar} 
+        disabled={uploading || !selectedFile}
+      >
         {uploading ? "Uploading..." : "Upload"}
       </button>
+
       {avatarUrl && (
         <>
-          <img src={avatarUrl} alt="Avatar Preview" width={100} />
-          <button onClick={removeAvatar} disabled={uploading}>
-            Remove Avatar
-          </button>
+          <Image 
+            src={avatarUrl} 
+            alt="Avatar Preview" 
+            width={100} 
+            height={100} 
+            priority
+            style={{ borderRadius: "50%" }}
+          />
+          <button onClick={removeAvatar}>Remove Avatar</button>
         </>
       )}
+
       {error && <p style={{ color: "red" }}>{error}</p>}
     </div>
   );

@@ -1,8 +1,7 @@
 import path from "path";
-import { NextConfig } from "next";
 
-/** @type {NextConfig} */
-const nextConfig: NextConfig = {
+/** @type {import('next').NextConfig} */
+const nextConfig = {
   reactStrictMode: true,
   webpack: (config) => {
     config.resolve.alias = {

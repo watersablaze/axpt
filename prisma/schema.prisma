@@ -16,14 +16,20 @@ model Session {
   sessionToken String @unique
 }
 
+enum TransactionTypeEnum {
+  DEPOSIT
+  WITHDRAWAL
+  TRANSFER
+}
+
 model Transaction {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
   userId    String   @db.ObjectId
   amount    Float // ✅ Amount of the transaction
-  type      String // ✅ Type (e.g., "deposit", "withdrawal")
+  type      TransactionTypeEnum // ✅ Now correctly defined as an ENUM
   createdAt DateTime @default(now()) @map("createdAt") @db.Date // ✅ Timestamp
 
-  // ✅ Explicitly name the relation
+  // ✅ Explicitly name the relation to avoid duplicate errors
   user User @relation(name: "UserTransactions", fields: [userId], references: [id])
 
   @@index([userId])
@@ -47,7 +53,7 @@ model User {
   walletBalance       Float    @default(0)
   avatar              String?
 
-  // ✅ Explicitly name the relation
+  // ✅ Correctly link transactions to users
   transactions Transaction[] @relation(name: "UserTransactions")
 }
 
@@ -57,4 +63,10 @@ model VerificationToken {
   token      String @unique
 
   @@unique([identifier, token])
+}
+
+model RevokedToken {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  jti       String   @unique // JWT ID
+  expiresAt DateTime // Expiration timestamp
 }
