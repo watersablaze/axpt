@@ -7,6 +7,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ✅ User Accounts & Authentication
 model Account {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 }
@@ -16,26 +17,34 @@ model Session {
   sessionToken String @unique
 }
 
+// ✅ Transaction Type Enum
 enum TransactionTypeEnum {
   DEPOSIT
   WITHDRAWAL
   TRANSFER
 }
 
+// ✅ Transactions Model
 model Transaction {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
-  amount    Float // ✅ Amount of the transaction
-  type      TransactionTypeEnum // ✅ Now correctly defined as an ENUM
-  createdAt DateTime @default(now()) @map("createdAt") @db.Date // ✅ Timestamp
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  senderId    String   @db.ObjectId @map("senderId") // ✅ Explicit mapping
+  recipientId String   @db.ObjectId @map("recipientId") // ✅ Explicit mapping
+  amount      Float 
+  type        TransactionTypeEnum 
+  status      String   @default("pending")
+  createdAt   DateTime @default(now()) @map("createdAt") @db.Date 
 
-  // ✅ Explicitly name the relation to avoid duplicate errors
-  user User @relation(name: "UserTransactions", fields: [userId], references: [id])
+  // ✅ Correctly Define Relationships
+  sender    User @relation(name: "SentTransactions", fields: [senderId], references: [id])
+  recipient User @relation(name: "ReceivedTransactions", fields: [recipientId], references: [id])
 
-  @@index([userId])
-  @@index([createdAt]) // ✅ Index for sorting transactions by date
+  // ✅ Indexes for Query Optimization
+  @@index([senderId])
+  @@index([recipientId])
+  @@index([createdAt]) 
 }
 
+// ✅ Users Model
 model User {
   id                  String   @id @default(auto()) @map("_id") @db.ObjectId
   createdAt           DateTime @default(now()) @map("createdAt") @db.Date
@@ -53,10 +62,12 @@ model User {
   walletBalance       Float    @default(0)
   avatar              String?
 
-  // ✅ Correctly link transactions to users
-  transactions Transaction[] @relation(name: "UserTransactions")
+  // ✅ Connect transactions to users
+  sentTransactions     Transaction[] @relation(name: "SentTransactions")
+  receivedTransactions Transaction[] @relation(name: "ReceivedTransactions")
 }
 
+// ✅ Email Verification
 model VerificationToken {
   id         String @id @default(auto()) @map("_id") @db.ObjectId
   identifier String @unique
@@ -65,8 +76,12 @@ model VerificationToken {
   @@unique([identifier, token])
 }
 
+// ✅ JWT Revocation for Security
 model RevokedToken {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  jti       String   @unique // JWT ID
+  jti       String   @unique // ✅ Only keep unique constraint
   expiresAt DateTime // Expiration timestamp
+
+  // ✅ Speed up token expiration cleanup
+  @@index([expiresAt])
 }

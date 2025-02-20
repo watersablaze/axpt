@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
-import AvatarUploader from "@/components/AvatarUploader"; // ✅ Ensure this is properly imported
+import AvatarUploader from "../../components/AvatarUploader"; // ✅ Relative Import
 import styles from "./DashboardHeader.module.css";
 
 export default function DashboardHeader() {
