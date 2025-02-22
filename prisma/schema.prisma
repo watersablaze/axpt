@@ -24,14 +24,22 @@ enum TransactionTypeEnum {
   TRANSFER
 }
 
+// ✅ Transaction Status Enum
+enum TransactionStatusEnum {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
 // ✅ Transactions Model
 model Transaction {
   id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  senderId    String   @db.ObjectId @map("senderId") // ✅ Explicit mapping
-  recipientId String   @db.ObjectId @map("recipientId") // ✅ Explicit mapping
+  senderId    String   @db.ObjectId @map("senderId")
+  recipientId String   @db.ObjectId @map("recipientId")
+  userId      String   @db.ObjectId @map("userId") // ✅ Added to track which user owns the transaction
   amount      Float 
   type        TransactionTypeEnum 
-  status      String   @default("pending")
+  status      TransactionStatusEnum @default(PENDING) // ✅ Enum for safer status management
   createdAt   DateTime @default(now()) @map("createdAt") @db.Date 
 
   // ✅ Correctly Define Relationships
@@ -41,6 +49,7 @@ model Transaction {
   // ✅ Indexes for Query Optimization
   @@index([senderId])
   @@index([recipientId])
+  @@index([userId]) // ✅ New index for user-based queries
   @@index([createdAt]) 
 }
 
@@ -62,7 +71,7 @@ model User {
   walletBalance       Float    @default(0)
   avatar              String?
 
-  // ✅ Connect transactions to users
+  // ✅ Correctly link transactions to users
   sentTransactions     Transaction[] @relation(name: "SentTransactions")
   receivedTransactions Transaction[] @relation(name: "ReceivedTransactions")
 }
@@ -79,7 +88,7 @@ model VerificationToken {
 // ✅ JWT Revocation for Security
 model RevokedToken {
   id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  jti       String   @unique // ✅ Only keep unique constraint
+  jti       String   @unique // ✅ Keep only the unique constraint
   expiresAt DateTime // Expiration timestamp
 
   // ✅ Speed up token expiration cleanup

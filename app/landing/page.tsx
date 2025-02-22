@@ -1,45 +1,75 @@
 "use client";
 
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { motion, useScroll, useTransform } from "framer-motion";
 import styles from "./Landing.module.css";
-import Hero from "./components/Hero"; 
-import Features from "./components/Features";
-import CTA from "./components/CTA";
-import Footer from "./components/Footer";
-
-export const metadata = {
-  title: "AXPT - The Future of Tech & Trade",
-  description: "A seamless ecosystem connecting blockchain, trade, and cultural exchange.",
-  keywords: "blockchain, trade, fintech, cultural exchange, investments, digital assets",
-  openGraph: {
-    title: "AXPT - The Future of Tech & Trade",
-    description: "Empowering global connections with decentralized finance.",
-    url: "https://axpt.io",
-    siteName: "AXPT.io",
-    images: [
-      {
-        url: "/AXI.png",
-        width: 1200,
-        height: 630,
-        alt: "AXPT Logo",
-      },
-    ],
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "AXPT - The Future of Tech & Trade",
-    description: "Join AXPT and revolutionize global trade and digital finance.",
-    images: ["/AXI.png"],
-  },
-};
 
 export default function LandingPage() {
+  const [tagline, setTagline] = useState("The Future of Tech & Trade");
+  const taglines = [
+    "Empowering Global Connections",
+    "The Next Era of Decentralized Finance",
+    "Where Blockchain Meets Trade",
+  ];
+
+  // ✅ Parallax effect for scrolling
+  const { scrollY } = useScroll();
+  const parallaxY = useTransform(scrollY, [0, 300], [0, -30]); // ✅ Subtle movement
+
+  useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      setTagline(taglines[index]);
+      index = (index + 1) % taglines.length;
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <main className={styles.landingContainer}>
-      <Hero />
-      <Features />
-      <CTA />
-      <Footer />
+      {/* 🌊 Underwater Light Effects */}
+      <div className={styles.underwaterEffect}></div>
+      <div className={styles.lightOverlay}></div>
+
+      {/* 🔷 Transparent Header */}
+      <header className={styles.header}>
+        <Image src="/temp.axpt.png" alt="AXPT Logo" width={80} height={80} />
+        <form className={styles.signupForm}>
+          <input type="email" placeholder="Enter your email" required />
+          <button type="submit" className={styles.signupButton}>Welcome Aboard</button>
+        </form>
+      </header>
+
+      {/* 🎭 Hero Section with Smooth Animations */}
+      <section className={styles.hero}>
+        <motion.h1
+          className={`${styles.title} fadeIn`}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+        >
+          AXPT.io
+        </motion.h1>
+        
+        <motion.p
+          className={`${styles.tagline} fadeIn`}
+          key={tagline}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
+          {tagline}
+        </motion.p>
+
+        {/* ✅ Subtle floating effect (not excessive) */}
+        <motion.div style={{ y: parallaxY }} className={styles.ctaContainer}>
+          <Link href="/signup" className={`${styles.ctaButton} fadeIn`}>
+            Get Started
+          </Link>
+        </motion.div>
+      </section>
     </main>
   );
 }

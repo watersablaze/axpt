@@ -1,7 +1,167 @@
+/* 🌊 Underwater Background */
 .landingContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: 20px;
-  }
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  background: url("/PXP-Background2.jpg") no-repeat center center/cover;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 🔷 Transparent Header */
+.header {
+  position: absolute;
+  top: 20px;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background: rgba(255, 255, 255, 0.025);
+  backdrop-filter: blur(20px);
+  border-radius: 10px;
+}
+
+/* 📝 Signup Form */
+.signupForm {
+  display: flex;
+  gap: 10px;
+  margin-right: 100px;
+}
+
+.signupForm input {
+  padding: 10px;
+  border: 1px solid #fff;
+  background: transparent;
+  color: #fff;
+  border-radius: 5px;
+  outline: none;
+}
+
+/* ✅ Digital Green Button */
+.signupButton {
+  background: #0d690353;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+.signupButton:hover {
+  background: #747217;
+  transform: scale(1.05);
+}
+
+/* 🎭 Hero Section */
+.hero {
+  text-align: center;
+  color: white;
+}
+
+.title {
+  font-size: 4rem;
+  font-weight: bold;
+}
+
+.tagline {
+  font-size: 1.5rem;
+  margin-top: 10px;
+}
+
+/* 💡 Smooth Underwater Light Effect */
+@keyframes underwaterLight {
+  0% { background-position: 0% 50%; opacity: 0.4; transform: scale(1); }
+  50% { background-position: 100% 50%; opacity: 0.7; transform: scale(1.02); }
+  100% { background-position: 0% 50%; opacity: 0.4; transform: scale(1); }
+}
+
+.underwaterEffect {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 10%, rgba(0, 0, 0, 0) 80%);
+  mix-blend-mode: overlay;
+  animation: underwaterLight 8s infinite ease-in-out;
+}
+
+/* ✨ Soft Glowing Highlights */
+@keyframes lightWave {
+  0% { transform: translateY(-25px) scale(1); opacity: 0.3; }
+  50% { transform: translateY(20px) scale(1.03); opacity: 0.6; }
+  100% { transform: translateY(-25px) scale(1); opacity: 0.3; }
+}
+
+.lightOverlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, rgba(67, 215, 223, 0.883) 20%, rgba(0, 0, 0, 0) 90%);
+  animation: lightWave 20s infinite ease-in-out;
+  mix-blend-mode: soft-light;
+}
+
+/* 📌 Keeps the CTA button centered & spaced properly */
+.ctaContainer {
+  margin-top: 40px; /* ✅ Prevents overlap */
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+/* ✅ Subtle Floating Effect (Fixed the excessive movement) */
+@keyframes subtleFloat {
+  0% { transform: translateY(-5px); }
+  50% { transform: translateY(5px); }
+  100% { transform: translateY(-5px); }
+}
+
+/* 🎯 CTA Button */
+.ctaButton {
+  background: #0d69035e;
+  color: white;
+  border: none;
+  padding: 12px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  font-size: 1.2rem;
+  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
+  display: inline-block;
+  animation: subtleFloat 6s infinite ease-in-out; /* ✅ Subtle floating effect */
+}
+
+.ctaButton:hover {
+  background: #747217;
+  transform: scale(1.05);
+}
+
+.ctaButton:active::after {
+  content: "";
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: ripple 0.6s ease-out;
+}
+
+/* 🏔️ Smooth Entry Animation */
+.fadeIn {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInAnimation 1s ease-in-out forwards;
+}
+
+@keyframes fadeInAnimation {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
