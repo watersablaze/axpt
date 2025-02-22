@@ -15,14 +15,58 @@
 .header {
   position: absolute;
   top: 20px;
-  width: 100%;
+  left: 0; 
+  right: 0;
+  width: 100vw; /* ✅ Ensures full width */
+  height: 80px; /* ✅ Fixed height to prevent expansion */
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 20px 40px;
+  justify-content: space-between;
+  padding: 15px 40px;
   background: rgba(255, 255, 255, 0.025);
   backdrop-filter: blur(20px);
   border-radius: 10px;
+  z-index: 10;
+}
+
+/* ✅ Logo - Independent of Header Size */
+.logo {
+  position: absolute;
+  left: 20px; /* ✅ Keeps it separate from flexbox spacing */
+  top: 50%;
+  transform: translateY(-50%);
+  width: 290px; /* ✅ Adjust size as needed */
+  height: auto;
+  filter: drop-shadow(0px 0px 8px rgba(0, 255, 170, 0.6));
+  transition: transform 0.3s ease-in-out;
+  margin-top: 10px;
+  margin-left: 40px;
+}
+
+/* ✅ Call-to-Action Tagline in Header */
+.headerTagline {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  flex-grow: 1; /* Takes up available space */
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  opacity: 0;
+  animation: fadeInTagline 1.5s ease-in-out forwards;
+  margin-left: 300px;
+}
+
+/* 🎭 Smooth Fade-In Effect for Tagline */
+@keyframes fadeInTagline {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 📝 Signup Form */
@@ -63,14 +107,45 @@
   color: white;
 }
 
+/* 🔹 AXPT.IO Title - Positioned at the Top */
 .title {
-  font-size: 4rem;
+  position: absolute;
+  top: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 6rem;
   font-weight: bold;
+  color: #00ffaa;
+  text-shadow: 0 0 8px rgba(0, 255, 170, 0.6), 0 0 12px rgba(0, 255, 170, 0.4);
+  transition: text-shadow 0.3s ease-in-out;
+}
+
+/* ✅ Subtle glow intensifies on hover */
+.title:hover {
+  text-shadow: 0 0 12px rgba(0, 255, 170, 0.8), 0 0 18px rgba(0, 255, 170, 0.6);
 }
 
 .tagline {
-  font-size: 1.5rem;
-  margin-top: 10px;
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  transition: all 0.3s ease-in-out;
+  opacity: 0;
+  filter: blur(8px);
+  animation: fadeInTagline 1.5s ease-in-out forwards;
+  margin-top: 680px
+}
+
+/* ✅ Smooth Fade-In Effect for Tagline */
+@keyframes fadeInTagline {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0px);
+  }
 }
 
 /* 💡 Smooth Underwater Light Effect */
@@ -122,11 +197,12 @@
 
 /* 🎯 CTA Button */
 .ctaButton {
-  background: #0d69035e;
+  background: #0d690332;
   color: white;
   border: none;
   padding: 12px 18px;
   border-radius: 8px;
+  border: #747217;
   cursor: pointer;
   position: relative;
   overflow: hidden;
@@ -134,6 +210,7 @@
   transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
   display: inline-block;
   animation: subtleFloat 6s infinite ease-in-out; /* ✅ Subtle floating effect */
+  animation: pulseWave 9s infinite ease-in-out, buttonVibrate 1.5s infinite ease-in-out;
 }
 
 .ctaButton:hover {
@@ -154,6 +231,28 @@
   animation: ripple 0.6s ease-out;
 }
 
+/* 🔄 Subtle Vibration Effect */
+@keyframes buttonVibrate {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-1px) rotate(-0.5deg); }
+  50% { transform: translateX(1px) rotate(0.5deg); }
+  75% { transform: translateX(-1px) rotate(-0.5deg); }
+  100% { transform: translateX(0); }
+}
+
+/* ✨ Soft Expanding Glow Effect */
+@keyframes pulseWave {
+  0% {
+    box-shadow: 0 0 5px rgba(13, 105, 3, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(13, 105, 3, 0.6);
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(13, 105, 3, 0.3);
+  }
+}
+
 /* 🏔️ Smooth Entry Animation */
 .fadeIn {
   opacity: 0;
@@ -164,4 +263,194 @@
 @keyframes fadeInAnimation {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
+}
+
+/* 🟢 Subtle Circuit Board Glow */
+@keyframes circuitGlow {
+  0% { opacity: 0.2; filter: blur(1px); transform: scale(1); }
+  50% { opacity: 0.6; filter: blur(3px); transform: scale(1.02); }
+  100% { opacity: 0.2; filter: blur(1px); transform: scale(1); }
+}
+
+.circuitBoard {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: url("/.png") repeat center center;
+  background-size: cover;
+  opacity: -0.1;
+  mix-blend-mode: overlay; /* Creates a seamless integration with the background */
+  animation: circuitGlow 20s infinite alternate ease-in-out;
+  z-index: 0;
+}
+
+@keyframes randomGlitch {
+  0%, 100% { transform: skewX(0deg); opacity: 1; }
+  12% { transform: skewX(1deg); opacity: 0.97; text-shadow: 1px 1px 2px rgba(0, 255, 170, 0.4); }
+  33% { transform: skewX(-1.5deg); opacity: 1; text-shadow: -2px -2px 3px rgba(0, 255, 170, 0.4); }
+  56% { transform: skewX(0.5deg); opacity: 0.98; text-shadow: 1px 1px 2px rgba(0, 255, 170, 0.6); }
+  78% { transform: skewX(-0.7deg); opacity: 1; }
+  89% { transform: skewX(1.5deg); opacity: 0.97; text-shadow: 2px 2px 4px rgba(0, 255, 170, 0.6); }
+}
+
+/* ✅ More organic glitch behavior */
+.softGlitchText {
+  display: inline-block;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: rgba(255, 255, 255, 0.9);
+  text-align: center;
+  animation: randomGlitch 7.5s infinite steps(1);
+  transition: all 0.3s ease-in-out;
+  filter: blur(5px); /* 🔹 Initial blur */
+}
+
+/* ✅ Ensures tagline starts blurred */
+.softGlitchText.hidden {
+  opacity: 0;
+  filter: blur(10px);
+}
+
+/* ✅ Smooth transition effect when it becomes visible */
+.softGlitchText.show {
+  filter: blur(0px);
+  transition: filter 1.2s ease-in-out;
+}
+
+.taglineWrapper {
+  margin-top: 45px;
+  display: flex; /* ✅ Ensures correct alignment */
+  justify-content: center;
+  align-items: center;
+  width: 100%; /* ✅ Prevents container shrinking */
+}
+
+@keyframes floatingContract {
+  0% { transform: translateY(0px) scale(1); opacity: 0.85; }
+  50% { transform: translateY(-5px) scale(1.01); opacity: 0.95; }
+  100% { transform: translateY(0px) scale(1); opacity: 0.85; }
+}
+
+/* 🔹 Smart Contract Container */
+.smartContractContainer {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 320px;
+  background: rgba(255, 255, 255, 0.039);
+  border: 0px solid rgba(0, 255, 170, 0.3);
+  border-radius: 12px;
+  backdrop-filter: blur(15px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 0px 12px rgba(0, 255, 170, 0.676);
+  overflow: hidden;
+  padding: 12px;
+  margin-top: 60px;
+}
+
+/* ✅ Subtle Blur for Contract Words */
+.contractBlurred {
+  filter: blur(1px);
+  transition: filter 0.5s ease-in-out;
+}
+
+.smartContractText {
+  font-size: 1rem;
+  font-weight: normal;
+  color: rgba(0, 255, 170, 0.85);
+  text-align: left;
+  line-height: 1.6;
+  text-shadow: 0 0 4px rgba(0, 255, 170, 0.3);
+  width: 90%;
+  overflow: hidden;
+  white-space: pre-wrap;
+}
+
+/* ✅ Progress dots animate to give "Executing..." a live feel */
+@keyframes progressAnimation {
+  0% { content: "."; }
+  33% { content: ".."; }
+  66% { content: "..."; }
+  100% { content: "."; }
+}
+
+.progressDots::after {
+  content: "";
+  animation: progressAnimation 1.5s infinite;
+}
+
+/* ✅ Holographic Flickering Effect */
+@keyframes holographicFlicker {
+  0% { opacity: 1; filter: brightness(1) blur(0px); }
+  25% { opacity: 0.95; filter: brightness(1.05) blur(0.5px); }
+  50% { opacity: 1; filter: brightness(0.98) blur(0px); }
+  75% { opacity: 0.9; filter: brightness(1.1) blur(0.5px); }
+  100% { opacity: 1; filter: brightness(1) blur(0px); }
+}
+
+.flickering {
+  animation: holographicFlicker 6s infinite ease-in-out;
+}
+
+/* ✅ Simulated Contract Scrolling */
+@keyframes scrollingText {
+  0% { transform: translateY(30%); opacity: 0.8; }
+  50% { transform: translateY(-30%); opacity: 1; }
+  100% { transform: translateY(30%); opacity: 0.8; }
+}
+
+.scrollingText {
+  display: block;
+  overflow: hidden;
+  width: 100%;
+  height: 150px;
+  text-align: left;
+  animation: delayedScroll 10s linear infinite;
+}
+
+/* ✅ Pulsing glow effect when contract is confirmed */
+@keyframes pulsingGlow {
+  0% { text-shadow: 0 0 5px rgba(0, 255, 170, 0.4); }
+  50% { text-shadow: 0 0 15px rgba(0, 255, 170, 0.8); }
+  100% { text-shadow: 0 0 5px rgba(0, 255, 170, 0.4); }
+}
+
+.pulsingText {
+  animation: pulsingGlow 2s infinite alternate ease-in-out;
+}
+
+/* ✅ Smooth scrolling delay */
+@keyframes delayedScroll {
+  0% { transform: translateY(100%); opacity: 0; }
+  10% { opacity: 1; }
+  100% { transform: translateY(-100%); }
+}
+
+/* ✅ Animated Digital Signature */
+.signature {
+  margin-top: 10px;
+  padding: 5px 10px;
+  border-radius: 5px;
+  font-size: 0.9rem;
+  color: rgba(0, 255, 170, 0.85);
+  background: rgba(0, 255, 170, 0.1);
+  box-shadow: 0px 0px 8px rgba(0, 255, 170, 0.3);
+  text-align: center;
+}
+
+/* ✅ Subtle Flickering Effect for Signature */
+@keyframes flicker {
+  0% { opacity: 0.8; }
+  50% { opacity: 1; }
+  100% { opacity: 0.8; }
+}
+
+.signatureText {
+  animation: flicker 2.5s infinite alternate ease-in-out;
 }
