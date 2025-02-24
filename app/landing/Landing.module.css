@@ -23,24 +23,170 @@
   align-items: center;
   justify-content: space-between;
   padding: 15px 40px;
-  background: rgba(255, 255, 255, 0.025);
-  backdrop-filter: blur(20px);
+  background: rgba(255, 255, 255, 0);
+  backdrop-filter: blur(2px);
   border-radius: 10px;
   z-index: 10;
 }
 
-/* ✅ Logo - Independent of Header Size */
-.logo {
+.hero {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  z-index: 1; /* ✅ Keep the hero backdrop low */
+  background: rgba(255, 255, 255, 0.02);
+  box-shadow: inset 0px 0px 10px rgba(0, 255, 170, 0.1);
+  backdrop-filter: blur(2px); /* ✅ Keep strong blur */
+}
+
+.rightSideText {
   position: absolute;
-  left: 20px; /* ✅ Keeps it separate from flexbox spacing */
   top: 50%;
+  right: 13%;
   transform: translateY(-50%);
-  width: 290px; /* ✅ Adjust size as needed */
+  text-align: right;
+  font-size: 1.2rem;
+  font-weight: 500;
+  color: rgba(82, 169, 160, 0.9);
+  line-height: 1.2;
+  white-space: nowrap;
+  z-index: 20;
+  text-shadow: 0 0 5px rgba(0, 255, 170, 0.5);
+}
+
+/* 🔹 Flickering Data Stream Effect */
+.revealText {
+  opacity: 0;
+  transform: translateX(20px);
+  animation: dataFlicker 1.5s ease-in-out forwards;
+  margin: 4px 0;
+}
+
+@keyframes dataFlicker {
+  0% { opacity: 0; transform: translateX(20px); filter: blur(3px); }
+  50% { opacity: 0.5; filter: blur(1.5px); }
+  100% { opacity: 1; transform: translateX(0); filter: blur(0px); }
+}
+
+@keyframes fadeInText {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 🎯 High-Tech Toggle Button */
+.toggleButton {
+  position: fixed;
+  bottom: 400px;
+  left: 330px;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle, rgba(0, 255, 170, 0.2), rgba(0, 255, 170, 0.05));
+  border: 2px solid rgba(0, 255, 170, 0.5);
+  color: #00ffaa;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.3rem;
+  transition: all 0.3s ease-in-out;
+  box-shadow: 0 0 12px rgba(0, 255, 170, 0.3);
+  animation: pulseGlow 3s infinite alternate ease-in-out;
+  z-index: 20;
+}
+
+.toggleButton:hover {
+  background: rgba(0, 255, 170, 0.3);
+  box-shadow: 0 0 18px rgba(0, 255, 170, 0.6);
+}
+
+/* 📦 Compact Floating Info Box */
+.infoBox {
+  position: fixed;
+  bottom: 344px;
+  right: 1100px;
+  width: 390px;
   height: auto;
-  filter: drop-shadow(0px 0px 8px rgba(0, 255, 170, 0.6));
+  padding: 15px;
+  background: rgba(20, 20, 20, 0.586);
+  border-radius: 10px;
+  border: 2px solid rgba(0, 255, 170, 0.4);
+  box-shadow: 0px 0px 12px rgba(0, 255, 170, 0.6);
+  color: white;
+  text-align: left;
+  font-size: 0.85rem;
+  z-index: 100;
+}
+
+/* ✅ Info Box Header (with Close Button) */
+.infoHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.infoHeader h3 {
+  font-size: 0.9rem;
+  color: #00ffaa;
+  margin: 0;
+}
+
+/* ❌ Close Icon Inside Box */
+.closeIcon {
+  cursor: pointer;
+  font-size: 1rem;
+  color: rgba(0, 255, 170, 0.8);
+  transition: color 0.3s ease-in-out;
+}
+
+.closeIcon:hover {
+  color: white;
+}
+
+/* ✅ Smooth Fade Animation */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ✅ Optimized Logo Animation (Syncs with browser resizing) */
+@keyframes floatingLogo {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(8px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes pulseGlow {
+  0% { filter: drop-shadow(0px 0px 8px rgba(0, 255, 170, 0.2)); }
+  50% { filter: drop-shadow(0px 0px 15px rgba(0, 255, 170, 0.2)); }
+  100% { filter: drop-shadow(0px 0px 8px rgba(0, 255, 170, 0.3)); }
+}
+
+/* ✅ Logo - Now Responsive */
+.logo {
+  position: relative;
+  width: 18vw; /* ✅ Scales based on screen size */
+  max-width: 300px;
+  height: auto;
+  margin-top: 100px;
   transition: transform 0.3s ease-in-out;
-  margin-top: 10px;
-  margin-left: 40px;
+  animation: floatingLogo 4s infinite ease-in-out, pulseGlow 6s infinite alternate ease-in-out;
+}
+
+.logo:hover {
+  transform: rotateY(15deg); /* ✅ Smooth 3D Tilt */
 }
 
 /* ✅ Call-to-Action Tagline in Header */
@@ -49,24 +195,12 @@
   font-weight: 600;
   color: #fff;
   text-align: center;
-  flex-grow: 1; /* Takes up available space */
+
   text-transform: uppercase;
   letter-spacing: 3px;
   opacity: 0;
   animation: fadeInTagline 1.5s ease-in-out forwards;
-  margin-left: 300px;
-}
-
-/* 🎭 Smooth Fade-In Effect for Tagline */
-@keyframes fadeInTagline {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  margin-left: 20px;
 }
 
 /* 📝 Signup Form */
@@ -101,51 +235,64 @@
   transform: scale(1.05);
 }
 
-/* 🎭 Hero Section */
-.hero {
-  text-align: center;
-  color: white;
-}
-
-/* 🔹 AXPT.IO Title - Positioned at the Top */
+/* 🔹 AXPT.IO Title - Clean High-Tech Look */
 .title {
   position: absolute;
-  top: 10%;
+  bottom: 5%;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 6rem;
+  font-size: 1.5rem;
   font-weight: bold;
-  color: #00ffaa;
-  text-shadow: 0 0 8px rgba(0, 255, 170, 0.6), 0 0 12px rgba(0, 255, 170, 0.4);
-  transition: text-shadow 0.3s ease-in-out;
+  color: rgba(79, 186, 216, 0.9);
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  text-align: center;
+  text-shadow: 
+    0 0 4px rgba(0, 255, 170, 0.3), 
+    0 0 12px rgba(0, 255, 170, 0.4), 
+    0 0 24px rgba(79, 186, 216, 0.8);
+  white-space: nowrap; /* ✅ Prevents line breaks */
+  z-index: 15; /* ✅ Puts title **above** .hero blur */
 }
 
-/* ✅ Subtle glow intensifies on hover */
+/* ✅ Holographic Glow Intensifies on Hover */
 .title:hover {
-  text-shadow: 0 0 12px rgba(0, 255, 170, 0.8), 0 0 18px rgba(0, 255, 170, 0.6);
+  color: rgba(0, 255, 170, 1);
+  text-shadow: 
+    0 0 8px rgba(0, 255, 170, 0.8), 
+    0 0 16px rgba(0, 255, 170, 0.6),
+    0 0 32px rgba(79, 186, 216, 1);
 }
 
-.tagline {
-  font-size: 2rem;
-  font-weight: bold;
-  color: white;
-  transition: all 0.3s ease-in-out;
-  opacity: 0;
-  filter: blur(8px);
-  animation: fadeInTagline 1.5s ease-in-out forwards;
-  margin-top: 680px
+/* 🎭 Floating Glow */
+@keyframes titleGlow {
+  0% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 0.95; filter: brightness(1.1); }
+  100% { opacity: 1; filter: brightness(1); }
 }
 
-/* ✅ Smooth Fade-In Effect for Tagline */
-@keyframes fadeInTagline {
-  from {
-    opacity: 0;
-    filter: blur(8px);
-  }
-  to {
-    opacity: 1;
-    filter: blur(0px);
-  }
+/* 🔹 Full-Width Glass Background */
+.title::before {
+  content: "";
+  position: absolute;
+  width: 100vw; /* Spanning full width */
+  height: 60px;
+  background: rgba(0, 255, 170, 0.1);
+  border-radius: 8px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 18px rgba(0, 255, 170, 0.3);
+  opacity: 0.5; /* Lowered opacity for a subtle effect */
+}
+
+/* ✨ High-Tech Flickering Animation */
+@keyframes holographicFlicker {
+  0% { opacity: 1; filter: brightness(1) blur(0px); }
+  50% { opacity: 0.95; filter: brightness(1.1) blur(0.5px); }
+  100% { opacity: 1; filter: brightness(0.98) blur(0px); }
 }
 
 /* 💡 Smooth Underwater Light Effect */
@@ -180,79 +327,6 @@
   mix-blend-mode: soft-light;
 }
 
-/* 📌 Keeps the CTA button centered & spaced properly */
-.ctaContainer {
-  margin-top: 40px; /* ✅ Prevents overlap */
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-/* ✅ Subtle Floating Effect (Fixed the excessive movement) */
-@keyframes subtleFloat {
-  0% { transform: translateY(-5px); }
-  50% { transform: translateY(5px); }
-  100% { transform: translateY(-5px); }
-}
-
-/* 🎯 CTA Button */
-.ctaButton {
-  background: #0d690332;
-  color: white;
-  border: none;
-  padding: 12px 18px;
-  border-radius: 8px;
-  border: #747217;
-  cursor: pointer;
-  position: relative;
-  overflow: hidden;
-  font-size: 1.2rem;
-  transition: background 0.3s ease-in-out, transform 0.2s ease-in-out;
-  display: inline-block;
-  animation: subtleFloat 6s infinite ease-in-out; /* ✅ Subtle floating effect */
-  animation: pulseWave 9s infinite ease-in-out, buttonVibrate 1.5s infinite ease-in-out;
-}
-
-.ctaButton:hover {
-  background: #747217;
-  transform: scale(1.05);
-}
-
-.ctaButton:active::after {
-  content: "";
-  position: absolute;
-  width: 100px;
-  height: 100px;
-  background: rgba(255, 255, 255, 0.4);
-  border-radius: 50%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  animation: ripple 0.6s ease-out;
-}
-
-/* 🔄 Subtle Vibration Effect */
-@keyframes buttonVibrate {
-  0% { transform: translateX(0); }
-  25% { transform: translateX(-1px) rotate(-0.5deg); }
-  50% { transform: translateX(1px) rotate(0.5deg); }
-  75% { transform: translateX(-1px) rotate(-0.5deg); }
-  100% { transform: translateX(0); }
-}
-
-/* ✨ Soft Expanding Glow Effect */
-@keyframes pulseWave {
-  0% {
-    box-shadow: 0 0 5px rgba(13, 105, 3, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 20px rgba(13, 105, 3, 0.6);
-  }
-  100% {
-    box-shadow: 0 0 5px rgba(13, 105, 3, 0.3);
-  }
-}
-
 /* 🏔️ Smooth Entry Animation */
 .fadeIn {
   opacity: 0;
@@ -284,104 +358,70 @@
   z-index: 0;
 }
 
-@keyframes randomGlitch {
-  0%, 100% { transform: skewX(0deg); opacity: 1; }
-  12% { transform: skewX(1deg); opacity: 0.97; text-shadow: 1px 1px 2px rgba(0, 255, 170, 0.4); }
-  33% { transform: skewX(-1.5deg); opacity: 1; text-shadow: -2px -2px 3px rgba(0, 255, 170, 0.4); }
-  56% { transform: skewX(0.5deg); opacity: 0.98; text-shadow: 1px 1px 2px rgba(0, 255, 170, 0.6); }
-  78% { transform: skewX(-0.7deg); opacity: 1; }
-  89% { transform: skewX(1.5deg); opacity: 0.97; text-shadow: 2px 2px 4px rgba(0, 255, 170, 0.6); }
-}
-
-/* ✅ More organic glitch behavior */
-.softGlitchText {
-  display: inline-block;
-  font-size: 1.5rem;
-  font-weight: 600;
-  letter-spacing: 1px;
-  color: rgba(255, 255, 255, 0.9);
-  text-align: center;
-  animation: randomGlitch 7.5s infinite steps(1);
-  transition: all 0.3s ease-in-out;
-  filter: blur(5px); /* 🔹 Initial blur */
-}
-
-/* ✅ Ensures tagline starts blurred */
-.softGlitchText.hidden {
-  opacity: 0;
-  filter: blur(10px);
-}
-
-/* ✅ Smooth transition effect when it becomes visible */
-.softGlitchText.show {
-  filter: blur(0px);
-  transition: filter 1.2s ease-in-out;
-}
-
-.taglineWrapper {
-  margin-top: 45px;
-  display: flex; /* ✅ Ensures correct alignment */
-  justify-content: center;
-  align-items: center;
-  width: 100%; /* ✅ Prevents container shrinking */
-}
-
-@keyframes floatingContract {
-  0% { transform: translateY(0px) scale(1); opacity: 0.85; }
-  50% { transform: translateY(-5px) scale(1.01); opacity: 0.95; }
-  100% { transform: translateY(0px) scale(1); opacity: 0.85; }
-}
-
+/* ✅ Floating Rotation Animation */
 @keyframes floatingRotation {
-  0% { transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg); }
-  50% { transform: translate(-50%, -50%) rotateX(2deg) rotateY(-2deg); }
-  100% { transform: translate(-50%, -50%) rotateX(0deg) rotateY(0deg); }
+  0% { transform: rotateX(6deg) rotateY(12deg) scale(1); }
+  50% { transform: rotateX(8deg) rotateY(-18deg) scale(1.02); } /* Smoother tilt */
+  100% { transform: rotateX(2deg) rotateY(6deg) scale(1); }
 }
 
-/* 🔹 Smart Contract Container */
 .smartContractContainer {
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 240px;
-  height: 300px;
-  background: rgba(255, 255, 255, 0.039);
-  border: 0px solid rgba(0, 255, 170, 0.3);
+  transform: translate(-50%, -50%) rotateX(15deg);
+  width: 200px;
+  height: auto;
+  background: rgba(0, 255, 170, 0.08);
+  border: 2px solid rgba(0, 255, 170, 0.4);
   border-radius: 12px;
-  backdrop-filter: blur(15px);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0px 0px 18px rgba(0, 255, 170, 0.676);
+  backdrop-filter: blur(20px);
+  box-shadow: 0px 0px 18px rgba(0, 255, 170, 0.6);
+  animation: hologramGlow 3s infinite alternate ease-in-out;
+  perspective: 1200px;
   overflow: hidden;
-  padding: 12px;
-  margin-top: 60px;
-  z-index: 10;
-  transform-style: preserve-3d; /* ✅ Enables 3D transformations */
-  perspective: 1000px; /* ✅ Adds depth effect */
-  animation: floatingRotation 1s infinite alternate ease-in-out;
+  z-index: 12; /* ✅ Above hero blur */
 }
 
-/* ✅ Subtle Blur for Contract Words */
-.contractBlurred {
-  filter: blur(1px);
-  transition: filter 0.5s ease-in-out;
+/* 🔹 Holographic Projection Glow */
+@keyframes hologramGlow {
+  0% { transform: translate(-50%, -50%) rotateX(12deg) scale(1); }
+  50% { transform: translate(-50%, -50%) rotateX(15deg) scale(1.02); }
+  100% { transform: translate(-50%, -50%) rotateX(12deg) scale(1); }
 }
 
-@keyframes holographicGlow {
-  0% { box-shadow: 0px 0px 12px rgba(0, 255, 170, 0.4); }
-  50% { box-shadow: 0px 0px 20px rgba(0, 255, 170, 0.6); }
-  100% { box-shadow: 0px 0px 12px rgba(0, 255, 170, 0.4); }
+/* 🔹 Scanline Animation */
+.smartContractContainer::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.03) 5%,
+    rgba(0, 255, 170, 0.2) 50%,
+    rgba(255, 255, 255, 0.03) 95%
+  );
+  opacity: 0.8;
+  animation: scanLines 5s linear infinite;
 }
 
-.smartContractContainer {
-  animation: holographicGlow 4s infinite alternate ease-in-out;
+/* 🔹 Smooth Vertical Scanning */
+@keyframes scanLines {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
+/* 🟢 Glow when hovered */
+.smartContractContainer:hover {
+  filter: brightness(1.8) saturate(1.5);
+  box-shadow: 0px 0px 25px rgba(0, 255, 170, 1);
 }
 
 .smartContractText {
-  font-size: 1rem;
+  font-size: 0.7rem;
   font-family: "Courier New", monospace;
   font-weight: normal;
   color: rgba(0, 255, 170, 0.85);
@@ -392,32 +432,6 @@
   width: 90%;
   overflow: hidden;
   white-space: pre-wrap;
-}
-
-/* ✅ Progress dots animate to give "Executing..." a live feel */
-@keyframes progressAnimation {
-  0% { content: "."; }
-  33% { content: ".."; }
-  66% { content: "..."; }
-  100% { content: "."; }
-}
-
-.progressDots::after {
-  content: "";
-  animation: progressAnimation 1.5s infinite;
-}
-
-/* ✅ Holographic Flickering Effect */
-@keyframes holographicFlicker {
-  0% { opacity: 1; filter: brightness(1) blur(0px); }
-  25% { opacity: 0.95; filter: brightness(1.05) blur(0.5px); }
-  50% { opacity: 1; filter: brightness(0.98) blur(0px); }
-  75% { opacity: 0.9; filter: brightness(1.1) blur(0.5px); }
-  100% { opacity: 1; filter: brightness(1) blur(0px); }
-}
-
-.flickering {
-  animation: holographicFlicker 6s infinite ease-in-out;
 }
 
 /* ✅ Simulated Contract Scrolling */
@@ -433,7 +447,7 @@
   width: 100%;
   height: 150px;
   text-align: left;
-  animation: scrollingText 12s linear infinite;
+  animation: scrollingText 6s linear infinite;
 }
 
 /* ✅ Pulsing glow effect when contract is confirmed */
@@ -447,19 +461,12 @@
   animation: pulsingGlow 2s infinite alternate ease-in-out;
 }
 
-/* ✅ Smooth scrolling delay */
-@keyframes delayedScroll {
-  0% { transform: translateY(100%); opacity: 0; }
-  10% { opacity: 1; }
-  100% { transform: translateY(-100%); }
-}
-
 /* ✅ Animated Digital Signature */
 .signature {
-  margin-top: 10px;
-  padding: 5px 10px;
-  border-radius: 5px;
-  font-size: 0.9rem;
+  margin-top: 90px;
+  padding: 2px 0px;
+  border-radius: 2px;
+  font-size: 0.5rem;
   color: rgba(0, 255, 170, 0.85);
   background: rgba(0, 255, 170, 0.1);
   box-shadow: 0px 0px 8px rgba(0, 255, 170, 0.3);
@@ -475,4 +482,27 @@
 
 .signatureText {
   animation: flicker 2.5s infinite alternate ease-in-out;
+}
+
+.scanningGrid {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: 50px 50px;
+  background-image: linear-gradient(
+      rgba(0, 255, 170, 0.1) 1px, transparent 1px
+    ),
+    linear-gradient(90deg, rgba(0, 255, 170, 0.1) 1px, transparent 1px);
+  z-index: 5;
+  opacity: 0.2;
+  animation: scanPulse 4s infinite alternate ease-in-out;
+}
+
+/* 🔹 Subtle Pulse Effect */
+@keyframes scanPulse {
+  0% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.02); }
+  100% { opacity: 0.15; transform: scale(1); }
 }

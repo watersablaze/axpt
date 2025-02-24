@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import Link from "next/link";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
+import { FaTimes, FaInfoCircle } from "react-icons/fa"; // ✅ Corrected Import
 import styles from "./Landing.module.css";
 
 export default function LandingPage() {
@@ -14,14 +14,35 @@ export default function LandingPage() {
     "Decentralized Ecosystem"
   ];
 
+  const [visibleLines, setVisibleLines] = useState<number>(0);
+  const textLines = [
+    "Welcome to Axis Point.",
+  ];
+
+  const [showInfoBox, setShowInfoBox] = useState(false);
+
+  const toggleInfoBox = () => {
+    setShowInfoBox((prev) => !prev);
+  };
+
   useEffect(() => {
-    let index = 0;
-    const interval = setInterval(() => {
-      setTagline(taglines[index]);
-      index = (index + 1) % taglines.length;
+    let taglineIndex = 0;
+    const taglineInterval = setInterval(() => {
+      setTagline(taglines[taglineIndex]);
+      taglineIndex = (taglineIndex + 1) % taglines.length;
     }, 4000);
 
-    return () => clearInterval(interval);
+    let textIndex = 0;
+    const textInterval = setInterval(() => {
+      setVisibleLines((prev) => (prev < textLines.length ? prev + 1 : prev));
+      textIndex++;
+      if (textIndex >= textLines.length) clearInterval(textInterval);
+    }, 1500);
+
+    return () => {
+      clearInterval(taglineInterval);
+      clearInterval(textInterval);
+    };
   }, []);
 
   return (
@@ -30,16 +51,17 @@ export default function LandingPage() {
       <div className={styles.circuitBoard}></div>
       <div className={styles.underwaterEffect}></div>
       <div className={styles.lightOverlay}></div>
+      <div className={styles.scanningGrid}></div>
 
       <header className={styles.header}>
         <Image 
-          src="/temporary.png" 
+          src="/axpt.io-logo.png" 
           alt="AXPT Logo" 
           width={180} 
           height={80} 
           className={styles.logo}
         />
-        <p className={styles.headerTagline}>Join the Digital Revolution</p>
+        <p className={styles.headerTagline}>Sign-up today for more information about <br /> eco-conscious investments and secure digital trade.</p>
         <form className={styles.signupForm}>
           <input type="email" placeholder="Enter your email" required />
           <button type="submit" className={styles.signupButton}>Welcome Aboard</button>
@@ -49,8 +71,45 @@ export default function LandingPage() {
       {/* 🎭 Hero Section */}
       <section className={styles.hero}>
 
+        {/* 🎯 Sleek Toggle Button */}
+        <motion.div 
+          className={styles.toggleButton} 
+          onClick={toggleInfoBox}
+          whileHover={{ scale: 1.15 }}
+          whileTap={{ scale: 0.9 }}
+        >
+          <FaInfoCircle />
+        </motion.div>
+
+        {/* 📦 Compact Info Box (Popup Style) */}
+        {showInfoBox && (
+          <motion.div 
+            className={styles.infoBox}
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.5, opacity: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+          >
+            <div className={styles.infoHeader}>
+              <h3>🌍 Global. Private. Secure.</h3>
+              <FaTimes className={styles.closeIcon} onClick={() => setShowInfoBox(false)} />
+            </div>
+            <p>Decentralized. Private. AI-powered. Future-ready.</p>
+            <p>Seamless transactions. Borderless expansion.</p>
+          </motion.div>
+        )}
+
+        {/* ✅ Right-Side Text Section */}
+        <div className={styles.rightSideText}>
+          {textLines.slice(0, visibleLines).map((line, index) => (
+            <motion.p key={index} className={styles.revealText}>
+              {line}
+            </motion.p>
+          ))}
+        </div>
+
         {/* ✅ Title */}
-        <motion.h1 className={styles.title}>AXPT.IO</motion.h1>
+        <motion.h1 className={styles.title}>The cross roads of Tech, Trade, & Cultural Exchange.</motion.h1>
 
         {/* ✅ Smart Contract */}
         <motion.div className={styles.smartContractContainer}>
@@ -78,11 +137,6 @@ export default function LandingPage() {
           <motion.div className={styles.signature}>
             <span className={styles.signatureText}>Verified by AXPT Chain</span>
           </motion.div>
-        </motion.div>
-
-        {/* ✅ Tagline */}
-        <motion.div className={styles.taglineWrapper}>
-          <motion.p className={styles.tagline}>{tagline}</motion.p>
         </motion.div>
 
       </section>
