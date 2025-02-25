@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { AnimatePresence } from "framer-motion";
 import { FaTimes, FaInfoCircle } from "react-icons/fa"; // ✅ Corrected Import
 import styles from "./Landing.module.css";
 
@@ -23,6 +24,7 @@ export default function LandingPage() {
 
   const toggleInfoBox = () => {
     setShowInfoBox((prev) => !prev);
+    console.log("Info box state:", !showInfoBox);
   };
 
   useEffect(() => {
@@ -54,19 +56,24 @@ export default function LandingPage() {
       <div className={styles.scanningGrid}></div>
 
       <header className={styles.header}>
-        <Image 
-          src="/axpt.io-logo.png" 
-          alt="AXPT Logo" 
-          width={180} 
-          height={80} 
-          className={styles.logo}
-        />
-        <p className={styles.headerTagline}>Sign-up today for more information about <br /> eco-conscious investments and secure digital trade.</p>
-        <form className={styles.signupForm}>
-          <input type="email" placeholder="Enter your email" required />
-          <button type="submit" className={styles.signupButton}>Welcome Aboard</button>
-        </form>
-      </header>
+      <Image 
+        src="/axpt.io-logo.png" 
+        alt="AXPT Logo" 
+        width={180} 
+        height={80} 
+        className={styles.logo}
+        priority /* ✅ Speeds up logo loading */
+      />
+      <p className={styles.headerTagline}>
+        Sign-up today for more information about <br /> eco-conscious investments and secure digital trade.
+      </p>
+      
+      {/* ✅ Updated Form with Name/ID Fix */}
+      <form className={styles.signupForm}>
+      <input type="email" name="email" id="email" placeholder="Enter your email" required />
+        <button type="submit" className={styles.signupButton}>Welcome Aboard</button>
+      </form>
+    </header>
 
       {/* 🎭 Hero Section */}
       <section className={styles.hero}>
@@ -74,7 +81,7 @@ export default function LandingPage() {
         {/* 🎯 Sleek Toggle Button */}
         <motion.div 
           className={styles.toggleButton} 
-          onClick={toggleInfoBox}
+          onClick={() => toggleInfoBox()}
           whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.9 }}
         >
@@ -82,6 +89,7 @@ export default function LandingPage() {
         </motion.div>
 
         {/* 📦 Compact Info Box (Popup Style) */}
+        <AnimatePresence>
         {showInfoBox && (
           <motion.div 
             className={styles.infoBox}
@@ -98,6 +106,7 @@ export default function LandingPage() {
             <p>Seamless transactions. Borderless expansion.</p>
           </motion.div>
         )}
+        </AnimatePresence>
 
         {/* ✅ Right-Side Text Section */}
         <div className={styles.rightSideText}>

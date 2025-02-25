@@ -1,4 +1,4 @@
-import path from "path";
+const path = require("path");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -12,6 +12,16 @@ const nextConfig = {
     };
     return config;
   },
+  images: {
+    formats: ["image/avif", "image/webp"], // ✅ Next.js will serve modern, compressed images
+    domains: ["yourdomain.com"], // ✅ Ensures images load from your CDN
+  },
+  experimental: {
+    optimizeCss: true, // ✅ Reduces CSS size for faster loading
+  },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production", // ✅ Removes console logs in production
+  },
   async redirects() {
     return [
       {
@@ -23,4 +33,4 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
+module.exports = nextConfig;

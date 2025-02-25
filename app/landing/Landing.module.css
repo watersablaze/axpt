@@ -84,7 +84,6 @@
   }
 }
 
-/* 🎯 High-Tech Toggle Button */
 .toggleButton {
   position: fixed;
   bottom: 400px;
@@ -103,7 +102,7 @@
   transition: all 0.3s ease-in-out;
   box-shadow: 0 0 12px rgba(0, 255, 170, 0.3);
   animation: pulseGlow 3s infinite alternate ease-in-out;
-  z-index: 20;
+
 }
 
 .toggleButton:hover {
@@ -126,7 +125,7 @@
   color: white;
   text-align: left;
   font-size: 0.85rem;
-  z-index: 100;
+  z-index: 9999;
 }
 
 /* ✅ Info Box Header (with Close Button) */
@@ -367,20 +366,27 @@
 
 .smartContractContainer {
   position: absolute;
-  top: 50%;
-  left: 50%;
+  top: 32%;
+  left: 46%;
   transform: translate(-50%, -50%) rotateX(15deg);
   width: 200px;
   height: auto;
   background: rgba(0, 255, 170, 0.08);
   border: 2px solid rgba(0, 255, 170, 0.4);
   border-radius: 12px;
-  backdrop-filter: blur(20px);
+  backdrop-filter: blur(12px);
   box-shadow: 0px 0px 18px rgba(0, 255, 170, 0.6);
   animation: hologramGlow 3s infinite alternate ease-in-out;
   perspective: 1200px;
   overflow: hidden;
   z-index: 12; /* ✅ Above hero blur */
+  transform-style: preserve-3d;
+  animation: floatingRotation 3s infinite alternate ease-in-out;
+  transition: transform 0.3s ease-in-out;
+}
+
+.smartContractContainer:hover {
+  transform: translate(-50%, -50%) rotateX(20deg) scale(1.03); /* ✅ Adds depth */
 }
 
 /* 🔹 Holographic Projection Glow */
@@ -410,14 +416,14 @@
 
 /* 🔹 Smooth Vertical Scanning */
 @keyframes scanLines {
-  0% { transform: translateY(-100%); }
-  100% { transform: translateY(100%); }
+  0% { transform: translateY(-400%); }
+  100% { transform: translateY(50%); }
 }
 
 /* 🟢 Glow when hovered */
 .smartContractContainer:hover {
   filter: brightness(1.8) saturate(1.5);
-  box-shadow: 0px 0px 25px rgba(0, 255, 170, 1);
+  box-shadow: 0px 0px 25px rgb(35, 201, 210);
 }
 
 .smartContractText {
@@ -428,7 +434,7 @@
   text-align: left;
   line-height: 1.6;
   text-shadow: 0 0 4px rgba(0, 255, 170, 0.3);
-  filter: blur(0.9px);
+  filter: blur(1.5px);
   width: 90%;
   overflow: hidden;
   white-space: pre-wrap;
@@ -492,12 +498,12 @@
   height: 100%;
   background-size: 50px 50px;
   background-image: linear-gradient(
-      rgba(0, 255, 170, 0.1) 1px, transparent 1px
+      rgba(0, 255, 170, 0.157) 1px, transparent 1px
     ),
-    linear-gradient(90deg, rgba(0, 255, 170, 0.1) 1px, transparent 1px);
+    linear-gradient(90deg, rgba(0, 255, 170, 0.131) 0.5px, transparent 1px);
   z-index: 5;
-  opacity: 0.2;
-  animation: scanPulse 4s infinite alternate ease-in-out;
+  opacity: 0.1;
+  animation: scanPulse 8s infinite alternate ease-in-out;
 }
 
 /* 🔹 Subtle Pulse Effect */
