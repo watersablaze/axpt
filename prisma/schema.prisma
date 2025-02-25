@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Subscriber {  // 👈 This means we use "subscriber" in queries
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  email String @unique
+}
+
 // ✅ User Accounts & Authentication
 model Account {
   id String @id @default(auto()) @map("_id") @db.ObjectId

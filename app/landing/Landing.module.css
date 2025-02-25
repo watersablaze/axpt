@@ -14,7 +14,7 @@
 /* 🔷 Transparent Header */
 .header {
   position: absolute;
-  top: 20px;
+  top: 3px;
   left: 0; 
   right: 0;
   width: 100vw; /* ✅ Ensures full width */
@@ -22,10 +22,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px 40px;
-  background: rgba(255, 255, 255, 0);
-  backdrop-filter: blur(2px);
-  border-radius: 10px;
+  padding: 15px 10px;
+  background: rgba(8, 158, 161, 0.032);
+  backdrop-filter: blur(12px);
+  border-radius: 1px;
   z-index: 10;
 }
 
@@ -177,9 +177,9 @@
 .logo {
   position: relative;
   width: 18vw; /* ✅ Scales based on screen size */
-  max-width: 300px;
+  max-width: 210px;
   height: auto;
-  margin-top: 100px;
+  margin-top: 25px;
   transition: transform 0.3s ease-in-out;
   animation: floatingLogo 4s infinite ease-in-out, pulseGlow 6s infinite alternate ease-in-out;
 }
@@ -261,30 +261,6 @@
     0 0 8px rgba(0, 255, 170, 0.8), 
     0 0 16px rgba(0, 255, 170, 0.6),
     0 0 32px rgba(79, 186, 216, 1);
-}
-
-/* 🎭 Floating Glow */
-@keyframes titleGlow {
-  0% { opacity: 1; filter: brightness(1); }
-  50% { opacity: 0.95; filter: brightness(1.1); }
-  100% { opacity: 1; filter: brightness(1); }
-}
-
-/* 🔹 Full-Width Glass Background */
-.title::before {
-  content: "";
-  position: absolute;
-  width: 100vw; /* Spanning full width */
-  height: 60px;
-  background: rgba(0, 255, 170, 0.1);
-  border-radius: 8px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: -1;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 0 18px rgba(0, 255, 170, 0.3);
-  opacity: 0.5; /* Lowered opacity for a subtle effect */
 }
 
 /* ✨ High-Tech Flickering Animation */
