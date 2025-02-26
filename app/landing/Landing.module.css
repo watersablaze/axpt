@@ -44,6 +44,28 @@
   backdrop-filter: blur(2px); /* ✅ Keep strong blur */
 }
 
+/* 🔹 Left-Side Key Phrases */
+.leftSideText {
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  transform: translateY(-50%);
+  text-align: left;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: rgba(79, 186, 216, 0.9);
+  line-height: 1.5;
+  z-index: 15;
+  text-shadow: 0 0 6px rgba(0, 255, 170, 0.6);
+}
+
+/* 🔹 Fade-in & Blur Effect for Key Phrases */
+.fadeInText {
+  opacity: 0;
+  filter: blur(10px);
+  transition: opacity 1s ease-in-out, filter 1s ease-in-out;
+}
+
 .rightSideText {
   position: absolute;
   top: 50%;
@@ -84,87 +106,10 @@
   }
 }
 
-.toggleButton {
-  position: fixed;
-  bottom: 400px;
-  left: 330px;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle, rgba(0, 255, 170, 0.2), rgba(0, 255, 170, 0.05));
-  border: 2px solid rgba(0, 255, 170, 0.5);
-  color: #00ffaa;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 1.3rem;
-  transition: all 0.3s ease-in-out;
-  box-shadow: 0 0 12px rgba(0, 255, 170, 0.3);
-  animation: pulseGlow 3s infinite alternate ease-in-out;
-
-}
-
-.toggleButton:hover {
-  background: rgba(0, 255, 170, 0.3);
-  box-shadow: 0 0 18px rgba(0, 255, 170, 0.6);
-}
-
-/* 📦 Compact Floating Info Box */
-.infoBox {
-  position: fixed;
-  bottom: 344px;
-  right: 1100px;
-  width: 390px;
-  height: auto;
-  padding: 15px;
-  background: rgba(20, 20, 20, 0.586);
-  border-radius: 10px;
-  border: 2px solid rgba(0, 255, 170, 0.4);
-  box-shadow: 0px 0px 12px rgba(0, 255, 170, 0.6);
-  color: white;
-  text-align: left;
-  font-size: 0.85rem;
-  z-index: 9999;
-}
-
-/* ✅ Info Box Header (with Close Button) */
-.infoHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.infoHeader h3 {
-  font-size: 0.9rem;
-  color: #00ffaa;
-  margin: 0;
-}
-
-/* ❌ Close Icon Inside Box */
-.closeIcon {
-  cursor: pointer;
-  font-size: 1rem;
-  color: rgba(0, 255, 170, 0.8);
-  transition: color 0.3s ease-in-out;
-}
-
-.closeIcon:hover {
-  color: white;
-}
-
 /* ✅ Smooth Fade Animation */
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.9); }
   to { opacity: 1; transform: scale(1); }
-}
-
-/* ✅ Optimized Logo Animation (Syncs with browser resizing) */
-@keyframes floatingLogo {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(8px); }
-  100% { transform: translateY(0px); }
 }
 
 @keyframes pulseGlow {
@@ -181,7 +126,7 @@
   height: auto;
   margin-top: 25px;
   transition: transform 0.3s ease-in-out;
-  animation: floatingLogo 4s infinite ease-in-out, pulseGlow 6s infinite alternate ease-in-out;
+  animation: floatingLogo 4s infinite ease-in-out, infinite alternate ease-in-out;
 }
 
 .logo:hover {
@@ -312,25 +257,6 @@
 @keyframes fadeInAnimation {
   from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
-}
-
-/* 🟢 Subtle Circuit Board Glow */
-@keyframes circuitGlow {
-  0% { opacity: 0.2; filter: blur(1px); transform: scale(1); }
-  50% { opacity: 0.6; filter: blur(3px); transform: scale(1.02); }
-  100% { opacity: 0.2; filter: blur(1px); transform: scale(1); }
-}
-
-.circuitBoard {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  background: url("/.png") repeat center center;
-  background-size: cover;
-  opacity: -0.1;
-  mix-blend-mode: overlay; /* Creates a seamless integration with the background */
-  animation: circuitGlow 20s infinite alternate ease-in-out;
-  z-index: 0;
 }
 
 /* ✅ Floating Rotation Animation */
@@ -488,3 +414,83 @@
   50% { opacity: 0.25; transform: scale(1.02); }
   100% { opacity: 0.15; transform: scale(1); }
 }
+
+/* 🔹 Footer Styles - All Text in One Line */
+.footer {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex; /* Enables inline layout */
+  align-items: center;
+  justify-content: center;
+  gap: 50px; /* 🔹 Adjust spacing between text groups */
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #fff; /* Ensuring strong contrast */
+  text-shadow: 0px 0px 10px rgba(0, 255, 170, 0.6); /* Soft glow effect */
+  opacity: 1;
+  letter-spacing: 1.2px;
+  z-index: 1;
+  margin-left: 50px;
+}
+
+/* 🔹 Footer Text Adjustments */
+.footerText {
+  white-space: nowrap; /* Ensures text stays in one line */
+}
+
+/* 🔹 Floating Security Lock */
+.securityLock {
+  position: fixed;
+  bottom: 30px;
+  right: 70px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 255, 170, 0.15);
+  border: 2px solid rgba(0, 255, 170, 0.5);
+  color: #00ffaa;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  box-shadow: 0 0 12px rgba(0, 255, 170, 0.3);
+  animation: pulseGlow 2.5s infinite alternate ease-in-out;
+  cursor: pointer;
+}
+
+/* 🔹 Pulsing Glow Animation */
+@keyframes pulseGlow {
+  0% { transform: scale(1); box-shadow: 0 0 12px rgba(0, 255, 170, 0.3); }
+  50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(0, 255, 170, 0.6); }
+  100% { transform: scale(1); box-shadow: 0 0 12px rgba(0, 255, 170, 0.3); }
+}
+
+/* 🔹 Blockchain Animation */
+.blockchainAnimation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10px; /* Adjust spacing */
+  color: rgba(0, 255, 170, 0.9); /* Neon glow effect */
+  text-shadow: 0px 0px 12px rgba(0, 255, 170, 0.8);
+}
+
+/* 🔹 SVG Icon - Blockchain Representation */
+.blockchainIcon {
+  width: 50px;
+  height: 50px;
+  margin-left: 300px;
+  fill: none;
+  stroke: #00ffaa; /* High-tech look */
+  stroke-width: 1;
+  animation: pulseGlow 2s infinite alternate ease-in-out;
+}
+
+/* 🔹 Subtle Glow Animation */
+@keyframes pulseGlow {
+  0% { filter: drop-shadow(0 0 4px rgba(0, 255, 170, 0.7)); }
+  100% { filter: drop-shadow(0 0 15px rgba(0, 255, 170, 0.5)); }
+}
+
