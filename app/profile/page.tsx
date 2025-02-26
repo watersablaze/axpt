@@ -1,28 +1,32 @@
 "use client";
 
-import { useState } from "react";
+import { useState, ChangeEvent } from "react";
 import Image from "next/image";
 import styles from "./Profile.module.css";
 
 export default function Profile() {
-  const [name, setName] = useState("John Doe");
-  const [email, setEmail] = useState("johndoe@example.com");
-  const [avatar, setAvatar] = useState("/assets/user-avatar.png");
+  const [name, setName] = useState<string>("John Doe");
+  const [email, setEmail] = useState<string>("johndoe@example.com");
+  const [avatar, setAvatar] = useState<string>("/assets/user-avatar.png");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [uploading, setUploading] = useState<boolean>(false);
+  const [message, setMessage] = useState<string>("");
 
   // ✅ Handle avatar file selection
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setSelectedFile(e.target.files[0]);
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>): void => {
+    const file = e.target.files?.[0] || null;
+    if (file) {
+      setSelectedFile(file);
       setMessage(""); // Clear any previous messages
     }
   };
 
-  // ✅ Upload avatar function (Simulated for now)
-  const uploadAvatar = async () => {
-    if (!selectedFile) return setMessage("Please select an image first.");
+  // ✅ Upload avatar function (Simulated)
+  const uploadAvatar = async (): Promise<void> => {
+    if (!selectedFile) {
+      setMessage("❌ Please select an image first.");
+      return;
+    }
 
     setUploading(true);
     setMessage("");
@@ -31,13 +35,14 @@ export default function Profile() {
       const formData = new FormData();
       formData.append("file", selectedFile);
 
-      // Simulate API call
+      // Simulated API request (Replace with actual API call)
       await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      // Replace with actual URL from server
+      // ✅ Generate object URL for preview
       setAvatar(URL.createObjectURL(selectedFile));
       setMessage("✅ Avatar updated successfully!");
-    } catch (err) {
+    } catch (error) {
+      console.error("❌ Upload Error:", error);
       setMessage("❌ Failed to upload avatar.");
     } finally {
       setUploading(false);
@@ -45,15 +50,16 @@ export default function Profile() {
   };
 
   // ✅ Save profile data
-  const handleSave = async () => {
+  const handleSave = async (): Promise<void> => {
     setMessage("Saving profile...");
 
     try {
-      // Simulate API request
+      // Simulated API request (Replace with actual API call)
       await new Promise((resolve) => setTimeout(resolve, 1000));
 
       setMessage("✅ Profile updated successfully!");
     } catch (error) {
+      console.error("❌ Save Error:", error);
       setMessage("❌ Error updating profile.");
     }
   };
@@ -64,7 +70,14 @@ export default function Profile() {
 
       {/* 🖼️ Profile Picture */}
       <div className={styles.avatarContainer}>
-        <Image src={avatar} alt="User Avatar" width={100} height={100} className={styles.avatar} />
+        <Image
+          src={avatar}
+          alt="User Avatar"
+          width={100}
+          height={100}
+          className={styles.avatar}
+          priority
+        />
         <input type="file" accept="image/*" onChange={handleFileChange} />
         <button onClick={uploadAvatar} disabled={uploading || !selectedFile}>
           {uploading ? "Uploading..." : "Upload Avatar"}
@@ -73,17 +86,29 @@ export default function Profile() {
 
       {/* ✍️ Editable Fields */}
       <div className={styles.inputGroup}>
-        <label>Name</label>
-        <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+        <label htmlFor="name">Name</label>
+        <input
+          id="name"
+          type="text"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+        />
       </div>
 
       <div className={styles.inputGroup}>
-        <label>Email</label>
-        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <label htmlFor="email">Email</label>
+        <input
+          id="email"
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
       </div>
 
       {/* 📝 Save Button */}
-      <button className={styles.saveButton} onClick={handleSave}>Save Changes</button>
+      <button className={styles.saveButton} onClick={handleSave}>
+        Save Changes
+      </button>
 
       {/* 🚀 Message Box */}
       {message && <p className={styles.message}>{message}</p>}

@@ -1,8 +1,13 @@
-import NextAuth, { DefaultSession, DefaultUser, Session, JWT } from "next-auth";
+import NextAuth, { NextAuthOptions, DefaultSession } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { prisma } from "@/lib/prisma"; // ✅ Ensure correct Prisma import
+import bcrypt from "bcryptjs";
+import { randomUUID } from "crypto";
 
-// ✅ Extend User type
+// ✅ Extend NextAuth User Type
 declare module "next-auth" {
-  interface User extends DefaultUser {
+  interface User {
     id: string;
     isAdmin: boolean;
     walletAddress?: string;
@@ -10,10 +15,12 @@ declare module "next-auth" {
   }
 
   interface Session extends DefaultSession {
-    user: User; // ✅ Ensures `user` matches the extended `User` type
+    user: User;
   }
+}
 
-  interface JWT extends JWT {
+declare module "next-auth/jwt" {
+  interface JWT {
     id: string;
     isAdmin: boolean;
     walletAddress?: string;
@@ -22,13 +29,14 @@ declare module "next-auth" {
   }
 }
 
-export const authOptions = {
+// ✅ Define NextAuth Configuration
+export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        email: { label: "Email", type: "text" },
+        email: { label: "Email", type: "text", placeholder: "example@example.com" },
         password: { label: "Password", type: "password" },
       },
       async authorize(credentials) {
@@ -72,8 +80,8 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
-    maxAge: 30 * 60,
-    updateAge: 10 * 60,
+    maxAge: 30 * 60, // 30 minutes session
+    updateAge: 10 * 60, // Refresh token every 10 minutes
   },
   callbacks: {
     async jwt({ token, user }) {

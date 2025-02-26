@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { Prisma, TransactionStatusEnum, TransactionTypeEnum } from "@prisma/client";
+import { ObjectId } from "mongodb"; // ✅ Ensure ObjectId is imported
 
 export async function POST(request: Request) {
   try {
@@ -10,20 +12,41 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
     }
 
-    const { recipientId, amount } = await request.json();
-    if (!recipientId || !amount) {
-      return NextResponse.json({ error: "Recipient and amount required" }, { status: 400 });
+    // ✅ Parse Request Body
+    const body = await request.json();
+    const { recipientId, amount } = body;
+
+    // ✅ Validate Inputs
+    if (!recipientId || !ObjectId.isValid(recipientId)) {
+      return NextResponse.json({ error: "Invalid recipient ID" }, { status: 400 });
+    }
+    if (isNaN(amount) || amount <= 0) {
+      return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
     }
 
-    // ✅ Use `TransactionUncheckedCreateInput` to manually define foreign keys
+    // ✅ Convert MongoDB ObjectId to String for Prisma
+    const senderIdString = new ObjectId(session.user.id).toString();
+    const recipientIdString = new ObjectId(recipientId).toString();
+
+    // ✅ Ensure Recipient Exists
+    const recipientExists = await prisma.user.findUnique({
+      where: { id: recipientIdString },
+    });
+
+    if (!recipientExists) {
+      return NextResponse.json({ error: "Recipient not found" }, { status: 404 });
+    }
+
+    // ✅ Add `userId` to Transaction Data (Fix the error!)
     const transaction = await prisma.transaction.create({
       data: {
-        senderId: session.user.id, // ✅ Ensures senderId matches Prisma expected type
-        recipientId, // ✅ Ensure recipientId is stored
+        senderId: senderIdString,
+        recipientId: recipientIdString,
+        userId: senderIdString, // ✅ Ensure `userId` is included
         amount: parseFloat(amount),
-        type: "TRANSFER", // ✅ Ensure correct type
-        status: "pending", // ✅ Added missing field
-      } as any, // ✅ Temporary fix for TypeScript type enforcement
+        type: TransactionTypeEnum.TRANSFER, // ✅ Use Prisma Enum
+        status: TransactionStatusEnum.PENDING, // ✅ Use Prisma Enum
+      } satisfies Prisma.TransactionUncheckedCreateInput, // ✅ Type safety
     });
 
     console.log(`✅ Transaction saved: ${transaction.id}`);
@@ -31,6 +54,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ success: true, transactionId: transaction.id });
   } catch (error) {
     console.error("❌ Error saving transaction:", error);
-    return NextResponse.json({ error: "Failed to process transaction" }, { status: 500 });
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Failed to process transaction" },
+      { status: 500 }
+    );
   }
 }

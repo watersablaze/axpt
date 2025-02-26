@@ -13,20 +13,19 @@
 
 /* 🔷 Transparent Header */
 .header {
-  position: absolute;
-  top: 3px;
-  left: 0; 
-  right: 0;
-  width: 100vw; /* ✅ Ensures full width */
-  height: 80px; /* ✅ Fixed height to prevent expansion */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 70px; /* ✅ Reduced height for better fit */
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 15px 10px;
-  background: rgba(8, 158, 161, 0.032);
+  padding: 10px 8px;
+  background: rgba(8, 158, 161, 0.05);
   backdrop-filter: blur(12px);
   border-radius: 1px;
-  z-index: 10;
+  z-index: 100;
 }
 
 .hero {
@@ -48,7 +47,7 @@
 .leftSideText {
   position: absolute;
   top: 50%;
-  left: 5%;
+  left: 12%;
   transform: translateY(-50%);
   text-align: left;
   font-size: 1.4rem;
@@ -66,27 +65,68 @@
   transition: opacity 1s ease-in-out, filter 1s ease-in-out;
 }
 
+/* ✅ Right-Side Text Section */
 .rightSideText {
   position: absolute;
   top: 50%;
-  right: 13%;
+  right: 10%;
   transform: translateY(-50%);
   text-align: right;
   font-size: 1.2rem;
   font-weight: 500;
   color: rgba(82, 169, 160, 0.9);
-  line-height: 1.2;
+  line-height: 2.1;
   white-space: nowrap;
   z-index: 20;
   text-shadow: 0 0 5px rgba(0, 255, 170, 0.5);
 }
 
-/* 🔹 Flickering Data Stream Effect */
+/* ✅ Line-by-Line Reveal Animation */
 .revealText {
   opacity: 0;
-  transform: translateX(20px);
-  animation: dataFlicker 1.5s ease-in-out forwards;
-  margin: 4px 0;
+  transform: translateY(20px);
+  animation: revealText 1s ease-in-out forwards;
+}
+
+/* ✅ Staggered Timing for Each Line */
+.revealText:nth-child(1) { animation-delay: 0.3s; }
+.revealText:nth-child(2) { animation-delay: 0.6s; }
+.revealText:nth-child(3) { animation-delay: 1s; }
+
+@keyframes revealText {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* ✅ Golden Highlight for "Welcome to AXPT" */
+.goldText {
+  color: rgba(255, 215, 0, 0.9);
+  text-shadow: 0 0 4px rgba(255, 215, 0, 0.6);
+  font-weight: 700;
+}
+
+/* ✅ Email Section Styling */
+.emailContainer {
+  display: flex;
+  align-items: center;
+  justify-content: right;
+  margin-top: 10px;
+}
+
+/* ✅ Sleek Email Icon */
+.emailIcon {
+  width: 22px;
+  height: 22px;
+  fill: rgba(0, 255, 170, 0.9);
+  margin-right: 12px; /* ✅ More spacing */
+}
+
+/* ✅ Email Text */
+.emailText {
+  font-size: 1rem;
+  color: rgba(0, 255, 170, 0.9);
+  font-weight: 600;
+  text-shadow: 0px 0px 5px rgba(0, 255, 170, 0.5);
 }
 
 @keyframes dataFlicker {
@@ -133,53 +173,7 @@
   transform: rotateY(15deg); /* ✅ Smooth 3D Tilt */
 }
 
-/* ✅ Call-to-Action Tagline in Header */
-.headerTagline {
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #fff;
-  text-align: center;
-
-  text-transform: uppercase;
-  letter-spacing: 3px;
-  opacity: 0;
-  animation: fadeInTagline 1.5s ease-in-out forwards;
-  margin-left: 20px;
-}
-
-/* 📝 Signup Form */
-.signupForm {
-  display: flex;
-  gap: 10px;
-  margin-right: 100px;
-}
-
-.signupForm input {
-  padding: 10px;
-  border: 1px solid #fff;
-  background: transparent;
-  color: #fff;
-  border-radius: 5px;
-  outline: none;
-}
-
-/* ✅ Digital Green Button */
-.signupButton {
-  background: #0d690353;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: transform 0.3s ease-in-out;
-}
-
-.signupButton:hover {
-  background: #747217;
-  transform: scale(1.05);
-}
-
-/* 🔹 AXPT.IO Title - Clean High-Tech Look */
+/* ✅ AXPT.IO Title - Now Golden */
 .title {
   position: absolute;
   bottom: 5%;
@@ -187,25 +181,25 @@
   transform: translateX(-50%);
   font-size: 1.5rem;
   font-weight: bold;
-  color: rgba(79, 186, 216, 0.9);
+  color: rgba(255, 217, 0, 0.352); /* ✅ Golden Color */
   text-transform: uppercase;
-  letter-spacing: 4px;
+  letter-spacing: 5px;
   text-align: center;
   text-shadow: 
-    0 0 4px rgba(0, 255, 170, 0.3), 
-    0 0 12px rgba(0, 255, 170, 0.4), 
-    0 0 24px rgba(79, 186, 216, 0.8);
-  white-space: nowrap; /* ✅ Prevents line breaks */
-  z-index: 15; /* ✅ Puts title **above** .hero blur */
+    0 0 4px rgba(255, 215, 0, 0.2), 
+    0 0 12px rgba(255, 215, 0, 0.2), 
+    0 0 24px rgba(255, 215, 0, 0.2); /* ✅ Soft Glow Effect */
+  white-space: nowrap;
+  z-index: 15;
 }
 
-/* ✅ Holographic Glow Intensifies on Hover */
+/* ✅ Title Glow Intensifies on Hover */
 .title:hover {
-  color: rgba(0, 255, 170, 1);
+  color: rgba(255, 215, 0, 1);
   text-shadow: 
-    0 0 8px rgba(0, 255, 170, 0.8), 
-    0 0 16px rgba(0, 255, 170, 0.6),
-    0 0 32px rgba(79, 186, 216, 1);
+    0 0 8px rgba(255, 215, 0, 0.8), 
+    0 0 16px rgba(255, 215, 0, 0.6),
+    0 0 32px rgba(255, 215, 0, 0.4);
 }
 
 /* ✨ High-Tech Flickering Animation */
@@ -268,16 +262,16 @@
 
 .smartContractContainer {
   position: absolute;
-  top: 32%;
+  top: 38%;
   left: 46%;
   transform: translate(-50%, -50%) rotateX(15deg);
-  width: 200px;
-  height: auto;
-  background: rgba(0, 255, 170, 0.08);
-  border: 2px solid rgba(0, 255, 170, 0.4);
+  width: 180px;
+  height: 325px; /* ✅ Increased height */
+  background: rgba(195, 0, 255, 0.06);
+  border: 0.3px solid rgba(0, 255, 170, 0.1);
   border-radius: 12px;
-  backdrop-filter: blur(12px);
-  box-shadow: 0px 0px 18px rgba(0, 255, 170, 0.6);
+  backdrop-filter: blur(3px);
+  box-shadow: 0px 0px 18px rgba(0, 255, 170, 0.3);
   animation: hologramGlow 3s infinite alternate ease-in-out;
   perspective: 1200px;
   overflow: hidden;
@@ -285,6 +279,10 @@
   transform-style: preserve-3d;
   animation: floatingRotation 3s infinite alternate ease-in-out;
   transition: transform 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column; /* ✅ Ensures text and signature align properly */
+  justify-content: space-between; /* ✅ Pushes signature to bottom */
+  padding: 15px; /* ✅ Ensures content doesn’t touch edges */
 }
 
 .smartContractContainer:hover {
@@ -337,9 +335,10 @@
   line-height: 1.6;
   text-shadow: 0 0 4px rgba(0, 255, 170, 0.3);
   filter: blur(1.5px);
-  width: 90%;
+  width: 100%;
   overflow: hidden;
   white-space: pre-wrap;
+  flex-grow: 1; /* ✅ Expands text to full container height */
 }
 
 /* ✅ Simulated Contract Scrolling */
@@ -353,7 +352,7 @@
   display: block;
   overflow: hidden;
   width: 100%;
-  height: 150px;
+  height: 400px;
   text-align: left;
   animation: scrollingText 6s linear infinite;
 }
@@ -371,13 +370,13 @@
 
 /* ✅ Animated Digital Signature */
 .signature {
-  margin-top: 90px;
+  margin-top: -350px;
   padding: 2px 0px;
   border-radius: 2px;
   font-size: 0.5rem;
   color: rgba(0, 255, 170, 0.85);
   background: rgba(0, 255, 170, 0.1);
-  box-shadow: 0px 0px 8px rgba(0, 255, 170, 0.3);
+  box-shadow: 0px 0px 3px rgba(0, 255, 170, 0.1);
   text-align: center;
 }
 
@@ -400,7 +399,7 @@
   height: 100%;
   background-size: 50px 50px;
   background-image: linear-gradient(
-      rgba(0, 255, 170, 0.157) 1px, transparent 1px
+      rgba(0, 255, 170, 0.157) 1px, transparent 2px
     ),
     linear-gradient(90deg, rgba(0, 255, 170, 0.131) 0.5px, transparent 1px);
   z-index: 5;
@@ -415,29 +414,35 @@
   100% { opacity: 0.15; transform: scale(1); }
 }
 
-/* 🔹 Footer Styles - All Text in One Line */
+/* ✅ Footer Styles - Now Golden */
 .footer {
   position: absolute;
-  bottom: 10px;
+  bottom: 0px;
   left: 50%;
+  width: 100vw;
+  height: 80px;
   transform: translateX(-50%);
-  display: flex; /* Enables inline layout */
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 50px; /* 🔹 Adjust spacing between text groups */
+  gap: 0px;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #fff; /* Ensuring strong contrast */
-  text-shadow: 0px 0px 10px rgba(0, 255, 170, 0.6); /* Soft glow effect */
-  opacity: 1;
-  letter-spacing: 1.2px;
-  z-index: 1;
-  margin-left: 50px;
+  color: rgba(255, 215, 0, 0.5); /* ✅ Golden Color */
+  text-shadow: 
+    0 0 4px rgba(255, 215, 0, 0.3), 
+    0 0 10px rgba(255, 215, 0, 0.2), 
+    0 0 18px rgba(255, 215, 0, 0.1); /* ✅ Soft Glow */
+  letter-spacing: 1.0px;
+  background: rgba(8, 158, 161, 0.032); /* ✅ Subtle background */
+  backdrop-filter: blur(12px); /* ✅ Soft glass effect */
+  z-index: 10;
 }
 
 /* 🔹 Footer Text Adjustments */
 .footerText {
-  white-space: nowrap; /* Ensures text stays in one line */
+  white-space: nowrap;
+  margin-left: 120px;
 }
 
 /* 🔹 Floating Security Lock */
@@ -455,25 +460,19 @@
   color: #00ffaa;
   border-radius: 50%;
   font-size: 1.5rem;
-  box-shadow: 0 0 12px rgba(0, 255, 170, 0.3);
+  box-shadow: 0 0 6px rgba(0, 255, 170, 0.3);
   animation: pulseGlow 2.5s infinite alternate ease-in-out;
   cursor: pointer;
 }
 
-/* 🔹 Pulsing Glow Animation */
-@keyframes pulseGlow {
-  0% { transform: scale(1); box-shadow: 0 0 12px rgba(0, 255, 170, 0.3); }
-  50% { transform: scale(1.05); box-shadow: 0 0 20px rgba(0, 255, 170, 0.6); }
-  100% { transform: scale(1); box-shadow: 0 0 12px rgba(0, 255, 170, 0.3); }
-}
 
-/* 🔹 Blockchain Animation */
+/* 🔹 Blockchain Animation - Subtle Movement */
 .blockchainAnimation {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-top: 10px; /* Adjust spacing */
-  color: rgba(0, 255, 170, 0.9); /* Neon glow effect */
+  margin-top: 10px;
+  color: rgba(0, 255, 170, 0.9);
   text-shadow: 0px 0px 12px rgba(0, 255, 170, 0.8);
 }
 
@@ -481,16 +480,63 @@
 .blockchainIcon {
   width: 50px;
   height: 50px;
-  margin-left: 300px;
+  margin-left: -80px;
   fill: none;
-  stroke: #00ffaa; /* High-tech look */
+  stroke: rgba(255, 215, 0, 0.9); /* ✅ Golden Stroke */
+  filter: drop-shadow(0px 0px 6px rgba(255, 215, 0, 0.6));
   stroke-width: 1;
-  animation: pulseGlow 2s infinite alternate ease-in-out;
+  animation: subtleBreath 3s infinite ease-in-out;
 }
 
-/* 🔹 Subtle Glow Animation */
-@keyframes pulseGlow {
-  0% { filter: drop-shadow(0 0 4px rgba(0, 255, 170, 0.7)); }
-  100% { filter: drop-shadow(0 0 15px rgba(0, 255, 170, 0.5)); }
+/* 🔹 Subtle Breathing Animation (No Position Change) */
+@keyframes subtleBreath {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.06); opacity: 0.85; } /* Slight size change */
+  100% { transform: scale(1); opacity: 1; }
 }
 
+/* 🔹 Vertical Scrolling Binary Data - Smooth Transition */
+.dataStreamContainer {
+  position: absolute;
+  top: 31.5%;
+  left: 48.5%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 18px; /* 🔹 Reduced spacing between lines */
+  z-index: 12;
+}
+
+/* 🔹 Binary Data Lines */
+.binaryLine {
+  font-size: 0.5rem;
+  font-weight: 600;
+  color: rgba(50, 191, 43, 0.151);
+  text-shadow: 0 0 4px rgba(0, 255, 170, 0.1);
+  letter-spacing: 3px;
+  white-space: nowrap;
+  position: relative;
+  animation: verticalStream 1.9s ease-in-out infinite;
+  opacity: 0.3;
+}
+
+/* 🔹 Different Opacity for Depth Effect */
+.binaryLine:nth-child(1) { opacity: 1; }
+.binaryLine:nth-child(2) { opacity: 0.9; }
+.binaryLine:nth-child(3) { opacity: 0.85; }
+.binaryLine:nth-child(4) { opacity: 0.8; }
+.binaryLine:nth-child(5) { opacity: 0.75; }
+.binaryLine:nth-child(6) { opacity: 0.7; }
+.binaryLine:nth-child(7) { opacity: 0.65; }
+.binaryLine:nth-child(8) { opacity: 0.6; }
+.binaryLine:nth-child(9) { opacity: 0.5; }
+.binaryLine:nth-child(10) { opacity: 0.3; }
+
+/* 🔹 Seamless Scrolling Animation */
+@keyframes verticalStream {
+  0% { transform: translateY(20px); opacity: 0.5; }
+  25% { opacity: 0.4; }
+  50% { transform: translateY(0); opacity: 1; }
+  75% { opacity: 0.4; }
+  100% { transform: translateY(-14px); opacity: 0.3; }
+}
