@@ -1,38 +1,23 @@
-import Stripe from "stripe";
 import { NextResponse } from "next/server";
+import { stripe } from "@/lib/stripe"; // ✅ Use the centralized Stripe instance
 
-// Initialize Stripe with the correct API version
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2025-01-27.acacia", // ✅ Fixed API version
-});
-
-export async function POST(req: Request) {
+export async function POST(request: Request) {
   try {
-    // Parse the JSON body from the request
-    const body: { amount: number } = await req.json();
+    const { amount, currency } = await request.json();
 
-    // Validate amount
-    if (!body.amount || body.amount <= 0 || isNaN(body.amount)) {
-      return NextResponse.json(
-        { error: "Invalid amount. Amount must be a positive number." },
-        { status: 400 }
-      );
+    if (!amount || !currency) {
+      return NextResponse.json({ error: "Invalid request: Amount and currency are required" }, { status: 400 });
     }
 
-    // Create a PaymentIntent
+    // ✅ Create a payment intent
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: Math.round(body.amount * 100), // Convert amount to cents
-      currency: "usd", // Adjust currency as needed
-      automatic_payment_methods: { enabled: true },
+      amount: amount * 100, // Convert dollars to cents
+      currency,
     });
 
-    // Return the clientSecret
     return NextResponse.json({ clientSecret: paymentIntent.client_secret });
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.error("Error creating payment intent:", error.message);
-      return NextResponse.json({ error: error.message }, { status: 500 });
-    }
-    return NextResponse.json({ error: "Unknown error occurred" }, { status: 500 });
+  } catch (error) {
+    console.error("❌ Stripe Error:", error);
+    return NextResponse.json({ error: "Payment processing failed" }, { status: 500 });
   }
 }
