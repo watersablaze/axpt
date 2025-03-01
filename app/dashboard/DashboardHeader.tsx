@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
 import AvatarUploader from "../../components/AvatarUploader"; // ✅ Relative Import
+import GoldPrice from "./GoldPrice"; // ✅ Import Gold Price Component
 import styles from "./DashboardHeader.module.css";
 
 export default function DashboardHeader() {
@@ -25,8 +26,13 @@ export default function DashboardHeader() {
     <header className={styles.header}>
       {/* ✅ Platform Logo */}
       <div className={styles.logo}>
-        <Image src="/AXI.png" alt="Platform Logo" width={100} height={50} priority />
+        <Image src="/axpt-logo3.png" alt="Platform Logo" width={100} height={50} priority />
       </div>
+
+    {/* ✅ Gold Price Positioned Next to Logo */}
+    <div className={styles.goldPriceWrapper}>
+      <GoldPrice />
+    </div>
 
       {/* ✅ Admin & User Section */}
       <div className={styles.userSection}>

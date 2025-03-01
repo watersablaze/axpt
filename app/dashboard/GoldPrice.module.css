@@ -1,34 +1,21 @@
-/* ========== Cyberpunk Gold Price UI ========== */
+/* ✅ Gold Price Styling - Clean & Seamless in Header */
 .goldPriceContainer {
-    background: rgba(10, 10, 15, 0.9);
-    padding: 15px;
-    border-radius: 10px;
-    text-align: center;
-    box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-    transition: box-shadow 0.3s ease-in-out;
-  }
-  
-  .goldPriceContainer:hover {
-    box-shadow: 0 0 25px rgba(255, 215, 0, 0.7);
-  }
-  
-  .title {
-    font-size: 1.2rem;
-    font-weight: bold;
-    color: gold;
-    text-transform: uppercase;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.7);
-  }
-  
-  .price {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #ffd700;
-    text-shadow: 0 0 15px rgba(255, 215, 0, 0.7);
-  }
-  
-  .loading, .error {
-    font-size: 1rem;
-    color: #ff4444;
-    font-style: italic;
-  }
+  font-size: 0.75rem; /* ✅ Keep it readable */
+  font-weight: 500;
+  color: rgba(240, 208, 97, 0.85); /* ✅ Gold tone */
+  font-family: "Courier New", monospace; /* ✅ Code-like font */
+  white-space: nowrap; /* ✅ Forces text on one line */
+  background: transparent; /* ✅ No background */
+  box-shadow: none; /* ✅ No extra styling */
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+/* ✅ Loading & Error Messages - Subtle */
+.loading,
+.error {
+  font-size: 1rem;
+  color: #ff4444; /* ✅ Subtle red for errors */
+  font-style: italic;
+}

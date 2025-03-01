@@ -11,10 +11,8 @@ export default function GoldPrice() {
     async function fetchGoldPrice() {
       try {
         console.log("🔄 Fetching gold price...");
-        
         const response = await fetch("/api/gold-price");
 
-        // ✅ Check if response is OK before parsing JSON
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
@@ -39,13 +37,14 @@ export default function GoldPrice() {
 
   return (
     <div className={styles.goldPriceContainer}>
-      <h3 className={styles.title}>Live Gold Price</h3>
       {loading ? (
-        <p className={styles.loading}>Fetching price...</p>
+        <span className={styles.loading}>Fetching price...</span>
       ) : goldPrice ? (
-        <p className={styles.price}>1g Gold = <span>${goldPrice.toFixed(2)}</span></p>
+        <span className={styles.price}>
+          Live Gold Price: 1g Gold = <strong>${goldPrice.toFixed(2)}</strong>
+        </span>
       ) : (
-        <p className={styles.error}>⚠️ Failed to load price.</p>
+        <span className={styles.error}>⚠️ Price Unavailable</span>
       )}
     </div>
   );

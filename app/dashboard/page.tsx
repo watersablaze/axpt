@@ -9,7 +9,6 @@ import Wallet from "./Wallet";
 import TransactionHistory from "./TransactionHistory";
 import MintStablecoin from "./MintStablecoin";
 import RedeemStablecoin from "./RedeemStablecoin";
-import GoldPrice from "./GoldPrice";
 import BulletinBoard from "./BulletinBoard";
 import styles from "@/app/dashboard/Dashboard.module.css";
 
@@ -62,11 +61,6 @@ export default function Dashboard() {
             </p>
 
             <BulletinBoard /> {/* ✅ Integrating the Bulletin Board */}
-
-            {/* ✅ Live Gold Price Section */}
-            <div className={styles.goldPriceSection}>
-              <GoldPrice />
-            </div>
 
             {/* ✅ Sleek Stablecoin Management Section */}
             <div className={styles.stablecoinManagement}>
