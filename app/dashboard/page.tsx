@@ -3,9 +3,10 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
+import { Wallet, Banknote, History, Newspaper } from "lucide-react"; // ✅ Icons for toggles
 import DashboardHeader from "./DashboardHeader";
 import Sidebar from "./Sidebar";
-import Wallet from "./Wallet";
+import WalletComponent from "./Wallet";
 import TransactionHistory from "./TransactionHistory";
 import MintStablecoin from "./MintStablecoin";
 import RedeemStablecoin from "./RedeemStablecoin";
@@ -13,16 +14,16 @@ import BulletinBoard from "./BulletinBoard";
 import styles from "@/app/dashboard/Dashboard.module.css";
 
 export default function Dashboard() {
-  const { data: session, status } = useSession(); // ✅ session is now used
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [currentDateTime, setCurrentDateTime] = useState("");
+  const [activeSection, setActiveSection] = useState<string | null>(null);
 
-  // ✅ Memoized function for updating time
+  // ✅ Updates the clock every second
   const updateDateTime = useCallback(() => {
     setCurrentDateTime(new Date().toLocaleString());
   }, []);
 
-  // ✅ Ensures time updates every second and cleans up properly
   useEffect(() => {
     updateDateTime();
     const interval = setInterval(updateDateTime, 1000);
@@ -32,9 +33,14 @@ export default function Dashboard() {
   // ✅ Redirect unauthenticated users
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.replace("/login"); // 🔄 Used `replace()` to avoid back navigation issue
+      router.replace("/login");
     }
   }, [status, router]);
+
+  // ✅ Toggle sections on icon click
+  const toggleSection = (section: string) => {
+    setActiveSection(activeSection === section ? null : section);
+  };
 
   return (
     <div className={styles.dashboard}>
@@ -43,36 +49,59 @@ export default function Dashboard() {
 
       <div className={styles.container}>
         <main className={styles.mainContent}>
-          {/* ✅ Left Panel for Title & Description */}
-          <div className={styles.leftPanel}>
-          
-
-            {/* ✅ Display User Info (Fixes Unused Session Warning) */}
+          {/* ✅ Welcome Message & Time (Now inside mainContent) */}
+          <div className={styles.welcomeSection}>
             {session?.user && (
-              <p className={styles.userInfo}>
-                Welcome, <strong>{session.user.name || "User"}</strong>! ({session.user.email})
-              </p>
+              <h2 className={styles.welcomeMessage}>
+                Welcome, <strong>{session.user.name || "User"}</strong>!
+              </h2>
             )}
-
-            {/* ✅ Display Current Time */}
             <p className={styles.dateTime}>
               <strong>Current Time:</strong> {currentDateTime}
             </p>
+          </div>
 
-            <BulletinBoard /> {/* ✅ Integrating the Bulletin Board */}
+          {/* ✅ Toggle Control Panel */}
+          <div className={styles.togglePanel}>
+            <button onClick={() => toggleSection("wallet")} className={activeSection === "wallet" ? styles.active : ""}>
+              <Wallet size={28} /> Wallet
+            </button>
+            <button onClick={() => toggleSection("stablecoin")} className={activeSection === "stablecoin" ? styles.active : ""}>
+              <Banknote size={28} /> Stablecoin
+            </button>
+            <button onClick={() => toggleSection("transactions")} className={activeSection === "transactions" ? styles.active : ""}>
+              <History size={28} /> Transactions
+            </button>
+            <button onClick={() => toggleSection("bulletin")} className={activeSection === "bulletin" ? styles.active : ""}>
+              <Newspaper size={28} /> Bulletin
+            </button>
+          </div>
 
-            {/* ✅ Sleek Stablecoin Management Section */}
-            <div className={styles.stablecoinManagement}>
+          {/* ✅ Expandable Sections */}
+          {activeSection === "wallet" && (
+            <div className={styles.expandedSection}>
+              <WalletComponent />
+            </div>
+          )}
+
+          {activeSection === "stablecoin" && (
+            <div className={styles.expandedSection}>
               <MintStablecoin />
               <RedeemStablecoin />
             </div>
-          </div>
+          )}
 
-          {/* ✅ Right Panel with Wallet & Transaction History */}
-          <div className={styles.rightPanel}>
-            <Wallet />
-            <TransactionHistory />
-          </div>
+          {activeSection === "transactions" && (
+            <div className={styles.expandedSection}>
+              <TransactionHistory />
+            </div>
+          )}
+
+          {activeSection === "bulletin" && (
+            <div className={styles.expandedSection}>
+              <BulletinBoard />
+            </div>
+          )}
         </main>
       </div>
     </div>

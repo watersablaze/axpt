@@ -1,161 +1,109 @@
-/* ========== Cyberpunk Wallet UI ========== */
+/* ✅ Wallet Container - Hidden By Default */
 .walletContainer {
-  width: 100%; /* ✅ Takes full width of its parent container */
-  max-width: 600px; /* ✅ Prevents excessive stretching */
-  background: rgba(15, 15, 20, 0.9);
-  backdrop-filter: blur(12px);
+  background: rgba(255, 255, 255, 0.05);
   padding: 20px;
-  border-radius: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.2);
+  max-width: 400px;
   text-align: center;
-  box-shadow: 0 0 15px rgba(0, 255, 255, 0.3);
-  transition: box-shadow 0.3s ease-in-out;
+  opacity: 0; /* Hidden */
+  transform: translateY(-10px);
+  transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+  position: absolute;
+  top: 80px; /* Adjusted for visibility */
+  right: 20px;
+  display: none; /* 🔴 Hides it completely */
+}
+
+/* ✅ Visible Wallet - Now Works! */
+.walletContainer.visible {
+  opacity: 1;
+  transform: translateY(0);
+  display: block; /* ✅ Ensures it appears */
+}
+
+
+/* ✅ Toggle Wallet Button */
+.toggleWallet {
+  background: rgba(0, 255, 255, 0.15);
+  border: none;
+  color: white;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.toggleWallet:hover {
+  background: rgba(0, 255, 255, 0.3);
+}
+
+/* ✅ Wallet Toggle Buttons */
+.walletToggle {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  justify-content: space-around;
+  margin-top: 15px;
+}
+
+.walletToggle button {
+  background: transparent;
+  border: none;
+  color: #ddd;
+  font-size: 1rem;
+  font-weight: bold;
+  display: flex;
   align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: transform 0.2s, color 0.2s;
 }
 
-.walletContainer:hover {
-  box-shadow: 0 0 25px rgba(0, 255, 255, 0.6);
+.walletToggle button:hover {
+  color: #00eaff;
+  transform: scale(1.1);
 }
 
-/* ========== Toggle Buttons ========== */
-.toggleContainer {
+.walletToggle .active {
+  color: #00eaff;
+  text-shadow: 0 0 5px rgba(0, 234, 255, 0.8);
+}
+
+/* ✅ Wallet Details */
+.walletDetails {
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ✅ Action Buttons */
+.actions {
   display: flex;
   justify-content: space-between;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.239);
-  padding: 8px;
-  border-radius: 2px;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
+  margin-top: 15px;
 }
 
-.toggleContainer button {
-  flex: 1;
-  background: none;
+.actions button {
+  background: rgba(0, 255, 255, 0.2);
+  color: white;
   border: none;
-  color: rgba(0, 255, 255, 0.8);
-  font-size: 1rem;
-  font-weight: bold;
   padding: 10px;
+  border-radius: 5px;
   cursor: pointer;
-  transition: all 0.3s ease-in-out;
+  transition: background 0.3s;
 }
 
-.toggleContainer button:hover {
-  color: cyan;
-  text-shadow: 0 0 8px rgba(0, 255, 255, 0.8);
-}
-
-.toggleContainer .active {
-  border-bottom: 3px solid cyan;
-}
-
-/* ========== Wallet Balance Box ========== */
-.walletBox {
-  width: 100%;
-  margin-top: 15px;
-  padding: 8px;
-  background: rgba(0, 0, 0, 0.288);
-  border-radius: 2px;
-  box-shadow: 0 0 10px rgba(0, 255, 255, 0.2);
-}
-
-.walletBox h3 {
-  font-size: 1.2rem;
-  color: rgba(0, 255, 255, 0.9);
-  text-transform: uppercase;
-}
-
-.balanceDisplay {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.4rem;
-  font-weight: bold;
-  color: #0ff;
-  text-shadow: 0 0 8px rgba(0, 255, 255, 0.6);
-  margin-top: 10px;
-}
-
-/* ========== Visibility & Copy Buttons ========== */
-.visibilityButton,
-.copyButton {
-  background: none;
-  border: none;
-  cursor: pointer;
-  margin-left: 12px;
-  transition: transform 0.3s ease-in-out;
-}
-
-.visibilityButton:hover,
-.copyButton:hover {
-  transform: scale(1.2);
-  filter: drop-shadow(0 0 8px rgba(0, 255, 255, 0.8));
-}
-
-/* ========== Wallet Address Box ========== */
-.walletAddressContainer {
-  width: 100%;
-  margin-top: 15px;
-}
-
-.walletAddressContainer h4 {
-  color: rgba(0, 255, 255, 0.9);
-  font-size: 1rem;
-  margin-bottom: 8px;
-}
-
-.walletAddressBox {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(0, 0, 0, 0.288);
-  padding: 8px;
-  border-radius: 2px;
-  box-shadow: 0 0 8px rgba(0, 255, 255, 0.4);
-  color: cyan;
-  font-weight: bold;
-}
-
-.walletAddressBox span {
-  font-size: 1rem;
-}
-
-.copyButton {
-  margin-left: 10px;
-  color: cyan;
-}
-
-/* ========== Hidden Text (for balance hiding) ========== */
-.hiddenText {
-  letter-spacing: 3px;
-  font-weight: bold;
-  color: rgba(0, 255, 255, 0.6);
-  text-shadow: 0 0 5px rgba(0, 255, 255, 0.3);
-}
-
-/* ✅ Mobile Optimization */
-@media (max-width: 768px) {
-  .walletContainer {
-    width: 100%;
-    padding: 15px;
-  }
-
-  .mainContent {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .walletBox h3 {
-    font-size: 1rem;
-  }
-
-  .balanceDisplay {
-    font-size: 1.2rem;
-  }
-
-  .walletAddressBox span {
-    font-size: 0.9rem;
-  }
+.actions button:hover {
+  background: rgba(0, 255, 255, 0.5);
 }

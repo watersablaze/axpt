@@ -5,26 +5,67 @@
   width: 100%;
   min-height: 100vh;
   position: relative;
-  background: url('/dashboard-bg.png') no-repeat center center fixed;
+  background: url('/dashboard-bg-2.png') no-repeat center center fixed;
   overflow: hidden;
+  background-size: cover;
   color: white;
+}
+
+/* ✅ Container Layout */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; /* ✅ Ensures elements are centered */
+  width: 100%;
+  height: calc(100vh - 80px); /* ✅ Subtracts header height */
+  position: relative;
+  margin-top: 80px;
+  margin-left: 136px;
+}
+
+/* ✅ Fade-In Blur Effect */
+@keyframes fadeInBlur {
+  from {
+    opacity: 0;
+    filter: blur(5px);
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: scale(1);
+  }
 }
 
 /* ✅ Main Content Layout */
 .mainContent {
-  flex-grow: 1;
-  width: calc(100vw - 280px);
-  height: calc(100vh - 60px);
-  padding: 20px;
-  background: rgba(122, 118, 118, 0.894);
-  border-radius: 15px;
-  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.4);
-  margin-left: 300px;
-  margin-top: 60px;
-  overflow-y: auto;
+  width: 80vw;
+  height: 90vh;
+  background: rgba(250, 245, 245, 0.168);
+  border-radius: 5px;
+  box-shadow: 0 4px 10px rgba(0, 255, 255, 0.4);
+  padding: 30px;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  position: relative;
+  animation: fadeInBlur 0.8s ease-in-out;
+  transition: filter 0.4s ease-in-out, opacity 0.4s ease-in-out;
+}
+
+/* ✅ Dim Background when Section is Active (But Keep Toggles Clickable) */
+.mainContent.dimmed::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 5;
+  pointer-events: none; /* ✅ Prevents the overlay from blocking clicks */
 }
 
 /* ✅ Sidebar Transition */
@@ -34,25 +75,175 @@
   transition: margin-left 0.3s ease-in-out; /* ✅ Smooth transition */
 }
 
-/* ✅ Left Panel (Title & Description) */
-.leftPanel {
-  flex: 1;
+/* ✅ Toggle Panel - Now a Vertical List */
+.togglePanel {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  padding: 20px;
+  align-items: left;
+  gap: 25px;
+  transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+  margin-right: 1550px;
+  z-index: 10; /* ✅ Keeps toggles clickable */
 }
 
-/* ✅ Right Panel (Wallet & Transactions) */
-.rightPanel {
-  flex: 1;
-  min-width: 400px;
+/* ✅ Subtle Slide-In Animation for Toggles */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ✅ Toggle Panel - Updated with Animation */
+.togglePanel button {
+  background: transparent;
+  border: none;
+  color: #ddd;
+  font-size: 1.1rem;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: transform 0.3s ease, color 0.3s ease, text-shadow 0.3s ease;
+  padding: 12px;
+  width: 200px;
+  animation: fadeSlideIn 0.6s ease-in-out;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ✅ Subtle Bounce Animation on Hover */
+@keyframes bounceHover {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+  100% { transform: translateY(0); }
+}
+
+/* ✅ Toggle Panel Hover Effect */
+.togglePanel button:hover {
+  color: #00eaff;
+  text-shadow: 0 0 5px rgba(0, 234, 255, 0.8);
+  transform: scale(1.1);
+}
+
+/* ✅ Toggle Panel Moves Down When a Section is Active */
+.panelHidden {
+  transform: translateY(40px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ✅ Centered Toggle Icons */
+.toggleIcons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+/* ✅ Each Toggle Icon */
+.toggleIcon {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; /* ✅ Aligns left */
-  justify-content: flex-start;
-  padding-left: 20px;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 15px;
+  border-radius: 12px;
+  transition: transform 0.3s, background 0.3s;
+  cursor: pointer;
 }
+
+.toggleIcon:hover {
+  background: rgba(0, 0, 0, 0.8);
+  transform: scale(1.1);
+}
+
+/* ✅ Prevent Sidebar Overlap */
+.sidebar.collapsed + .mainContent {
+  width: 100vw;
+  margin-left: 80px;
+}
+
+/* ✅ Mobile Fixes */
+@media (max-width: 768px) {
+  .mainContent {
+    width: 90vw;
+    height: 85vh;
+    flex-direction: column;
+  }
+
+  .toggleIcons {
+    gap: 15px;
+  }
+}
+
+/* ✅ Smooth Glow Effect for Active Toggle */
+.togglePanel .active {
+  color: #00eaff;
+  text-shadow: 0 0 8px rgba(0, 234, 255, 0.9);
+  font-weight: bold;
+}
+
+/* ✅ Enlarge Active Section */
+.expandedSection {
+  width: 100%;
+  max-width: 850px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 234, 255, 0.5);
+  opacity: 0;
+  transform: scale(0.95);
+  animation: fadeIn 0.4s ease-in-out forwards;
+  position: relative;
+  z-index: 15;
+}
+
+/* ✅ Enlarges Active Section & Keeps it Clickable */
+.expandedSection.active {
+  box-shadow: 0 0 25px rgba(0, 234, 255, 0.8);
+  transform: scale(1.05);
+  transition: box-shadow 0.4s ease-in-out, transform 0.4s ease-in-out;
+  z-index: 20;
+  opacity: 1;
+}
+
+/* ✅ Dim Other Sections */
+.mainContent:not(.dimmed) .expandedSection:not(.active) {
+  opacity: 0.3;
+  transform: scale(0.9);
+  pointer-events: none;
+}
+
+/* ✅ Soft Fade-In for Expanded Sections */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 
 /* ✅ Mobile Fixes */
 @media (max-width: 768px) {
@@ -66,4 +257,82 @@
     width: 100%;
     align-items: flex-start; /* ✅ Prevents center alignment issue */
   }
+
+  .togglePanel {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .expandedSection {
+    width: 100%;
+    padding: 15px;
+  }
+}
+
+/* ✅ Welcome Section */
+.welcomeSection {
+  text-align: center;
+  margin-bottom: 40px;
+  transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+  animation: welcomeSlideUp 0.8s ease-in-out;
+  position: relative;
+  z-index: 10; /* ✅ Keeps it above dimming effect */
+}
+
+/* ✅ Welcome Section - Moves Up When Section is Active */
+.welcomeHidden {
+  transform: translateY(-50px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.welcomeMessage {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.6);
+  margin-bottom: 5px;
+}
+
+/* ✅ Welcome Section - Fades in and Moves When Active */
+@keyframes welcomeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.dateTime {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-shadow: 0 0 3px rgba(0, 255, 255, 0.6);
+}
+
+/* ✅ Animated Text Trickling Up & Fading Out */
+@keyframes trickleUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(-20px);
+  }
+}
+
+.trickleText {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: rgba(0, 234, 255, 0.8);
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  animation: trickleUp 2s infinite linear;
+  position: absolute;
+  bottom: -50px;
+  left: 50%;
+  transform: translateX(-50%);
 }

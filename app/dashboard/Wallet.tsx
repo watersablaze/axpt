@@ -1,65 +1,93 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { Banknote, Bitcoin, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
 import styles from "./Wallet.module.css";
-import { Eye, EyeOff, Copy } from "lucide-react";
 
 export default function Wallet() {
-  const [activeWallet, setActiveWallet] = useState("crypto"); // 'crypto' or 'fiat'
-  const [showBalance, setShowBalance] = useState(false);
-  const cryptoBalance = "2.453 ETH";
-  const fiatBalance = "$5,230.00";
-  const walletAddress = "0x1234...abcd";
+  const { data: session } = useSession();
+  const [activeWallet, setActiveWallet] = useState<"crypto" | "fiat">("crypto");
+  const [cryptoBalance, setCryptoBalance] = useState<number>(0);
+  const [fiatBalance, setFiatBalance] = useState<number>(0);
+  const [isVisible, setIsVisible] = useState(false); // ✅ Controls wallet visibility
 
-  const copyToClipboard = () => {
-    navigator.clipboard.writeText(walletAddress);
-    alert("Wallet address copied!");
-  };
+  // ✅ Fetch Crypto Balance (Mock for now, will use Web3 API)
+  useEffect(() => {
+    async function fetchCryptoBalance() {
+      try {
+        setCryptoBalance(2.5); // Mock balance: 2.5 ETH
+      } catch (error) {
+        console.error("❌ Error fetching crypto balance:", error);
+      }
+    }
+    fetchCryptoBalance();
+  }, []);
+
+  // ✅ Fetch Fiat Balance (Using Stripe API)
+  useEffect(() => {
+    async function fetchFiatBalance() {
+      try {
+        const response = await fetch("/api/stripe/balance");
+        const data = await response.json();
+        setFiatBalance(data.balance || 0);
+      } catch (error) {
+        console.error("❌ Error fetching fiat balance:", error);
+      }
+    }
+    fetchFiatBalance();
+  }, []);
 
   return (
-    <div className={styles.walletContainer}>
-      {/* Wallet Toggle */}
-      <div className={styles.toggleContainer}>
+    <div className={`${styles.walletContainer} ${isVisible ? styles.visible : ""}`}>
+      {/* ✅ Toggle Button for Wallet Visibility */}
+      <button className={styles.toggleWallet} onClick={() => setIsVisible(!isVisible)}>
+        {isVisible ? "Close Wallet" : "View Wallet"}
+      </button>
+
+      {/* ✅ Wallet Toggle Buttons */}
+      <div className={styles.walletToggle}>
         <button
-          className={activeWallet === "crypto" ? styles.active : ""}
           onClick={() => setActiveWallet("crypto")}
+          className={activeWallet === "crypto" ? styles.active : ""}
         >
-          Crypto Wallet
+          <Bitcoin size={24} /> Crypto
         </button>
         <button
-          className={activeWallet === "fiat" ? styles.active : ""}
           onClick={() => setActiveWallet("fiat")}
+          className={activeWallet === "fiat" ? styles.active : ""}
         >
-          Fiat Wallet
+          <Banknote size={24} /> Fiat
         </button>
       </div>
 
-      {/* Wallet Display */}
-      <div className={styles.walletBox}>
-        <h3>{activeWallet === "crypto" ? "Crypto Balance" : "Fiat Balance"}</h3>
-        <div className={styles.balanceDisplay}>
-          {showBalance ? (
-            <span>{activeWallet === "crypto" ? cryptoBalance : fiatBalance}</span>
-          ) : (
-            <span className={styles.hiddenText}>••••••••</span>
-          )}
-          <button
-            className={styles.visibilityButton}
-            onClick={() => setShowBalance(!showBalance)}
-          >
-            {showBalance ? <EyeOff size={18} /> : <Eye size={18} />}
-          </button>
-        </div>
-      </div>
-
-      {/* Wallet Address */}
+      {/* ✅ Crypto Wallet View */}
       {activeWallet === "crypto" && (
-        <div className={styles.walletAddressContainer}>
-          <h4>Wallet Address</h4>
-          <div className={styles.walletAddressBox}>
-            <span>{walletAddress}</span>
-            <button className={styles.copyButton} onClick={copyToClipboard}>
-              <Copy size={16} />
+        <div className={styles.walletDetails}>
+          <h3>Crypto Wallet</h3>
+          <p>Balance: <strong>{cryptoBalance} ETH</strong></p>
+          <div className={styles.actions}>
+            <button className={styles.sendButton}>
+              <ArrowUpCircle size={20} /> Send
+            </button>
+            <button className={styles.receiveButton}>
+              <ArrowDownCircle size={20} /> Receive
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ Fiat Wallet View */}
+      {activeWallet === "fiat" && (
+        <div className={styles.walletDetails}>
+          <h3>Fiat Wallet</h3>
+          <p>Balance: <strong>${fiatBalance.toFixed(2)}</strong></p>
+          <div className={styles.actions}>
+            <button className={styles.depositButton}>
+              <ArrowUpCircle size={20} /> Deposit
+            </button>
+            <button className={styles.withdrawButton}>
+              <ArrowDownCircle size={20} /> Withdraw
             </button>
           </div>
         </div>
