@@ -38,7 +38,7 @@ export default function LandingPage() {
                         animate={{ opacity: 1, filter: "blur(0px)" }}
                         transition={{ duration: 1, delay: 0.5 }}
                     >
-                        <p className={styles.inscriptionText}>Welcome to AXPT.</p>
+                        <p className={styles.inscriptionText}>Welcome to AXPT</p>
                     </motion.div>
 
                     {/* ✅ Smart Contract - Smaller, Floating, Animated */}

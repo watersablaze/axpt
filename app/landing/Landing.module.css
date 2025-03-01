@@ -9,6 +9,42 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  animation: fadeInScreen 0.8s ease-in-out forwards;
+}
+
+/* 🌟 Fade-in Effect */
+@keyframes fadeInScreen {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 📱 Mobile Background - Prevent Flash */
+@media (max-width: 768px) {
+  .landingContainer {
+    background: linear-gradient(
+      to bottom,
+      rgba(15, 30, 55, 0.9), /* ✅ Less aggressive at start */
+      rgba(11, 43, 92, 0.7)  /* ✅ Smooth transition */
+    ),
+    url("/PXP-Background2.jpg") no-repeat center center/cover;
+    background-blend-mode: normal; /* ✅ Avoid overly bright blending at start */
+    backdrop-filter: brightness(1.3) contrast(1.05); /* ✅ Subtle boost */
+    animation: fadeInBackground 1s ease-in-out forwards 0.5s; /* ✅ Slight delay */
+  }
+}
+
+/* 🌟 Gradual Background Adjustment */
+@keyframes fadeInBackground {
+  from { backdrop-filter: brightness(1) contrast(1); }
+  to { backdrop-filter: brightness(1.3) contrast(1.05); }
+}
+
+/* 🛠️ Fix for Slow Rendering */
+@media (prefers-reduced-motion: reduce) {
+  .landingContainer {
+    animation: none; /* ✅ Prevent animations if system prefers reduced motion */
+    opacity: 1;
+  }
 }
 
 /* 🔷 Transparent Header */
@@ -27,11 +63,12 @@
   z-index: 100;
 }
 
-/* 📏 Mobile Header */
+/* 📱 Mobile Header - Deep Blue & Thinner */
 @media (max-width: 768px) {
   .header {
-    height: 40px;
-    padding: 4px 8px;
+    height: 50px !important;
+    padding: 3px 6px;
+    background: rgb(1, 10, 63) !important;
   }
 }
 
@@ -46,27 +83,90 @@
   justify-content: center;
   overflow: hidden;
   z-index: 1;
-  background: rgba(255, 255, 255, 0.02);
   box-shadow: inset 0px 0px 8px rgba(0, 255, 170, 0.1);
   backdrop-filter: blur(2px);
 }
 
-/* ✅ Center Section - Smart Contract + Text */
+/* 📱 Mobile Hero - Better Spacing */
+@media (max-width: 768px) {
+  .hero {
+    padding: 15px;
+    gap: 10px;
+  }
+
+/* ✅ Center Section - Adjusted */
 .centerSection {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 15px; /* ✅ Adds spacing while keeping elements grouped */
+  gap: 12px;
 }
 
-/* ✅ Bottom Section - Independent Text Blocks */
+  .smartContractText {
+    font-size: 0.5rem;
+    filter: blur(0.1px);
+    animation: scrollingText 6s linear infinite; /* ✅ Faster scrolling */
+  }
+
+
+  .topTextContainer {
+    font-size: 0.6rem; /* Reduce text size */
+  }
+
+  .inscriptionText {
+    font-size: 1.2rem; /* ✅ Smaller for mobile */
+    letter-spacing: 1.5px;
+    width: fit-content; /* ✅ Allows it to expand based on text length */
+    animation: typing 3.5s steps(30, end) forwards, blinkCursor 0.7s infinite;
+    animation-delay: 0.5s; /* ✅ Delays typing start */
+    animation: fadeInText 0.8s ease-in forwards, typing 5s steps(20, end) forwards 1.5s, blinkCursor 0.7s infinite 4s;
+  }
+
+  .connectText {
+    font-size: 0.4rem;
+    margin-top: 6px;
+    margin-right: 20px;
+    transform: translateX(20px);
+  }
+
+  .emailContainer {
+    flex-direction: row;
+    align-items: center;
+    gap: 2px;
+    margin-left: 14px;
+  }
+
+  .emailText {
+    font-size: 0.45rem !important;
+  }
+
+  .leftIcon, .rightIcon {
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  .logo {
+    margin-bottom: 20px;
+  }
+}
+
 .bottomSection {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 8px; /* ✅ Adds spacing while keeping elements visually connected */
-  margin-top: 20px;
+  flex-direction: column; 
+  align-items: center; /* ✅ Centers all elements */
+  justify-content: center; /* ✅ Keeps everything neatly positioned */
+  gap: 6px; /* ✅ Ensures good spacing */
+}
+
+@media (max-width: 768px) {
+  .bottomSection {
+    display: flex;
+    flex-direction: column; /* ✅ Keeps everything stacked */
+    align-items: center;
+    justify-content: center;
+    gap: 4px; /* ✅ Reduce gap to snug fit */
+    width: 100%;
+  }
 }
 
 /* ✅ "Connect with us:" - Independent */
@@ -80,20 +180,82 @@
   margin-top: 10px; /* ✅ Adjust spacing separately */
 }
 
-/* ✅ High-Tech Smaller "Blockchain Powered" */
-.blockchainInscription {
-  font-family: "Orbitron", sans-serif;
-  font-size: 0.4rem; /* ✅ Smaller than normal text */
-  font-weight: 400;
-  color: rgba(180, 180, 180, 0.8);
-  text-transform: uppercase;
-  letter-spacing: 1.5px;
-  margin-top: -30px; /* ✅ Snug under smart contract */
-  margin-left: 5px;
+/* 🔹 Main Text Effect */
+.inscriptionText {
+  font-family: "Courier New", monospace; /* ✅ Professional coding aesthetic */
+  font-size: clamp(1.4rem, 3vw, 1.8rem); /* ✅ Scales dynamically */
+  font-weight: 500;
+  color: rgba(255, 215, 0, 0.85); /* ✅ Gold futuristic glow */
+  white-space: nowrap; /* ✅ Prevents line breaks */
+  overflow: hidden; /* ✅ Ensures text is hidden initially */
+  display: inline-flex; /* ✅ Avoids spacing issues */
+  width: 0; /* ✅ Starts completely hidden */
+  max-width: fit-content; /* ✅ Adapts to text length */
+  border-right: 2px solid rgba(255, 215, 0, 0.85); /* ✅ Cursor effect */
+  letter-spacing: 1.8px;
+  animation: typing 3s steps(30, end) forwards, blinkCursor 0.7s infinite;
+  animation: fadeInText 0.8s ease-in forwards 1s, typing 3s steps(20, end) forwards 1.5s, blinkCursor 0.7s infinite 4s;
+  animation-delay: 0.5s; /* ✅ Ensures smooth entry */
 }
 
-.inscriptionText {
-  color: rgba(255, 215, 0, 0.9); /* ✅ Soft gold color */
+/* 🌟 Gradual Fade-In Before Typing */
+@keyframes fadeInText {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 🔹 Typing Animation */
+@keyframes typing {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* 🔹 Blinking Cursor */
+@keyframes blinkCursor {
+  50% { border-color: transparent; }
+}
+
+/* 🔹 Blockchain Label */
+.blockchainInscription {
+  font-family: "Orbitron", sans-serif;
+  font-size: 0.3rem;
+  font-weight: 400;
+  color: rgba(255, 217, 0, 0.85);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  display: block;
+  text-align: center;
+  position: relative;
+  bottom: 10px;
+  left: 40px;
+  margin: 5px auto 0 auto;
+  transform: translateX(-50%) translateY(8px);
+}
+
+@media (max-width: 768px) {
+  .blockchainInscription {
+    font-size: 0.3rem; /* ✅ Ensures readability on mobile */
+    text-align: center; /* ✅ Keep centered */
+    color: rgba(255, 217, 0, 0.85);
+
+    /* ✅ Correcting Positioning */
+    position: relative; 
+    left: 48%; /* Moves it to center */
+    bottom: 15px;
+    transform: translateX(-50%) translateY(5px); /* ✅ Adjust left/right & spacing */
+    width: 90%; /* ✅ Ensures it doesn’t stretch too wide */
+  }
+}
+
+@media (max-width: 768px) {
+  .bottomSection {
+    display: flex;
+    flex-direction: column; /* ✅ Keeps everything stacked */
+    align-items: center;
+    justify-content: center;
+    gap: 4px; /* ✅ Reduce gap to snug fit */
+    width: 100%;
+  }
 }
 
 /* ✅ Smart Contract Container - Perfectly Centered */
@@ -111,7 +273,7 @@
   align-items: center;
   justify-content: center;
   padding: 12px;
-  margin-left: 0%; /* ✅ Shift to the right */
+  margin-left: 30%; /* ✅ Shift to the right */
   margin-top: 10%;
   transform: rotateX(10deg) rotateY(5deg); /* ✅ More pronounced bend */
   animation: floatBend 6s infinite ease-in-out alternate;
@@ -130,49 +292,15 @@
   100% { transform: rotateX(10deg) rotateY(5deg); }
 }
 
-/* 📏 Mobile Smart Contract */
+/* 📜 Smart Contract - Ensure Smaller Mobile Scale */
 @media (max-width: 768px) {
   .smartContractContainer {
-    width: 100px;
-    height: 150px;
-  }
-}
-
-/* 📏 Mobile Optimization */
-@media (max-width: 768px) {
-  .topTextContainer, .bottomTextContainer {
-    font-size: 1rem;
-    max-width: 90%;
-  }
-}
-
-/* ✅ Bottom Section - Independent Text Blocks */
-.bottomSection {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 8px; /* ✅ Adds spacing while keeping elements visually connected */
-  margin-top: 20px;
-}
-
-/* ✅ "Connect with us:" - Independent, Responsive, and Adjustable */
-.connectText {
-  font-family: "Orbitron", sans-serif; /* ✅ High-tech font */
-  font-size: 0.8rem; /* ✅ Reduced size */
-  font-weight: 500;
-  color: rgba(200, 200, 200, 0.9);
-  text-transform: uppercase;
-  letter-spacing: 1.2px;
-  text-shadow: none;
-  margin-top: 15px; /* ✅ Adjust spacing */
-  text-align: center; /* ✅ Ensure centered alignment */
-}
-
-/* 📏 Mobile Optimization */
-@media (max-width: 768px) {
-  .connectText {
-    font-size: 0.7rem; /* ✅ Slightly smaller on mobile */
+    width: 75px !important; /* Force smaller width */
+    height: 105px !important; /* Force smaller height */
+    transform: rotateX(8deg) rotateY(4deg) skewX(-3deg) !important;
+    padding: 0px !important;
+    border: 0.3px solid rgba(0, 255, 170, 0.412);
+    right: 30px;
   }
 }
 
@@ -214,37 +342,40 @@
   transform: rotateY(15deg); /* ✅ Smooth 3D Tilt */
 }
 
-/* ✅ AXPT.IO Title - Now Golden */
 .title {
   position: absolute;
   bottom: 5%;
   left: 50%;
   transform: translateX(-50%);
-  font-size: clamp(1rem, 4vw, 1.0rem);
+  font-size: clamp(1rem, 4vw, 1.2rem); /* ✅ Auto-resizing */
   font-weight: bold;
-  color: rgba(255, 217, 0, 0.352); /* ✅ Golden Color */
+  color: rgba(255, 217, 0, 0.95); /* ✅ Stronger gold */
   text-transform: uppercase;
-  letter-spacing: clamp(1px, 0.5vw, 3px);
+  letter-spacing: clamp(1px, 0.5vw, 3px); /* ✅ Digital crispness */
   text-align: center;
   text-shadow: 0 0 3px rgba(255, 215, 0, 0.3);
   white-space: nowrap;
   z-index: 15;
+  transition: all 0.3s ease-in-out;
 }
 
-/* ✅ Title Glow Intensifies on Hover */
+/* 📱 Mobile Optimization */
+@media (max-width: 768px) {
+  .title {
+    font-size: 0.5rem; /* ✅ Slightly smaller on mobile */
+    text-shadow: 0 0 2px rgba(255, 215, 0, 0.3);
+    left: 230px;
+    bottom: 10px
+  }
+}
+
+/* ✅ Sleek Hover Effect */
 .title:hover {
   color: rgba(255, 215, 0, 1);
   text-shadow: 
     0 0 8px rgba(255, 215, 0, 0.8), 
     0 0 16px rgba(255, 215, 0, 0.6),
     0 0 32px rgba(255, 215, 0, 0.4);
-}
-
-/* ✨ High-Tech Flickering Animation */
-@keyframes holographicFlicker {
-  0% { opacity: 1; filter: brightness(1) blur(0px); }
-  50% { opacity: 0.95; filter: brightness(1.1) blur(0.5px); }
-  100% { opacity: 1; filter: brightness(0.98) blur(0px); }
 }
 
 /* 💡 Smooth Underwater Light Effect */
@@ -334,7 +465,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  filter: blur(0.2px);
+  filter: blur(0.1px);
   animation: scrollingText 3s linear infinite; /* ✅ Faster scrolling */
 }
 
@@ -354,28 +485,11 @@
   animation: scrollingText 4s linear infinite; /* ✅ Faster speed */
 }
 
-/* 📱 Mobile Optimization */
-@media (max-width: 768px) {
-  .smartContractContainer {
-    width: 65px;
-    height: 120px;
-    transform: rotateX(25deg) rotateY(10deg) skewX(-6deg);
-  }
-
-  .smartContractText {
-    font-size: 0.3rem;
-  }
-}
-
 /* ✅ Pulse Animation Softened */
 @keyframes pulseGlow {
   0% { filter: drop-shadow(0px 0px 5px rgba(0, 255, 170, 0.2)); }
   50% { filter: drop-shadow(0px 0px 10px rgba(0, 255, 170, 0.2)); }
   100% { filter: drop-shadow(0px 0px 5px rgba(0, 255, 170, 0.2)); }
-}
-
-.signatureText {
-  animation: flicker 2.5s infinite alternate ease-in-out;
 }
 
 .scanningGrid {
@@ -394,7 +508,7 @@
   animation: scanPulse 8s infinite alternate ease-in-out;
 }
 
-/* ✅ Footer Styling - Clean, Centered, and Readable */
+/* 🌊 Footer - Glassmorphic & Balanced */
 .footer {
   position: absolute;
   bottom: 0;
@@ -405,39 +519,52 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 500;
-  color: rgba(255, 215, 0, 0.9); /* ✅ Soft gold color */
-  text-shadow: none;
-  background: rgba(0, 0, 0, 0.3); /* ✅ Slight transparency */
-  backdrop-filter: blur(5px);
-  padding: 10px;
+  color: rgba(255, 215, 0, 0.85) !important;  background: rgba(10, 25, 45, 0.2); /* Deep aquatic glass effect */
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: inset 0px 0px 6px rgba(0, 255, 170, 0.05);
+  transition: all 0.3s ease-in-out;
+  background: rgba(9, 67, 96, 0.19) !important; /* Match header */
 }
 
-/* ✅ Footer Text */
-.footerText {
-  white-space: nowrap;
-  margin: 0 8px; /* ✅ Adjusted spacing */
-  font-family: "Orbitron", sans-serif; /* ✅ Matches high-tech theme */
-}
-
-/* ✅ Footer Separator */
-.footerSeparator {
-  color: rgba(255, 215, 0, 0.5);
-  font-weight: bold;
-  margin: 0 6px;
-}
-
-/* 📏 Mobile Footer */
+/* 📱 Mobile Footer - Deep Blue */
 @media (max-width: 768px) {
   .footer {
-    height: 40px;
-    font-size: 0.75rem;
+    background: rgb(1, 10, 63) !important; /* Match header */
+    border-top: none;
+    display: flex;
+    flex-direction: row; /* ✅ Keeps everything on the same line */
+    align-items: center;
+    justify-content: center;
+    padding: 0px 0;
+
+    .footerText {
+      font-size: 0.7rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
+
   .footerText {
-    font-size: 0.7rem;
+    font-family: "Orbitron", sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1.2; /* ✅ Ensures even height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
   }
+}
+
+.footerSeparator {
+  margin: 0 6px;
+  color: rgba(255, 215, 0, 0.7);
+  font-weight: bold;
 }
 
 /* 🔹 Floating Security Lock */
@@ -460,13 +587,13 @@
   cursor: pointer;
 }
 
-/* 📏 Mobile Security Lock */
+/* 🔐 Security Lock Icon - Reduce Size on Mobile */
 @media (max-width: 768px) {
   .securityLock {
-    bottom: 15px;
-    right: 30px;
-    width: 30px;
-    height: 30px;
+    bottom: 10px;
+    right: 28px;
+    width: 25px; /* Smaller */
+    height: 25px;
     font-size: 1rem;
   }
 }
@@ -501,17 +628,6 @@
   0% { transform: scale(1); opacity: 1; }
   50% { transform: scale(1.06); opacity: 0.85; }
   100% { transform: scale(1); opacity: 1; }
-}
-
-/* 📏 Mobile Adjustments */
-@media (max-width: 768px) {
-  .smartContractContainer {
-    width: 180px;
-    height: 270px;
-  }
-
-  .blockchainInscription { font-size: 0.8rem; }
-  .inscriptionText { font-size: 1rem; }
 }
 
 /* 🔹 Email Section - Fully Adjustable */
