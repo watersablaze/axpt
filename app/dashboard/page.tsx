@@ -45,8 +45,7 @@ export default function Dashboard() {
         <main className={styles.mainContent}>
           {/* ✅ Left Panel for Title & Description */}
           <div className={styles.leftPanel}>
-            <h2 className={styles.sectionTitle}>Finance Hub</h2>
-            <p className={styles.sectionDescription}>Manage your assets seamlessly.</p>
+          
 
             {/* ✅ Display User Info (Fixes Unused Session Warning) */}
             {session?.user && (

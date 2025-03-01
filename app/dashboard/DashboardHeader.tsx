@@ -16,8 +16,10 @@ export default function DashboardHeader() {
       // ✅ If admin, use default admin avatar, otherwise use user avatar (or fallback)
       setUserAvatar(
         session.user.isAdmin 
-          ? "/comet.admin.default.png"  // Admin default avatar
-          : session.user.avatar || "/africanPro.jpg"  // Regular user avatar fallback
+          ? "/comet.admin.default.png"
+          : session.user.avatar && session.user.avatar !== "" 
+            ? session.user.avatar 
+            : "/africanPro.jpg"
       );
     }
   }, [session]);
@@ -34,23 +36,33 @@ export default function DashboardHeader() {
       <GoldPrice />
     </div>
 
+
+      {/* ✅ Title & Description Centered */}
+      <div className={styles.headerContent}>
+        <h2 className={styles.sectionTitle}>Finance Hub</h2>
+        <p className={styles.sectionDescription}>Manage your assets seamlessly.</p>
+      </div>
+
+
       {/* ✅ Admin & User Section */}
       <div className={styles.userSection}>
         {session?.user ? (
           <>
-            {/* ✅ Correct Greeting Based on Role */}
             <span className={styles.greeting}>
               {session.user.isAdmin ? "Admin Dashboard" : `Hello, ${session.user.name}`}
             </span>
 
-            {/* ✅ Dynamic Avatar Based on Role */}
-            <Image
-              src={userAvatar}
-              alt="User Avatar"
-              width={40}
-              height={40}
-              className={styles.avatar}
-            />
+            {/* ✅ Render Avatar only if valid */}
+            {userAvatar && (
+              <Image
+                src={userAvatar}
+                alt="User Avatar"
+                width={40}
+                height={40}
+                className={styles.avatar}
+                priority
+              />
+            )}
 
             {/* ✅ Avatar Upload Feature */}
             {!session.user.isAdmin && <AvatarUploader updateSession={update} />}
