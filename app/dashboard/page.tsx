@@ -3,10 +3,10 @@
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, useCallback } from "react";
-import { Wallet, Banknote, History, Newspaper } from "lucide-react"; // ✅ Icons for toggles
-import DashboardHeader from "./DashboardHeader";
+import { Wallet2, DollarSign, ClipboardList, ScrollText, X } from "lucide-react";
 import Sidebar from "./Sidebar";
-import WalletComponent from "./Wallet";
+import DashboardHeader from "./DashboardHeader";
+import Wallet from "./Wallet";
 import TransactionHistory from "./TransactionHistory";
 import MintStablecoin from "./MintStablecoin";
 import RedeemStablecoin from "./RedeemStablecoin";
@@ -18,6 +18,7 @@ export default function Dashboard() {
   const router = useRouter();
   const [currentDateTime, setCurrentDateTime] = useState("");
   const [activeSection, setActiveSection] = useState<string | null>(null);
+  const [indicatorTop, setIndicatorTop] = useState<number | null>(null);
 
   // ✅ Updates the clock every second
   const updateDateTime = useCallback(() => {
@@ -37,19 +38,52 @@ export default function Dashboard() {
     }
   }, [status, router]);
 
+  useEffect(() => {
+    console.log("Active Section:", activeSection); // ✅ Debugging
+  }, [activeSection]);
+
   // ✅ Toggle sections on icon click
-  const toggleSection = (section: string) => {
-    setActiveSection(activeSection === section ? null : section);
-  };
+  const toggleSection = useCallback(
+    (section: string, event?: React.MouseEvent<HTMLButtonElement>) => {
+      if (activeSection === section) return;
+      setActiveSection(section);
+      if (event) {
+        setIndicatorTop(event.currentTarget.offsetTop);
+      }
+    },
+    [activeSection]
+  );
+
+  const closeSection = useCallback(() => {
+    setActiveSection(null);
+    setIndicatorTop(null);
+  }, []);
+
+  useEffect(() => {
+    if (activeSection === null) {
+      setIndicatorTop(null);
+    }
+  }, [activeSection]);
 
   return (
     <div className={styles.dashboard}>
       <DashboardHeader />
       <Sidebar />
 
+      {/* ✅ Reintroduced Overlay for Dim Effect */}
+      {activeSection && (
+        <div
+          className={styles.overlay}
+          onClick={() => {
+            console.log("Overlay Clicked - Closing Section"); // 🔎 Debugging
+            closeSection();
+          }}
+        ></div>
+      )}
+
       <div className={styles.container}>
         <main className={styles.mainContent}>
-          {/* ✅ Welcome Message & Time (Now inside mainContent) */}
+          {/* ✅ Welcome Message & Time */}
           <div className={styles.welcomeSection}>
             {session?.user && (
               <h2 className={styles.welcomeMessage}>
@@ -61,46 +95,63 @@ export default function Dashboard() {
             </p>
           </div>
 
-          {/* ✅ Toggle Control Panel */}
+          {/* ✅ Vertical Toggle Panel */}
           <div className={styles.togglePanel}>
-            <button onClick={() => toggleSection("wallet")} className={activeSection === "wallet" ? styles.active : ""}>
-              <Wallet size={28} /> Wallet
+            {indicatorTop !== null && (
+              <div className={styles.toggleIndicator} style={{ top: `${indicatorTop}px` }}></div>
+            )}
+
+            <button onClick={(e) => toggleSection("wallet", e)} className={activeSection === "wallet" ? styles.active : ""}>
+              <Wallet2 size={28} /> Wallet
             </button>
-            <button onClick={() => toggleSection("stablecoin")} className={activeSection === "stablecoin" ? styles.active : ""}>
-              <Banknote size={28} /> Stablecoin
+            <button onClick={(e) => toggleSection("stablecoin", e)} className={activeSection === "stablecoin" ? styles.active : ""}>
+              <DollarSign size={28} /> Stablecoin
             </button>
-            <button onClick={() => toggleSection("transactions")} className={activeSection === "transactions" ? styles.active : ""}>
-              <History size={28} /> Transactions
+            <button onClick={(e) => toggleSection("transactions", e)} className={activeSection === "transactions" ? styles.active : ""}>
+              <ClipboardList size={28} /> Transactions
             </button>
-            <button onClick={() => toggleSection("bulletin")} className={activeSection === "bulletin" ? styles.active : ""}>
-              <Newspaper size={28} /> Bulletin
+            <button onClick={(e) => toggleSection("bulletin", e)} className={activeSection === "bulletin" ? styles.active : ""}>
+              <ScrollText size={28} /> Bulletin
             </button>
           </div>
 
           {/* ✅ Expandable Sections */}
-          {activeSection === "wallet" && (
-            <div className={styles.expandedSection}>
-              <WalletComponent />
-            </div>
-          )}
+          {activeSection && (
+            <>
+              {/* ✅ Background Click Layer - Closes when clicking outside */}
+              <div className={styles.expandedSectionWrapper}>
+              <div
+              className={styles.expandedSection}
+              onClick={(e) => {
+                console.log("Clicked Inside ExpandedSection"); // ✅ Debugging
+                e.stopPropagation();
+              }}
+            >
+                  {/* ✅ Close Button */}
+                  <button
+                    className={styles.exitButton}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      console.log("Close Button Clicked - Closing Section"); // 🔎 Debugging
+                      setActiveSection(null);
+                    }}
+                  >
+                    <X size={24} /> Close
+                  </button>
 
-          {activeSection === "stablecoin" && (
-            <div className={styles.expandedSection}>
-              <MintStablecoin />
-              <RedeemStablecoin />
-            </div>
-          )}
-
-          {activeSection === "transactions" && (
-            <div className={styles.expandedSection}>
-              <TransactionHistory />
-            </div>
-          )}
-
-          {activeSection === "bulletin" && (
-            <div className={styles.expandedSection}>
-              <BulletinBoard />
-            </div>
+                  {/* ✅ Render Active Component */}
+                  {activeSection === "wallet" && <Wallet />}
+                  {activeSection === "stablecoin" && (
+                    <>
+                      <MintStablecoin />
+                      <RedeemStablecoin />
+                    </>
+                  )}
+                  {activeSection === "transactions" && <TransactionHistory />}
+                  {activeSection === "bulletin" && <BulletinBoard />}
+                </div>
+              </div>
+            </>
           )}
         </main>
       </div>
