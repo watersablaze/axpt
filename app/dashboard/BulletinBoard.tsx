@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import GoldPrice from "./GoldPrice"; // ✅ Import Gold Price Component
 import styles from "./BulletinBoard.module.css";
 
 interface NewsItem {
@@ -30,6 +31,22 @@ export default function BulletinBoard() {
 
   return (
     <div className={styles.bulletinContainer}>
+
+<div className={styles.bulletinContainer}>
+      <h2 className={styles.bulletinTitle}>Market Updates & Financial News</h2>
+
+      {/* ✅ Gold Price Now in Bulletin Section */}
+      <div className={styles.goldPriceSection}>
+        <GoldPrice />
+      </div>
+
+      <p className={styles.bulletinDescription}>
+        Stay informed with real-time market trends and updates on financial movements.
+      </p>
+
+      {/* ✅ Other Bulletin Content Can Go Here */}
+    </div>
+    
       <h2 className={styles.bulletinTitle}>Latest Financial & Crypto Insights</h2>
       <div className={styles.newsItem}>
         <h3>{newsUpdates[currentIndex].title}</h3>

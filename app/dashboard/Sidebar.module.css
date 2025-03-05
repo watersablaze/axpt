@@ -1,45 +1,59 @@
-/* ✅ Sidebar Base */
+/* ✅ Sidebar Base - Thinner & Sleek */
 .sidebar {
   position: fixed;
-  top: 82px;
+  top: 80px;
   left: 0;
-  height: calc(100vh - 60px);
-  width: 250px;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(10px);
+  height: calc(100vh - 80px);
+  width: 300px;
+  background: rgba(18, 18, 18, 0.8);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 4px 15px rgba(0, 255, 255, 0.1);
   color: white;
   display: flex;
   flex-direction: column;
   padding: 15px;
   transition: width 0.4s ease-in-out;
   z-index: 1000;
+  overflow-y: auto; /* ✅ Enables scrolling if necessary */
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ✅ Ensures sidebar content is always visible */
+.sidebar::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+}
+
+.sidebar.collapsed {
+  width: 80px;
   overflow: hidden;
 }
 
-/* ✅ Collapsed Sidebar */
-.sidebar.closed {
-  width: 60px;
+.sidebar.collapsed .navButton,
+.sidebar.collapsed .nav a {
+  justify-content: center;
+  text-align: center;
+}
+
+.sidebar.collapsed h4 {
+  display: none;
 }
 
 /* ✅ Sidebar Content */
 .content {
-  opacity: 1;
-  transition: opacity 0.3s ease-in-out;
-  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+  padding-top: 20px;
 }
 
 .content.hidden {
   opacity: 0;
   pointer-events: none;
-}
-
-.content.visible {
-  opacity: 1;
-}
-
-/* ✅ Welcome Message */
-.welcomeMessage {
-  margin-left: 80px;
 }
 
 /* ✅ Toggle Button */
@@ -50,103 +64,182 @@
   background: transparent;
   border: none;
   cursor: pointer;
-  color: rgb(233, 205, 61);
-  transition: transform 0.3s;
+  color: #00eaff;
+  transition: transform 0.3s ease-in-out;
 }
 
-.sidebar.closed .toggleButton {
+.sidebar.collapsed .toggleButton {
   transform: rotate(180deg);
 }
 
-/* ✅ User Info */
-.userInfo {
-  margin-top: 20px;
+/* ✅ Welcome Message */
+.welcomeMessage {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #1a6b34;
   text-align: center;
 }
 
-.name {
-  font-size: 1.2rem;
+/* ✅ Financial Dashboard Buttons */
+.navButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
   font-weight: bold;
+  color: #ffd700;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.navButton:hover {
+  background: rgba(255, 215, 0, 0.2);
+  transform: scale(1.05);
+}
+
+.nav { /*General nav Styles*/
+  margin-top: -20px; /* ✅ Creates space before this section */
+  padding-bottom: 30px; /* ✅ Pushes content up so it's not cut off */
+  flex-grow: 1; /* ✅ Ensures content fits dynamically */
+}
+
+.nav h4 {
+  text-align: left;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.nav a:hover {
+  background: rgba(0, 255, 255, 0.2);
+  color: #ffffff;
+  transform: scale(1.05);
+}
+
+/* ✅ Sidebar Links & Buttons */
+.nav a, .navButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  color: #f6f8f4;
+  text-decoration: none;
+  border-radius: 3px;
+  transition: background 0.3s, transform 0.2s;
+  cursor: pointer;
+}
+
+.nav a:hover, .navButton:hover {
+  background: rgba(0, 255, 255, 0.1);
+  transform: scale(1.0);
+}
+
+/* ✅ Glow Effect */
+.nav a:hover {
+  background: rgba(0, 255, 255, 0.2);
+  color: #ffffff;
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.5);
 }
 
 /* ✅ Wallet Section */
 .walletSection {
-  margin-top: 20px;
+  margin-top: -25px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
   text-align: center;
 }
 
-/* ✅ Wallet Box with Extra Spacing */
+/* ✅ Wallet Box - Smaller, Adjustable, and Customizable */
 .walletBox {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  background: rgba(255, 255, 255, 0.08); /* Default - Adjust as needed */
+  padding: 3px 6px; /* ✅ Smaller padding */
+  border-radius: 4px;
+  font-size: 0.75rem; /* ✅ Smaller font */
+  gap: 3px; /* ✅ Tighter spacing */
+  min-height: 24px; /* ✅ Adjust height */
+  width: 100%; /* ✅ Full width for uniformity */
+}
+
+/* ✅ Adjust Wallet Box Background for Testing */
+.walletBox.transparent {
+  background: transparent;
+}
+
+.walletBox.dark {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.walletBox.light {
   background: rgba(255, 255, 255, 0.1);
-  padding: 3px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  gap: 6px;  /* ✅ Adds space between text & button */
 }
 
 .hiddenText {
-  letter-spacing: 3px;
-  margin-left: 30px;
+  margin-left: 95px;
 }
 
-/* ✅ Copy Button */
-.copyButton {
+/* ✅ Smaller, Sleeker Copy & Toggle Buttons */
+.copyButton, .visibilityButton {
+  background: rgba(0, 255, 255, 0.15); /* ✅ Softer color */
+  border-radius: 3px;
+  padding: 3px 8px; /* ✅ Reduced padding */
+  font-size: 0.7rem; /* ✅ Smaller font */
+  font-weight: normal; /* ✅ Less bold */
+  color: #00eaff;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  border: none;
   display: flex;
   align-items: center;
-  justify-content: center;
-  background: rgba(255, 215, 0, 0.2);
-  padding: 2px 4px;
-  border-radius: 3px;
-  font-size: 0.5rem;
-  font-weight: bold;
-  color: #ffd700;
-  border: 0px solid rgba(255, 215, 0, 0.2);
-  cursor: pointer;
-  transition: background 0.3s ease-in-out;
-  margin-top:20px;
-  margin-left: 110px;
+  gap: 3px;
 }
 
-.visibilityButton {
-  color: #ffd700;
-  padding: 2px 2px;
-  border: 0px solid rgba(255, 215, 0, 0.2);
-  background: rgba(255, 215, 0, 0.4);
+/* ✅ Hover Effect */
+.copyButton:hover, .visibilityButton:hover {
+  background: rgba(0, 255, 255, 0.25);
+  transform: scale(1.05);
 }
 
-.copyButton:hover {
-  background: rgba(255, 215, 0, 0.4);
+/* ✅ Active Press Effect */
+.copyButton:active, .visibilityButton:active {
+  transform: scale(0.98);
 }
 
-/* ✅ Divider for User Links */
-.navDivider {
-  margin: 20px 0;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.2);
-  width: 100%;
-}
-
-/* ✅ Navigation Links */
-.nav {
-  display: flex;
-  flex-direction: column;
+/* ✅ Financial Dashboard */
+.financialDashboard {
   margin-top: 10px;
+  padding-bottom: 30px;
+  height: 23%;
+  background: rgba(28, 140, 152, 0.109);
 }
 
-/* ✅ Golden Navigation Links */
-.nav a {
-  padding: 12px;
-  color: #ffd700;
-  text-decoration: none;
+.financialDashboard h4 {
+  text-align: left;
+  font-size: 1.0rem;
   font-weight: bold;
-  border-radius: 5px;
-  transition: background 0.3s, color 0.3s;
+  color: #f8f8f8;
+  margin-bottom: 10px;
+  margin-top: -20px;
 }
 
-.nav a:hover {
-  background: rgba(255, 215, 0, 0.2);
-  color: #ffffff;
+/* ✅ Sidebar Animations */
+@keyframes fadeInSidebar {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

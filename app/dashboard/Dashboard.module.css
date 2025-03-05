@@ -1,4 +1,4 @@
-/* ========== General Layout ========== */
+/* ✅ General Layout */
 .dashboard {
   display: flex;
   flex-direction: column;
@@ -11,443 +11,63 @@
   color: white;
 }
 
-/* ✅ Container Layout */
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center; /* ✅ Ensures elements are centered */
-  width: 100%;
-  height: calc(100vh - 80px); /* ✅ Subtracts header height */
-  position: relative;
-  margin-top: 80px;
-  margin-left: 136px;
-}
-
-/* ✅ Fade-In Blur Effect */
-@keyframes fadeInBlur {
-  from {
-    opacity: 0;
-    filter: blur(5px);
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    filter: blur(0);
-    transform: scale(1);
-  }
-}
-
-/* ✅ Main Content Layout */
-.mainContent {
-  width: 80vw;
-  height: 90vh;
-  background: rgba(250, 245, 245, 0.168);
-  border-radius: 5px;
-  box-shadow: 0 4px 10px rgba(0, 255, 255, 0.4);
-  padding: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start;
-  position: relative;
-  transition: filter 0.4s ease-in-out, opacity 0.4s ease-in-out;
-}
-
-/* ✅ Dim Background when Section is Active */
-.mainContent.dimmed {
-  filter: blur(3px);
-  opacity: 0.5;
-  pointer-events: none; /* ✅ Prevents interaction */
-}
-
-/* ✅ Dims Inactive Sections Without Affecting Clicks */
-.mainContent.dimmed::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 2;
-  pointer-events: none; /* ✅ Allows clicks to pass through */
-}
-
-/* ✅ Prevent Sidebar Overlap */
-.sidebar.collapsed + .mainContent {
-  width: 100vw;
-  margin-left: 80px;
-}
-
-/* ✅ Toggle Panel - Now full height & positioned against sidebar */
-.togglePanel {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 20px;
-  background: rgba(15, 15, 15, 0.8);
-  padding: 30px 20px;
-  border-radius: 0px;
-  backdrop-filter: blur(12px);
-  position: absolute;
-  left: 0px; /* ✅ Right on the edge of mainContent */
-  top: 0;
-  height: 100%;
-  border-right: 1px solid rgba(0, 255, 255, 0.3);
-  box-shadow: 0 0 20px rgba(0, 234, 255, 0.3);
-  animation: slideInPanel 0.5s ease-in-out;
-  transition: all 0.3s ease-in-out;
-  z-index: 10;
-}
-
-.togglePanel button svg {
-  width: 28px !important;
-  height: 28px !important;
-  min-width: 28px;
-  min-height: 28px;
-  max-width: 28px;
-  max-height: 28px;
-  display: inline-block;
-  color: white;
-}
-
-/* ✅ Slide In Animation */
-@keyframes slideInPanel {
-  from {
-    opacity: 0;
-    transform: translateX(-30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.togglePanel button {
-  background: transparent; 
-  font-size: 1.1rem;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: white;
-  cursor: pointer;
-  transition: all 0.3s ease-in-out;
-  padding: 14px; /* ✅ Adjust button padding */
-  width: 220px; /* ✅ Button width */
-  text-transform: uppercase;
-  border-radius: 0px;
-  border: none;
-  letter-spacing: 1.5px;
-  text-shadow: 0 0 5px rgba(0, 255, 255, 0.6);
-  position: relative;
-  overflow: hidden;
-  margin-top: 100px;
-}
-
-@keyframes fadeInScale {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* ✅ Subtle Bounce Animation on Hover */
-@keyframes bounceHover {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-  100% { transform: translateY(0); }
-}
-
-.togglePanel button:hover {
-  color: #00eaff;
-  border-color: rgba(0, 255, 255, 0.7);
-  transform: scale(1.05);
-}
-
-.togglePanel button:hover svg {
-  transform: translateX(3px);
-  transition: transform 0.2s ease-in-out;
-}
-
-/* ✅ Toggle Panel Moves Down When a Section is Active */
-.panelHidden {
-  transform: translateY(40px);
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* ✅ Sliding Indicator - Now Moves Dynamically */
-.toggleIndicator {
-  position: absolute;
-  left: 0px;
-  width: 5px;
-  height: 40px;
-  background: linear-gradient(180deg, #00eaff, #0044ff);
-  transition: top 0.3s ease-in-out;
-  border-radius: 2px;
-}
-
-/* ✅ Hide Indicator when no section is active */
-.toggleIndicator.hidden {
-  opacity: 0;
-}
-
-/* ✅ Centered Toggle Icons */
-.toggleIcons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-  align-items: center;
-  margin-top: 20px;
-}
-
-.toggleIcon:hover {
-  background: rgba(0, 0, 0, 0.8);
-  transform: scale(1.1);
-}
-
-/* ✅ Prevent Sidebar Overlap */
-.sidebar.collapsed + .mainContent {
-  width: 100vw;
-  margin-left: 80px;
-}
-
-/* ✅ Mobile Fixes */
-@media (max-width: 768px) {
-  .mainContent {
-    width: 90vw;
-    height: 85vh;
-    flex-direction: column;
-  }
-
-  .toggleIcons {
-    gap: 15px;
-  }
-
-  .expandedSection {
-    width: 100%;
-    padding: 15px;
-  }
-}
-
-/* ✅ Active Button Pulse */
-.togglePanel .active {
-  animation: pulseGlow 1.5s infinite alternate ease-in-out;
-  color: #00eaff;
-  text-shadow: 0 0 10px rgba(0, 234, 255, 1);
-}
-
-/* ✅ Subtle Glow Effect on Click */
-.togglePanel button:active {
-  transform: scale(0.98);
-  animation: pulseGlow 1.5s infinite alternate ease-in-out;
-}
-
-
-/* ✅ Enlarged & Highlighted Active Section */
-.expandedSection {
-  width: 100%;
-  max-width: 850px;
-  padding: 20px;
-  background: rgba(132, 186, 251, 0.867); /* ✅ Increased brightness */
-  border-radius: 0px;
-  box-shadow: 0 0 10px rgba(0, 234, 255, 0.5);
-  opacity: 0;
-  transform: scale(0.95);
-  animation: fadeIn 0.10s ease-in-out forwards;
-  position: relative;
-  margin-left: 330px;
-  transition: background 0.3s ease-in-out, box-shadow 0.8s ease-in-out;
-  z-index: 1001;
-}
-
-
-/* ✅ Ensure Expanded Section is Clickable */
-.expandedSectionWrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  z-index: 1010; /* ✅ Above overlay */
-}
-
-/* ✅ Pulse Effect for Active Button */
-@keyframes pulseGlow {
-  0% {
-    box-shadow: 0 0 10px rgba(0, 234, 255, 0.8);
-  }
-  50% {
-    box-shadow: 0 0 15px rgba(0, 234, 255, 1);
-  }
-  100% {
-    box-shadow: 0 0 10px rgba(0, 234, 255, 0.8);
-  }
-}
-
-/* ✅ Active Section - Enhanced Glow */
-.expandedSection.active {
-  background: rgba(255, 255, 255, 0.25); /* ✅ Even brighter when active */
-  box-shadow: 0 0 25px rgba(0, 234, 255, 0.8);
-  transform: scale(1);
-  opacity: 1;
-}
-
-/* ✅ Dim Other Sections */
-.mainContent:not(.dimmed) .expandedSection:not(.active) {
-  opacity: 0.3;
-  transform: scale(0.9);
-  pointer-events: none;
-}
-
-/* ✅ Soft Fade-In for Expanded Sections */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-
-/* ✅ Mobile Fixes */
-@media (max-width: 768px) {
-  .mainContent {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 15px;
-  }
-
-  .rightPanel {
-    width: 100%;
-    align-items: flex-start; /* ✅ Prevents center alignment issue */
-  }
-
-  .togglePanel {
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .expandedSection {
-    width: 100%;
-    padding: 15px;
-  }
-}
-
-/* ✅ Welcome Section - Moves Out of the Way */
-.welcomeSection {
-  text-align: center;
-  margin-bottom: 40px;
-  margin-left: 300px;
-  transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
-  position: relative;
-  z-index: 10;
-}
-
-/* ✅ Welcome Section - Moves Up When Section is Active */
-.welcomeHidden {
-  transform: translateY(-50px);
-  opacity: 0;
-  pointer-events: none;
-}
-
-.welcomeMessage {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: white;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.6);
-  margin-bottom: 5px;
-}
-
-/* ✅ Welcome Section - Fades in and Moves When Active */
-@keyframes welcomeSlideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.dateTime {
-  font-size: 1rem;
-  color: rgba(255, 255, 255, 0.8);
-  text-shadow: 0 0 3px rgba(0, 255, 255, 0.6);
-}
-
-/* ✅ Animated Text Trickling Up & Fading Out */
-@keyframes trickleUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(-20px);
-  }
-}
-
-.trickleText {
-  font-size: 1.2rem;
-  font-weight: bold;
-  color: rgba(0, 234, 255, 0.8);
-  text-transform: uppercase;
-  letter-spacing: 2px;
-  animation: trickleUp 2s infinite linear;
-  position: absolute;
-  bottom: -50px;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  z-index: 999; /* ✅ Ensures it's not blocking expanded section */
-  z-index: 1000;
-  transition: opacity 0.3s ease-in-out;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* ✅ Exit Button */
-.exitButton {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: rgba(255, 0, 0, 0.2);
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  gap: 5px;
+/* ✅ Dim Background Effect */
+.dashboard.dimmed {
+  background: rgba(0, 0, 0, 0.7);
   transition: background 0.3s ease-in-out;
 }
 
-.exitButton:hover {
-  background: rgba(255, 0, 0, 0.4);
+/* ✅ Welcome Section */
+.welcomeSection {
+  text-align: center;
+  margin-top: 100px;
+  margin-left: 800px;
+  transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+  position: relative;
+  z-index: 10;
+  max-width: 450px;
+  padding: 3px;
+  border-radius: 2px;
 }
+
+.sectionDescription {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  margin-top: 8px; /* ✅ Adjust spacing */
+  font-weight: 500;
+}
+
+/* ✅ Welcome Message */
+.welcomeMessage {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: white;
+  text-shadow: 0 0 8px rgba(22, 21, 21, 0.718);
+  margin-bottom: 10px;
+}
+
+/* ✅ Username */
+.username {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+  margin-bottom: 5px;
+}
+
+/* ✅ Date & Time */
+.dateTime {
+  font-size: 1rem;
+  color: rgba(250, 249, 249, 0.384);
+  text-shadow: 0 0 3px rgba(9, 9, 9, 0.3);
+}
+
+/* ✅ Mobile Optimization */
+@media (max-width: 768px) {
+  .welcomeSection {
+    width: 90%;
+    padding: 20px;
+  }
+}
+

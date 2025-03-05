@@ -4,12 +4,12 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useSession, signOut } from "next-auth/react";
 import AvatarUploader from "../../components/AvatarUploader"; // ✅ Relative Import
-import GoldPrice from "./GoldPrice"; // ✅ Import Gold Price Component
 import styles from "./DashboardHeader.module.css";
 
 export default function DashboardHeader() {
   const { data: session, update } = useSession(); // ✅ Update session on avatar change
   const [userAvatar, setUserAvatar] = useState<string | null>(null);
+  const [currentDateTime, setCurrentDateTime] = useState("");
 
   useEffect(() => {
     if (session?.user) {
@@ -24,6 +24,17 @@ export default function DashboardHeader() {
     }
   }, [session]);
 
+    // ✅ Updates the current date and time
+    useEffect(() => {
+      const updateDateTime = () => {
+        setCurrentDateTime(new Date().toLocaleString());
+      };
+  
+      updateDateTime(); // Initial set
+      const interval = setInterval(updateDateTime, 1000);
+      return () => clearInterval(interval);
+    }, []);
+
   return (
     <header className={styles.header}>
       {/* ✅ Platform Logo */}
@@ -31,16 +42,14 @@ export default function DashboardHeader() {
         <Image src="/axpt-logo3.png" alt="Platform Logo" width={100} height={50} priority />
       </div>
 
-    {/* ✅ Gold Price Positioned Next to Logo */}
-    <div className={styles.goldPriceWrapper}>
-      <GoldPrice />
-    </div>
-
+        {/* ✅ Current Date & Time (Replaces Gold Price) */}
+        <div className={styles.dateTimeWrapper}>
+        <p>{currentDateTime}</p>
+      </div>
 
       {/* ✅ Title & Description Centered */}
       <div className={styles.headerContent}>
-        <h2 className={styles.sectionTitle}>Finance Hub</h2>
-        <p className={styles.sectionDescription}>Manage your assets seamlessly.</p>
+        <h2 className={styles.sectionTitle}>Financial Dashboard</h2>
       </div>
 
 
