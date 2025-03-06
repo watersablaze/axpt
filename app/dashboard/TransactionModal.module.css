@@ -1,0 +1,90 @@
+/* ✅ Modal Overlay */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+  
+  /* ✅ Modal Content */
+  .modalContent {
+    background: rgba(18, 18, 18, 0.95);
+    padding: 25px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+    text-align: center;
+    color: white;
+    backdrop-filter: blur(10px);
+  }
+  
+  /* ✅ Modal Title */
+  .modalTitle {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  
+  /* ✅ Input Fields */
+  .inputLabel {
+    display: block;
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 10px;
+    text-align: left;
+  }
+  
+  .inputField {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
+    border: none;
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1rem;
+    outline: none;
+  }
+  
+  /* ✅ Action Buttons */
+  .modalActions {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+  }
+  
+  .confirmButton, .cancelButton {
+    flex: 1;
+    margin: 0 5px;
+    padding: 10px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+  }
+  
+  .confirmButton {
+    background: #00eaff;
+    color: black;
+  }
+  
+  .cancelButton {
+    background: rgba(255, 255, 255, 0.3);
+    color: white;
+  }
+  
+  .confirmButton:hover {
+    background: #00bcd4;
+    transform: scale(1.05);
+  }
+  
+  .cancelButton:hover {
+    background: rgba(255, 255, 255, 0.5);
+  }

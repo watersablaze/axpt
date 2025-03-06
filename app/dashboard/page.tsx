@@ -51,12 +51,13 @@ export default function Dashboard() {
       <DashboardHeader />
       <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} setActiveSection={setActiveSection} />
       
-      <div className={styles.welcomeSection}>
-      {session?.user && (
-        <h2 className={styles.welcomeMessage}>
-          Welcome to your Financial Dashboard, <strong>{session.user.name || "User"}</strong>!
-        </h2>
-      )}
+        {/* ✅ Welcome Section - Hidden when a modal is active */}
+        <div className={`${styles.welcomeSection} ${activeSection ? styles.hidden : ""}`}>
+          {session?.user && (
+            <h2 className={styles.welcomeMessage}>
+              Welcome, <strong>{session.user.name || "User"}</strong>!
+            </h2>
+          )}
 
       {/* ✅ Moved from DashboardHeader.tsx */}
       <p className={styles.sectionDescription}>Manage your assets seamlessly.</p>

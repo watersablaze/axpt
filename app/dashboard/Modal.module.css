@@ -12,31 +12,27 @@
     z-index: 150;
   }
   
-/* ✅ Modal Content - Centers and Moves Right */
-.modalContent {
-  position: relative;
-  top: 30px;
-  left: 180px; /* ✅ Moves it slightly to the right */
-  max-width: 800px;
-  width: 90%;
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 7px rgba(0, 255, 255, 0.1);
-  backdrop-filter: blur(15px);
-  z-index: 200;
-}
+  .modalContent {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 12px;
+    width: 80%; /* ✅ Expands but doesn't take full width */
+    max-width: 800px;
+    max-height: 90vh; /* ✅ Prevents overflow */
+    overflow-y: auto;
+  }
   
   /* ✅ Close Button Styling */
   .closeButton {
     position: absolute;
-    top: 30px;
-    right: 50px;
-    background: rgba(72, 1, 1, 0.933);
+    top: 500px;
+    right: 20px;
+    background: rgb(3, 72, 1);
     border: none;
-    border-radius: 0%;
-    padding: 3px;
+    border-radius: 30%;
+    padding: 6px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 10px;
     color: white;
     transition: color 0.2s ease-in-out;
     z-index: 250; /* ✅ Keeps it above everything */
