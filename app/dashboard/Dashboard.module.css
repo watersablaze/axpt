@@ -13,23 +13,24 @@
 
 /* ✅ Dim Background Effect */
 .dashboard.dimmed {
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.8);
   transition: background 0.3s ease-in-out;
 }
 
-/* ✅ Welcome Section */
+/* ✅ Welcome Section - Now in Top-Right Corner */
 .welcomeSection {
-  text-align: center;
-  margin-top: 100px;
-  margin-left: 800px;
+  position: absolute; /* ✅ Allows direct placement */
+  top: 60px; /* ✅ Positions it near the top */
+  right: 20px; /* ✅ Pushes it to the right */
+  text-align: right; /* ✅ Aligns content properly */
   transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
-  position: relative;
-  z-index: 10;
+  z-index: 100; /* ✅ Ensures it stays above sidebar */
   max-width: 450px;
-  padding: 3px;
-  border-radius: 2px;
+  padding: 10px;
+  border-radius: 4px;
 }
 
+/* ✅ Hide Effect */
 .welcomeSection.hidden {
   opacity: 0;
   transform: translateY(-20px);
@@ -73,7 +74,9 @@
 @media (max-width: 768px) {
   .welcomeSection {
     width: 90%;
-    padding: 20px;
+    right: 10px; /* ✅ Adjusts for smaller screens */
+    top: 10px;
+    text-align: center; /* ✅ Center-aligns on mobile */
   }
 }
 

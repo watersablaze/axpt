@@ -18,6 +18,14 @@
   border-right: 1px solid rgba(255, 255, 255, 0.2);
 }
 
+.sidebarDescription {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  margin-top: -20px;
+  font-weight: 500;
+}
+
 /* ✅ Ensures sidebar content is always visible */
 .sidebar::-webkit-scrollbar {
   width: 5px;

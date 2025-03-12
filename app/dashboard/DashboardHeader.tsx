@@ -49,7 +49,7 @@ export default function DashboardHeader() {
 
       {/* ✅ Title & Description Centered */}
       <div className={styles.headerContent}>
-        <h2 className={styles.sectionTitle}>Financial Dashboard</h2>
+        <h2 className={styles.sectionTitle}>Financial Management</h2>
       </div>
 
 

@@ -1,82 +1,94 @@
-"use client";
-
-import { useState } from "react";
+import React, { useState } from "react";
+import { X, ArrowUpCircle, ArrowDownCircle, CheckCircle, AlertCircle } from "lucide-react";
 import styles from "./TransactionModal.module.css";
 
 interface TransactionModalProps {
-    type: "send" | "receive" | "deposit" | "withdraw";
-    selectedCrypto: { name: string; symbol: string; network: string };  // ✅ Now accepts an object
-    onClose: () => void;
-    onTransaction: (amount: number) => void;
-  }
+  type: "send" | "receive" | "deposit" | "withdraw";
+  selectedCrypto: { name: string; symbol: string; network: string };
+  onClose: () => void;
+  onTransaction: (amount: number) => void;
+}
 
 export default function TransactionModal({ type, selectedCrypto, onClose, onTransaction }: TransactionModalProps) {
-  const [amount, setAmount] = useState<number>(0);
-  const [recipient, setRecipient] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [amount, setAmount] = useState<number | "">("");
+  const [error, setError] = useState<string | null>(null);
+  const [confirmed, setConfirmed] = useState<boolean>(false);
 
-  // ✅ Handles Transaction Execution
-  const handleTransaction = () => {
-    if (amount <= 0) {
-      alert("Please enter a valid amount.");
+  // ✅ Validate input & check balance before confirming
+  const handleConfirm = () => {
+    if (!amount || amount <= 0) {
+      setError("❌ Please enter a valid amount.");
       return;
     }
 
-    if (type === "send" && !recipient) {
-      alert("Please enter a recipient address.");
-      return;
-    }
+    setError(null);
+    setConfirmed(true);
 
-    setLoading(true);
     setTimeout(() => {
       onTransaction(amount);
-      setLoading(false);
       onClose();
-    }, 1000);
+    }, 1500);
+  };
+
+  // ✅ Icons based on transaction type
+  const getIcon = () => {
+    switch (type) {
+      case "send":
+        return <ArrowUpCircle size={36} className={styles.sendIcon} />;
+      case "receive":
+        return <ArrowDownCircle size={36} className={styles.receiveIcon} />;
+      case "deposit":
+        return <ArrowUpCircle size={36} className={styles.depositIcon} />;
+      case "withdraw":
+        return <ArrowDownCircle size={36} className={styles.withdrawIcon} />;
+      default:
+        return null;
+    }
   };
 
   return (
-    <div className={styles.modalOverlay}>
+    <div className={styles.modalWrapper}>
       <div className={styles.modalContent}>
-        <h2 className={styles.modalTitle}>
-          {type === "send" && `Send ${selectedCrypto}`}
-          {type === "receive" && `Receive ${selectedCrypto}`}
-          {type === "deposit" && "Deposit Fiat"}
-          {type === "withdraw" && "Withdraw Fiat"}
-        </h2>
+        {/* ✅ Close Button */}
+        <button className={styles.closeButton} onClick={onClose}>
+          <X size={24} />
+        </button>
 
-        {/* ✅ Amount Input */}
-        <label className={styles.inputLabel}>Amount</label>
+        {/* ✅ Transaction Icon & Title */}
+        <div className={styles.header}>
+          {getIcon()}
+          <h3>{type.charAt(0).toUpperCase() + type.slice(1)} {selectedCrypto.name}</h3>
+        </div>
+
+        <p className={styles.network}><strong>Network:</strong> {selectedCrypto.network}</p>
+
+        {/* ✅ Input for transaction amount */}
         <input
           type="number"
-          min="0"
-          className={styles.inputField}
-          value={amount}
-          onChange={(e) => setAmount(parseFloat(e.target.value))}
           placeholder="Enter amount"
+          value={amount}
+          onChange={(e) => {
+            const value = Number(e.target.value);
+            if (value < 0) {
+              setError("❌ Amount cannot be negative.");
+            } else {
+              setError(null);
+              setAmount(value);
+            }
+          }}
+          className={styles.inputField}
         />
 
-        {/* ✅ Recipient Input for Sending Crypto */}
-        {type === "send" && (
-          <>
-            <label className={styles.inputLabel}>Recipient Address</label>
-            <input
-              type="text"
-              className={styles.inputField}
-              value={recipient}
-              onChange={(e) => setRecipient(e.target.value)}
-              placeholder="Enter recipient address"
-            />
-          </>
-        )}
+        {/* ✅ Error Message */}
+        {error && <p className={styles.errorMessage}><AlertCircle size={16} /> {error}</p>}
 
-        {/* ✅ Action Buttons */}
-        <div className={styles.modalActions}>
-          <button className={styles.cancelButton} onClick={onClose}>Cancel</button>
-          <button className={styles.confirmButton} onClick={handleTransaction} disabled={loading}>
-            {loading ? "Processing..." : "Confirm"}
-          </button>
-        </div>
+        {/* ✅ Confirmation Button */}
+        <button className={styles.confirmButton} onClick={handleConfirm} disabled={!amount || amount <= 0}>
+          {confirmed ? <CheckCircle size={20} /> : "Confirm " + type.charAt(0).toUpperCase() + type.slice(1)}
+        </button>
+
+        {/* ✅ Success Message */}
+        {confirmed && <p className={styles.successMessage}><CheckCircle size={20} /> Transaction Successful!</p>}
       </div>
     </div>
   );

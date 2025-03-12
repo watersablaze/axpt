@@ -2,19 +2,21 @@
 
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { Eye, EyeOff, CopyCheck, Menu, X, Wallet2, DollarSign, ClipboardList, ScrollText, HelpCircle, User, Settings, BookOpen } from "lucide-react";
+import { 
+  Eye, EyeOff, CopyCheck, Menu, X, 
+  Wallet2, DollarSign, ClipboardList, ScrollText, 
+  HelpCircle, User, Settings, BookOpen 
+} from "lucide-react";
 import { Dispatch, SetStateAction } from "react";
 import styles from "./Sidebar.module.css";   
 
-export default function Sidebar({ 
-  collapsed, 
-  setCollapsed, 
-  setActiveSection 
-}: { 
-  collapsed: boolean; 
+interface SidebarProps {
+  collapsed: boolean;
   setCollapsed: Dispatch<SetStateAction<boolean>>;
-  setActiveSection: Dispatch<SetStateAction<string | null>>;
-}) {  
+  openHUD: (component: string) => void; // ✅ Open financial components inside the HUD
+}
+
+const Sidebar: React.FC<SidebarProps> = ({ collapsed, setCollapsed, openHUD }) => {
   const { data: session } = useSession();
   const [showWallet, setShowWallet] = useState(false);
   const user = session?.user;
@@ -44,6 +46,8 @@ export default function Sidebar({
           </h2>
         )}
 
+        <p className={styles.sidebarDescription}>Manage your assets seamlessly.</p>
+
         {/* ✅ Wallet Section */}
         <div className={styles.walletSection}>
           <h4>Wallet Address:</h4>
@@ -62,24 +66,24 @@ export default function Sidebar({
           </button>
         </div>
 
-        {/* ✅ Financial Dashboard - Moved Below Wallet Box */}
+        {/* ✅ Financial Dashboard (Uses HUD) */}
         <div className={styles.financialDashboard}>
           <h4>Financial Dashboard</h4>
-          <button className={styles.navButton} onClick={() => setActiveSection("wallet")}>
+          <button className={styles.navButton} onClick={() => openHUD("wallet")}>
             <Wallet2 size={24} /> Wallet
           </button>
-          <button className={styles.navButton} onClick={() => setActiveSection("stablecoin")}>
+          <button className={styles.navButton} onClick={() => openHUD("stablecoin")}>
             <DollarSign size={24} /> Stablecoin
           </button>
-          <button className={styles.navButton} onClick={() => setActiveSection("transactions")}>
+          <button className={styles.navButton} onClick={() => openHUD("transactions")}>
             <ClipboardList size={24} /> Transactions
           </button>
-          <button className={styles.navButton} onClick={() => setActiveSection("bulletin")}>
+          <button className={styles.navButton} onClick={() => openHUD("bulletin")}>
             <ScrollText size={24} /> Bulletin
           </button>
         </div>
 
-        {/* ✅ General Navigation - Below Financial Dashboard */}
+        {/* ✅ General Navigation */}
         <nav className={styles.nav}>
           <h4>General</h4>
           <a href="/faq"><HelpCircle size={20} /> FAQ</a>
@@ -90,4 +94,6 @@ export default function Sidebar({
       </div>
     </aside>
   );
-}
+};
+
+export default Sidebar;

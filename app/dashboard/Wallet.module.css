@@ -1,19 +1,84 @@
-/* ✅ Wallet Container */
-.walletContainer {
-  background: rgba(18, 18, 18, 0.9);
-  padding: 25px;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 600px;
-  text-align: center;
-  box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3);
-  color: white;
+/* ✅ HUD Mode Fullscreen */
+.walletHUD {
+  position: fixed;
+  top: 60px; /* Below header */
+  left: 250px; /* Sidebar width */
+  width: calc(100vw - 250px);
+  height: calc(100vh - 60px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.8); /* Dim effect */
+  backdrop-filter: blur(8px);
+  z-index: 100;
 }
 
-/* ✅ Wallet Header */
-.walletHeader {
-  font-size: 1.5rem;
-  margin-bottom: 15px;
+/* ✅ Wallet Container - Glassmorphism + Neon Glow */
+.walletContainer {
+  background: rgb(5, 0, 0); /* ✅ Glass effect */
+  backdrop-filter: blur(12px); /* ✅ Smooth frosted blur */
+  padding: 30px;
+  border-radius: 16px;
+  width: calc(100vw - 250px); /* Full width minus sidebar */
+  height: calc(100vh - 60px); /* Full height minus header */
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0);
+  color: white;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+  overflow-y: auto;
+  transition: opacity 0.3s ease-in-out;
+  animation: fadeInHUD 0.4s ease-in-out;
+}
+
+/* ✅ Fade-in Animation */
+@keyframes fadeInHUD {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* ✅ Mobile Responsive */
+@media (max-width: 768px) {
+  .walletHUD {
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+  }
+  .walletContainer {
+    width: 90%;
+    max-width: 400px;
+  }
+}
+
+/* ✅ Wallet Content */
+.walletContent {
+  background: rgba(168, 193, 54, 0.087);
+  padding: 20px;
+  border-radius: 2px;
+  text-align: center;
+  width: 70%;
+  height: 30%;
+  max-width: 600px;
+  max-height: 300px;
+  margin-top: 50px;
+  margin-left: 3px;
+
+  --notchSize: 20px;
+  
+  clip-path: 
+    polygon(
+      0% var(--notchSize), 
+      var(--notchSize) 0%, 
+      calc(100% - var(--notchSize)) 0%, 
+      100% var(--notchSize), 
+      100% calc(100% - var(--notchSize)), 
+      calc(100% - var(--notchSize)) 100%, 
+      var(--notchSize) 100%, 
+      0% calc(100% - var(--notchSize))
+    );
 }
 
 /* ✅ Wallet Toggle */
@@ -21,86 +86,361 @@
   display: flex;
   justify-content: center;
   gap: 15px;
-  margin-bottom: 15px;
+  margin-top: 30px;
 }
 
+/* ✅ Base Button Style */
 .walletToggle button {
-  background: rgba(0, 0, 0, 0.6);
-  color: white;
-  border: none;
-  padding: 10px;
-  border-radius: 8px;
+  padding: 12px 18px;
+  border-radius: 2px;
   cursor: pointer;
-  transition: background 0.3s;
+  font-size: 1rem;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.walletToggle button:hover {
+  background: rgba(0, 238, 255, 0.2);
+  border-color: rgba(0, 238, 255, 1);
+  box-shadow: 0 0 12px rgba(0, 238, 255, 0.7);
 }
 
 .walletToggle .active {
-  background: #00eaff;
-  color: black;
+  color: rgb(253, 249, 249);
+}
+
+/* ✅ Active State */
+.active {
+  font-weight: bold;
+}
+
+/* ✅ Crypto Button - Distinct Style */
+.cryptoButton {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(255, 165, 0, 0.7); /* Orange glow for Crypto */
+  margin-right: 30px;
+}
+
+.cryptoButton:hover {
+  background: rgba(255, 165, 0, 0.2);
+  border-color: rgba(255, 165, 0, 1);
+  box-shadow: 0 0 12px rgba(255, 165, 0, 0.7);
+}
+
+/* ✅ Fiat Button - Distinct Style */
+.fiatButton {
+  background: rgba(0, 0, 0, 0.85);
+  border-color: rgba(50, 205, 50, 0.7); /* Green glow for Fiat */
+  margin-left: 30px;
+}
+
+.fiatButton:hover {
+  background: rgba(50, 205, 50, 0.2);
+  border-color: rgba(50, 205, 50, 1);
+  box-shadow: 0 0 12px rgba(50, 205, 50, 0.7);
 }
 
 /* ✅ Crypto Selection */
 .cryptoSelection {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.cryptoDropdown {
+  background: black;
+  color: white;
+  border: 2px solid #00eaff;
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.cryptoDropdown:hover {
+  background: rgba(0, 238, 255, 0.2);
+  border-color: rgba(0, 238, 255, 1);
+  box-shadow: 0 0 12px rgba(0, 238, 255, 0.7);
+}
+
+.cryptoDropdown option {
+  background: #121212;
+  color: white;
+  padding: 10px;
+}
+
+/* ✅ Last Updated Text */
+.lastUpdated {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 5px;
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+  animation: pulseGlow 1.5s infinite alternate;
+}
+
+/* ✅ Refresh Button - Slight Delay for Logical Order */
+.refreshWrapper {
+  opacity: 0;
+  animation: fadeInElements 1.5s ease-out forwards;
+  animation-delay: 2s;
+}
+
+/* ✅ Crypto Selection */
+.cryptoSelection {
+  display: flex;
+  justify-content: center;
   margin-bottom: 15px;
 }
 
 .cryptoSelection button {
-  background: rgba(0, 0, 0, 0.4);
-  border: none;
-  padding: 8px;
-  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(0, 255, 255, 0.5);
+  padding: 10px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
   color: white;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.cryptoSelection button:hover {
+  background: rgba(0, 255, 255, 0.3);
+  border-color: rgba(0, 255, 255, 1);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
 }
 
 .cryptoSelection .activeCrypto {
   background: #00eaff;
   color: black;
+  border: 2px solid white;
+  box-shadow: 0 0 15px rgba(0, 238, 255, 0.8);
 }
 
-/* ✅ Wallet Card */
+/* ✅ Wallet Card - Loads After Balance */
 .walletCard {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0, 255, 255, 0.3);
-  width: 100%;
-  max-width: 400px;
+  background: rgba(34, 163, 206, 0.273);
+  padding: 4px;
+  border-radius: 9px;
+  width: 80%;
+  height: 60%;
+  max-width: 380px;
+  max-height:300px;
   text-align: center;
+  margin-left: 27px;
+  margin-top: 40px;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  opacity: 0;
+  transform: scale(0.95);
+  animation: fadeInElements 1.5s ease-out forwards;
+  animation-delay: 1.8s;
 }
 
-.balance {
-  font-size: 1.4rem;
+/* ✅ Fade-In Effect for Wallet Elements */
+@keyframes fadeInElements {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes walletActivate {
+  0% { opacity: 0; transform: scale(0.95); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* ✅ Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes subtlePulse {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.03);
+  }
+}
+
+@keyframes pulseGlow {
+  from {
+    text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+  }
+  to {
+    text-shadow: 0 0 12px rgba(0, 255, 255, 0.8);
+  }
+}
+
+@keyframes softGlow {
+  from {
+    box-shadow: 0 0 12px rgba(0, 255, 255, 0.3);
+  }
+  to {
+    box-shadow: 0 0 20px rgba(0, 255, 255, 0.6);
+  }
+}
+
+.walletCard:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.8);
+}
+
+/* ✅ Responsive Adjustments */
+@media (max-width: 1024px) {
+  .walletCard {
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 768px) {
+  .walletCard {
+    max-width: 100%;
+  }
+}
+
+/* ✅ Balance Section */
+.balanceSection {
+  background: rgba(133, 137, 15, 0.646);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 15%;
+  max-height: 300px;
+  width: 80%;
+  max-width: 500px;
+  border-radius: 3px;
+  margin-bottom: 20px;
+}
+
+/* ✅ Balance Label */
+.balanceLabel {
+  font-size: 1.0rem;
   font-weight: bold;
-  color: #00eaff;
+  color: #00ff00;
+  text-transform: uppercase;
 }
 
-.network {
+/* ✅ Balance Reveal Effect */
+@keyframes digitReveal {
+  from { opacity: 0; transform: translateY(-5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ✅ Balance Reveal */
+.balance {
   font-size: 0.9rem;
+  font-weight: bold;
+  color: #00ff00;
+  font-family: "Digital-7", monospace;
+  letter-spacing: 2px;
+  opacity: 0;
+  animation: digitReveal 0.5s ease-out forwards;
+}
+
+/* ✅ Blinking Cursor Effect */
+@keyframes blinkCursor {
+  50% { opacity: 0; }
+}
+.cursor {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+  background-color: #00ff00;
+  animation: blinkCursor 1s infinite;
+}
+
+/* ✅ Wallet Elements - Fade in AFTER Balance */
+.fadeIn {
+  opacity: 0;
+  animation: fadeInSequence 1s ease-in forwards;
+}
+
+/* ✅ Sequential Fade-in */
+@keyframes fadeInSequence {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ✅ Apply Sequential Delay */
+.fadeIn:nth-child(1) { animation-delay: 0.5s; }
+.fadeIn:nth-child(2) { animation-delay: 1s; }
+.fadeIn:nth-child(3) { animation-delay: 1.5s; }
+.fadeIn:nth-child(4) { animation-delay: 2s; }
+
+/* ✅ Network Text - Slight Glow */
+.network {
+  font-size: 1rem;
   color: rgba(255, 255, 255, 0.8);
-  margin-top: 5px;
+  text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+  margin-top: 20px;
 }
 
 /* ✅ Action Buttons */
 .actions {
   display: flex;
-  justify-content: space-around;
-  margin-top: 15px;
+  justify-content: space-between;
+  margin-top: 10px;
 }
 
 .actions button {
   background: rgba(0, 255, 255, 0.2);
   border: none;
   padding: 10px;
-  border-radius: 8px;
+  border-radius: 3px;
   cursor: pointer;
 }
 
 .actions button:hover {
   background: rgba(0, 255, 255, 0.4);
+}
+
+.sendButton {
+  margin-bottom: 0px;
+  margin-left: 10px;
+}
+
+.receiveButton {
+  margin-bottom: 0px;
+  margin-right: 10px;
+}
+
+/* ✅ Responsive */
+@media (max-width: 768px) {
+  .walletContainer {
+    max-width: 90%;
+  }
+
+  .walletCard {
+    max-width: 350px;
+  }
+}
+
+@media (max-width: 768px) {
+  .walletContainer {
+    max-width: 90%;
+    height: 80vh;
+    max-height: 600px;
+  }
+
+  .walletCard {
+    max-width: 100%;
+  }
+
+  .walletHeader {
+    font-size: 1.4rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .actions button {
+    width: 100%;
+  }
 }

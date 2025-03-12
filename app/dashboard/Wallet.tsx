@@ -1,12 +1,11 @@
 "use client";
 
-import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Banknote, Bitcoin, ArrowUpCircle, ArrowDownCircle } from "lucide-react";
-import TransactionModal from "./TransactionModal";
+import { toast } from "sonner";
 import styles from "./Wallet.module.css";
+import TransactionModal from "./TransactionModal";
 
-// ✅ Define supported cryptocurrencies & networks
 const supportedCryptos = [
   { name: "Ethereum", symbol: "ETH", network: "Ethereum" },
   { name: "Bitcoin", symbol: "BTC", network: "Bitcoin" },
@@ -14,86 +13,91 @@ const supportedCryptos = [
   { name: "Binance Coin", symbol: "BNB", network: "Binance Smart Chain" }
 ];
 
-export default function Wallet() {
-  const { data: session } = useSession();
-  const [activeWallet, setActiveWallet] = useState<"crypto" | "fiat">("crypto");
+interface WalletProps {
+  closeHUD: () => void; // ✅ Allows HUD closing when clicking outside
+}
+
+export default function Wallet({ closeHUD }: WalletProps) {
+  const [activeWallet, setActiveWallet] = useState("crypto");
   const [selectedCrypto, setSelectedCrypto] = useState(supportedCryptos[0]);
-  const [cryptoBalances, setCryptoBalances] = useState<{ [key: string]: number }>({
-    ETH: 2.5,
-    BTC: 0.1,
-    SOL: 5.0,
-    BNB: 3.2
-  });
-  const [fiatBalance, setFiatBalance] = useState<number>(1000);
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [cryptoBalances, setCryptoBalances] = useState<{ [key: string]: number }>({});
+  const [fiatBalance, setFiatBalance] = useState(0);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+  const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<"send" | "receive" | "deposit" | "withdraw" | null>(null);
 
-  // ✅ Auto-update balance when transactions occur
-  const handleTransaction = (amount: number) => {
-    if (modalType === "send") {
-      if (cryptoBalances[selectedCrypto.symbol] >= amount) {
-        setCryptoBalances(prev => ({
-          ...prev,
-          [selectedCrypto.symbol]: prev[selectedCrypto.symbol] - amount
-        }));
-      } else {
-        alert("Insufficient balance!");
-      }
-    } else if (modalType === "receive") {
-      setCryptoBalances(prev => ({
-        ...prev,
-        [selectedCrypto.symbol]: prev[selectedCrypto.symbol] + amount
-      }));
-    } else if (modalType === "deposit") {
-      setFiatBalance(prev => prev + amount);
-    } else if (modalType === "withdraw") {
-      if (fiatBalance >= amount) {
-        setFiatBalance(prev => prev - amount);
-      } else {
-        alert("Insufficient fiat balance!");
-      }
+  // ✅ HUD Mode - Fullscreen Animation & Responsive Scroll
+  useEffect(() => {
+    document.body.classList.add("hud-active");
+    return () => document.body.classList.remove("hud-active");
+  }, []);
+
+  // ✅ Fetch balances from API
+  const fetchBalances = async () => {
+    try {
+      console.log("Fetching balances...");
+
+      const response = await fetch("/api/wallet/balances");
+      if (!response.ok) throw new Error(`HTTP error! Status: ${response.status}`);
+
+      const data = await response.json();
+      setCryptoBalances(data.balances.cryptoBalances);
+      setFiatBalance(data.balances.fiatBalance);
+      setLastUpdated(new Date().toLocaleTimeString());
+
+      toast.success("✅ Balances updated successfully!");
+    } catch (error) {
+      console.error("❌ Failed to fetch balances:", error);
+      toast.error("❌ Failed to update balances");
     }
   };
 
+  useEffect(() => {
+    fetchBalances();
+    const interval = setInterval(fetchBalances, 30000); // Auto-refresh every 30 sec
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div className={styles.walletContainer}>
-      <h2 className={styles.walletHeader}>
-        {session?.user?.name ? `Welcome, ${session.user.name}!` : "Welcome!"}
-      </h2>
+    <div className={styles.walletHUD} onClick={closeHUD}>
+      <div className={styles.walletContainer} onClick={(e) => e.stopPropagation()}>
+        <h2 className={styles.walletTitle}>Wallet Overview</h2>
 
-      {/* ✅ Wallet Type Toggle */}
-      <div className={styles.walletToggle}>
-        <button onClick={() => setActiveWallet("crypto")} className={activeWallet === "crypto" ? styles.active : ""}>
-          <Bitcoin size={24} /> Crypto
-        </button>
-        <button onClick={() => setActiveWallet("fiat")} className={activeWallet === "fiat" ? styles.active : ""}>
-          <Banknote size={24} /> Fiat
-        </button>
-      </div>
-
-      {/* ✅ Cryptocurrency Selection */}
-      {activeWallet === "crypto" && (
-        <div className={styles.cryptoSelection}>
-          {supportedCryptos.map(crypto => (
-            <button
-              key={crypto.symbol}
-              className={selectedCrypto.symbol === crypto.symbol ? styles.activeCrypto : ""}
-              onClick={() => setSelectedCrypto(crypto)}
-            >
-              {crypto.name} ({crypto.symbol})
-            </button>
-          ))}
+        {/* ✅ Balance Section */}
+        <div className={styles.balanceSection}>
+          <h3 className={styles.balanceLabel}>Balance:</h3>
+          <p className={styles.balance}>
+            <strong>
+              {cryptoBalances[selectedCrypto.symbol] !== undefined
+                ? cryptoBalances[selectedCrypto.symbol].toFixed(4)
+                : "Loading..."}{" "}
+              {selectedCrypto.symbol}
+            </strong>
+          </p>
         </div>
-      )}
 
-      {/* ✅ Wallet Display */}
-      <div className={styles.walletContent}>
-        {activeWallet === "crypto" ? (
+        {/* ✅ Last Updated */}
+        <p className={styles.lastUpdated}>🕒 Last Updated: {lastUpdated || "Fetching..."}</p>
+
+        {/* ✅ Wallet Toggle */}
+        <div className={styles.walletToggle}>
+          <button
+            onClick={() => setActiveWallet("crypto")}
+            className={`${styles.cryptoButton} ${activeWallet === "crypto" ? styles.active : ""}`}
+          >
+            <Bitcoin size={24} /> Crypto
+          </button>
+          <button
+            onClick={() => setActiveWallet("fiat")}
+            className={`${styles.fiatButton} ${activeWallet === "fiat" ? styles.active : ""}`}
+          >
+            <Banknote size={24} /> Fiat
+          </button>
+        </div>
+
+        {/* ✅ Wallet Content */}
+        <div className={styles.walletContent}>
           <div className={styles.walletCard}>
-            <h3>{selectedCrypto.name} Wallet</h3>
-            <p className={styles.balance}>
-              Balance: <strong>{cryptoBalances[selectedCrypto.symbol] || 0} {selectedCrypto.symbol}</strong>
-            </p>
             <p className={styles.network}><strong>Network:</strong> {selectedCrypto.network}</p>
             <div className={styles.actions}>
               <button onClick={() => { setModalOpen(true); setModalType("send"); }} className={styles.sendButton}>
@@ -104,31 +108,18 @@ export default function Wallet() {
               </button>
             </div>
           </div>
-        ) : (
-          <div className={styles.walletCard}>
-            <h3>Fiat Wallet</h3>
-            <p className={styles.balance}>Balance: <strong>${fiatBalance.toFixed(2)}</strong></p>
-            <div className={styles.actions}>
-              <button onClick={() => { setModalOpen(true); setModalType("deposit"); }} className={styles.depositButton}>
-                <ArrowUpCircle size={20} /> Deposit
-              </button>
-              <button onClick={() => { setModalOpen(true); setModalType("withdraw"); }} className={styles.withdrawButton}>
-                <ArrowDownCircle size={20} /> Withdraw
-              </button>
-            </div>
-          </div>
+        </div>
+
+        {/* ✅ Transaction Modal */}
+        {modalOpen && modalType && (
+          <TransactionModal
+            type={modalType}
+            selectedCrypto={selectedCrypto}
+            onClose={() => setModalOpen(false)}
+            onTransaction={fetchBalances}
+          />
         )}
       </div>
-
-      {/* ✅ Transaction Modal */}
-      {modalOpen && (
-        <TransactionModal
-          type={modalType}
-          selectedCrypto={selectedCrypto}
-          onClose={() => setModalOpen(false)}
-          onTransaction={handleTransaction}
-        />
-      )}
     </div>
   );
 }
