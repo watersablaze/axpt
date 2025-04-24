@@ -7,95 +7,80 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Subscriber {  // 👈 This means we use "subscriber" in queries
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  email String @unique
-}
-
-// ✅ User Accounts & Authentication
 model Account {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 }
 
+model RevokedToken {
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  /// Field referred in an index, but found no data to define the type.
+  expiresAt Json?
+  /// Field referred in an index, but found no data to define the type.
+  jti       Json?  @unique
+
+  @@index([expiresAt])
+}
+
 model Session {
   id           String @id @default(auto()) @map("_id") @db.ObjectId
-  sessionToken String @unique
+  /// Field referred in an index, but found no data to define the type.
+  sessionToken Json?  @unique
 }
 
-// ✅ Transaction Type Enum
-enum TransactionTypeEnum {
-  DEPOSIT
-  WITHDRAWAL
-  TRANSFER
+model Subscriber {
+  id    String @id @default(auto()) @map("_id") @db.ObjectId
+  /// Field referred in an index, but found no data to define the type.
+  email Json?  @unique
 }
 
-// ✅ Transaction Status Enum
-enum TransactionStatusEnum {
-  PENDING
-  COMPLETED
-  FAILED
-}
-
-// ✅ Transactions Model
 model Transaction {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  senderId    String   @db.ObjectId @map("senderId")
-  recipientId String   @db.ObjectId @map("recipientId")
-  userId      String   @db.ObjectId @map("userId") // ✅ Added to track which user owns the transaction
-  amount      Float 
-  type        TransactionTypeEnum 
-  status      TransactionStatusEnum @default(PENDING) // ✅ Enum for safer status management
-  createdAt   DateTime @default(now()) @map("createdAt") @db.Date 
+  id          String @id @default(auto()) @map("_id") @db.ObjectId
+  /// Field referred in an index, but found no data to define the type.
+  createdAt   Json?
+  /// Field referred in an index, but found no data to define the type.
+  recipientId Json?
+  /// Field referred in an index, but found no data to define the type.
+  senderId    Json?
+  /// Field referred in an index, but found no data to define the type.
+  userId      Json?
 
-  // ✅ Correctly Define Relationships
-  sender    User @relation(name: "SentTransactions", fields: [senderId], references: [id])
-  recipient User @relation(name: "ReceivedTransactions", fields: [recipientId], references: [id])
-
-  // ✅ Indexes for Query Optimization
+  @@index([userId])
+  @@index([createdAt])
   @@index([senderId])
   @@index([recipientId])
-  @@index([userId]) // ✅ New index for user-based queries
-  @@index([createdAt]) 
 }
 
-// ✅ Users Model
 model User {
   id                  String   @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt           DateTime @default(now()) @map("createdAt") @db.Date
-  updatedAt           DateTime @updatedAt @map("updatedAt") @db.Date
+  createdAt           DateTime @db.Date
   email               String   @unique
   encryptedPrivateKey String
   industry            String?
   interests           String?
-  isAdmin             Boolean  @default(false)
+  isAdmin             Boolean?
   iv                  String
   name                String
   password            String
-  role                String   @default("user")
+  role                String
+  updatedAt           DateTime @db.Date
   walletAddress       String?  @unique
-  walletBalance       Float    @default(0)
-  avatar              String?
-
-  // ✅ Correctly link transactions to users
-  sentTransactions     Transaction[] @relation(name: "SentTransactions")
-  receivedTransactions Transaction[] @relation(name: "ReceivedTransactions")
+  walletBalance       Float
 }
 
-// ✅ Email Verification
 model VerificationToken {
   id         String @id @default(auto()) @map("_id") @db.ObjectId
-  identifier String @unique
-  token      String @unique
+  /// Field referred in an index, but found no data to define the type.
+  identifier Json?  @unique
+  /// Field referred in an index, but found no data to define the type.
+  token      Json?  @unique
 
   @@unique([identifier, token])
 }
 
-// ✅ JWT Revocation for Security
-model RevokedToken {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  jti       String   @unique // ✅ Keep only the unique constraint
-  expiresAt DateTime // Expiration timestamp
-
-  // ✅ Speed up token expiration cleanup
-  @@index([expiresAt])
+model users {
+  id       String  @id @default(auto()) @map("_id") @db.ObjectId
+  email    String  @unique
+  isAdmin  Boolean
+  name     String
+  password String
 }

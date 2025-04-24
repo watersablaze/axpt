@@ -1,0 +1,23 @@
+/* ✅ Full-screen overlay covering the HUD area (excluding header/sidebar) */
+.overlay {
+    position: fixed;
+    top: 60px; /* Below header */
+    left: 250px; /* Exclude sidebar */
+    width: calc(100vw - 250px);
+    height: calc(100vh - 60px);
+    background: rgba(0, 0, 0, 0.7); /* Dim effect */
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+  }
+  
+  /* ✅ Prevent clicks inside from closing HUD */
+  .overlayContent {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+    z-index: 101; /* Above dimming effect */
+  }

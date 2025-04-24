@@ -15,10 +15,10 @@
 
 /* ✅ Stablecoin Container - Centered in HUD */
 .stablecoinContainer {
-  background: rgba(18, 18, 18, 0.95);
+  background: rgba(18, 18, 18, 0.948);
   padding: 40px;
   border-radius: 12px;
-  width: 80%;
+  width: 100%;
   max-width: 600px;
   max-height: 80vh;
   overflow-y: auto;

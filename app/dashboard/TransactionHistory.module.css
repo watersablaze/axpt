@@ -1,82 +1,70 @@
-  .transactionContainer {
-    width: 100%;
-    max-width: 600px;
-    background: rgba(20, 20, 25, 0.9);
-    backdrop-filter: blur(10px);
-    padding: 20px;
-    border-radius: 12px;
-    text-align: center;
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
-  }
-  
-/* ✅ Title Styling */
+/* ✅ HUD Background - Covers Dashboard Only */
+.transactionHUD {
+  position: absolute; /* ✅ Keeps it inside the dashboard */
+  top: 60px; /* ✅ Below the header */
+  left: 250px; /* ✅ Avoids covering the sidebar */
+  width: calc(100vw - 250px); /* ✅ Remaining space */
+  height: calc(100vh - 60px);
+  background: rgba(0, 0, 0, 0.7); /* ✅ Soft dim effect */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+/* ✅ Transaction Container */
+.transactionContainer {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(12px);
+  padding: 20px;
+  border-radius: 12px;
+  width: 60%;
+  max-width: 600px;
+  height: 70vh;
+  overflow-y: auto;
+  color: white;
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+}
+
+/* ✅ Title */
 .title {
-    font-size: 1.4rem;
-    font-weight: bold;
-    color: #00eaff;
-    text-shadow: 0 0 8px rgba(0, 255, 255, 0.7);
-    text-transform: uppercase;
-    margin-bottom: 10px;
-  }
-  
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 15px;
+}
+
 /* ✅ Transaction List */
 .transactionList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    width: 100%;
-  }
-  
-  .transactionItem {
-    background: rgba(0, 0, 0, 0.6);
-    padding: 10px;
-    margin: 10px 0;
-    border-radius: 8px;
-    box-shadow: 0 0 6px rgba(0, 255, 255, 0.4);
-    text-align: left;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-    color: white;
-    transition: transform 0.2s ease-in-out, box-shadow 0.3s ease-in-out;
-  }
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 
-  .transactionItem:hover {
-    transform: scale(1.03);
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
-  }
+/* ✅ Individual Transaction */
+.transactionItem {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  text-align: left;
+}
 
-  /* ✅ Transaction Text */
-.transactionItem p {
-    margin: 5px 0;
-    font-size: 0.9rem;
-    color: #ffffff;
-  }
-  
-  .transactionItem strong {
-    color: #00ffcc;
-    text-shadow: 0 0 5px rgba(0, 255, 255, 0.6);
-  }
-  
-  /* ✅ Responsive Adjustments */
-  @media (max-width: 768px) {
-    .transactionContainer {
-      width: 100%;
-      padding: 12px;
-    }
-  
-    .transactionItem p {
-      font-size: 0.85rem;
-    }
-  }
-  
-/* ✅ Loading / No Transactions Text */
+/* ✅ Loading & No Transactions */
 .loading, .noTransactions {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.6);
-    font-style: italic;
-    text-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ✅ Mobile Responsive */
+@media (max-width: 768px) {
+  .transactionHUD {
+    left: 0;
+    width: 100vw;
   }
 
-  .transactionItem:last-child {
-    border-bottom: none;
+  .transactionContainer {
+    width: 90%;
+    height: 80vh;
   }
-  
+}

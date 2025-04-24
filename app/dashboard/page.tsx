@@ -8,7 +8,7 @@ import DashboardHeader from "./DashboardHeader";
 import Wallet from "./Wallet";
 import TransactionHistory from "./TransactionHistory";
 import MintStablecoin from "./MintStablecoin";
-import RedeemStablecoin from "./Stablecoin";
+import Stablecoin from "./Stablecoin"; // ✅ Ensure correct import
 import BulletinBoard from "./BulletinBoard";
 import Overlay from "./Overlay"; // ✅ Replaces Modal with full HUD Overlay
 import styles from "@/app/dashboard/Dashboard.module.css";
@@ -21,20 +21,17 @@ export default function Dashboard() {
   const [collapsed, setCollapsed] = useState(false);
   const [walletActive, setWalletActive] = useState(false);
 
-  // ✅ Redirect unauthenticated users
   useEffect(() => {
     if (status === "unauthenticated") {
       router.replace("/login");
     }
   }, [status, router]);
 
-  // ✅ Open the HUD for a specific component
   const openHUD = useCallback((component: string) => {
     setActiveHUD(component);
-    setWalletActive(component === "wallet"); // Ensure wallet state syncs correctly
+    setWalletActive(component === "wallet"); // Sync wallet state
   }, []);
 
-  // ✅ Close the HUD
   const closeHUD = useCallback(() => {
     setActiveHUD(null);
     setWalletActive(false);
@@ -48,16 +45,11 @@ export default function Dashboard() {
 
         {/* ✅ Overlay for HUD Components */}
         <Overlay isOpen={!!activeHUD} closeHUD={closeHUD}>
-          {activeHUD === "wallet" && <Wallet setWalletActive={setWalletActive} />}
-          {activeHUD === "stablecoin" && (
-            <>
-              <MintStablecoin />
-              <RedeemStablecoin />
-            </>
-          )}
-          {activeHUD === "transactions" && <TransactionHistory />}
-          {activeHUD === "bulletin" && <BulletinBoard />}
-        </Overlay>
+          {activeHUD === "wallet" && <Wallet closeHUD={closeHUD} setWalletActive={setWalletActive} />}
+          {activeHUD === "stablecoin" && <Stablecoin closeHUD={closeHUD} />}
+          {activeHUD === "transactions" && <TransactionHistory closeHUD={closeHUD} />}          
+          {activeHUD === "bulletin" && <BulletinBoard closeHUD={closeHUD} />}        
+          </Overlay>
       </div>
     </div>
   );

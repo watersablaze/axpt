@@ -8,15 +8,16 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background: rgba(0, 0, 0, 0.8); /* Dim effect */
+  background: rgba(0, 0, 0, 0.7); /* Dim effect */
   backdrop-filter: blur(8px);
-  z-index: 100;
+  z-index: 100; /* ✅ Ensures it’s above other elements */
+  cursor: pointer; /* ✅ Makes it clear it's clickable */
 }
 
-/* ✅ Wallet Container - Glassmorphism + Neon Glow */
+/* ✅ Wallet Container */
 .walletContainer {
-  background: rgb(5, 0, 0); /* ✅ Glass effect */
-  backdrop-filter: blur(12px); /* ✅ Smooth frosted blur */
+  background: rgb(5, 0, 0);
+  backdrop-filter: blur(12px);
   padding: 30px;
   border-radius: 16px;
   width: calc(100vw - 250px); /* Full width minus sidebar */
@@ -28,10 +29,16 @@
   justify-content: center;
   flex-direction: column;
   align-items: center;
-  margin: auto;
+  margin: 0 auto; /* ✅ Avoid layout shifting */
   overflow-y: auto;
   transition: opacity 0.3s ease-in-out;
   animation: fadeInHUD 0.4s ease-in-out;
+  pointer-events: auto; /* ✅ Ensures only this area prevents click-through */
+}
+
+/* ✅ Ensure Clicking Outside Works */
+.walletHUD:not(.walletContainer) {
+  pointer-events: auto; /* ✅ Allows outside clicks */
 }
 
 /* ✅ Fade-in Animation */

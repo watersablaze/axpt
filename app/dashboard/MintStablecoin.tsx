@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import styles from "./StablecoinManagement.module.css";
+import styles from "./Stablecoin.module.css";
 
 export default function MintStablecoin() {
   const [ethAmount, setEthAmount] = useState("");
