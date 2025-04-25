@@ -1,70 +1,111 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import LottieAnimation from '@/app/components/LottieAnimation';
 
 export default function WhitepaperPage() {
-  const [tokenInput, setTokenInput] = useState('');
+  const [token, setToken] = useState('');
   const [status, setStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
-  const [verified, setVerified] = useState(false);
+  const [verifiedPartner, setVerifiedPartner] = useState<string | null>(null);
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
-  // Tokens from your .env file
-  const allowedTokens = [
-    process.env.NEXT_PUBLIC_QUEENDOM_COLLECTIVE_TOKEN,
-    process.env.NEXT_PUBLIC_RED_ROLLIN_TOKEN,
-    process.env.NEXT_PUBLIC_LIMITECH_TOKEN,
-    process.env.NEXT_PUBLIC_AXPT_ADMIN_TOKEN,
-  ];
+  const handleVerify = async () => {
+    if (!acceptTerms) {
+      alert('Please agree to the terms and conditions.');
+      return;
+    }
 
-  const handleVerify = () => {
     setStatus('verifying');
-    if (allowedTokens.includes(tokenInput.trim())) {
-      setStatus('success');
-      setVerified(true);
-    } else {
+
+    try {
+      const res = await fetch('/api/partner/verify-token', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.partner) {
+        setStatus('success');
+        setVerifiedPartner(data.partner);
+      } else {
+        setStatus('error');
+      }
+    } catch (error) {
+      console.error('Verification failed:', error);
       setStatus('error');
     }
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-[#0e0e0e] text-white p-8">
-      {!verified ? (
-        <div className="max-w-md w-full bg-[#1a1a1a] p-6 rounded-xl shadow-lg border border-[#333]">
-          <h1 className="text-2xl mb-4 font-bold">🔒 Partner Whitepaper Access</h1>
-          <p className="mb-4 text-sm text-gray-300">
-            Please enter your provided token to view the AXPT.io partner whitepaper.
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#1a1a1a] text-white px-4">
+      <div className="pt-20">
+        <LottieAnimation src="/placeholder.json" />
+      </div>
+
+      <h1 className="mt-8 text-2xl font-bold">Enter Your Access Token</h1>
+
+      <div className="mt-4 w-full max-w-md bg-[#2a2a2a] p-6 rounded-xl shadow-lg">
+        <input
+          type="text"
+          value={token}
+          onChange={(e) => setToken(e.target.value)}
+          placeholder="Your Access Token"
+          className="w-full p-3 rounded-md text-black"
+        />
+
+        <div className="mt-4 p-4 bg-[#333333] rounded-md text-sm text-gray-300 border border-gray-600">
+          <h2 className="text-lg font-semibold mb-2">Access Terms & Conditions</h2>
+          <p className="mb-2">
+            By proceeding, you agree that the contents of this whitepaper are confidential,
+            proprietary, and intended solely for your individual review as a verified partner of Axis Point Investments (AXPT.io).
           </p>
-          <input
-            type="text"
-            value={tokenInput}
-            onChange={(e) => setTokenInput(e.target.value)}
-            placeholder="Enter your key/token here..."
-            className="w-full p-3 rounded-md bg-[#2a2a2a] text-white focus:outline-none focus:ring-2 focus:ring-[#FFD700] mb-4"
-          />
-          <button
-            onClick={handleVerify}
-            className="w-full bg-[#FFD700] text-black font-bold py-2 px-4 rounded-md hover:bg-yellow-400 transition"
-          >
-            Verify & Enter
-          </button>
-          {status === 'error' && (
-            <p className="mt-3 text-red-500 text-sm">❌ Invalid token. Please check and try again.</p>
-          )}
+          <p className="mb-2">
+            Redistribution, duplication, or sharing of this document or its content in any form
+            without explicit written permission is strictly prohibited.
+          </p>
+          <div className="flex items-center mt-3">
+            <input
+              id="acceptTerms"
+              type="checkbox"
+              checked={acceptTerms}
+              onChange={(e) => setAcceptTerms(e.target.checked)}
+              className="mr-2"
+            />
+            <label htmlFor="acceptTerms">
+              I agree to the terms and conditions stated above.
+            </label>
+          </div>
         </div>
-      ) : (
-        <div className="w-full max-w-5xl">
-          <h1 className="text-3xl mb-6 font-bold text-center">📄 AXPT.io Partner Whitepaper</h1>
-          <div className="border-2 border-[#FFD700] rounded-lg overflow-hidden shadow-lg">
+
+        <button
+          onClick={handleVerify}
+          disabled={status === 'verifying'}
+          className={`mt-4 w-full ${
+            acceptTerms ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-gray-500 cursor-not-allowed'
+          } text-white py-2 rounded-md transition-all`}
+        >
+          {status === 'verifying' ? 'Verifying...' : 'Access Whitepaper'}
+        </button>
+
+        {status === 'error' && (
+          <p className="mt-2 text-red-400">Invalid token. Please try again.</p>
+        )}
+      </div>
+
+      {status === 'success' && verifiedPartner && (
+        <div className="mt-6 w-full max-w-4xl text-lg text-emerald-400">
+          ✅ Welcome, {verifiedPartner}! You now have exclusive access.
+          <div className="mt-6 w-full">
             <iframe
               src="/whitepaper/AXPT-Whitepaper.pdf"
-              width="100%"
-              height="900px"
-              style={{ border: 'none' }}
+              className="w-full h-[80vh] border border-gray-700 rounded-lg shadow-lg"
               title="AXPT.io Partner Whitepaper"
             />
           </div>
-          <p className="mt-4 text-sm text-center text-gray-400">
-            This document is private and intended solely for your use. Please do not share or forward.
-          </p>
         </div>
       )}
     </div>
