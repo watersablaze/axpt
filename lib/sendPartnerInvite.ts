@@ -1,32 +1,47 @@
-import { generateQRCode } from "@/lib/qrHelper";
-import { generateEmailBody } from "@/lib/emailContent";
+import { generateQRCode } from './qrHelper';
 
-interface SendPartnerInviteProps {
-  partnerEmail: string;
-  token: string;
+export interface PartnerInviteOptions {
+  partnerName: string;
+  tokenSecret: string;
+  tokenLink: string;
 }
 
-export async function sendPartnerInvite({ partnerEmail, token }: SendPartnerInviteProps) {
-  const verificationUrl = `https://your-domain.com/partner/verify?token=${token}`;
+export async function sendPartnerInvite({
+  partnerName,
+  tokenSecret,
+  tokenLink,
+}: PartnerInviteOptions): Promise<string> {
+  const qrCodeDataURL = await generateQRCode(tokenLink);
 
-  // Generate QR Code as a Data URI
-  const qrDataUri = await generateQRCode(verificationUrl);
+  const border = '============================================';
 
-  // Generate the email body with QR + link
-  const emailBody = generateEmailBody({
-    partnerEmail,
-    token,
-    url: verificationUrl,
-    qrDataUri,
-  });
+  const emailContent = `
+${border}
+💌 Invite Email for: ${partnerName}
+${border}
 
-  // Output the result to the terminal for manual copy-paste
-  console.log("\n===== PARTNER INVITE EMAIL =====\n");
-  console.log(`TO: ${partnerEmail}`);
-  console.log("\nEMAIL CONTENT:\n");
-  console.log(emailBody);
-  console.log("\n===== END OF EMAIL =====\n");
+Hello ${partnerName},
+
+You are invited to access the AXPT.io partner whitepaper.
+
+🔗 Click the link below to begin:
+${tokenLink}
+
+🔒 Your key/password:
+${tokenSecret}
+
+📲 Or simply scan this QR code to open the link directly:
+<img src="${qrCodeDataURL}" alt="QR Code" style="width:200px;height:200px;"/>
+
+⚠️ This link is private and intended solely for your use.
+Please do not forward or share.
+
+With respect and anticipation,  
+— The AXPT.io Team
+${border}
+✅ Email content ready. Copy and paste into Proton Mail.
+${border}
+`;
+
+  return emailContent;
 }
-
-// Example usage:
-// sendPartnerInvite({ partnerEmail: "partner@example.com", token: "abc123xyz" });
