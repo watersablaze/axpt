@@ -1,62 +1,60 @@
-"use client";
+// app/partner/whitepaper.tsx
+'use client';
 
 import { useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { verifyTokenSignature } from "@/lib/tokenUtils";
-import Lottie from "lottie-react";
-import animationData from "@/public/lottie/axpt_sigil.json"; // Adjust if needed
 import styles from "./Whitepaper.module.css";
+import Lottie from "lottie-react";
+import axptSigil from "@/public/lottie/axpt_sigil.json"; // Adjust the path as needed
 
 export default function WhitepaperPage() {
   const searchParams = useSearchParams();
-  const token = searchParams.get("token") || "";
-  const signature = searchParams.get("signature") || "";
-  const partner = searchParams.get("partner") || "Partner";
-
-  const [isVerified, setIsVerified] = useState<boolean | null>(null);
+  const [token, setToken] = useState('');
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
 
   useEffect(() => {
-    const valid = verifyTokenSignature(token, signature);
-    setIsVerified(valid);
-  }, [token, signature]);
+    const tokenParam = searchParams.get('token');
+    const emailParam = searchParams.get('email');
+    if (tokenParam) setToken(tokenParam);
+    if (emailParam) setEmail(emailParam);
+  }, [searchParams]);
 
-  if (isVerified === null) {
-    return (
-      <div className={styles.loaderContainer}>
-        <Lottie animationData={animationData} className={styles.lottie} />
-        <p className={styles.loadingText}>Authenticating your access...</p>
-      </div>
-    );
-  }
+  const handleVerify = async () => {
+    setStatus('verifying');
+    const res = await fetch('/api/partner/verify-token', {
+      method: 'POST',
+      body: JSON.stringify({ token, email }),
+      headers: { 'Content-Type': 'application/json' },
+    });
+    const data = await res.json();
+    if (data.success) {
+      setStatus('success');
+    } else {
+      setStatus('error');
+    }
+  };
 
-  if (!isVerified) {
+  if (status === 'success') {
     return (
-      <div className={styles.errorContainer}>
-        <Lottie animationData={animationData} className={styles.lottie} />
-        <h2 className={styles.errorText}>🚫 Invalid or missing access token.</h2>
-        <p>Please contact your AXPT.io representative for assistance.</p>
+      <div className="fade-in">
+        <h1>Welcome, Partner.</h1>
+        <p>The whitepaper awaits.</p>
+        {/* Embed iframe or directly display the content here */}
       </div>
     );
   }
 
   return (
-    <div className={styles.whitepaperPage}>
-      <div className={styles.header}>
-        <Lottie animationData={animationData} className={styles.lottieSmall} />
-        <h1 className={styles.greeting}>Welcome, {partner}</h1>
-        <p className={styles.subText}>Enjoy your private reading of the AXPT.io whitepaper.</p>
-      </div>
-
-      {/* ✅ Inline PDF Viewer ONLY */}
-      <div className={styles.pdfContainer}>
-        <iframe
-          src="/pdfs/axpt_whitepaper.pdf"
-          title="AXPT.io Whitepaper"
-          width="100%"
-          height="800px"
-          className={styles.pdfViewer}
-        />
-      </div>
+    <div className="verification-container">
+      <h2>Enter Your Access Key</h2>
+      <input
+        type="text"
+        placeholder="Enter your key"
+        value={token}
+        onChange={(e) => setToken(e.target.value)}
+      />
+      <button onClick={handleVerify}>Verify & Enter</button>
+      {status === 'error' && <p className="error">Invalid token. Please check and try again.</p>}
     </div>
   );
 }
