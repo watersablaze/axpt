@@ -1,0 +1,38 @@
+/* AXPT.io Font Declarations */
+
+@font-face {
+    font-family: 'LoyalBold';
+    src: url('/fonts/LoyalBoldv1.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'Helvoni';
+    src: url('/fonts/HELVONI-regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'LTMuseum';
+    src: url('/fonts/LTMuseum-Black.ttf') format('truetype');
+    font-weight: 900;
+    font-style: normal;
+  }
+  
+  @font-face {
+    font-family: 'LTMuseumLight';
+    src: url('/fonts/LTMuseum-Light.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+  }
+  
+  /* Suggested Global Font Usage */
+  :root {
+    --font-primary: 'LoyalBold', sans-serif;
+    --font-secondary: 'Helvoni', serif;
+    --font-accent: 'LTMuseum', sans-serif;
+    --font-light: 'LTMuseumLight', sans-serif;
+  }
+  

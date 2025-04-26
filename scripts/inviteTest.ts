@@ -2,9 +2,9 @@ import { sendPartnerInvite } from '../lib/sendPartnerInvite';
 import prompts from 'prompts';
 
 const partners = [
-  { name: 'Queendom Collective', tokenSecret: 'QC-SECRET-001' },
-  { name: 'Red Rollin Holdings', tokenSecret: 'RRH-SECRET-002' },
-  { name: 'Limitech', tokenSecret: 'LIMITECH-PORTAL-ACCESS-GRANTED-003' },
+  { name: 'Queendom Collective', tokenSecret: process.env.NEXT_PUBLIC_QUEENDOM_COLLECTIVE_TOKEN! },
+  { name: 'Red Rollin Holdings', tokenSecret: process.env.NEXT_PUBLIC_RED_ROLLIN_TOKEN! },
+  { name: 'Limitech', tokenSecret: process.env.NEXT_PUBLIC_LIMITECH_TOKEN! },
 ];
 
 (async () => {
@@ -21,6 +21,7 @@ const partners = [
     type: 'text',
     name: 'partnerEmail',
     message: `📧 What's the email address for ${partner.name}?`,
+    validate: email => email.includes('@') ? true : 'Please enter a valid email address.',
   });
 
   console.log(`\n🚀 Generating invite for: ${partner.name}`);
@@ -31,7 +32,7 @@ const partners = [
   const emailContent = await sendPartnerInvite({
     partnerName: partner.name,
     tokenSecret: partner.tokenSecret,
-    tokenLink: tokenLink,
+    tokenLink,
   });
 
   const border = '============================================';

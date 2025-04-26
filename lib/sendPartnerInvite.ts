@@ -1,4 +1,4 @@
-import { generateQRCode } from './qrHelper';
+import { generateQRCode } from './generateQRCode';
 
 export interface PartnerInviteOptions {
   partnerName: string;

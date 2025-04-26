@@ -1,10 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import LottieAnimation from '@/app/components/LottieAnimation';
+import LottieAnimation from '../../../components/LottieAnimation';
 
 export default function WhitepaperPage() {
   const [token, setToken] = useState('');
+  const [partner, setPartner] = useState('queendom_collective'); // Default or add dropdown if needed
   const [status, setStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
   const [verifiedPartner, setVerifiedPartner] = useState<string | null>(null);
   const [acceptTerms, setAcceptTerms] = useState(false);
@@ -23,14 +24,14 @@ export default function WhitepaperPage() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ token }),
+        body: JSON.stringify({ token }),  // ✅ This 'token' comes from your input field
       });
 
       const data = await res.json();
 
-      if (res.ok && data.partner) {
+      if (res.ok && data.success) {
         setStatus('success');
-        setVerifiedPartner(data.partner);
+        setVerifiedPartner(partner); // ✅ Now assigning from your partner field directly
       } else {
         setStatus('error');
       }
@@ -43,12 +44,25 @@ export default function WhitepaperPage() {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-[#1a1a1a] text-white px-4">
       <div className="pt-20">
-        <LottieAnimation src="/placeholder.json" />
+        <LottieAnimation src="/lotties/placeholder.json" />
       </div>
 
       <h1 className="mt-8 text-2xl font-bold">Enter Your Access Token</h1>
 
       <div className="mt-4 w-full max-w-md bg-[#2a2a2a] p-6 rounded-xl shadow-lg">
+        {/* Optional: Uncomment this dropdown if you'd like to select different partners */}
+        {/* 
+        <select
+          value={partner}
+          onChange={(e) => setPartner(e.target.value)}
+          className="w-full p-3 rounded-md text-black mb-4"
+        >
+          <option value="queendom_collective">Queendom Collective</option>
+          <option value="axis_allies">Axis Allies</option>
+          <option value="global_consortium">Global Consortium</option>
+        </select>
+        */}
+
         <input
           type="text"
           value={token}
@@ -98,7 +112,7 @@ export default function WhitepaperPage() {
 
       {status === 'success' && verifiedPartner && (
         <div className="mt-6 w-full max-w-4xl text-lg text-emerald-400">
-          ✅ Welcome, {verifiedPartner}! You now have exclusive access.
+          ✅ Welcome, {verifiedPartner.replace('_', ' ').toUpperCase()}! You now have exclusive access.
           <div className="mt-6 w-full">
             <iframe
               src="/whitepaper/AXPT-Whitepaper.pdf"

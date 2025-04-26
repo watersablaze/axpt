@@ -1,0 +1,85 @@
+@import './_colors.css';
+@import './_fonts.css';
+
+:root {
+  /* Fallbacks in case _colors.css doesn't load */
+  --background: var(--space-black, #0a0a0a);
+  --foreground: var(--gold-accent, #d4af37);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: var(--space-black);
+    --foreground: var(--pale-gold);
+  }
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow-x: hidden;
+  color: var(--foreground);
+  background-size: cover;
+  font-family: 'LoyalBold', sans-serif;
+  scroll-behavior: smooth;
+}
+
+/* Typography Hierarchy */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Helvoni', serif;
+  margin: 0;
+}
+
+p, span, li, a {
+  font-family: 'LTMuseumLight', sans-serif;
+}
+
+/* Link Styling with Pop */
+a {
+  color: var(--teal-accent);
+  text-decoration: none;
+  transition: color 0.3s ease, text-shadow 0.3s ease;
+}
+
+a:hover {
+  color: var(--royal-purple);
+  text-shadow: 0 0 8px var(--pale-gold);
+}
+
+/* Layout Wrapper */
+.content-wrapper {
+  padding-top: 70px;
+  padding-bottom: 60px;
+  min-height: 100vh;
+}
+
+/* Custom Scrollbar Styling */
+body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--teal-accent) var(--royal-purple);
+}
+
+body::-webkit-scrollbar {
+  width: 10px;
+}
+
+body::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, var(--teal-accent), var(--royal-purple));
+  border-radius: 10px;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+body::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+/* Responsive Media Queries */
+@media (prefers-color-scheme: dark) {
+  html {
+    color-scheme: dark;
+  }
+}

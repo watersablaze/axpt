@@ -1,24 +1,27 @@
-// /app/api/verify-token/route.ts
-
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
-
-const TOKEN_SECRET = process.env.TOKEN_SECRET!;
 
 export async function POST(req: Request) {
-  const { email, token } = await req.json();
+  const { token } = await req.json();
 
-  if (!email || !token) {
-    return NextResponse.json({ success: false, message: 'Missing email or token.' }, { status: 400 });
+  if (!token) {
+    return NextResponse.json({ success: false, message: 'Missing token.' }, { status: 400 });
   }
 
-  const generatedToken = crypto
-    .createHmac('sha256', TOKEN_SECRET)
-    .update(email)
-    .digest('hex');
+  const partnerTokens: Record<string, string> = {
+    [process.env.NEXT_PUBLIC_QUEENDOM_COLLECTIVE_TOKEN!]: 'Queendom Collective',
+    [process.env.NEXT_PUBLIC_RED_ROLLIN_TOKEN!]: 'Red Rollin Holdings',
+    [process.env.NEXT_PUBLIC_LIMITECH_TOKEN!]: 'Limitech',
+    [process.env.NEXT_PUBLIC_AXPT_ADMIN_TOKEN!]: 'AXPT Admin Access',
+  };
 
-  if (generatedToken === token) {
-    return NextResponse.json({ success: true, message: 'Token is valid.' });
+  const partnerName = partnerTokens[token];
+
+  if (partnerName) {
+    return NextResponse.json({
+      success: true,
+      message: 'Token is valid.',
+      partner: partnerName,
+    });
   } else {
     return NextResponse.json({ success: false, message: 'Invalid token.' }, { status: 401 });
   }

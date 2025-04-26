@@ -1,28 +1,51 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "es2020",
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "incremental": true,
-    "module": "esnext",
     "esModuleInterop": true,
+    "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "baseUrl": ".", 
+    "baseUrl": ".", // ✅ Root-relative imports enabled
     "paths": {
-      "@/*": ["./*"],  
-      "@/components/*": ["app/(landing)/components/*"],
-      "@/lib/*": ["lib/*"],
-      "@/styles/*": ["styles/*"],  
-      "@/config/*": ["config/*"]
+      "styles/*": [
+        "app/styles/*"
+      ], // ✅ Clean absolute imports for styles
+      "components/*": [
+        "app/components/*"
+      ],
+      "lib/*": [
+        "app/lib/*"
+      ],
+      "api/*": [
+        "app/api/*"
+      ]
     },
-    "plugins": [{ "name": "next" }]
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-  "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
-  "exclude": ["node_modules"]
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "next-env.d.ts",
+    ".next/types/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
