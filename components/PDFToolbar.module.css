@@ -1,0 +1,62 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&display=swap');
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  padding: 0.5rem 1rem;
+  width: 100%;                                /* 🟢 Full width */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  box-sizing: border-box;
+  font-family: 'Fira Code', monospace;        /* 🟢 Code font */
+}
+
+.leftGroup, .centerGroup, .rightGroup {
+  display: flex;
+  align-items: center;
+}
+
+.pageIndicator {
+  margin: 0 0.8rem;
+  font-size: 0.85rem;
+  color: #cccccc;
+}
+
+.toolbarButton {
+  background-color: #333;
+  color: #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  padding: 0.4rem 0.8rem;
+  margin-right: 0.5rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.85rem;
+  border-radius: 0;                            /* 🟥 No rounding */
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.toolbarButton:hover {
+  background-color: #555;
+  cursor: pointer;
+  transform: translateY(-1px);
+}
+
+.toolbarButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.searchInput {
+  background-color: #222;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: #e0e0e0;
+  padding: 0.3rem 0.6rem;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.85rem;
+  border-radius: 0;                            /* 🟥 No rounding */
+}
+
+.searchInput::placeholder {
+  color: #888;
+}

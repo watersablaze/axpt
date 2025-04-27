@@ -1,66 +1,35 @@
-## Foundry
+# 🌐 AXPT.io – Axis Point Investments
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+**The Crossroads of Technology, Trade, and Cultural Exchange.**
 
-Foundry consists of:
+Welcome to the AXPT.io codebase! This platform serves as an interactive portal connecting global partners through digital innovation, cultural integrity, and financial technology. Together, we build scalable systems with a spirit of excellence and creative elegance.
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+---
 
-## Documentation
+## 🚀 Project Vision
 
-https://book.getfoundry.sh/
+AXPT.io exists to:
+- Enable seamless partner collaboration via token-based access.
+- Provide a secure and interactive portal for document sharing (whitepapers, agreements, research).
+- Uphold cultural respect, global outreach, and technological integrity.
+- Integrate modern front-end architecture with a stable and secure back-end flow.
 
-## Usage
+---
 
-### Build
+## 🛠️ Tech Stack
 
-```shell
-$ forge build
-```
+- **Next.js 15**  
+- **TypeScript**  
+- **Prisma + PostgreSQL**  
+- **Lottie Animations / Motion Graphics**  
+- **Environment-based token verification system**  
+- **Styled with CSS Modules and Design Tokens**  
 
-### Test
+---
 
-```shell
-$ forge test
-```
+## 🧰 Local Development Setup
 
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+1. **Clone the Repo:**
+   ```bash
+   git clone https://github.com/your-username/axpt.io.git
+   cd axpt.io

@@ -7,6 +7,35 @@
   --foreground: var(--gold-accent, #d4af37);
 }
 
+:root {
+  --font-main: 'LoyalBold', sans-serif;
+  --color-background-dark: #0a0a0a; /* Cosmic black */
+  --color-foreground-light: #ededed;
+  --color-accent-purple: #c084fc;
+  --color-accent-gold: #facc15;
+  --color-accent-teal: #00bfa5;
+  --color-disabled: #555;
+}
+
+/* Apply Fira Code to any <code>, <pre>, or .mono class elements */
+code, pre, .mono {
+  font-family: var(--font-fira-code), monospace;
+}
+
+/* Optional: If you want to force monospace in specific contexts like your toolbar */
+.toolbar, .toolbar button, .toolbar input {
+  font-family: var(--font-fira-code), monospace;
+}
+
+  /* 🔍 Search Highlight */
+  mark {
+    background-color: rgba(252, 211, 77, 0.7); /* Gold highlight */
+    color: #000;
+    padding: 0 2px;
+    border-radius: 2px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
 @media (prefers-color-scheme: dark) {
   :root {
     --background: var(--space-black);

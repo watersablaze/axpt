@@ -1,0 +1,150 @@
+/* 🟢 Pre-Verification View Styling */
+
+.pageContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #0a0a0a; /* Deep cosmic black */
+  color: #ededed;
+  font-family: 'LoyalBold', sans-serif;
+  text-align: center;
+  padding: 2rem;
+  box-sizing: border-box;
+}
+
+/* 🟣 Animation Styling */
+.animationWrapper {
+  margin-bottom: 2rem;
+  max-width: 300px;
+  width: 100%;
+  height: auto;
+}
+
+/* 🟠 Headline */
+.heading {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+  color: #facc15; /* Gold accent */
+}
+
+/* 🟡 Token Input Box */
+.tokenBox {
+  background-color: #1a1a1a;
+  border: 1px solid #444;
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 100%;
+  margin: 1rem auto;
+  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); /* Subtle gold glow */
+  text-align: left;
+}
+
+/* 🔵 Input Field */
+.inputField {
+  width: 100%;
+  padding: 12px;
+  margin-top: 1rem;
+  border-radius: 8px;
+  border: 1px solid #555;
+  background-color: #ededed;
+  color: #171717;
+  font-size: 1rem;
+}
+
+/* 🟤 Terms Box */
+.termsBox {
+  background-color: #2a2a2a;
+  border: 1px solid #555;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #d1d5db;
+}
+
+/* 💎 Terms Heading */
+.termsHeading {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  color: #c084fc; /* Royal purple accent */
+}
+
+/* ✅ Checkbox Row */
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.checkboxRow label {
+  margin-left: 0.5rem;
+}
+
+/* 🟢 Button Styling */
+.verifyButton {
+  margin-top: 1.5rem;
+  padding: 0.75rem;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: background-color 0.3s ease;
+  width: 100%;
+}
+
+.buttonActive {
+  background-color: #00bfa5; /* Teal */
+  color: #fff;
+}
+
+.buttonActive:hover {
+  background-color: #008e76;
+}
+
+.buttonDisabled {
+  background-color: #555;
+  cursor: not-allowed;
+}
+
+/* 🟥 Error Message */
+.errorText {
+  margin-top: 1rem;
+  color: #f87171; /* Soft red */
+  text-align: center;
+}
+
+/* 🔥 Smooth Fade-In Animation */
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animateFadeIn {
+  animation: fadeIn 0.8s ease forwards;
+}
+
+/* 📱 Responsive Tweaks */
+@media (max-width: 768px) {
+  .heading {
+    font-size: 2rem;
+  }
+
+  .tokenBox {
+    padding: 1.5rem;
+  }
+
+  .verifyButton {
+    font-size: 1rem;
+  }
+}

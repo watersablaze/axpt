@@ -1,0 +1,81 @@
+.viewerContainer {
+  display: flex;
+  width: 100%;
+  height: 100vh;              /* 🟢 Viewport-locked height */
+  overflow: hidden;           /* 🟢 Prevent outer scroll */
+}
+
+.sidebar {
+  width: 180px;
+  background-color: #1a1a1a;
+  color: #fff;
+  overflow-y: auto;           /* 🟢 Internal scrolling for thumbnails */
+  height: 100vh;              /* 🟢 Fixed to viewport height */
+  padding: 0.5rem;
+  border-right: 4px solid rgba(94, 143, 196, 0.679);
+  box-sizing: border-box;
+}
+
+.thumbnail {
+  cursor: pointer;
+  margin-bottom: 0.5rem;
+  margin-left: 6px;
+  padding: 0.9rem;
+  border: 1px solid transparent;
+  transition: border 0.2s ease, transform 0.2s ease;
+}
+
+.thumbnail:hover {
+  border: 1px solid #ffcc00;
+  transform: scale(1.05);
+}
+
+.activeThumbnail {
+  border: 2px solid #ffcc00;
+}
+
+.pageNumberLabel {
+  font-size: 0.8rem;
+  text-align: center;
+  color: #cccccc;
+  margin-top: 0.3rem;
+}
+
+.toggleWrapper {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+  font-size: 0.85rem;
+  color: #ccc;
+}
+
+.toggleWrapper input {
+  margin-right: 0.5rem;
+}
+
+/* 🟢 PDF Viewer Layout (no scroll) */
+.pdfViewerArea {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;              /* 🟢 Lock the main viewer area */
+  overflow: hidden;
+}
+
+.pdfToolbarWrapper {
+  flex-shrink: 0;             /* 🟢 Toolbar remains at the top */
+}
+
+.pdfContainer {
+  flex-grow: 1;               /* 🟢 PDF takes remaining space */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;           /* 🟢 No scroll here */
+  background-color: #0a0a0a;
+}
+
+.pdfDocument {
+  width: 100%;
+  height: 100%;
+}

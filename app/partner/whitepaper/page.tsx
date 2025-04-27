@@ -1,14 +1,33 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import LottieAnimation from '../../../components/LottieAnimation';
+import GreetingWrapper from '../../../components/GreetingWrapper';
+import WhitepaperViewer from '../../../components/WhitepaperViewer';
+
+// 🟢 Pre and Post Verification Styles
+import preStyles from './WhitepaperPreVerify.module.css'; 
+import postStyles from './Whitepaper.module.css'; 
 
 export default function WhitepaperPage() {
   const [token, setToken] = useState('');
-  const [partner, setPartner] = useState('queendom_collective'); // Default or add dropdown if needed
   const [status, setStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
   const [verifiedPartner, setVerifiedPartner] = useState<string | null>(null);
   const [acceptTerms, setAcceptTerms] = useState(false);
+
+  // ✅ DEV BYPASS - Turn ON for easy testing
+  const devBypass = true; // <<< Change to false before production
+
+  const envMode = process.env.NODE_ENV || 'development';
+
+  // ✅ Load from localStorage on page load
+  useEffect(() => {
+    const savedPartner = localStorage.getItem('verifiedPartner');
+    if (savedPartner) {
+      setStatus('success');
+      setVerifiedPartner(savedPartner);
+    }
+  }, []);
 
   const handleVerify = async () => {
     if (!acceptTerms) {
@@ -21,17 +40,16 @@ export default function WhitepaperPage() {
     try {
       const res = await fetch('/api/partner/verify-token', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ token }),  // ✅ This 'token' comes from your input field
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token }),
       });
 
       const data = await res.json();
 
       if (res.ok && data.success) {
         setStatus('success');
-        setVerifiedPartner(partner); // ✅ Now assigning from your partner field directly
+        setVerifiedPartner(data.partner);
+        localStorage.setItem('verifiedPartner', data.partner); // ✅ Save verified partner
       } else {
         setStatus('error');
       }
@@ -41,87 +59,90 @@ export default function WhitepaperPage() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('verifiedPartner');
+    setStatus('idle');
+    setVerifiedPartner(null);
+    setToken('');
+  };
+
+  // ✅ POST-VERIFICATION VIEW (with DEV BYPASS logic)
+  if ((status === 'success' && verifiedPartner) || devBypass) {
+    return (
+      <div className={postStyles.fullScreenWrapper}>
+        <GreetingWrapper partnerName={verifiedPartner || 'Developer Mode'}>
+          {/* 🟢 NOW properly passed as children */}
+          <div className={postStyles.viewerSection}>
+            <WhitepaperViewer pdfFile="/whitepaper/AXPT-Whitepaper.pdf" />
+            {!devBypass && (
+              <button className={postStyles.logoutButton} onClick={handleLogout}>
+                Logout / Reset Verification
+              </button>
+            )}
+          </div>
+        </GreetingWrapper>
+
+        {/* 🟢 Dev Mode Badge (Only shows if devBypass is true) */}
+        {devBypass && (
+          <div className={postStyles.devBadge}>
+            DEV MODE ACTIVE<br />
+            <span className={postStyles.envIndicator}>Environment: {envMode}</span>
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ✅ PRE-VERIFICATION VIEW
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-[#1a1a1a] text-white px-4">
-      <div className="pt-20">
+    <div className={preStyles.pageContainer}>
+      <div className={preStyles.animationWrapper}>
         <LottieAnimation src="/lotties/placeholder.json" />
       </div>
 
-      <h1 className="mt-8 text-2xl font-bold">Enter Your Access Token</h1>
+      <h1 className={preStyles.heading}>Enter Your Access Token</h1>
 
-      <div className="mt-4 w-full max-w-md bg-[#2a2a2a] p-6 rounded-xl shadow-lg">
-        {/* Optional: Uncomment this dropdown if you'd like to select different partners */}
-        {/* 
-        <select
-          value={partner}
-          onChange={(e) => setPartner(e.target.value)}
-          className="w-full p-3 rounded-md text-black mb-4"
-        >
-          <option value="queendom_collective">Queendom Collective</option>
-          <option value="axis_allies">Axis Allies</option>
-          <option value="global_consortium">Global Consortium</option>
-        </select>
-        */}
-
+      <div className={preStyles.tokenBox}>
         <input
           type="text"
           value={token}
           onChange={(e) => setToken(e.target.value)}
           placeholder="Your Access Token"
-          className="w-full p-3 rounded-md text-black"
+          className={preStyles.inputField}
         />
 
-        <div className="mt-4 p-4 bg-[#333333] rounded-md text-sm text-gray-300 border border-gray-600">
-          <h2 className="text-lg font-semibold mb-2">Access Terms & Conditions</h2>
-          <p className="mb-2">
-            By proceeding, you agree that the contents of this whitepaper are confidential,
-            proprietary, and intended solely for your individual review as a verified partner of Axis Point Investments (AXPT.io).
+        <div className={preStyles.termsBox}>
+          <h2 className={preStyles.termsHeading}>Access Terms & Conditions</h2>
+          <p>
+            By proceeding, you agree that the contents of this whitepaper are confidential and intended solely
+            for your individual review as a verified partner of Axis Point Investments (AXPT.io).
           </p>
-          <p className="mb-2">
-            Redistribution, duplication, or sharing of this document or its content in any form
-            without explicit written permission is strictly prohibited.
+          <p>
+            Redistribution or sharing of this document or its content without explicit permission is strictly prohibited.
           </p>
-          <div className="flex items-center mt-3">
+          <div className={preStyles.checkboxRow}>
             <input
               id="acceptTerms"
               type="checkbox"
               checked={acceptTerms}
               onChange={(e) => setAcceptTerms(e.target.checked)}
-              className="mr-2"
             />
-            <label htmlFor="acceptTerms">
-              I agree to the terms and conditions stated above.
-            </label>
+            <label htmlFor="acceptTerms">I agree to the terms and conditions stated above.</label>
           </div>
         </div>
 
         <button
           onClick={handleVerify}
           disabled={status === 'verifying'}
-          className={`mt-4 w-full ${
-            acceptTerms ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-gray-500 cursor-not-allowed'
-          } text-white py-2 rounded-md transition-all`}
+          className={`${preStyles.verifyButton} ${acceptTerms ? preStyles.buttonActive : preStyles.buttonDisabled}`}
         >
           {status === 'verifying' ? 'Verifying...' : 'Access Whitepaper'}
         </button>
 
         {status === 'error' && (
-          <p className="mt-2 text-red-400">Invalid token. Please try again.</p>
+          <p className={preStyles.errorText}>Invalid token. Please try again.</p>
         )}
       </div>
-
-      {status === 'success' && verifiedPartner && (
-        <div className="mt-6 w-full max-w-4xl text-lg text-emerald-400">
-          ✅ Welcome, {verifiedPartner.replace('_', ' ').toUpperCase()}! You now have exclusive access.
-          <div className="mt-6 w-full">
-            <iframe
-              src="/whitepaper/AXPT-Whitepaper.pdf"
-              className="w-full h-[80vh] border border-gray-700 rounded-lg shadow-lg"
-              title="AXPT.io Partner Whitepaper"
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 }
