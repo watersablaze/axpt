@@ -5,20 +5,12 @@ interface PDFToolbarProps {
   pageNumber: number;
   numPages: number;
   setPageNumber: (page: number) => void;
-  scale: number;
-  setScale: (scale: number) => void;
-  searchText: string;
-  onSearchChange: (text: string) => void;
 }
 
 const PDFToolbar: React.FC<PDFToolbarProps> = ({
   pageNumber,
   numPages,
   setPageNumber,
-  scale,
-  setScale,
-  searchText,
-  onSearchChange,
 }) => {
   return (
     <div className={styles.toolbar}>
@@ -41,31 +33,6 @@ const PDFToolbar: React.FC<PDFToolbarProps> = ({
           disabled={pageNumber >= numPages}
         >
           Next ▶
-        </button>
-      </div>
-
-      <div className={styles.centerGroup}>
-        <input
-          className={styles.searchInput}
-          type="text"
-          value={searchText}
-          onChange={(e) => onSearchChange(e.target.value)}
-          placeholder="Search text..."
-        />
-      </div>
-
-      <div className={styles.rightGroup}>
-        <button
-          className={styles.toolbarButton}
-          onClick={() => setScale(scale + 0.1)}
-        >
-          ➕ Zoom In
-        </button>
-        <button
-          className={styles.toolbarButton}
-          onClick={() => setScale(scale - 0.1)}
-        >
-          ➖ Zoom Out
         </button>
       </div>
     </div>

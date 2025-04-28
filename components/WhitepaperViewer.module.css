@@ -1,37 +1,38 @@
 .viewerContainer {
   display: flex;
   width: 100%;
-  height: 100vh;              /* 🟢 Viewport-locked height */
-  overflow: hidden;           /* 🟢 Prevent outer scroll */
+  height: 100vh;                /* 🔥 Full viewport height */
+  overflow: hidden;             /* Prevent outer scrolling */
+  background-color: #0a0a0a;    /* Cosmic black */
 }
 
+/* 🟢 Sidebar (Thumbnails) */
 .sidebar {
   width: 180px;
   background-color: #1a1a1a;
-  color: #fff;
-  overflow-y: auto;           /* 🟢 Internal scrolling for thumbnails */
-  height: 100vh;              /* 🟢 Fixed to viewport height */
+  color: #e0e0e0;
+  overflow-y: auto;
+  height: 100vh;
   padding: 0.5rem;
-  border-right: 4px solid rgba(94, 143, 196, 0.679);
+  border-right: 1px solid rgba(255, 255, 255, 0.15);
   box-sizing: border-box;
 }
 
 .thumbnail {
   cursor: pointer;
   margin-bottom: 0.5rem;
-  margin-left: 6px;
-  padding: 0.9rem;
+  padding: 0.3rem;
   border: 1px solid transparent;
   transition: border 0.2s ease, transform 0.2s ease;
 }
 
 .thumbnail:hover {
-  border: 1px solid #ffcc00;
+  border: 1px solid #00ffc6;
   transform: scale(1.05);
 }
 
 .activeThumbnail {
-  border: 2px solid #ffcc00;
+  border: 2px solid #00ffc6;
 }
 
 .pageNumberLabel {
@@ -41,9 +42,10 @@
   margin-top: 0.3rem;
 }
 
+/* 🔲 Toggle Wrapper (Width Fit Switch) */
 .toggleWrapper {
   margin-top: 1rem;
-  padding: 0.5rem;
+  padding-top: 1rem;
   border-top: 1px solid rgba(255, 255, 255, 0.2);
   font-size: 0.85rem;
   color: #ccc;
@@ -53,25 +55,31 @@
   margin-right: 0.5rem;
 }
 
-/* 🟢 PDF Viewer Layout (no scroll) */
+/* 🟠 PDF Viewer Layout */
 .pdfViewerArea {
   flex-grow: 1;
   display: flex;
-  flex-direction: column;
-  height: 100vh;              /* 🟢 Lock the main viewer area */
+  flex-direction: column;         /* Toolbar stays on top, PDF fills below */
+  height: 100vh;
   overflow: hidden;
 }
 
+/* 🔹 Toolbar Wrapper */
 .pdfToolbarWrapper {
-  flex-shrink: 0;             /* 🟢 Toolbar remains at the top */
+  flex-shrink: 0;                 /* Keep toolbar from shrinking */
+  background-color: #1a1a1a;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1rem;
+  box-sizing: border-box;
 }
 
+/* 🟡 PDF Container (Main Page Area) */
 .pdfContainer {
-  flex-grow: 1;               /* 🟢 PDF takes remaining space */
+  flex-grow: 1;
   display: flex;
   justify-content: center;
   align-items: center;
-  overflow: hidden;           /* 🟢 No scroll here */
+  overflow: hidden;
   background-color: #0a0a0a;
 }
 

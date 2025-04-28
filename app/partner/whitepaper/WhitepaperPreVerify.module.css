@@ -1,18 +1,47 @@
 /* 🟢 Pre-Verification View Styling */
 
 .pageContainer {
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 100vh;
-  width: 100%;
-  background-color: #0a0a0a; /* Deep cosmic black */
-  color: #ededed;
-  font-family: 'LoyalBold', sans-serif;
-  text-align: center;
-  padding: 2rem;
-  box-sizing: border-box;
+  background: radial-gradient(circle at center, #0a0a0a 40%, #050505 100%);
+  color: #ffffff;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ⭐ Starfield Layer */
+.pageContainer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 300%;
+  height: 300%;
+  background: transparent url('/images/starfield.png') repeat;
+  opacity: 0.07;
+  animation: starDrift 120s linear infinite;
+  z-index: 0; /* stays behind your content */
+}
+
+@keyframes starDrift {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-200px, -200px);
+  }
+}
+
+@keyframes starDrift {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(-200px, -200px);
+  }
 }
 
 /* 🟣 Animation Styling */
@@ -23,34 +52,59 @@
   height: auto;
 }
 
+.orbWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+.orbBreathLayer {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.subheading {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #d1d5db;
+  margin-bottom: 2rem;
+}
+
 /* 🟠 Headline */
 .heading {
-  font-size: 2.5rem;
+  font-size: 1.2rem;
+  text-align: center;
+  font-family: 'Fira Code', monospace;
   font-weight: bold;
-  margin-bottom: 1rem;
-  letter-spacing: 1px;
+  margin-bottom: 0rem;
+  letter-spacing: 2.5px;
   color: #facc15; /* Gold accent */
 }
 
 /* 🟡 Token Input Box */
 .tokenBox {
-  background-color: #1a1a1a;
-  border: 1px solid #444;
-  border-radius: 12px;
-  padding: 2rem;
+  background-color: #1a1a1a00;
+  border: 0px solid #444;
+  border-radius: 0px;
+  padding: 1rem;
   max-width: 500px;
   width: 100%;
   margin: 1rem auto;
-  box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); /* Subtle gold glow */
   text-align: left;
 }
 
 /* 🔵 Input Field */
 .inputField {
-  width: 100%;
-  padding: 12px;
+  width: 70%;
+  padding: 8px;
   margin-top: 1rem;
-  border-radius: 8px;
+  margin-left: 60px;
+  margin-bottom: 40px;
+  border-radius: 0px;
   border: 1px solid #555;
   background-color: #ededed;
   color: #171717;
@@ -59,19 +113,19 @@
 
 /* 🟤 Terms Box */
 .termsBox {
-  background-color: #2a2a2a;
-  border: 1px solid #555;
+  background-color: #1627556e;
+  border: 1px solid #c084fc;
   border-radius: 8px;
   padding: 1rem;
-  margin-top: 1.5rem;
-  font-size: 0.9rem;
+  margin-top: 0rem;
+  font-size: 0.7rem;
   line-height: 1.5;
   color: #d1d5db;
 }
 
 /* 💎 Terms Heading */
 .termsHeading {
-  font-size: 1.2rem;
+  font-size: 1rem;
   margin-bottom: 0.5rem;
   color: #c084fc; /* Royal purple accent */
 }
@@ -87,27 +141,64 @@
   margin-left: 0.5rem;
 }
 
-/* 🟢 Button Styling */
 .verifyButton {
-  margin-top: 1.5rem;
-  padding: 0.75rem;
-  border-radius: 8px;
+  position: relative;
+  background: linear-gradient(135deg, #0fffc1, #1a9fff);
+  margin-left: 140px;
+  margin-top: 50px;
+  color: #0a0a0a;
   font-weight: bold;
-  transition: background-color 0.3s ease;
-  width: 100%;
+  text-transform: uppercase;
+  border: none;
+  padding: 0.9rem 2rem;
+  border-radius: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+  box-shadow: 0 0 20px rgba(10, 255, 193, 0.4);
 }
 
+.verifyButton::before {
+  content: '';
+  position: absolute;
+  top: -100%;
+  left: -50%;
+  width: 200%;
+  height: 300%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 60%);
+  transform: rotate(25deg);
+  animation: liquidGloss 3s infinite linear;
+  pointer-events: none;
+}
+
+@keyframes liquidGloss {
+  0% {
+    top: -100%;
+    left: -50%;
+  }
+  50% {
+    top: 150%;
+    left: 150%;
+  }
+  100% {
+    top: -100%;
+    left: -50%;
+  }
+}
+
+/* 🌀 Breath Pulse on Hover */
+.verifyButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(10, 255, 193, 0.7);
+}
+
+/* ✅ Active and Disabled States */
 .buttonActive {
-  background-color: #00bfa5; /* Teal */
-  color: #fff;
-}
-
-.buttonActive:hover {
-  background-color: #008e76;
+  opacity: 1;
 }
 
 .buttonDisabled {
-  background-color: #555;
+  opacity: 0.4;
   cursor: not-allowed;
 }
 

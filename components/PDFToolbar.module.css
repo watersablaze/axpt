@@ -46,17 +46,3 @@
   opacity: 0.4;
   cursor: not-allowed;
 }
-
-.searchInput {
-  background-color: #222;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: #e0e0e0;
-  padding: 0.3rem 0.6rem;
-  font-family: 'Fira Code', monospace;
-  font-size: 0.85rem;
-  border-radius: 0;                            /* 🟥 No rounding */
-}
-
-.searchInput::placeholder {
-  color: #888;
-}

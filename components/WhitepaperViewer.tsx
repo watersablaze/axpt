@@ -12,9 +12,7 @@ interface WhitepaperViewerProps {
 const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ pdfFile }) => {
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
-  const [scale, setScale] = useState<number>(1);
-  const [searchText, setSearchText] = useState<string>('');
-  const [useWidth, setUseWidth] = useState<boolean>(true); // 🟢 Toggle between width and scale!
+  const [useWidth, setUseWidth] = useState<boolean>(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const [containerWidth, setContainerWidth] = useState<number>(0);
   const [containerHeight, setContainerHeight] = useState<number>(0);
@@ -24,11 +22,7 @@ const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ pdfFile }) => {
     setPageNumber(1);
   };
 
-  const handleSearchChange = (text: string) => {
-    setSearchText(text);
-  };
-
-  // 🟢 Resize Observer for container sizing
+  // Resize Observer for container sizing
   useEffect(() => {
     const updateSize = () => {
       if (containerRef.current) {
@@ -52,31 +46,11 @@ const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ pdfFile }) => {
     };
   }, []);
 
-  // 🟠 Scaling logic (if using scale instead of width)
   const idealPdfWidth = 800;
   const idealPdfHeight = 1100;
   const scaleWidth = containerWidth / idealPdfWidth;
   const scaleHeight = containerHeight / idealPdfHeight;
   const calculatedScale = Math.min(scaleWidth, scaleHeight);
-
-  // 🔍 Search Highlight Logic
-  useEffect(() => {
-    const textLayers = document.querySelectorAll('.react-pdf__Page__textContent');
-    textLayers.forEach((layer) => {
-      const spans = layer.querySelectorAll('span');
-      spans.forEach((span) => {
-        const text = span.textContent || '';
-        if (searchText) {
-          span.innerHTML = text.replace(
-            new RegExp(`(${searchText})`, 'gi'),
-            '<mark>$1</mark>'
-          );
-        } else {
-          span.innerHTML = text;
-        }
-      });
-    });
-  }, [searchText, pageNumber]);
 
   return (
     <div className={styles.viewerContainer}>
@@ -118,10 +92,6 @@ const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ pdfFile }) => {
             pageNumber={pageNumber}
             numPages={numPages}
             setPageNumber={setPageNumber}
-            scale={scale}
-            setScale={setScale}
-            searchText={searchText}
-            onSearchChange={handleSearchChange}
           />
         </div>
         <div className={styles.pdfContainer}>
@@ -134,7 +104,8 @@ const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ pdfFile }) => {
               pageNumber={pageNumber}
               scale={!useWidth ? calculatedScale : undefined}
               width={useWidth ? containerWidth : undefined}
-              renderTextLayer
+              renderTextLayer={true}
+              renderAnnotationLayer={false}
             />
           </Document>
         </div>
