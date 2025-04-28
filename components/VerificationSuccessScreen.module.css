@@ -42,34 +42,61 @@
     }
   }
   
-  /* 🟢 Fragmented Text Techy Precision Animation */
   .fragmentedText {
-    font-family: var(--font-fira-code), monospace;
-    font-size: 1.8rem;
-    letter-spacing: 0.2em;
-    color: #00ffc6;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-wrap: wrap;
+    font-family: 'Fira Code', monospace;
+    color: #f5f5f5; /* soft white */
+    font-size: 1.2rem;
+    letter-spacing: 0.08em;
+    text-align: center;
+    margin-top: 1.5rem;
   }
   
   .fragmentedText span {
     display: inline-block;
     opacity: 0;
-    transform: translateY(10px) scale(0.9);
-    animation: riseIn 0.4s forwards ease-out;
+    transform: translateY(10px);
+    animation: riseFadeIn 1.2s ease-out forwards;
   }
   
-  /* Each letter will apply its individual delay from inline style in the TSX file */
-  @keyframes riseIn {
+  .fragmentedText span:nth-child(odd) {
+    animation-delay: calc(var(--i) * 0.04s);
+  }
+  
+  .fragmentedText span:nth-child(even) {
+    animation-delay: calc(var(--i) * 0.06s);
+  }
+  
+  /* Animation for each letter */
+  @keyframes riseFadeIn {
     to {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: translateY(0);
     }
   }
 
   .space {
     width: 0.6em; /* Adjust spacing between words */
     display: inline-block;
+  }
+
+  .portalGlow {
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 200, 0.2) 0%, transparent 70%);
+    animation: portalPulse 4s ease-in-out infinite alternate;
+    z-index: 0;
+    filter: blur(20px);
+  }
+  
+  @keyframes portalPulse {
+    0% {
+      transform: scale(0.95);
+      opacity: 0.3;
+    }
+    100% {
+      transform: scale(1.05);
+      opacity: 0.6;
+    }
   }

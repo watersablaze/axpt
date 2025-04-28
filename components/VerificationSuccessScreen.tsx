@@ -33,22 +33,22 @@ const VerificationSuccessScreen: React.FC<VerificationSuccessScreenProps> = ({ o
   return (
     <div className={`${styles.transitionContainer} ${fadeOut ? styles.fadeOut : ''}`}>
       <div className={styles.sigilAnimation}>
-        {/* Sigil graphic placeholder (SVG pulse or line-tracing animation suggested) */}
-        <OrbAnimation size={300} fadeIn />
-      </div>
+      <div className={styles.portalGlow}></div> {/* 🌟 Portal Radiance Layer */}
+      <OrbAnimation size={220} fadeIn />
+    </div>
 
       {showMessage && (
-        <h1 className={styles.fragmentedText}>
-        {"Entering The Axis".split('').map((char, index) => (
-          <span
-            key={index}
-            className={char === ' ' ? styles.space : ''}
-            style={{ animationDelay: `${index * 0.05}s` }}
-          >
-            {char}
-          </span>
-        ))}
-      </h1>
+       <h1 className={styles.fragmentedText}>
+       {"Entering The Axis".split('').map((char, index) => (
+         <span
+           key={index}
+           style={{ '--i': index } as React.CSSProperties}
+           className={char === ' ' ? styles.space : ''}
+         >
+           {char}
+         </span>
+       ))}
+     </h1>
       )}
     </div>
   );

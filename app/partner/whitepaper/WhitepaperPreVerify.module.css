@@ -1,46 +1,71 @@
 /* 🟢 Pre-Verification View Styling */
 
 .pageContainer {
-  min-height: 100vh;
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  background: radial-gradient(circle at center, #0a0a0a 40%, #050505 100%);
-  color: #ffffff;
+  justify-content: flex-start;
+  min-height: 100vh;
+  padding-top: 6rem;
+  background: #0a0a0a url('/images/black-felt.png') center center / cover no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
+  animation: pageFadeIn 2s ease-out forwards;
+  opacity: 0;
   overflow: hidden;
-  position: relative;
 }
 
-/* ⭐ Starfield Layer */
+/* Soft Fade-In for entire portal */
+@keyframes pageFadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* 🌑 Depth: Vertical Gradient Overlay */
 .pageContainer::before {
   content: '';
   position: absolute;
   top: 0;
   left: 0;
-  width: 300%;
-  height: 300%;
-  background: transparent url('/images/starfield.png') repeat;
-  opacity: 0.07;
-  animation: starDrift 120s linear infinite;
-  z-index: 0; /* stays behind your content */
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(10, 10, 10, 0.4) 0%,
+    rgba(10, 10, 10, 0.6) 100%
+  );
+  pointer-events: none;
+  z-index: 0;
 }
 
-@keyframes starDrift {
-  0% {
-    transform: translate(0, 0);
-  }
-  100% {
-    transform: translate(-200px, -200px);
-  }
+/* 🌫️ Life Energy: Moving Mist Layer */
+.pageContainer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('/images/mist-layer.png') center center / cover no-repeat;
+  opacity: 0.02; /* Ultra subtle */
+  filter: blur(4px);
+  animation: mistDrift 220s linear infinite;
+  pointer-events: none;
+  z-index: 1;
 }
 
-@keyframes starDrift {
+/* Mist drifting motion */
+@keyframes mistDrift {
   0% {
-    transform: translate(0, 0);
+    transform: translate(0px, 0px) scale(1);
+  }
+  50% {
+    transform: translate(10px, 5px) scale(1.01);
   }
   100% {
-    transform: translate(-200px, -200px);
+    transform: translate(0px, 0px) scale(1);
   }
 }
 
@@ -56,7 +81,8 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  position: relative;
+  z-index: 0; /* ✅ Lower priority */
+  pointer-events: none; /* ✅ Prevents it from blocking clicks */
 }
 
 .orbBreathLayer {
@@ -67,22 +93,22 @@
   pointer-events: none;
 }
 
-.subheading {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #d1d5db;
-  margin-bottom: 2rem;
+.heading {
+  font-family: 'Fira Code', monospace;
+  font-weight: 400;
+  margin-top: 100px;
+  letter-spacing: 0.03em;
+  font-size: 1rem; /* ✅ Small but readable */
+  color: #e0e0e0;
+  z-index: 1;
 }
 
-/* 🟠 Headline */
-.heading {
-  font-size: 1.2rem;
-  text-align: center;
+.subheading {
   font-family: 'Fira Code', monospace;
-  font-weight: bold;
-  margin-bottom: 0rem;
-  letter-spacing: 2.5px;
-  color: #facc15; /* Gold accent */
+  font-weight: 400;
+  font-size: 0.6rem;
+  color: #b0b0b0;
+  margin-top: 0.5rem;
 }
 
 /* 🟡 Token Input Box */
@@ -95,27 +121,32 @@
   width: 100%;
   margin: 1rem auto;
   text-align: left;
+  z-index: 1;
+  position: relative;
 }
 
-/* 🔵 Input Field */
 .inputField {
-  width: 70%;
-  padding: 8px;
-  margin-top: 1rem;
-  margin-left: 60px;
-  margin-bottom: 40px;
-  border-radius: 0px;
-  border: 1px solid #555;
-  background-color: #ededed;
-  color: #171717;
-  font-size: 1rem;
+  width: 100%;
+  padding: 0.6rem 0.8rem; /* smaller padding */
+  border-radius: 6px; /* smaller curve */
+  border: 1px solid #444;
+  background-color: #111;
+  color: #e0e0e0;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9rem; /* smaller font */
+  margin-bottom: 1rem;
+  outline: none;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+.inputField:focus {
+  border-color: #fdf6e3; /* Soft gold-white focus border */
 }
 
 /* 🟤 Terms Box */
 .termsBox {
-  background-color: #1627556e;
-  border: 1px solid #c084fc;
-  border-radius: 8px;
+  border: 0px solid #c084fc;
+  border-radius: 1px;
   padding: 1rem;
   margin-top: 0rem;
   font-size: 0.7rem;
@@ -142,47 +173,41 @@
 }
 
 .verifyButton {
-  position: relative;
-  background: linear-gradient(135deg, #0fffc1, #1a9fff);
-  margin-left: 140px;
-  margin-top: 50px;
-  color: #0a0a0a;
-  font-weight: bold;
+  font-family: 'Fira Code', monospace;
+  background: linear-gradient(145deg, #1a1a1a, #0e0e0e);
+  border: 1px solid #555;
+  color: #fdf6e3;
+  padding: 0.7rem 1.5rem; /* smaller padding */
+  font-size: 0.9rem; /* smaller text */
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  border: none;
-  padding: 0.9rem 2rem;
-  border-radius: 12px;
+  border-radius: 10px; /* slightly tighter curve */
+  margin-left: 140px;
+  box-shadow: none;
+  transition: box-shadow 0.6s ease, transform 0.6s ease;
+  position: relative;
   overflow: hidden;
+}
+
+.verifyButton:hover {
+  box-shadow: 0 0 10px rgba(253, 246, 227, 0.3),
+              0 0 20px rgba(253, 246, 227, 0.2),
+              0 0 30px rgba(253, 246, 227, 0.1);
+  animation: breatheGlow 3s ease-in-out infinite alternate;
+  transform: scale(1.02);
   cursor: pointer;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-  box-shadow: 0 0 20px rgba(10, 255, 193, 0.4);
 }
 
-.verifyButton::before {
-  content: '';
-  position: absolute;
-  top: -100%;
-  left: -50%;
-  width: 200%;
-  height: 300%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0) 60%);
-  transform: rotate(25deg);
-  animation: liquidGloss 3s infinite linear;
-  pointer-events: none;
-}
-
-@keyframes liquidGloss {
+/* 🌿 Breathing subtle glow animation */
+@keyframes breatheGlow {
   0% {
-    top: -100%;
-    left: -50%;
-  }
-  50% {
-    top: 150%;
-    left: 150%;
+    box-shadow: 0 0 10px rgba(253, 246, 227, 0.2),
+                0 0 20px rgba(253, 246, 227, 0.1);
   }
   100% {
-    top: -100%;
-    left: -50%;
+    box-shadow: 0 0 20px rgba(253, 246, 227, 0.4),
+                0 0 30px rgba(253, 246, 227, 0.2),
+                0 0 40px rgba(253, 246, 227, 0.1);
   }
 }
 

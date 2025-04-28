@@ -60,16 +60,21 @@ const PreVerificationScreen: React.FC<PreVerificationScreenProps> = ({
       initial="hidden"
       animate="show"
     >
-
-        <motion.div
+      {/* Orb Animation */}
+      <motion.div
         className={styles.orbWrapper}
+        style={{
+          marginTop: '3rem', // 🌟 LOWERED the Orb Gently
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
         initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 2 }}
+        animate={orbBreathing}
         whileHover={{ scale: 1.07 }}
-        >
-        <OrbAnimation size={300} fadeIn />
-        </motion.div>
+      >
+        <OrbAnimation size={150} fadeIn />
+      </motion.div>
 
       {/* Heading */}
       <motion.h1 className={styles.heading} variants={itemVariants}>
@@ -78,7 +83,7 @@ const PreVerificationScreen: React.FC<PreVerificationScreenProps> = ({
 
       {/* Subheading */}
       <motion.p className={styles.subheading} variants={itemVariants}>
-        Verified partners only. Confidential access portal.
+        Confidential Access Portal.
       </motion.p>
 
       {/* Input Section */}
@@ -92,24 +97,24 @@ const PreVerificationScreen: React.FC<PreVerificationScreenProps> = ({
         />
 
         <div className={styles.termsBox}>
-        <h2 className={styles.termsHeading}>Access Terms & Conditions</h2>
-        <p>
+          <h2 className={styles.termsHeading}>Access Terms & Conditions</h2>
+          <p>
             By entering your access token, you affirm that you are a verified partner of Axis Point Investments (AXPT.io).
             The contents of this whitepaper are confidential and intended solely for your individual review.
-        </p>
-        <p>
+          </p>
+          <p>
             Redistribution, duplication, or sharing of this document or its contents without explicit permission from AXPT.io is strictly prohibited.
             Your access and usage of this material confirms your agreement to these terms.
-        </p>
-        <label className={styles.checkboxRow}>
+          </p>
+          <label className={styles.checkboxRow}>
             <input
-            id="acceptTerms"
-            type="checkbox"
-            checked={acceptTerms}
-            onChange={(e) => setAcceptTerms(e.target.checked)}
+              id="acceptTerms"
+              type="checkbox"
+              checked={acceptTerms}
+              onChange={(e) => setAcceptTerms(e.target.checked)}
             />
             <span>I have read and agree to the terms and conditions stated above.</span>
-        </label>
+          </label>
         </div>
 
         <button
