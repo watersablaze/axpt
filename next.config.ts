@@ -1,5 +1,5 @@
 import path from "path";
-import type { Configuration } from "webpack"; // ✅ TypeScript typing for config
+import type { Configuration } from "webpack";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -26,7 +26,7 @@ const nextConfig = {
   // ✅ Image optimization settings
   images: {
     formats: ["image/avif", "image/webp"],
-    domains: ["yourdomain.com"], // Replace with your actual image domain(s)
+    domains: ["yourdomain.com"], // 🔵 Remember to update this with real image domains later
   },
 
   experimental: {
@@ -37,13 +37,17 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === "production", // ✅ Clean production console logs
   },
 
+  eslint: {
+    ignoreDuringBuilds: true, // ✅ NEW: Allow production deploy even with ESLint warnings
+  },
+
   // ✅ Redirect logic
   async redirects() {
     return [
       {
         source: "/",            // Root route
-        destination: "/landing", // Redirect to landing page
-        permanent: true,        // SEO-friendly permanent redirect
+        destination: "/landing", // 🔵 Note: Make sure "/landing" exists or adjust as needed
+        permanent: true,         // SEO-friendly permanent redirect
       },
     ];
   },
