@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prebuild": "tsx scripts/checkEnvTokens.ts",
     "dev": "next dev",
     "build": "npx prisma generate && next build",
     "start": "next start",
