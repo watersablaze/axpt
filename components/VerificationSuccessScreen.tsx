@@ -1,6 +1,8 @@
+'use client';
+
 import React, { useEffect, useState } from 'react';
 import styles from './VerificationSuccessScreen.module.css';
-import OrbAnimation from './OrbAnimation';
+import OrbAnimation from './OrbAnimation'; // ✅ Ensure you import Orb
 
 interface VerificationSuccessScreenProps {
   onComplete: () => void;
@@ -13,15 +15,15 @@ const VerificationSuccessScreen: React.FC<VerificationSuccessScreenProps> = ({ o
   useEffect(() => {
     const messageTimer = setTimeout(() => {
       setShowMessage(true);
-    }, 500); // Delay before starting text animation
+    }, 1000); // ✨ Slightly delayed before text appears
 
     const fadeOutTimer = setTimeout(() => {
       setFadeOut(true);
-    }, 3500); // Start fade-out before transitioning
+    }, 4500); // ✨ Longer breathing space
 
     const transitionTimer = setTimeout(() => {
       onComplete();
-    }, 4000); // Auto-transition after 4 seconds
+    }, 5000); // ✨ Smooth timing to handoff
 
     return () => {
       clearTimeout(messageTimer);
@@ -32,23 +34,23 @@ const VerificationSuccessScreen: React.FC<VerificationSuccessScreenProps> = ({ o
 
   return (
     <div className={`${styles.transitionContainer} ${fadeOut ? styles.fadeOut : ''}`}>
+      {/* 🟡 Orb now above text */}
       <div className={styles.sigilAnimation}>
-      <div className={styles.portalGlow}></div> {/* 🌟 Portal Radiance Layer */}
-      <OrbAnimation size={220} fadeIn />
-    </div>
+        <OrbAnimation size={120} /> {/* Smaller, majestic */}
+      </div>
 
       {showMessage && (
-       <h1 className={styles.fragmentedText}>
-       {"Entering The Axis".split('').map((char, index) => (
-         <span
-           key={index}
-           style={{ '--i': index } as React.CSSProperties}
-           className={char === ' ' ? styles.space : ''}
-         >
-           {char}
-         </span>
-       ))}
-     </h1>
+        <h1 className={styles.fragmentedText}>
+          {"Entering The Axis".split('').map((char, index) => (
+            <span
+              key={index}
+              className={char === ' ' ? styles.space : ''}
+              style={{ animationDelay: `${index * 0.07}s` }} // 🛠 Slowed cascade effect
+            >
+              {char}
+            </span>
+          ))}
+        </h1>
       )}
     </div>
   );

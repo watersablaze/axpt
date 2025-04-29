@@ -4,7 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "predev": "npx tsx scripts/checkEnvTokens.ts",
     "prebuild": "tsx scripts/checkEnvTokens.ts",
     "dev": "next dev",
     "build": "npx prisma generate && next build",
@@ -31,6 +30,7 @@
     "@stripe/stripe-js": "^5.4.0",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.3",
+    "canvas": "^3.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",

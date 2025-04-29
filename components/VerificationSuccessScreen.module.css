@@ -19,9 +19,12 @@
     pointer-events: none;
   }
   
-  /* 🔮 Sigil Animation Placeholder */
   .sigilAnimation {
-    margin-bottom: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 5rem; /* 🛗 Raise orb higher on page */
+    margin-bottom: 3rem; /* ✨ Breath before text */
   }
   
   .sigilPlaceholder {
@@ -52,10 +55,20 @@
   }
   
   .fragmentedText span {
-    display: inline-block;
     opacity: 0;
-    transform: translateY(10px);
-    animation: riseFadeIn 1.2s ease-out forwards;
+    display: inline-block;
+    animation: fadeInChar 0.5s forwards;
+  }
+  
+  @keyframes fadeInChar {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
   
   .fragmentedText span:nth-child(odd) {
