@@ -1,11 +1,9 @@
 import path from "path";
 import type { Configuration } from "webpack";
 
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
 
-  // ✅ Webpack configuration with correct typing
   webpack: (config: Configuration) => {
     config.resolve = {
       ...config.resolve,
@@ -17,37 +15,35 @@ const nextConfig = {
       },
       fallback: {
         ...config.resolve?.fallback,
-        canvas: false, // ✅ Prevents issues with react-pdf dependencies
+        canvas: false, // For react-pdf
       },
     };
     return config;
   },
 
-  // ✅ Image optimization settings
   images: {
     formats: ["image/avif", "image/webp"],
-    domains: ["yourdomain.com"], // 🔵 Remember to update this with real image domains later
+    domains: ["yourdomain.com"], // <-- Update if you need real domains
   },
 
   experimental: {
-    optimizeCss: true, // ✅ Modern CSS optimization
+    optimizeCss: true, // Next.js modern CSS optimization
   },
 
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production", // ✅ Clean production console logs
+    removeConsole: process.env.NODE_ENV === "production", // Clean production console.logs
   },
 
   eslint: {
-    ignoreDuringBuilds: true, // ✅ NEW: Allow production deploy even with ESLint warnings
+    ignoreDuringBuilds: true, // ✅ PATCHED: Allow deploy even if ESLint errors
   },
 
-  // ✅ Redirect logic
   async redirects() {
     return [
       {
-        source: "/",            // Root route
-        destination: "/landing", // 🔵 Note: Make sure "/landing" exists or adjust as needed
-        permanent: true,         // SEO-friendly permanent redirect
+        source: "/",            // Root landing
+        destination: "/landing", // Your public page
+        permanent: true,
       },
     ];
   },
