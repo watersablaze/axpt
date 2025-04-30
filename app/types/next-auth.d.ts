@@ -1,7 +1,9 @@
+// 🔁 TEMP PATCHED IMPORTS — will be reverted after clean build
+
 import NextAuth, { NextAuthOptions, DefaultSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma } from "@/lib/prisma"; // ✅ Ensure correct Prisma import
+import { prisma } from "@/lib/prisma.temp"; // ✅ Ensure correct Prisma import
 import bcrypt from "bcryptjs";
 import { randomUUID } from "crypto";
 

@@ -76,3 +76,4 @@ coverage/
 .vscode/
 .idea/
 *.swp
+.next
