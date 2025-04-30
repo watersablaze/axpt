@@ -1,14 +1,14 @@
 'use client';
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Fragment } from 'react';
 import GreetingWrapper from '../../../components/GreetingWrapper';
 import WhitepaperViewer from '../../../components/WhitepaperViewer';
 import VerificationSuccessScreen from '../../../components/VerificationSuccessScreen';
 import StorageStatus from '../../../components/StorageStatus';
 import PreVerificationScreen from '../../../components/PreVerificationScreen';
-import { useHydrationState } from "@/lib/hooks/useHydrationState";
+import { useHydrationState } from '@/lib/hooks/useHydrationState';
 
 import preStyles from './WhitepaperPreVerify.module.css';
 import postStyles from './Whitepaper.module.css';
@@ -20,22 +20,29 @@ export default function WhitepaperPage() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [transitionComplete, setTransitionComplete] = useState(false);
   const [startFadeOut, setStartFadeOut] = useState(false);
-  const { hydrated, values } = useHydrationState(["verifiedPartner", "preVerified"]);
+  const { hydrated, values } = useHydrationState(['verifiedPartner', 'preVerified']);
+  const [showBadge, setShowBadge] = useState(true);
 
   const devBypass = false;
   const envMode = process.env.NODE_ENV || 'development';
 
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'production') {
+      const timer = setTimeout(() => setShowBadge(false), 4000); // auto-hide in 4s
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   useEffect(() => {
     if (!hydrated) return;
-  
-    const savedPartner = values["verifiedPartner"];
-    const preVerified = values["preVerified"];
-  
+
+    const savedPartner = values['verifiedPartner'];
+    const preVerified = values['preVerified'];
+
     if (savedPartner) {
       setVerifiedPartner(savedPartner);
-      setStatus("success");
-      setTransitionComplete(preVerified === "true");
+      setStatus('success');
+      setTransitionComplete(preVerified === 'true');
     } else {
       resetState();
     }
@@ -104,31 +111,56 @@ export default function WhitepaperPage() {
             setTimeout(() => {
               setTransitionComplete(true);
               localStorage.setItem('preVerified', 'true');
-            }, 600); // ✅ We'll tune this timing together next
+            }, 600);
           }}
         />
       );
     }
 
     return (
-      <div className={postStyles.fullScreenWrapper}>
-        <GreetingWrapper partnerName={verifiedPartner || 'Developer Mode'}>
-          <div className={`${postStyles.viewerSection} ${postStyles.fadeIn}`}>
-            <WhitepaperViewer pdfFile="/whitepaper/AXPT-Whitepaper.pdf" />
-          </div>
-        </GreetingWrapper>
-        {devBypass && (
-          <div className={postStyles.devBadge}>
-            DEV MODE ACTIVE<br />
-            <span className={postStyles.envIndicator}>Environment: {envMode}</span>
+      <Fragment>
+        <div className={postStyles.fullScreenWrapper}>
+          <GreetingWrapper partnerName={verifiedPartner || 'Developer Mode'}>
+            <div className={`${postStyles.viewerSection} ${postStyles.fadeIn}`}>
+              <WhitepaperViewer pdfFile="/whitepaper/AXPT-Whitepaper.pdf" />
+            </div>
+          </GreetingWrapper>
+
+          {devBypass && (
+            <div className={postStyles.devBadge}>
+              DEV MODE ACTIVE<br />
+              <span className={postStyles.envIndicator}>Environment: {envMode}</span>
+            </div>
+          )}
+
+          <StorageStatus onStorageCleared={handleSoftReset} />
+        </div>
+
+        {process.env.NODE_ENV === 'production' && showBadge && (
+          <div
+            style={{
+              position: 'fixed',
+              bottom: '1rem',
+              right: '1rem',
+              background: '#000',
+              color: '#0ff',
+              padding: '6px 12px',
+              fontSize: '0.75rem',
+              borderRadius: '6px',
+              opacity: 0.8,
+              fontFamily: 'monospace',
+              zIndex: 9999,
+              transition: 'opacity 0.5s ease',
+            }}
+          >
+            AXPT ● Vercel ✅
           </div>
         )}
-        <StorageStatus onStorageCleared={handleSoftReset} />
-      </div>
+      </Fragment>
     );
   }
 
-  // 🟢 Pre-Verification Experience with Orb & Motion
+  // 🔓 Pre-verification state
   return (
     <PreVerificationScreen
       token={token}
