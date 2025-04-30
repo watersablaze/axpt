@@ -8,6 +8,7 @@ import WhitepaperViewer from '../../../components/WhitepaperViewer';
 import VerificationSuccessScreen from '../../../components/VerificationSuccessScreen';
 import StorageStatus from '../../../components/StorageStatus';
 import PreVerificationScreen from '../../../components/PreVerificationScreen';
+import { useHydrationState } from "@/lib/hooks/useHydrationState";
 
 import preStyles from './WhitepaperPreVerify.module.css';
 import postStyles from './Whitepaper.module.css';
@@ -19,24 +20,26 @@ export default function WhitepaperPage() {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [transitionComplete, setTransitionComplete] = useState(false);
   const [startFadeOut, setStartFadeOut] = useState(false);
-  const [hydrated, setHydrated] = useState(false);
+  const { hydrated, values } = useHydrationState(["verifiedPartner", "preVerified"]);
 
   const devBypass = false;
   const envMode = process.env.NODE_ENV || 'development';
 
-  useEffect(() => {
-    const savedPartner = localStorage.getItem('verifiedPartner');
-    const preVerified = localStorage.getItem('preVerified');
 
+  useEffect(() => {
+    if (!hydrated) return;
+  
+    const savedPartner = values["verifiedPartner"];
+    const preVerified = values["preVerified"];
+  
     if (savedPartner) {
       setVerifiedPartner(savedPartner);
-      setStatus('success');
-      setTransitionComplete(preVerified === 'true');
+      setStatus("success");
+      setTransitionComplete(preVerified === "true");
     } else {
       resetState();
     }
-    setHydrated(true);
-  }, []);
+  }, [hydrated]);
 
   const handleVerify = async () => {
     if (!acceptTerms) {
@@ -87,7 +90,7 @@ export default function WhitepaperPage() {
   if (!hydrated) {
     return (
       <div className={postStyles.loadingScreen}>
-        <p>Loading access portal...</p>
+        <p>🌀 Waiting for hydration (loading access portal)...</p>
       </div>
     );
   }
