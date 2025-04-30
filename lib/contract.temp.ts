@@ -1,5 +1,5 @@
 import { ethers } from "ethers";
-import contractAbi from "@/abi/GoldPeggedStablecoin.json";
+import contractAbi from "@/abi/GoldPeggedStablecoin.json"; 
 
 const CONTRACT_ADDRESS = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS!;
 const RPC_URL = process.env.NEXT_PUBLIC_SEPOLIA_RPC_URL!;

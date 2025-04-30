@@ -4,7 +4,7 @@ import { stripe } from "@/lib/stripe"; // ✅ Use the centralized Stripe instanc
 export async function POST(request: Request) {
   try {
     const { amount, currency } = await request.json();
-
+ 
     if (!amount || !currency) {
       return NextResponse.json({ error: "Invalid request: Amount and currency are required" }, { status: 400 });
     }

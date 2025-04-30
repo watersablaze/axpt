@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/prisma";
-import { NextResponse } from "next/server";
+import { NextResponse } from "next/server"; 
 import bcrypt from "bcryptjs";
 import { Wallet } from "ethers";
 import { encryptPrivateKey } from "../../utils/crypto-utils";
