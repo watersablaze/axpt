@@ -5,9 +5,9 @@ import fs from 'fs';
 import path from 'path';
 import qrcode from 'qrcode';
 
-const partnerName = process.argv[2];
+const rawInput = process.argv[2];
 
-if (!partnerName) {
+if (!rawInput) {
   console.error("❌ Please provide a partner name.\nExample: npx tsx app/scripts/generateInvite.ts 'The Kingdom Collective'");
   process.exit(1);
 }
@@ -18,23 +18,28 @@ if (!PARTNER_SECRET) {
   process.exit(1);
 }
 
+// 🔠 Normalize for token + hash use
+const normalizePartner = (name: string) => name.trim().replace(/\s+/g, '-');
+
 const generateToken = (partner: string): string => {
+  const normalized = normalizePartner(partner);
   const hmac = crypto.createHmac('sha256', PARTNER_SECRET);
-  hmac.update(partner);
+  hmac.update(normalized);
   const digest = hmac.digest('hex');
-  return `${partner.replace(/\s+/g, '-')}:${digest}`;
+  return `${normalized}:${digest}`;
 };
 
 const main = async () => {
-  const token = generateToken(partnerName);
+  const token = generateToken(rawInput);
   const url = `https://axpt.io/partner/whitepaper?token=${encodeURIComponent(token)}`;
+  const fileName = normalizePartner(rawInput);
 
-  const qrOutputPath = path.join(process.cwd(), `./qrcodes/${partnerName.replace(/\s+/g, '-')}.png`);
+  const qrOutputPath = path.join(process.cwd(), `./qrcodes/${fileName}.png`);
   fs.mkdirSync(path.dirname(qrOutputPath), { recursive: true });
   await qrcode.toFile(qrOutputPath, url);
 
   console.log(`\n✅ New AXPT.io Partner Token Generated\n`);
-  console.log(`🎟️ Partner: ${partnerName}`);
+  console.log(`🎟️ Partner: ${rawInput}`);
   console.log(`🔐 Token:\n${token}\n`);
   console.log(`🔗 Access Portal URL:\n${url}\n`);
   console.log(`📎 QR Code saved at:\n${qrOutputPath}\n`);

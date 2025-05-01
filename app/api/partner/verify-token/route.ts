@@ -3,6 +3,8 @@ import crypto from 'crypto';
 
 const PARTNER_SECRET = process.env.PARTNER_SECRET;
 
+const normalizePartner = (name: string) => name.trim().replace(/\s+/g, '-');
+
 export async function POST(req: Request) {
   if (!PARTNER_SECRET) {
     console.error('🚨 Missing PARTNER_SECRET in environment. Cannot verify tokens.');
@@ -18,27 +20,28 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: false, message: 'Missing token.' }, { status: 400 });
   }
 
-  const [partnerString, providedSignature] = token.split(':');
+  const [rawPartner, providedSignature] = token.split(':');
 
-  if (!partnerString || !providedSignature) {
+  if (!rawPartner || !providedSignature) {
     return NextResponse.json({ success: false, message: 'Malformed token.' }, { status: 400 });
   }
 
-  // ✅ Recalculate signature
+  const normalized = normalizePartner(rawPartner);
   const expectedSignature = crypto
     .createHmac('sha256', PARTNER_SECRET)
-    .update(partnerString)
+    .update(normalized)
     .digest('hex');
 
-  const isValid = providedSignature === expectedSignature;
+  const isValid = expectedSignature === providedSignature;
 
   if (isValid) {
     return NextResponse.json({
       success: true,
       message: 'Token is valid.',
-      partner: partnerString, // (you might prettify this later if needed)
+      partner: normalized,
     });
   } else {
+    console.warn(`❌ Invalid token attempt: ${token}`);
     return NextResponse.json({ success: false, message: 'Invalid token.' }, { status: 401 });
   }
 }
