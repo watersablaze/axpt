@@ -1,13 +1,11 @@
 // app/scripts/verifyToken.ts
-
-// run: npx tsx app/scripts/verifyToken.ts "The-Kingdom-Collective:yourhash"
 import 'dotenv/config';
 import crypto from 'crypto';
 
 const token = process.argv[2];
 
 if (!token) {
-  console.error("❌ Please provide a token to verify.");
+  console.error("❌ Please provide a token to verify.\nExample: npx tsx app/scripts/verifyToken.ts 'Partner:hash'");
   process.exit(1);
 }
 
@@ -17,7 +15,7 @@ if (!PARTNER_SECRET) {
   process.exit(1);
 }
 
-const [partnerString, providedSignature] = token.split(":");
+const [partnerString, providedSignature] = token.split(':');
 
 if (!partnerString || !providedSignature) {
   console.error("❌ Malformed token.");
@@ -30,9 +28,7 @@ const expectedSignature = crypto
   .digest('hex');
 
 if (expectedSignature === providedSignature) {
-  console.log("✅ Token is VALID for:", partnerString);
+  console.log(`✅ Token is valid for partner: ${partnerString}`);
 } else {
-  console.log("❌ Token is INVALID.");
-  console.log("Expected:", expectedSignature);
-  console.log("Provided:", providedSignature);
+  console.log(`❌ Token is invalid.`);
 }
