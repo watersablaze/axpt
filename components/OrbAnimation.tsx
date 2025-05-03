@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+// components/OrbAnimation.tsx
+
+import React from 'react';
+import Lottie from 'lottie-react';
 
 interface OrbAnimationProps {
   size?: number;
@@ -11,14 +14,12 @@ const OrbAnimation: React.FC<OrbAnimationProps> = ({
   fadeIn = true,
   className = '',
 }) => {
-  const [videoLoaded, setVideoLoaded] = useState(false);
-
   return (
     <div
       className={`orbAnimationWrapper ${className}`}
       style={{
-        opacity: videoLoaded ? (fadeIn ? 0.85 : 1) : 0,
-        animation: videoLoaded && fadeIn ? 'orbFadeIn 3s ease-in forwards' : undefined,
+        opacity: fadeIn ? 0.85 : 1,
+        animation: fadeIn ? 'orbFadeIn 3s ease-in forwards' : undefined,
         pointerEvents: 'none',
         display: 'flex',
         justifyContent: 'center',
@@ -27,18 +28,13 @@ const OrbAnimation: React.FC<OrbAnimationProps> = ({
         transition: 'opacity 2s ease',
       }}
     >
-      <video
-        src="/videos/Axis_Orb3.webm" // ✅ Updated to your new render!
-        autoPlay
+      <Lottie
+        animationData={require('@/../public/lotties/Digital_Orb.json')}
         loop
-        muted
-        playsInline
-        onLoadedData={() => setVideoLoaded(true)}
+        autoplay
         style={{
           width: `${size}px`,
-          height: 'auto',
-          backgroundColor: 'transparent',
-          filter: 'blur(0.3px)',
+          height: `${size}px`,
         }}
       />
       <style jsx>{`

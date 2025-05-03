@@ -1,4 +1,3 @@
-// app/scripts/generateInvite.ts
 import 'dotenv/config';
 import crypto from 'crypto';
 import fs from 'fs';
@@ -21,8 +20,7 @@ if (!PARTNER_SECRET) {
 const generateToken = (partner: string): string => {
   const hmac = crypto.createHmac('sha256', PARTNER_SECRET);
   hmac.update(partner);
-  const digest = hmac.digest('hex');
-  return `${partner.replace(/\s+/g, '-')}:${digest}`;
+  return `${partner.replace(/\s+/g, '-')}:${hmac.digest('hex')}`;
 };
 
 const main = async () => {
@@ -58,12 +56,37 @@ const main = async () => {
   existing.push(newEntry);
   fs.writeFileSync(logPath, JSON.stringify(existing, null, 2));
 
-  console.log(`\n✅ New AXPT.io Partner Token Generated\n`);
-  console.log(`🎟️ Partner: ${partnerName}`);
-  console.log(`🔐 Token:\n${token}\n`);
-  console.log(`🔗 Access Portal URL:\n${url}\n`);
-  console.log(`📎 QR Code saved at:\n${qrOutputPath}`);
-  console.log(`📘 Directory updated at:\n${logPath}\n`);
+  // ✉️ Copy-Paste Email Block
+  const emailBlock = `
+────────────────────────────────────
+  ✉️ AXPT.io | Secure Whitepaper Invite
+────────────────────────────────────
+
+Dear ${partnerName},
+
+You’ve been granted access to the AXPT.io Partner Whitepaper Portal.
+
+Please use the secure invite link below:
+
+🔗 Access Link:
+${url}
+
+🧾 Access Token (for manual use):
+${token}
+
+📄 Terms & access instructions will be shown upon entry.
+
+This link is private and intended only for your team.
+For any questions, please contact partners@axpt.io
+
+Thank you for walking with us at the Axis Point.
+
+────────────────────────────────────
+`;
+
+  console.log(emailBlock);
+  console.log(`📎 QR Code saved to: ${qrOutputPath}`);
+  console.log(`📘 Log updated at: ${logPath}\n`);
 };
 
 main();
