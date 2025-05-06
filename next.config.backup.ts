@@ -9,10 +9,9 @@ const nextConfig = {
       ...config.resolve,
       alias: {
         ...config.resolve?.alias,
-        "@": path.resolve(__dirname, "src"),                   // ✅ Root src/
-        "@/lib": path.resolve(__dirname, "src/lib"),           // ✅ src/lib/
-        "@/components": path.resolve(__dirname, "src/components"), // ✅ src/components/
-        "@/abi": path.resolve(__dirname, "abi")                // ✅ External abi/
+        "@": path.resolve(__dirname, "src"),         // ✅ Main alias
+        "@/lib": path.resolve(__dirname, "src/lib"), // ✅ Sub-path alias
+        "@/abi": path.resolve(__dirname, "abi")      // ✅ External dir alias
       },
       fallback: {
         ...config.resolve?.fallback,

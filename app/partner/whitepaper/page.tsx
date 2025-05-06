@@ -3,11 +3,11 @@
 export const dynamic = 'force-dynamic';
 
 import { useState, useEffect, useRef, Fragment } from 'react';
-import GreetingWrapper from '../../../components/GreetingWrapper';
-import WhitepaperViewer from '../../../components/WhitepaperViewer';
-import VerificationSuccessScreen from '../../../components/VerificationSuccessScreen';
-import StorageStatus from '../../../components/StorageStatus';
-import PreVerificationScreen from '../../../components/PreVerificationScreen';
+import GreetingWrapper from '@/components/GreetingWrapper';
+import WhitepaperViewer from '@/components/WhitepaperViewer';
+import VerificationSuccessScreen from '@/components/VerificationSuccessScreen';
+import StorageStatus from '@/components/StorageStatus';
+import PreVerificationScreen from '@/components/PreVerificationScreen';
 import { useHydrationState } from '@/lib/hooks/useHydrationState';
 
 import preStyles from './WhitepaperPreVerify.module.css';

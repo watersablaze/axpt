@@ -4,7 +4,7 @@ echo "🔍 Verifying no stale dashboard imports remain..."
 
 STALE_PATTERNS=(
   "@/app/dashboard/Dashboard.module.css"
-  "styles.dashboard"
+  "/* styles.dashboard 🚫 stale */"
   "/dashboard" # e.g., router.push("/dashboard")
 )
 

@@ -1,29 +1,22 @@
 #!/bin/bash
 
-echo "🧹 Scanning and commenting out stale dashboard imports..."
+echo "🧹 Cleaning up stale dashboard references..."
 
-# Define stale patterns to look for
-STALE_IMPORTS=(
-  "from \"@/app/dashboard/Dashboard.module.css\""
-  "from '@/app/dashboard/Dashboard.module.css'"
-)
+TARGET_FILES=$(grep -rl "@/app/dashboard/Dashboard.module.css" app || true)
 
-# Scan all TS/TSX files in app/ and comment out matching lines
-find ./app -type f \( -name "*.ts" -o -name "*.tsx" \) | while read -r file; do
-  for pattern in "${STALE_IMPORTS[@]}"; do
-    if grep -q "$pattern" "$file"; then
-      echo "🛠️  Commenting import in: $file"
-      sed -i '' "s|$pattern|// 🚫 Stale import (auto-commented): $pattern|" "$file"
-    fi
-  done
+for file in $TARGET_FILES; do
+  echo "🛠️  Cleaning: $file"
+  # Comment out stale CSS import
+  sed -i '' 's|// 🚫 Stale import (auto-commented): from "@/app/dashboard/Dashboard.module.css";
+
+  # Comment out all references to /* styles.dashboard 🚫 stale */
+  sed -i '' 's/styles\.dashboard/\/\* /* styles.dashboard 🚫 stale */ 🚫 stale \*\//g' "$file"
 done
 
-# Optional: Comment out dashboard class references
-find ./app -type f \( -name "*.ts" -o -name "*.tsx" \) | while read -r file; do
-  if grep -q "styles.dashboard" "$file"; then
-    echo "🛠️  Commenting out styles.dashboard reference in: $file"
-    sed -i '' 's/styles\.dashboard/\/\* styles.dashboard 🚫 stale \*\//' "$file"
-  fi
+# Extra: Remove or comment references to page.tsx if they exist elsewhere
+grep -rl "// 🚫 dashboard/page stale reference" app | while read -r file; do
+  echo "🧽 Removing // 🚫 dashboard/page stale reference reference in $file"
+  sed -i '' 's|// 🚫 dashboard/page stale reference|// 🚫 // 🚫 dashboard/page stale reference stale reference|g' "$file"
 done
 
-echo "✅ Stale dashboard imports auto-commented."
+echo "✅ Stale dashboard references cleaned."

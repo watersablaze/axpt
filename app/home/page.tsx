@@ -4,7 +4,7 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import styles from './HomePage.module.css';
-import OrbAnimation from 'components/OrbAnimation';
+{/* import OrbAnimation from "@/components/OrbAnimation"; */}
 
 export default function HomePage() {
   return (
@@ -16,7 +16,7 @@ export default function HomePage() {
     >
       {/* Orb / Compass Core */}
       <div className={styles.orbCenterpiece}>
-        <OrbAnimation fadeIn size={220} />
+       {/* <OrbAnimation fadeIn size={220} /> */}
       </div>
 
       {/* Constellation Nav Links */}

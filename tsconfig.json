@@ -21,25 +21,16 @@
     "baseUrl": "src",
     "paths": {
       "@/*": [
-        "*"
+        "app/src/*"
+      ],
+      "@/components/*": [
+        "app/src/components/*"
       ],
       "@/lib/*": [
-        "lib/*"
+        "app/src/lib/*"
       ],
-      "@/abi/*": [
-        "../abi/*"
-      ],
-      "components/*": [
-        "components/*"
-      ],
-      "styles/*": [
-        "app/styles/*"
-      ],
-      "api/*": [
-        "app/api/*"
-      ],
-      "partner/*": [
-        "app/partner/*"
+      "@/lotties/*": [
+        "app/src/lotties/*"
       ]
     },
     "plugins": [
