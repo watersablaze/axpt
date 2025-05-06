@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import styles from "./Wallet.module.css";
 

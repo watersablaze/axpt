@@ -1,0 +1,94 @@
+/* 🎨 AXPT Home Page Styling — Minimal, Dark, Elegant */
+
+.pageContainer {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background-color: #0a0a0a;
+    background-image: url('/images/black-felt.png');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    overflow: hidden;
+    padding: 4rem 1.5rem;
+    color: #e0e0e0;
+    font-family: 'Fira Code', monospace;
+  }
+  
+  .gridLayout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 2rem;
+    width: 100%;
+    max-width: 1200px;
+    margin-top: 3rem;
+  }
+  
+  .heroSection {
+    text-align: center;
+    z-index: 2;
+    margin-bottom: 2rem;
+    animation: fadeInUp 1s ease-out;
+  }
+  
+  .heroHeading {
+    font-size: 2rem;
+    letter-spacing: 0.05em;
+    color: #fafafa;
+    margin-bottom: 0.5rem;
+  }
+  
+  .heroSubheading {
+    font-size: 1rem;
+    color: #999;
+  }
+  
+  .orbZone {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem 0;
+    pointer-events: none;
+  }
+  
+  .compassNavZone {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 300px;
+    position: relative;
+    margin-top: 4rem;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @media (max-width: 768px) {
+    .pageContainer {
+      padding: 2rem 1rem;
+    }
+  
+    .heroHeading {
+      font-size: 1.5rem;
+    }
+  
+    .gridLayout {
+      gap: 1.5rem;
+    }
+  
+    .compassNavZone {
+      height: 220px;
+    }
+  }
+  

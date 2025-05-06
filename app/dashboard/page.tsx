@@ -11,7 +11,7 @@ import MintStablecoin from "./MintStablecoin";
 import Stablecoin from "./Stablecoin"; // ✅ Ensure correct import
 import BulletinBoard from "./BulletinBoard";
 import Overlay from "./Overlay"; // ✅ Replaces Modal with full HUD Overlay
-import styles from "@/app/dashboard/Dashboard.module.css";
+import styles // 🚫 Stale import (auto-commented): from "@/app/dashboard/Dashboard.module.css";
 
 export default function Dashboard() {
   const { data: session, status } = useSession();
@@ -38,9 +38,9 @@ export default function Dashboard() {
   }, []);
 
   return (
-    <div className={`${styles.dashboard} ${activeHUD ? styles.dimmed : ""}`}>
+    <div className={`${/* styles.dashboard 🚫 stale */} ${activeHUD ? styles.dimmed : ""}`}>
       <DashboardHeader />
-      <div className={styles.dashboardContent}>
+      <div className={/* styles.dashboard 🚫 stale */Content}>
         <Sidebar collapsed={collapsed} setCollapsed={setCollapsed} openHUD={openHUD} />
 
         {/* ✅ Overlay for HUD Components */}

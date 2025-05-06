@@ -9,44 +9,44 @@ const nextConfig = {
       ...config.resolve,
       alias: {
         ...config.resolve?.alias,
-        "@": path.resolve(__dirname),
-        "@/lib": path.resolve(__dirname, "lib"),
-        "@/abi": path.resolve(__dirname, "abi"),
+        "@": path.resolve(__dirname, "src"),         // ✅ Main alias
+        "@/lib": path.resolve(__dirname, "src/lib"), // ✅ Sub-path alias
+        "@/abi": path.resolve(__dirname, "abi")      // ✅ External dir alias
       },
       fallback: {
         ...config.resolve?.fallback,
-        canvas: false, // For react-pdf
-      },
+        canvas: false // For react-pdf
+      }
     };
     return config;
   },
 
   images: {
     formats: ["image/avif", "image/webp"],
-    domains: ["yourdomain.com"], // <-- Update if you need real domains
+    domains: ["yourdomain.com"]
   },
 
   experimental: {
-    optimizeCss: true, // Next.js modern CSS optimization
+    optimizeCss: true
   },
 
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production", // Clean production console.logs
+    removeConsole: process.env.NODE_ENV === "production"
   },
 
   eslint: {
-    ignoreDuringBuilds: true, // ✅ PATCHED: Allow deploy even if ESLint errors
+    ignoreDuringBuilds: true
   },
 
   async redirects() {
     return [
       {
-        source: "/",            // Root landing
-        destination: "/landing", // Your public page
-        permanent: true,
-      },
+        source: "/",
+        destination: "/landing",
+        permanent: true
+      }
     ];
-  },
+  }
 };
 
 export default nextConfig;

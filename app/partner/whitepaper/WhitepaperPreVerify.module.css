@@ -98,9 +98,10 @@
   font-weight: 400;
   margin-top: 100px;
   letter-spacing: 0.03em;
-  font-size: 1rem; /* ✅ Small but readable */
+  font-size: 1rem;
   color: #e0e0e0;
   z-index: 1;
+  text-align: center;
 }
 
 .subheading {
@@ -109,6 +110,7 @@
   font-size: 0.6rem;
   color: #b0b0b0;
   margin-top: 0.5rem;
+  text-align: center;
 }
 
 /* 🟡 Token Input Box */
@@ -127,20 +129,20 @@
 
 .inputField {
   width: 100%;
-  padding: 0.6rem 0.8rem; /* smaller padding */
-  border-radius: 6px; /* smaller curve */
+  padding: 0.6rem 0.8rem;
+  border-radius: 6px;
   border: 1px solid #444;
   background-color: #111;
   color: #e0e0e0;
   font-family: 'Fira Code', monospace;
-  font-size: 0.9rem; /* smaller font */
+  font-size: 0.9rem;
   margin-bottom: 1rem;
   outline: none;
   transition: border-color 0.3s ease, background-color 0.3s ease;
 }
 
 .inputField:focus {
-  border-color: #fdf6e3; /* Soft gold-white focus border */
+  border-color: #fdf6e3;
 }
 
 /* 🟤 Terms Box */
@@ -154,14 +156,12 @@
   color: #d1d5db;
 }
 
-/* 💎 Terms Heading */
 .termsHeading {
   font-size: 1rem;
   margin-bottom: 0.5rem;
-  color: #c084fc; /* Royal purple accent */
+  color: #c084fc;
 }
 
-/* ✅ Checkbox Row */
 .checkboxRow {
   display: flex;
   align-items: center;
@@ -177,11 +177,11 @@
   background: linear-gradient(145deg, #1a1a1a, #0e0e0e);
   border: 1px solid #555;
   color: #fdf6e3;
-  padding: 0.7rem 1.5rem; /* smaller padding */
-  font-size: 0.9rem; /* smaller text */
+  padding: 0.7rem 1.5rem;
+  font-size: 0.9rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border-radius: 10px; /* slightly tighter curve */
+  border-radius: 10px;
   margin-left: 140px;
   box-shadow: none;
   transition: box-shadow 0.6s ease, transform 0.6s ease;
@@ -198,7 +198,6 @@
   cursor: pointer;
 }
 
-/* 🌿 Breathing subtle glow animation */
 @keyframes breatheGlow {
   0% {
     box-shadow: 0 0 10px rgba(253, 246, 227, 0.2),
@@ -211,13 +210,11 @@
   }
 }
 
-/* 🌀 Breath Pulse on Hover */
 .verifyButton:hover {
   transform: scale(1.05);
   box-shadow: 0 0 30px rgba(10, 255, 193, 0.7);
 }
 
-/* ✅ Active and Disabled States */
 .buttonActive {
   opacity: 1;
 }
@@ -227,14 +224,12 @@
   cursor: not-allowed;
 }
 
-/* 🟥 Error Message */
 .errorText {
   margin-top: 1rem;
-  color: #f87171; /* Soft red */
+  color: #f87171;
   text-align: center;
 }
 
-/* 🔥 Smooth Fade-In Animation */
 @keyframes fadeIn {
   0% {
     opacity: 0;
@@ -253,14 +248,43 @@
 /* 📱 Responsive Tweaks */
 @media (max-width: 768px) {
   .heading {
-    font-size: 2rem;
+    font-size: 1.3rem;
+    margin-top: 2rem;
+    padding: 0 1rem;
+  }
+
+  .subheading {
+    font-size: 0.8rem;
+    padding: 0 1rem;
   }
 
   .tokenBox {
-    padding: 1.5rem;
+    width: 100%;
+    max-width: 500px;
+    padding: 1rem;
+    box-sizing: border-box;
+  }
+
+  .inputField {
+    font-size: 1rem;
+    padding: 0.8rem 1rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .termsBox {
+    font-size: 0.75rem;
   }
 
   .verifyButton {
+    margin-left: 0;
+    width: 100%;
     font-size: 1rem;
+    text-align: center;
+    padding: 0.9rem;
+  }
+
+  .orbWrapper {
+    margin-top: 1rem;
   }
 }

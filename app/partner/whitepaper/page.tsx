@@ -2,7 +2,7 @@
 
 export const dynamic = 'force-dynamic';
 
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, useRef, Fragment } from 'react';
 import GreetingWrapper from '../../../components/GreetingWrapper';
 import WhitepaperViewer from '../../../components/WhitepaperViewer';
 import VerificationSuccessScreen from '../../../components/VerificationSuccessScreen';
@@ -14,13 +14,15 @@ import preStyles from './WhitepaperPreVerify.module.css';
 import postStyles from './Whitepaper.module.css';
 
 export default function WhitepaperPage() {
+  const { hydrated, values } = useHydrationState(['verifiedPartner', 'preVerified']);
+  const hydratedOnce = useRef(false);
+
   const [token, setToken] = useState('');
   const [status, setStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
   const [verifiedPartner, setVerifiedPartner] = useState<string | null>(null);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [transitionComplete, setTransitionComplete] = useState(false);
   const [startFadeOut, setStartFadeOut] = useState(false);
-  const { hydrated, values } = useHydrationState(['verifiedPartner', 'preVerified']);
   const [showBadge, setShowBadge] = useState(true);
 
   const devBypass = false;
@@ -28,13 +30,14 @@ export default function WhitepaperPage() {
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
-      const timer = setTimeout(() => setShowBadge(false), 4000); // auto-hide in 4s
+      const timer = setTimeout(() => setShowBadge(false), 4000);
       return () => clearTimeout(timer);
     }
   }, []);
 
   useEffect(() => {
-    if (!hydrated) return;
+    if (!hydrated || hydratedOnce.current) return;
+    hydratedOnce.current = true;
 
     const savedPartner = values['verifiedPartner'];
     const preVerified = values['preVerified'];
@@ -160,7 +163,6 @@ export default function WhitepaperPage() {
     );
   }
 
-  // 🔓 Pre-verification state
   return (
     <PreVerificationScreen
       token={token}

@@ -1,50 +1,67 @@
-// components/OrbAnimation.tsx
+'use client';
 
-import React from 'react';
-import Lottie from 'lottie-react';
+import React, { useRef, useEffect, useState } from 'react';
+import Lottie, { LottieRefCurrentProps } from 'lottie-react';
 
-interface OrbAnimationProps {
+export interface OrbAnimationProps {
   size?: number;
   fadeIn?: boolean;
   className?: string;
 }
 
 const OrbAnimation: React.FC<OrbAnimationProps> = ({
-  size = 300,
+  size = 200,
   fadeIn = true,
   className = '',
 }) => {
+  const lottieRef = useRef<LottieRefCurrentProps>(null);
+  const [orbData, setOrbData] = useState<any | null>(null);
+
+  useEffect(() => {
+    // Dynamically import to ensure SSR safety
+    import('@/lotties/Axis_Orb.json').then((data) => {
+      setOrbData(data.default || data);
+    });
+  }, []);
+
   return (
     <div
       className={`orbAnimationWrapper ${className}`}
       style={{
-        opacity: fadeIn ? 0.85 : 1,
-        animation: fadeIn ? 'orbFadeIn 3s ease-in forwards' : undefined,
+        opacity: fadeIn ? 0.8 : 1,
+        animation: fadeIn ? 'orbFadeIn 3s ease-in-out forwards' : undefined,
         pointerEvents: 'none',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 1,
-        transition: 'opacity 2s ease',
+        transition: 'opacity 3s ease',
       }}
     >
-      <Lottie
-        animationData={require('@/../public/lotties/Digital_Orb.json')}
-        loop
-        autoplay
-        style={{
-          width: `${size}px`,
-          height: `${size}px`,
-        }}
-      />
+      {orbData && (
+        <Lottie
+          lottieRef={lottieRef}
+          animationData={orbData}
+          loop
+          autoplay
+          style={{
+            width: size,
+            height: 'auto',
+            backgroundColor: 'transparent',
+            filter: 'drop-shadow(0 0 12px #0ff) blur(0.3px)',
+            transition: 'transform 4s ease-in-out',
+          }}
+        />
+      )}
+
       <style jsx>{`
         @keyframes orbFadeIn {
           0% {
             opacity: 0;
-            transform: scale(0.95);
+            transform: scale(0.92);
           }
           100% {
-            opacity: 0.85;
+            opacity: 0.8;
             transform: scale(1);
           }
         }

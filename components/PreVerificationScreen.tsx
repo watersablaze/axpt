@@ -2,8 +2,9 @@
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import styles from '../app/partner/whitepaper/WhitepaperPreVerify.module.css'; // Adjust path if needed!
+import styles from '../app/partner/whitepaper/WhitepaperPreVerify.module.css';
 import OrbAnimation from './OrbAnimation';
+import { useOrbSize } from '@/lib/hooks/useOrbSize';
 
 interface PreVerificationScreenProps {
   token: string;
@@ -24,6 +25,9 @@ const PreVerificationScreen: React.FC<PreVerificationScreenProps> = ({
 }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
 
+  // ✅ Move the hook here inside the component
+  const orbSize = useOrbSize();
+
   // ✨ Motion Variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -41,7 +45,6 @@ const PreVerificationScreen: React.FC<PreVerificationScreenProps> = ({
     show: { opacity: 1, y: 0, transition: { ease: 'easeOut', duration: 1 } },
   };
 
-  // 🟢 Breathing Loop Animation (TypeScript-safe)
   const orbBreathing = {
     opacity: 1,
     scale: [1, 1.02, 1],
@@ -64,7 +67,7 @@ const PreVerificationScreen: React.FC<PreVerificationScreenProps> = ({
       <motion.div
         className={styles.orbWrapper}
         style={{
-          marginTop: '3rem', // 🌟 LOWERED the Orb Gently
+          marginTop: '3rem',
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
@@ -73,7 +76,7 @@ const PreVerificationScreen: React.FC<PreVerificationScreenProps> = ({
         animate={orbBreathing}
         whileHover={{ scale: 1.07 }}
       >
-        <OrbAnimation size={150} fadeIn />
+        <OrbAnimation size={orbSize} fadeIn />
       </motion.div>
 
       {/* Heading */}

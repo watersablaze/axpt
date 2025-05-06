@@ -7,80 +7,60 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Account {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+model User {
+  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt           DateTime @db.Date
+  updatedAt           DateTime @db.Date
+  name                String
+  email               String   @unique
+  password            String
+  role                String
+  encryptedPrivateKey String
+  iv                  String
+  isAdmin             Boolean?
+  walletAddress       String?  @unique
+  walletBalance       Float
+  industry            String?
+  interests           String?
 }
 
 model RevokedToken {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
-  /// Field referred in an index, but found no data to define the type.
-  expiresAt Json?
-  /// Field referred in an index, but found no data to define the type.
-  jti       Json?  @unique
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  jti       String   @unique
+  expiresAt DateTime
 
   @@index([expiresAt])
 }
 
 model Session {
-  id           String @id @default(auto()) @map("_id") @db.ObjectId
-  /// Field referred in an index, but found no data to define the type.
-  sessionToken Json?  @unique
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
 }
 
-model Subscriber {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  /// Field referred in an index, but found no data to define the type.
-  email Json?  @unique
-}
+model Account {
+  id                String  @id @default(auto()) @map("_id") @db.ObjectId
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
 
-model Transaction {
-  id          String @id @default(auto()) @map("_id") @db.ObjectId
-  /// Field referred in an index, but found no data to define the type.
-  createdAt   Json?
-  /// Field referred in an index, but found no data to define the type.
-  recipientId Json?
-  /// Field referred in an index, but found no data to define the type.
-  senderId    Json?
-  /// Field referred in an index, but found no data to define the type.
-  userId      Json?
-
-  @@index([userId])
-  @@index([createdAt])
-  @@index([senderId])
-  @@index([recipientId])
-}
-
-model User {
-  id                  String   @id @default(auto()) @map("_id") @db.ObjectId
-  createdAt           DateTime @db.Date
-  email               String   @unique
-  encryptedPrivateKey String
-  industry            String?
-  interests           String?
-  isAdmin             Boolean?
-  iv                  String
-  name                String
-  password            String
-  role                String
-  updatedAt           DateTime @db.Date
-  walletAddress       String?  @unique
-  walletBalance       Float
+  @@unique([provider, providerAccountId])
 }
 
 model VerificationToken {
-  id         String @id @default(auto()) @map("_id") @db.ObjectId
-  /// Field referred in an index, but found no data to define the type.
-  identifier Json?  @unique
-  /// Field referred in an index, but found no data to define the type.
-  token      Json?  @unique
+  id         String   @id @default(auto()) @map("_id") @db.ObjectId
+  identifier String   @unique
+  token      String   @unique
+  expires    DateTime
 
   @@unique([identifier, token])
-}
-
-model users {
-  id       String  @id @default(auto()) @map("_id") @db.ObjectId
-  email    String  @unique
-  isAdmin  Boolean
-  name     String
-  password String
 }

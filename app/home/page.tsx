@@ -1,16 +1,35 @@
+// app/home/page.tsx
 'use client';
-import AxisOrbAnimation from './AxisOrbAnimation';
-import EnterButton from './EnterButton';
-import CompassNav from './CompassNav';
+
+import { motion } from 'framer-motion';
+import Link from 'next/link';
+import styles from './HomePage.module.css';
+import OrbAnimation from 'components/OrbAnimation';
 
 export default function HomePage() {
   return (
-    <div className="relative w-full h-screen bg-black text-white overflow-hidden">
-      <AxisOrbAnimation />
-      <div className="absolute inset-0 flex items-center justify-center">
-        <EnterButton />
+    <motion.main
+      className={styles.pageContainer}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 1.5 }}
+    >
+      {/* Orb / Compass Core */}
+      <div className={styles.orbCenterpiece}>
+        <OrbAnimation fadeIn size={220} />
       </div>
-      <CompassNav />
-    </div>
+
+      {/* Constellation Nav Links */}
+      <nav className={styles.constellationNav}>
+        <Link href="/whitepaper" className={styles.navLink}>Whitepaper</Link>
+        <Link href="/wallet" className={styles.navLink}>Wallet Core</Link>
+        <Link href="/mission" className={styles.navLink}>Mission</Link>
+        <Link href="/ecosystem" className={styles.navLink}>Ecosystem</Link>
+        <Link href="/partners" className={styles.navLink}>Partner Access</Link>
+      </nav>
+
+      {/* Tagline or Welcome */}
+      <h1 className={styles.tagline}>A New Axis of Exchange Has Emerged</h1>
+    </motion.main>
   );
 }
