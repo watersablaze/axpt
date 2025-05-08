@@ -9,44 +9,35 @@ import styles from "./AdminPanel.module.css";
 import { Loader } from "lucide-react";
 
 export default function AdminDashboard() {
+  // ✅ Prevent SSR crash by ensuring this only runs client-side
+  if (typeof window === "undefined") return null;
+
   const { data: session, status } = useSession();
   const router = useRouter();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (status === "loading") return;
-    
-    if (status === "unauthenticated" || !session?.user?.isAdmin) {
+
+    if (!session) {
       router.push("/login");
     } else {
       setLoading(false);
     }
-  }, [session?.user?.isAdmin, status, router]); // ✅ Added `router` to dependencies
+  }, [session, status, router]);
 
   if (loading) {
     return (
-      <p className={styles.loading}>
-        <Loader className={styles.loader} /> Loading admin panel...
-      </p>
+      <div className={styles.loaderWrapper}>
+        <Loader className={styles.loader} />
+      </div>
     );
   }
 
   return (
-    <div className={styles.adminContainer}>
-      <h2 className={styles.title}>Admin Dashboard</h2>
-      <div className={styles.gridContainer}>
-        {/* User Management Section */}
-        <section className={styles.section}>
-          <h3>Users</h3>
-          <UserList />
-        </section>
-
-        {/* Transactions Section */}
-        <section className={styles.section}>
-          <h3>Recent Transactions</h3>
-          <TransactionList />
-        </section>
-      </div>
+    <div className={styles.panel}>
+      <UserList />
+      <TransactionList />
     </div>
   );
 }
