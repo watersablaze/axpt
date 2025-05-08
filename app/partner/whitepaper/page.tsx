@@ -10,7 +10,7 @@ import StorageStatus from '@/components/StorageStatus';
 import PreVerificationScreen from '@/components/PreVerificationScreen';
 import { useHydrationState } from '@/lib/hooks/useHydrationState';
 
-import preStyles from './WhitepaperPreVerify.module.css';
+import styles from '@/partner/whitepaper/WhitepaperPreVerify.module.css';
 import postStyles from './Whitepaper.module.css';
 
 export default function WhitepaperPage() {

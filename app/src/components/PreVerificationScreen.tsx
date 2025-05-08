@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
-import styles from '../app/partner/whitepaper/WhitepaperPreVerify.module.css';
+import styles from '../../partner/whitepaper/WhitepaperPreVerify.module.css';
 import OrbAnimation from './OrbAnimation';
 import { useOrbSize } from '@/lib/hooks/useOrbSize';
 

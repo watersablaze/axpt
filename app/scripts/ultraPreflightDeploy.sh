@@ -2,7 +2,7 @@
 
 # === AXPT | Ultra Preflight + Deploy Ritual ===
 # Timestamp: Auto-log enabled
-# Usage: chmod +x ultraPreflightDeploy.sh && ./ultraPreflightDeploy.sh
+# Usage: chmod +x app/scripts/ultraPreflightDeploy.sh && ./app/scripts/ultraPreflightDeploy.sh
 
 timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
 logfile="logs/ultraPreflightDeploy_$timestamp.log"
@@ -12,29 +12,52 @@ log() {
   echo -e "$1" | tee -a "$logfile"
 }
 
-log "🔍 [1/6] Running TypeScript checks..."
-npx tsc --noEmit >> "$logfile" 2>&1
+log "🧱 [PRE] Validating canonical directory structure..."
+./app/scripts/validate-canonical-structure.sh >> "$logfile" 2>&1
+if [ $? -ne 0 ]; then
+  log "❌ Canonical structure validation failed. See logs above."
+  exit 1
+fi
+log "✅ Canonical structure confirmed.\n"
 
+log "🧹 [0/7] Cleaning .next and .turbo caches..."
+rm -rf .next .turbo >> "$logfile" 2>&1
+log "✅ Cache directories removed.\n"
+
+log "📁 [1/7] Validating alias paths..."
+if ./app/scripts/validate-aliases-from-tsconfig.sh >> "$logfile" 2>&1; then
+  log "✅ Alias validation passed.\n"
+else
+  log "❌ Alias validation failed. Check alias paths or tsconfig.json."
+  exit 1
+fi
+
+log "🧠 [2/7] Type-checking..."
+npx tsc --noEmit >> "$logfile" 2>&1
 if [ $? -ne 0 ]; then
   log "❌ TypeScript errors detected. Fix before continuing."
   exit 1
 fi
-
 log "✅ Type check passed.\n"
 
-log "🧪 [2/6] Running local Next.js production build..."
-npm run build >> "$logfile" 2>&1
+log "🧬 [3/7] Running Prisma generate..."
+npx prisma generate >> "$logfile" 2>&1
+if [ $? -ne 0 ]; then
+  log "❌ Prisma generate failed. Check schema.prisma."
+  exit 1
+fi
+log "✅ Prisma client generated.\n"
 
+log "🧪 [4/7] Running Next.js production build..."
+npm run build >> "$logfile" 2>&1
 if [ $? -ne 0 ]; then
   log "❌ Build failed. Investigate above errors."
   exit 1
 fi
-
 log "✅ Build successful.\n"
 
-log "🔎 [3A/6] Checking for stale dashboard imports..."
+log "🔎 [5/7] Checking for stale dashboard imports..."
 ./app/scripts/verify-no-stale-dashboard-imports.sh >> "$logfile" 2>&1
-
 if [ $? -ne 0 ]; then
   log "⚠️  Stale dashboard imports detected. Review output above."
   read -p "🛑 Continue anyway? (y/n): " dashConfirm
@@ -46,9 +69,7 @@ else
   log "✅ No stale dashboard imports found.\n"
 fi
 
-# === PRISMA + STRIPE AUTO-DETECTION ===
-log "🔍 [4/6] Scanning for Prisma and Stripe usage..."
-
+log "🧬 [6/7] Scanning for Prisma and Stripe usage..."
 prismaFiles=$(grep -rl "@prisma/client" app lib || true)
 stripeFiles=$(grep -rl "stripe" app lib || true)
 
@@ -58,7 +79,7 @@ if [[ -n "$prismaFiles" ]]; then
   for file in $prismaFiles; do
     if [[ "$file" != *.temp.ts ]]; then
       mv "$file" "${file/.ts/.temp.ts}"
-      log "  🔒 Renamed $file → ${file/.ts/.temp.ts}" 
+      log "  🔒 Renamed $file → ${file/.ts/.temp.ts}"
     fi
   done
 else
@@ -71,21 +92,21 @@ if [[ -n "$stripeFiles" ]]; then
   for file in $stripeFiles; do
     if [[ "$file" != *.temp.ts ]]; then
       mv "$file" "${file/.ts/.temp.ts}"
-      log "  🔒 Renamed $file → ${file/.ts/.temp.ts}" 
+      log "  🔒 Renamed $file → ${file/.ts/.temp.ts}"
     fi
   done
 else
   log "✅ No Stripe usage detected."
 fi
 
-log "\n🚦 [5/6] Confirm Deploy"
+log "\n🚦 [7/7] Confirm Deploy"
 read -p "🚀 Ready to deploy? (y/n): " confirm
 if [ "$confirm" != "y" ]; then
   log "🛑 Launch aborted by operator."
   exit 0
 fi
 
-log "🛠️ [6/6] Executing Deploy Ritual..."
+log "🛠️ Executing Deploy Ritual..."
 ./deployritual >> "$logfile" 2>&1
 
 if [ $? -eq 0 ]; then
