@@ -13,7 +13,9 @@
     "move:lotties:safe": "tsx app/scripts/moveAllLottiesToSrc.ts --safe",
     "move:lotties:dry": "tsx app/scripts/moveAllLottiesToSrc.ts --dry",
     "ultraPreflightDeploy": "sh app/scripts/ultraPreflightDeploy.sh",
-    "deployritual": "sh app/scripts/deployritual.sh"
+    "deployritual": "sh app/scripts/deployritual.sh",
+    "token": "tsx app/scripts/partner/token.ts",
+    "verify": "tsx app/scripts/partner/verifyTokenLocally.ts"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.2.3",
@@ -92,6 +94,7 @@
     "eslint-config-next": "15.1.2",
     "postcss": "^8.5.1",
     "prisma": "^6.4.1",
+    "qrcode-terminal": "^0.12.0",
     "shadcn-ui": "^0.9.4",
     "tailwindcss": "^4.0.0",
     "tsx": "^4.19.3",

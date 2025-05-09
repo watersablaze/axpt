@@ -1,0 +1,3 @@
+#!/bin/bash
+# AXPT Token CLI Launcher
+npx tsx app/scripts/partner/token.ts "$@"

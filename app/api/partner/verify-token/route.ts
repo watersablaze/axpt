@@ -1,38 +1,31 @@
+// File: app/api/partner/verify-token/route.ts
+
 import { NextResponse } from 'next/server';
-import crypto from 'crypto';
+import { generateSignedToken } from '@/app/scripts/partner/utils/signToken';
+import { normalizePartner } from '@/app/scripts/partner/utils/normalize';
+import { getEnv } from '@/app/scripts/partner/utils/readEnv';
 
-const PARTNER_SECRET = process.env.PARTNER_SECRET;
-
-const normalizePartner = (name: string) => name.trim().replace(/\s+/g, '-');
+const PARTNER_SECRET = getEnv('PARTNER_SECRET');
 
 export async function POST(req: Request) {
-  if (!PARTNER_SECRET) {
-    console.error('🚨 Missing PARTNER_SECRET in environment. Cannot verify tokens.');
-    return NextResponse.json(
-      { success: false, message: 'Server configuration error. Please contact AXPT support.' },
-      { status: 500 }
-    );
-  }
-
   const { token } = await req.json();
 
   if (!token) {
     return NextResponse.json({ success: false, message: 'Missing token.' }, { status: 400 });
   }
 
-  const [rawPartner, providedSignature] = token.split(':');
+  const cleaned = token.trim();
+  const [rawPartner, providedSignature] = cleaned.split(':');
 
   if (!rawPartner || !providedSignature) {
     return NextResponse.json({ success: false, message: 'Malformed token.' }, { status: 400 });
   }
 
-  const normalized = normalizePartner(rawPartner);
-  const expectedSignature = crypto
-    .createHmac('sha256', PARTNER_SECRET)
-    .update(normalized)
-    .digest('hex');
-
+  const { normalized, token: expectedToken } = generateSignedToken(rawPartner, PARTNER_SECRET, false);
+  const expectedSignature = expectedToken.split(':')[1];
   const isValid = expectedSignature === providedSignature;
+
+  console.log({ rawPartner, normalized, providedSignature, expectedSignature, isValid });
 
   if (isValid) {
     return NextResponse.json({

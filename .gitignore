@@ -77,3 +77,4 @@ coverage/
 .idea/
 *.swp
 .next
+.env*.local
