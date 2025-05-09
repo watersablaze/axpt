@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/partner/whitepaper",
+      "destination": "/partner/whitepaper"
+    }
+  ]
+}

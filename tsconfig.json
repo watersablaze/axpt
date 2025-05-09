@@ -13,17 +13,23 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "baseUrl": ".", // ✅ Root-relative imports
-    "paths": {
-      "styles/*": ["app/styles/*"],
-      "components/*": ["app/components/*"],
-      "lib/*": ["app/lib/*"],
-      "api/*": ["app/api/*"],
-      "partner/*": ["app/partner/*"]
-    },
     "incremental": true,
-    "plugins": [{ "name": "next" }]
+    "baseUrl": "app/src",
+    "paths": {
+      "@/*": ["*"],
+      "@/components/*": ["components/*"],
+      "@/lib/*": ["lib/*"],
+      "@/lotties/*": ["lotties/*"],
+      "@partner/*": ["../partner/*"]
+    },
+   "plugins": [{ "name": "next" }]
   },
-  "include": ["**/*.ts", "**/*.tsx", "next-env.d.ts", ".next/types/**/*.ts"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "../.next/types/**/*.ts",
+    "../next-env.d.ts",
+    ".next/types/**/*.ts"
+  ],
   "exclude": ["node_modules"]
 }

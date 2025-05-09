@@ -1,14 +1,14 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
 import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import styles from "./Wallet.module.css";
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || ""); // ✅ Use ENV variable
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY || "");
 
 const PaymentForm = () => {
   const stripe = useStripe();
@@ -28,7 +28,7 @@ const PaymentForm = () => {
 
     try {
       const { error, paymentIntent } = await stripe.confirmCardPayment(
-        process.env.NEXT_PUBLIC_STRIPE_CLIENT_SECRET || "", // ✅ Use environment variable
+        process.env.NEXT_PUBLIC_STRIPE_CLIENT_SECRET || "",
         {
           payment_method: {
             card: elements.getElement(CardElement)!,
@@ -69,6 +69,9 @@ const PaymentForm = () => {
 };
 
 const WalletPage = () => {
+  // ✅ SSR safeguard: Skip all rendering if on the server
+  if (typeof window === "undefined") return null;
+
   const { data: session, status } = useSession();
   const router = useRouter();
   const [wallet, setWallet] = useState<{ address: string; balance: string } | null>(null);

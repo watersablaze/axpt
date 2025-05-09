@@ -1,4 +1,4 @@
-import "styles/globals.css"; // ✅ Clean absolute import
+import "../styles/globals.css"; // ✅ Clean absolute import
 import { Metadata } from "next";
 import { ReactNode } from "react";
 

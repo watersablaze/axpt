@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# === AXPT | DEPLOY RITUAL ===
+# Last Updated: $(date)
+# Description: Cleans prisma/stripe-blocking files + commits and deploys.
+
+echo "🧹 Step 1: Cleansing Prisma + Stripe linked routes..."
+bash ./app/scripts/UltraPatchPrisma.sh
+
+echo ""
+echo "🚀 Step 2: Deploying to Vercel via Git Push..."
+bash ./app/scripts/UltraDeploy.sh
+
+echo ""
+echo "✅ Done! Check your Vercel Dashboard to confirm."

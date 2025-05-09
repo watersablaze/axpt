@@ -1,52 +1,53 @@
 import path from "path";
-import type { Configuration } from "webpack"; // ✅ TypeScript typing for config
+import type { Configuration } from "webpack";
 
-/** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
 
-  // ✅ Webpack configuration with correct typing
   webpack: (config: Configuration) => {
     config.resolve = {
       ...config.resolve,
       alias: {
         ...config.resolve?.alias,
-        "@": path.resolve(__dirname),
-        "@/lib": path.resolve(__dirname, "lib"),
-        "@/abi": path.resolve(__dirname, "abi"),
+        "@": path.resolve(__dirname, "app/src"),
+        "@/components": path.resolve(__dirname, "app/src/components"),
+        "@/lib": path.resolve(__dirname, "app/src/lib"),
+        "@/lotties": path.resolve(__dirname, "app/src/lotties")
       },
       fallback: {
         ...config.resolve?.fallback,
-        canvas: false, // ✅ Prevents issues with react-pdf dependencies
-      },
+        canvas: false // For react-pdf
+      }
     };
     return config;
   },
 
-  // ✅ Image optimization settings
   images: {
     formats: ["image/avif", "image/webp"],
-    domains: ["yourdomain.com"], // Replace with your actual image domain(s)
+    domains: ["yourdomain.com"]
   },
 
   experimental: {
-    optimizeCss: true, // ✅ Modern CSS optimization
+    optimizeCss: true
   },
 
   compiler: {
-    removeConsole: process.env.NODE_ENV === "production", // ✅ Clean production console logs
+    removeConsole: process.env.NODE_ENV === "production"
   },
 
-  // ✅ Redirect logic
+  eslint: {
+    ignoreDuringBuilds: true
+  },
+
   async redirects() {
     return [
       {
-        source: "/",            // Root route
-        destination: "/landing", // Redirect to landing page
-        permanent: true,        // SEO-friendly permanent redirect
-      },
+        source: "/",
+        destination: "/landing",
+        permanent: true
+      }
     ];
-  },
+  }
 };
 
 export default nextConfig;

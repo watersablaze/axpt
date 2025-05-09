@@ -1,5 +1,6 @@
 @import './_colors.css';
 @import './_fonts.css';
+@import "./mobile.css";
 
 :root {
   /* Fallbacks in case _colors.css doesn't load */
