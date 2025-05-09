@@ -16,13 +16,15 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "baseUrl": "app/src",
+    "baseUrl": "app",
     "paths": {
-      "@/*": ["*"],
-      "@/components/*": ["components/*"],
-      "@/lib/*": ["lib/*"],
-      "@/lotties/*": ["lotties/*"],
-      "@partner/*": ["../partner/*"]
+      "@/*": ["src/*"],
+      "@/components/*": ["src/components/*"],
+      "@/lib/*": ["src/lib/*"],
+      "@/lotties/*": ["src/lotties/*"],
+      "@/config/*": ["src/config/*"],
+      "@partner/*": ["scripts/partner/*"],
+      "@utils/*": ["scripts/partner/utils/*"]
     },
    "plugins": [{ "name": "next" }]
   },

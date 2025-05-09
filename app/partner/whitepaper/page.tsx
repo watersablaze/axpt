@@ -134,8 +134,7 @@ export default function WhitepaperPage() {
           <div className={postStyles.fullScreenWrapper}>
             <GreetingWrapper partnerName={verifiedPartner || 'Developer Mode'}>
               <div className={`${postStyles.viewerSection} ${postStyles.fadeIn}`}>
-                <WhitepaperViewer pdfFile="/whitepaper/AXPT-Whitepaper.pdf" />
-              </div>
+              <WhitepaperViewer allowedDocs={["AXPT-Whitepaper.pdf"]} />              </div>
             </GreetingWrapper>
 
             {devBypass && (

@@ -1,3 +1,37 @@
 #!/bin/bash
 # AXPT Token CLI Launcher
-npx tsx app/scripts/partner/token.ts "$@"
+
+source ./app/scripts/verify-env.sh
+
+COMMAND=$1
+shift
+
+SCRIPT_DIR="./app/scripts/partner"
+
+case "$COMMAND" in
+  generate)
+    npx tsx "$SCRIPT_DIR/generateToken.ts" "$@"
+    ;;
+  verify)
+    npx tsx "$SCRIPT_DIR/verifyToken.ts" "$@"
+    ;;
+  ""|help|--help|-h)
+    echo ""
+    echo "🔐 AXPT Token CLI"
+    echo "------------------"
+    echo "Usage:"
+    echo "  bin/token generate              # Interactive token creation (tier + docs)"
+    echo "  bin/token verify <token>        # Verify token manually"
+    echo "  bin/token [args...]             # Pass through to app/scripts/partner/token.ts"
+    echo ""
+    echo "Examples:"
+    echo "  bin/token generate"
+    echo "  bin/token verify \"rain-capital:abc123...\""
+    echo "  bin/token list"
+    echo ""
+    ;;
+  *)
+    # Default: Pass all remaining args to token.ts
+    npx tsx "$SCRIPT_DIR/token.ts" "$COMMAND" "$@"
+    ;;
+esac

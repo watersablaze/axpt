@@ -8,10 +8,11 @@ import styles from './WhitepaperViewer.module.css';
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface WhitepaperViewerProps {
-  pdfFile: string;
+  allowedDocs: string[]; // Now expects list of PDFs
 }
 
-const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ pdfFile }) => {
+const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ allowedDocs }) => {
+  const [selectedDoc, setSelectedDoc] = useState<string>(allowedDocs[0]);
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [useWidth, setUseWidth] = useState<boolean>(true);
@@ -21,10 +22,9 @@ const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ pdfFile }) => {
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
-    setPageNumber(1);
+    setPageNumber(1); // Reset page on doc change
   };
 
-  // Resize Observer for container sizing
   useEffect(() => {
     const updateSize = () => {
       if (containerRef.current) {
@@ -35,17 +35,10 @@ const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ pdfFile }) => {
     };
 
     updateSize();
-    const resizeObserver = new ResizeObserver(() => {
-      updateSize();
-    });
+    const resizeObserver = new ResizeObserver(() => updateSize());
 
-    if (containerRef.current) {
-      resizeObserver.observe(containerRef.current);
-    }
-
-    return () => {
-      resizeObserver.disconnect();
-    };
+    if (containerRef.current) resizeObserver.observe(containerRef.current);
+    return () => resizeObserver.disconnect();
   }, []);
 
   const idealPdfWidth = 800;
@@ -56,6 +49,22 @@ const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ pdfFile }) => {
 
   return (
     <div className={styles.viewerContainer}>
+      {/* PDF Selector Dropdown */}
+      <div className={styles.dropdownWrapper}>
+        <label htmlFor="docSelector">📄 Select Document: </label>
+        <select
+          id="docSelector"
+          value={selectedDoc}
+          onChange={(e) => setSelectedDoc(e.target.value)}
+        >
+          {allowedDocs.map((doc) => (
+            <option key={doc} value={doc}>
+              {doc.replace(/_/g, ' ').replace(/\.pdf$/, '')}
+            </option>
+          ))}
+        </select>
+      </div>
+
       {/* Sidebar */}
       <div className={styles.sidebar}>
         {Array.from(new Array(numPages), (_, index) => (
@@ -64,7 +73,7 @@ const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ pdfFile }) => {
             className={`${styles.thumbnail} ${pageNumber === index + 1 ? styles.activeThumbnail : ''}`}
             onClick={() => setPageNumber(index + 1)}
           >
-            <Document file={pdfFile}>
+            <Document file={`/docs/${selectedDoc}`}>
               <Page
                 pageNumber={index + 1}
                 scale={0.2}
@@ -98,7 +107,7 @@ const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ pdfFile }) => {
         </div>
         <div className={styles.pdfContainer}>
           <Document
-            file={pdfFile}
+            file={`/docs/${selectedDoc}`}
             onLoadSuccess={onDocumentLoadSuccess}
             className={styles.pdfDocument}
           >

@@ -1,9 +1,9 @@
 // File: app/api/partner/verify-token/route.ts
 
 import { NextResponse } from 'next/server';
-import { generateSignedToken } from '@/app/scripts/partner/utils/signToken';
-import { normalizePartner } from '@/app/scripts/partner/utils/normalize';
-import { getEnv } from '@/app/scripts/partner/utils/readEnv';
+import { generateSignedToken } from '@utils/signToken';
+import { normalizePartner } from '@utils/normalize';
+import { getEnv } from '@utils/readEnv';
 
 const PARTNER_SECRET = getEnv('PARTNER_SECRET');
 

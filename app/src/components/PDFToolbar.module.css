@@ -7,13 +7,15 @@
   background-color: #1a1a1a;
   color: #e0e0e0;
   padding: 0.5rem 1rem;
-  width: 100%;                                /* 🟢 Full width */
+  width: 100%;
   border-bottom: 1px solid rgba(255, 255, 255, 0.2);
   box-sizing: border-box;
-  font-family: 'Fira Code', monospace;        /* 🟢 Code font */
+  font-family: 'Fira Code', monospace;
 }
 
-.leftGroup, .centerGroup, .rightGroup {
+.leftGroup,
+.centerGroup,
+.rightGroup {
   display: flex;
   align-items: center;
 }
@@ -32,7 +34,7 @@
   margin-right: 0.5rem;
   font-family: 'Fira Code', monospace;
   font-size: 0.85rem;
-  border-radius: 0;                            /* 🟥 No rounding */
+  border-radius: 0;
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
@@ -45,4 +47,25 @@
 .toolbarButton:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* 📄 Dropdown selector styling */
+.docSelect {
+  background-color: #111;
+  color: #e0e0e0;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-family: 'Fira Code', monospace;
+  font-size: 0.85rem;
+  padding: 0.4rem 0.6rem;
+  margin-left: 0.5rem;
+  appearance: none;
+  border-radius: 0;
+  transition: border 0.2s ease;
+}
+
+.docSelect:hover,
+.docSelect:focus {
+  border-color: #999;
+  outline: none;
+  cursor: pointer;
 }
