@@ -71,8 +71,12 @@ export default function WhitepaperPage() {
       if (res.ok && data.success) {
         setStatus('success');
         setVerifiedPartner(data.partner);
-        localStorage.setItem('verifiedPartner', data.partner);
-        localStorage.removeItem('preVerified');
+
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('verifiedPartner', data.partner);
+          localStorage.removeItem('preVerified');
+        }
+
         setTransitionComplete(false);
       } else {
         setStatus('error');
@@ -92,8 +96,10 @@ export default function WhitepaperPage() {
   };
 
   const handleSoftReset = () => {
-    localStorage.removeItem('verifiedPartner');
-    localStorage.removeItem('preVerified');
+    if (typeof localStorage !== 'undefined') {
+      localStorage.removeItem('verifiedPartner');
+      localStorage.removeItem('preVerified');
+    }
     resetState();
   };
 
@@ -113,7 +119,13 @@ export default function WhitepaperPage() {
             setStartFadeOut(true);
             setTimeout(() => {
               setTransitionComplete(true);
-              localStorage.setItem('preVerified', 'true');
+              try {
+                if (typeof localStorage !== 'undefined') {
+                  localStorage.setItem('preVerified', 'true');
+                }
+              } catch (e) {
+                console.warn("⚠️ Could not set preVerified:", e);
+              }
             }, 600);
           }}
         />

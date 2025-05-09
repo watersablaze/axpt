@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # === AXPT | Ultra Preflight + Deploy Ritual ===
-# Timestamp: Auto-log enabled
-# Usage: chmod +x app/scripts/ultraPreflightDeploy.sh && ./app/scripts/ultraPreflightDeploy.sh
+# Usage: chmod +x app/scripts/ultraPreflightDeploy.sh && app/scripts/ultraPreflightDeploy.sh
 
 timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
 logfile="logs/ultraPreflightDeploy_$timestamp.log"
@@ -15,22 +14,28 @@ log() {
 log "🧱 [PRE] Validating canonical directory structure..."
 ./app/scripts/validate-canonical-structure.sh >> "$logfile" 2>&1
 if [ $? -ne 0 ]; then
-  log "❌ Canonical structure validation failed. See logs above."
+  log "❌ Canonical structure validation failed."
   exit 1
 fi
-log "✅ Canonical structure confirmed.\n"
+
+log "🔐 [PRE] Scanning for missing 'use client' on useSession()..."
+./app/scripts/check-useSession-client-boundary.sh >> "$logfile" 2>&1
+if [ $? -ne 0 ]; then
+  log "❌ 'useSession()' used without 'use client'. Fix this before continuing."
+  exit 1
+fi
 
 log "🧹 [0/7] Cleaning .next and .turbo caches..."
 rm -rf .next .turbo >> "$logfile" 2>&1
 log "✅ Cache directories removed.\n"
 
 log "📁 [1/7] Validating alias paths..."
-if ./app/scripts/validate-aliases-from-tsconfig.sh >> "$logfile" 2>&1; then
-  log "✅ Alias validation passed.\n"
-else
-  log "❌ Alias validation failed. Check alias paths or tsconfig.json."
+./app/scripts/validate-aliases-from-tsconfig.sh >> "$logfile" 2>&1
+if [ $? -ne 0 ]; then
+  log "❌ Alias validation failed. Check tsconfig.json."
   exit 1
 fi
+log "✅ Alias validation passed.\n"
 
 log "🧠 [2/7] Type-checking..."
 npx tsc --noEmit >> "$logfile" 2>&1
@@ -69,7 +74,7 @@ else
   log "✅ No stale dashboard imports found.\n"
 fi
 
-log "🧬 [6/7] Scanning for Prisma and Stripe usage..."
+log "📦 [6/7] Scanning for Prisma and Stripe usage..."
 prismaFiles=$(grep -rl "@prisma/client" app lib || true)
 stripeFiles=$(grep -rl "stripe" app lib || true)
 
@@ -108,11 +113,10 @@ fi
 
 log "🛠️ Executing Deploy Ritual..."
 ./deployritual >> "$logfile" 2>&1
-
 if [ $? -eq 0 ]; then
   log "✅ Deploy Ritual completed successfully."
 else
-  log "❌ Deploy Ritual failed. Check the logs for more details."
+  log "❌ Deploy Ritual failed. Check logs for details."
 fi
 
 log "\n📜 Log saved to $logfile"

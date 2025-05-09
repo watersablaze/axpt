@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from '../../partner/whitepaper/WhitepaperPreVerify.module.css';
 import OrbAnimation from './OrbAnimation';
 import { useOrbSize } from '@/lib/hooks/useOrbSize';
@@ -24,9 +24,14 @@ const PreVerificationScreen: React.FC<PreVerificationScreenProps> = ({
   status,
 }) => {
   const [videoLoaded, setVideoLoaded] = useState(false);
-
-  // ✅ Move the hook here inside the component
   const orbSize = useOrbSize();
+
+  // 🛡️ Future-proofing for any document-based logic
+  useEffect(() => {
+    if (typeof document !== 'undefined') {
+      // Placeholder for any safe DOM logic if needed later
+    }
+  }, []);
 
   // ✨ Motion Variants
   const containerVariants = {
