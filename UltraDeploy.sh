@@ -25,9 +25,15 @@ if [ -z "$COMMIT_MESSAGE" ]; then
   COMMIT_MESSAGE="UltraDeploy: $(date '+%Y-%m-%d %H:%M:%S')"
 fi
 
-# Step 4: Git commit
+# Step 4: Git commit with check
 echo "\n🖋️ Committing changes..."
-git commit -m "$COMMIT_MESSAGE"
+if git diff --cached --quiet; then
+  echo "⚠️  No changes staged. Nothing to commit."
+  echo "🛑 Deploy aborted. No new changes to push."
+  exit 0
+else
+  git commit -m "$COMMIT_MESSAGE"
+fi
 
 # Step 5: Git push
 echo "\n🚀 Pushing to remote origin..."

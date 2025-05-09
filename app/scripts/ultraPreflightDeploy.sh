@@ -7,19 +7,21 @@ timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
 logfile="logs/ultraPreflightDeploy_$timestamp.log"
 mkdir -p logs
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 log() {
   echo -e "$1" | tee -a "$logfile"
 }
 
 log "🧱 [PRE] Validating canonical directory structure..."
-./app/scripts/validate-canonical-structure.sh >> "$logfile" 2>&1
+"$SCRIPT_DIR/validate-canonical-structure.sh" >> "$logfile" 2>&1
 if [ $? -ne 0 ]; then
   log "❌ Canonical structure validation failed."
   exit 1
 fi
 
 log "🔐 [PRE] Scanning for missing 'use client' on useSession()..."
-./app/scripts/check-useSession-client-boundary.sh >> "$logfile" 2>&1
+"$SCRIPT_DIR/check-useSession-client-boundary.sh" >> "$logfile" 2>&1
 if [ $? -ne 0 ]; then
   log "❌ 'useSession()' used without 'use client'. Fix this before continuing."
   exit 1
@@ -30,7 +32,7 @@ rm -rf .next .turbo >> "$logfile" 2>&1
 log "✅ Cache directories removed.\n"
 
 log "📁 [1/7] Validating alias paths..."
-./app/scripts/validate-aliases-from-tsconfig.sh >> "$logfile" 2>&1
+"$SCRIPT_DIR/validate-aliases-from-tsconfig.sh" >> "$logfile" 2>&1
 if [ $? -ne 0 ]; then
   log "❌ Alias validation failed. Check tsconfig.json."
   exit 1
@@ -62,7 +64,7 @@ fi
 log "✅ Build successful.\n"
 
 log "🔎 [5/7] Checking for stale dashboard imports..."
-./app/scripts/verify-no-stale-dashboard-imports.sh >> "$logfile" 2>&1
+"$SCRIPT_DIR/verify-no-stale-dashboard-imports.sh" >> "$logfile" 2>&1
 if [ $? -ne 0 ]; then
   log "⚠️  Stale dashboard imports detected. Review output above."
   read -p "🛑 Continue anyway? (y/n): " dashConfirm
@@ -74,19 +76,13 @@ else
   log "✅ No stale dashboard imports found.\n"
 fi
 
-log "📦 [6/7] Scanning for Prisma and Stripe usage..."
-prismaFiles=$(grep -rl "@prisma/client" app lib || true)
-stripeFiles=$(grep -rl "stripe" app lib || true)
+log "📦 [6/7] Noting Prisma and Stripe usage (non-destructive)..."
+prismaFiles=$(grep -rl "@prisma/client" app/src lib || true)
+stripeFiles=$(grep -rl "stripe" app/src lib || true)
 
 if [[ -n "$prismaFiles" ]]; then
   log "⚠️ Prisma usage detected:"
   echo "$prismaFiles" | tee -a "$logfile"
-  for file in $prismaFiles; do
-    if [[ "$file" != *.temp.ts ]]; then
-      mv "$file" "${file/.ts/.temp.ts}"
-      log "  🔒 Renamed $file → ${file/.ts/.temp.ts}"
-    fi
-  done
 else
   log "✅ No Prisma usage detected."
 fi
@@ -94,12 +90,6 @@ fi
 if [[ -n "$stripeFiles" ]]; then
   log "⚠️ Stripe usage detected:"
   echo "$stripeFiles" | tee -a "$logfile"
-  for file in $stripeFiles; do
-    if [[ "$file" != *.temp.ts ]]; then
-      mv "$file" "${file/.ts/.temp.ts}"
-      log "  🔒 Renamed $file → ${file/.ts/.temp.ts}"
-    fi
-  done
 else
   log "✅ No Stripe usage detected."
 fi
@@ -112,7 +102,7 @@ if [ "$confirm" != "y" ]; then
 fi
 
 log "🛠️ Executing Deploy Ritual..."
-./deployritual >> "$logfile" 2>&1
+"$SCRIPT_DIR/deployritual" >> "$logfile" 2>&1
 if [ $? -eq 0 ]; then
   log "✅ Deploy Ritual completed successfully."
 else

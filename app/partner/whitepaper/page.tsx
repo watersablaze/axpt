@@ -1,17 +1,17 @@
 'use client';
 
-export const dynamic = 'force-dynamic';
-
-import { useState, useEffect, useRef, Fragment } from 'react';
-import GreetingWrapper from '@/components/GreetingWrapper';
-import WhitepaperViewer from '@/components/WhitepaperViewer';
-import VerificationSuccessScreen from '@/components/VerificationSuccessScreen';
-import StorageStatus from '@/components/StorageStatus';
-import PreVerificationScreen from '@/components/PreVerificationScreen';
+import { useState, useEffect, useRef, Fragment, Suspense } from 'react';
+import dynamicImport from 'next/dynamic';
 import { useHydrationState } from '@/lib/hooks/useHydrationState';
-
 import styles from '@/partner/whitepaper/WhitepaperPreVerify.module.css';
 import postStyles from './Whitepaper.module.css';
+
+// ✅ Dynamic imports for SSR-unsafe components
+const GreetingWrapper = dynamicImport(() => import('@/components/GreetingWrapper'));
+const WhitepaperViewer = dynamicImport(() => import('@/components/WhitepaperViewer'), { ssr: false });
+const VerificationSuccessScreen = dynamicImport(() => import('@/components/VerificationSuccessScreen'), { ssr: false });
+const StorageStatus = dynamicImport(() => import('@/components/StorageStatus'), { ssr: false });
+const PreVerificationScreen = dynamicImport(() => import('@/components/PreVerificationScreen'), { ssr: false });
 
 export default function WhitepaperPage() {
   const { hydrated, values } = useHydrationState(['verifiedPartner', 'preVerified']);
@@ -71,12 +71,10 @@ export default function WhitepaperPage() {
       if (res.ok && data.success) {
         setStatus('success');
         setVerifiedPartner(data.partner);
-
         if (typeof localStorage !== 'undefined') {
           localStorage.setItem('verifiedPartner', data.partner);
           localStorage.removeItem('preVerified');
         }
-
         setTransitionComplete(false);
       } else {
         setStatus('error');
@@ -114,42 +112,42 @@ export default function WhitepaperPage() {
   if ((status === 'success' && verifiedPartner) || devBypass) {
     if (!transitionComplete) {
       return (
-        <VerificationSuccessScreen
-          onComplete={() => {
-            setStartFadeOut(true);
-            setTimeout(() => {
-              setTransitionComplete(true);
-              try {
+        <Suspense fallback={<div className={postStyles.loadingScreen}>Loading animation...</div>}>
+          <VerificationSuccessScreen
+            onComplete={() => {
+              setStartFadeOut(true);
+              setTimeout(() => {
+                setTransitionComplete(true);
                 if (typeof localStorage !== 'undefined') {
                   localStorage.setItem('preVerified', 'true');
                 }
-              } catch (e) {
-                console.warn("⚠️ Could not set preVerified:", e);
-              }
-            }, 600);
-          }}
-        />
+              }, 600);
+            }}
+          />
+        </Suspense>
       );
     }
 
     return (
       <Fragment>
-        <div className={postStyles.fullScreenWrapper}>
-          <GreetingWrapper partnerName={verifiedPartner || 'Developer Mode'}>
-            <div className={`${postStyles.viewerSection} ${postStyles.fadeIn}`}>
-              <WhitepaperViewer pdfFile="/whitepaper/AXPT-Whitepaper.pdf" />
-            </div>
-          </GreetingWrapper>
+        <Suspense fallback={<div className={postStyles.loadingScreen}>Loading viewer...</div>}>
+          <div className={postStyles.fullScreenWrapper}>
+            <GreetingWrapper partnerName={verifiedPartner || 'Developer Mode'}>
+              <div className={`${postStyles.viewerSection} ${postStyles.fadeIn}`}>
+                <WhitepaperViewer pdfFile="/whitepaper/AXPT-Whitepaper.pdf" />
+              </div>
+            </GreetingWrapper>
 
-          {devBypass && (
-            <div className={postStyles.devBadge}>
-              DEV MODE ACTIVE<br />
-              <span className={postStyles.envIndicator}>Environment: {envMode}</span>
-            </div>
-          )}
+            {devBypass && (
+              <div className={postStyles.devBadge}>
+                DEV MODE ACTIVE<br />
+                <span className={postStyles.envIndicator}>Environment: {envMode}</span>
+              </div>
+            )}
 
-          <StorageStatus onStorageCleared={handleSoftReset} />
-        </div>
+            <StorageStatus onStorageCleared={handleSoftReset} />
+          </div>
+        </Suspense>
 
         {process.env.NODE_ENV === 'production' && showBadge && (
           <div
@@ -176,13 +174,15 @@ export default function WhitepaperPage() {
   }
 
   return (
-    <PreVerificationScreen
-      token={token}
-      setToken={setToken}
-      acceptTerms={acceptTerms}
-      setAcceptTerms={setAcceptTerms}
-      handleVerify={handleVerify}
-      status={status}
-    />
+    <Suspense fallback={<div className={postStyles.loadingScreen}>Loading pre-verification screen...</div>}>
+      <PreVerificationScreen
+        token={token}
+        setToken={setToken}
+        acceptTerms={acceptTerms}
+        setAcceptTerms={setAcceptTerms}
+        handleVerify={handleVerify}
+        status={status}
+      />
+    </Suspense>
   );
 }
