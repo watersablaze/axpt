@@ -2,14 +2,19 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { getEnv } from '@utils/readEnv';
-import partnerTiers from '@/config/partnerTiers.json' assert { type: 'json' };
-import tierDocs from '@/config/tierDocs.json' assert { type: 'json' };
+import partnerTiers from '@/config/partnerTiers.json';
+import tierDocs from '@/config/tierDocs.json';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 
 const PARTNER_SECRET = getEnv('PARTNER_SECRET');
-const partners = partnerTiers as Record<string, string>;
+
+// New structure: partnerTiers is Record<string, { tier: string; displayName?: string; greeting?: string }>
+const partners = partnerTiers as Record<
+  string,
+  { tier: string; displayName?: string; greeting?: string }
+>;
 const tierToDocs = tierDocs as Record<string, string[]>;
 
 const getLogPath = () => {
@@ -29,7 +34,7 @@ const ipHits = new Map<string, number[]>();
 function isRateLimited(ip: string): boolean {
   const now = Date.now();
   const attempts = ipHits.get(ip) || [];
-  const recent = attempts.filter(ts => now - ts < RATE_LIMIT_WINDOW_MS);
+  const recent = attempts.filter((ts) => now - ts < RATE_LIMIT_WINDOW_MS);
   recent.push(now);
   ipHits.set(ip, recent);
   return recent.length > RATE_LIMIT_MAX_ATTEMPTS;
@@ -71,18 +76,20 @@ export async function POST(req: NextRequest) {
   }
 
   const { partner, tier } = payload;
-
   if (!partner || !tier) {
     logUsage(`❌ [${ip}] Token missing partner or tier fields`);
     return NextResponse.json({ success: false, message: 'Invalid token structure.' }, { status: 403 });
   }
 
-  if (!partners[partner]) {
-    logUsage(`⚠️ [${ip}] No matching partner tier → ${partner}`);
+  const partnerEntry = partners[partner];
+  if (!partnerEntry) {
+    logUsage(`⚠️ [${ip}] No matching partner entry → ${partner}`);
     return NextResponse.json({ success: false, message: 'Partner not registered.' }, { status: 403 });
   }
 
   const allowedDocs = tierToDocs[tier] || [];
+  const displayName = partnerEntry.displayName || partner;
+  const greeting = partnerEntry.greeting || `Welcome, ${displayName}`;
 
   logUsage(`✅ [${ip}] ${partner} → ${tier} (${allowedDocs.length} docs)`);
   return NextResponse.json({
@@ -90,6 +97,8 @@ export async function POST(req: NextRequest) {
     message: 'Token is valid.',
     partner,
     tier,
-    allowedDocs
+    allowedDocs,
+    displayName,
+    greeting,
   });
 }

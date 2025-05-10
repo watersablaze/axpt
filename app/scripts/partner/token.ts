@@ -8,13 +8,11 @@ import qrcode from 'qrcode';
 import { normalizePartner } from './utils/normalize';
 import { generateSignedToken } from './utils/signToken';
 import { getEnv } from './utils/readEnv';
-import rawPartnerTiers from '@/config/partnerTiers.json' assert { type: 'json' };
+import rawPartnerTiers from '@/config/partnerTiers.json';
 import tierDocs from '@/config/tierDocs.json';
 
 const partners = rawPartnerTiers as Record<string, string>;
 const tierToDocs = tierDocs as Record<string, string[]>;
-const PARTNER_FILE = path.resolve('app/config/partnerTiers.json');
-const TIERS_FILE = path.resolve('app/config/tierDocs.json');
 const LOG_FILE = path.resolve(process.cwd(), 'logs/token-actions.log');
 const QR_DIR = path.resolve(process.cwd(), 'qrcodes');
 
@@ -23,34 +21,49 @@ const logAction = (entry: string) => {
   fs.appendFileSync(LOG_FILE, line);
 };
 
-const verifyToken = (token: string): boolean => {
-  const [raw, sig] = token.split(':');
-  const secret = getEnv('PARTNER_SECRET');
-  const norm = normalizePartner(raw);
-  const expected = generateSignedToken(norm, secret).token.split(':')[1];
-  return sig === expected;
-};
-
 async function generateTokenFlow() {
   const secret = getEnv('PARTNER_SECRET');
-  const { name } = await prompts({
+
+  const { name: rawName } = await prompts({
     type: 'text',
     name: 'name',
-    message: 'Enter Partner Name:',
+    message: 'Enter Partner Name (raw, e.g. Jane Doey):'
   });
 
-  const result = generateSignedToken(name, secret);
-  const link = `https://axpt.io/partner/whitepaper?token=${encodeURIComponent(result.token)}`;
-  const qrPath = path.resolve(QR_DIR, `${result.normalized}.png`);
-  await qrcode.toFile(qrPath, link);
-
-  const tier = partners[result.normalized] || 'unclassified';
+  const normalized = normalizePartner(rawName);
+  const tier = partners[normalized] || 'unclassified';
   const allowedDocs = tierToDocs[tier] || [];
 
-  console.log(`\n🔐 Token Generated\n──────────────────────────────\nRaw Partner: ${result.raw}\nNormalized: ${result.normalized}\nToken     : ${result.token}\nLink      : ${link}\nTier      : ${tier}\nPDFs      : ${allowedDocs.join(', ')}\nQR Path   : ${qrPath}\n──────────────────────────────\n`);
+  console.log(`\n📛 Partner Name Submitted: ${rawName}`);
+  console.log(`🔧 Normalized to:          ${normalized}`);
+  console.log(`🎖️ Tier Detected:           ${tier}`);
+  console.log(`📄 Docs:                   ${allowedDocs.join(', ') || 'None'}`);
 
-  logAction(`Generated token for '${result.raw}' [${result.normalized}] → Tier: ${tier}`);
+  const { token, payload, encoded, signature } = generateSignedToken(
+    rawName,
+    secret,
+    tier,
+    allowedDocs,
+    true
+  );
+
+  const link = `https://axpt.io/partner/whitepaper?token=${encodeURIComponent(token)}`;
+  const qrPath = path.resolve(QR_DIR, `${normalized}.png`);
+  await qrcode.toFile(qrPath, link);
+
+  console.log(`\n🔐 Token Generated\n──────────────────────────────`);
+  console.log(`Raw Partner : ${rawName}`);
+  console.log(`Normalized  : ${normalized}`);
+  console.log(`Tier        : ${tier}`);
+  console.log(`PDFs        : ${allowedDocs.join(', ') || 'None'}`);
+  console.log(`Token       : ${token}`);
+  console.log(`Encoded     : ${encoded}`);
+  console.log(`Signature   : ${signature}`);
+  console.log(`Link        : ${link}`);
+  console.log(`QR Code     : ${qrPath}`);
+  console.log(`──────────────────────────────\n`);
+
+  logAction(`Generated token for '${rawName}' [${normalized}] → Tier: ${tier}`);
 }
 
-// Remaining logic remains unchanged; continue using `partners` and `tierToDocs` throughout...
-// You can request I re-patch additional flows like edit/lookup/etc. with this dual-tier model.
+generateTokenFlow();

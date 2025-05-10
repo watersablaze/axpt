@@ -1,9 +1,47 @@
 {
-    "the-kingdom-collective": "Genesis",
-    "eric-chinje": "Genesis",
-    "ron-borges": "Crown",
-    "jamal-ward": "Crown",
-    "maya-siobhan": "Crown",
-    "limitech-limpopo": "Steward",
-    "bobby-french": "Crown"
+  "the-kingdom-collective": {
+    "tier": "Genesis",
+    "displayName": "The Kingdom Collective",
+    "greeting": "Greetings to the Kingdom 🙏🏾 A sacred alliance begins again."
+  },
+  "eric-chinje": {
+    "tier": "Genesis",
+    "displayName": "Erol Chaun",
+    "greeting": "Honorable greetings, Eric. The map folds open with your presence affirming the foundation. Welcome home."
+  },
+  "ron-borges": {
+    "tier": "Crown",
+    "displayName": "Ryan Boils",
+    "greeting": "Welcome, Ronny. Together, we can do it all."
+  },
+  "jamal-ward": {
+    "tier": "Crown",
+    "displayName": "jamal ward",
+    "greeting": "Welcome Wata Falcon. We take flight with you, fearlessly. Thank you for your relentless guidance."
+  },
+  "maya-siobhan": {
+    "tier": "Crown",
+    "displayName": "maya siobhan",
+    "greeting": "Welcome, Ma'yá. Let's break every barrier."
+  },
+  "maya-redding": {
+    "tier": "Crown",
+    "displayName": "maya redding",
+    "greeting": "Welcome, maya redding. We're honored to have you here."
+  },
+  "limitech-limpopo": {
+    "tier": "Steward",
+    "displayName": "Limited Rivers",
+    "greeting": "Welcome, Limitech. We are connecting more than phone lines, but ancestral memory all the same."
+  },
+  "bobby-french": {
+    "tier": "Crown",
+    "displayName": "Barbara Frian",
+    "greeting": "Welcome, Bobby. Stay Mighty & Listen closely. A lick too fast, and you'll miss it. Let's make magic."
+  },
+  "joan-manna": {
+    "tier": "Crown",
+    "displayName": "angel nyce",
+    "greeting": "Welcome, angel nyce. We're honored to have you here."
   }
+}

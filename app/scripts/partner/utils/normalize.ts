@@ -5,5 +5,5 @@
  * Example: "The Kingdom Collective" → "The-Kingdom-Collective"
  */
 export function normalizePartner(name: string): string {
-  return name.trim().replace(/\s+/g, '-');
+  return name.trim().toLowerCase().replace(/\s+/g, '-');
 }

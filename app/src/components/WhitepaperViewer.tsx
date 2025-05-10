@@ -5,14 +5,16 @@ import { Document, Page, pdfjs } from 'react-pdf';
 import PDFToolbar from './PDFToolbar';
 import styles from './WhitepaperViewer.module.css';
 import { motion, AnimatePresence } from 'framer-motion';
-
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface WhitepaperViewerProps {
   allowedDocs: string[];
+  partnerName?: string;
+  displayName?: string;
+  greeting?: string;
 }
 
-const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ allowedDocs }) => {
+const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ allowedDocs, partnerName, displayName, greeting }) => {
   const [currentDoc, setCurrentDoc] = useState<string>(allowedDocs[0]);
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
@@ -49,6 +51,14 @@ const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ allowedDocs }) => {
 
   return (
     <div className={styles.viewerContainer}>
+      {displayName && (
+        <div className={styles.partnerGreeting}>
+          <h2>👋 Welcome, {displayName}!</h2>
+          {greeting && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>{greeting}</motion.p>}
+          <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>📄 Use the document dropdown below to view your access.</p>
+        </div>
+      )}
+
       <div className={styles.sidebar}>
         {Array.from(new Array(numPages), (_, index) => (
           <div

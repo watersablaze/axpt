@@ -1,25 +1,48 @@
 // File: app/scripts/partner/utils/signToken.ts
 import crypto from 'node:crypto';
-import { normalizePartner } from './normalize';
 import fs from 'fs';
 import path from 'path';
+import { normalizePartner } from './normalize';
+import { getEnv } from './readEnv';
 
 export const generateSignedToken = (
   partner: string,
   secret: string,
-  log = true
-): { raw: string; normalized: string; token: string } => {
+  tier: string = 'unclassified',
+  docs: string[] = [],
+  log: boolean = true
+): {
+  raw: string;
+  normalized: string;
+  token: string;
+  payload: Record<string, any>;
+  encoded: string;
+  signature: string;
+} => {
   const normalized = normalizePartner(partner);
-  const hmac = crypto.createHmac('sha256', secret).update(normalized).digest('hex');
-  const token = `${normalized}:${hmac}`;
+  const payload = {
+    partner: normalized,
+    tier,
+    docs,
+    iat: Date.now(),
+  };
+
+  const json = JSON.stringify(payload);
+  const encoded = Buffer.from(json).toString('base64url');
+  const signature = crypto.createHmac('sha256', secret).update(json).digest('hex');
+  const token = `${encoded}:${signature}`;
 
   if (log) {
     const logPath = path.join(process.cwd(), 'logs/partner-token-directory.json');
     const entry = {
-      raw: partner,
-      normalized,
+      originalName: partner,
+      normalizedName: normalized,
+      tier,
+      allowedDocs: docs,
       token,
-      timestamp: new Date().toISOString(),
+      url: `https://axpt.io/partner/whitepaper?token=${encodeURIComponent(token)}`,
+      qrPath: path.join('qrcodes', `${normalized}.png`),
+      generatedAt: new Date().toISOString(),
     };
 
     const existing = fs.existsSync(logPath)
@@ -30,5 +53,12 @@ export const generateSignedToken = (
     fs.writeFileSync(logPath, JSON.stringify(existing, null, 2));
   }
 
-  return { raw: partner, normalized, token };
+  return {
+    raw: partner,
+    normalized,
+    token,
+    payload,
+    encoded,
+    signature,
+  };
 };
