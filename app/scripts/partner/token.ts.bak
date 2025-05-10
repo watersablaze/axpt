@@ -9,7 +9,7 @@ import { normalizePartner } from './utils/normalize';
 import { generateSignedToken } from './utils/signToken';
 import { getEnv } from './utils/readEnv';
 import rawPartnerTiers from '@/config/partnerTiers.json' assert { type: 'json' };
-import tierDocs from '@/config/tierDocs.json';
+import tiers from '@/config/tiers.json';
 
 const partners = rawPartnerTiers as Record<string, string>;
 const tierToDocs = tierDocs as Record<string, string[]>;

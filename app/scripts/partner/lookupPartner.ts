@@ -1,3 +1,4 @@
+import 'dotenv/config';
 // File: app/scripts/partner/lookupPartner.ts
 import fs from 'fs';
 import path from 'path';

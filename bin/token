@@ -10,28 +10,36 @@ SCRIPT_DIR="./app/scripts/partner"
 
 case "$COMMAND" in
   generate)
-    npx tsx "$SCRIPT_DIR/generateToken.ts" "$@"
+    # ✅ Route to new unified generator
+    npx tsx "$SCRIPT_DIR/token.ts" generate "$@"
     ;;
   verify)
-    npx tsx "$SCRIPT_DIR/verifyToken.ts" "$@"
+    npx tsx "$SCRIPT_DIR/token.ts" verify "$@"
+    ;;
+  list)
+    npx tsx "$SCRIPT_DIR/token.ts" list "$@"
+    ;;
+  lookup)
+    npx tsx "$SCRIPT_DIR/token.ts" lookup "$@"
     ;;
   ""|help|--help|-h)
     echo ""
     echo "🔐 AXPT Token CLI"
     echo "------------------"
     echo "Usage:"
-    echo "  bin/token generate              # Interactive token creation (tier + docs)"
-    echo "  bin/token verify <token>        # Verify token manually"
-    echo "  bin/token [args...]             # Pass through to app/scripts/partner/token.ts"
+    echo "  bin/token generate               # Interactive token creation (JSON + signature)"
+    echo "  bin/token verify <token>         # Verify token manually"
+    echo "  bin/token list                   # List all known partners and tiers"
+    echo "  bin/token lookup <partner-name>  # Lookup a specific partner’s tier"
+    echo "  bin/token                        # Launch interactive dashboard"
     echo ""
     echo "Examples:"
     echo "  bin/token generate"
-    echo "  bin/token verify \"rain-capital:abc123...\""
-    echo "  bin/token list"
+    echo "  bin/token verify \"<token>\""
     echo ""
     ;;
   *)
-    # Default: Pass all remaining args to token.ts
+    # 🧿 Default: fallback to interactive dashboard or custom args
     npx tsx "$SCRIPT_DIR/token.ts" "$COMMAND" "$@"
     ;;
 esac
