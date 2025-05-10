@@ -4,15 +4,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import PDFToolbar from './PDFToolbar';
 import styles from './WhitepaperViewer.module.css';
+import { motion, AnimatePresence } from 'framer-motion';
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
 
 interface WhitepaperViewerProps {
-  allowedDocs: string[]; // Now expects list of PDFs
+  allowedDocs: string[];
 }
 
 const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ allowedDocs }) => {
-  const [selectedDoc, setSelectedDoc] = useState<string>(allowedDocs[0]);
+  const [currentDoc, setCurrentDoc] = useState<string>(allowedDocs[0]);
   const [numPages, setNumPages] = useState<number>(0);
   const [pageNumber, setPageNumber] = useState<number>(1);
   const [useWidth, setUseWidth] = useState<boolean>(true);
@@ -22,7 +23,7 @@ const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ allowedDocs }) => {
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
-    setPageNumber(1); // Reset page on doc change
+    setPageNumber(1);
   };
 
   useEffect(() => {
@@ -36,7 +37,6 @@ const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ allowedDocs }) => {
 
     updateSize();
     const resizeObserver = new ResizeObserver(() => updateSize());
-
     if (containerRef.current) resizeObserver.observe(containerRef.current);
     return () => resizeObserver.disconnect();
   }, []);
@@ -49,23 +49,6 @@ const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ allowedDocs }) => {
 
   return (
     <div className={styles.viewerContainer}>
-      {/* PDF Selector Dropdown */}
-      <div className={styles.dropdownWrapper}>
-        <label htmlFor="docSelector">📄 Select Document: </label>
-        <select
-          id="docSelector"
-          value={selectedDoc}
-          onChange={(e) => setSelectedDoc(e.target.value)}
-        >
-          {allowedDocs.map((doc) => (
-            <option key={doc} value={doc}>
-              {doc.replace(/_/g, ' ').replace(/\.pdf$/, '')}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {/* Sidebar */}
       <div className={styles.sidebar}>
         {Array.from(new Array(numPages), (_, index) => (
           <div
@@ -73,7 +56,7 @@ const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ allowedDocs }) => {
             className={`${styles.thumbnail} ${pageNumber === index + 1 ? styles.activeThumbnail : ''}`}
             onClick={() => setPageNumber(index + 1)}
           >
-            <Document file={`/docs/${selectedDoc}`}>
+            <Document file={`/docs/${currentDoc}`}>
               <Page
                 pageNumber={index + 1}
                 scale={0.2}
@@ -96,28 +79,40 @@ const WhitepaperViewer: React.FC<WhitepaperViewerProps> = ({ allowedDocs }) => {
         </div>
       </div>
 
-      {/* Main Viewer */}
       <div className={styles.pdfViewerArea} ref={containerRef}>
         <div className={styles.pdfToolbarWrapper}>
           <PDFToolbar
             pageNumber={pageNumber}
             numPages={numPages}
             setPageNumber={setPageNumber}
+            currentDoc={currentDoc}
+            allowedDocs={allowedDocs}
+            setCurrentDoc={setCurrentDoc}
           />
         </div>
         <div className={styles.pdfContainer}>
           <Document
-            file={`/docs/${selectedDoc}`}
+            file={`/docs/${currentDoc}`}
             onLoadSuccess={onDocumentLoadSuccess}
             className={styles.pdfDocument}
           >
-            <Page
-              pageNumber={pageNumber}
-              scale={!useWidth ? calculatedScale : undefined}
-              width={useWidth ? containerWidth : undefined}
-              renderTextLayer={true}
-              renderAnnotationLayer={false}
-            />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={pageNumber + currentDoc}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <Page
+                  pageNumber={pageNumber}
+                  scale={!useWidth ? calculatedScale : undefined}
+                  width={useWidth ? containerWidth : undefined}
+                  renderTextLayer={true}
+                  renderAnnotationLayer={false}
+                />
+              </motion.div>
+            </AnimatePresence>
           </Document>
         </div>
       </div>

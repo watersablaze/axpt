@@ -5,8 +5,10 @@ import dynamicImport from 'next/dynamic';
 import { useHydrationState } from '@/lib/hooks/useHydrationState';
 import styles from '@/partner/whitepaper/WhitepaperPreVerify.module.css';
 import postStyles from './Whitepaper.module.css';
+import tierDocs from '@/config/tierDocs.json' assert { type: 'json' };
 
-// ✅ Dynamic imports for SSR-unsafe components
+const tierToDocs = tierDocs as Record<string, string[]>;
+
 const GreetingWrapper = dynamicImport(() => import('@/components/GreetingWrapper'));
 const WhitepaperViewer = dynamicImport(() => import('@/components/WhitepaperViewer'), { ssr: false });
 const VerificationSuccessScreen = dynamicImport(() => import('@/components/VerificationSuccessScreen'), { ssr: false });
@@ -14,12 +16,13 @@ const StorageStatus = dynamicImport(() => import('@/components/StorageStatus'), 
 const PreVerificationScreen = dynamicImport(() => import('@/components/PreVerificationScreen'), { ssr: false });
 
 export default function WhitepaperPage() {
-  const { hydrated, values } = useHydrationState(['verifiedPartner', 'preVerified']);
+  const { hydrated, values } = useHydrationState(['verifiedPartner', 'verifiedTier', 'preVerified']);
   const hydratedOnce = useRef(false);
 
   const [token, setToken] = useState('');
   const [status, setStatus] = useState<'idle' | 'verifying' | 'success' | 'error'>('idle');
   const [verifiedPartner, setVerifiedPartner] = useState<string | null>(null);
+  const [verifiedTier, setVerifiedTier] = useState<string | null>(null);
   const [acceptTerms, setAcceptTerms] = useState(false);
   const [transitionComplete, setTransitionComplete] = useState(false);
   const [startFadeOut, setStartFadeOut] = useState(false);
@@ -40,10 +43,12 @@ export default function WhitepaperPage() {
     hydratedOnce.current = true;
 
     const savedPartner = values['verifiedPartner'];
+    const savedTier = values['verifiedTier'];
     const preVerified = values['preVerified'];
 
     if (savedPartner) {
       setVerifiedPartner(savedPartner);
+      setVerifiedTier(savedTier || null);
       setStatus('success');
       setTransitionComplete(preVerified === 'true');
     } else {
@@ -71,8 +76,10 @@ export default function WhitepaperPage() {
       if (res.ok && data.success) {
         setStatus('success');
         setVerifiedPartner(data.partner);
+        setVerifiedTier(data.tier);
         if (typeof localStorage !== 'undefined') {
           localStorage.setItem('verifiedPartner', data.partner);
+          localStorage.setItem('verifiedTier', data.tier);
           localStorage.removeItem('preVerified');
         }
         setTransitionComplete(false);
@@ -88,6 +95,7 @@ export default function WhitepaperPage() {
   const resetState = () => {
     setStatus('idle');
     setVerifiedPartner(null);
+    setVerifiedTier(null);
     setTransitionComplete(false);
     setStartFadeOut(false);
     setToken('');
@@ -96,10 +104,14 @@ export default function WhitepaperPage() {
   const handleSoftReset = () => {
     if (typeof localStorage !== 'undefined') {
       localStorage.removeItem('verifiedPartner');
+      localStorage.removeItem('verifiedTier');
       localStorage.removeItem('preVerified');
     }
     resetState();
   };
+
+  const allowedDocs = verifiedTier ? tierToDocs[verifiedTier] || [] : [];
+  const hasValidDocs = allowedDocs.length > 0;
 
   if (!hydrated) {
     return (
@@ -134,7 +146,18 @@ export default function WhitepaperPage() {
           <div className={postStyles.fullScreenWrapper}>
             <GreetingWrapper partnerName={verifiedPartner || 'Developer Mode'}>
               <div className={`${postStyles.viewerSection} ${postStyles.fadeIn}`}>
-              <WhitepaperViewer allowedDocs={["AXPT-Whitepaper.pdf"]} />              </div>
+                {hasValidDocs ? (
+                  <WhitepaperViewer allowedDocs={allowedDocs} />
+                ) : (
+                <div className={postStyles.restrictedAccessPanel}>
+                  <h2>🚫 Access Restricted</h2>
+                  <p>Your tier <code>{verifiedTier}</code> does not have access to any documents.</p>
+                  <button onClick={handleSoftReset}>
+                    Retry Login
+                  </button>
+                </div>
+                )}
+              </div>
             </GreetingWrapper>
 
             {devBypass && (

@@ -15,7 +15,8 @@
     "ultraPreflightDeploy": "sh app/scripts/ultraPreflightDeploy.sh",
     "deployritual": "sh app/scripts/deployritual.sh",
     "token": "tsx app/scripts/partner/token.ts",
-    "verify": "tsx app/scripts/partner/verifyTokenLocally.ts"
+    "verify": "tsx app/scripts/partner/verifyTokenLocally.ts",
+    "partners:list": "tsx app/scripts/partner/listAccess.ts"
   },
   "dependencies": {
     "@chakra-ui/react": "^3.2.3",
