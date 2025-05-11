@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './PDFToolbar.module.css';
 
 interface PDFToolbarProps {
@@ -21,6 +21,17 @@ const PDFToolbar: React.FC<PDFToolbarProps> = ({
   setCurrentDoc,
 }) => {
   const hasMultipleDocs = allowedDocs.length > 1 && setCurrentDoc;
+  const [showHint, setShowHint] = useState(false);
+
+  useEffect(() => {
+    const delayTimer = setTimeout(() => {
+      setShowHint(true);
+      const hideTimer = setTimeout(() => setShowHint(false), 20000); // 20s visible
+      return () => clearTimeout(hideTimer);
+    }, 2500); // delay after greeting popup
+
+    return () => clearTimeout(delayTimer);
+  }, []);
 
   return (
     <div className={styles.toolbar}>
@@ -61,6 +72,12 @@ const PDFToolbar: React.FC<PDFToolbarProps> = ({
               </option>
             ))}
           </select>
+
+          {showHint && (
+            <span className={styles.floatingHint}>
+               You can switch documents here point 👉🏿
+            </span>
+          )}
         </div>
       )}
     </div>

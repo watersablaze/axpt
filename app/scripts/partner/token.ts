@@ -11,7 +11,11 @@ import { getEnv } from './utils/readEnv';
 import rawPartnerTiers from '@/config/partnerTiers.json';
 import tierDocs from '@/config/tierDocs.json';
 
-const partners = rawPartnerTiers as Record<string, string>;
+const partners = rawPartnerTiers as Record<string, {
+  tier: string;
+  displayName: string;
+  greeting: string;
+}>;
 const tierToDocs = tierDocs as Record<string, string[]>;
 const LOG_FILE = path.resolve(process.cwd(), 'logs/token-actions.log');
 const QR_DIR = path.resolve(process.cwd(), 'qrcodes');
@@ -31,12 +35,13 @@ async function generateTokenFlow() {
   });
 
   const normalized = normalizePartner(rawName);
-  const tier = partners[normalized] || 'unclassified';
+  const partnerEntry = partners[normalized];
+  const tier = partnerEntry?.tier || 'unclassified';
   const allowedDocs = tierToDocs[tier] || [];
 
   console.log(`\n📛 Partner Name Submitted: ${rawName}`);
   console.log(`🔧 Normalized to:          ${normalized}`);
-  console.log(`🎖️ Tier Detected:           ${tier}`);
+  console.log(`🎖️ Tier Detected:          ${tier}`);
   console.log(`📄 Docs:                   ${allowedDocs.join(', ') || 'None'}`);
 
   const { token, payload, encoded, signature } = generateSignedToken(

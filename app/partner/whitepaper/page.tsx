@@ -5,9 +5,11 @@ import dynamicImport from 'next/dynamic';
 import { useHydrationState } from '@/lib/hooks/useHydrationState';
 import styles from '@/partner/whitepaper/WhitepaperPreVerify.module.css';
 import postStyles from './Whitepaper.module.css';
-import tierDocs from '@/config/tierDocs.json' assert { type: 'json' };
+import tierDocs from '@/config/tierDocs.json';
+import rawPartnerTiers from '@/config/partnerTiers.json';
 
 const tierToDocs = tierDocs as Record<string, string[]>;
+const partnerInfo = rawPartnerTiers as Record<string, { tier: string; displayName: string; greeting: string }>;
 
 const GreetingWrapper = dynamicImport(() => import('@/components/GreetingWrapper'));
 const WhitepaperViewer = dynamicImport(() => import('@/components/WhitepaperViewer'), { ssr: false });
@@ -112,6 +114,8 @@ export default function WhitepaperPage() {
 
   const allowedDocs = verifiedTier ? tierToDocs[verifiedTier] || [] : [];
   const hasValidDocs = allowedDocs.length > 0;
+  const displayName = verifiedPartner && partnerInfo[verifiedPartner]?.displayName;
+  const greeting = verifiedPartner && partnerInfo[verifiedPartner]?.greeting;
 
   if (!hydrated) {
     return (
@@ -144,18 +148,26 @@ export default function WhitepaperPage() {
       <Fragment>
         <Suspense fallback={<div className={postStyles.loadingScreen}>Loading viewer...</div>}>
           <div className={postStyles.fullScreenWrapper}>
-            <GreetingWrapper partnerName={verifiedPartner || 'Developer Mode'}>
+            <GreetingWrapper
+                partnerName={verifiedPartner ?? 'Developer Mode'}
+                displayName={displayName ?? undefined}
+              >
               <div className={`${postStyles.viewerSection} ${postStyles.fadeIn}`}>
                 {hasValidDocs ? (
-                  <WhitepaperViewer allowedDocs={allowedDocs} />
+                  <WhitepaperViewer
+                    docs={allowedDocs}
+                    partnerName={verifiedPartner || undefined}
+                    displayName={displayName || undefined}
+                    greeting={greeting || undefined}
+                  />
                 ) : (
-                <div className={postStyles.restrictedAccessPanel}>
-                  <h2>🚫 Access Restricted</h2>
-                  <p>Your tier <code>{verifiedTier}</code> does not have access to any documents.</p>
-                  <button onClick={handleSoftReset}>
-                    Retry Login
-                  </button>
-                </div>
+                  <div className={postStyles.restrictedAccessPanel}>
+                    <h2>🚫 Access Restricted</h2>
+                    <p>Your tier <code>{verifiedTier}</code> does not have access to any documents.</p>
+                    <button onClick={handleSoftReset}>
+                      Retry Login
+                    </button>
+                  </div>
                 )}
               </div>
             </GreetingWrapper>
@@ -168,6 +180,7 @@ export default function WhitepaperPage() {
             )}
 
             <StorageStatus onStorageCleared={handleSoftReset} />
+
           </div>
         </Suspense>
 

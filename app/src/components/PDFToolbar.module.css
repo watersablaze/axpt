@@ -69,3 +69,26 @@
   outline: none;
   cursor: pointer;
 }
+
+.floatingHint {
+  position: absolute;
+  top: 1rem;
+  right: 0.5rem;
+  background: rgba(0, 255, 198, 0.1);
+  color: #00ffc6;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid #00ffc6;
+  margin-right: 500px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  animation: fadeOutHint 1s ease-in-out 20s forwards;
+  z-index: 5;
+  pointer-events: none;
+}
+
+@keyframes fadeOutHint {
+  to {
+    opacity: 0;
+    transform: translateX(40%);
+  }
+}

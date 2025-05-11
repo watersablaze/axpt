@@ -3,15 +3,18 @@ import styles from './GreetingWrapper.module.css'; // Assuming your CSS file is 
 
 interface GreetingWrapperProps {
   partnerName: string;
-  children: ReactNode; // ✅ Now properly expects children
+  displayName?: string;
+  children: ReactNode; 
 }
 
-const GreetingWrapper: FC<GreetingWrapperProps> = ({ partnerName, children }) => {
+const GreetingWrapper: FC<GreetingWrapperProps> = ({ partnerName, displayName, children }) => {
+  const shownName = displayName || partnerName;
+  
   return (
     <div className={styles.fullScreenWrapper}>
       <div className={styles.greetingWrapper}>
       <p className={styles.greetingText}>
-  Welcome, {partnerName}! You now have exclusive access to the AXPT.io Official Whitepaper.
+  Welcome, {displayName}! You now have exclusive access to the AXPT.io Official Whitepaper.
 </p>
       </div>
       <div className={styles.viewerSection}>
