@@ -1,9 +1,17 @@
-import 'dotenv/config';
 // File: app/scripts/partner/listAccess.ts
+import 'dotenv/config';
 import partnerTiers from '@/config/partnerTiers.json' assert { type: 'json' };
 import tierDocs from '@/config/tierDocs.json' assert { type: 'json' };
 
-const partners = partnerTiers as Record<string, string>;
+const partners = partnerTiers as Record<
+  string,
+  {
+    tier: string;
+    displayName: string;
+    greeting: string;
+  }
+>;
+
 const docs = tierDocs as Record<string, string[]>;
 
 console.log('\n📋 Partner Tier Access Overview\n──────────────────────────────');
@@ -11,15 +19,16 @@ console.log('\n📋 Partner Tier Access Overview\n──────────
 const foundTiers = new Set(Object.keys(docs));
 const seenTiers = new Set<string>();
 
-Object.entries(partners).forEach(([partner, tier]) => {
+Object.entries(partners).forEach(([partner, info]) => {
+  const { tier, displayName } = info;
   const pdfs = docs[tier];
   seenTiers.add(tier);
 
   if (!pdfs) {
     console.warn(`⚠️  Tier '${tier}' for partner '${partner}' is not defined in tierDocs.json`);
-    console.log(`👤 ${partner.padEnd(25)} → 🎖️ ${tier.padEnd(10)} → ⚠️ No PDF mapping`);
+    console.log(`👤 ${displayName.padEnd(25)} → 🎖️ ${tier.padEnd(10)} → ⚠️ No PDF mapping`);
   } else {
-    console.log(`👤 ${partner.padEnd(25)} → 🎖️ ${tier.padEnd(10)} → 📄 [${pdfs.join(', ')}]`);
+    console.log(`👤 ${displayName.padEnd(25)} → 🎖️ ${tier.padEnd(10)} → 📄 [${pdfs.join(', ')}]`);
   }
 });
 

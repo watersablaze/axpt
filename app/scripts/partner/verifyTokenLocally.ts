@@ -3,7 +3,7 @@
 import 'dotenv/config';
 import crypto from 'node:crypto';
 import { normalizePartner } from './utils/normalize';
-import { getEnv } from './utils/readEnv';
+import { getEnv } from '@/lib/utils/readEnv';
 
 const PARTNER_SECRET = getEnv('PARTNER_SECRET');
 

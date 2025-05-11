@@ -7,7 +7,7 @@ import path from 'path';
 import qrcode from 'qrcode';
 import { normalizePartner } from './utils/normalize';
 import { generateSignedToken } from './utils/signToken';
-import { getEnv } from './utils/readEnv';
+import { getEnv } from '@/lib/utils/readEnv';
 import rawPartnerTiers from '@/config/partnerTiers.json';
 import tierDocs from '@/config/tierDocs.json';
 

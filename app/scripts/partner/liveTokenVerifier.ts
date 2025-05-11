@@ -2,7 +2,7 @@ import 'dotenv/config';
 import prompts from 'prompts';
 import crypto from 'node:crypto';
 import { normalizePartner } from './utils/normalize';
-import { getEnv } from './utils/readEnv';
+import { getEnv } from '@/lib/utils/readEnv';
 
 const PARTNER_SECRET = getEnv('PARTNER_SECRET');
 

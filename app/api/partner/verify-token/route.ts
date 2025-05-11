@@ -1,7 +1,7 @@
 // File: app/api/partner/verify-token/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import { getEnv } from '@utils/readEnv';
+import { getEnv } from '@/lib/utils/readEnv';
 import partnerTiers from '@/config/partnerTiers.json';
 import tierDocs from '@/config/tierDocs.json';
 import crypto from 'crypto';
@@ -9,12 +9,7 @@ import fs from 'fs';
 import path from 'path';
 
 const PARTNER_SECRET = getEnv('PARTNER_SECRET');
-
-// New structure: partnerTiers is Record<string, { tier: string; displayName?: string; greeting?: string }>
-const partners = partnerTiers as Record<
-  string,
-  { tier: string; displayName?: string; greeting?: string }
->;
+const partners = partnerTiers as Record<string, { tier: string; displayName?: string; greeting?: string }>;
 const tierToDocs = tierDocs as Record<string, string[]>;
 
 const getLogPath = () => {
@@ -45,11 +40,15 @@ function verifyTokenPayload(token: string): { isValid: boolean; payload?: any } 
   if (!encodedPayload || !providedSig) return { isValid: false };
 
   try {
-    const json = Buffer.from(encodedPayload, 'base64').toString('utf8');
-    const payload = JSON.parse(json);
-    const expectedSig = crypto.createHmac('sha256', PARTNER_SECRET).update(json).digest('hex');
-    return { isValid: expectedSig === providedSig, payload };
-  } catch {
+    const payloadRaw = Buffer.from(encodedPayload, 'base64').toString('utf8');
+    const payload = JSON.parse(payloadRaw);
+
+    const expectedSig = crypto.createHmac('sha256', PARTNER_SECRET).update(payloadRaw).digest('hex');
+
+    const isValid = expectedSig === providedSig;
+    return { isValid, payload };
+  } catch (err) {
+    console.error('❌ Token decode/verify error:', err);
     return { isValid: false };
   }
 }

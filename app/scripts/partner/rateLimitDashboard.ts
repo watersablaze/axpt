@@ -2,7 +2,7 @@
 import 'dotenv/config';
 import { Redis } from '@upstash/redis';
 import prompts from 'prompts';
-import { getEnv } from '@utils/readEnv';
+import { getEnv } from '@/lib/utils/readEnv';
 
 const redis = new Redis({
   url: getEnv('UPSTASH_REDIS_REST_URL'),

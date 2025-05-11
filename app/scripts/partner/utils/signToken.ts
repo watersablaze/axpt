@@ -3,7 +3,7 @@ import crypto from 'node:crypto';
 import fs from 'fs';
 import path from 'path';
 import { normalizePartner } from './normalize';
-import { getEnv } from './readEnv';
+import { getEnv } from '@/lib/utils/readEnv';
 
 export const generateSignedToken = (
   partner: string,

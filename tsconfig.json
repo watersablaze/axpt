@@ -16,24 +16,25 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "baseUrl": "app",
+    "baseUrl": "app/src",
     "paths": {
-      "@/*": ["src/*"],
-      "@/components/*": ["src/components/*"],
-      "@/lib/*": ["src/lib/*"],
-      "@/lotties/*": ["src/lotties/*"],
-      "@/config/*": ["src/config/*"],
-      "@partner/*": ["scripts/partner/*"],
-      "@utils/*": ["scripts/partner/utils/*"]
+      "@/*": ["*"],
+      "@/components/*": ["components/*"],
+      "@/lib/*": ["lib/*"],
+      "@/lotties/*": ["lotties/*"],
+      "@/config/*": ["config/*"],
+      "@partner/*": ["../../scripts/partner/*"],
+      "@utils/*": ["../scripts/partner/utils/*"]
     },
-   "plugins": [{ "name": "next" }]
+    "plugins": [{ "name": "next" }]
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     "../.next/types/**/*.ts",
     "../next-env.d.ts",
-    ".next/types/**/*.ts"
+    ".next/types/**/*.ts",
+    "../scripts/**/*"
   ],
   "exclude": ["node_modules"]
 }
