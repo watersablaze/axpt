@@ -102,11 +102,30 @@ if [ "$confirm" != "y" ]; then
 fi
 
 log "🛠️ Executing Deploy Ritual..."
-"$SCRIPT_DIR/deployritual" >> "$logfile" 2>&1
-if [ $? -eq 0 ]; then
-  log "✅ Deploy Ritual completed successfully."
+echo -e "\nChoose deployment method:\n  1) Vercel CLI\n  2) Git Push\n"
+read -p "→ Enter 1 or 2: " method
+
+if [ "$method" == "1" ]; then
+  vercel --prod --confirm >> "$logfile" 2>&1
+  if [ $? -eq 0 ]; then
+    log "✅ Deployed with Vercel CLI."
+  else
+    log "❌ Vercel CLI deploy failed."
+    exit 1
+  fi
+elif [ "$method" == "2" ]; then
+  git add . >> "$logfile" 2>&1
+  git commit -m "📦 Auto deploy at $timestamp" >> "$logfile" 2>&1
+  git push origin master >> "$logfile" 2>&1
+  if [ $? -eq 0 ]; then
+    log "✅ Changes pushed to Git for deployment."
+  else
+    log "❌ Git push failed."
+    exit 1
+  fi
 else
-  log "❌ Deploy Ritual failed. Check logs for details."
+  log "❌ Invalid input. Aborting deploy."
+  exit 1
 fi
 
 log "\n📜 Log saved to $logfile"
