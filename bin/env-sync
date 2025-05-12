@@ -1,0 +1,33 @@
+#!/bin/bash
+# AXPT | Environment Sync: Compare local and Vercel env values
+
+KEY="PARTNER_SECRET"
+
+echo "🔐 Checking PARTNER_SECRET consistency between environments..."
+
+# Load local .env value
+LOCAL_VAL=$(grep "^$KEY=" .env | cut -d '=' -f2- | tr -d '\\"' | tr -d "'")
+if [ -z "$LOCAL_VAL" ]; then
+  echo "❌ Local .env value not found for $KEY"
+  exit 1
+fi
+
+# Load Vercel value via CLI (requires Vercel CLI to be logged in)
+VERCEL_VAL=$(vercel env pull .env.vercel.tmp --yes > /dev/null 2>&1 && grep "^$KEY=" .env.vercel.tmp | cut -d '=' -f2- | tr -d '\\"' | tr -d "'")
+rm -f .env.vercel.tmp
+
+if [ -z "$VERCEL_VAL" ]; then
+  echo "❌ Failed to retrieve Vercel value for $KEY"
+  exit 1
+fi
+
+if [ "$LOCAL_VAL" = "$VERCEL_VAL" ]; then
+  echo "✅ PARTNER_SECRET values match."
+else
+  echo "⚠️ Mismatch detected!"
+  echo "  Local:  $LOCAL_VAL"
+  echo "  Vercel: $VERCEL_VAL"
+  echo ""
+  echo "💡 If your local value is correct, sync it with:"
+  echo "   vercel env add $KEY"
+fi

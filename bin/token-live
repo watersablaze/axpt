@@ -1,0 +1,32 @@
+#!/bin/bash
+
+# === AXPT | Live Token Generator ===
+# Usage: bin/token-live <partner-slug> [--tier=TierName]
+# Example: bin/token-live jamal --tier=Board
+
+if [ -z "$1" ]; then
+  echo "❌ Usage: bin/token-live <partner-slug> [--tier=TierName]"
+  exit 1
+fi
+
+PARTNER=$1
+TIER=${2:---tier=Partner}
+
+echo "🌐 Fetching live environment variables from Vercel..."
+vercel env pull --environment=production .env.live > /dev/null
+
+if [ ! -f .env.live ]; then
+  echo "❌ Failed to fetch .env.live"
+  exit 1
+fi
+
+echo "🔐 Loading PARTNER_SECRET from live environment..."
+export $(grep PARTNER_SECRET .env.live)
+
+if [ -z "$PARTNER_SECRET" ]; then
+  echo "❌ PARTNER_SECRET not found in .env.live"
+  exit 1
+fi
+
+echo "🪙 Generating token for '$PARTNER' ($TIER)..."
+npx tsx app/scripts/partner/token.ts generate "$PARTNER" $TIER

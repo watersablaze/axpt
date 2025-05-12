@@ -5,6 +5,11 @@ import prompts from 'prompts';
 import fs from 'fs';
 import path from 'path';
 import qrcode from 'qrcode';
+import os from 'os';
+import { exec } from 'child_process';
+import clipboardy from 'clipboardy';
+import crypto from 'crypto';
+
 import { normalizePartner } from './utils/normalize';
 import { generateSignedToken } from './utils/signToken';
 import { getEnv } from '@/lib/utils/readEnv';
@@ -44,7 +49,7 @@ async function generateTokenFlow() {
   console.log(`🎖️ Tier Detected:          ${tier}`);
   console.log(`📄 Docs:                   ${allowedDocs.join(', ') || 'None'}`);
 
-  const { token, payload, encoded, signature } = generateSignedToken(
+  const { token, encoded, signature } = generateSignedToken(
     rawName,
     secret,
     tier,
@@ -69,6 +74,48 @@ async function generateTokenFlow() {
   console.log(`──────────────────────────────\n`);
 
   logAction(`Generated token for '${rawName}' [${normalized}] → Tier: ${tier}`);
+
+  await clipboardy.write(token);
+  console.log(`📋 Token copied to clipboard.`);
+
+  if (!process.argv.includes('--no-preview')) {
+    const openCmd =
+      os.platform() === 'darwin'
+        ? `open "${qrPath}"`
+        : os.platform() === 'win32'
+        ? `start "" "${qrPath}"`
+        : `xdg-open "${qrPath}"`;
+
+    exec(openCmd, (err) => {
+      if (err) {
+        console.error('⚠️ Could not open QR preview:', err.message);
+      } else {
+        console.log('🖼️  QR code preview launched.');
+      }
+    });
+  }
+
+  // 🧪 Inline Local Verification Using PARTNER_SECRET
+  console.log(`\n🧪 Verifying token using local PARTNER_SECRET...`);
+  try {
+    const [payloadPart, sigPart] = token.split(':');
+    const parsed = JSON.parse(Buffer.from(payloadPart, 'base64').toString());
+    const expectedSig = crypto
+      .createHmac('sha256', secret)
+      .update(JSON.stringify(parsed))
+      .digest('hex');
+
+    if (expectedSig === sigPart) {
+      console.log(`✅ Live Verification Passed`);
+      console.log(`🎖️ Tier: ${parsed.tier}`);
+      const access = Array.isArray(parsed.allowedDocs) ? parsed.allowedDocs.join(', ') : 'None';
+      console.log(`📄 Access: ${access}`);
+    } else {
+      console.error(`❌ Invalid token signature.`);
+    }
+  } catch (err: any) {
+    console.error(`❌ Failed to verify token: ${err.message}`);
+  }
 }
 
 generateTokenFlow();

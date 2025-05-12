@@ -35,6 +35,42 @@ bin/preflight
 - `tsc --noEmit`
 - `prisma generate`
 - `npm run build`
+- `audit-dashboard-remnants.sh`
+
+---
+
+#### 🔐 `bin/token`
+Interactive and flag-based access token utility.
+
+**Usage:**
+```bash
+bin/token generate              # Interactive token creation
+bin/token verify <token>        # Manually verify a token
+bin/token list                  # Show all partner tiers
+bin/token lookup <partner>      # Show tier for partner
+```
+
+---
+
+#### 🔐 `bin/token-debug-live`
+Verifies a token using the live Vercel `PARTNER_SECRET` value directly via shell injection.
+
+**Usage:**
+```bash
+bin/token-debug-live <token>
+```
+
+---
+
+#### 🧬 `bin/env-sync`
+Compares the `PARTNER_SECRET` from your local `.env` with the deployed value in Vercel.
+
+**Usage:**
+```bash
+bin/env-sync
+```
+
+Use this to catch desync issues between environments.
 
 ---
 

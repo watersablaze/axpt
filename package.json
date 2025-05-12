@@ -45,6 +45,7 @@
     "bootstrap": "^5.3.3",
     "canvas": "^3.1.0",
     "class-variance-authority": "^0.7.1",
+    "clipboardy": "^4.0.0",
     "clsx": "^2.1.1",
     "dotenv": "^16.4.7",
     "ethers": "^6.13.5",

@@ -7,21 +7,21 @@ timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
 logfile="logs/ultraPreflightDeploy_$timestamp.log"
 mkdir -p logs
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../app/scripts"
 
 log() {
   echo -e "$1" | tee -a "$logfile"
 }
 
 log "🧱 [PRE] Validating canonical directory structure..."
-"$SCRIPT_DIR/../app/scripts/validate-canonical-structure.sh" >> "$logfile" 2>&1
+"$SCRIPT_DIR/validate-canonical-structure.sh" >> "$logfile" 2>&1
 if [ $? -ne 0 ]; then
   log "❌ Canonical structure validation failed."
   exit 1
 fi
 
 log "🔐 [PRE] Scanning for missing 'use client' on useSession()..."
-"$SCRIPT_DIR/../app/scripts/check-useSession-client-boundary.sh" >> "$logfile" 2>&1
+"$SCRIPT_DIR/check-useSession-client-boundary.sh" >> "$logfile" 2>&1
 if [ $? -ne 0 ]; then
   log "❌ 'useSession()' used without 'use client'. Fix this before continuing."
   exit 1
@@ -32,7 +32,7 @@ rm -rf .next .turbo >> "$logfile" 2>&1
 log "✅ Cache directories removed.\n"
 
 log "📁 [1/7] Validating alias paths..."
-"$SCRIPT_DIR/../app/scripts/validate-aliases-from-tsconfig.sh" >> "$logfile" 2>&1
+"$SCRIPT_DIR/validate-aliases-from-tsconfig.sh" >> "$logfile" 2>&1
 if [ $? -ne 0 ]; then
   log "❌ Alias validation failed. Check tsconfig.json."
   exit 1
@@ -64,7 +64,7 @@ fi
 log "✅ Build successful.\n"
 
 log "🔎 [5/7] Auditing for stale dashboard remnants..."
-"$SCRIPT_DIR/../app/scripts/audit-dashboard-remnants.sh" >> "$logfile" 2>&1
+"$SCRIPT_DIR/audit-dashboard-remnants.sh" >> "$logfile" 2>&1
 if [ $? -ne 0 ]; then
   log "⚠️  Stale dashboard imports detected. Review output above."
   read -p "🛑 Continue anyway? (y/n): " dashConfirm
@@ -101,38 +101,44 @@ if [ "$confirm" != "y" ]; then
   exit 0
 fi
 
+read -p "🧬 Detected local .env file. Sync to Vercel before deploy? (y/n): " syncEnv
+if [ "$syncEnv" == "y" ]; then
+  bin/env-sync >> "$logfile" 2>&1
+  if [ $? -eq 0 ]; then
+    log "✅ Environment variables synced to Vercel."
+  else
+    log "❌ Failed to sync env vars. Review output above."
+    exit 1
+  fi
+fi
+
 log "🛠️ Executing Deploy Ritual..."
 echo -e "\nChoose deployment method:\n  1) Vercel CLI\n  2) Git Push\n"
 read -p "→ Enter 1 or 2: " method
 
 if [ "$method" == "1" ]; then
-  vercel --prod --yes >> "$logfile" 2>&1
+  vercel --prod --confirm >> "$logfile" 2>&1
   if [ $? -eq 0 ]; then
     log "✅ Deployed with Vercel CLI."
   else
     log "❌ Vercel CLI deploy failed."
     exit 1
   fi
-
 elif [ "$method" == "2" ]; then
   git add . >> "$logfile" 2>&1
   git commit -m "📦 Auto deploy at $timestamp" >> "$logfile" 2>&1
   git push origin master >> "$logfile" 2>&1
   if [ $? -eq 0 ]; then
     log "✅ Changes pushed to Git for deployment."
-
-    echo -e "\n🚀 Would you like to now deploy to Vercel CLI?"
-    read -p "→ Enter y or n: " vercelConfirm
-    if [ "$vercelConfirm" == "y" ]; then
-      vercel --prod --yes >> "$logfile" 2>&1
+    read -p "🚀 Deploy to Vercel now as well? (y/n): " deployNow
+    if [ "$deployNow" == "y" ]; then
+      vercel --prod --confirm >> "$logfile" 2>&1
       if [ $? -eq 0 ]; then
-        log "✅ Deployed with Vercel CLI after Git push."
+        log "✅ Deployed to Vercel after Git push."
       else
-        log "❌ Vercel CLI deploy failed after Git push."
+        log "❌ Vercel deploy failed."
         exit 1
       fi
-    else
-      log "🕊️ Skipping Vercel CLI deploy after Git push."
     fi
   else
     log "❌ Git push failed."

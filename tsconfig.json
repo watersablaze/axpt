@@ -1,8 +1,5 @@
 {
   "compilerOptions": {
-    "typeRoots": ["./types", "./node_modules/@types"],
-    "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
     "target": "es2020",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
@@ -24,8 +21,14 @@
       "@/lotties/*": ["lotties/*"],
       "@/config/*": ["config/*"],
       "@partner/*": ["../../scripts/partner/*"],
-      "@utils/*": ["../scripts/partner/utils/*"]
+      "@utils/*": ["../../scripts/partner/utils/*"]
     },
+    "typeRoots": [
+      "./types",
+      "./node_modules/@types"
+    ],
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
     "plugins": [{ "name": "next" }]
   },
   "include": [

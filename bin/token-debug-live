@@ -1,0 +1,35 @@
+#!/bin/bash
+
+# === AXPT | Live Token Verifier ===
+# Usage: bin/token-debug-live "<token>"
+
+if [ -z "$1" ]; then
+  echo "❌ Usage: bin/token-debug-live \"<token>\""
+  exit 1
+fi
+
+TOKEN="$1"
+TEMP_ENV=".env.live"
+
+echo "🌐 Fetching live environment variables from Vercel..."
+vercel env pull --environment=production "$TEMP_ENV" > /dev/null
+
+if [ ! -f "$TEMP_ENV" ]; then
+  echo "❌ Failed to fetch $TEMP_ENV"
+  exit 1
+fi
+
+echo "🔐 Loading PARTNER_SECRET from $TEMP_ENV..."
+export $(grep PARTNER_SECRET "$TEMP_ENV")
+
+if [ -z "$PARTNER_SECRET" ]; then
+  echo "❌ PARTNER_SECRET not found in $TEMP_ENV"
+  rm "$TEMP_ENV"
+  exit 1
+fi
+
+echo "🧪 Verifying token using live secret..."
+npx tsx app/scripts/partner/token.ts verify "$TOKEN"
+
+echo "🧼 Cleaning up $TEMP_ENV..."
+rm "$TEMP_ENV"
