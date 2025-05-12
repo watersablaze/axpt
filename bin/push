@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# === AXPT | Git Push Deploy + Optional Vercel Trigger ===
+timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
+logfile="logs/gitPushDeploy_$timestamp.log"
+mkdir -p logs
+
+log() {
+  echo -e "$1" | tee -a "$logfile"
+}
+
+log "📦 Git Commit & Push Initiated at $timestamp"
+
+git add . >> "$logfile" 2>&1
+git commit -m "📦 Auto push at $timestamp" >> "$logfile" 2>&1
+git push origin master >> "$logfile" 2>&1
+
+if [ $? -eq 0 ]; then
+  log "✅ Changes pushed to Git."
+
+  echo -e "\n🚀 Would you like to trigger a Vercel deployment now?"
+  read -p "→ Deploy to Vercel now? (y/n): " deployNow
+
+  if [ "$deployNow" == "y" ]; then
+    vercel --prod --yes >> "$logfile" 2>&1
+    if [ $? -eq 0 ]; then
+      log "✅ Vercel deploy complete."
+    else
+      log "❌ Vercel deploy failed."
+    fi
+  else
+    log "🕊️ Skipped Vercel deploy by user choice."
+  fi
+else
+  log "❌ Git push failed."
+  exit 1
+fi
+
+log "📜 Log saved to $logfile"
