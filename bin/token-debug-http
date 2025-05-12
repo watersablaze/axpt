@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# === AXPT | Token HTTP Debugger ===
+# Usage:
+#   bin/token-debug-http "<token>" [--prod]
+
+TOKEN=$1
+ENVIRONMENT=$2
+
+if [ -z "$TOKEN" ]; then
+  echo "❌ Usage: bin/token-debug-http \"<token>\" [--prod]"
+  exit 1
+fi
+
+if [ "$ENVIRONMENT" == "--prod" ]; then
+  ENDPOINT="https://axpt.io/api/partner/verify-token"
+else
+  ENDPOINT="http://localhost:3000/api/partner/verify-token"
+fi
+
+echo -e "\n🌐 Testing token against: $ENDPOINT"
+response=$(curl -s -X GET "$ENDPOINT?token=$TOKEN")
+
+# Detect response type
+if [[ -z "$response" ]]; then
+  echo -e "\n⚠️  Empty response received."
+  exit 1
+elif echo "$response" | grep -q "<html"; then
+  echo -e "\n⚠️  Received an HTML response. Likely an error page:"
+  echo "$response" | head -n 10
+  exit 1
+elif echo "$response" | jq . >/dev/null 2>&1; then
+  echo -e "\n📦 Parsed JSON Response:"
+  echo "$response" | jq
+else
+  echo -e "\n⚠️  Response is not valid JSON:\n$response"
+  exit 1
+fi
