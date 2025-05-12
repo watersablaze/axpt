@@ -6,8 +6,12 @@
 timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
 logfile="logs/ultraPreflightDeploy_$timestamp.log"
 mkdir -p logs
+touch "$logfile"
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../app/scripts"
+echo "📓 Log will be saved to: $logfile"
+
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+SCRIPT_DIR="$ROOT_DIR/app/scripts"
 
 log() {
   echo -e "$1" | tee -a "$logfile"

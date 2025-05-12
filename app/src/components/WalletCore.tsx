@@ -36,7 +36,7 @@ export default function WalletCore() {
         </div>
       )}
 
-      {/* Placeholder for further dashboard elements */}
+      {/* Placeholder for further portal elements */}
       <div className="mt-10 text-gray-400 text-sm">
         <p>Transaction history, staking, and swap features coming soon.</p>
       </div>
