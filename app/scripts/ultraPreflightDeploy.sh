@@ -68,16 +68,20 @@ fi
 log "✅ Build successful.\n"
 
 log "🔎 [5/7] Auditing for stale dashboard remnants..."
-"$SCRIPT_DIR/audit-dashboard-remnants.sh" >> "$logfile" 2>&1
-if [ $? -ne 0 ]; then
-  log "⚠️  Stale dashboard imports detected. Review output above."
-  read -p "🛑 Continue anyway? (y/n): " dashConfirm
-  if [ "$dashConfirm" != "y" ]; then
-    log "🛑 Deployment aborted due to stale imports."
-    exit 1
+if [ -x "$SCRIPT_DIR/audit-dashboard-remnants.sh" ]; then
+  "$SCRIPT_DIR/audit-dashboard-remnants.sh" >> "$logfile" 2>&1
+  if [ $? -ne 0 ]; then
+    log "⚠️  Stale dashboard imports detected. Review output above."
+    read -p "🛑 Continue anyway? (y/n): " dashConfirm
+    if [ "$dashConfirm" != "y" ]; then
+      log "🛑 Deployment aborted due to stale imports."
+      exit 1
+    fi
+  else
+    log "✅ No stale dashboard imports found.\n"
   fi
 else
-  log "✅ No stale dashboard imports found.\n"
+  log "⚠️  audit-dashboard-remnants.sh not found. Skipping stale import audit.\n"
 fi
 
 log "📦 [6/7] Noting Prisma and Stripe usage (non-destructive)..."
