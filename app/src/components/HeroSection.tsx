@@ -45,7 +45,7 @@ const HeroSection = () => {
         if (loginResponse?.ok) {
           setFormMessage("Welcome! Redirecting to your dashboard...");
           setTimeout(() => {
-            window.location.href = "/dashboard";
+            window.location.href = "/" // 🚫 replaced stale /dashboard link;
           }, 2000);
         } else {
           setFormMessage("Signup succeeded, but auto-login failed. Please login manually.");

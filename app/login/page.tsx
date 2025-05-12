@@ -33,7 +33,7 @@ export default function LoginPage() {
       setError("❌ Invalid email or password. Please try again.");
       setLoading(false);
     } else {
-      router.push("/dashboard"); // ✅ Next.js navigation (better UX)
+      router.push("/"); // 🚫 replaced stale /dashboard link); // ✅ Next.js navigation (better UX)
     }
   };
 
