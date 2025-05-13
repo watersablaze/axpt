@@ -3,7 +3,7 @@ import 'dotenv/config';
 import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import qrcode from 'qrcode';
+import * as qrcode from 'qrcode';
 
 const partnerName = process.argv[2];
 
@@ -19,9 +19,17 @@ if (!PARTNER_SECRET) {
 }
 
 const generateToken = (partner: string): string => {
-  const hmac = crypto.createHmac('sha256', PARTNER_SECRET);
-  hmac.update(partner);
-  return `${partner.replace(/\s+/g, '-')}:${hmac.digest('hex')}`;
+  const payload = {
+    partner: partner.replace(/\s+/g, '-').toLowerCase(),
+    tier: 'Partner',
+    docs: ['AXPT-Whitepaper.pdf'],
+    iat: Math.floor(Date.now() / 1000)
+  };
+
+  const raw = JSON.stringify(payload);
+  const encoded = Buffer.from(raw).toString('base64');
+  const sig = crypto.createHmac('sha256', PARTNER_SECRET).update(raw).digest('hex');
+  return `${encoded}:${sig}`;
 };
 
 const main = async () => {

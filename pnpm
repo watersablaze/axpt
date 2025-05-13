@@ -1,0 +1,13 @@
+Environment variables loaded from .env
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.7.0) to ./prisma/generated/client in 302ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want to react to database changes in your app as they happen? Discover how with Pulse: https://pris.ly/tip-1-pulse
+
+
+warn Versions of prisma@6.2.1 and @prisma/client@6.7.0 don't match.
+This might lead to unexpected behavior.
+Please make sure they have the same version.

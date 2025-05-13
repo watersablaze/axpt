@@ -1,19 +1,18 @@
 #!/bin/bash
-# AXPT Token CLI Launcher
+# 🔐 AXPT Token CLI Launcher
 
 source ./app/scripts/verify-env.sh
 
+SCRIPT_DIR="./app/scripts/partner"
 COMMAND=$1
 shift
-
-SCRIPT_DIR="./app/scripts/partner"
 
 case "$COMMAND" in
   generate)
     npx tsx "$SCRIPT_DIR/token.ts" generate "$@"
     ;;
   verify)
-    npx tsx "$SCRIPT_DIR/verifyToken.ts" "$@"
+    npx tsx "$SCRIPT_DIR/token.ts" verify "$@"
     ;;
   list)
     npx tsx "$SCRIPT_DIR/token.ts" list "$@"
@@ -27,25 +26,26 @@ case "$COMMAND" in
   sync-env)
     bin/env-sync "$@"
     ;;
+  dashboard)
+    npx tsx bin/token-menu.ts
+    ;;
   ""|help|--help|-h)
     echo ""
     echo "🔐 AXPT Token CLI"
     echo "------------------"
     echo "Usage:"
-    echo "  bin/token generate               # Interactive token creation (JSON + signature)"
-    echo "  bin/token verify <token>         # Verify token manually (default: consolidated verifier)"
-    echo "  bin/token list                   # List all known partners and tiers"
-    echo "  bin/token lookup <partner-name>  # Lookup a specific partner’s tier"
-    echo "  bin/token debug-live             # Verify token using Vercel environment"
-    echo "  bin/token sync-env               # Ensure Vercel and local .env values match"
-    echo ""
-    echo "Examples:"
-    echo "  bin/token generate"
-    echo "  bin/token verify \"<token>\""
-    echo "  bin/token debug-live \"<token>\""
+    echo "  bin/token generate               # Interactive token creation"
+    echo "  bin/token verify <token>         # Verify token and open"
+    echo "  bin/token list                   # List partners"
+    echo "  bin/token lookup <partner>       # Lookup tier"
+    echo "  bin/token debug-live <token>     # Verify using prod API"
+    echo "  bin/token sync-env               # Check ENV sync"
+    echo "  bin/token dashboard              # Launch CLI menu"
     echo ""
     ;;
   *)
-    npx tsx "$SCRIPT_DIR/token.ts" "$COMMAND" "$@"
+    echo "❌ Unknown command: $COMMAND"
+    echo "Run 'bin/token help' to see available options."
+    exit 1
     ;;
 esac

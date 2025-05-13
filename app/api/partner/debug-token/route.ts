@@ -1,40 +1,44 @@
 // File: app/api/partner/debug-token/route.ts
-
 import { NextRequest, NextResponse } from 'next/server';
 import crypto from 'crypto';
+import { getEnv } from '@/lib/utils/readEnv';
 
-const SECRET = process.env.PARTNER_SECRET as string;
+const PARTNER_SECRET = getEnv('PARTNER_SECRET');
 
 export async function POST(req: NextRequest) {
-  if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json({ success: false, message: '🔒 Debugging disabled in production.' }, { status: 403 });
-  }
-
-  const { token } = await req.json();
-  if (!token || typeof token !== 'string') {
-    return NextResponse.json({ success: false, message: 'Token missing or invalid.' }, { status: 400 });
-  }
-
-  const [encoded, sig] = token.split(':');
-  if (!encoded || !sig) {
-    return NextResponse.json({ success: false, message: 'Malformed token.' }, { status: 400 });
-  }
-
   try {
-    const rawJson = Buffer.from(encoded, 'base64').toString('utf8');
-    const payload = JSON.parse(rawJson);
+    const { token } = await req.json();
+    if (!token) return NextResponse.json({ error: 'Missing token.' }, { status: 400 });
 
-    const expectedSig = crypto.createHmac('sha256', SECRET).update(rawJson).digest('hex');
-    const valid = sig === expectedSig;
+    const [encodedPayload, providedSig] = token.split(':');
+    if (!encodedPayload || !providedSig) {
+      return NextResponse.json({ error: 'Malformed token structure.' }, { status: 400 });
+    }
+
+    let decodedPayload = '';
+    try {
+      decodedPayload = Buffer.from(encodedPayload, 'base64').toString('utf8');
+    } catch (err) {
+      return NextResponse.json({ error: 'Failed to decode base64 payload.', details: err }, { status: 400 });
+    }
+
+    let parsedPayload;
+    try {
+      parsedPayload = JSON.parse(decodedPayload);
+    } catch (err) {
+      return NextResponse.json({ error: 'Failed to parse JSON payload.', decoded: decodedPayload }, { status: 400 });
+    }
+
+    const expectedSig = crypto.createHmac('sha256', PARTNER_SECRET).update(decodedPayload).digest('hex');
 
     return NextResponse.json({
-      success: true,
-      valid,
-      reason: valid ? '✅ Signature valid' : '❌ Signature mismatch',
-      payload,
-      expectedSig
+      decodedPayload,
+      parsedPayload,
+      providedSig,
+      expectedSig,
+      isValid: expectedSig === providedSig,
     });
   } catch (err) {
-    return NextResponse.json({ success: false, message: 'Token decode or parse failed.' }, { status: 400 });
+    return NextResponse.json({ error: 'Unexpected error', details: err }, { status: 500 });
   }
 }

@@ -1,88 +1,66 @@
-/* 🟢 Pre-Verification View Styling */
-
+/* 🌌 Page Layout */
 .pageContainer {
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   min-height: 100vh;
-  padding-top: 6rem;
+  padding: 2rem 1rem;
   background: #0a0a0a url('/images/black-felt.png') center center / cover no-repeat;
   background-size: cover;
   background-attachment: fixed;
   animation: pageFadeIn 2s ease-out forwards;
   opacity: 0;
   overflow: hidden;
+  text-align: center;
+  box-sizing: border-box;
 }
 
-/* Soft Fade-In for entire portal */
 @keyframes pageFadeIn {
   to {
     opacity: 1;
   }
 }
 
-/* 🌑 Depth: Vertical Gradient Overlay */
+/* ✨ Overlay Effects */
 .pageContainer::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(10, 10, 10, 0.4) 0%,
-    rgba(10, 10, 10, 0.6) 100%
-  );
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to bottom, rgba(10, 10, 10, 0.4), rgba(10, 10, 10, 0.6));
   pointer-events: none;
   z-index: 0;
 }
 
-/* 🌫️ Life Energy: Moving Mist Layer */
 .pageContainer::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  top: 0; left: 0; right: 0; bottom: 0;
   background: url('/images/mist-layer.png') center center / cover no-repeat;
-  opacity: 0.02; /* Ultra subtle */
+  opacity: 0.02;
   filter: blur(4px);
   animation: mistDrift 220s linear infinite;
   pointer-events: none;
   z-index: 1;
 }
 
-/* Mist drifting motion */
 @keyframes mistDrift {
-  0% {
-    transform: translate(0px, 0px) scale(1);
-  }
-  50% {
-    transform: translate(10px, 5px) scale(1.01);
-  }
-  100% {
-    transform: translate(0px, 0px) scale(1);
-  }
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(10px, 5px) scale(1.01); }
+  100% { transform: translate(0, 0) scale(1); }
 }
 
-/* 🟣 Animation Styling */
-.animationWrapper {
-  margin-bottom: 2rem;
-  max-width: 300px;
-  width: 100%;
-  height: auto;
-}
-
+/* 🌀 Orb */
 .orbWrapper {
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 0; /* ✅ Lower priority */
-  pointer-events: none; /* ✅ Prevents it from blocking clicks */
+  z-index: 2;
+  pointer-events: none;
+  margin-top: 0rem;
+  max-width: 180px;
+  width: 100%;
 }
 
 .orbBreathLayer {
@@ -93,38 +71,39 @@
   pointer-events: none;
 }
 
+/* 🔑 Headings */
 .heading {
   font-family: 'Fira Code', monospace;
-  font-weight: 400;
-  margin-top: 100px;
+  font-weight: 500;
+  font-size: 1.2rem;
   letter-spacing: 0.03em;
-  font-size: 1rem;
   color: #e0e0e0;
-  z-index: 1;
-  text-align: center;
+  margin-top: 1.2rem;
+  z-index: 2;
 }
 
 .subheading {
   font-family: 'Fira Code', monospace;
   font-weight: 400;
-  font-size: 0.6rem;
+  font-size: 0.85rem;
   color: #b0b0b0;
-  margin-top: 0.5rem;
-  text-align: center;
+  margin-top: 0.4rem;
 }
 
-/* 🟡 Token Input Box */
+/* 🧾 Token + Terms */
 .tokenBox {
-  background-color: #1a1a1a00;
-  border: 0px solid #444;
-  border-radius: 0px;
+  background-color: transparent;
   padding: 1rem;
-  max-width: 500px;
+  max-width: 480px;
   width: 100%;
-  margin: 1rem auto;
-  text-align: left;
-  z-index: 1;
-  position: relative;
+  margin: 0 auto;
+  box-sizing: border-box;
+  text-align: center;
+  z-index: 2;
+}
+
+.detectedTokenBox {
+  margin-top: 1rem;
 }
 
 .inputField {
@@ -138,40 +117,167 @@
   font-size: 0.9rem;
   margin-bottom: 1rem;
   outline: none;
-  transition: border-color 0.3s ease, background-color 0.3s ease;
+  transition: border-color 0.3s ease;
 }
 
 .inputField:focus {
   border-color: #fdf6e3;
 }
 
-/* 🟤 Terms Box */
+/* 📜 Terms */
 .termsBox {
-  border: 0px solid #c084fc;
   border-radius: 1px;
-  padding: 1rem;
-  margin-top: 0rem;
-  font-size: 0.7rem;
-  line-height: 1.5;
+  padding: 0.8rem 1rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
   color: #d1d5db;
+  text-align: left;
+  max-width: 100%;
 }
 
 .termsHeading {
-  font-size: 1rem;
+  font-size: 1.1rem;
   margin-bottom: 0.5rem;
   color: #c084fc;
 }
 
+/* ✅ Confirmation Row */
 .checkboxRow {
   display: flex;
   align-items: center;
-  margin-top: 1rem;
+  margin-top: 1.25rem;
+  gap: 0.75rem;
+  flex-wrap: nowrap;
 }
 
-.checkboxRow label {
-  margin-left: 0.5rem;
+/* ✅ Checkbox itself */
+.customCheckbox {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
+.customCheckbox input[type='checkbox'] {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.checkmark {
+  width: 22px;
+  height: 22px;
+  border: 2px solid #c084fc;
+  border-radius: 4px;
+  background-color: transparent;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  display: inline-block;
+}
+
+.customCheckbox input[type='checkbox']:checked + .checkmark {
+  background-color: #c084fc;
+  box-shadow: 0 0 8px rgba(192, 132, 252, 0.5);
+}
+
+/* 🌬️ Guardian Sigil Animation — Steady Breathing */
+.guardianSigil {
+  width: 84px;
+  height: auto;
+  margin-right: 0.75rem;
+  animation: sigilBreath 3.5s ease-in-out infinite;
+  animation: fadeInRise 2.4s ease-in-out forwards;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+  opacity: 1;
+}
+
+@keyframes sigilBreath {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 3px #c084fc80);
+  }
+  50% {
+    transform: scale(1.07);
+    filter: drop-shadow(0 0 6px #c084fcdd);
+  }
+}
+
+@keyframes fadeInRise {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.guardianSigil img {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 6px #c084fc88);
+  animation: sigilBreath 5s ease-in-out infinite;
+}
+
+@keyframes sigilBreath {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.03);
+    opacity: 0.92;
+  }
+}
+
+.sigilVisible .guardianSigil {
+  opacity: 1;
+  transform: scale(1);
+}
+
+@keyframes guardianGrace {
+  from {
+    opacity: 0;
+    transform: scale(0.85) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.sigilGlow {
+  width: 64px;
+  height: auto;
+  filter: drop-shadow(0 0 6px #c084fc88);
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.sigilGlow:hover {
+  transform: scale(1.07);
+  filter: drop-shadow(0 0 12px #c084fc);
+}
+
+.guardianSigil:hover {
+  transform: scale(1.08);
+}
+
+@keyframes guardianRise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 🎟️ Action */
 .verifyButton {
   font-family: 'Fira Code', monospace;
   background: linear-gradient(145deg, #1a1a1a, #0e0e0e);
@@ -182,43 +288,23 @@
   letter-spacing: 0.08em;
   text-transform: uppercase;
   border-radius: 10px;
-  margin-left: 140px;
+  margin: 2rem auto 0 auto;
   box-shadow: none;
   transition: box-shadow 0.6s ease, transform 0.6s ease;
-  position: relative;
-  overflow: hidden;
+  display: block;
 }
 
 .verifyButton:hover {
   box-shadow: 0 0 10px rgba(253, 246, 227, 0.3),
               0 0 20px rgba(253, 246, 227, 0.2),
               0 0 30px rgba(253, 246, 227, 0.1);
-  animation: breatheGlow 3s ease-in-out infinite alternate;
   transform: scale(1.02);
   cursor: pointer;
-}
-
-@keyframes breatheGlow {
-  0% {
-    box-shadow: 0 0 10px rgba(253, 246, 227, 0.2),
-                0 0 20px rgba(253, 246, 227, 0.1);
-  }
-  100% {
-    box-shadow: 0 0 20px rgba(253, 246, 227, 0.4),
-                0 0 30px rgba(253, 246, 227, 0.2),
-                0 0 40px rgba(253, 246, 227, 0.1);
-  }
-}
-
-.verifyButton:hover {
-  transform: scale(1.05);
-  box-shadow: 0 0 30px rgba(10, 255, 193, 0.7);
 }
 
 .buttonActive {
   opacity: 1;
 }
-
 .buttonDisabled {
   opacity: 0.4;
   cursor: not-allowed;
@@ -230,61 +316,29 @@
   text-align: center;
 }
 
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animateFadeIn {
-  animation: fadeIn 0.8s ease forwards;
-}
-
-/* 📱 Responsive Tweaks */
+/* 📱 Responsive First */
 @media (max-width: 768px) {
   .heading {
-    font-size: 1.3rem;
-    margin-top: 2rem;
-    padding: 0 1rem;
+    font-size: 1.2rem;
+    margin-top: 1.5rem;
   }
 
   .subheading {
-    font-size: 0.8rem;
-    padding: 0 1rem;
+    font-size: 0.85rem;
   }
 
   .tokenBox {
-    width: 100%;
-    max-width: 500px;
     padding: 1rem;
-    box-sizing: border-box;
-  }
-
-  .inputField {
-    font-size: 1rem;
-    padding: 0.8rem 1rem;
-    width: 100%;
-    box-sizing: border-box;
-  }
-
-  .termsBox {
-    font-size: 0.75rem;
   }
 
   .verifyButton {
-    margin-left: 0;
-    width: 100%;
     font-size: 1rem;
-    text-align: center;
-    padding: 0.9rem;
+    width: 100%;
+    padding: 0.85rem;
   }
 
-  .orbWrapper {
-    margin-top: 1rem;
+  .guardianSigil {
+    width: 48px;
+    height: 48px;
   }
 }

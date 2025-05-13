@@ -7,6 +7,9 @@ import styles from '@/partner/whitepaper/WhitepaperPreVerify.module.css';
 import postStyles from './Whitepaper.module.css';
 import tierDocs from '@/config/tierDocs.json';
 import rawPartnerTiers from '@/config/partnerTiers.json';
+import dynamic from 'next/dynamic';
+
+const SearchParamLoader = dynamic(() => import('./SearchParamLoader'), { ssr: false });
 
 const tierToDocs = tierDocs as Record<string, string[]>;
 const partnerInfo = rawPartnerTiers as Record<string, { tier: string; displayName: string; greeting: string }>;
@@ -149,9 +152,9 @@ export default function WhitepaperPage() {
         <Suspense fallback={<div className={postStyles.loadingScreen}>Loading viewer...</div>}>
           <div className={postStyles.fullScreenWrapper}>
             <GreetingWrapper
-                partnerName={verifiedPartner ?? 'Developer Mode'}
-                displayName={displayName ?? undefined}
-              >
+              partnerName={verifiedPartner ?? 'Developer Mode'}
+              displayName={displayName ?? undefined}
+            >
               <div className={`${postStyles.viewerSection} ${postStyles.fadeIn}`}>
                 {hasValidDocs ? (
                   <WhitepaperViewer
@@ -164,26 +167,20 @@ export default function WhitepaperPage() {
                   <div className={postStyles.restrictedAccessPanel}>
                     <h2>🚫 Access Restricted</h2>
                     <p>Your tier <code>{verifiedTier}</code> does not have access to any documents.</p>
-                    <button onClick={handleSoftReset}>
-                      Retry Login
-                    </button>
+                    <button onClick={handleSoftReset}>Retry Login</button>
                   </div>
                 )}
               </div>
             </GreetingWrapper>
-
             {devBypass && (
               <div className={postStyles.devBadge}>
                 DEV MODE ACTIVE<br />
                 <span className={postStyles.envIndicator}>Environment: {envMode}</span>
               </div>
             )}
-
             <StorageStatus onStorageCleared={handleSoftReset} />
-
           </div>
         </Suspense>
-
         {process.env.NODE_ENV === 'production' && showBadge && (
           <div
             style={{
@@ -210,6 +207,14 @@ export default function WhitepaperPage() {
 
   return (
     <Suspense fallback={<div className={postStyles.loadingScreen}>Loading pre-verification screen...</div>}>
+      <SearchParamLoader
+        onTokenDetected={(t) => {
+          console.log('💡 Token detected:', t);
+          if (status === 'idle' && !verifiedPartner && t) {
+            setToken(t.trim());
+          }
+        }}
+      />
       <PreVerificationScreen
         token={token}
         setToken={setToken}

@@ -41,10 +41,11 @@ fi
 echo -e "\n🚀 [4/4] Choose Deployment Method"
 echo -e "  1) Vercel CLI"
 echo -e "  2) Git Push"
-read -p "→ Deploy now? (1/2): " deployOpt
+read -p "→ Deploy now? (1/2) [default: 1]: " deployOpt
+deployOpt=${deployOpt:-1}
 
 if [ "$deployOpt" == "1" ]; then
-  vercel --prod --confirm | tee -a "$logfile"
+  vercel --prod --confirm 2>&1 | tee -a "$logfile"
 elif [ "$deployOpt" == "2" ]; then
   bin/push | tee -a "$logfile"
 else

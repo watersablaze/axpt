@@ -13,31 +13,26 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "baseUrl": "app/src",
+    "baseUrl": ".", 
     "paths": {
-      "@/*": ["*"],
-      "@/components/*": ["components/*"],
-      "@/lib/*": ["lib/*"],
-      "@/lotties/*": ["lotties/*"],
-      "@/config/*": ["config/*"],
-      "@partner/*": ["../../scripts/partner/*"],
-      "@utils/*": ["../../scripts/partner/utils/*"]
+      "@/*": ["app/src/*"],
+      "@/components/*": ["app/src/components/*"],
+      "@/lib/*": ["app/src/lib/*"],
+      "@/config/*": ["app/src/config/*"],
+      "@/scripts/*": ["app/scripts/*"]
     },
-    "typeRoots": [
-      "./types",
-      "./node_modules/@types"
-    ],
+    "typeRoots": ["./types", "./node_modules/@types"],
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "plugins": [{ "name": "next" }]
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx",
-    "../.next/types/**/*.ts",
-    "../next-env.d.ts",
+    "app",
+    "bin",
+    "scripts",
+    "types",
     ".next/types/**/*.ts",
-    "../scripts/**/*"
+    "next-env.d.ts"
   ],
   "exclude": ["node_modules"]
 }

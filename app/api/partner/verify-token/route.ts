@@ -16,10 +16,7 @@ const isProd = process.env.NODE_ENV === 'production';
 
 const getLogPath = () => {
   const today = new Date().toISOString().split('T')[0];
-  const logDir = isProd
-    ? '/tmp' // ✅ Vercel-compatible temp directory
-    : path.resolve(process.cwd(), 'logs');
-
+  const logDir = isProd ? '/tmp' : path.resolve(process.cwd(), 'logs');
   if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
   return path.join(logDir, `token-verify-${today}.log`);
 };
@@ -53,7 +50,13 @@ function verifyTokenPayload(token: string): { isValid: boolean; payload?: any } 
   try {
     const payloadRaw = Buffer.from(encodedPayload, 'base64').toString('utf8');
     const payload = JSON.parse(payloadRaw);
-    const expectedSig = crypto.createHmac('sha256', PARTNER_SECRET).update(payloadRaw).digest('hex');
+
+    // ✅ Fix: Use JSON.stringify(payload) to match token generator
+    const expectedSig = crypto
+      .createHmac('sha256', PARTNER_SECRET)
+      .update(JSON.stringify(payload))
+      .digest('hex');
+
     return { isValid: expectedSig === providedSig, payload };
   } catch (err) {
     console.error('❌ Token decode/verify error:', err);
@@ -95,11 +98,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, message: 'Partner not registered.' }, { status: 403 });
     }
 
-    const allowedDocs = tierToDocs[tier] || [];
+    const allowedDocs = Array.isArray(payload.docs)
+    ? payload.docs
+    : tierToDocs[tier] || [];
     const displayName = partnerEntry.displayName || partner;
     const greeting = partnerEntry.greeting || `Welcome, ${displayName}`;
 
     logUsage(`✅ [${ip}] ${partner} → ${tier} (${allowedDocs.length} docs)`);
+
     return NextResponse.json({
       success: true,
       message: 'Token is valid.',

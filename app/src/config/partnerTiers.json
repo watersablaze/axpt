@@ -12,36 +12,12 @@
   "ron-borges": {
     "tier": "Crown",
     "displayName": "Ronald Borges",
-    "greeting": "Welcome, Ronny. Together, we can do it all."
+    "greeting": "Ronny. Together, we can do it all."
   },
   "jamal-ward": {
     "tier": "Crown",
     "displayName": "Jamal Ward",
-    "greeting": "Welcome Wata Falcon. We take flight with you, fearlessly. Thank you for your relentless guidance."
-  },
-  "maya-siobhan": {
-    "tier": "Crown",
-    "displayName": "Maya Siobhan",
-    "greeting": "Welcome, Ma'yá. Let's break every barrier."
-  },
-  "maya-redding": {
-    "tier": "Crown",
-    "displayName": "Maya Redding",
-    "greeting": "Welcome, maya redding. We're honored to have you here."
-  },
-  "limitech-limpopo": {
-    "tier": "Steward",
-    "displayName": "Limited Rivers",
-    "greeting": "Welcome, Limitech. We are connecting more than phone lines, but ancestral memory all the same."
-  },
-  "bobby-french": {
-    "tier": "Crown",
-    "displayName": "Barbara Frian",
-    "greeting": "Welcome, Bobby. Stay Mighty & Listen closely. A lick too fast, and you'll miss it. Let's make magic."
-  },
-  "joan-manna": {
-    "tier": "Crown",
-    "displayName": "Angel Nyce",
-    "greeting": "Welcome, angel nyce. We're honored to have you here."
+    "greeting": "Wata Falcon. We take flight with you, fearlessly. Thank you for your relentless guidance."
   }
+
 }

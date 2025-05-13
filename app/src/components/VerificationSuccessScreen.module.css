@@ -59,6 +59,11 @@
     display: inline-block;
     animation: fadeInChar 0.5s forwards;
   }
+
+  .messageContainer {
+  text-align: center;
+  margin-top: 1rem;
+}
   
   @keyframes fadeInChar {
     from {
@@ -113,3 +118,46 @@
       opacity: 0.6;
     }
   }
+
+.orbGlow {
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  background: radial-gradient(circle, rgba(192,132,252,0.2) 0%, transparent 80%);
+  border-radius: 50%;
+  animation: orbPulse 6s ease-in-out infinite;
+  z-index: 0;
+}
+
+@keyframes orbPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 0.5;
+  }
+}
+
+.captionWhisper {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.75rem;
+  color: #b9b9b9;
+  margin-top: 1rem;
+  opacity: 0;
+  animation: fadeUp 1.5s ease forwards;
+  animation-delay: 2.5s;
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+

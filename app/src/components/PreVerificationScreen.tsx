@@ -26,14 +26,12 @@ const PreVerificationScreen: React.FC<PreVerificationScreenProps> = ({
   const [videoLoaded, setVideoLoaded] = useState(false);
   const orbSize = useOrbSize();
 
-  // 🛡️ Future-proofing for any document-based logic
   useEffect(() => {
     if (typeof document !== 'undefined') {
       // Placeholder for any safe DOM logic if needed later
     }
   }, []);
 
-  // ✨ Motion Variants
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
@@ -68,15 +66,9 @@ const PreVerificationScreen: React.FC<PreVerificationScreenProps> = ({
       initial="hidden"
       animate="show"
     >
-      {/* Orb Animation */}
       <motion.div
         className={styles.orbWrapper}
-        style={{
-          marginTop: '3rem',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
+        style={{ marginTop: '2rem', maxWidth: '180px' }}
         initial={{ opacity: 0, scale: 0.95 }}
         animate={orbBreathing}
         whileHover={{ scale: 1.07 }}
@@ -84,56 +76,73 @@ const PreVerificationScreen: React.FC<PreVerificationScreenProps> = ({
         <OrbAnimation size={orbSize} fadeIn />
       </motion.div>
 
-      {/* Heading */}
-      <motion.h1 className={styles.heading} variants={itemVariants}>
-        Enter Your Access Token
+      <motion.h1 className={`${styles.heading} ${styles.animateFadeIn}`} variants={itemVariants}>
+        Access Key Recognized
       </motion.h1>
 
-      {/* Subheading */}
-      <motion.p className={styles.subheading} variants={itemVariants}>
-        Confidential Access Portal.
+      <motion.p className={`${styles.subheading} ${styles.animateFadeIn}`} variants={itemVariants}>
+        Confirm terms to unlock your private portal.
       </motion.p>
 
-      {/* Input Section */}
       <motion.div className={styles.tokenBox} variants={itemVariants}>
-        <input
-          type="text"
-          value={token}
-          onChange={(e) => setToken(e.target.value)}
-          placeholder="Your Access Token"
-          className={styles.inputField}
-        />
+        {token && (
+          <div className={styles.detectedTokenBox}>
+            <input
+              type="text"
+              value={token}
+              readOnly
+              className={styles.inputField}
+            />
+          </div>
+        )}
 
         <div className={styles.termsBox}>
-          <h2 className={styles.termsHeading}>Access Terms & Conditions</h2>
+          <h2 className={styles.termsHeading}>Portal Terms of Access</h2>
           <p>
-            By entering your access token, you affirm that you are a verified partner of Axis Point Investments (AXPT.io).
-            The contents of this whitepaper are confidential and intended solely for your individual review.
+            By entering this portal, you acknowledge your designation as a verified partner of <strong>Axis Point Investments (AXPT.io)</strong> —
+            a living node in a greater constellation of Earth-aligned stewards and strategic visionaries.
           </p>
           <p>
-            Redistribution, duplication, or sharing of this document or its contents without explicit permission from AXPT.io is strictly prohibited.
-            Your access and usage of this material confirms your agreement to these terms.
+            The documents herein are encrypted transmissions intended solely for your private review, or that of your directly affiliated team.
+            Their contents are sacred in nature — not in secrecy, but in precision. They serve the birth of generational infrastructure.
           </p>
+          <p>
+            Redistribution, duplication, forwarding, or extraction of any part of these materials without explicit written permission
+            from AXPT is strictly prohibited. Your conscious participation confirms your agreement to honor these boundaries.
+          </p>
+          
           <label className={styles.checkboxRow}>
-            <input
-              id="acceptTerms"
-              type="checkbox"
-              checked={acceptTerms}
-              onChange={(e) => setAcceptTerms(e.target.checked)}
-            />
-            <span>I have read and agree to the terms and conditions stated above.</span>
+            {acceptTerms && (
+              <div className={styles.guardianSigil}>
+                <img src="/images/axpt.io-2x.png" alt="Guardian Sigil" />
+              </div>
+            )}
+
+            <div className={styles.customCheckbox}>
+              <input
+                id="acceptTerms"
+                type="checkbox"
+                checked={acceptTerms}
+                onChange={(e) => setAcceptTerms(e.target.checked)}
+              />
+              <span className={styles.checkmark}></span>
+            </div>
+
+            <span>I have read and honor the terms outlined above.</span>
           </label>
         </div>
 
-        <button
-          onClick={handleVerify}
-          disabled={status === 'verifying'}
-          className={`${styles.verifyButton} ${
-            acceptTerms ? styles.buttonActive : styles.buttonDisabled
-          }`}
-        >
-          {status === 'verifying' ? 'Verifying...' : 'Access Whitepaper'}
-        </button>
+        <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>
+          <motion.button
+            onClick={handleVerify}
+            disabled={status === 'verifying' || !acceptTerms}
+            className={`${styles.verifyButton} ${acceptTerms ? styles.buttonActive : styles.buttonDisabled}`}
+            whileTap={{ scale: 0.98 }}
+            whileHover={acceptTerms ? { scale: 1.05, boxShadow: '0 0 15px #0ff' } : {}}
+          >
+            {status === 'verifying' ? 'Verifying...' : 'Enter the Portal'}
+          </motion.button>
+        </div>
 
         {status === 'error' && (
           <p className={styles.errorText}>Invalid token. Please try again.</p>
