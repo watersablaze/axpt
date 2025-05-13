@@ -1,3 +1,4 @@
+import { CANONICAL_DOMAIN, LOCAL_DEV_DOMAIN } from "@/lib/constants";
 // File: app/scripts/partner/utils/signToken.ts
 import crypto from 'node:crypto';
 import fs from 'fs';
@@ -40,7 +41,7 @@ export const generateSignedToken = (
       tier,
       allowedDocs: docs,
       token,
-      url: `https://axpt.io/partner/whitepaper?token=${encodeURIComponent(token)}`,
+      url: `${CANONICAL_DOMAIN}/partner/whitepaper?token=${encodeURIComponent(token)}`,
       qrPath: path.join('qrcodes', `${normalized}.png`),
       generatedAt: new Date().toISOString(),
     };

@@ -1,3 +1,4 @@
+import { CANONICAL_DOMAIN, LOCAL_DEV_DOMAIN } from "@/lib/constants";
 import 'dotenv/config';
 import crypto from 'crypto';
 import fs from 'fs';
@@ -26,7 +27,7 @@ const generateToken = (partner: string): string => {
 const main = async () => {
   const token = generateToken(partnerName);
   const safePartnerName = partnerName.replace(/\s+/g, '-');
-  const url = `https://axpt.io/partner/whitepaper?token=${encodeURIComponent(token)}`;
+  const url = `${CANONICAL_DOMAIN}/partner/whitepaper?token=${encodeURIComponent(token)}`;
   const qrOutputPath = path.join(process.cwd(), `./qrcodes/${safePartnerName}.png`);
 
   fs.mkdirSync(path.dirname(qrOutputPath), { recursive: true });

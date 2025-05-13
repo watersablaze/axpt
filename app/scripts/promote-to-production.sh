@@ -8,7 +8,7 @@ set -e
 timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
 backup_branch="backup-master-before-temp-merge-$timestamp"
 
-PRODUCTION_DOMAIN="https://axpt.io"
+PRODUCTION_DOMAIN="${CANONICAL_DOMAIN}"
 VERCEL_DASHBOARD_URL="https://vercel.com/dashboard"
 
 echo "🔁 Switching to master branch..."

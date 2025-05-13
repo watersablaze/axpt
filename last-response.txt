@@ -1,0 +1,5 @@
+
+🌐 Testing token against: https://axpt.io/api/partner/verify-token
+
+⚠️  Response is not valid JSON:
+Redirecting...

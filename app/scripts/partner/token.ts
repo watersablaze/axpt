@@ -1,3 +1,4 @@
+import { CANONICAL_DOMAIN, LOCAL_DEV_DOMAIN } from "@/lib/constants";
 // File: app/scripts/partner/token.ts
 
 import 'dotenv/config';
@@ -57,7 +58,7 @@ async function generateTokenFlow() {
     true
   );
 
-  const link = `https://axpt.io/partner/whitepaper?token=${encodeURIComponent(token)}`;
+  const link = `${CANONICAL_DOMAIN}/partner/whitepaper?token=${encodeURIComponent(token)}`;
   const qrPath = path.resolve(QR_DIR, `${normalized}.png`);
   await qrcode.toFile(qrPath, link);
 

@@ -1,8 +1,9 @@
 {
-  "rewrites": [
+  "redirects": [
     {
-      "source": "/partner/whitepaper",
-      "destination": "/partner/whitepaper"
+      "source": "/(.*)",
+      "destination": "https://www.axpt.io/$1",
+      "permanent": true
     }
   ]
 }
