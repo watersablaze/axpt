@@ -26,9 +26,9 @@ const PDFToolbar: React.FC<PDFToolbarProps> = ({
   useEffect(() => {
     const delayTimer = setTimeout(() => {
       setShowHint(true);
-      const hideTimer = setTimeout(() => setShowHint(false), 20000); // 20s visible
+      const hideTimer = setTimeout(() => setShowHint(false), 20000);
       return () => clearTimeout(hideTimer);
-    }, 2500); // delay after greeting popup
+    }, 2500);
 
     return () => clearTimeout(delayTimer);
   }, []);
@@ -75,7 +75,7 @@ const PDFToolbar: React.FC<PDFToolbarProps> = ({
 
           {showHint && (
             <span className={styles.floatingHint}>
-               You can switch documents here point 👉🏿
+              You can switch documents here 👉🏿
             </span>
           )}
         </div>

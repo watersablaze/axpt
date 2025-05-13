@@ -34,7 +34,7 @@ const VerificationSuccessScreen: React.FC<VerificationSuccessScreenProps> = ({ o
       {showMessage && (
         <div className={styles.messageContainer}>
           <h1 className={styles.fragmentedText}>
-            {"Entering The Axis".split('').map((char, index) => (
+            {"Entering The Axis Point".split('').map((char, index) => (
               <span
                 key={index}
                 className={char === ' ' ? styles.space : ''}

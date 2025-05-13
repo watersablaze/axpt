@@ -341,4 +341,37 @@
     width: 48px;
     height: 48px;
   }
+
+  .pageContainer {
+    padding: 1.5rem 1rem;
+  }
+
+  .orbWrapper {
+    max-width: 140px;
+  }
+
+  .termsBox {
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  .inputField {
+    font-size: 0.85rem;
+    padding: 0.5rem 0.7rem;
+  }
+
+  .checkboxRow {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .greetingWrapper {
+    padding: 1rem 0.5rem;
+  }
+
+  .greetingText {
+    font-size: 0.85rem;
+    text-align: center;
+  }
 }

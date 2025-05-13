@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# === AXPT | Full Ritual: Sync + Preflight + Deploy (Lite) ===
+# Usage: chmod +x bin/launch-lite && bin/launch-lite
+
+timestamp=$(date +"%Y-%m-%d_%H-%M-%S")
+logfile="logs/fullLaunch_$timestamp.log"
+mkdir -p logs
+touch "$logfile"
+
+echo "📓 Log will be saved to: $logfile"
+
+# Step 1: Sync env
+echo -e "\n🌐 [1/3] Syncing local .env to Vercel..."
+read -p "🧬 Sync .env to Vercel before deploy? (y/n): " syncEnv
+if [ "$syncEnv" == "y" ]; then
+  bin/env-sync >> "$logfile" 2>&1
+  if [ $? -eq 0 ]; then
+    echo "✅ Env synced successfully." | tee -a "$logfile"
+  else
+    echo "❌ Env sync failed." | tee -a "$logfile"
+    exit 1
+  fi
+else
+  echo "🕊️ Skipping env sync by choice." | tee -a "$logfile"
+fi
+
+# Step 2: Run full preflight ritual
+echo -e "\n🧱 [2/3] Running full preflight..."
+bin/preflight | tee -a "$logfile"
+if [ $? -ne 0 ]; then
+  echo "❌ Preflight failed. Aborting launch." | tee -a "$logfile"
+  exit 1
+fi
+
+# Step 3: Deploy
+echo -e "\n🚀 [3/3] Choose Deployment Method"
+echo -e "  1) Vercel CLI"
+echo -e "  2) Git Push"
+read -p "→ Deploy now? (1/2) [default: 1]: " deployOpt
+deployOpt=${deployOpt:-1}
+
+if [ "$deployOpt" == "1" ]; then
+  vercel --prod --confirm 2>&1 | tee -a "$logfile"
+  if [ $? -eq 0 ]; then
+    echo "✅ Deployed with Vercel CLI." | tee -a "$logfile"
+  else
+    echo "❌ Vercel deploy failed." | tee -a "$logfile"
+    exit 1
+  fi
+elif [ "$deployOpt" == "2" ]; then
+  bin/push | tee -a "$logfile"
+  if [ $? -eq 0 ]; then
+    echo "✅ Changes pushed to Git." | tee -a "$logfile"
+  else
+    echo "❌ Git push failed." | tee -a "$logfile"
+    exit 1
+  fi
+else
+  echo "🛑 Invalid selection. Launch aborted." | tee -a "$logfile"
+  exit 1
+fi
+
+echo -e "\n✅ Full Launch Ritual Complete"
+echo "📜 Log saved to $logfile"
