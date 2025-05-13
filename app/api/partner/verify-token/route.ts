@@ -12,14 +12,25 @@ const PARTNER_SECRET = getEnv('PARTNER_SECRET');
 const partners = partnerTiers as Record<string, { tier: string; displayName?: string; greeting?: string }>;
 const tierToDocs = tierDocs as Record<string, string[]>;
 
+const isProd = process.env.NODE_ENV === 'production';
+
 const getLogPath = () => {
   const today = new Date().toISOString().split('T')[0];
-  return path.resolve(process.cwd(), `logs/token-verify-${today}.log`);
+  const logDir = isProd
+    ? '/tmp' // ✅ Vercel-compatible temp directory
+    : path.resolve(process.cwd(), 'logs');
+
+  if (!fs.existsSync(logDir)) fs.mkdirSync(logDir, { recursive: true });
+  return path.join(logDir, `token-verify-${today}.log`);
 };
 
 const logUsage = (entry: string) => {
   const line = `[${new Date().toISOString()}] ${entry}\n`;
-  fs.appendFileSync(getLogPath(), line);
+  try {
+    fs.appendFileSync(getLogPath(), line);
+  } catch (err) {
+    console.warn('⚠️ Logging failed:', err);
+  }
 };
 
 const RATE_LIMIT_WINDOW_MS = 60 * 1000;
@@ -42,11 +53,8 @@ function verifyTokenPayload(token: string): { isValid: boolean; payload?: any } 
   try {
     const payloadRaw = Buffer.from(encodedPayload, 'base64').toString('utf8');
     const payload = JSON.parse(payloadRaw);
-
     const expectedSig = crypto.createHmac('sha256', PARTNER_SECRET).update(payloadRaw).digest('hex');
-
-    const isValid = expectedSig === providedSig;
-    return { isValid, payload };
+    return { isValid: expectedSig === providedSig, payload };
   } catch (err) {
     console.error('❌ Token decode/verify error:', err);
     return { isValid: false };
@@ -54,50 +62,55 @@ function verifyTokenPayload(token: string): { isValid: boolean; payload?: any } 
 }
 
 export async function POST(req: NextRequest) {
-  const { token } = await req.json();
-  const ip = req.headers.get('x-forwarded-for') || req.headers.get('host') || 'unknown-ip';
+  try {
+    const { token } = await req.json();
+    const ip = req.headers.get('x-forwarded-for') || req.headers.get('host') || 'unknown-ip';
 
-  if (isRateLimited(ip)) {
-    logUsage(`🚫 [${ip}] Rate limit exceeded`);
-    return NextResponse.json({ success: false, message: 'Too many attempts. Please try again shortly.' }, { status: 429 });
+    if (isRateLimited(ip)) {
+      logUsage(`🚫 [${ip}] Rate limit exceeded`);
+      return NextResponse.json({ success: false, message: 'Too many attempts. Please try again shortly.' }, { status: 429 });
+    }
+
+    if (!token) {
+      logUsage(`❌ [${ip}] Missing token`);
+      return NextResponse.json({ success: false, message: 'Missing token.' }, { status: 400 });
+    }
+
+    const { isValid, payload } = verifyTokenPayload(token);
+
+    if (!isValid || !payload) {
+      logUsage(`❌ [${ip}] Invalid or malformed token`);
+      return NextResponse.json({ success: false, message: 'Invalid or malformed token.' }, { status: 401 });
+    }
+
+    const { partner, tier } = payload;
+    if (!partner || !tier) {
+      logUsage(`❌ [${ip}] Token missing partner or tier fields`);
+      return NextResponse.json({ success: false, message: 'Invalid token structure.' }, { status: 403 });
+    }
+
+    const partnerEntry = partners[partner];
+    if (!partnerEntry) {
+      logUsage(`⚠️ [${ip}] No matching partner entry → ${partner}`);
+      return NextResponse.json({ success: false, message: 'Partner not registered.' }, { status: 403 });
+    }
+
+    const allowedDocs = tierToDocs[tier] || [];
+    const displayName = partnerEntry.displayName || partner;
+    const greeting = partnerEntry.greeting || `Welcome, ${displayName}`;
+
+    logUsage(`✅ [${ip}] ${partner} → ${tier} (${allowedDocs.length} docs)`);
+    return NextResponse.json({
+      success: true,
+      message: 'Token is valid.',
+      partner,
+      tier,
+      allowedDocs,
+      displayName,
+      greeting,
+    });
+  } catch (err) {
+    console.error('❌ Unexpected server error:', err);
+    return NextResponse.json({ success: false, message: 'Server error.' }, { status: 500 });
   }
-
-  if (!token) {
-    logUsage(`❌ [${ip}] Missing token`);
-    return NextResponse.json({ success: false, message: 'Missing token.' }, { status: 400 });
-  }
-
-  const { isValid, payload } = verifyTokenPayload(token);
-
-  if (!isValid || !payload) {
-    logUsage(`❌ [${ip}] Invalid or malformed token`);
-    return NextResponse.json({ success: false, message: 'Invalid or malformed token.' }, { status: 401 });
-  }
-
-  const { partner, tier } = payload;
-  if (!partner || !tier) {
-    logUsage(`❌ [${ip}] Token missing partner or tier fields`);
-    return NextResponse.json({ success: false, message: 'Invalid token structure.' }, { status: 403 });
-  }
-
-  const partnerEntry = partners[partner];
-  if (!partnerEntry) {
-    logUsage(`⚠️ [${ip}] No matching partner entry → ${partner}`);
-    return NextResponse.json({ success: false, message: 'Partner not registered.' }, { status: 403 });
-  }
-
-  const allowedDocs = tierToDocs[tier] || [];
-  const displayName = partnerEntry.displayName || partner;
-  const greeting = partnerEntry.greeting || `Welcome, ${displayName}`;
-
-  logUsage(`✅ [${ip}] ${partner} → ${tier} (${allowedDocs.length} docs)`);
-  return NextResponse.json({
-    success: true,
-    message: 'Token is valid.',
-    partner,
-    tier,
-    allowedDocs,
-    displayName,
-    greeting,
-  });
 }
