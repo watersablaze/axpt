@@ -111,25 +111,25 @@ const PreVerificationScreen: React.FC<PreVerificationScreenProps> = ({
             from AXPT is strictly prohibited. Your conscious participation confirms your agreement to honor these boundaries.
           </p>
           
-          <label className={styles.checkboxRow}>
-            {acceptTerms && (
-              <div className={styles.guardianSigil}>
-                <img src="/images/axpt.io-2x.png" alt="Guardian Sigil" />
-              </div>
-            )}
+    <label className={styles.checkboxRow}>
+      {acceptTerms && (
+        <div className={styles.guardianSigil}>
+          <img src="/images/axpt.io-2x.png" alt="Guardian Sigil" />
+        </div>
+      )}
 
-            <div className={styles.customCheckbox}>
-              <input
-                id="acceptTerms"
-                type="checkbox"
-                checked={acceptTerms}
-                onChange={(e) => setAcceptTerms(e.target.checked)}
-              />
-              <span className={styles.checkmark}></span>
-            </div>
+      <div className={styles.customCheckbox}>
+        <input
+          id="acceptTerms"
+          type="checkbox"
+          checked={acceptTerms}
+          onChange={(e) => setAcceptTerms(e.target.checked)}
+        />
+        <span className={styles.checkmark}></span>
+      </div>
 
-            <span>I have read and honor the terms outlined above.</span>
-          </label>
+      <span>I have read and honor the terms outlined above.</span>
+    </label>
         </div>
 
         <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>

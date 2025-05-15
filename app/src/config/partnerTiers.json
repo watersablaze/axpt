@@ -7,7 +7,7 @@
   "eric-chinje": {
     "tier": "Genesis",
     "displayName": "Eric Chinje",
-    "greeting": "Honorable greetings, Eric. The map folds open with your presence affirming the foundation. Welcome home."
+    "greeting": "Greetings, The map folds open with your presence affirming the foundation. Welcome home."
   },
   "ron-borges": {
     "tier": "Crown",
@@ -18,6 +18,11 @@
     "tier": "Crown",
     "displayName": "Jamal Ward",
     "greeting": "Wata Falcon. We take flight with you, fearlessly. Thank you for your relentless guidance."
+  },
+    "khalil-cade": {
+    "tier": "Crown",
+    "displayName": "Khalil Cade",
+    "greeting": "Kali, dig deeper lad. What a wonderous creature you. Derobe from the cloths of despair. Breathe in. There's air."
   }
 
 }

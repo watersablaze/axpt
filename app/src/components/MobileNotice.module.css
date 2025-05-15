@@ -1,0 +1,84 @@
+.mobileNotice {
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 9999;
+  width: 90%;
+  max-width: 400px;
+  padding: 0rem;
+  backdrop-filter: blur(10px);
+  background: radial-gradient(ellipse at center, #0a0a0a 60%, #000 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 255, 198, 0.1);
+  font-family: 'Fira Code', monospace;
+  color: #e0e0e0;
+  text-align: center;
+  animation: fadeInSlide 0.6s ease forwards;
+}
+
+.toast {
+  background: rgba(15, 15, 15, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 1.25rem 1rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  font-family: 'Fira Code', monospace;
+  animation: fadeIn 0.5s ease;
+}
+
+.noticeBox {
+  background: rgba(18, 18, 18, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 2rem;
+  max-width: 90%;
+  width: 180px;
+  text-align: center;
+  color: #eeeeee;
+  backdrop-filter: blur(12px);
+}
+
+.message {
+  color: #eaeaea;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  margin-bottom: 0.75rem;
+}
+
+.noticeText {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  color: #ccc;
+}
+
+.dismiss {
+  background: #111;
+  border: 1px solid #00ffc6;
+  color: #00ffc6;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.75rem;
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.dismiss:hover {
+  background: #00ffc6;
+  color: #000;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 10px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}

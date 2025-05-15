@@ -7,7 +7,7 @@
     "node": ">=18 <=20"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev:net": "next dev --hostname 0.0.0.0",
     "build": "pnpm prisma generate && pnpm next build",
     "start": "pnpm next start",
     "generate": "pnpm prisma generate",

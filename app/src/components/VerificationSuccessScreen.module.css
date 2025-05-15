@@ -1,123 +1,33 @@
 .transitionContainer {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    width: 100%;
-    background-color: #0a0a0a;
-    color: #e0e0e0;
-    overflow: hidden;
-    position: relative;
-    z-index: 5;
-    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-  }
-  
-  .fadeOut {
-    opacity: 0;
-    transform: scale(0.95);
-    pointer-events: none;
-  }
-  
-  .sigilAnimation {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 5rem; /* 🛗 Raise orb higher on page */
-    margin-bottom: 3rem; /* ✨ Breath before text */
-  }
-  
-  .sigilPlaceholder {
-    font-size: 4rem;
-    color: #00ffc6;
-    opacity: 0.7;
-    animation: pulse 2s infinite ease-in-out;
-  }
-  
-  @keyframes pulse {
-    0%, 100% {
-      transform: scale(1);
-      opacity: 0.7;
-    }
-    50% {
-      transform: scale(1.15);
-      opacity: 1;
-    }
-  }
-  
-  .fragmentedText {
-    font-family: 'Fira Code', monospace;
-    color: #f5f5f5; /* soft white */
-    font-size: 1.5rem;
-    letter-spacing: 0.08em;
-    text-align: center;
-    margin-top: 1.3rem;
-  }
-  
-  .fragmentedText span {
-    opacity: 0;
-    display: inline-block;
-    animation: fadeInChar 0.5s forwards;
-  }
-
-  .messageContainer {
-  text-align: center;
-  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100%;
+  background-color: #0a0a0a;
+  color: #e0e0e0;
+  overflow: hidden;
+  position: relative;
+  z-index: 5;
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
-  
-  @keyframes fadeInChar {
-    from {
-      opacity: 0;
-      transform: translateY(10px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
-  
-  .fragmentedText span:nth-child(odd) {
-    animation-delay: calc(var(--i) * 0.04s);
-  }
-  
-  .fragmentedText span:nth-child(even) {
-    animation-delay: calc(var(--i) * 0.06s);
-  }
-  
-  /* Animation for each letter */
-  @keyframes riseFadeIn {
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
-  }
 
-  .space {
-    width: 0.6em; /* Adjust spacing between words */
-    display: inline-block;
-  }
+.fadeOut {
+  opacity: 0;
+  transform: scale(0.95);
+  pointer-events: none;
+  transition: opacity 1s ease-out, transform 1s ease-out;
+}
 
-  .portalGlow {
-    position: absolute;
-    width: 300px;
-    height: 300px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(255, 255, 200, 0.2) 0%, transparent 70%);
-    animation: portalPulse 4s ease-in-out infinite alternate;
-    z-index: 0;
-    filter: blur(20px);
-  }
-  
-  @keyframes portalPulse {
-    0% {
-      transform: scale(0.95);
-      opacity: 0.3;
-    }
-    100% {
-      transform: scale(1.05);
-      opacity: 0.6;
-    }
-  }
+.sigilAnimation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 4rem;
+  margin-bottom: 2.5rem;
+  position: relative;
+}
 
 .orbGlow {
   position: absolute;
@@ -140,14 +50,115 @@
   }
 }
 
+.messageContainer {
+  text-align: center;
+  margin-top: 1rem;
+  max-width: 480px;
+  width: 100%;
+  padding: 0 1.5rem;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInContainer 1.5s ease forwards;
+  animation-delay: 1.2s;
+
+  @media screen and (max-width: 768px) {
+  .messageContainer {
+    padding: 0 1rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .fragmentedText {
+    font-size: 1.25rem;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .captionWhisper {
+    text-align: center;
+    max-width: 90%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+}
+
+@keyframes fadeInContainer {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fragmentedText {
+  font-family: 'Fira Code', monospace;
+  color: #f5f5f5;
+  font-size: 1.6rem;
+  letter-spacing: 0.08em;
+  text-align: center;
+  margin-top: 1rem;
+  line-height: 1.4;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.fragmentedText span {
+  opacity: 0;
+  display: inline-block;
+  animation: fadeInChar 0.5s forwards;
+}
+
+@keyframes fadeInChar {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fragmentedText span:nth-child(odd) {
+  animation-delay: calc(var(--i) * 0.04s);
+}
+
+.fragmentedText span:nth-child(even) {
+  animation-delay: calc(var(--i) * 0.06s);
+}
+
+.space {
+  width: 0.6em;
+  display: inline-block;
+}
+
 .captionWhisper {
   font-family: 'Fira Code', monospace;
   font-size: 0.75rem;
   color: #b9b9b9;
-  margin-top: 1rem;
   opacity: 0;
   animation: fadeUp 1.5s ease forwards;
-  animation-delay: 2.5s;
+  animation-delay: 3.4s;
+  line-height: 1.5;
+}
+
+.captionWhisper:nth-of-type(2) {
+  animation-delay: 2.2s;
+}
+
+.captionWhisper:nth-of-type(3) {
+  animation-delay: 3.6s;
+}
+
+.captionWhisper:nth-of-type(4) {
+  animation-delay: 5s;
 }
 
 @keyframes fadeUp {
@@ -161,3 +172,33 @@
   }
 }
 
+.greetingText {
+  font-family: 'Fira Code', monospace;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #c084fc;
+  opacity: 0;
+  animation: fadeUp 1.5s ease forwards;
+  animation-delay: 2.5s;
+  max-width: 420px;
+  text-align: center;
+  margin-top: 0.25rem;
+  word-wrap: break-word;
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 1;
+    text-shadow: 0 0 0px rgba(255, 255, 255, 0.0);
+  }
+  50% {
+    opacity: 1;
+    text-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+  }
+}
+
+.pulseFinal {
+  animation: fadeUp 1.5s ease forwards, pulseGlow 2.5s ease-in-out 5s infinite;
+  color: #f0f0f0;
+  font-weight: 500;
+}

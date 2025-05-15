@@ -10,6 +10,8 @@ interface PDFToolbarProps {
   currentDoc?: string;
   allowedDocs?: string[];
   setCurrentDoc?: (doc: string) => void;
+  onToggleFullscreen?: () => void;
+  isFullscreen?: boolean;
 }
 
 const PDFToolbar: React.FC<PDFToolbarProps> = ({
@@ -19,9 +21,12 @@ const PDFToolbar: React.FC<PDFToolbarProps> = ({
   currentDoc,
   allowedDocs = [],
   setCurrentDoc,
+  onToggleFullscreen,
+  isFullscreen,
 }) => {
-  const hasMultipleDocs = allowedDocs.length > 1 && setCurrentDoc;
+  const hasMultipleDocs = allowedDocs.length > 1 && setCurrentDoc !== undefined;
   const [showHint, setShowHint] = useState(false);
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
 
   useEffect(() => {
     const delayTimer = setTimeout(() => {
@@ -57,29 +62,36 @@ const PDFToolbar: React.FC<PDFToolbarProps> = ({
         </button>
       </div>
 
-      {hasMultipleDocs && (
-        <div className={styles.rightGroup}>
-          <label htmlFor="docSelector">📄 Document:</label>
-          <select
-            id="docSelector"
-            value={currentDoc}
-            onChange={(e) => setCurrentDoc(e.target.value)}
-            className={styles.docSelect}
-          >
-            {allowedDocs.map((doc) => (
-              <option key={doc} value={doc}>
-                {doc.replace(/_/g, ' ').replace(/\.pdf$/, '')}
-              </option>
-            ))}
-          </select>
+      <div className={styles.rightGroup}>
+        {hasMultipleDocs && (
+          <>
+            <label htmlFor="docSelector">📄 Document:</label>
+            <select
+              id="docSelector"
+              value={currentDoc}
+              onChange={(e) => setCurrentDoc?.(e.target.value)}
+              className={styles.docSelect}
+            >
+              {allowedDocs.map((doc) => (
+                <option key={doc} value={doc}>
+                  {doc.replace(/_/g, ' ').replace(/\.pdf$/, '')}
+                </option>
+              ))}
+            </select>
+            {/* Hint removed for cleaner interface */}
+          </>
+        )}
 
-          {showHint && (
-            <span className={styles.floatingHint}>
-              You can switch documents here 👉🏿
-            </span>
-          )}
-        </div>
-      )}
+        {/* Hide fullscreen button on mobile */}
+        {!isMobile && onToggleFullscreen && (
+          <button
+            className={styles.toolbarButton}
+            onClick={onToggleFullscreen}
+          >
+            {isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
+          </button>
+        )}
+      </div>
     </div>
   );
 };

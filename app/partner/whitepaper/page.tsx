@@ -7,18 +7,16 @@ import styles from '@/partner/whitepaper/WhitepaperPreVerify.module.css';
 import postStyles from './Whitepaper.module.css';
 import tierDocs from '@/config/tierDocs.json';
 import rawPartnerTiers from '@/config/partnerTiers.json';
-import dynamic from 'next/dynamic';
 
-const SearchParamLoader = dynamic(() => import('./SearchParamLoader'), { ssr: false });
-
-const tierToDocs = tierDocs as Record<string, string[]>;
-const partnerInfo = rawPartnerTiers as Record<string, { tier: string; displayName: string; greeting: string }>;
-
-const GreetingWrapper = dynamicImport(() => import('@/components/GreetingWrapper'));
+const SearchParamLoader = dynamicImport(() => import('./SearchParamLoader'), { ssr: false });
 const WhitepaperViewer = dynamicImport(() => import('@/components/WhitepaperViewer'), { ssr: false });
 const VerificationSuccessScreen = dynamicImport(() => import('@/components/VerificationSuccessScreen'), { ssr: false });
 const StorageStatus = dynamicImport(() => import('@/components/StorageStatus'), { ssr: false });
 const PreVerificationScreen = dynamicImport(() => import('@/components/PreVerificationScreen'), { ssr: false });
+const MobileNotice = dynamicImport(() => import('@/components/MobileNotice'), { ssr: false });
+
+const tierToDocs = tierDocs as Record<string, string[]>;
+const partnerInfo = rawPartnerTiers as Record<string, { tier: string; displayName: string; greeting: string }>;
 
 export default function WhitepaperPage() {
   const { hydrated, values } = useHydrationState(['verifiedPartner', 'verifiedTier', 'preVerified']);
@@ -35,6 +33,9 @@ export default function WhitepaperPage() {
 
   const devBypass = false;
   const envMode = process.env.NODE_ENV || 'development';
+
+  const isMobile =
+    typeof navigator !== 'undefined' && /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
 
   useEffect(() => {
     if (process.env.NODE_ENV === 'production') {
@@ -142,6 +143,7 @@ export default function WhitepaperPage() {
                 }
               }, 600);
             }}
+            displayName={displayName ?? undefined}
           />
         </Suspense>
       );
@@ -151,27 +153,26 @@ export default function WhitepaperPage() {
       <Fragment>
         <Suspense fallback={<div className={postStyles.loadingScreen}>Loading viewer...</div>}>
           <div className={postStyles.fullScreenWrapper}>
-            <GreetingWrapper
-              partnerName={verifiedPartner ?? 'Developer Mode'}
-              displayName={displayName ?? undefined}
-            >
-              <div className={`${postStyles.viewerSection} ${postStyles.fadeIn}`}>
-                {hasValidDocs ? (
+            <div className={`${postStyles.viewerSection} ${postStyles.fadeIn}`}>
+              {hasValidDocs ? (
+                isMobile ? (
+                  <MobileNotice />
+                ) : (
                   <WhitepaperViewer
                     docs={allowedDocs}
                     partnerName={verifiedPartner || undefined}
                     displayName={displayName || undefined}
                     greeting={greeting || undefined}
                   />
-                ) : (
-                  <div className={postStyles.restrictedAccessPanel}>
-                    <h2>🚫 Access Restricted</h2>
-                    <p>Your tier <code>{verifiedTier}</code> does not have access to any documents.</p>
-                    <button onClick={handleSoftReset}>Retry Login</button>
-                  </div>
-                )}
-              </div>
-            </GreetingWrapper>
+                )
+              ) : (
+                <div className={postStyles.restrictedAccessPanel}>
+                  <h2>🚫 Access Restricted</h2>
+                  <p>Your tier <code>{verifiedTier}</code> does not have access to any documents.</p>
+                  <button onClick={handleSoftReset}>Retry Login</button>
+                </div>
+              )}
+            </div>
             {devBypass && (
               <div className={postStyles.devBadge}>
                 DEV MODE ACTIVE<br />
