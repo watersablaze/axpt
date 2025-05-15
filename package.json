@@ -8,6 +8,8 @@
   },
   "scripts": {
     "dev:net": "next dev --hostname 0.0.0.0",
+    "dev:clean": "bash scripts/dev-cleanup.sh",
+    "clean": "sh ./scripts/clean-install-pnpm.sh",
     "build": "pnpm prisma generate && pnpm next build",
     "start": "pnpm next start",
     "generate": "pnpm prisma generate",

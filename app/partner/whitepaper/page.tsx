@@ -62,6 +62,12 @@ export default function WhitepaperPage() {
     }
   }, [hydrated]);
 
+  useEffect(() => {
+    if (token && status === 'idle' && !verifiedPartner) {
+      handleVerify();
+    }
+  }, [token, status, verifiedPartner]);
+
   const handleVerify = async () => {
     if (!acceptTerms) {
       alert('Please agree to the terms and conditions.');
