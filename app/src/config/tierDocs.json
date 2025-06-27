@@ -1,15 +1,5 @@
 {
-    "Genesis": [
-      "AXPT-Whitepaper.pdf",
-      "Hemp_Ecosystem.pdf",
-      "CIM_Chinje.pdf"
-    ],
-    "Crown": [
-      "AXPT-Whitepaper.pdf",
-      "Hemp_Ecosystem.pdf",
-      "CIM_Chinje.pdf"
-    ],
-    "Steward": [
-      "AXPT-Whitepaper.pdf"
-    ]
-  }
+  "Investor": ["AXPT-Whitepaper.pdf", "Hemp_Ecosystem.pdf", "CIM_Chinje.pdf"],
+  "Partner": ["AXPT-Whitepaper.pdf", "Hemp_Ecosystem.pdf"],
+  "Board": ["AXPT-Whitepaper.pdf", "Hemp_Ecosystem.pdf", "CIM_Chinje.pdf"]
+}

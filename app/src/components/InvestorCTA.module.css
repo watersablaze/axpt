@@ -1,0 +1,72 @@
+/* components/InvestorCTA.module.css */
+
+.cta {
+  background: linear-gradient(to right, #fefefe, #f9fafb);
+  border: 1px solid #e0e0e0;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.06);
+  margin-top: 2rem;
+  text-align: center;
+  animation: fadeIn 0.8s ease-in-out;
+}
+
+.cta h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #111827;
+}
+
+.cta p {
+  font-size: 1rem;
+  color: #374151;
+  margin-bottom: 1.5rem;
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.primary {
+  background-color: #4f46e5;
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  font-weight: 500;
+  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+  transition: all 0.2s ease;
+}
+
+.primary:hover {
+  background-color: #4338ca;
+  box-shadow: 0 6px 18px rgba(67, 56, 202, 0.4);
+}
+
+.secondary {
+  background-color: #e0f2fe;
+  color: #0369a1;
+  padding: 0.65rem 1.25rem;
+  border-radius: 0.75rem;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.secondary:hover {
+  background-color: #bae6fd;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

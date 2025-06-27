@@ -1,0 +1,37 @@
+{
+  "the-kingdom-collective": {
+    "tier": "Steward",
+    "displayName": "The Kingdom Collective",
+    "greeting": "Greetings to the Kingdom 🙏🏾 A sacred alliance begins again."
+  },
+  "eric-chinje": {
+    "tier": "Investor",
+    "displayName": "Eric Chinje",
+    "greeting": "Greetings, Eric. Your personalized proposal has arrived. The vision is alive."
+  },
+  "ron-borges": {
+    "tier": "Crown",
+    "displayName": "Ronald Borges",
+    "greeting": "Ronny. Together, we can do it all. You've been protected. Now, protect."
+  },
+  "jamal-ward": {
+    "tier": "Crown",
+    "displayName": "Jamal Ward",
+    "greeting": "Wata Falcon. We take flight with you, fearlessly. Thank you for your relentless guidance."
+  },
+  "khalil-cade": {
+    "tier": "Crown",
+    "displayName": "Khalil Cade",
+    "greeting": "Kali, dig deeper lad. What a wonderous creature you. Derobe from the cloths of despair. Breathe in. There's air."
+  },
+  "mitch-khalpey": {
+    "tier": "Hallkeeper",
+    "displayName": "Mitch Khalpey",
+    "greeting": "Greetings there Mitch! You know ... times are changing (in incredible ways). Your vision is golden. Know it."
+  },
+  "tomeo-nakamura": {
+    "tier": "Genesis",
+    "displayName": "Tomeo Nakamura",
+    "greeting": "✨ Welcome, Tomeo — sacred flows await you."
+  }
+}

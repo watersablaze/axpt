@@ -1,107 +1,55 @@
-@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap');
+/* PDFToolbar.module.css */
 
-.toolbar {
+.toolbarContainer {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #121212;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  padding: 0.4rem 0.75rem;
-  font-family: 'Fira Code', monospace;
-  font-size: 0.75rem;
-  color: #e0e0e0;
-  gap: 0.5rem;
-  z-index: 10;
+  padding: 0.75rem 1rem;
+  background-color: rgba(10, 10, 10, 0.8);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-family: 'LTMuseumLight', sans-serif;
+  color: var(--foreground);
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
-.leftGroup,
-.rightGroup {
+.pageNav {
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.toolbarButton {
-  background-color: #1f1f1f;
-  color: #ccc;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 0.3rem 0.6rem;
-  font-size: 0.75rem;
-  font-family: 'Fira Code', monospace;
-  border-radius: 2px;
-  transition: all 0.2s ease;
-  min-width: 70px;
+.pageNav input {
+  width: 3rem;
+  text-align: center;
+  font-family: monospace;
 }
 
-.toolbarButton:hover:not(:disabled) {
-  background-color: #2b2b2b;
-  color: #fff;
-  border-color: rgba(255, 255, 255, 0.25);
+.pageNav button {
+  padding: 0.25rem 0.5rem;
+  font-family: monospace;
+}
+
+.fullscreenBtn {
+  font-family: monospace;
+  padding: 0.3rem 0.75rem;
+  background-color: transparent;
+  color: var(--color-accent-gold);
+  border: 1px solid var(--color-accent-gold);
   cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-.toolbarButton:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
+.fullscreenBtn:hover {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
-.pageIndicator {
-  font-size: 0.75rem;
-  color: #888;
+.docSelector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.docSelect {
-  background-color: #1a1a1a;
-  color: #e0e0e0;
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 0.3rem 0.5rem;
-  font-size: 0.75rem;
-  font-family: 'Fira Code', monospace;
-  border-radius: 2px;
-  transition: border-color 0.2s ease;
-}
-
-.docSelect:hover,
-.docSelect:focus {
-  border-color: #888;
-  outline: none;
-}
-
-/*
-.floatingHint {
-  font-size: 0.7rem;
-  color: #00ffc6;
-  background-color: rgba(0, 255, 198, 0.05);
-  border: 1px solid rgba(0, 255, 198, 0.3);
-  padding: 0.3rem 0.5rem;
-  border-radius: 4px;
-  margin-left: 0.5rem;
-  animation: fadeOutHint 1s ease-in-out 18s forwards;
-}
-
-@keyframes fadeOutHint {
-  to {
-    opacity: 0;
-    transform: translateX(30%);
-  }
-} */
-
-/* Optional: responsive tightening */
-@media screen and (max-width: 768px) {
-  .toolbar {
-    flex-direction: column;
-    align-items: stretch;
-    padding: 0.5rem;
-  }
-
-  .leftGroup,
-  .rightGroup {
-    justify-content: space-between;
-    width: 100%;
-  }
-
-  .docSelect {
-    width: 100%;
-  }
+.docSelector select {
+  font-family: monospace;
 }

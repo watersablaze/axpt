@@ -1,0 +1,10 @@
+.mirageWrapper {
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 1.4s ease, transform 1.4s ease;
+}
+
+.fadeIn {
+  opacity: 1;
+  transform: scale(1);
+}

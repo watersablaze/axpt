@@ -1,0 +1,67 @@
+/* 🌌 Dashboard Wrapper */
+.dashboardContainer {
+  padding: 2rem;
+  min-height: 100vh;
+  background: #0b0b0b url('/images/black-felt.png') center center / cover no-repeat;
+  color: #e0e0e0;
+  font-family: 'Fira Code', monospace;
+}
+
+/* 🧠 Headings */
+.dashboardContainer h1 {
+  font-size: 2rem;
+  color: #f5f5f5;
+  margin-bottom: 1.5rem;
+}
+
+.dashboardContainer h2 {
+  font-size: 1.2rem;
+  margin-bottom: 0.75rem;
+  color: #c084fc;
+  border-bottom: 1px solid #222;
+  padding-bottom: 0.25rem;
+}
+
+/* 🧱 Sections */
+.section {
+  margin-bottom: 3rem;
+}
+
+/* 🧮 Stats */
+.statsGrid {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* 📦 Content Cards */
+.card {
+  background: #111;
+  padding: 1.25rem;
+  border-radius: 12px;
+  border: 1px solid #333;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.4);
+}
+
+/* ✍🏾 Tables / Logs */
+.tokenRow, .logRow {
+  border-bottom: 1px solid #333;
+  padding: 0.75rem 0;
+  font-size: 0.9rem;
+}
+
+/* 💫 Fade-in Animation */
+@keyframes fadeInRise {
+  0% {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fadeInRise {
+  animation: fadeInRise 0.6s ease forwards;
+}

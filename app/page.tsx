@@ -1,18 +1,9 @@
-"use client"
-
-import React from 'react';
-import Header from "@/components/Header";
-import HeroSection from "@/components/HeroSection";
-import Footer from "@/components/Footer";
-
-
-
-export default function Home() {
+// app/page.tsx
+export default function HomePage() {
   return (
-    <main>
-      <Header />
-      <HeroSection />
-      <Footer />
-    </main>
+    <div style={{ padding: '2rem' }}>
+      <h1>🧪 Clean Test Page</h1>
+      <p>If you're seeing this, the bug is elsewhere.</p>
+    </div>
   );
 }

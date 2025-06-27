@@ -1,4 +1,0 @@
-#!/bin/bash
-# AXPT Token Dashboard Launcher
-
-npx tsx bin/token-menu.ts

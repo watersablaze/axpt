@@ -1,125 +1,45 @@
-// 🔁 CLEAN AUTH CONFIG — aligned with current schema
+import CredentialsProvider from 'next-auth/providers/credentials';
+import { compare } from 'bcryptjs';
+import prisma from '@/lib/prisma';
+import { NextAuthOptions, Session, User } from 'next-auth';
+import { JWT } from 'next-auth/jwt';
 
-import NextAuth, { NextAuthOptions, DefaultSession } from "next-auth";
-import CredentialsProvider from "next-auth/providers/credentials";
-import { PrismaAdapter } from "@next-auth/prisma-adapter";
-import { prisma } from "@/lib/prisma";
-import bcrypt from "bcryptjs";
-import { randomUUID } from "crypto";
-
-// ✅ Extend NextAuth User Type
-declare module "next-auth" {
-  interface User {
-    id: string;
-    isAdmin: boolean;
-    walletAddress?: string;
-  }
-
-  interface Session extends DefaultSession {
-    user: User;
-  }
-}
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    id: string;
-    isAdmin: boolean;
-    walletAddress?: string;
-    jti?: string;
-  }
-}
-
-// ✅ NextAuth Configuration
-export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
+export const authOptions = {
   providers: [
     CredentialsProvider({
-      name: "Credentials",
+      name: 'Credentials',
       credentials: {
-        email: { label: "Email", type: "text", placeholder: "example@example.com" },
-        password: { label: "Password", type: "password" },
+        email: { label: 'Email', type: 'text' },
+        password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials, req) {
-        if (!credentials?.email || !credentials?.password) {
-          throw new Error("❌ Missing email or password");
-        }
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) return null;
 
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email },
-          select: {
-            id: true,
-            name: true,
-            email: true,
-            password: true,
-            isAdmin: true,
-            walletAddress: true,
-          },
-        });
+        const user = await prisma.user.findUnique({ where: { email: credentials.email } });
+        if (!user) return null;
 
-        if (!user) throw new Error("❌ No user found");
-
-        const isValidPassword = await bcrypt.compare(credentials.password, user.password);
-        if (!isValidPassword) throw new Error("❌ Invalid credentials");
+        const isValid = await compare(credentials.password, user.password);
+        if (!isValid) return null;
 
         return {
           id: user.id,
-          name: user.name,
           email: user.email,
-          isAdmin: user.isAdmin ?? false,
-          walletAddress: user.walletAddress ?? undefined, // ✅ Convert null to undefined
+          name: user.username,
         };
       },
     }),
   ],
-  secret: process.env.NEXTAUTH_SECRET,
-  session: {
-    strategy: "jwt",
-    maxAge: 30 * 60,
-    updateAge: 10 * 60,
-  },
-  callbacks: {
-    async jwt({ token, user }) {
-      if (user) {
-        token.id = user.id;
-        token.isAdmin = user.isAdmin;
-        token.walletAddress = user.walletAddress;
-        token.jti = randomUUID();
-      }
-
-      const revokedToken = await prisma.revokedToken.findUnique({
-        where: { jti: token.jti },
-      });
-
-      if (revokedToken) {
-        throw new Error("❌ Token is revoked. Please log in again.");
-      }
-
-      return token;
-    },
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = token.id;
-        session.user.isAdmin = token.isAdmin;
-        session.user.walletAddress = token.walletAddress;
-      }
-      return session;
-    },
-  },
-  pages: {
-    signIn: "/login",
-    error: "/login",
-  },
-  cookies: {
-    sessionToken: {
-      name: `__Secure-next-auth.session-token`,
-      options: {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        path: "/",
+    callbacks: {
+      async session({ session, token }: { session: Session; token: JWT }) {
+        session.user.id = token.sub!;
+        return session;
+      },
+      async jwt({ token }: { token: JWT }) {
+        return token;
       },
     },
+  pages: {
+    signIn: '/login',
   },
+  secret: process.env.JWT_SECRET,
 };
-
-export default NextAuth(authOptions);

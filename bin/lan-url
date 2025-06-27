@@ -1,8 +1,0 @@
-#!/bin/bash
-# Show your LAN URL for iPhone testing
-IP=$(ipconfig getifaddr en0)
-PORT=3000
-
-echo -e "\n🌐 Open this on your iPhone:\n"
-echo "    http://$IP:$PORT"
-echo ""

@@ -1,0 +1,47 @@
+.tokenRowContainer {
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  background: #f9f9f9;
+  padding: 1rem;
+}
+
+.tokenRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.tokenRowItem {
+  min-width: 200px;
+}
+
+.tokenRowLabel {
+  font-weight: bold;
+}
+
+.tokenRowValue {
+  margin-left: 0.5rem;
+}
+
+.expandButton {
+  margin-top: 1rem;
+  background: #eee;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  border: none;
+  font-size: 0.9rem;
+}
+
+.tokenDetailsPanel {
+  margin-top: 1rem;
+  background: #fff;
+  border-top: 1px dashed #ccc;
+  padding: 1rem;
+  font-size: 0.85rem;
+  white-space: pre-wrap;
+}
+
+.qrSection img {
+  margin-top: 0.5rem;
+}

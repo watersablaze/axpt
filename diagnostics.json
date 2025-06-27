@@ -1,0 +1,76 @@
+[
+  {
+    "model": "user",
+    "status": "❌",
+    "count": null,
+    "fields": null,
+    "error": "\nInvalid `model.findFirst()` invocation in\n/Users/jamalward/axpt/app/scripts/diagnose-prisma.ts:33:34\n\n  30 \n  31 try {\n  32   const count = await model.count();\n→ 33   const sample = await model.findFirst(\nError converting field \"email\" of expected non-nullable type \"String\", found incompatible value of \"null\"."
+  },
+  {
+    "model": "wallet",
+    "status": "✅",
+    "count": 4,
+    "fields": [
+      "id",
+      "userId",
+      "address",
+      "balance"
+    ]
+  },
+  {
+    "model": "blockchainWallet",
+    "status": "⚠️",
+    "count": 0,
+    "fields": []
+  },
+  {
+    "model": "transaction",
+    "status": "❌",
+    "count": null,
+    "fields": null,
+    "error": "\nInvalid `model.findFirst()` invocation in\n/Users/jamalward/axpt/app/scripts/diagnose-prisma.ts:33:34\n\n  30 \n  31 try {\n  32   const count = await model.count();\n→ 33   const sample = await model.findFirst(\nAttempted to serialize non-enum-compatible value 'null' for enum 'TokenType'"
+  },
+  {
+    "model": "stake",
+    "status": "❌",
+    "count": null,
+    "fields": null,
+    "error": "\nInvalid `model.findFirst()` invocation in\n/Users/jamalward/axpt/app/scripts/diagnose-prisma.ts:33:34\n\n  30 \n  31 try {\n  32   const count = await model.count();\n→ 33   const sample = await model.findFirst(\nError converting field \"apy\" of expected non-nullable type \"Float\", found incompatible value of \"null\"."
+  },
+  {
+    "model": "investmentProposal",
+    "status": "⚠️",
+    "count": 0,
+    "fields": []
+  },
+  {
+    "model": "nFTBadge",
+    "status": "⚠️",
+    "count": 0,
+    "fields": []
+  },
+  {
+    "model": "simProfile",
+    "status": "⚠️",
+    "count": 0,
+    "fields": []
+  },
+  {
+    "model": "nodeSyncStatus",
+    "status": "⚠️",
+    "count": 0,
+    "fields": []
+  },
+  {
+    "model": "revokedToken",
+    "status": "⚠️",
+    "count": 0,
+    "fields": []
+  },
+  {
+    "model": "partner",
+    "status": "⚠️",
+    "count": 0,
+    "fields": []
+  }
+]

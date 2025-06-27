@@ -1,0 +1,27 @@
+.badge {
+  padding: 0.25rem 0.6rem;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.investor {
+  background-color: #1f2937;
+  color: #facc15;
+}
+
+.board {
+  background-color: #0f172a;
+  color: #60a5fa;
+}
+
+.crown {
+  background-color: #4c1d95;
+  color: #f472b6;
+}
+
+.default {
+  background-color: #374151;
+  color: #f3f4f6;
+}

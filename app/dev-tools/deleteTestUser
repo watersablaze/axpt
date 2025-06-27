@@ -1,0 +1,10 @@
+// app/dev-tools/deleteTestUser.ts
+import 'tsconfig-paths/register';
+import prisma from '../src/lib/prisma';
+
+async function remove() {
+  const deleted = await prisma.user.deleteMany({ where: { username: 'testuser' } });
+  console.log('🗑️ Test users deleted:', deleted.count);
+}
+
+remove().finally(() => prisma.$disconnect());

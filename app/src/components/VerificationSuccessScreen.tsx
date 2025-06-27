@@ -1,69 +1,37 @@
+// ✅ VerificationSuccessScreen.tsx
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import styles from './VerificationSuccessScreen.module.css';
-import OrbAnimation from './OrbAnimation';
+import React, { useEffect } from 'react';
+import { motion } from 'framer-motion';
 
-interface VerificationSuccessScreenProps {
+interface Props {
   onComplete: () => void;
   displayName?: string;
 }
 
-const VerificationSuccessScreen: React.FC<VerificationSuccessScreenProps> = ({
-  onComplete,
-  displayName,
-}) => {
-  const [showMessage, setShowMessage] = useState(false);
-  const [fadeOut, setFadeOut] = useState(false);
-
+const VerificationSuccessScreen: React.FC<Props> = ({ onComplete, displayName }) => {
   useEffect(() => {
-    const messageTimer = setTimeout(() => setShowMessage(true), 1000);
-    const fadeOutTimer = setTimeout(() => setFadeOut(true), 9500);
-    const transitionTimer = setTimeout(() => onComplete(), 10000);
-
-    return () => {
-      clearTimeout(messageTimer);
-      clearTimeout(fadeOutTimer);
-      clearTimeout(transitionTimer);
-    };
+    const timer = setTimeout(() => {
+      onComplete();
+    }, 1500);
+    return () => clearTimeout(timer);
   }, [onComplete]);
 
-  const baseText = 'Access granted: ';
-  const fullText = baseText + (displayName ?? '');
-
   return (
-    <div
-      className={`${styles.transitionContainer} ${fadeOut ? styles.fadeOut : ''}`}
-      role="alert"
-      aria-live="polite"
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.6 }}
+      style={{
+        padding: '4rem',
+        textAlign: 'center',
+        fontSize: '1.2rem',
+        color: '#ededed',
+      }}
     >
-      <div className={styles.sigilAnimation}>
-        <div className={styles.orbGlow} />
-        <OrbAnimation size={120} />
-      </div>
-
-      {showMessage && (
-        <div className={styles.messageContainer}>
-          <h1 className={styles.fragmentedText}>
-            {fullText.split('').map((char, index) => (
-              <span
-                key={`char-${index}`}
-                className={char === ' ' ? styles.space : ''}
-                style={{ animationDelay: `${index * 0.07}s` }}
-              >
-                {char}
-              </span>
-            ))}
-          </h1>
-
-          <p className={styles.captionWhisper} style={{ animationDelay: '2.2s' }}>Initiating…</p>
-          <p className={styles.captionWhisper} style={{ animationDelay: '3.2s' }}>Exclusive access to Axis Point Documents.</p>
-          <p className={`${styles.captionWhisper} ${styles.pulseFinal}`} style={{ animationDelay: '4.2s' }}>
-          Enjoy your review.
-        </p>
-        </div>
-      )}
-    </div>
+      <h2>✅ Welcome{displayName ? `, ${displayName}` : ''}</h2>
+      <p>Verifying access...</p>
+    </motion.div>
   );
 };
 

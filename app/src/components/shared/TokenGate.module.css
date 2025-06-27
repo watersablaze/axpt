@@ -1,0 +1,61 @@
+.tokenGateContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 70vh;
+  padding: 2rem;
+  z-index: 2;
+}
+
+.tokenCard {
+  background: rgba(20, 10, 40, 0.85);
+  padding: 2rem;
+  border-radius: 1rem;
+  border: 1px solid rgba(160, 130, 255, 0.2);
+  box-shadow: 0 0 30px rgba(160, 130, 255, 0.15);
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
+}
+
+.tokenCardTitle {
+  color: #eee;
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.tokenInput {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+  border-radius: 0.5rem;
+  border: none;
+  margin-bottom: 1rem;
+  background: #100720;
+  color: #eee;
+  font-family: monospace;
+}
+
+.verifyButton {
+  padding: 0.6rem 1.5rem;
+  background-color: #6000c9;
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  font-family: 'Space Grotesk', sans-serif;
+  cursor: pointer;
+}
+
+.verifyButton:hover {
+  background-color: #7a00e0;
+}
+
+.errorMessage {
+  margin-top: 1rem;
+  color: #ff7a7a;
+  font-size: 0.875rem;
+  font-family: monospace;
+}

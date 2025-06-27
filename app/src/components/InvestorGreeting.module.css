@@ -1,0 +1,72 @@
+/* components/InvestorGreeting.module.css */
+
+.greeting {
+  background: linear-gradient(to bottom right, #fdfcfb, #f3f4f6);
+  border: 1px solid #e5e7eb;
+  border-radius: 1.25rem;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.05);
+  margin-top: 2rem;
+  text-align: center;
+  animation: fadeInGlow 0.9s ease;
+}
+
+.greeting h2 {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
+}
+
+.greeting p {
+  font-size: 1rem;
+  color: #374151;
+  line-height: 1.6;
+}
+
+.greeting strong {
+  color: #4f46e5;
+  font-weight: 600;
+}
+
+.pulseGlow {
+  position: absolute;
+  top: -2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 300px;
+  height: 300px;
+  background: radial-gradient(circle, rgba(79, 70, 229, 0.15), transparent 60%);
+  animation: pulse 3s infinite ease-in-out;
+  z-index: 0;
+  pointer-events: none;
+  filter: blur(30px);
+}
+
+@keyframes pulse {
+  0% {
+    transform: translateX(-50%) scale(0.95);
+    opacity: 0.7;
+  }
+  50% {
+    transform: translateX(-50%) scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-50%) scale(0.95);
+    opacity: 0.7;
+  }
+}
+
+@keyframes fadeInGlow {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

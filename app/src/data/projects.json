@@ -1,0 +1,29 @@
+[
+  {
+    "id": "zimbabwe-food-network",
+    "title": "Zimbabwe Food Network",
+    "tagline": "National supermarket chain seeded in Earth and ethics.",
+    "description": "A decentralized food access initiative co-owned by local producers, creating economic cycles powered by AXG.",
+    "location": "Harare, Zimbabwe",
+    "status": "ACTIVE",
+    "tier": "INVESTOR",
+    "token": "AXG",
+    "image": "/images/projects/zimbabwe-food-network.jpg",
+    "links": {
+      "whitepaper": "/docs/zimbabwe-whitepaper.pdf",
+      "dashboard": "/projects/zimbabwe-food-network"
+    },
+    "impact": {
+      "axgRaised": 150000,
+      "beneficiaries": 6000,
+      "landRestored": 45,
+      "jobsCreated": 200
+    },
+    "videoEmbed": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    "roadmap": [
+      "Q2 2025: Finalize community land buy-in",
+      "Q3 2025: Launch token distribution",
+      "Q4 2025: Open first location"
+    ]
+  }
+]

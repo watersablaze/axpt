@@ -1,0 +1,63 @@
+/* 🌌 Velvet Background */
+.viewerContainer {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 1rem;
+  background: #0a0a0a url('/images/black-felt.png') center center / cover no-repeat;
+  color: #eaeaea;
+  animation: fadeInDoc 1s ease-out;
+}
+
+@keyframes fadeInDoc {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.title {
+  font-size: 1.5rem;
+  color: #d8b4fe;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.1);
+}
+
+/* 📄 PDF Document Styles */
+.document {
+  width: 100%;
+  max-width: 900px;
+  background: #1c1c1c;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.05);
+  margin-top: 2rem;
+}
+
+.page {
+  margin: 1rem 0;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+  border-radius: 4px;
+}
+
+/* 🚨 Error Message */
+.error {
+  color: #f87171;
+  background: rgba(255, 0, 0, 0.08);
+  padding: 0.75rem 1rem;
+  margin-top: 2rem;
+  border: 1px solid rgba(255, 0, 0, 0.2);
+  border-radius: 6px;
+  max-width: 600px;
+  font-size: 0.9rem;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: left;
+}
