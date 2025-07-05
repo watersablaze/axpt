@@ -1,6 +1,9 @@
 {
   "rewrites": [
-    { "source": "/", "destination": "/onboard/investor" }
+    {
+      "source": "/",
+      "destination": "/onboard/investor"
+    }
   ],
   "build": {
     "env": {
@@ -8,11 +11,22 @@
     }
   },
   "functions": {
-    "api/partner/verify-token.ts": {
+    "app/api/partner/**/route.ts": {
       "memory": 256,
       "maxDuration": 10
     }
   },
-  "ignoreCommand": "echo Ignoring non-investor pages",
-  "outputDirectory": ".next"
+  "ignoreCommand": "echo Skipping non-investor routes for this deploy pass.",
+  "outputDirectory": ".next",
+  "preview": {
+    "rewrites": [
+      {
+        "source": "/",
+        "destination": "/landing"
+      }
+    ],
+    "env": {
+      "NODE_ENV": "development"
+    }
+  }
 }
