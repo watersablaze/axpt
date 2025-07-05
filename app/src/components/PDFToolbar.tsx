@@ -51,6 +51,24 @@ const PDFToolbar: React.FC<PDFToolbarProps> = ({
         </label>
       </div>
 
+              <a
+          href={`/docs/${currentDoc}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          download
+          style={{
+            color: '#facc15',
+            marginLeft: '1rem',
+            fontWeight: 'bold',
+            textDecoration: 'none',
+            background: '#222',
+            padding: '0.5rem 1rem',
+            borderRadius: '6px',
+          }}
+        >
+          ⬇️ Download PDF
+        </a>
+
       <button onClick={onToggleFullscreen}>
         {isFullscreen ? 'Exit Fullscreen' : 'Enter Fullscreen'}
       </button>

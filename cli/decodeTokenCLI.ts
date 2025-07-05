@@ -3,7 +3,7 @@
 import 'dotenv/config';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
-import { decodeToken } from '@/src/utils/token';
+import { decodeToken } from '@/utils/token';
 import type { TokenPayload } from '@/types/token';
 
 async function runDecoder() {

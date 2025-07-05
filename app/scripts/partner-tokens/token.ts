@@ -4,16 +4,11 @@
 import 'dotenv/config';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
-import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
-import { TokenPayload } from '@/types/token';
 
-const generateSignedToken = (payload: TokenPayload, secret: string): string => {
-  const payloadB64 = Buffer.from(JSON.stringify(payload)).toString('base64url');
-  const signature = crypto.createHmac('sha256', secret).update(payloadB64).digest('hex');
-  return `${payloadB64}:${signature}`;
-};
+import { generateSignedToken } from '@/utils/token'; // ✅ Unified import
+import type { TokenPayload } from '@/types/token';
 
 const run = async () => {
   console.log(chalk.cyan('🔐 AXPT.io Token CLI Generator'));
@@ -39,16 +34,11 @@ const run = async () => {
     iat: Math.floor(Date.now() / 1000),
   };
 
-  const secret = process.env.PARTNER_SECRET;
-  if (!secret) {
-    console.error(chalk.red('❌ Missing PARTNER_SECRET'));
-    process.exit(1);
-  }
+  const token = generateSignedToken(payload);
 
-  const token = generateSignedToken(payload, secret);
   const dir = path.resolve('tokens');
   fs.mkdirSync(dir, { recursive: true });
-  const file = path.join(dir, `${payload.partner}.token.txt`);
+  const file = path.join(dir, `${partner}.token.txt`);
   fs.writeFileSync(file, token);
 
   console.log(chalk.green('\n✅ Token generated:'));

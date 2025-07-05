@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import styles from '@/partner/whitepaper/WhitepaperPreVerify.module.css';
 import OrbAnimation from '@/components/shared/OrbAnimation';
-import { useOrbSize } from '@/hooks/useOrbSize';
+import { useOrbSize } from 'staging/hooks/useOrbSize';
 
 interface PreVerificationScreenProps {
   token: string;

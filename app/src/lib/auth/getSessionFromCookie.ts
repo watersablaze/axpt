@@ -1,29 +1,43 @@
-import prisma from '@/lib/prisma';
-import { hashToken } from '@/utils/secureToken';
+// app/src/lib/auth/getSessionFromCookie.ts
+
+import { jwtVerify } from 'jose';
 import type { ReadonlyRequestCookies } from 'next/dist/server/web/spec-extension/adapters/request-cookies';
 
-export async function getSessionFromCookie(cookies: ReadonlyRequestCookies) {
-  const rawToken = cookies.get('axpt_session')?.value;
-  if (!rawToken) return null;
+const secret = new TextEncoder().encode(process.env.SESSION_SECRET || 'changeme');
 
-  const tokenHash = hashToken(rawToken);
+type SessionData = {
+  userId: string;
+  tier?: string;
+  displayName?: string;
+};
 
-  const user = await prisma.user.findFirst({
-    where: { accessTokenHash: tokenHash },
-    select: {
-      id: true,
-      email: true,
-      name: true,
-      tier: true,
-    },
-  });
+export async function getSessionFromCookie(
+  cookieJar: ReadonlyRequestCookies
+): Promise<SessionData | null> {
+  const token = cookieJar.get('axpt_session')?.value;
+  if (!token) {
+    console.warn('⚠️ No session token found in cookies.');
+    return null;
+  }
 
-  if (!user) return null;
+  try {
+    const { payload } = await jwtVerify(token, secret);
 
-  return {
-    userId: user.id,
-    email: user.email,
-    name: user.name,
-    tier: user.tier,
-  };
+    if (typeof payload !== 'object' || typeof payload.userId !== 'string') {
+      console.warn('⚠️ Malformed session payload structure.');
+      return null;
+    }
+
+    return {
+      userId: payload.userId,
+      tier: typeof payload.tier === 'string' ? payload.tier : undefined,
+      displayName:
+        typeof payload.displayName === 'string'
+          ? payload.displayName
+          : undefined,
+    };
+  } catch (err) {
+    console.error('❌ Invalid session token (jose verify failed):', err);
+    return null;
+  }
 }

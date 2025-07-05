@@ -4,8 +4,8 @@
   "private": true,
   "packageManager": "pnpm@9.1.0",
   "engines": {
-    "node": ">=20",
-    "pnpm": ">=9"
+    "node": "20.11.1",
+    "pnpm": "8.15.5"
   },
   "scripts": {
     "dev": "next dev",
@@ -13,38 +13,82 @@
     "build": "pnpm prisma generate && pnpm next build",
     "start": "pnpm next start",
     "lint": "next lint",
+    "dev:css": "pnpm exec tailwindcss -i ./app/src/styles/input.css -o ./public/output.css --watch",
+    "build:css": "pnpm exec tailwindcss -i ./app/src/styles/input.css -o ./public/output.css --minify",
     "clean": "sh ./scripts/clean-install-pnpm.sh",
     "clean:build": "rm -rf node_modules .next .turbo && pnpm install",
     "generate": "pnpm prisma generate",
     "verify-deploy": "pnpm tsx app/scripts/verify-deploy-status.ts",
-
-
+    "typecheck": "tsc --noEmit",
+    "verify-env": "tsx app/scripts/verify-env.ts",
     "token": "ts-node cli/token.ts",
     "token:test": "ts-node app/scripts/partner-tokens/token-test.ts",
     "token:gen": "pnpm token generate",
     "token:list": "pnpm token list",
     "token:decode": "tsx cli/decodeTokenCLI.ts",
     "token:verify": "tsx cli/verifyTokenCLI.ts",
-
     "onboard": "tsx cli/onboard.ts",
     "partners:list": "pnpm tsx app/scripts/partner/listAccess.ts",
-
     "log:read": "tsx app/scripts/logs/readLogs.ts",
     "log:purge": "tsx app/scripts/logs/purgeLogs.ts",
     "log:fix": "tsx app/scripts/partner-tokens/flows/fix-token-log.ts",
-
     "dev:seed": "tsx cli/dev.ts",
     "db:seed": "pnpm tsx prisma/seed.ts",
     "diagnose:prisma": "tsx app/scripts/diagnose-prisma.ts",
     "check:token-system": "bash app/scripts/check-token-system.sh",
-
     "deployritual": "sh app/scripts/deployritual.sh",
     "ultraPreflightDeploy": "sh bin/ultraPreflightDeploy.sh",
     "FullDeploy": "sh bin/FullDeploy.sh",
-
     "move:lotties": "pnpm tsx app/scripts/moveAllLottiesToSrc.ts",
     "env:check": "tsx app/scripts/env.validate.ts"
   },
-  "dependencies": {},
-  "devDependencies": {}
+  "devDependencies": {
+    "@eslint/eslintrc": "2.1.4",
+    "@types/chalk": "^2.2.4",
+    "@types/figlet": "^1.7.0",
+    "@types/inquirer": "^9.0.8",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "20.4.2",
+    "@types/qrcode": "^1.5.5",
+    "@types/react": "18.2.24",
+    "@types/react-dom": "18.2.12",
+    "@typescript-eslint/eslint-plugin": "6.15.0",
+    "@typescript-eslint/parser": "6.15.0",
+    "autoprefixer": "^10.4.21",
+    "axios": "^1.10.0",
+    "clipboardy": "^4.0.0",
+    "cross-env": "^7.0.3",
+    "dotenv": "^17.0.0",
+    "eslint": "8.57.0",
+    "eslint-config-next": "14.2.3",
+    "eslint-import-resolver-alias": "^1.1.2",
+    "postcss": "^8.5.6",
+    "prisma": "^6.10.1",
+    "tailwindcss": "^3.4.1",
+    "tsx": "^4.20.3",
+    "typescript": "5.4.5"
+  },
+  "dependencies": {
+    "@lottiefiles/react-lottie-player": "^3.6.0",
+    "@prisma/client": "^6.10.1",
+    "base64url": "^3.0.1",
+    "chalk": "^5.4.1",
+    "critters": "^0.0.25",
+    "figlet": "^1.8.1",
+    "gradient-string": "^3.0.0",
+    "howler": "^2.2.4",
+    "inquirer": "^12.6.3",
+    "jose": "^6.0.11",
+    "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.525.0",
+    "next": "^15.3.4",
+    "next-auth": "^4.24.11",
+    "qrcode": "^1.5.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-icons": "^5.5.0",
+    "swr": "^2.3.3",
+    "zod": "^3.25.71",
+    "zustand": "^5.0.6"
+  }
 }

@@ -24,6 +24,6 @@ pnpm build
 
 # 5. Run deploy verification script
 echo "🔐 Verifying deploy artifacts..."
-pnpm tsx scripts/verify-deploy-status.ts
+pnpm pnpm run verify-deploy
 
 echo "✅ Ultra Preflight Checks Passed. Ready to deploy."

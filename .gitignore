@@ -78,3 +78,6 @@ coverage/
 *.swp
 .next
 .env*.local
+
+# Tailwind output
+public/output.css

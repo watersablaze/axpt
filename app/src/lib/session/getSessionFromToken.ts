@@ -5,6 +5,7 @@ export interface SessionPayload {
   tier: string;
   docs: string[];
   iat: number;
+  exp?: number;
   token: string;
 }
 
@@ -13,25 +14,26 @@ export function getSessionFromToken(token: string): SessionPayload | null {
     const payload = verifyToken(token);
     if (!payload) return null;
 
-    const { partner, tier, docs, iat } = payload;
+    const { partner, tier, docs, iat, exp } = payload;
 
-    if (
+    const isValid =
       typeof partner === 'string' &&
       typeof tier === 'string' &&
-      Array.isArray(docs)
-    ) {
-      return {
-        partner,
-        tier,
-        docs,
-        iat,
-        token,
-      };
-    }
+      Array.isArray(docs) &&
+      typeof iat === 'number';
 
-    return null;
+    if (!isValid) return null;
+
+    return {
+      partner,
+      tier,
+      docs,
+      iat,
+      exp,
+      token,
+    };
   } catch (err) {
-    console.error('⚠️ Token verification failed:', err);
+    console.error('⚠️ Token verification failed in getSessionFromToken:', err);
     return null;
   }
 }

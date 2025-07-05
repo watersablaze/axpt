@@ -1,25 +1,14 @@
-// app/src/components/layouts/ProtectedLayout.tsx
-
 'use client';
 
 import { useEffect, useState } from 'react';
-import { getSession } from '@/lib/auth/getCurrentUser';
 import { Loader } from '@/components/ui/loader';
+import { useSession } from 'next-auth/react';
 
 export function ProtectedLayout({ children }: { children: React.ReactNode }) {
-  const [authorized, setAuthorized] = useState(false);
+  const { data: session, status } = useSession();
 
-  useEffect(() => {
-    async function checkAuth() {
-      const session = await getSession();
-      if (session?.user) {
-        setAuthorized(true);
-      }
-    }
-    checkAuth();
-  }, []);
-
-  if (!authorized) return <Loader />;
+  if (status === 'loading') return <Loader />;
+  if (status === 'unauthenticated') return <div>Not authorized.</div>;
 
   return <>{children}</>;
 }

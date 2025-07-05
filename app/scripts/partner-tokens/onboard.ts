@@ -1,4 +1,4 @@
-// ✅ NEW: app/scripts/partner-tokens/onboard.ts
+// ✅ FILE: app/scripts/partner-tokens/onboard.ts
 
 import 'dotenv/config';
 import chalk from 'chalk';
@@ -14,11 +14,12 @@ const prisma = new PrismaClient();
     await prisma.partner.create({
       data: {
         name: payload.partner,
+        slug: payload.partner.toLowerCase().replace(/\s+/g, '-'),
         tier: payload.tier,
         token,
-        documents: payload.docs,
-        issuedAt: new Date(payload.iat * 1000),
-      }
+        docs: payload.docs, // ✅ correctly matches schema
+        createdAt: new Date(payload.iat * 1000),
+      },
     });
 
     console.log(chalk.green(`✅ Synced to DB: ${payload.partner}`));

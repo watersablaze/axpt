@@ -1,65 +1,51 @@
 {
   "compilerOptions": {
-    // Language & Module Features
-    "target": "es2020",                            // JavaScript version output
-    "lib": ["dom", "dom.iterable", "esnext"],      // Include DOM and modern JS features
-    "module": "esnext",                            // Use ES module syntax
-    "moduleResolution": "node",                    // Resolve modules like Node.js
-    "jsx": "preserve",                             // Keep JSX as-is for Next.js to handle
-    "esModuleInterop": true,                       // Allow default imports from CommonJS
-    "allowSyntheticDefaultImports": true,          // Avoid needing default keyword for imports
+    "target": "es2020",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "jsx": "preserve",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "allowJs": true,
+    "resolveJsonModule": true,
+    "incremental": true,
 
-    // Strictness & Type Safety
-    "strict": true,                                // Enables all strict type-checking options
-    "skipLibCheck": true,                          // Skip type checks on declaration files
-    "forceConsistentCasingInFileNames": true,      // File paths must match case
-    "noEmit": true,                                // Do not output compiled JS
-    "isolatedModules": true,                       // Required for Next.js with TypeScript
+    "baseUrl": ".", // Path root
 
-    // JavaScript Interoperability
-    "allowJs": true,                               // Allow JS files to be compiled
-    "resolveJsonModule": true,                     // Allow importing `.json` as modules
-    "incremental": true,                           // Enable faster incremental builds
-
-    // Path Aliases
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["./app/src/*"],
-      "@/lib/*": ["./app/src/lib/*", "./app/lib/*"], // Fallback support
-      "@/utils/*": ["./app/src/utils/*"],
-      "@/components/*": ["./app/src/components/*"],
-      "@/hooks/*": ["./app/src/hooks/*"],
-      "@/styles/*": ["./app/src/styles/*"],
-      "@/types/*": ["./app/types/*"],
-      "@/env": ["./app/scripts/partner-tokens/utils/readEnv.ts"],
-      "@/scripts/*": ["./app/scripts/*"],
-      "@/flows/*": ["./app/scripts/partner-tokens/utils/flows/*"],
-      "@/cli/*": ["./cli/*"]
+      "@/*": ["app/src/*"],
+      "@/lib/*": ["app/src/lib/*"],
+      "@/utils/*": ["app/src/utils/*"],
+      "@/components/*": ["app/src/components/*"],
+      "@/hooks/*": ["staging/hooks/*"],
+      "@/styles/*": ["app/src/styles/*"],
+      "@/types/*": ["types/*"],
+      "@/env": ["app/scripts/partner-tokens/utils/readEnv.ts"],
+      "@/scripts/*": ["app/scripts/*"],
+      "@/flows/*": ["app/scripts/partner-tokens/utils/flows/*"],
+      "@/cli/*": ["cli/*"]
     },
 
-    // Type Definitions
-    "types": ["node", "react"],
-    "typeRoots": [
-      "./app/types",               // Custom types
-      "./node_modules/@types",     // Default third-party types
-      "./generated/client"         // Prisma client types
-    ],
-
-    // Next.js plugin (optional but helpful for intellisense)
-    "plugins": [
-      { "name": "next" }
-    ]
+    "types": ["node", "react", "react-dom"],
+    "typeRoots": ["types", "node_modules/@types", "generated/client"],
+    "plugins": [{ "name": "next" }]
   },
+
   "include": [
-    "app",
     "app/src",
     "app/scripts",
+    "app/api",
     "cli",
     "types",
     ".next/types/**/*.ts",
     "next-env.d.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+, "staging/signup", "staging/logout", "staging/account", "staging/logout", "staging/api-lambda", "staging/auth", "staging/hooks", "staging/validatePinLogin.ts", "staging/pinAuth.ts"  ],
+
+  "exclude": ["node_modules"]
 }

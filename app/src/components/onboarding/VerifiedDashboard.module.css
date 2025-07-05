@@ -1,0 +1,257 @@
+@keyframes fadeInBlur {
+  0% {
+    opacity: 0;
+    filter: blur(20px);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+
+.verifiedWrapper {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background: radial-gradient(ellipse at center, #013c3c 0%, #000000 100%);
+  animation: fadeInBlur 1.4s ease-out;
+  padding: 4rem 2rem;
+  gap: 4rem;
+}
+
+.leftPane {
+  width: 320px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.sigilImage {
+  max-width: 560px;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 0 24px rgba(0, 255, 255, 0.5));
+}
+
+.accessGranted {
+  font-size: 1.25rem;
+  color: #66ffff;
+  letter-spacing: 0.45em;
+  text-transform: uppercase;
+  margin-top: 0.75rem;
+  font-weight: 500;
+}
+
+.rightPane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding-top: 1rem;
+  padding-right: 1.5rem;
+}
+
+.welcomeTitle {
+  font-size: 2.5rem;
+  font-family: 'Source Code Pro', monospace;
+  font-weight: 100;
+  color: #00ffee;
+  letter-spacing: -0.10em;
+  margin-bottom: 1rem;
+  line-height: 0.8;
+  text-shadow: 0 0 28px #00ffee44;
+  transition: all 0.3s ease;
+}
+
+.greetingBox {
+  align-self: flex-end;
+  max-width: 1280px;
+  background-color: #010725;
+  padding: 1.5rem 2rem;
+  border-left: 3px solid #00ffee99;
+  border-radius: 0.5rem;
+  box-shadow: 0 0 12px #00ffee22;
+  color: #e0fdfd;
+  font-family: 'Source Code Pro', monospace;
+  text-align: left;
+}
+
+.description {
+  font-size: 1rem;
+  color: #a0dedd;
+}
+
+.orientationGrid {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 2rem;
+  margin-top: 2.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+}
+
+.orientationSplit {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 2rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.orientationLeft {
+  flex: 1;
+  min-width: 280px;
+  color: #cccccc;
+  font-size: 0.95rem;
+  max-width: 420px;
+  padding-right: 1rem;
+}
+
+.orientationLeft h3 {
+  font-size: 1.2rem;
+  color: #66ffff;
+  margin-bottom: 0.5rem;
+}
+
+.orientationLeft p {
+  font-size: 0.95rem;
+  color: #aaa;
+  margin: 0;
+}
+
+.documentGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-top: 2rem;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.docCard {
+  background-color: #111111f5;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid #333;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.docCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.4);
+}
+
+.docCard h3 {
+  font-size: 1.2rem;
+  color: #66ffff;
+  margin-bottom: 0.5rem;
+}
+
+.docCard p {
+  font-size: 0.95rem;
+  color: #cccccc;
+  margin-bottom: 1rem;
+}
+
+.cardButton {
+  background: linear-gradient(to right, #00cccc, #009999);
+  color: white;
+  border: none;
+  border-radius: 2rem;
+  padding: 0.6rem 1.4rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cardButton:hover {
+  background: linear-gradient(to right, #00e0e0, #00aaaa);
+  transform: scale(1.05);
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+}
+
+.actionButtons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: 1.5rem;
+}
+
+.beginButton,
+.viewButton {
+  background: linear-gradient(to right, #00cccc, #007777);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.6rem;
+  border-radius: 2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.beginButton:hover,
+.viewButton:hover {
+  background: linear-gradient(to right, #00e6e6, #009999);
+  transform: scale(1.05);
+  box-shadow: 0 0 12px rgba(0, 255, 255, 0.25);
+}
+
+.upgradeButton {
+  padding: 0.5rem 1rem;
+  background-color: #00222259;
+  color: #66ffcc;
+  border: 1px solid #00ffee33;
+  margin-left: 22.5rem;
+  border-radius: 4px;
+  font-size: 1.15rem;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.upgradeButton:hover {
+  background-color: #003333;
+  border-color: #00ffeeaa;
+  color: #ffffff;
+}
+
+@media screen and (max-width: 900px) {
+  .verifiedWrapper {
+    flex-direction: column;
+    align-items: center;
+    padding: 2.5rem 1.5rem;
+  }
+
+  .leftPane {
+    order: 1;
+  }
+
+  .rightPane {
+    width: 100%;
+    order: 2;
+  }
+
+  .orientationRight {
+    justify-content: center;
+    margin-top: 1rem;
+    width: 100%;
+    display: flex;
+  }
+
+  .welcomeTitle {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 1.2rem;
+  }
+}

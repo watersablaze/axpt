@@ -6,38 +6,41 @@ import path from 'path';
 import readline from 'readline';
 import clipboard from 'clipboardy';
 import axios from 'axios';
-import { decodeToken, verifyToken, isTokenExpired } from '../app/src/utils/token';
+import { verifyToken } from '../app/src/utils/token';
+import { isTokenExpired } from '@/utils/token';
 
 const rl = readline.createInterface({
   input: process.stdin,
-  output: process.stdout
+  output: process.stdout,
 });
 
 rl.question('🔑 Paste your full token:\n', async (token) => {
-  console.log('\n🔍 Decoding token...');
+  console.log('\n🔍 Verifying token...');
 
-  const decoded = decodeToken(token);
+  const payload = await verifyToken(token);
 
-  if (!decoded) {
-    console.error(chalk.red('❌ Failed to decode token.'));
+  if (!payload) {
+    console.error(chalk.red('❌ Token verification failed.'));
     rl.close();
     return;
   }
 
-  const { partner, tier, docs, iat } = decoded;
+  const { partner, tier, docs, iat } = payload;
   const issuedAt = new Date(iat * 1000);
-  const expired = isTokenExpired(token);
-  const isValid = verifyToken(token);
+  const expired = isTokenExpired(iat);
 
-  const tierColors: Record<string, chalk.Chalk> = {
+  const tierColors: Record<string, (text: string) => string> = {
     Investor: chalk.yellowBright,
     Partner: chalk.cyanBright,
     Farmer: chalk.greenBright,
-    Nomad: chalk.magentaBright
+    Merchant: chalk.blueBright,
+    Nomad: chalk.magentaBright,
+    Board: chalk.redBright,
   };
-  const tierColor = tierColors[tier] || chalk.white;
 
-  // Copy to clipboard
+  const tierColor = tierColors[tier] || ((txt: string) => txt);
+
+  // Copy token to clipboard
   try {
     clipboard.writeSync(token);
     console.log(chalk.gray('\n📋 Token copied to clipboard.\n'));
@@ -45,13 +48,13 @@ rl.question('🔑 Paste your full token:\n', async (token) => {
     console.warn(chalk.red('⚠️ Failed to copy to clipboard.'));
   }
 
-  // Display token table
+  // Display summary
   console.table({
     Partner: partner,
-    Tier: tier,
+    Tier: tierColor(tier),
     'Issued At': issuedAt.toLocaleString(),
     Expired: expired ? 'Yes' : 'No',
-    'Valid Token': isValid ? 'Yes' : 'No'
+    'Valid Token': 'Yes',
   });
 
   console.log(`📄 Docs:`);
@@ -59,7 +62,7 @@ rl.question('🔑 Paste your full token:\n', async (token) => {
     console.log(`   - ${chalk.blueBright(doc)}`);
   });
 
-  // Webhook (optional, change URL)
+  // Optional webhook
   const webhookUrl = process.env.TOKEN_VERIFICATION_WEBHOOK;
   if (webhookUrl) {
     try {
@@ -68,13 +71,14 @@ rl.question('🔑 Paste your full token:\n', async (token) => {
         tier,
         docs,
         token,
-        valid: isValid,
+        valid: true,
         expired,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
       console.log(chalk.gray('\n🌐 Webhook sent.'));
     } catch (err) {
-      console.warn(chalk.red('⚠️ Webhook failed:'), err.message);
+      const message = err instanceof Error ? err.message : String(err);
+      console.warn(chalk.red('⚠️ Webhook failed:'), message);
     }
   }
 
@@ -86,12 +90,12 @@ rl.question('🔑 Paste your full token:\n', async (token) => {
     iat,
     token,
     timestamp: new Date().toISOString(),
-    status: isValid ? (expired ? 'expired' : 'valid') : 'invalid'
+    status: expired ? 'expired' : 'valid',
   };
+
   const logPath = path.join(process.cwd(), 'logs/token-verifications.jsonl');
   fs.appendFileSync(logPath, JSON.stringify(logEntry) + '\n');
 
   console.log(chalk.gray(`\n🧾 Log written to ${logPath}\n`));
-
   rl.close();
 });

@@ -5,9 +5,9 @@ import path from 'path';
 import qrcode from 'qrcode';
 import clipboard from 'clipboardy';
 import chalk from 'chalk';
-import { generateSignedToken } from '@/utils/token';
+import { generateSignedToken } from '../app/src/utils/token';
 import { getEnv } from '@/scripts/partner-tokens/utils/readEnv';
-import type { TokenPayload } from '@/types/token';
+import { TokenPayload } from '@/types/token';
 
 console.log('[🔐 SECRET CHECK]', getEnv('PARTNER_SECRET'));
 
@@ -35,7 +35,7 @@ export async function generateTokenForCLI(
     iat: Math.floor(Date.now() / 1000),
   };
 
-  const token = generateSignedToken(payload); // ✅ Full signed token with signature
+const token = await generateSignedToken(payload);
 
   const qrPath = path.join(qrDir, `${partner}.png`);
   const qrURL = `https://www.axpt.io/qr-view?token=${token}`;
@@ -46,7 +46,8 @@ export async function generateTokenForCLI(
     color: { dark: '#000000', light: '#FFFFFF' },
   });
 
-  clipboard.writeSync(token);
+if (typeof token === 'string') clipboard.writeSync(token);
+else console.warn('⚠️ Token is not a string. Clipboard copy skipped.');
 
   console.log(chalk.green(`\n✓ Token generated for:`), chalk.cyan(partner));
   console.log(chalk.magenta(`📄 QR saved to:`), chalk.gray(qrPath));

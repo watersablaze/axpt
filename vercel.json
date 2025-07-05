@@ -1,0 +1,22 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/onboard/investor" }
+  ],
+  "build": {
+    "env": {
+      "NODE_ENV": "production"
+    }
+  },
+  "functions": {
+    "api/partner/verify-token.ts": {
+      "memory": 256,
+      "maxDuration": 10
+    }
+  },
+  "routes": [
+    { "src": "/onboard/investor", "dest": "/onboard/investor" },
+    { "src": "/api/partner/verify-token", "dest": "/api/partner/verify-token" }
+  ],
+  "ignoreCommand": "echo Ignoring non-investor pages",
+  "outputDirectory": ".next"
+}

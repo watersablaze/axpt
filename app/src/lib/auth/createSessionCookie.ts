@@ -1,28 +1,43 @@
 import { SignJWT } from 'jose';
-import { cookies } from 'next/headers';
 
-const secret = new TextEncoder().encode(process.env.SESSION_SECRET || 'changeme');
+const secret = new TextEncoder().encode(process.env.SESSION_SECRET || 'defaultsecret');
+
+export type SessionPayload = {
+  userId: string;
+  tier: string;
+  displayName?: string;
+  docs?: string[];
+};
+
+type CreateSessionInput = SessionPayload;
 
 export async function createSessionCookie({
   userId,
   tier,
-}: {
-  userId: string;
-  tier: string | null;
-}) {
-  const jwt = await new SignJWT({ userId, tier })
+  displayName,
+  docs = [],
+}: CreateSessionInput): Promise<{
+  jwt: string;
+  cookie: string;
+}> {
+  const payload: SessionPayload = { userId, tier, displayName, docs };
+
+  const jwt = await new SignJWT(payload)
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime('7d')
     .sign(secret);
 
-  const cookieStore = cookies(); // ✅ sync
-  cookieStore.set('axpt_session', jwt, {
-    path: '/',
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
-  });
+  const cookie = [
+    `axpt_session=${jwt}`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    process.env.NODE_ENV === 'production' ? 'Secure' : '',
+    `Max-Age=${7 * 24 * 60 * 60}`,
+  ]
+    .filter(Boolean)
+    .join('; ');
 
-  return jwt;
+  return { jwt, cookie };
 }

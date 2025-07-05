@@ -1,9 +1,10 @@
 // app/api/token/issue/route.ts
+
 import { NextResponse } from 'next/server';
 import { generateSignedToken } from '@/utils/token';
-import { prisma } from '@/lib/db'; // adjust path if needed
+import { prisma } from '@/lib/db';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function POST(req: Request) {
   try {
@@ -13,18 +14,26 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Missing partner name or tier' }, { status: 400 });
     }
 
-    const token = generateSignedToken({ partnerName, tier, docs });
+    const payload = {
+      partner: partnerName,
+      tier,
+      docs,
+      iat: Math.floor(Date.now() / 1000),
+    };
+
+    const token = generateSignedToken(payload);
     const onboardingUrl = `https://axpt.io/onboard?token=${token}`;
 
-    await prisma.tokenLog.create({
-      data: {
-        partnerName,
-        tier,
-        docs,
-        token,
-        issuedBy: 'public-api',
-      },
-    });
+    // 📝 Logging skipped – TokenLog model not defined in Prisma
+    // await prisma.tokenLog.create({
+    //   data: {
+    //     partnerName,
+    //     tier,
+    //     docs,
+    //     token,
+    //     issuedBy: 'public-api',
+    //   },
+    // });
 
     return NextResponse.json({
       success: true,
@@ -32,6 +41,7 @@ export async function POST(req: Request) {
       onboardingUrl,
     });
   } catch (err: any) {
+    console.error('[AXPT::token-issue]', err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

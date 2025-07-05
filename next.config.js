@@ -1,13 +1,13 @@
-// next.config.js
-
 const path = require("path");
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+
   productionBrowserSourceMaps: true,
 
   compiler: {
+    // Strip console.* only in production
     removeConsole: process.env.NODE_ENV === "production",
   },
 
@@ -26,6 +26,10 @@ const nextConfig = {
   },
 
   webpack: (config, { isServer }) => {
+    // ⛑ Prevent critical dependency failures in jose/crypto libs
+    config.module.exprContextCritical = false;
+
+    // 💫 Aliases for absolute imports
     config.resolve = {
       ...config.resolve,
       alias: {
@@ -37,10 +41,11 @@ const nextConfig = {
       },
       fallback: {
         ...(config.resolve?.fallback || {}),
-        canvas: false, // for react-pdf
+        canvas: false, // For react-pdf or pdfjs-dist
       },
     };
 
+    // 🎯 Optional: customize chunk output in browser
     if (!isServer) {
       config.output = {
         ...config.output,
@@ -51,6 +56,7 @@ const nextConfig = {
     return config;
   },
 
+  // 🌍 Redirect root to landing
   async redirects() {
     return [
       {
