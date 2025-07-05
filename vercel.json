@@ -13,10 +13,6 @@
       "maxDuration": 10
     }
   },
-  "routes": [
-    { "src": "/onboard/investor", "dest": "/onboard/investor" },
-    { "src": "/api/partner/verify-token", "dest": "/api/partner/verify-token" }
-  ],
   "ignoreCommand": "echo Ignoring non-investor pages",
   "outputDirectory": ".next"
 }
