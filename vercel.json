@@ -16,17 +16,6 @@
       "maxDuration": 10
     }
   },
-  "ignoreCommand": "echo Skipping non-investor routes for this deploy pass.",
-  "outputDirectory": ".next",
-  "preview": {
-    "rewrites": [
-      {
-        "source": "/",
-        "destination": "/landing"
-      }
-    ],
-    "env": {
-      "NODE_ENV": "development"
-    }
-  }
+  "ignoreCommand": "echo Ignoring non-investor pages during deployment.",
+  "outputDirectory": ".next"
 }
