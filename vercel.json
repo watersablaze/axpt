@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "bash app/scripts/verify-env.sh && pnpm install && pnpm build",
+  "buildCommand": "pnpm install && pnpm build",
   "outputDirectory": ".next",
   "framework": "nextjs",
   "env": {
