@@ -20,6 +20,7 @@
   animation: fadeInBlur 1.4s ease-out;
   padding: 4rem 2rem;
   gap: 4rem;
+  overflow-y: auto;
 }
 
 .leftPane {
@@ -253,5 +254,12 @@
     font-size: 2.5rem;
     text-align: center;
     margin-bottom: 1.2rem;
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .verifiedWrapper {
+    overflow-y: auto;
+    max-height: 100vh;
   }
 }

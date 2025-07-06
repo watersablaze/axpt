@@ -1,21 +1,31 @@
 {
-  "rewrites": [
+  "version": 2,
+  "buildCommand": "bash app/scripts/verify-env.sh && pnpm install && pnpm build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "env": {
+    "NODE_ENV": "production"
+  },
+  "routes": [
     {
-      "source": "/",
-      "destination": "/onboard/investor"
+      "src": "/",
+      "dest": "/landing"
+    },
+    {
+      "src": "/vault/(.*)",
+      "dest": "/vault/[doc]"
+    },
+    {
+      "src": "/onboard/investor",
+      "dest": "/onboard/investor"
+    },
+    {
+      "src": "/onboard/investor/dashboard",
+      "dest": "/onboard/investor/dashboard"
+    },
+    {
+      "src": "/docs/(.*)",
+      "dest": "/docs/[doc]"
     }
-  ],
-  "build": {
-    "env": {
-      "NODE_ENV": "production"
-    }
-  },
-  "functions": {
-    "app/api/partner/**/route.ts": {
-      "memory": 256,
-      "maxDuration": 10
-    }
-  },
-  "ignoreCommand": "echo Ignoring non-investor pages during deployment.",
-  "outputDirectory": ".next"
+  ]
 }

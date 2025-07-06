@@ -4,5 +4,13 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "eslint.validate": ["javascript", "typescript", "typescriptreact"]
+  "eslint.validate": [
+    "javascript",
+    "typescript",
+    "typescriptreact"
+  ],
+  "terminal.integrated.smoothScrolling": true,
+  "terminal.integrated.mouseWheelZoom": true,
+  "terminal.integrated.minimumContrastRatio": 7,
+  "terminal.integrated.fontSize": 11
 }

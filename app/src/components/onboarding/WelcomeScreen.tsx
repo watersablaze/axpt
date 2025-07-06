@@ -65,7 +65,7 @@ export default function WelcomeScreen({ onAcceptAction }: WelcomeScreenProps) {
               <OrbAnimation size={180} fadeIn />
             </div>
             <div className={styles.messageBox}>
-              <h1 className={styles.title}>ENTERING AXPT PORTAL</h1>
+              <h1 className={styles.title}>ENTERING AXPT ONBOARDING PORTAL</h1>
               <p className={styles.message}>
                 This platform is a sacred technology. By entering, you affirm your role in restoring
                 Earth’s wealth systems and supporting culturally awakened economies. Accessing this

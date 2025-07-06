@@ -1,22 +1,44 @@
 #!/bin/bash
 
-echo "🚀 Running Full Deploy Ritual..."
+echo "⟁ AXPT | FullDeploy Ritual"
+echo "──────────────────────────────────────────"
 
-# Exit on error
-set -e
+# 1. Run Ultra Preflight Check
+echo "🌀 Running Ultra Preflight Deploy..."
+bash bin/ultraPreflightDeploy.sh
 
-# 1. Run Ultra Preflight
-echo "🔍 Running Ultra Preflight Script..."
-./bin/ultraPreflightDeploy.sh
+if [ $? -ne 0 ]; then
+  echo "❌ Preflight check failed. Aborting FullDeploy."
+  exit 1
+fi
 
-# 2. Push to Git
-echo "🌀 Committing and pushing to Git..."
-git add .
-git commit -m "🚀 Full deploy via FullDeploy script"
-git push origin main
+# 2. Git Add & Commit
+echo "📂 Staging changes..."
+git add -A
 
-# 3. Deploy to Vercel
-echo "🌐 Triggering Vercel Deploy..."
-vercel --prod
+read -p "📝 Enter commit message: " COMMIT_MSG
 
-echo "🎉 Full Deployment Complete!"
+if [ -z "$COMMIT_MSG" ]; then
+  echo "⚠️  No commit message entered. Aborting."
+  exit 1
+fi
+
+echo "📦 Committing changes..."
+git commit -m "$COMMIT_MSG"
+
+# 3. Git Push
+echo "🚀 Pushing to origin/master..."
+git push origin master
+
+if [ $? -ne 0 ]; then
+  echo "❌ Git push failed. Please check your remote or branch name."
+  exit 1
+fi
+
+# 4. Deployment complete
+echo "🎉 Code pushed. Vercel should now auto-deploy."
+
+echo "🔍 Monitor deployment: https://vercel.com/dashboard"
+echo "──────────────────────────────────────────"
+echo "✅ AXPT | FullDeploy Ritual complete"
+echo "🕓 Timestamp: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"

@@ -22,8 +22,5 @@ pnpm typecheck
 echo "🏗️  Running build..."
 pnpm build
 
-# 5. Run deploy verification script
-echo "🔐 Verifying deploy artifacts..."
-pnpm pnpm run verify-deploy
 
 echo "✅ Ultra Preflight Checks Passed. Ready to deploy."

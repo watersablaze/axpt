@@ -1,8 +1,8 @@
-// ✅ OrbAnimation.tsx (Lottie)
 'use client';
 
 import React from 'react';
 import { Player } from '@lottiefiles/react-lottie-player';
+import styles from './OrbAnimation.module.css';
 
 interface OrbProps {
   size?: number;
@@ -11,21 +11,23 @@ interface OrbProps {
 }
 
 const OrbAnimation: React.FC<OrbProps> = ({ size = 180, fadeIn = false, className }) => {
+  const combinedClass = `${styles.orbContainer} ${fadeIn ? styles.fadeIn : ''} ${className || ''}`;
+
   return (
     <div
-      className={className}
+      className={combinedClass}
       style={{
         width: size,
         height: size,
-        opacity: fadeIn ? 0.9 : 1,
-        margin: '0 auto',
       }}
     >
       <Player
         autoplay
         loop
-        src="/lotties/Axis_Orb.json"
-        style={{ height: size, width: size }}
+        keepLastFrame
+        renderer="svg"
+        src="/lotties/Axis_orb.json"
+        style={{ width: size, height: size }}
       />
     </div>
   );

@@ -1,55 +1,57 @@
 #!/bin/bash
 
+echo ""
 echo "⟁ AXPT | MetaDeploy Ritual"
 echo "🌐 Location: $(pwd)"
-echo "------------------------------------"
+echo "──────────────────────────────────────"
 
-# Log everything to preflight.log
-LOGFILE="preflight.log"
-exec > >(tee -a "$LOGFILE") 2>&1
-
-echo "🩺 Running AXPT Doctor Checkup..."
-
-# Ensure Prisma Client is generated before anything
-echo "🔁 Ensuring Prisma Client is generated..."
-pnpm prisma generate --silent
-
-# Locate and run doctor script
-DOCTOR_SCRIPT=$(find app/scripts -name 'doctor.ts*' | head -n 1)
-pnpm exec tsx "$DOCTOR_SCRIPT" --silent
+# 1. Verify Configuration
+echo "⚡ Running verify-config..."
+chmod +x app/scripts/verify-config.sh
+sh app/scripts/verify-config.sh
 if [ $? -ne 0 ]; then
-  echo "❌ Doctor checkup failed. Deployment halted."
+  echo "❌ Configuration verification failed. Aborting deploy."
   exit 1
 fi
 
-echo "✅ Doctor checkup passed. Proceeding to deployment..."
-echo "------------------------------------"
-echo "🛠️  Running ultraPreflightDeploy Ritual..."
-
-bash app/scripts/ultraPreflightDeploy.sh || {
-  echo "❌ Build failed. Aborting."
-  exit 1
-}
-
-echo "📡 Verifying token flow with test call..."
-TEST_TOKEN="TEST_TOKEN"
-RESPONSE=$(curl -s -w "%{http_code}" -o /dev/null -X POST http://localhost:3000/api/partner/verify-token \
-  -H "Content-Type: application/json" \
-  -d "{\"token\": \"$TEST_TOKEN\"}")
-
-echo "📝 Token Endpoint Response: $RESPONSE" >> "$LOGFILE"
-
-if [ "$RESPONSE" = "200" ]; then
-  echo "✅ Token endpoint returned 200 OK."
-elif [ "$RESPONSE" = "400" ]; then
-  echo "⚠️  Token endpoint returned 400 — likely expected for a dummy token. API reachable."
+# 2. Verify .env NODE_ENV is set correctly
+ENV_VAL=$(grep "^NODE_ENV=" .env | cut -d '=' -f2)
+if [[ "$ENV_VAL" == "production" ]]; then
+  echo "✅ .env NODE_ENV is set to production"
 else
-  echo "❌ Token endpoint returned unexpected status: $RESPONSE"
+  echo "⚠️  NODE_ENV in .env is '$ENV_VAL' — should be 'production' for deploy"
 fi
 
-echo "🌱 Running Vercel .env sync test..."
-pnpm exec vercel env pull .env.production --yes
+# 3. Run TypeScript Checks
+echo ""
+echo "📘 Running TypeScript validation..."
+pnpm typecheck
+if [ $? -ne 0 ]; then
+  echo "❌ TypeScript check failed. Aborting deploy."
+  exit 1
+fi
 
-echo "✅ AXPT | MetaDeploy Ritual Complete"
-echo "🕓 Timestamp: $(date -u +"%Y-%m-%dT%H:%M:%SZ")"
-echo "🚀 Project successfully built and ready for launch."
+# 4. Run Build
+echo ""
+echo "🏗️  Building production version..."
+pnpm build
+if [ $? -ne 0 ]; then
+  echo "❌ Build failed. Aborting deploy."
+  exit 1
+fi
+
+# 5. Commit and Push to Git
+echo ""
+echo "📦 Committing to Git..."
+git add .
+git commit -m "🔁 AXPT Deploy Commit: $(date +'%Y-%m-%d %H:%M:%S')"
+git push
+
+# 6. Deploy to Vercel
+echo ""
+echo "🚀 Triggering Vercel Deploy..."
+vercel --prod
+
+echo ""
+echo "🎉 AXPT Deployed Successfully to Production"
+echo "=============================================="
