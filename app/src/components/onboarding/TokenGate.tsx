@@ -8,7 +8,7 @@ import { decodeToken } from '@/utils/token';
 import {
   getStoredToken,
   storeVerifiedToken,
-} from '@/lib/utils/tokenSession';
+} from '@/utils/tokenSession';
 
 type TokenGateProps = {
   onVerifiedAction: (token: string) => void;

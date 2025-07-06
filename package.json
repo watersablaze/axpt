@@ -4,13 +4,13 @@
   "private": true,
   "packageManager": "pnpm@8.15.5",
   "engines": {
-    "node": "20.11.1",
-    "pnpm": "8.15.5"
+    "node": ">=20.11.1 <21",
+    "pnpm": ">=8.15.5 <9"
   },
   "scripts": {
     "dev": "next dev",
     "dev:net": "cross-env NODE_ENV=development NEXT_PUBLIC_AXPT_ENV=net next dev",
-    "build": "pnpm prisma generate && pnpm next build",
+    "build": "node_modules/.bin/prisma generate && pnpm next build",
     "start": "pnpm next start",
     "lint": "next lint",
     "dev:css": "pnpm exec tailwindcss -i ./app/src/styles/input.css -o ./public/output.css --watch",
@@ -38,9 +38,9 @@
     "ultraPreflightDeploy": "sh bin/ultraPreflightDeploy.sh",
     "FullDeploy": "sh bin/FullDeploy.sh",
     "move:lotties": "pnpm tsx app/scripts/moveAllLottiesToSrc.ts",
+    "check:env": "tsx app/scripts/env.validate.ts",
     "env:check": "tsx app/scripts/env.validate.ts",
-    "verify-env": "bash ./app/scripts/verify-env.sh",
-    "axpt:deploy": "sh bin/deploy.sh",      
+    "axpt:deploy": "sh bin/deploy.sh",
     "deployritual-local": "sh bin/deployritual-local.sh",
     "doctor": "tsx app/scripts/doctor.ts"
   },
@@ -65,7 +65,6 @@
     "eslint-config-next": "14.2.3",
     "eslint-import-resolver-alias": "^1.1.2",
     "postcss": "^8.5.6",
-    "prisma": "^6.10.1",
     "tailwindcss": "^3.4.1",
     "tsx": "^4.20.3",
     "typescript": "5.4.5"
@@ -85,6 +84,7 @@
     "lucide-react": "^0.525.0",
     "next": "^15.3.4",
     "next-auth": "^4.24.11",
+    "prisma": "^6.11.1",
     "qrcode": "^1.5.4",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

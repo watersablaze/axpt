@@ -2,6 +2,14 @@
 
 # AXPT Environment Validator
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+# ⛳️ Skip on Vercel deploys
+if [[ "$VERCEL" == "1" ]]; then
+  echo "⚠️  Skipping verify-env.sh in Vercel build environment."
+  exit 0
+fi
+
+# Determine .env file to use
 ENV_FILE=""
 if [[ -f .env.local ]]; then
   ENV_FILE=".env.local"
