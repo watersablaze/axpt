@@ -4,13 +4,24 @@
   "editor.codeActionsOnSave": {
     "source.fixAll.eslint": "explicit"
   },
-  "eslint.validate": [
-    "javascript",
-    "typescript",
-    "typescriptreact"
+  "eslint.validate": ["javascript", "typescript", "typescriptreact"],
+  "tailwindCSS.includeLanguages": {
+    "plaintext": "html",
+    "css": "css",
+    "postcss": "css",
+    "typescript": "javascript",
+    "typescriptreact": "javascript"
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["clsx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
+    ["cn\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ],
+  "tailwindCSS.emmetCompletions": true,
+  "files.associations": {
+    "*.css": "postcss"
+  },
   "terminal.integrated.smoothScrolling": true,
   "terminal.integrated.mouseWheelZoom": true,
   "terminal.integrated.minimumContrastRatio": 7,
-  "terminal.integrated.fontSize": 11
+  "terminal.integrated.fontSize": 10
 }

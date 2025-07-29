@@ -1,0 +1,133 @@
+/* SecureScroll.module.css */
+
+.viewerPage {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(145deg, #0d1117, #161b22);
+  color: #e6edf3;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+
+.header {
+  width: 100%;
+  padding: 1.25rem 2rem;
+  background: rgba(13, 17, 23, 0.85);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  z-index: 10;
+  position: sticky;
+  top: 0;
+}
+
+.title {
+  font-size: 1.75rem;
+  font-weight: 600;
+  color: #58a6ff;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  color: #c9d1d9;
+  font-family: monospace;
+  margin-left: 1rem;
+  flex: 1;
+  min-width: 200px;
+}
+
+.fullscreenToggle {
+  background: #21262d;
+  color: #c9d1d9;
+  border: 1px solid #30363d;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background 0.3s ease;
+}
+
+.fullscreenToggle:hover {
+  background: #30363d;
+}
+
+.iframe {
+  width: 100%;
+  height: calc(100vh - 80px); /* subtract approximate header height */
+  border: none;
+  transition: filter 0.4s ease-in-out, opacity 0.4s ease;
+  box-shadow: 0 0 12px rgba(88, 166, 255, 0.15);
+  border-radius: 0;
+}
+
+.blur {
+  filter: blur(10px);
+  opacity: 0.5;
+}
+
+.reveal {
+  filter: none;
+  opacity: 1;
+}
+
+.loaderOverlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: transparent;
+  padding: 1rem 2rem;
+  z-index: 20;
+  color: #ffffff;
+  text-align: center;
+}
+
+.loaderText {
+  font-size: 1rem;
+  font-family: monospace;
+  color: #8b949e;
+}
+
+.cursor {
+  display: inline-block;
+  animation: blink 1.2s infinite;
+  color: #58a6ff;
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.mobileNotice {
+  font-size: 0.95rem;
+  color: #d29922;
+  background: rgba(32, 35, 40, 0.8);
+  border: 1px dashed #d29922;
+  padding: 1rem;
+  margin: 2rem auto;
+  border-radius: 8px;
+  max-width: 90vw;
+  text-align: center;
+}
+
+.mobileNotice a {
+  color: #58a6ff;
+  text-decoration: underline;
+}
+
+.fullscreen {
+  background: #000000;
+}

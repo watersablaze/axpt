@@ -1,0 +1,136 @@
+/* === Container Layout === */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  color: #fff;
+  text-align: center;
+  margin-top: 10rem;
+  margin-right: 10rem;
+}
+
+.header {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 2rem;
+  margin-left: 10rem;
+  position: relative;
+  z-index: 3; /* keeps the title above ripples and other layers */
+}
+
+.header h2 {
+  font-size: 1.8rem;
+  color: #00ffe0;
+  margin-bottom: -10rem;
+  letter-spacing: 0.3rem;
+}
+
+/* === Radial Positioning Layout === */
+.radialLayout {
+  position: relative;
+  width: 100%;
+  max-width: 800px;
+  height: 600px;
+  margin: 0 auto;
+}
+
+/* === Center Orb (Text Bubble) === */
+.centerText {
+  position: absolute;
+  top: 45%;
+  left: 61%;
+  transform: translate(-50%, -50%);
+  width: 280px;
+  padding: 1.25rem;
+  background: rgba(0, 0, 0, 0.55);
+  border-radius: 20px;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  white-space: pre-line;
+  box-shadow: 0 0 25px rgba(170, 140, 255, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.4s ease;
+  z-index: 2;
+}
+
+.centerGlow {
+  transform: translate(-50%, -50%) scale(1.06);
+  box-shadow: 0 0 35px rgba(200, 150, 255, 0.4);
+}
+
+/* === Profile Cards === */
+.card {
+  position: absolute;
+  width: 160px;
+  height: 60px;
+  background: rgba(44, 0, 99, 0.4);
+  color: #1785b8;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  animation: fadeIn 0.6s ease forwards;
+  transition: all 0.35s ease;
+  cursor: pointer;
+  overflow: visible;
+  z-index: 1;
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(175, 150, 255, 0.12);
+}
+
+/* Ripple halo (triggered by .cardHover) */
+.card::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 90px;
+  height: 90px;
+  background: radial-gradient(circle, rgba(198, 140, 255, 0.35), transparent 70%);
+  border-radius: 50%;
+  transform: translate(-50%, -50%) scale(0.8);
+  opacity: 0;
+  transition: all 0.4s ease;
+  z-index: -1;
+}
+
+/* Hover effect with glow + ripple */
+.cardHover {
+  transform: translate(-50%, -50%) scale(1.1);
+  background: rgba(128, 90, 255, 0.55);
+  color: #ffffff;
+  box-shadow: 0 0 25px rgba(128, 90, 255, 0.3);
+  z-index: 3;
+}
+
+.cardHover::after {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1.2);
+}
+
+/* Dimmed state for unhovered siblings */
+.cardDim {
+  opacity: 0.35;
+  transform: translate(-50%, -50%) scale(0.94);
+  filter: blur(0.5px);
+  z-index: 0;
+}
+
+/* === Positions (Radial Petal Placement) === */
+.pos0 { top: 5%; left: 50%; transform: translate(-50%, -50%); }
+.pos1 { top: 18%; left: 75%; transform: translate(-50%, -50%); }
+.pos2 { top: 40%; left: 88%; transform: translate(-50%, -50%); }
+.pos3 { top: 65%; left: 75%; transform: translate(-50%, -50%); }
+.pos4 { top: 85%; left: 50%; transform: translate(-50%, -50%); }
+.pos5 { top: 65%; left: 25%; transform: translate(-50%, -50%); }
+.pos6 { top: 40%; left: 12%; transform: translate(-50%, -50%); }
+.pos7 { top: 18%; left: 25%; transform: translate(-50%, -50%); }
+
+/* === Animations === */
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}

@@ -1,0 +1,11 @@
+{
+  "Investor": "Has access to strategic documents and proposals for funding.",
+  "Project Manager": "Oversees active projects; can view execution blueprints.",
+  "Broker": "Facilitates exchanges and partnerships across AXPT.",
+  "Fund Manager": "Manages pooled capital; views investor overviews and projections.",
+  "Proprietor": "Owner-level access to specific enterprise ventures.",
+  "Custodial Steward": "Guardian of shared assets and responsibilities.",
+  "Nomad / Trader": "Mobile operators with transactional access.",
+  "Suppliers / Distributors": "Handles logistics and delivery ecosystems.",
+  "Creative Producer": "Has access to content production pipelines and collaborations."
+}

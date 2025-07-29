@@ -1,10 +1,8 @@
-// app/api/partner/log-view/route.ts
 import { NextRequest } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { verifyToken, decodeToken } from '@/utils/token';
-import { getEnv } from '@/scripts/partner-tokens/utils/readEnv';
 import crypto from 'crypto';
+import { verifyToken, decodeToken } from '@/lib/token';
 
 export const runtime = 'nodejs';
 
@@ -17,10 +15,16 @@ export async function POST(req: NextRequest) {
       return new Response(JSON.stringify({ error: 'Token is required' }), { status: 400 });
     }
 
-    const payload = verifyToken(token);
-    const decoded = decodeToken(token);
+    // Attempt token verification
+    const { valid, payload } = await verifyToken(token);
+
+    // Decode as backup for logs even if verification fails
+    const decoded = await decodeToken(token);
+
+    // Hash token for log integrity
     const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
 
+    // Create structured log entry
     const logEntry = {
       timestamp: new Date().toISOString(),
       route,
@@ -31,17 +35,20 @@ export async function POST(req: NextRequest) {
       docs: payload?.docs ?? decoded?.docs ?? [],
       iat: payload?.iat ?? decoded?.iat ?? null,
       userAgent,
-      verified: !!payload
+      verified: valid,
     };
 
+    // Ensure logs directory exists
     const logsDir = path.join(process.cwd(), 'logs');
-    const logPath = path.join(logsDir, 'partner-view-logs.jsonl');
     fs.mkdirSync(logsDir, { recursive: true });
+
+    // Append entry to .jsonl file
+    const logPath = path.join(logsDir, 'partner-view-logs.jsonl');
     fs.appendFileSync(logPath, JSON.stringify(logEntry) + '\n');
 
     return new Response(JSON.stringify({ success: true }), { status: 200 });
-  } catch (err) {
-    console.error('Logging failed:', err);
+  } catch (error) {
+    console.error('🛑 Logging failed:', error);
     return new Response(JSON.stringify({ error: 'Logging failed' }), { status: 500 });
   }
 }

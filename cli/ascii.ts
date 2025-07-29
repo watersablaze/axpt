@@ -1,4 +1,6 @@
 // cli/ascii.ts
+import '@/lib/env/loadEnv';
+
 import chalk from 'chalk';
 import figlet from 'figlet';
 import gradient from 'gradient-string';

@@ -1,0 +1,32 @@
+.tabBar {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.tab {
+  padding: 0.55rem 1.25rem;
+  border: 1px solid rgba(0, 255, 255, 0.12);
+  background: rgba(0, 255, 255, 0.02);
+  color: #ccfff8;
+  font-family: 'Source Code Pro', monospace;
+  font-size: 0.95rem;
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab:hover {
+  background-color: rgba(0, 255, 255, 0.08);
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.12);
+}
+
+.active {
+  background-color: rgba(0, 255, 255, 0.12);
+  border-color: #00ffee;
+  color: #ffffff;
+  font-weight: bold;
+}

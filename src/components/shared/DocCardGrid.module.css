@@ -1,0 +1,93 @@
+/* components/shared/DocCardGrid.module.css */
+
+.gridWrapper {
+  padding: 2.5rem 1rem;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.01), rgba(0, 255, 255, 0.03));
+  border-radius: 1.25rem;
+  border: 1px solid rgba(0, 255, 255, 0.301);
+  box-shadow: 0 0 40px rgba(0, 255, 255, 0.05);
+  margin: 3rem auto;
+  width: 100%;
+  transition: background 0.4s ease, box-shadow 0.4s ease, border 0.4s ease;
+}
+
+.gridHeading {
+  font-size: 1.35rem;
+  color: #00ffee;
+  font-family: 'Space Grotesk', sans-serif;
+  text-align: center;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  position: relative;
+  z-index: 1;
+}
+
+.toggleButton {
+  margin-top: 2rem;
+  background: transparent;
+  border: 1px solid #00ffee;
+  color: #00ffee;
+  padding: 0.5rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.toggleButton:hover {
+  background: rgba(0, 255, 255, 0.1);
+  transform: scale(1.05);
+}
+
+/* Dark Mode Enhancements */
+.darkMode {
+  background: #000000;
+  border-color: rgba(0, 255, 255, 0.15);
+  box-shadow: 0 0 60px rgba(0, 255, 255, 0.1);
+}
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  width: 100%;
+  max-width: 960px;
+  z-index: 2;
+}
+
+.cardWrapper {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .gridWrapper {
+    padding: 1.5rem 1rem;
+  }
+
+  .gridHeading {
+    font-size: 1.1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .cardGrid {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    padding: 0 0.5rem;
+  }
+}
+

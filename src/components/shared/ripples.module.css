@@ -1,0 +1,31 @@
+@keyframes ripple {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(3.2);
+    opacity: 0;
+  }
+}
+
+.energyRipple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 220px;
+  height: 220px;
+  margin-left: 40px;
+  margin-top: -110px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
+  filter: blur(1.5px);
+  animation: ripple 10s ease-out infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.delayed {
+  animation-delay: 5s;
+}

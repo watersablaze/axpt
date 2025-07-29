@@ -13,39 +13,63 @@
     "noEmit": true,
     "isolatedModules": true,
     "allowJs": true,
+    "checkJs": false,
     "resolveJsonModule": true,
     "incremental": true,
-
-    "baseUrl": ".", // Path root
-
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["app/src/*"],
-      "@/lib/*": ["app/src/lib/*"],
-      "@/utils/*": ["app/src/utils/*"],
-      "@/components/*": ["app/src/components/*"],
-      "@/hooks/*": ["staging/hooks/*"],
-      "@/styles/*": ["app/src/styles/*"],
-      "@/types/*": ["types/*"],
-      "@/env": ["app/scripts/partner-tokens/utils/readEnv.ts"],
-      "@/scripts/*": ["app/scripts/*"],
-      "@/flows/*": ["app/scripts/partner-tokens/utils/flows/*"],
-      "@/cli/*": ["cli/*"]
+      "@/*": ["src/*"],
+
+      /* Lib Aliases */
+      "@/lib/*": ["src/lib/*"],
+      "@/env/*": ["src/lib/env/*"],
+      "@/auth/*": ["src/lib/auth/*"],
+      "@/token/*": ["src/lib/token/*"],
+      "@/token": ["src/lib/token/index.ts"],
+      "@/utils/*": ["src/lib/utils/*"],
+      "@/constants/*": ["src/constants/*"],
+      "@/logging/*": ["src/lib/logging/*"],
+      "@/lotties/*": ["src/lib/lotties/*"],
+      "@/prisma": ["src/lib/prisma.ts"],
+
+      /* Components */
+      "@/components/*": ["src/components/*"],
+      "@/onboarding/*": ["src/components/onboarding/*"],
+      "@/styles/*": ["src/styles/*"],
+      "@/hooks/*": ["src/hooks/*"],
+
+      /* Stores */
+      "@/stores/*": ["src/stores/*"],
+
+      /* CLI + Scripts */
+      "@/cli/*": ["cli/*"],
+      "@/scripts/*": ["scripts/*"],
+      "@/flows/*": ["scripts/partner-tokens/utils/flows/*"],
+
+      /* Types */
+      "@/types/*": ["src/types/*"]
     },
-
-    "types": ["node", "react", "react-dom"],
-    "typeRoots": ["types", "node_modules/@types", "generated/client"],
-    "plugins": [{ "name": "next" }]
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ]
   },
-
   "include": [
-    "app/src",
-    "app/scripts",
+    "src",
     "app/api",
     "cli",
     "types",
-    ".next/types/**/*.ts",
-    "next-env.d.ts"
-, "staging/signup", "staging/logout", "staging/account", "staging/logout", "staging/api-lambda", "staging/auth", "staging/hooks", "staging/validatePinLogin.ts", "staging/pinAuth.ts"  ],
-
-  "exclude": ["node_modules"]
+    "lib",
+    "scripts",
+    "middleware.ts",
+    "next-env.d.ts",
+    ".next/types/**/*.ts", "staging/SessionInitializer.tsx", "staging/useSessionStore.ts", "staging/getSessionFromCookie.ts", "staging/generateTokenForCLI.ts", "staging/generateTokenCLIFlow.ts", "staging/SharedDocViewer.tsx", 
+  ],
+  "exclude": [
+    "node_modules",
+    "staging/**/*",
+    ".next",
+    "archived/**/*"
+  ]
 }

@@ -1,0 +1,150 @@
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1.75rem 2rem;
+  border-radius: 1.25rem;
+  background: linear-gradient(145deg, #0d0d26, #080820);
+  border: 1px solid rgba(0, 255, 255, 0.12);
+  box-shadow:
+    0 0 20px rgba(0, 255, 224, 0.04),
+    0 0 55px rgba(0, 255, 224, 0.02);
+  transition: all 0.35s ease;
+  opacity: 0;
+  transform: translateY(12px);
+  width: 100%;
+  max-width: 100%;
+  text-align: center;
+  z-index: 1;
+}
+
+/* Reveal on mount */
+.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hover glow and lift */
+.card:hover {
+  box-shadow:
+    0 0 32px rgba(0, 255, 224, 0.2),
+    0 0 65px rgba(0, 255, 224, 0.08);
+  transform: translateY(-2px) scale(1.012);
+}
+
+/* Soft pulsing aura */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at center, rgba(0, 255, 224, 0.025), transparent 60%);
+  z-index: 0;
+  pointer-events: none;
+  animation: cardPulse 6s ease-in-out infinite;
+}
+
+@keyframes cardPulse {
+  0%, 100% {
+    opacity: 0.035;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.08;
+    transform: scale(1.015);
+  }
+}
+
+/* Content layer */
+.content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Typography */
+.title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #00ffee;
+  margin-bottom: 0.5rem;
+  font-family: 'Space Grotesk', sans-serif;
+  letter-spacing: 0.04em;
+  text-transform: capitalize;
+}
+
+.subtitle {
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.75);
+  margin-bottom: 1.2rem;
+  font-family: 'Space Grotesk', sans-serif;
+  max-width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Action buttons */
+.actions {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+  flex-wrap: wrap;
+}
+
+.viewButton,
+.downloadButton {
+  font-size: 0.9rem;
+  padding: 0.5rem 1.3rem;
+  font-family: 'Source Code Pro', monospace;
+  border: 1px solid #00ffee;
+  background: rgba(0, 255, 255, 0.04);
+  color: #ccfff8;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.viewButton:hover,
+.downloadButton:hover {
+  background-color: rgba(0, 255, 255, 0.08);
+  box-shadow: 0 0 8px rgba(0, 255, 255, 0.15);
+  color: white;
+}
+
+/* Mobile */
+@media screen and (max-width: 768px) {
+  .card {
+    padding: 1.25rem;
+    max-width: 100%;
+    margin-bottom: 1.5rem;
+  }
+
+  .title {
+    font-size: 1.05rem;
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+    max-width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1.25rem;
+  }
+
+  .viewButton,
+  .downloadButton {
+    width: 100%;
+    text-align: center;
+    font-size: 0.88rem;
+    padding: 0.55rem 1.2rem;
+  }
+}

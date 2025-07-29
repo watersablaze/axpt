@@ -1,0 +1,61 @@
+/* FILE: gateBox.module.css */
+
+.orbBox {
+  backdrop-filter: blur(24px);
+  background: rgba(18, 16, 34, 0.52);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 1.5rem;
+  padding: 2.5rem;
+  box-shadow:
+    0 0 80px rgba(135, 88, 255, 0.13),
+    0 0 30px rgba(135, 88, 255, 0.04) inset;
+  transition: all 0.4s ease;
+  z-index: 20;
+  position: relative;
+}
+
+.centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.topAligned {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* 🌫️ Subtle glow around the box */
+.orbContainerAura {
+  position: absolute;
+  width: 1200px;
+  height: 1200px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(144, 94, 255, 0.035), transparent 70%);
+  animation: orbPulseGlow 6s ease-in-out infinite;
+  z-index: 0;
+  pointer-events: none;
+}
+
+@keyframes orbPulseGlow {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.08;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.12);
+    opacity: 0.03;
+  }
+}
+
+/* ✨ Optional soft fade out */
+.fadeOutSoft {
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+}

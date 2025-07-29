@@ -1,6 +1,5 @@
-// ✅ app/api/admin/tokens/create/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { generateSignedToken } from '@/utils/token';
+import { signToken } from '@/lib/token';
 import prisma from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
@@ -11,15 +10,26 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
     }
 
+    // 🔍 Look up the user by partnerSlug
+    const user = await prisma.user.findFirst({
+      where: { partnerSlug: partner },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
     const payload = {
       partner,
       tier,
       docs,
-      iat: Math.floor(Date.now() / 1000), // ⏱️ Include issued-at timestamp
+      userId: user.id, // ✅ Required field
+      iat: Math.floor(Date.now() / 1000),
     };
 
-    const token = generateSignedToken(payload);
+    const token = await signToken(payload); // ✅ Sign it
 
+    // 🧾 Log the token to RevokedToken table (audit/history)
     await prisma.revokedToken.create({
       data: {
         partner,

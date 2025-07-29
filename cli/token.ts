@@ -1,19 +1,16 @@
 #!/usr/bin/env tsx
+// 📁 cli/token.ts
 
+import '@/lib/env/loadEnv';
 import 'dotenv/config';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import fs from 'fs';
 import path from 'path';
+import { signToken, verifyToken, decodeToken } from '@/lib/token';
 
-import { generateFlow } from '@/flows/generateFlow';
-import { decodeFlow } from '@/flows/decodeFlow';
-import verifyFlow from '@/flows/verifyFlow'; // default export
-
-// 🔐 Path to the token log
 const logPath = path.resolve('app/scripts/partner-tokens/logs/token-log.json');
 
-// 🧭 Main Menu
 async function run() {
   console.log(chalk.cyan('\n🧰 AXPT Token CLI Toolkit'));
   console.log(chalk.gray('──────────────────────────────'));
@@ -28,23 +25,57 @@ async function run() {
   ]);
 
   switch (action) {
-    case 'Generate':
-      await generateFlow();
+    case 'Generate': {
+      const { partner, tier, userId, docs } = await inquirer.prompt([
+        { type: 'input', name: 'partner', message: 'Enter partner name:' },
+        { type: 'input', name: 'tier', message: 'Enter tier:' },
+        { type: 'input', name: 'userId', message: 'Enter user ID:' },
+        {
+          type: 'checkbox',
+          name: 'docs',
+          message: 'Select documents:',
+          choices: ['whitepaper.pdf', 'chinje.pdf', 'hemp.pdf'],
+        },
+      ]);
+      const payload = {
+        partner,
+        tier,
+        docs,
+        userId
+      };
+      const token = await signToken(payload);
+      console.log(chalk.green('\n✅ Token Generated:'));
+      console.log(token);
       break;
+    }
 
-    case 'Verify':
-      const { token: verifyTokenInput } = await inquirer.prompt([
+    case 'Verify': {
+      const { token } = await inquirer.prompt([
         { type: 'input', name: 'token', message: 'Paste token to verify:' }
       ]);
-      verifyFlow(verifyTokenInput);
+      const result = await verifyToken(token);
+      if (result.valid) {
+        console.log(chalk.green('✅ Token is valid!'));
+        console.log(result.payload);
+      } else {
+        console.log(chalk.red('❌ Invalid token'));
+      }
       break;
+    }
 
-    case 'Decode':
-      const { token: decodeTokenInput } = await inquirer.prompt([
+    case 'Decode': {
+      const { token } = await inquirer.prompt([
         { type: 'input', name: 'token', message: 'Paste token to decode:' }
       ]);
-      decodeFlow(decodeTokenInput);
+      const decoded = await decodeToken(token);
+      if (decoded) {
+        console.log(chalk.blue('🔎 Decoded Token:'));
+        console.log(decoded);
+      } else {
+        console.log(chalk.red('❌ Failed to decode token.'));
+      }
       break;
+    }
 
     case 'List Log History':
       listTokenLog();
@@ -52,7 +83,6 @@ async function run() {
   }
 }
 
-// 📖 Display Token History
 function listTokenLog() {
   if (!fs.existsSync(logPath)) {
     console.log(chalk.yellow('⚠️ No token log found.'));

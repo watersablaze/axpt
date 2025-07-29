@@ -3,27 +3,42 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
+enum TokenType {
+  AXG
+  NMP
+  USD
+  OTHER
+}
+
 model User {
-  id           String  @id @default(auto()) @map("_id") @db.ObjectId
+  id           String  @id @default(cuid())
   username     String  @unique
-  passwordHash String // renamed for clarity and security
+  passwordHash String
   email        String  @unique
   isAdmin      Boolean @default(false)
 
-  accessToken         String?   @unique // made optional to prevent unique null constraint issues
-  accessTokenHash     String? // hashed session token
-  accessTokenIssuedAt DateTime? // token timestamp
-  name                String? // optional name
-  tier                String? // for routing + privileges
-  partnerSlug         String? // linked partner
-  updatedAt           DateTime  @updatedAt
-  createdAt           DateTime  @default(now())
+  accessToken         String?   @unique
+  accessTokenHash     String?
+  accessTokenIssuedAt DateTime?
+
+  name        String?
+  displayName String?
+  tier        String?
+  partnerSlug String? // ✅ ADD THIS LINE
+
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+  lastLogin   DateTime?
+  loginCount  Int      @default(0)
+  viewedDocs  String[]
+  sessionLogs SessionLog[]
 
   wallets             Wallet[]
+  balances            Balance[]
   transactions        Transaction[]
   stakes              Stake[]
   investmentProposals InvestmentProposal[]
@@ -31,13 +46,29 @@ model User {
   simProfiles         SimProfile[]
   nodeSyncStatuses    NodeSyncStatus[]
   revokedTokens       RevokedToken[]
+  sessions            Session[]
+  contractLogs        ContractInteractionLog[]
 
-  blockchainWallet   BlockchainWallet? @relation(name: "UserToBlockchainWallet")
-  blockchainWalletId String?           @unique @db.ObjectId
+  blockchainWallet   BlockchainWallet?
+  blockchainWalletId String?  @unique
+}
+
+
+model SessionLog {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  timestamp DateTime @default(now())
+  ip        String?
+  location  String?
+  device    String?
+  action    String   @default("login")
+  path      String?
+  details   Json?
 }
 
 model PinLoginRequest {
-  id        String   @id @default(cuid()) @map("_id")
+  id        String   @id @default(cuid())
   email     String   @unique
   pinHash   String
   expiresAt DateTime
@@ -45,29 +76,40 @@ model PinLoginRequest {
 }
 
 model Wallet {
-  id      String @id @default(auto()) @map("_id") @db.ObjectId
-  userId  String @db.ObjectId
+  id      String @id @default(cuid())
+  userId  String
   address String @unique
-  balance Float
 
   user         User              @relation(fields: [userId], references: [id])
+  balances     Balance[]
   transactions Transaction[]
-  blockchain   BlockchainWallet? @relation(name: "WalletToBlockchain")
+  blockchain   BlockchainWallet?
+}
+
+model Balance {
+  id        String    @id @default(cuid())
+  walletId  String
+  userId    String
+  tokenType TokenType
+  amount    Float     @default(0)
+
+  wallet Wallet @relation(fields: [walletId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model BlockchainWallet {
-  id       String @id @default(auto()) @map("_id") @db.ObjectId
-  walletId String @unique @db.ObjectId
-  userId   String @unique @db.ObjectId
+  id       String @id @default(cuid())
+  walletId String @unique
+  userId   String @unique
 
-  wallet Wallet @relation(name: "WalletToBlockchain", fields: [walletId], references: [id])
-  user   User   @relation(name: "UserToBlockchainWallet", fields: [userId], references: [id])
+  wallet Wallet @relation(fields: [walletId], references: [id])
+  user   User   @relation(fields: [userId], references: [id])
 }
 
 model Transaction {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String    @db.ObjectId
-  walletId  String    @db.ObjectId
+  id        String    @id @default(cuid())
+  userId    String
+  walletId  String
   type      String
   amount    Float
   tokenType TokenType
@@ -79,9 +121,59 @@ model Transaction {
   wallet Wallet @relation(fields: [walletId], references: [id])
 }
 
+model SmartContract {
+  id        String   @id @default(cuid())
+  name      String
+  address   String   @unique
+  abi       Json
+  network   String
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  interactions ContractInteractionLog[]
+}
+
+model ContractInteractionLog {
+  id           String   @id @default(cuid())
+  userId       String
+  contractId   String
+  functionName String
+  args         Json
+  result       Json?
+  txHash       String?
+  status       String
+  createdAt    DateTime @default(now())
+
+  user     User          @relation(fields: [userId], references: [id])
+  contract SmartContract @relation(fields: [contractId], references: [id])
+}
+
+model Session {
+  id         String    @id @default(cuid())
+  userId     String
+  deviceInfo String?
+  ip         String?
+  location   String?
+  userAgent  String?
+  status     String    @default("active")
+  startedAt  DateTime  @default(now())
+  endedAt    DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model SessionActionLog {
+  id        String   @id @default(cuid())
+  userId    String
+  action    String
+  timestamp DateTime @default(now())
+  ip        String?
+  userAgent String?
+}
+
 model Stake {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
+  id        String   @id @default(cuid())
+  userId    String
   amount    Float
   apy       Float
   type      String
@@ -93,8 +185,8 @@ model Stake {
 }
 
 model InvestmentProposal {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String   @db.ObjectId
+  id          String   @id @default(cuid())
+  userId      String
   title       String
   description String
   amount      Float
@@ -105,8 +197,8 @@ model InvestmentProposal {
 }
 
 model NFTBadge {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId      String   @db.ObjectId
+  id          String   @id @default(cuid())
+  userId      String
   name        String
   description String?
   imageUrl    String?
@@ -116,8 +208,8 @@ model NFTBadge {
 }
 
 model SimProfile {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String   @db.ObjectId
+  id        String   @id @default(cuid())
+  userId    String
   deviceId  String
   carrier   String
   country   String
@@ -128,8 +220,8 @@ model SimProfile {
 }
 
 model NodeSyncStatus {
-  id       String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId   String   @db.ObjectId
+  id       String   @id @default(cuid())
+  userId   String
   status   String
   syncedAt DateTime
 
@@ -137,29 +229,35 @@ model NodeSyncStatus {
 }
 
 model RevokedToken {
-  id        String   @id @default(cuid()) @map("_id")
+  id        String   @id @default(cuid())
   rawToken  String
   partner   String
   tier      String
   createdAt DateTime @default(now())
 
-  userId String? @db.ObjectId
+  userId String?
   user   User?   @relation(fields: [userId], references: [id])
 }
 
 model Partner {
-  id        String   @id @default(cuid()) @map("_id")
-  name      String
-  slug      String   @unique
-  tier      String
-  email     String?
-  docs      String[] // ✅ Correct field name
-  token     String   @unique
-  createdAt DateTime @default(now())
+  id           String   @id @default(cuid())
+  slug         String   @unique
+  name         String
+  email        String?
+  tier         String
+  token        String
+  docs         String[]
+  popupMessage String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  lastLogin  DateTime?
+  loginCount Int       @default(0)
+  viewedDocs String[]  @default([])
 }
 
 model TokenAccessLog {
-  id         String   @id @default(cuid()) @map("_id")
+  id         String   @id @default(cuid())
   token      String
   tier       String
   partner    String
@@ -168,7 +266,7 @@ model TokenAccessLog {
 }
 
 model IssuedToken {
-  id        String   @id @default(cuid()) @map("_id")
+  id        String   @id @default(cuid())
   partner   String
   tier      String
   docs      String[]
@@ -177,7 +275,7 @@ model IssuedToken {
 }
 
 model LogoutLog {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  id        String   @id @default(cuid())
   userId    String
   timestamp DateTime @default(now())
   reason    String
@@ -185,18 +283,14 @@ model LogoutLog {
   userAgent String?
 }
 
-model SessionActionLog {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  userId    String
-  action    String
-  timestamp DateTime @default(now())
-  ip        String?
-  userAgent String?
-}
-
-enum TokenType {
-  AXG
-  NMP
-  USD
-  OTHER
+model GemIntake {
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  desiredGem String
+  format     String?
+  size       String?
+  quantity   String?
+  notes      String?
+  createdAt  DateTime @default(now())
 }

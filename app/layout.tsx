@@ -1,11 +1,11 @@
-// ✅ FIXED: app/onboard/layout.tsx
+// app/layout.tsx
 import '@/styles/globals.css';
-import { Fira_Code } from 'next/font/google';
+import { Inter } from 'next/font/google';
+import { Toaster } from 'sonner';
 
-const firaCode = Fira_Code({
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-fira-code',
+  display: 'swap',
 });
 
 export const metadata = {
@@ -15,9 +15,11 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={firaCode.variable}>
-      <body className="font-mono bg-black text-white">
+    <html lang="en">
+      <body className={`${inter.className} bg-black text-white`}>
         {children}
+        <Toaster richColors position="top-right" />
+        <div id="portal-root" />
       </body>
     </html>
   );

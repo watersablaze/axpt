@@ -1,0 +1,43 @@
+/* Sparkle float + twinkle */
+@keyframes float {
+  0%   { transform: translateY(0) scale(1);   opacity: 0.4; }
+  50%  { transform: translateY(-12px) scale(1.1); opacity: 0.9; }
+  100% { transform: translateY(0) scale(1);   opacity: 0.4; }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.8; }
+}
+
+.sparkle {
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 0 6px 2px rgba(255, 255, 255, 0.6);
+  animation: float 10s ease-in-out infinite alternate,
+             twinkle 4s ease-in-out infinite;
+  opacity: 0.4;
+}
+
+/* Size variants */
+.tiny   { width: 2px; height: 2px; }
+.medium { width: 4px; height: 4px; }
+.large  { width: 6px; height: 6px; }
+
+/* Position + delay */
+.one   { top: 15%; left: 8%;  animation-delay: 0s; }
+.two   { top: 30%; left: 72%; animation-delay: 1.5s; }
+.three { top: 80%; left: 25%; animation-delay: 3s; }
+.four  { top: 60%; left: 85%; animation-delay: 0.8s; }
+.five  { top: 38%; left: 45%; animation-delay: 2.5s; }
+.six   { top: 20%; left: 50%; animation-delay: 4s; }
+.seven { top: 65%; left: 15%; animation-delay: 1s; }
+.eight { top: 45%; left: 60%; animation-delay: 3.5s; }
+.nine  { top: 70%; left: 75%; animation-delay: 5s; }
+.ten   { top: 25%; left: 30%; animation-delay: 2s; }
+
+/* Optional color variation for celestial vibe */
+.gold   { background: #ffebcc; box-shadow: 0 0 6px 1px #ffebcc; }
+.blue   { background: #ccf2ff; box-shadow: 0 0 6px 1px #ccf2ff; }
+.violet { background: #f0ccff; box-shadow: 0 0 6px 1px #f0ccff; }

@@ -1,0 +1,159 @@
+/* 🌌 Absolute centering for Mirage orb */
+.orbTrueCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-57%, -50%);
+  width: 52vw;
+  max-width: 620px;
+  z-index: 1;
+  animation: subtlePulse 6s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes subtlePulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 14px rgba(180, 240, 255, 0.15));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px rgba(140, 200, 255, 0.2));
+  }
+}
+
+/* 🌀 Orb frame container */
+.orbContainer {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0 auto;
+  pointer-events: none;
+  z-index: 0;
+  mix-blend-mode: screen;
+}
+
+/* 🧿 Lottie inner mount */
+.orbInner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  opacity: 0.65; /* ↓ from 1 to reduce brightness */
+  filter: blur(7px); /* Softens the visual edges */
+  transition: all 0.5s ease;
+}
+
+/* 🌫️ Celestial fog */
+.celestialMist {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 170%;
+  height: 170%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(
+    circle,
+    rgba(200, 230, 255, 0.035) 0%,
+    rgba(100, 150, 255, 0.02) 35%,
+    transparent 100%
+  );
+  filter: blur(18px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 🌈 Ethereal rotating ring */
+.etherealRing {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 105%;
+  height: 105%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #91f1ff 0%,
+    #71ccff 25%,
+    #cc99ff 50%,
+    #aaffdd 75%,
+    #91f1ff 100%
+  );
+  opacity: 0.035;
+  filter: blur(28px);
+  z-index: 1;
+  animation: spinFade 50s linear infinite, auraFade 12s ease-in-out infinite alternate;
+}
+
+@keyframes spinFade {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes auraFade {
+  0% {
+    opacity: 0.015;
+    filter: blur(24px);
+  }
+  100% {
+    opacity: 0.045;
+    filter: blur(36px);
+  }
+}
+
+/* ✨ Subtle entrance */
+.fadeIn {
+  opacity: 0;
+  animation: fadeInAnimation 1.2s ease-in-out forwards;
+}
+
+@keyframes fadeInAnimation {
+  0% {
+    opacity: 0;
+    transform: scale(0.98) translateY(8px);
+    filter: blur(6px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* 📱 Mobile responsiveness */
+@media (max-width: 768px) {
+  .orbTrueCenter {
+    width: 78vw;
+    max-width: 440px;
+    transform: translate(-50%, -50%);
+  }
+
+  .celestialMist {
+    width: 200%;
+    height: 200%;
+  }
+
+  .etherealRing {
+    width: 130%;
+    height: 130%;
+    filter: blur(36px);
+  }
+}
+
+@media (max-width: 480px) {
+  .orbTrueCenter {
+    width: 90vw;
+    max-width: 380px;
+  }
+
+  .etherealRing {
+    opacity: 0.06;
+    filter: blur(40px);
+  }
+}

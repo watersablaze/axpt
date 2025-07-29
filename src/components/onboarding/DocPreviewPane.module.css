@@ -1,0 +1,27 @@
+.previewPane {
+  width: 100%;
+  max-width: 980px;
+  height: 720px;
+  margin: 2rem auto;
+  background: radial-gradient(circle at center, rgba(0, 255, 255, 0.025), transparent 60%);
+  border: 1px solid rgba(0, 255, 255, 0.08);
+  border-radius: 1.25rem;
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+.previewPane iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: inherit;
+}
+
+/* Mobile */
+@media screen and (max-width: 768px) {
+  .previewPane {
+    height: 480px;
+    margin: 1.5rem auto;
+  }
+}

@@ -1,6 +1,8 @@
-// app/api/admin/tokens/issue/route.ts ✅
+// ✅ FILE: app/api/admin/tokens/issue/route.ts
+
 import { NextRequest, NextResponse } from 'next/server';
-import { generateSignedToken } from '@/utils/token';
+import { signToken } from '@/lib/token';
+import prisma from '@/lib/prisma';
 import path from 'path';
 import fs from 'fs';
 
@@ -12,15 +14,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid request payload' }, { status: 400 });
     }
 
+    // 🔍 Find the user based on partnerSlug
+    const user = await prisma.user.findFirst({
+      where: { partnerSlug: partner },
+    });
+
+    if (!user) {
+      return NextResponse.json({ error: 'User not found for partnerSlug' }, { status: 404 });
+    }
+
+    // 🧾 Build payload
     const payload = {
       partner,
       tier,
       docs,
+      userId: user.id, // ✅ This is what was missing
       iat: Math.floor(Date.now() / 1000),
     };
 
-    const token = generateSignedToken(payload);
+    const token = await signToken(payload);
 
+    // 🗃️ Log token to file
     const logPath = path.join(process.cwd(), 'app/scripts/partner-tokens/logs/token-log.json');
     const logEntry = {
       partner,

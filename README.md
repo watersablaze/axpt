@@ -79,7 +79,7 @@ app/scripts/
 │   ├── signToken.ts         # Token HMAC signer
 │   ├── verifyToken.ts       # Verifier
 │   ├── decodeToken.ts       # Decoder
-│   ├── readEnv.ts           # Loads PARTNER_SECRET
+│   ├── readEnv.ts           # Loads SIGNING_SECRET
 
 
 ⸻
@@ -88,7 +88,7 @@ app/scripts/
 
 Create a .env file in your root:
 
-PARTNER_SECRET=your_hmac_sha256_secret_here
+SIGNING_SECRET=your_hmac_sha256_secret_here
 
 
 ⸻
