@@ -1,6 +1,7 @@
 // app/initiatives/[slug]/page.tsx
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import PriceBadge from '@/components/chain/PriceBadge';
 
 const axgFmt = new Intl.NumberFormat(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
@@ -39,6 +40,10 @@ export default async function InitiativePublicDetailPage({
 
   return (
     <main className="min-h-screen bg-black text-white">
+        <div className="flex items-center justify-between gap-3">
+        <h1 className="text-2xl font-semibold">{initiative.title}</h1>
+        <PriceBadge />
+        </div>
       <div className="max-w-3xl mx-auto px-6 py-12">
         <div className="mb-4">
           <Link href="/initiatives" className="text-xs text-zinc-400 hover:text-zinc-200 underline underline-offset-4">
