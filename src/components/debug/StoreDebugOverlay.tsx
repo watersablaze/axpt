@@ -1,4 +1,3 @@
-// 📁 app/components/debug/StoreDebugOverlay.tsx
 'use client';
 
 import { useConsentStore } from '@/stores/useConsentStore';
@@ -7,11 +6,11 @@ import { useEffect, useState } from 'react';
 
 export default function StoreDebugOverlay() {
   const { hasAccepted } = useConsentStore();
-  const { token, decoded } = useTokenStore();
+  const { token, tokenPayload } = useTokenStore();
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(false), 5000); // fade after 5s
+    const timer = setTimeout(() => setVisible(false), 5000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -22,8 +21,8 @@ export default function StoreDebugOverlay() {
       <strong className="block mb-1">🧪 AXPT Zustand Debug</strong>
       <div>🟢 Consent: {hasAccepted ? 'Accepted' : 'Not accepted'}</div>
       <div>🔐 Token: {token ? `${token.slice(0, 12)}...` : 'None'}</div>
-      <div>📛 Name: {decoded?.displayName ?? 'N/A'}</div>
-      <div>🎖️ Tier: {decoded?.tier ?? 'N/A'}</div>
+      <div>📛 Name: {tokenPayload?.displayName ?? 'N/A'}</div>
+      <div>🎖️ Tier: {tokenPayload?.tier ?? 'N/A'}</div>
     </div>
   );
 }

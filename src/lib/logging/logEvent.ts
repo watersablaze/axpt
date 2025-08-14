@@ -1,5 +1,5 @@
 // FILE: lib/logging/logEvent.ts
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 
 export async function logEvent(input: {
   userId: string;

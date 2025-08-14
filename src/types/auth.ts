@@ -1,8 +1,14 @@
 // types/auth.ts
-export interface SessionPayload {
+
+export type SessionPayload = {
   userId: string;
-  tier: string;
-  displayName?: string;
-  popupMessage?: string;
-  docs?: string[];
-}
+  tier: 'Investor' | 'Partner' | 'Farmer' | 'Merchant' | 'Nomad' | 'Board';
+  displayName: string;
+  docs: ('whitepaper' | 'hemp' | 'chinje')[];
+  popupMessage: string;
+  greeting: string;
+  partner: string;
+  iat: number;
+  exp: number;
+  email?: string; // Optional
+};

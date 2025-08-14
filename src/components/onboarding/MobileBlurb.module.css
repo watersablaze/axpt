@@ -1,0 +1,8 @@
+.blurbText {
+  font-size: 0.88rem;
+  line-height: 1.75;
+  max-width: 270px;
+  font-weight: 400;
+  text-align: left;
+  margin-top: 0; /* ⬅️ No longer needed if parent uses gap */
+}

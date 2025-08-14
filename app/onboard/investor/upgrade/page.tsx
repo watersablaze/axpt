@@ -48,7 +48,7 @@ export default function InvestorUpgradePage() {
         <div className="w-full md:w-[48%] mt-60">
           <div className={`flex justify-center mb-6 ${styles.sigilFadePulse}`}>
             <Image
-              src="/images/axpt-sigil.png"
+              src="/images/axpt-sigil-main.png"
               alt="AXPT Sigil"
               width={380}
               height={380}

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import prisma from '@/lib/prisma'; // adjust to your prisma client path
+import { prisma } from '@/lib/prisma';
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,6 +9,7 @@ export async function POST(req: NextRequest) {
       data: {
         name: data.name,
         email: data.email,
+        phone: data.phone || null, // ✅ Include phone field
         desiredGem: data.desiredGem,
         format: data.format || null,
         size: data.size || null,
@@ -19,7 +20,9 @@ export async function POST(req: NextRequest) {
 
     console.log('[📿 GEM INTAKE SAVED]', entry);
 
-    return NextResponse.json({ message: 'Your entry has been saved. We’ll contact you soon.' });
+    return NextResponse.json({
+      message: 'Your entry has been saved. We’ll contact you soon.',
+    });
   } catch (error) {
     console.error('[❌ ERROR]', error);
     return NextResponse.json({ error: 'Something went wrong.' }, { status: 500 });

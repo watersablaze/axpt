@@ -4,7 +4,7 @@ export const runtime = 'nodejs';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 import { cookies } from 'next/headers';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 //import { getSessionCookieHeader } from '@/lib/auth/session';
 
 export async function POST(req: Request) {

@@ -1,8 +1,9 @@
 // app/onboard/layout.tsx
+
 export default function OnboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <section className="min-h-screen">
+    <div className="min-h-screen w-screen bg-black text-white antialiased">
       {children}
-    </section>
+    </div>
   );
 }

@@ -1,0 +1,35 @@
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.card {
+  background: #0f172a;
+  border: 1px solid #334155;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  color: #e2e8f0;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  box-shadow: 0 0 4px #475569;
+}
+
+.card:hover {
+  background: #1e293b;
+}
+
+.title {
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #7dd3fc;
+}
+
+.summary {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #cbd5e1;
+}

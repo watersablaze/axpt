@@ -1,0 +1,13 @@
+.fadeInBase {
+  opacity: 0;
+  transform: translateY(50px);
+  filter: blur(6px);
+  transition: opacity 1.3s ease-out, transform 1.3s ease-out, filter 1.2s ease;
+  will-change: opacity, transform, filter;
+}
+
+.visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}

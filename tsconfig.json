@@ -17,6 +17,7 @@
     "resolveJsonModule": true,
     "incremental": true,
     "baseUrl": ".",
+    "types": ["bcryptjs", "chalk"],
     "paths": {
       "@/*": ["src/*"],
 
@@ -47,7 +48,8 @@
       "@/flows/*": ["scripts/partner-tokens/utils/flows/*"],
 
       /* Types */
-      "@/types/*": ["src/types/*"]
+      "@/types/*": ["src/types/*"],
+    
     },
     "plugins": [
       {
@@ -59,12 +61,12 @@
     "src",
     "app/api",
     "cli",
-    "types",
+    "types/global.d.ts",
     "lib",
     "scripts",
     "middleware.ts",
     "next-env.d.ts",
-    ".next/types/**/*.ts", "staging/SessionInitializer.tsx", "staging/useSessionStore.ts", "staging/getSessionFromCookie.ts", "staging/generateTokenForCLI.ts", "staging/generateTokenCLIFlow.ts", "staging/SharedDocViewer.tsx", 
+    ".next/types/**/*.ts", "staging/SessionInitializer.tsx", "staging/useSessionStore.ts", "staging/getSessionFromCookie.ts", "staging/generateTokenForCLI.ts", "staging/generateTokenCLIFlow.ts", "staging/SharedDocViewer.tsx", "src/lib/prisma.ts", 
   ],
   "exclude": [
     "node_modules",

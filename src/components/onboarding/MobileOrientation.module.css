@@ -1,0 +1,16 @@
+.orientationContainer {
+  text-align: center;
+  color: #e2e8f0;
+}
+
+.title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+.description {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #94a3b8;
+}

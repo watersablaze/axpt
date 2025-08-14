@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import dynamic from 'next/dynamic';
 import TierBadge from '@/components/shared/TierBadge';
 
-const LoginAnimation = dynamic(() => import('@/components/animations/LoginAnimation'), { ssr: false });
+const LoginAnimation = dynamic(() => import('@/components/animation/LoginAnimation'), { ssr: false });
 
 export default function PageWrapper({
   children,

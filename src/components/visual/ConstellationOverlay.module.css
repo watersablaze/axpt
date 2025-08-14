@@ -1,0 +1,84 @@
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
+  background: transparent;
+  overflow: hidden;
+}
+
+/* Main Stars */
+.star {
+  position: absolute;
+  background-color: #ffffff;
+  border-radius: 50%;
+  opacity: 0.15;
+  animation-name: twinkle, none;
+  animation-timing-function: ease-in-out, linear;
+  animation-iteration-count: infinite;
+  animation-fill-mode: both;
+  mix-blend-mode: screen;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.6);
+  z-index: 2;
+}
+
+@keyframes twinkle {
+  from {
+    transform: scale(1);
+    opacity: 0.1;
+  }
+  to {
+    transform: scale(1.2);
+    opacity: 0.45;
+  }
+}
+
+@keyframes driftLeft {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-10px);
+  }
+}
+
+@keyframes driftRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(10px);
+  }
+}
+
+.driftLeft {
+  animation-name: twinkle, driftLeft;
+}
+
+.driftRight {
+  animation-name: twinkle, driftRight;
+}
+
+/* Guardian Stars */
+.guardian {
+  position: absolute;
+  background-color: #ffffff;
+  border-radius: 50%;
+  opacity: 0.08;
+  z-index: 1;
+  animation: guardianDrift var(--duration, 45s) ease-in-out infinite alternate;
+  mix-blend-mode: screen;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+}
+
+@keyframes guardianDrift {
+  from {
+    transform: translate(0px, 0px);
+  }
+  to {
+    transform: translate(var(--xDrift, 20px), var(--yDrift, 20px));
+  }
+}

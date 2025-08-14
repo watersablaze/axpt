@@ -7,18 +7,18 @@ import sigil from '/public/images/axpt.io-2x.png';
 import { useTokenStore } from '@/stores/useTokenStore';
 
 const allDocs = {
-  'AXPT-Whitepaper.pdf': {
-    id: 'AXPT-Whitepaper',
+  'whitepaper.pdf': {
+    id: 'whitepaper',
     title: 'AXPT Whitepaper',
     description: 'Explore the full vision, architecture, and protocols of the AXPT ecosystem.',
   },
-  'Hemp_Ecosystem.pdf': {
-    id: 'Hemp_Ecosystem',
+  'hemp.pdf': {
+    id: 'hemp',
     title: 'Hemp Ecosystem Brief',
     description: 'A living overview of regenerative hemp systems in continental Africa.',
   },
-  'CIM_Chinje.pdf': {
-    id: 'CIM_Chinje',
+  'chinje.pdf': {
+    id: 'chinje',
     title: 'Chinje Investment Memo',
     description: 'Internal proposal outlining projected milestones and investment yield models.',
   },
@@ -29,10 +29,10 @@ type Doc = (typeof allDocs)[DocKey];
 
 export default function VerifiedDashboard() {
   const router = useRouter();
-  const { decoded } = useTokenStore();
+  const { tokenPayload } = useTokenStore();
 
   const documents: Doc[] =
-    decoded?.docs
+    tokenPayload?.docs
       ?.map((filename: string) => allDocs[filename.trim() as DocKey])
       .filter(Boolean) ?? [];
 
@@ -45,10 +45,10 @@ export default function VerifiedDashboard() {
 
       <div className={styles.rightPane}>
         <div className={`${styles.greetingBox} ${styles.fadeInDelay1}`}>
-          <h1 className={styles.welcomeTitle}>Welcome, {decoded?.displayName || 'Partner'}</h1>
+          <h1 className={styles.welcomeTitle}>Welcome, {tokenPayload?.displayName || 'Partner'}</h1>
           <p className={styles.description}>
             You’ve unlocked access to protected content and features reserved for{' '}
-            <strong>{decoded?.tier || 'Partner'}</strong> tier.
+            <strong>{tokenPayload?.tier || 'Partner'}</strong> tier.
           </p>
         </div>
 
@@ -75,7 +75,7 @@ export default function VerifiedDashboard() {
                     View
                   </button>
                   <a
-                    href={`/docs/AXPT/${doc.id}.pdf`}
+                    href={`/docs/AXPT/${docKeyFromId(doc.id)}`}
                     download
                     className={styles.cardButton}
                     style={{ marginLeft: '0.5rem' }}
@@ -100,4 +100,9 @@ export default function VerifiedDashboard() {
       </div>
     </div>
   );
+}
+
+function docKeyFromId(id: string): string {
+  const entry = Object.entries(allDocs).find(([_, val]) => val.id === id);
+  return entry?.[0] ?? `${id}.pdf`;
 }

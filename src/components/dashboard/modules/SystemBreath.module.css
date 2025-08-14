@@ -1,0 +1,72 @@
+.breathBox {
+  position: relative;
+  padding: 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  overflow: hidden;
+  box-shadow: 0 0 12px rgba(0, 255, 128, 0.2);
+}
+
+.aura {
+  position: absolute;
+  width: 140%;
+  height: 140%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0,255,128,0.3) 0%, transparent 70%);
+  animation: breathe 4s ease-in-out infinite;
+  z-index: 0;
+}
+
+.stats {
+  position: relative;
+  z-index: 1;
+  color: #eaeaea;
+}
+
+.label {
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.interval {
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.quality {
+  margin-top: 0.3rem;
+  font-size: 1rem;
+}
+
+@keyframes breathe {
+  0% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.95);
+    opacity: 0.5;
+  }
+}
+
+.stable .aura {
+  background: radial-gradient(circle, rgba(0,255,128,0.3) 0%, transparent 70%);
+}
+
+.irregular .aura {
+  background: radial-gradient(circle, rgba(255,204,0,0.3) 0%, transparent 70%);
+}
+
+.unstable .aura {
+  background: radial-gradient(circle, rgba(255,0,64,0.25) 0%, transparent 70%);
+}

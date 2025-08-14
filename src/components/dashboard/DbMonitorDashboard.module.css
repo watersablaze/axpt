@@ -1,0 +1,61 @@
+.dashboardContainer {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: radial-gradient(circle at center, #111822, #0a0f14);
+  color: #f3f3f3;
+  font-family: 'Inter', sans-serif;
+}
+
+.dashboardTitle {
+  font-size: 2rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.03em;
+}
+
+.moduleBox {
+  background-color: #1b1f24;
+  padding: 2rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 0 30px rgba(0, 255, 170, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cockpitTitle {
+  font-size: 1.4rem;
+  margin-bottom: 1.5rem;
+  color: #93f6dc;
+  font-weight: 500;
+}
+
+.modulesGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.moduleCard {
+  background: #0e1116;
+  border-radius: 1.25rem;
+  padding: 1.5rem;
+  box-shadow: 0 0 20px rgba(0, 255, 170, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.errorBox {
+  background: #391616;
+  padding: 1rem;
+  border-radius: 1rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ff4d4d;
+  color: #fdd;
+}
+
+.loading {
+  text-align: center;
+  padding: 1rem;
+  font-style: italic;
+  color: #aaa;
+}

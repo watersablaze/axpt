@@ -1,0 +1,62 @@
+.alertModule {
+  border-radius: 12px;
+  padding: 1.25rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+}
+
+/* Base + Status Themes */
+.title {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 0.75rem;
+}
+
+.statusText {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.messageText {
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.timeInfo {
+  font-size: 0.85rem;
+  font-style: italic;
+  color: #a3a3a3;
+  margin-top: 0.75rem;
+}
+
+/* 🌿 Healthy */
+.healthy {
+  background: #102e1c;
+  border: 1px solid #22c55e;
+  color: #bbf7d0;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.4);
+}
+
+/* ⚠️ Degraded */
+.degraded {
+  background: #3a2f0f;
+  border: 1px solid #facc15;
+  color: #fde68a;
+  box-shadow: 0 0 10px rgba(250, 204, 21, 0.3);
+}
+
+/* 🚨 Offline */
+.offline {
+  background: #2a0f0f;
+  border: 1px solid #ef4444;
+  color: #fecaca;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.35);
+}
+
+/* Unknown fallback */
+.unknown {
+  background: #1f2937;
+  border: 1px solid #6b7280;
+  color: #f3f4f6;
+  box-shadow: 0 0 6px rgba(107, 114, 128, 0.3);
+}

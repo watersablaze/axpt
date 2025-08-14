@@ -1,0 +1,39 @@
+.card {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 0 1rem rgba(139, 92, 246, 0.1);
+  transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  border-color: #7c3aed;
+  box-shadow: 0 0 1.25rem rgba(139, 92, 246, 0.3);
+}
+
+.header {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #e5e5e5;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #444;
+  padding-bottom: 0.5rem;
+}
+
+.body {
+  color: #ccc;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.footer {
+  margin-top: 1.25rem;
+  border-top: 1px solid #444;
+  padding-top: 0.75rem;
+  font-size: 0.85rem;
+  color: #aaa;
+  display: flex;
+  justify-content: flex-end;
+}

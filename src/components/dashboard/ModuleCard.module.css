@@ -1,0 +1,50 @@
+/* 📁 app/components/dashboard/ModuleCard.module.css */
+.card {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 0.5rem rgba(255, 255, 255, 0.05);
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  border-color: #5b21b6;
+  box-shadow: 0 0 0.75rem rgba(139, 92, 246, 0.25);
+}
+
+.card h3 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: #fff;
+}
+
+.card h4 {
+  margin: 0.25rem 0;
+  color: #aaa;
+  font-weight: 500;
+}
+
+.card p {
+  margin: 0.75rem 0;
+  color: #ccc;
+}
+
+.card time {
+  display: block;
+  font-size: 0.875rem;
+  color: #888;
+  margin-top: 0.5rem;
+}
+
+.card a {
+  color: #a78bfa;
+  font-size: 0.875rem;
+  text-decoration: none;
+}
+
+.card a:hover {
+  text-decoration: underline;
+  color: #c4b5fd;
+}

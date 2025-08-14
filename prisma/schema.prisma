@@ -1,3 +1,4 @@
+// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,50 +15,9 @@ enum TokenType {
   OTHER
 }
 
-model User {
-  id           String  @id @default(cuid())
-  username     String  @unique
-  passwordHash String
-  email        String  @unique
-  isAdmin      Boolean @default(false)
-
-  accessToken         String?   @unique
-  accessTokenHash     String?
-  accessTokenIssuedAt DateTime?
-
-  name        String?
-  displayName String?
-  tier        String?
-  partnerSlug String? // ✅ ADD THIS LINE
-
-  updatedAt   DateTime @updatedAt
-  createdAt   DateTime @default(now())
-  lastLogin   DateTime?
-  loginCount  Int      @default(0)
-  viewedDocs  String[]
-  sessionLogs SessionLog[]
-
-  wallets             Wallet[]
-  balances            Balance[]
-  transactions        Transaction[]
-  stakes              Stake[]
-  investmentProposals InvestmentProposal[]
-  nftBadges           NFTBadge[]
-  simProfiles         SimProfile[]
-  nodeSyncStatuses    NodeSyncStatus[]
-  revokedTokens       RevokedToken[]
-  sessions            Session[]
-  contractLogs        ContractInteractionLog[]
-
-  blockchainWallet   BlockchainWallet?
-  blockchainWalletId String?  @unique
-}
-
-
 model SessionLog {
   id        String   @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
   timestamp DateTime @default(now())
   ip        String?
   location  String?
@@ -65,6 +25,10 @@ model SessionLog {
   action    String   @default("login")
   path      String?
   details   Json?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, timestamp])
 }
 
 model PinLoginRequest {
@@ -76,49 +40,80 @@ model PinLoginRequest {
 }
 
 model Wallet {
-  id      String @id @default(cuid())
-  userId  String
-  address String @unique
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  user         User              @relation(fields: [userId], references: [id])
+  user         User          @relation(fields: [userId], references: [id])
   balances     Balance[]
   transactions Transaction[]
-  blockchain   BlockchainWallet?
+
+  // Backref to on-chain mirror (optional)
+  blockchainWallet BlockchainWallet?
 }
 
 model Balance {
-  id        String    @id @default(cuid())
-  walletId  String
-  userId    String
-  tokenType TokenType
-  amount    Float     @default(0)
+  id String @id @default(cuid())
 
-  wallet Wallet @relation(fields: [walletId], references: [id])
+  // Relations
+  walletId String
+  wallet   Wallet @relation(fields: [walletId], references: [id])
+
+  userId String
   user   User   @relation(fields: [userId], references: [id])
+
+  // Either a core enum token OR a dynamic Token row
+  tokenType TokenType?
+  tokenId   String?
+  token     Token?     @relation(fields: [tokenId], references: [id])
+
+  // Ledger values
+  amount Float @default(0)
+
+  @@unique([walletId, tokenType, tokenId]) // prevents duplicate rows for same asset in one wallet
+  @@index([walletId])
+  @@index([userId])
+  @@index([tokenType])
+  @@index([tokenId])
 }
 
 model BlockchainWallet {
-  id       String @id @default(cuid())
-  walletId String @unique
-  userId   String @unique
+  id String @id @default(cuid())
 
-  wallet Wallet @relation(fields: [walletId], references: [id])
+  walletId String @unique
+  wallet   Wallet @relation(fields: [walletId], references: [id])
+
+  userId String @unique
   user   User   @relation(fields: [userId], references: [id])
+
+  address   String?  @unique
+  network   String? // e.g. Ethereum, Polygon, AXPT Chain
+  createdAt DateTime @default(now())
 }
 
 model Transaction {
-  id        String    @id @default(cuid())
-  userId    String
-  walletId  String
-  type      String
-  amount    Float
-  tokenType TokenType
+  id       String @id @default(cuid())
+  userId   String
+  walletId String
+  type     String
+  amount   Float
+
+  tokenType TokenType?
+  tokenId   String?
+  token     Token?     @relation(fields: [tokenId], references: [id])
+
   txHash    String?
   metadata  Json?
-  createdAt DateTime  @default(now())
+  createdAt DateTime @default(now())
 
   user   User   @relation(fields: [userId], references: [id])
   wallet Wallet @relation(fields: [walletId], references: [id])
+
+  @@index([userId, createdAt])
+  @@index([walletId, createdAt])
+  @@index([tokenId])
+  @@index([tokenType])
 }
 
 model SmartContract {
@@ -144,8 +139,11 @@ model ContractInteractionLog {
   status       String
   createdAt    DateTime @default(now())
 
-  user     User          @relation(fields: [userId], references: [id])
   contract SmartContract @relation(fields: [contractId], references: [id])
+  user     User          @relation(fields: [userId], references: [id])
+
+  @@index([contractId, createdAt])
+  @@index([userId, createdAt])
 }
 
 model Session {
@@ -160,6 +158,8 @@ model Session {
   endedAt    DateTime?
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, startedAt])
 }
 
 model SessionActionLog {
@@ -169,6 +169,9 @@ model SessionActionLog {
   timestamp DateTime @default(now())
   ip        String?
   userAgent String?
+  User      User     @relation(fields: [userId], references: [id])
+
+  @@index([userId, timestamp])
 }
 
 model Stake {
@@ -182,6 +185,8 @@ model Stake {
   isActive  Boolean  @default(true)
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, isActive])
 }
 
 model InvestmentProposal {
@@ -193,7 +198,10 @@ model InvestmentProposal {
   status      String?  @default("pending")
   createdAt   DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
+  user                  User                   @relation(fields: [userId], references: [id])
+  tokenIssuanceRequests TokenIssuanceRequest[] @relation("RequestsForProject")
+
+  @@index([userId, createdAt])
 }
 
 model NFTBadge {
@@ -205,6 +213,8 @@ model NFTBadge {
   mintedAt    DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, mintedAt])
 }
 
 model SimProfile {
@@ -217,6 +227,8 @@ model SimProfile {
   createdAt DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, createdAt])
 }
 
 model NodeSyncStatus {
@@ -226,11 +238,13 @@ model NodeSyncStatus {
   syncedAt DateTime
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, syncedAt])
 }
 
 model RevokedToken {
   id        String   @id @default(cuid())
-  rawToken  String
+  rawToken  String   @unique
   partner   String
   tier      String
   createdAt DateTime @default(now())
@@ -240,20 +254,19 @@ model RevokedToken {
 }
 
 model Partner {
-  id           String   @id @default(cuid())
-  slug         String   @unique
+  id           String    @id @default(cuid())
+  slug         String    @unique
   name         String
   email        String?
   tier         String
   token        String
   docs         String[]
   popupMessage String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  lastLogin  DateTime?
-  loginCount Int       @default(0)
-  viewedDocs String[]  @default([])
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastLogin    DateTime?
+  loginCount   Int       @default(0)
+  viewedDocs   String[]  @default([])
 }
 
 model TokenAccessLog {
@@ -263,6 +276,8 @@ model TokenAccessLog {
   partner    String
   path       String
   accessedAt DateTime @default(now())
+
+  @@index([token, accessedAt])
 }
 
 model IssuedToken {
@@ -281,16 +296,340 @@ model LogoutLog {
   reason    String
   ip        String
   userAgent String?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId, timestamp])
 }
 
 model GemIntake {
   id         String   @id @default(cuid())
   name       String
   email      String
+  phone      String? // optional
   desiredGem String
   format     String?
   size       String?
   quantity   String?
   notes      String?
   createdAt  DateTime @default(now())
+}
+
+model DbPulseLog {
+  id        String   @id @default(cuid())
+  status    String
+  message   String?
+  createdAt DateTime @default(now())
+}
+
+/**
+ * -------------------------
+ * Token / Governance models
+ * -------------------------
+ */
+
+model Token {
+  id          String   @id @default(cuid())
+  symbol      String   @unique
+  name        String
+  decimals    Int      @default(2)
+  description String?
+  isCore      Boolean  @default(false)
+  status      String   @default("active")
+  totalSupply Float    @default(0)
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  createdById String?
+  createdBy   User?   @relation("TokensCreatedBy", fields: [createdById], references: [id])
+
+  approvedById String?
+  approvedBy   CouncilElder? @relation("TokensApprovedBy", fields: [approvedById], references: [id])
+
+  // Backrefs
+  balances            Balance[]
+  transactions        Transaction[]
+  approvedForRequests TokenIssuanceRequest[] @relation("ApprovedTokenForRequests")
+}
+
+model CouncilElder {
+  id       String   @id @default(cuid())
+  userId   String   @unique
+  title    String?
+  joinedAt DateTime @default(now())
+  isActive Boolean  @default(true)
+
+  user User @relation(fields: [userId], references: [id])
+
+  // Backrefs
+  proposals      GovernanceProposal[] @relation("ElderAuthoredProposals")
+  votes          GovernanceVote[]
+  approvedTokens Token[]              @relation("TokensApprovedBy")
+}
+
+model GovernanceProposal {
+  id            String    @id @default(cuid())
+  authorElderId String
+  title         String
+  description   String?
+  kind          String
+  status        String    @default("pending") // pending | approved | rejected | executed
+  payload       Json?
+  createdAt     DateTime  @default(now())
+  decidedAt     DateTime?
+
+  // Phase 1 governance lifecycle fields
+  updatedAt         DateTime  @updatedAt
+  quorum            Int?
+  approvalThreshold Int?
+  votingEndsAt      DateTime?
+  timelockSeconds   Int?
+  approvedAt        DateTime?
+  readyAt           DateTime? // approvedAt + timelockSeconds (computed in app)
+  executedAt        DateTime?
+
+  // Relations
+  authorElder CouncilElder     @relation(name: "ElderAuthoredProposals", fields: [authorElderId], references: [id])
+  votes       GovernanceVote[]
+
+  @@index([status, createdAt])
+  @@index([votingEndsAt])
+}
+
+model GovernanceVote {
+  id         String   @id @default(cuid())
+  elderId    String
+  proposalId String
+  choice     String // "yes" | "no" | "abstain"
+  reason     String?
+  createdAt  DateTime @default(now())
+
+  elder    CouncilElder       @relation(fields: [elderId], references: [id])
+  proposal GovernanceProposal @relation(fields: [proposalId], references: [id])
+
+  @@unique([elderId, proposalId]) // one vote per elder per proposal
+  @@index([proposalId, createdAt])
+  @@index([elderId, proposalId])
+}
+
+model TokenIssuanceRequest {
+  id          String    @id @default(cuid())
+  requestedBy String
+  projectId   String?
+  symbol      String
+  name        String
+  decimals    Int       @default(2)
+  purpose     String?
+  metadata    Json?
+  status      String    @default("pending")
+  createdAt   DateTime  @default(now())
+  decidedAt   DateTime?
+
+  approvedTokenId String?
+  approvedToken   Token?  @relation("ApprovedTokenForRequests", fields: [approvedTokenId], references: [id])
+
+  requester User                @relation("RequestsByUser", fields: [requestedBy], references: [id])
+  project   InvestmentProposal? @relation("RequestsForProject", fields: [projectId], references: [id])
+
+  @@index([requestedBy, createdAt])
+  @@index([status, createdAt])
+}
+
+/**
+ * -------------------------
+ * Project models (resident-only)
+ * -------------------------
+ */
+
+enum ProjectStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  DENIED
+  FUNDED
+}
+
+model Project {
+  id           String        @id @default(cuid())
+  userId       String
+  title        String
+  summary      String        @db.Text
+  requestedAxg Decimal       @db.Decimal(18, 2)
+  status       ProjectStatus @default(SUBMITTED)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviews ProjectReview[]
+
+  @@index([userId, status])
+  @@index([createdAt])
+}
+
+model ProjectReview {
+  id         String   @id @default(cuid())
+  projectId  String
+  reviewerId String
+  action     String // "APPROVE" | "DENY" | "REQUEST_INFO"
+  note       String?
+  createdAt  DateTime @default(now())
+
+  project  Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  reviewer User    @relation("Reviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  @@index([projectId, reviewerId])
+  @@index([createdAt])
+}
+
+model CouncilSettings {
+  id              String   @id @default("singleton") // single-row
+  councilEmails   String[] @default([])
+  slackWebhookUrl String?
+  fromEmail       String? // overrides env default
+  provider        String? // "resend" | "postmark" (optional)
+  updatedAt       DateTime @updatedAt
+  createdAt       DateTime @default(now())
+}
+
+// --- New: Initiative domain -----------------------------------------------
+
+// ---------- Enums ----------
+// ========= Enums =========
+enum InitiativeStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  ARCHIVED
+}
+
+enum InitiativeCategory {
+  ENERGY
+  DATA
+  FINANCE
+  OTHER
+}
+
+// ========= User (append the backrefs at the end of your existing model) =========
+model User {
+  id           String  @id @default(cuid())
+  username     String  @unique
+  passwordHash String
+  email        String  @unique
+  isAdmin      Boolean @default(false)
+
+  // Access tokens (optional legacy / partner)
+  accessToken         String?   @unique
+  accessTokenHash     String?
+  accessTokenIssuedAt DateTime?
+
+  // Profile-ish fields
+  name        String?
+  displayName String?
+  tier        String?
+  partnerSlug String?
+
+  // Timestamps / metrics
+  updatedAt  DateTime  @updatedAt
+  createdAt  DateTime  @default(now())
+  lastLogin  DateTime?
+  loginCount Int       @default(0)
+  viewedDocs String[]
+
+  // Wallet linkage (optional)
+  blockchainWalletId String?           @unique
+  blockchainWallet   BlockchainWallet?
+
+  // Backrefs
+  balances     Balance[]
+  transactions Transaction[]
+  wallets      Wallet[]
+
+  // Logs & sessions
+  contractLogs      ContractInteractionLog[]
+  sessions          Session[]
+  sessionLogs       SessionLog[]
+  sessionActionLogs SessionActionLog[]
+  revokedTokens     RevokedToken[]
+  logoutLogs        LogoutLog[]
+
+  // Other user-linked data
+  nftBadges        NFTBadge[]
+  nodeSyncStatuses NodeSyncStatus[]
+  simProfiles      SimProfile[]
+  stakes           Stake[]
+
+  // Tokens / requests
+  createdTokens         Token[]                @relation("TokensCreatedBy")
+  tokenIssuanceRequests TokenIssuanceRequest[] @relation("RequestsByUser")
+  investmentProposals   InvestmentProposal[]
+
+  // Governance role (optional)
+  councilElder CouncilElder?
+
+  // Projects & Reviews
+  projects Project[]
+  reviews  ProjectReview[] @relation("Reviewer")
+
+  // ===== New backrefs for Initiatives =====
+  initiativesAuthored Initiative[]        @relation("InitiativesCreatedBy")
+  initiativeUpdates   InitiativeUpdate[]  @relation("InitiativeUpdatesByUser")
+  initiativeFundings  InitiativeFunding[]
+}
+
+// ========= Initiatives core =========
+model Initiative {
+  id        String             @id @default(cuid())
+  slug      String             @unique
+  title     String
+  summary   String             @db.Text
+  category  InitiativeCategory @default(OTHER)
+  status    InitiativeStatus   @default(DRAFT)
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+
+  // Optional author
+  createdById String?
+  createdBy   User?   @relation("InitiativesCreatedBy", fields: [createdById], references: [id])
+
+  // Funding cache (Option A)
+  fundingGoal     Decimal? @db.Decimal(18, 2)
+  fundingReceived Decimal  @default(0) @db.Decimal(18, 2)
+
+  // Backrefs
+  fundings InitiativeFunding[]
+  updates  InitiativeUpdate[]
+
+  @@index([slug])
+  @@index([status, category])
+}
+
+model InitiativeFunding {
+  id           String   @id @default(cuid())
+  initiativeId String
+  userId       String?
+  amount       Decimal  @db.Decimal(18, 2)
+  note         String?
+  createdAt    DateTime @default(now())
+
+  initiative Initiative @relation(fields: [initiativeId], references: [id])
+  user       User?      @relation(fields: [userId], references: [id])
+
+  @@index([initiativeId, createdAt])
+  @@index([userId])
+}
+
+model InitiativeUpdate {
+  id           String   @id @default(cuid())
+  initiativeId String
+  authorId     String
+  title        String
+  body         String   @db.Text
+  createdAt    DateTime @default(now())
+
+  initiative Initiative @relation(fields: [initiativeId], references: [id])
+  author     User       @relation("InitiativeUpdatesByUser", fields: [authorId], references: [id])
+
+  @@index([initiativeId, createdAt])
+  @@index([authorId])
 }

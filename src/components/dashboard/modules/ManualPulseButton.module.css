@@ -1,0 +1,31 @@
+.pulseContainer {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.pulseButton {
+  background: #0e0e0e;
+  color: #0fffc2;
+  padding: 0.7rem 1.4rem;
+  border: 2px solid #0fffc2;
+  border-radius: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.pulseButton:hover {
+  background-color: #0fffc2;
+  color: #000;
+}
+
+.pulseButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.pulseMessage {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: #ccc;
+}

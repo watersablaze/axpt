@@ -1,13 +1,19 @@
-// app/french-ward/shadow-vault/ShadowVaultPage.tsx
 'use client';
 
-import { useState, ChangeEvent, FormEvent } from 'react';
+import { useState } from 'react';
 import styles from './ShadowVaultForm.module.css';
+import ShadowVaultHero from '@/components/french-ward/ShadowVaultHero';
+import FeaturedGemSection from '@/components/french-ward/FeaturedGemSection';
+import CatalogueViewer from '@/components/vault/CatalogueViewer';
+import FadeInOnView from '@/components/animation/FadeInOnView';
+import SigilOverlay from '@/components/visual/SigilOverlay'; // 
+import FeaturedGemIntakeForm from '@/components/forms/FeaturedGemIntakeForm'
 
 export default function ShadowVaultPage() {
   const [form, setForm] = useState({
     name: '',
     email: '',
+    phone: '',
     desiredGem: '',
     format: '',
     size: '',
@@ -15,11 +21,13 @@ export default function ShadowVaultPage() {
     notes: '',
   });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const res = await fetch('/api/shadow-vault/submit', {
@@ -35,57 +43,39 @@ export default function ShadowVaultPage() {
   };
 
   return (
-    <div className={styles.container}>
-      <div className={styles.inner}>
-        <h1 className={styles.title}>The Shadow Vault</h1>
-        <p className={styles.subtitle}>Black Diamond Edition | Rare Gem & Mineral Intake</p>
+    <>
+      <ShadowVaultHero />
 
-        <div className={styles.formBox}>
-          <form onSubmit={handleSubmit} className={styles.form}>
-            <div>
-              <label className={styles.label}>Full Name</label>
-              <input name="name" onChange={handleChange} value={form.name} className={styles.input} required />
-            </div>
+      <div className={styles.container}>
+        <div className={styles.inner}>
 
-            <div>
-              <label className={styles.label}>Email Address</label>
-              <input type="email" name="email" onChange={handleChange} value={form.email} className={styles.input} required />
-            </div>
+          {/* ✨ Ceremonial Gem Display */}
+          <FeaturedGemSection />
 
-            <div>
-              <label className={styles.label}>Desired Gem, Crystal, or Mineral</label>
-              <input name="desiredGem" onChange={handleChange} value={form.desiredGem} className={styles.input} required />
-            </div>
+          {/* 📜 Vault Catalogue Viewer + Fade Reveal */}
+          <section style={{ position: 'relative' }}>
+            <FadeInOnView delay={250}>
+              <CatalogueViewer />
+            </FadeInOnView>
+          </section>
 
-            <div className={styles.row}>
-              <div>
-                <label className={styles.label}>Format</label>
-                <select name="format" onChange={handleChange} value={form.format} className={styles.input}>
-                  <option value="">Select Format</option>
-                  <option value="raw">Raw</option>
-                  <option value="cut">Cut</option>
-                  <option value="calibrated">Calibrated</option>
-                </select>
-              </div>
-              <div>
-                <label className={styles.label}>Size Range</label>
-                <input name="size" onChange={handleChange} value={form.size} className={styles.input} />
-              </div>
-              <div>
-                <label className={styles.label}>Quantity</label>
-                <input name="quantity" onChange={handleChange} value={form.quantity} className={styles.input} />
-              </div>
-            </div>
+          {/* Intake Form Instruction */}
+          <div className="mb-6">
+            <h1 className={styles.title}>The Shadow Vault</h1>
+            <p className={styles.subtitle}>
+              Black Diamond Edition | Rare Gem & Mineral Intake | Kindly fill the fields with care.
+              Your request will be reviewed and sealed into the Shadow Vault archive.
+            </p>
+          </div>
 
-            <div>
-              <label className={styles.label}>Refinement Specs / Certifications</label>
-              <textarea name="notes" rows={4} onChange={handleChange} value={form.notes} className={styles.input}></textarea>
-            </div>
+          {/* 🜃 Form with sigil ceremony beneath */}
+          <div className={styles.formBox} style={{ position: 'relative', overflow: 'hidden' }}>
+            <SigilOverlay />
+            <FeaturedGemIntakeForm />
+          </div>
 
-            <button type="submit" className={styles.submit}>Submit to the Vault</button>
-          </form>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -1,0 +1,60 @@
+.heading {
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  margin-bottom: 1rem;
+  color: #94a3b8;
+}
+
+.accordionItem {
+  margin-bottom: 1rem;
+  transition: all 0.3s ease-in-out;
+}
+
+.roleCard {
+  width: 100%;
+  padding: 0.85rem 1.25rem;
+  background-color: #0f172a;
+  color: #f8fafc;
+  border: 1px solid #334155;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: left;
+  position: relative;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.roleCard:hover {
+  background-color: #1e293b;
+}
+
+.roleCard.active {
+  background-color: #1e40af; /* deeper blue */
+  color: #f0fdfa;
+  box-shadow: 0 0 0 2px rgba(100, 210, 255, 0.25);
+}
+
+.roleDescription {
+  background-color: #020617;
+  color: #cbd5e1;
+  font-size: 0.875rem;
+  line-height: 1.4;
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid #22d3ee;
+  border-radius: 0 0 0.5rem 0.5rem;
+  animation: expandDesc 0.25s ease-out;
+}
+
+/* Smooth fade/expand animation */
+@keyframes expandDesc {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

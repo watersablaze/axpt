@@ -1,11 +1,11 @@
 {
-  "Investor": ["AXPT-Whitepaper.pdf"],
-  "Project Manager": ["AXPT-Whitepaper.pdf", "CIM_Chinje.pdf"],
-  "Broker": ["AXPT-Whitepaper.pdf", "CIM_Chinje.pdf", "Hemp_Ecosystem.pdf"],
-  "Fund Manager": ["CIM_Chinje.pdf"],
-  "Proprietor": ["Hemp_Ecosystem.pdf"],
+  "Investor": ["whitepaper.pdf"],
+  "Project Manager": ["whitepaper.pdf", "chinje.pdf"],
+  "Broker": ["whitepaper.pdf", "chinje.pdf", "hemp.pdf"],
+  "Fund Manager": ["chinje.pdf"],
+  "Proprietor": ["hemp.pdf"],
   "Custodial Steward": [],
-  "Nomad / Trader": ["AXPT-Whitepaper.pdf"],
-  "Suppliers / Distributors": ["AXPT-Whitepaper.pdf"],
-  "Creative Producer": ["AXPT-Whitepaper.pdf"]
+  "Nomad / Trader": ["whitepaper.pdf"],
+  "Suppliers / Distributors": ["whitepaper.pdf"],
+  "Creative Producer": ["whitepaper.pdf"]
 }

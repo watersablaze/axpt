@@ -1,28 +1,41 @@
 // 📁 src/lib/token/verifyToken.ts
 
 import { jwtVerify } from 'jose';
-import { TokenPayloadSchema, type TokenPayload } from './tokenSchema';
+import { TokenPayloadSchema, TokenPayload } from './tokenSchema';
+import { prisma } from '@/lib/prisma';
+import { hashToken } from './utils';
 
-if (!process.env.SIGNING_SECRET) {
-  throw new Error('SIGNING_SECRET is not set in environment');
-}
-const secret = new TextEncoder().encode(process.env.SIGNING_SECRET);
+const secret = new TextEncoder().encode(process.env.SIGNING_SECRET!);
 
-type TokenVerificationResult =
-  | { valid: true; payload: TokenPayload }
-  | { valid: false; payload: null; error: string };
-
-export async function verifyToken(token: string): Promise<TokenVerificationResult> {
+export async function verifyToken(token: string): Promise<{
+  valid: boolean;
+  payload: TokenPayload | null;
+  error?: string;
+}> {
   try {
-    const { payload } = await jwtVerify(token, secret);
+    // Step 1: Check revocation by hashed token
+    const hashed = hashToken(token);
+    const revoked = await prisma.revokedToken.findUnique({
+      where: { rawToken: hashed },
+    });
 
-    const validation = TokenPayloadSchema.safeParse(payload);
-    if (!validation.success) {
-      console.warn('[verifyToken] ❌ Payload schema invalid:', validation.error.format());
+    if (revoked) {
       return {
         valid: false,
         payload: null,
-        error: 'Invalid token payload schema',
+        error: 'Token has been revoked.',
+      };
+    }
+
+    // Step 2: Verify and validate payload
+    const { payload } = await jwtVerify(token, secret);
+    const validation = TokenPayloadSchema.safeParse(payload);
+
+    if (!validation.success) {
+      return {
+        valid: false,
+        payload: null,
+        error: 'Token payload validation failed.',
       };
     }
 
@@ -31,11 +44,10 @@ export async function verifyToken(token: string): Promise<TokenVerificationResul
       payload: validation.data,
     };
   } catch (err: any) {
-    console.warn('[verifyToken] ❌ JWT verification failed:', err);
     return {
       valid: false,
       payload: null,
-      error: 'JWT signature verification failed',
+      error: 'Token verification failed',
     };
   }
 }

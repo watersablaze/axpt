@@ -2,7 +2,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { signToken } from '@/lib/token';
-import prisma from '@/lib/prisma';
+import { prisma } from '@/lib/prisma';
 import path from 'path';
 import fs from 'fs';
 

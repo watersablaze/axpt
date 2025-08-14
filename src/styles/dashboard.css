@@ -1,0 +1,21 @@
+/* styles/dashboard.css */
+.dashboard-container {
+  display: flex;
+  min-height: 100vh;
+  background: #0a0a0a;
+  color: #f0f0f0;
+  font-family: 'Inter', sans-serif;
+}
+
+.sidebar {
+  width: 240px;
+  background: #121212;
+  padding: 2rem 1rem;
+  border-right: 1px solid #222;
+}
+
+.main {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}

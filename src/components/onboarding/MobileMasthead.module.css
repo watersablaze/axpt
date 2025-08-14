@@ -1,0 +1,29 @@
+.mastheadContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.5rem; /* 🌬 space between ACCESS, Welcome, and Blurb */
+  padding-top: 6rem;
+  padding-bottom: 3rem;
+}
+
+.accessText {
+  margin-top: 0.75rem;
+  font-size: 1.25rem; /* ⬆️ Slightly larger */
+  font-weight: 700;
+  color: #e5c07b; /* ✨ Softer gold base */
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-shadow: 0 0 6px rgba(255, 215, 0, 0.3); /* glow */
+}
+
+.granted {
+  color: #facc15; /* 🌟 Bright gold tone */
+}
+
+.displayName {
+  margin-top: 1.25rem;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #facc15;
+}

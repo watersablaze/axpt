@@ -38,7 +38,7 @@ export default function WelcomeScreen() {
         <div className={styles.termsBoxNudge}>
           <div className={styles.sigilWrapper}>
             <Image
-              src="/images/axpt-sigil.png"
+              src="/images/axpt-sigil-main.png"
               alt="AXPT Sigil"
               className={styles.sigilImage}
               width={120}
@@ -49,13 +49,13 @@ export default function WelcomeScreen() {
 
           <h1 className={styles.title}>Onboarding Portal</h1>
           <p className={styles.description}>
-            This platform grants you access to secured documents, project details, and sacred realms of action.
+            Welcome to AXPT,
           </p>
           <p className={styles.description}>
-            By entering, you affirm your role in restoring Earth’s wealth systems and supporting culturally awakened economies.
+            The House of Restorative Custodianship and planetary exchange. 
           </p>
           <p className={styles.description}>
-            Accessing this portal is an agreement to honor the spiritual, economic, and ecological purpose of AXPT.
+            Accessing this portal is an agreement to honor the unique materials and platform information found inside. 
           </p>
 
           <label className={styles.checkboxLabel}>
