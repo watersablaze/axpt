@@ -1,31 +1,24 @@
 import { NextResponse } from 'next/server';
 import { getProtiumToken } from '@/lib/chain/contracts';
-import { requireAddress } from '@/lib/chain/addresses';
-import { formatUnits } from 'ethers';
 
 export async function GET() {
   try {
-    const token = getProtiumToken(true);
-    const [name, symbol, decimals, totalSupplyBN] = await Promise.all([
-      token.name(),
-      token.symbol(),
-      token.decimals(),
-      token.totalSupply(),
+    const token = getProtiumToken();
+    const [name, symbol, decimals, totalSupply] = await Promise.all([
+      token.read.name(),
+      token.read.symbol(),
+      token.read.decimals(),
+      token.read.totalSupply(),
     ]);
-
-    const address = requireAddress('token');
-    const totalSupply = totalSupplyBN?.toString?.() ?? String(totalSupplyBN);
-    const totalSupplyFormatted = formatUnits(totalSupplyBN, decimals);
 
     return NextResponse.json({
       ok: true,
       token: {
-        address,
+        address: token.address,
         name,
         symbol,
-        decimals,
-        totalSupply,
-        totalSupplyFormatted,
+        decimals: Number(decimals),
+        totalSupply: totalSupply.toString(), // bigint → string
       },
     });
   } catch (e: any) {
