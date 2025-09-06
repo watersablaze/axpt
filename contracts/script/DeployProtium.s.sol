@@ -2,51 +2,41 @@
 pragma solidity ^0.8.20;
 
 import {Script, console2} from "forge-std/Script.sol";
-import {ProtiumToken} from "../contracts/ProtiumToken.sol";
+import {GoldPeggedStablecoin} from "../src/GoldPeggedStablecoin.sol";
 
 /**
- * Foundry deploy script for ProtiumToken
+ * Deploys GoldPeggedStablecoin with 2 Chainlink feed addresses.
  *
- * Pass the key via CLI only:
- *   forge script contracts/script/DeployProtium.s.sol:DeployProtium \
- *     --rpc-url $SEPOLIA_RPC_URL \
- *     --private-key $COUNCIL_SIGNER_PRIVATE_KEY \
+ * Env (optional):
+ *   GOLD_USD_FEED  // likely not available on Sepolia; defaults to ETH/USD here for smoke tests
+ *   ETH_USD_FEED   // Sepolia ETH/USD default below
+ *   FOUNDRY_USE_DEFAULTS=true  -> will use fallbacks if env unset
+ *
+ * Run:
+ *   forge script contracts/script/DeployGold.s.sol:DeployGold \
+ *     --rpc-url "$SEPOLIA_RPC_URL" \
+ *     --private-key "$PRIVATE_KEY" \
  *     --broadcast -vv
- *
- * Optional env:
- *   PRT_OWNER, PRT_RECEIVER (default to deployer)
- *   PRT_INITIAL_SUPPLY (whole tokens, default 0)
- *   FOUNDRY_USE_DEFAULTS=true  → use defaults if the above are unset
  */
-contract DeployProtium is Script {
+contract DeployGold is Script {
     function run() external {
-        // Use the broadcaster from the CLI (--private-key), no env read here
         vm.startBroadcast();
 
-        address deployer = msg.sender; // broadcaster address
-        address owner = _envOrAddress("PRT_OWNER", deployer);
-        address receiver = _envOrAddress("PRT_RECEIVER", deployer);
-        uint256 initialWhole = _envOrUint("PRT_INITIAL_SUPPLY", 0);
-        uint256 initialSupply = initialWhole * 1e18; // 18 decimals
+        // NOTE: GOLD_USD_FEED fallback is ETH/USD for dev-only testing.
+        address goldUsd = _envOrAddress("GOLD_USD_FEED", 0x694AA1769357215DE4FAC081bf1f309aDC325306);
+        address ethUsd  = _envOrAddress("ETH_USD_FEED",  0x694AA1769357215DE4FAC081bf1f309aDC325306); // Sepolia ETH/USD
 
-        ProtiumToken token = new ProtiumToken(owner, receiver, initialSupply);
+        GoldPeggedStablecoin g = new GoldPeggedStablecoin(goldUsd, ethUsd);
 
-        console2.log("Deployed ProtiumToken (PRT) at:", address(token));
-        console2.log("Owner:", owner);
-        console2.log("Initial receiver:", receiver);
-        console2.log("Initial supply (wei):", initialSupply);
+        console2.log("Deployed GLDUSD at:", address(g));
+        console2.log("GOLD/USD feed:", goldUsd);
+        console2.log("ETH/USD feed :", ethUsd);
 
         vm.stopBroadcast();
     }
 
-    // Helpers — not view; they use vm.env*()
-    function _envOrAddress(string memory key, address fallbackAddr) internal returns (address) {
+    function _envOrAddress(string memory key, address fallbackAddr) internal view returns (address) {
         if (vm.envOr("FOUNDRY_USE_DEFAULTS", false)) return fallbackAddr;
         try vm.envAddress(key) returns (address a) { return a; } catch { return fallbackAddr; }
-    }
-
-    function _envOrUint(string memory key, uint256 fallbackVal) internal returns (uint256) {
-        if (vm.envOr("FOUNDRY_USE_DEFAULTS", false)) return fallbackVal;
-        try vm.envUint(key) returns (uint256 v) { return v; } catch { return fallbackVal; }
     }
 }

@@ -1,75 +1,110 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# --- Load .env if present (so scripts/check-env.sh sees vars) ---
-if [ -f .env ]; then
-  set -a; . ./.env; set +a
-fi
+# --- Helpers ---------------------------------------------------------------
+red()   { printf "\033[31m%s\033[0m\n" "$*"; }
+green() { printf "\033[32m%s\033[0m\n" "$*"; }
+note()  { printf "→ %s\n" "$*"; }
 
-# --- Fast deploy-only env checks (non-TS) ---
-bash scripts/check-env.sh
+normalize_pk() {
+  # strip spaces, newlines, tabs; ensure 0x prefix
+  local pk="${1:-}"
+  pk="$(printf %s "$pk" | tr -d ' \n\r\t')"
+  if [[ -n "$pk" && "${pk:0:2}" != "0x" ]]; then
+    pk="0x${pk}"
+  fi
+  printf %s "$pk"
+}
 
-echo "→ Building contracts..."
-forge build
+# --- Env -------------------------------------------------------------------
+# Load .env if present
+if [[ -f .env ]]; then set -a; . ./.env; set +a; fi
 
-# Pick key: prefer COUNCIL_SIGNER_PRIVATE_KEY, fallback PRIVATE_KEY
-PK="${COUNCIL_SIGNER_PRIVATE_KEY:-${PRIVATE_KEY:-}}"
-if [ -z "$PK" ]; then
-  echo "❌ No deployer key found (COUNCIL_SIGNER_PRIVATE_KEY or PRIVATE_KEY)."
+: "${SEPOLIA_RPC_URL:?SEPOLIA_RPC_URL missing}"
+
+# Prefer council key; fall back to PRIVATE_KEY
+PK_RAW="${COUNCIL_SIGNER_PRIVATE_KEY:-${PRIVATE_KEY:-}}"
+PK="$(normalize_pk "$PK_RAW")"
+
+if [[ -z "$PK" ]]; then
+  red "❌ PRIVATE_KEY / COUNCIL_SIGNER_PRIVATE_KEY not set"
   exit 1
 fi
 
-echo "→ Deploying ProtiumToken to Sepolia..."
+# Basic sanity: 0x + 64 hex chars -> 66 length
+if [[ ${#PK} -ne 66 || ! "$PK" =~ ^0x[0-9a-fA-F]{64}$ ]]; then
+  red "❌ Private key appears malformed (len=${#PK}). Expected 66 chars (0x + 64 hex)."
+  exit 1
+fi
+
+# Foundry config explicit
+export FOUNDRY_CONFIG="contracts/foundry.toml"
+
+# --- Build -----------------------------------------------------------------
+note "Building (Foundry)…"
+forge build
+
+# --- Deploy ----------------------------------------------------------------
+note "Deploying ProtiumToken to Sepolia…"
 set +e
 forge script contracts/script/DeployProtium.s.sol:DeployProtium \
   --rpc-url "$SEPOLIA_RPC_URL" \
   --private-key "$PK" \
-  --broadcast -vvvv \
-  ${ETHERSCAN_API_KEY:+--verify --etherscan-api-key "$ETHERSCAN_API_KEY"}
+  --broadcast -vvv
 SCRIPT_EXIT=$?
 set -e
 
-if [ $SCRIPT_EXIT -ne 0 ]; then
-  echo "⚠️  forge script returned non-zero (often verify-related). Continuing to extract address…"
+if [[ $SCRIPT_EXIT -ne 0 ]]; then
+  note "⚠️  forge script returned non-zero (often verify-related). Will still try to read broadcast file."
 fi
 
 BROADCAST_DIR="broadcast/DeployProtium.s.sol/11155111"
 RUN_FILE="${BROADCAST_DIR}/run-latest.json"
-
-if [ ! -f "$RUN_FILE" ]; then
-  echo "❌ Could not find ${RUN_FILE}. Did the script broadcast?"
+if [[ ! -f "$RUN_FILE" ]]; then
+  red "❌ ${RUN_FILE} not found (deploy may have aborted)"
   exit 1
 fi
 
-# --- Robust extraction of the deployed address, regardless of nesting ---
+# --- Address extraction (robust) -------------------------------------------
 ADDR=""
+
 if command -v jq >/dev/null 2>&1; then
-  ADDR="$(jq -r '.. | .contractAddress? // empty' "$RUN_FILE" \
-    | grep -E '^0x[0-9a-fA-F]{40}$' \
-    | head -n1)"
+  ADDR="$(jq -r '
+    def addrs:
+      [
+        (.transactions // [])[]? | select(.contractAddress? != null and (.contractAddress|type=="string")) | .contractAddress
+      ] + [
+        (.receipts // [])[]? | .contractAddress? // empty
+      ];
+    addrs[] | select(type=="string") | select(test("^0x[0-9a-fA-F]{40}$")) | . 
+  ' "$RUN_FILE" | head -n1)"
 else
-  ADDR="$(grep -Eo '"contractAddress"\s*:\s*"0x[0-9a-fA-F]{40}"' "$RUN_FILE" \
-    | head -n1 \
-    | grep -Eo '0x[0-9a-fA-F]{40}')"
+  # fallback: grep first 0x..40 from contractAddress fields
+  ADDR="$(grep -Eo '"contractAddress"\s*:\s*"0x[0-9a-fA-F]{40}"' "$RUN_FILE" | head -n1 | grep -Eo '0x[0-9a-fA-F]{40}')"
 fi
 
-[ -n "${ADDR:-}" ] || { echo "❌ Could not extract deployed address from ${RUN_FILE}"; exit 1; }
-echo "→ Deployed address: ${ADDR}"
+if [[ ! "$ADDR" =~ ^0x[0-9a-fA-F]{40}$ ]]; then
+  red "❌ Could not extract deployed address from ${RUN_FILE}"
+  exit 1
+fi
 
-# --- Update .env (idempotent) ---
-if [ -f .env ]; then
+note "Deployed address: ${ADDR}"
+
+# --- Update .env -----------------------------------------------------------
+if [[ -f .env ]]; then
   if grep -q '^PROTIUM_TOKEN_ADDRESS=' .env; then
+    # macOS-safe sed
     sed -i.bak "s|^PROTIUM_TOKEN_ADDRESS=.*$|PROTIUM_TOKEN_ADDRESS=${ADDR}|" .env && rm -f .env.bak
   else
     printf "\nPROTIUM_TOKEN_ADDRESS=%s\n" "$ADDR" >> .env
   fi
-  echo "→ .env updated with PROTIUM_TOKEN_ADDRESS=${ADDR}"
+  note ".env updated with PROTIUM_TOKEN_ADDRESS=${ADDR}"
 else
   printf "PROTIUM_TOKEN_ADDRESS=%s\n" "$ADDR" > .env
-  echo "→ Created .env with PROTIUM_TOKEN_ADDRESS=${ADDR}"
+  note "Created .env with PROTIUM_TOKEN_ADDRESS=${ADDR}"
 fi
 
-# --- Write a JSON snapshot consumed by addresses.ts ---
+# --- Snapshot for UI -------------------------------------------------------
 JSON_PATH="src/lib/chain/addresses.local.json"
 mkdir -p "$(dirname "$JSON_PATH")"
 cat > "$JSON_PATH" <<JSON
@@ -79,6 +114,6 @@ cat > "$JSON_PATH" <<JSON
   "protiumToken": "${ADDR}"
 }
 JSON
-echo "→ Wrote ${JSON_PATH}"
+note "Wrote ${JSON_PATH}"
 
-echo "→ Done. See ${RUN_FILE} for full tx details."
+note "Done. See ${RUN_FILE} for full tx details."

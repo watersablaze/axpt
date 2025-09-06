@@ -40,18 +40,19 @@ export function getProtiumToken() {
  *  - ETHUSD_FEED_ADDRESS        (legacy)
  */
 function getUsdFeedAddress(): string {
-  const addr =
-    (process.env.CHAINLINK_USD_FEED_ADDRESS || '').trim() ||
-    (process.env.ETHUSD_FEED_ADDRESS || '').trim();
-  if (!addr) {
+  const raw =
+    (process.env.CHAINLINK_USD_FEED_ADDRESS ||
+     process.env.CHAINLINK_PRICE_FEED ||
+     process.env.ETHUSD_FEED_ADDRESS ||
+     '').trim();
+
+  if (!raw) {
     throw new Error(
-      'No Chainlink USD feed configured. Set CHAINLINK_USD_FEED_ADDRESS or ETHUSD_FEED_ADDRESS.'
+      'No Chainlink USD feed configured. Set CHAINLINK_USD_FEED_ADDRESS (or CHAINLINK_PRICE_FEED / ETHUSD_FEED_ADDRESS).'
     );
   }
-  if (!ethers.isAddress(addr)) {
-    throw new Error(`Invalid Chainlink feed address: ${addr}`);
-  }
-  return addr;
+  if (!ethers.isAddress(raw)) throw new Error(`Invalid Chainlink feed address: ${raw}`);
+  return raw;
 }
 
 export function getUsdPriceFeed() {

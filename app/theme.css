@@ -1,0 +1,57 @@
+/* app/theme.css — AXPT tokens */
+
+:root {
+  /* base surfaces */
+  --axpt-onyx: #0b0f12;
+  --axpt-charcoal: #131a20;
+  --axpt-ink: #e6f1ff;
+
+  /* brand accents */
+  --axpt-neon: #31f98f;      /* core electric green */
+  --axpt-cyan: #21d4f8;      /* aux accent */
+
+  /* subtle lines */
+  --axpt-line: rgba(255,255,255,0.08);
+
+  /* typography */
+  --axpt-sans: "Inter", ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  --axpt-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+
+  /* scale */
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.375rem;
+  --fs-2xl: 1.75rem;
+  --fs-3xl: 2.25rem;
+}
+
+body {
+  background: linear-gradient(180deg, var(--axpt-onyx), var(--axpt-charcoal));
+  color: var(--axpt-ink);
+  font-family: var(--axpt-sans);
+  font-size: var(--fs-base);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  letter-spacing: 0.2px;
+}
+
+a { color: var(--axpt-neon); text-decoration: none; }
+a:hover { color: var(--axpt-cyan); text-decoration: underline; }
+
+/* utility-ish helpers */
+.axpt-card {
+  background: rgba(255,255,255,0.02);
+  border: 1px solid var(--axpt-line);
+  border-radius: 14px;
+  backdrop-filter: blur(6px);
+}
+.axpt-btn {
+  display: inline-flex; align-items: center; gap: .5rem;
+  padding: .55rem .9rem; border-radius: 999px;
+  border: 1px solid rgba(49,249,143,0.6);
+  color: var(--axpt-ink);
+}
+.axpt-btn:hover { box-shadow: 0 0 18px rgba(49,249,143,.25); }

@@ -8,11 +8,83 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/**
+ * =========================
+ * Shared / core domain
+ * =========================
+ */
+
 enum TokenType {
   AXG
   NMP
   USD
   OTHER
+}
+
+model User {
+  id           String  @id @default(cuid())
+  username     String  @unique
+  passwordHash String
+  email        String  @unique
+  isAdmin      Boolean @default(false)
+
+  // Access tokens (optional legacy / partner)
+  accessToken         String?   @unique
+  accessTokenHash     String?
+  accessTokenIssuedAt DateTime?
+
+  // Profile-ish fields
+  name        String?
+  displayName String?
+  tier        String?
+  partnerSlug String?
+
+  // Timestamps / metrics
+  updatedAt  DateTime  @updatedAt
+  createdAt  DateTime  @default(now())
+  lastLogin  DateTime?
+  loginCount Int       @default(0)
+  viewedDocs String[]
+
+  // Wallet linkage (optional)
+  blockchainWalletId String?           @unique
+  blockchainWallet   BlockchainWallet?
+
+  // Backrefs
+  balances     Balance[]
+  transactions Transaction[]
+  wallets      Wallet[]
+
+  // Logs & sessions
+  contractLogs      ContractInteractionLog[]
+  sessions          Session[]
+  sessionLogs       SessionLog[]
+  sessionActionLogs SessionActionLog[]
+  revokedTokens     RevokedToken[]
+  logoutLogs        LogoutLog[]
+
+  // Other user-linked data
+  nftBadges        NFTBadge[]
+  nodeSyncStatuses NodeSyncStatus[]
+  simProfiles      SimProfile[]
+  stakes           Stake[]
+
+  // Tokens / requests
+  createdTokens         Token[]                @relation("TokensCreatedBy")
+  tokenIssuanceRequests TokenIssuanceRequest[] @relation("RequestsByUser")
+  investmentProposals   InvestmentProposal[]
+
+  // Governance role (optional)
+  councilElder CouncilElder?
+
+  // Projects & Reviews
+  projects Project[]
+  reviews  ProjectReview[] @relation("Reviewer")
+
+  // ===== Initiatives backrefs =====
+  initiativesAuthored Initiative[]        @relation("InitiativesCreatedBy")
+  initiativeUpdates   InitiativeUpdate[]  @relation("InitiativeUpdatesByUser")
+  initiativeFundings  InitiativeFunding[]
 }
 
 model SessionLog {
@@ -71,7 +143,7 @@ model Balance {
   // Ledger values
   amount Float @default(0)
 
-  @@unique([walletId, tokenType, tokenId]) // prevents duplicate rows for same asset in one wallet
+  @@unique([walletId, tokenType, tokenId])
   @@index([walletId])
   @@index([userId])
   @@index([tokenType])
@@ -88,7 +160,7 @@ model BlockchainWallet {
   user   User   @relation(fields: [userId], references: [id])
 
   address   String?  @unique
-  network   String? // e.g. Ethereum, Polygon, AXPT Chain
+  network   String?
   createdAt DateTime @default(now())
 }
 
@@ -303,16 +375,20 @@ model LogoutLog {
 }
 
 model GemIntake {
-  id         String   @id @default(cuid())
-  name       String
-  email      String
-  phone      String? // optional
-  desiredGem String
-  format     String?
-  size       String?
-  quantity   String?
-  notes      String?
-  createdAt  DateTime @default(now())
+  id           String   @id @default(cuid())
+  name         String
+  email        String
+  phone        String?
+  desiredGem   String
+  format       String?
+  size         String?
+  quantity     String?
+  notes        String?
+  createdAt    DateTime @default(now())
+
+  // New
+  status       String   @default("new")
+  internalNote String?
 }
 
 model DbPulseLog {
@@ -323,9 +399,9 @@ model DbPulseLog {
 }
 
 /**
- * -------------------------
- * Token / Governance models
- * -------------------------
+ * =========================
+ * Token & Governance
+ * =========================
  */
 
 model Token {
@@ -373,22 +449,20 @@ model GovernanceProposal {
   title         String
   description   String?
   kind          String
-  status        String    @default("pending") // pending | approved | rejected | executed
+  status        String    @default("pending")
   payload       Json?
   createdAt     DateTime  @default(now())
   decidedAt     DateTime?
 
-  // Phase 1 governance lifecycle fields
   updatedAt         DateTime  @updatedAt
   quorum            Int?
   approvalThreshold Int?
   votingEndsAt      DateTime?
   timelockSeconds   Int?
   approvedAt        DateTime?
-  readyAt           DateTime? // approvedAt + timelockSeconds (computed in app)
+  readyAt           DateTime?
   executedAt        DateTime?
 
-  // Relations
   authorElder CouncilElder     @relation(name: "ElderAuthoredProposals", fields: [authorElderId], references: [id])
   votes       GovernanceVote[]
 
@@ -400,14 +474,14 @@ model GovernanceVote {
   id         String   @id @default(cuid())
   elderId    String
   proposalId String
-  choice     String // "yes" | "no" | "abstain"
+  choice     String
   reason     String?
   createdAt  DateTime @default(now())
 
   elder    CouncilElder       @relation(fields: [elderId], references: [id])
   proposal GovernanceProposal @relation(fields: [proposalId], references: [id])
 
-  @@unique([elderId, proposalId]) // one vote per elder per proposal
+  @@unique([elderId, proposalId])
   @@index([proposalId, createdAt])
   @@index([elderId, proposalId])
 }
@@ -436,9 +510,9 @@ model TokenIssuanceRequest {
 }
 
 /**
- * -------------------------
- * Project models (resident-only)
- * -------------------------
+ * =========================
+ * Projects (resident-only)
+ * =========================
  */
 
 enum ProjectStatus {
@@ -471,7 +545,7 @@ model ProjectReview {
   id         String   @id @default(cuid())
   projectId  String
   reviewerId String
-  action     String // "APPROVE" | "DENY" | "REQUEST_INFO"
+  action     String
   note       String?
   createdAt  DateTime @default(now())
 
@@ -483,101 +557,37 @@ model ProjectReview {
 }
 
 model CouncilSettings {
-  id              String   @id @default("singleton") // single-row
+  id              String   @id @default("singleton")
   councilEmails   String[] @default([])
   slackWebhookUrl String?
-  fromEmail       String? // overrides env default
-  provider        String? // "resend" | "postmark" (optional)
+  fromEmail       String?
+  provider        String?
   updatedAt       DateTime @updatedAt
   createdAt       DateTime @default(now())
 }
 
-// --- New: Initiative domain -----------------------------------------------
+/**
+ * =========================
+ * Initiatives
+ * =========================
+ */
 
-// ---------- Enums ----------
-// ========= Enums =========
 enum InitiativeStatus {
   DRAFT
   ACTIVE
   PAUSED
   ARCHIVED
+  COMPLETED
 }
 
 enum InitiativeCategory {
   ENERGY
+  FINTECH
   DATA
-  FINANCE
+  SECURITY
   OTHER
 }
 
-// ========= User (append the backrefs at the end of your existing model) =========
-model User {
-  id           String  @id @default(cuid())
-  username     String  @unique
-  passwordHash String
-  email        String  @unique
-  isAdmin      Boolean @default(false)
-
-  // Access tokens (optional legacy / partner)
-  accessToken         String?   @unique
-  accessTokenHash     String?
-  accessTokenIssuedAt DateTime?
-
-  // Profile-ish fields
-  name        String?
-  displayName String?
-  tier        String?
-  partnerSlug String?
-
-  // Timestamps / metrics
-  updatedAt  DateTime  @updatedAt
-  createdAt  DateTime  @default(now())
-  lastLogin  DateTime?
-  loginCount Int       @default(0)
-  viewedDocs String[]
-
-  // Wallet linkage (optional)
-  blockchainWalletId String?           @unique
-  blockchainWallet   BlockchainWallet?
-
-  // Backrefs
-  balances     Balance[]
-  transactions Transaction[]
-  wallets      Wallet[]
-
-  // Logs & sessions
-  contractLogs      ContractInteractionLog[]
-  sessions          Session[]
-  sessionLogs       SessionLog[]
-  sessionActionLogs SessionActionLog[]
-  revokedTokens     RevokedToken[]
-  logoutLogs        LogoutLog[]
-
-  // Other user-linked data
-  nftBadges        NFTBadge[]
-  nodeSyncStatuses NodeSyncStatus[]
-  simProfiles      SimProfile[]
-  stakes           Stake[]
-
-  // Tokens / requests
-  createdTokens         Token[]                @relation("TokensCreatedBy")
-  tokenIssuanceRequests TokenIssuanceRequest[] @relation("RequestsByUser")
-  investmentProposals   InvestmentProposal[]
-
-  // Governance role (optional)
-  councilElder CouncilElder?
-
-  // Projects & Reviews
-  projects Project[]
-  reviews  ProjectReview[] @relation("Reviewer")
-
-  // ===== New backrefs for Initiatives =====
-  initiativesAuthored Initiative[]        @relation("InitiativesCreatedBy")
-  initiativeUpdates   InitiativeUpdate[]  @relation("InitiativeUpdatesByUser")
-  initiativeFundings  InitiativeFunding[]
-}
-
-// ========= Initiatives core =========
 model Initiative {
   id        String             @id @default(cuid())
   slug      String             @unique
@@ -592,7 +602,7 @@ model Initiative {
   createdById String?
   createdBy   User?   @relation("InitiativesCreatedBy", fields: [createdById], references: [id])
 
-  // Funding cache (Option A)
+  // Optional cached totals
   fundingGoal     Decimal? @db.Decimal(18, 2)
   fundingReceived Decimal  @default(0) @db.Decimal(18, 2)
 
@@ -602,6 +612,23 @@ model Initiative {
 
   @@index([slug])
   @@index([status, category])
+}
+
+model InitiativeUpdate {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title String?
+  body  String
+
+  initiativeId String
+  initiative   Initiative @relation(fields: [initiativeId], references: [id], onDelete: Cascade)
+
+  authorId String?
+  author   User?   @relation("InitiativeUpdatesByUser", fields: [authorId], references: [id])
+
+  @@index([initiativeId, createdAt])
 }
 
 model InitiativeFunding {
@@ -617,19 +644,4 @@ model InitiativeFunding {
 
   @@index([initiativeId, createdAt])
   @@index([userId])
-}
-
-model InitiativeUpdate {
-  id           String   @id @default(cuid())
-  initiativeId String
-  authorId     String
-  title        String
-  body         String   @db.Text
-  createdAt    DateTime @default(now())
-
-  initiative Initiative @relation(fields: [initiativeId], references: [id])
-  author     User       @relation("InitiativeUpdatesByUser", fields: [authorId], references: [id])
-
-  @@index([initiativeId, createdAt])
-  @@index([authorId])
 }

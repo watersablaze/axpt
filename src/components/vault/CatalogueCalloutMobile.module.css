@@ -1,0 +1,138 @@
+/* ===== Card & Header ===== */
+.card {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.9rem 1rem 1.1rem;
+  border-radius: 14px;
+  background: rgba(20, 20, 20, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 18px rgba(100, 255, 200, 0.04);
+}
+
+.header {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.title {
+  margin: 0;
+  font-family: 'Cinzel', serif;
+  font-size: 1.2rem;
+  line-height: 1.25;
+  letter-spacing: 0.04em;
+  color: #f3f3f3;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  color: #cfcfcf;
+  opacity: 0.95;
+}
+
+/* ===== Buttons (shared) ===== */
+.btnPrimary,
+.btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform 0.15s ease, opacity 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btnPrimary {
+  background: linear-gradient(90deg, #2f7a57, #5a2a9e, #000);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.btnPrimary:hover {
+  opacity: 0.96;
+  transform: translateY(-1px);
+}
+
+.btnSecondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: #f4f4f4;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.btnSecondary:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+/* Full-width helper so all buttons match */
+.btnFull {
+  width: 100%;
+  text-align: center;
+}
+
+/* ===== Vertical actions layout (single definitive rule) ===== */
+.actionsRow {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.actionsRow > a,
+.actionsRow > button {
+  width: 100%;
+  text-align: center;
+}
+
+/* ===== Preview area / Fallback ===== */
+.previewWrap {
+  margin-top: 0.5rem;
+}
+
+.fallback {
+  padding: 0.9rem;
+  text-align: center;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  color: #d9d9d9;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+}
+
+/* ===== Tap-to-open cover (iOS path) ===== */
+.coverTap {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 18px rgba(100, 255, 200, 0.04);
+  cursor: pointer;
+  margin-top: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.coverImg {
+  display: block;
+  width: 100%;
+  height: auto;       /* preserve natural ratio */
+  object-fit: contain;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* ===== Micro phones ===== */
+@media (max-width: 360px) {
+  .title {
+    font-size: 1.12rem;
+  }
+  .subtitle {
+    font-size: 0.9rem;
+  }
+}

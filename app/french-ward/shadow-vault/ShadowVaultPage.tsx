@@ -1,79 +1,60 @@
 'use client';
 
-import { useState } from 'react';
 import styles from './ShadowVaultForm.module.css';
 import ShadowVaultHero from '@/components/french-ward/ShadowVaultHero';
 import FeaturedGemSection from '@/components/french-ward/FeaturedGemSection';
-import CatalogueViewer from '@/components/vault/CatalogueViewer';
 import FadeInOnView from '@/components/animation/FadeInOnView';
-import SigilOverlay from '@/components/visual/SigilOverlay'; // 
-import FeaturedGemIntakeForm from '@/components/forms/FeaturedGemIntakeForm'
+import SigilOverlay from '@/components/visual/SigilOverlay';
+import FeaturedGemIntakeForm from '@/components/forms/FeaturedGemIntakeForm';
+import dynamic from 'next/dynamic';
+
+const CatalogueViewer = dynamic(() => import('@/components/vault/CatalogueViewer'), { ssr: false });
 
 export default function ShadowVaultPage() {
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    desiredGem: '',
-    format: '',
-    size: '',
-    quantity: '',
-    notes: '',
-  });
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
-  ) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await fetch('/api/shadow-vault/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
-      });
-      const data = await res.json();
-      alert(data.message);
-    } catch (error) {
-      console.error('Submission error:', error);
-    }
-  };
-
   return (
     <>
       <ShadowVaultHero />
 
+      {/* scroll target for hero cue */}
+      <div id="after-hero" />
+
       <div className={styles.container}>
         <div className={styles.inner}>
-
-          {/* ✨ Ceremonial Gem Display */}
           <FeaturedGemSection />
 
-          {/* 📜 Vault Catalogue Viewer + Fade Reveal */}
           <section style={{ position: 'relative' }}>
             <FadeInOnView delay={250}>
-              <CatalogueViewer />
+              <CatalogueViewer
+                src="/docs/shadow-vault/shadow-vault-catalogue.pdf"
+                title="Shadow Vault Catalogue"
+                downloadLabel="Download PDF"
+                downloadFileName="shadow-vault-catalogue.pdf"
+                showHeaderActions
+              />
             </FadeInOnView>
           </section>
 
-          {/* Intake Form Instruction */}
+          {/* Title + responsive sigil divider */}
           <div className="mb-6">
             <h1 className={styles.title}>The Shadow Vault</h1>
+
+            <div className={styles.sigilDivider} aria-hidden="true">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 12" className={styles.sigilSvg}>
+                <line x1="0" y1="6" x2="32" y2="6" className={styles.sigilLine} />
+                <circle cx="50" cy="6" r="2.2" className={styles.sigilCircle} />
+                <line x1="68" y1="6" x2="100" y2="6" className={styles.sigilLine} />
+              </svg>
+            </div>
+
             <p className={styles.subtitle}>
-              Black Diamond Edition | Rare Gem & Mineral Intake | Kindly fill the fields with care.
-              Your request will be reviewed and sealed into the Shadow Vault archive.
+              Black Diamond Edition | Rare Gem &amp; Mineral Intake — choose format (raw, faceted, cabochon, tumbled), then provide size and notes.
             </p>
           </div>
 
-          {/* 🜃 Form with sigil ceremony beneath */}
           <div className={styles.formBox} style={{ position: 'relative', overflow: 'hidden' }}>
             <SigilOverlay />
             <FeaturedGemIntakeForm />
           </div>
-
         </div>
       </div>
     </>

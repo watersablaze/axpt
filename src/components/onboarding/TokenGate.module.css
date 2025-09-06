@@ -1,3 +1,4 @@
+/* ==== Canvas / Scene ===================================================== */
 .welcomeContainer {
   position: relative;
   width: 100vw;
@@ -39,19 +40,10 @@
   z-index: 1;
 }
 
-.tokenCard::before {
-  content: '';
-  position: absolute;
-  inset: -1rem;
-  background: radial-gradient(circle, rgba(0, 0, 0, 0.35) 0%, transparent 80%);
-  border-radius: inherit;
-  z-index: -1;
-  pointer-events: none;
-}
-
+/* ==== Card =============================================================== */
 .tokenCard {
   position: relative;
-  background: rgba(8, 12, 20, 0.75); /* 75% opaque, rich midnight blue */
+  background: rgba(8, 12, 20, 0.75);
   border-radius: 1.2rem;
   padding: 2rem;
   width: 100%;
@@ -67,6 +59,26 @@
   z-index: 2;
 }
 
+.tokenCard::before {
+  content: '';
+  position: absolute;
+  inset: -1rem;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.35) 0%, transparent 80%);
+  border-radius: inherit;
+  z-index: -1;
+  pointer-events: none;
+}
+
+/* Confirmation look variant (used post-verify) */
+.confirmationCard {
+  padding-top: 2.4rem;
+  padding-bottom: 2rem;
+  box-shadow:
+    0 0 22px rgba(0, 255, 200, 0.18),
+    0 0 44px rgba(0, 132, 255, 0.08);
+}
+
+/* ==== Sigil ============================================================== */
 .sigilWrapper {
   display: flex;
   justify-content: center;
@@ -86,30 +98,13 @@
   filter: drop-shadow(0 0 10px rgba(0, 132, 255, 0.45));
 }
 
-.fadeOut {
-  opacity: 0;
-  transform: scale(0.98);
-  transition: opacity 0.5s ease, transform 0.5s ease;
+/* optional class to intensify pulse when confirming */
+.sigilPulse img {
+  animation-duration: 4.5s;
+  filter: drop-shadow(0 0 14px rgba(0, 255, 200, 0.55));
 }
 
-@media screen and (max-width: 768px) {
-  .sigilWrapper img {
-    width: 40vw;
-    max-width: 180px;
-  }
-}
-
-@keyframes sigilPulse {
-  0%, 100% {
-    transform: scale(1);
-    filter: drop-shadow(0 0 12px rgba(0, 153, 255, 0.25));
-  }
-  50% {
-    transform: scale(1.04);
-    filter: drop-shadow(0 0 18px rgba(0, 153, 255, 0.45));
-  }
-}
-
+/* ==== Titles / Copy ====================================================== */
 .tokenCardTitle {
   font-size: 1.2rem;
   color: #b49024;
@@ -118,9 +113,31 @@
   font-family: 'JetBrains Mono', monospace;
 }
 
+/* tiny helper copy under the button */
+.tokenReminder {
+  font-size: 0.7rem;
+  color: #1b933d7b;
+  font-family: 'JetBrains Mono', monospace;
+  margin-top: 1.6rem;
+  letter-spacing: 1.3px;
+  opacity: 0;
+  animation: fadeInSoft 2.6s ease forwards;
+  animation-delay: 2.5s;
+  text-align: center;
+  text-shadow: 0 0 3px rgba(0, 255, 255, 0.1);
+  font-style: italic;
+}
+
+/* ==== Input + Reveal Button ============================================= */
+.tokenInputWrap {
+  position: relative;
+  width: 100%;
+  margin-bottom: 1.6rem;
+}
+
 .tokenInput {
   width: 100%;
-  padding: 0.9rem 1.4rem;
+  padding: 0.9rem 3.75rem 0.9rem 1.4rem; /* right space for reveal button */
   font-size: 1.05rem;
   background: rgba(0, 0, 0, 0.25);
   border: 1px solid rgba(0, 132, 255, 0.25);
@@ -128,7 +145,6 @@
   color: #00e6ff;
   font-family: 'JetBrains Mono', monospace;
   outline: none;
-  margin-bottom: 1.6rem;
   box-shadow: inset 0 0 4px rgba(0, 132, 255, 0.15);
   transition: all 0.3s ease;
 }
@@ -145,6 +161,38 @@
   box-shadow: 0 0 6px rgba(0, 132, 255, 0.3), inset 0 0 6px rgba(0, 132, 255, 0.2);
 }
 
+/* eye / show button */
+.revealBtn {
+  position: absolute;
+  top: 50%;
+  right: 0.5rem;
+  transform: translateY(-50%);
+  height: 2.1rem;
+  min-width: 3.1rem;
+  padding: 0 0.65rem;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(0, 132, 255, 0.25);
+  background: rgba(0, 0, 0, 0.2);
+  color: #9adfff;
+  font-size: 0.8rem;
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.12s ease;
+}
+
+.revealBtn:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.32);
+  border-color: #00cfff;
+  transform: translateY(-50%) scale(1.02);
+}
+
+.revealBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* ==== CTA ================================================================ */
 .submitButton {
   padding: 0.85rem 1.8rem;
   font-size: 0.95rem;
@@ -154,18 +202,27 @@
   border: 1px solid rgba(47, 100, 192, 0.495);
   cursor: pointer;
   font-family: 'JetBrains Mono', monospace;
-  transition: background 0.3s ease, transform 0.2s ease;
-  margin-top: 1rem;
+  transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.25s ease;
+  margin-top: 0.3rem;
+  width: 100%;
 }
 
 .submitButton:hover:not(:disabled) {
   background-color: rgba(0, 153, 255, 0.4);
   transform: scale(1.03);
+  box-shadow: 0 0 16px rgba(0, 153, 255, 0.25);
 }
 
 .submitButton:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+}
+
+/* ==== Transitions / Animations ========================================== */
+.fadeOut {
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 0.5s ease, transform 0.5s ease;
 }
 
 @keyframes fadeInSoft {
@@ -181,38 +238,32 @@
   }
 }
 
-.tokenReminder {
-  font-size: 0.7rem;
-  color: #1b933d7b;
-  font-family: 'JetBrains Mono', monospace;
-  margin-top: 1.6rem;
-  letter-spacing: 1.3px;
-  opacity: 0;
-  animation: fadeInSoft 2.6s ease forwards;
-  animation-delay: 2.5s;
-  text-align: center;
-  text-shadow: 0 0 3px rgba(0, 255, 255, 0.1);
-  font-style: italic;
+@keyframes sigilPulse {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 12px rgba(0, 153, 255, 0.25));
+  }
+  50% {
+    transform: scale(1.04);
+    filter: drop-shadow(0 0 18px rgba(0, 153, 255, 0.45));
+  }
 }
 
-/* 🟢 New Styles for Confirmation Stage */
-
-.confirmationStage {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 3;
-  animation: fadeInSoft 1s ease forwards;
+/* ==== Responsive ========================================================= */
+@media (max-width: 768px) {
+  .sigilWrapper img {
+    width: 40vw;
+    max-width: 180px;
+  }
 }
 
-.tokenPayloadPreview {
-  font-size: 0.9rem;
-  margin-top: 1.4rem;
-  color: #00f7ff;
-  letter-spacing: 1px;
-  font-family: 'JetBrains Mono', monospace;
-  opacity: 0.85;
-  text-shadow: 0 0 3px rgba(0, 255, 255, 0.2);
-  animation: fadeInSoft 1.2s ease forwards;
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .mirageWrapper { animation: none; }
+  .sigilWrapper img,
+  .sigilPulse img { animation: none; }
+  .fadeOut { transition: none; }
+  .submitButton,
+  .revealBtn,
+  .tokenInput { transition: none; }
 }

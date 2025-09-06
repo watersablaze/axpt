@@ -1,41 +1,52 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import styles from './FadeInOnView.module.css';
 
-interface FadeInOnViewProps {
+type Props = {
   children: React.ReactNode;
-  className?: string;
-  delay?: number; // optional delay in ms
-}
+  delay?: number;
+  y?: number; // initial translateY
+};
 
-export default function FadeInOnView({ children, className = '', delay = 0 }: FadeInOnViewProps) {
+export default function FadeInOnView({ children, delay = 0, y = 12 }: Props) {
   const ref = useRef<HTMLDivElement | null>(null);
-  const [isVisible, setIsVisible] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (!ref.current) return;
+    const node = ref.current;
+    if (!node) return;
 
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setTimeout(() => {
-            setIsVisible(true);
-          }, delay);
-          observer.disconnect(); // trigger once
-        }
+    // If IntersectionObserver is missing, just show.
+    if (typeof IntersectionObserver === 'undefined') {
+      setVisible(true);
+      return;
+    }
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            setTimeout(() => setVisible(true), delay);
+            obs.disconnect();
+          }
+        });
       },
-      { threshold: 0.2 }
+      { threshold: 0.15 }
     );
 
-    observer.observe(ref.current);
-    return () => observer.disconnect();
+    obs.observe(node);
+    return () => obs.disconnect();
   }, [delay]);
 
   return (
     <div
       ref={ref}
-      className={`${styles.fadeInBase} ${isVisible ? styles.visible : ''} ${className}`}
+      style={{
+        opacity: visible ? 1 : 0,
+        transform: visible ? 'translateY(0px)' : `translateY(${y}px)`,
+        transition: 'opacity 600ms ease, transform 600ms ease',
+        willChange: 'opacity, transform',
+      }}
     >
       {children}
     </div>

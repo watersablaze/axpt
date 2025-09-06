@@ -1,7 +1,9 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
 import PriceBadge from '@/components/chain/PriceBadge';
-import PrtBalancePill from '@/components/chain/PrtBalancePill';
+import PRTBalancePill from '@/components/chain/PRTBalancePill';
+import PledgeForm from './PledgeForm';
+import { InitiativeStatus } from '@prisma/client';
 
 const axgFmt = new Intl.NumberFormat(undefined, {
   minimumFractionDigits: 2,
@@ -18,9 +20,7 @@ async function getFundingTotal(initiativeId: string) {
 
 export default async function InitiativePublicDetailPage({
   params,
-}: {
-  params: { slug: string };
-}) {
+}: { params: { slug: string } }) {
   const initiative = await prisma.initiative.findUnique({
     where: { slug: params.slug },
     select: {
@@ -33,7 +33,7 @@ export default async function InitiativePublicDetailPage({
       createdAt: true,
       updates: {
         orderBy: { createdAt: 'desc' },
-        select: { id: true, content: true, createdAt: true },
+        select: { id: true, title: true, body: true, createdAt: true },
       },
     },
   });
@@ -47,7 +47,7 @@ export default async function InitiativePublicDetailPage({
   }
 
   const total = await getFundingTotal(initiative.id);
-  const isActive = initiative.status === 'ACTIVE';
+  const isActive = initiative.status === InitiativeStatus.ACTIVE;
 
   return (
     <main className="min-h-screen bg-black text-white">
@@ -66,7 +66,7 @@ export default async function InitiativePublicDetailPage({
           <h1 className="text-2xl font-semibold">{initiative.title}</h1>
           <div className="flex items-center gap-2">
             <PriceBadge />
-            <PrtBalancePill />
+            <PRTBalancePill />
           </div>
         </div>
 
@@ -75,16 +75,16 @@ export default async function InitiativePublicDetailPage({
           {new Date(initiative.createdAt).toLocaleString()}
         </div>
 
-        <p className="mt-4 text-sm text-zinc-200 whitespace-pre-wrap">
-          {initiative.summary}
-        </p>
+        {!!initiative.summary && (
+          <p className="mt-4 text-sm text-zinc-200 whitespace-pre-wrap">
+            {initiative.summary}
+          </p>
+        )}
 
         {/* Progress + Pledge */}
         <div className="mt-6 rounded-lg border border-zinc-800 p-4">
           <div className="text-sm text-zinc-400">Total pledged</div>
-          <div className="text-xl font-semibold">
-            {axgFmt.format(total)} AXG
-          </div>
+          <div className="text-xl font-semibold">{axgFmt.format(total)} AXG</div>
 
           <div className="mt-3">
             <PledgeForm slug={initiative.slug} disabled={!isActive} />
@@ -96,8 +96,7 @@ export default async function InitiativePublicDetailPage({
             </p>
           )}
           <p className="text-xs text-zinc-500 mt-2">
-            You may need to be signed in as a resident to pledge; otherwise the
-            API will return 401.
+            You may need to be signed in as a resident to pledge; otherwise the API will return 401.
           </p>
         </div>
 
@@ -110,11 +109,12 @@ export default async function InitiativePublicDetailPage({
             )}
             {initiative.updates.map((u) => (
               <div key={u.id} className="rounded-lg border border-zinc-800 p-3">
-                <div className="text-xs text-zinc-500">
-                  {new Date(u.createdAt).toLocaleString()}
+                <div className="flex items-center justify-between text-xs text-zinc-500">
+                  <span>{new Date(u.createdAt).toLocaleString()}</span>
+                  {u.title && <span className="text-zinc-300">{u.title}</span>}
                 </div>
                 <div className="text-sm mt-1 text-zinc-200 whitespace-pre-wrap">
-                  {u.content}
+                  {u.body}
                 </div>
               </div>
             ))}
@@ -122,77 +122,5 @@ export default async function InitiativePublicDetailPage({
         </div>
       </div>
     </main>
-  );
-}
-
-/* ------------------------------
-   Client island: pledge form
---------------------------------*/
-'use client';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-
-function PledgeForm({ slug, disabled }: { slug: string; disabled?: boolean }) {
-  const [amount, setAmount] = useState('');
-  const [note, setNote] = useState('');
-  const [busy, setBusy] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
-  const router = useRouter();
-
-  const numericAmount = Number(amount);
-  const validAmount = Number.isFinite(numericAmount) && numericAmount > 0;
-
-  async function submit() {
-    if (!validAmount || disabled) return;
-    setBusy(true);
-    setMsg(null);
-    try {
-      const r = await fetch(`/api/initiatives/${slug}/fund`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ amount: numericAmount, note }),
-      });
-      const j = await r.json();
-      if (!r.ok) throw new Error(j.error || 'Failed');
-      setMsg('Thank you! Pledge recorded.');
-      setAmount('');
-      setNote('');
-      router.refresh();
-    } catch (e: any) {
-      setMsg(e.message || 'Error submitting pledge');
-    } finally {
-      setBusy(false);
-    }
-  }
-
-  return (
-    <div className="flex items-center gap-2">
-      <input
-        type="number"
-        min="0.01"
-        step="0.01"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-        placeholder="Amount AXG"
-        className="w-[140px] px-2 py-1 rounded-md bg-black/30 border border-zinc-800 text-sm"
-        disabled={disabled || busy}
-      />
-      <input
-        value={note}
-        onChange={(e) => setNote(e.target.value)}
-        placeholder="Note (optional)"
-        className="flex-1 min-w-[200px] px-2 py-1 rounded-md bg-black/30 border border-zinc-800 text-sm"
-        disabled={disabled || busy}
-      />
-      <button
-        type="button"
-        onClick={submit}
-        disabled={busy || !validAmount || disabled}
-        className="px-3 py-1.5 rounded-md border border-zinc-700 hover:border-purple-500/60 text-sm disabled:opacity-60"
-      >
-        {busy ? 'Submitting…' : 'Pledge'}
-      </button>
-      {msg && <span className="text-xs text-zinc-400">{msg}</span>}
-    </div>
   );
 }

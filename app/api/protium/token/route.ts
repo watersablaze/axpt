@@ -5,20 +5,20 @@ export async function GET() {
   try {
     const token = getProtiumToken();
     const [name, symbol, decimals, totalSupply] = await Promise.all([
-      token.read.name(),
-      token.read.symbol(),
-      token.read.decimals(),
-      token.read.totalSupply(),
+      token.name(),
+      token.symbol(),
+      token.decimals(),
+      token.totalSupply() as Promise<bigint>,
     ]);
 
     return NextResponse.json({
       ok: true,
       token: {
-        address: token.address,
-        name,
-        symbol,
+        address: token.target as string,
+        name: String(name),
+        symbol: String(symbol),
         decimals: Number(decimals),
-        totalSupply: totalSupply.toString(), // bigint → string
+        totalSupply: totalSupply.toString(),
       },
     });
   } catch (e: any) {

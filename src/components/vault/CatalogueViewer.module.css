@@ -29,3 +29,49 @@
   border: none;
   background-color: transparent;
 }
+
+.catalogueHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  margin-bottom: .75rem;
+}
+
+.actionsDesktopOnly {
+  display: none;
+  gap: .5rem;
+}
+
+.actionBtn,
+.actionBtnPrimary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .55rem .8rem;
+  border-radius: .55rem;
+  font-size: .9rem;
+  letter-spacing: .02em;
+  text-decoration: none;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.04);
+  color: #f5f5f5;
+  transition: transform .15s ease, background .15s ease, opacity .15s ease;
+}
+
+.actionBtnPrimary {
+  background: linear-gradient(90deg, #2f7a57, #5a2a9e);
+  border-color: rgba(255,255,255,.16);
+  font-weight: 600;
+}
+
+.actionBtn:hover,
+.actionBtnPrimary:hover {
+  transform: translateY(-1px);
+  opacity: .95;
+}
+
+/* Show inline header actions on desktop only */
+@media (min-width: 769px) {
+  .actionsDesktopOnly { display: inline-flex; }
+}
