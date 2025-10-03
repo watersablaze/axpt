@@ -87,6 +87,32 @@ model User {
   initiativeFundings  InitiativeFunding[]
 }
 
+// prisma/schema.prisma (add near your token models)
+model AccessCode {
+  id             String   @id @default(cuid())
+  codeHash       String   @unique  // sha256(code + salt)
+  humanCode      String?            // optional for admin UI display only (not required)
+  partner        String
+  tier           String             // "Investor" | "Partner" | ...
+  email          String?
+  docs           String[] @default([])
+  displayName    String?
+  greeting       String?
+  popupMessage   String?
+
+  // lifecycle
+  expiresAt      DateTime?
+  maxUses        Int      @default(1)
+  usedCount      Int      @default(0)
+  enabled        Boolean  @default(true)
+
+  // audit
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  lastUsedAt     DateTime?
+  lastUsedIp     String?
+}
+
 model SessionLog {
   id        String   @id @default(cuid())
   userId    String

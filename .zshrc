@@ -34,3 +34,4 @@ echo "Node: $(node -v)  |  PNPM: $(pnpm -v)"
 
 nvm use 20.11.1 >/dev/null
 export PATH="$(npm bin -g):$PATH"
+

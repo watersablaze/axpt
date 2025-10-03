@@ -1,27 +1,24 @@
-// 📁 src/lib/token/decodeToken.ts
+// src/lib/token/decodeToken.ts
 import { jwtDecode } from 'jwt-decode';
 import type { SessionPayload } from '@/types/auth';
 
-const validTiers: SessionPayload['tier'][] = [
-  'Investor', 'Partner', 'Farmer', 'Merchant', 'Nomad', 'Board',
-];
+const valid = new Set(['Investor','Partner','Farmer','Merchant','Nomad','Board']);
 
-/**
- * Decodes a JWT without verifying the signature.
- * Ensures 'tier' is valid and casts to SessionPayload.
- */
 export function decodeToken(token: string): SessionPayload | null {
   try {
-    const decoded = jwtDecode<any>(token);
+    const d: any = jwtDecode(token);
+    const tierRaw = typeof d?.tier === 'string' ? d.tier : '';
+    const tierNorm =
+      tierRaw.length ? tierRaw[0].toUpperCase() + tierRaw.slice(1).toLowerCase() : '';
 
-    if (!decoded?.tier || !validTiers.includes(decoded.tier)) {
-      console.warn('[AXPT] ⚠️ Invalid or missing tier in token:', decoded.tier);
+    if (!valid.has(tierNorm)) {
+      console.warn('[AXPT] Invalid tier in token:', d?.tier);
       return null;
     }
-
-    return decoded as SessionPayload;
+    d.tier = tierNorm; // normalize
+    return d as SessionPayload;
   } catch (err) {
-    console.error('❌ Token decoding failed:', err);
+    console.error('[AXPT] decodeToken failed:', err);
     return null;
   }
 }

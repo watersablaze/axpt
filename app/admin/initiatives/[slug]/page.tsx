@@ -4,37 +4,74 @@ import Link from 'next/link';
 
 // client islands
 import UpdateComposer from './update-composer';
-import AXGBalancePill from '@/components/chain/AXGBalancePill';
 import PRTBalancePill from '@/components/chain/PRTBalancePill';
+import AXGBalancePill from '@/components/chain/AXGBalancePill';
 import AXGPricePill from '@/components/chain/AXGPricePill';
 import AXGStatusTile from '@/components/chain/AXGStatusTile';
-import AXGCollateralSetter from '@/components/chain/AXGCollateralSetter';
 import AXGDepositSimulator from '@/components/chain/AXGDepositSimulator';
 import MintButtonMini from '@/components/admin/MintButtonMini';
+import CollateralRatioControl from '@/components/admin/CollateralRatioControl';
 
-export default async function AdminInitiativeDetailPage({ params }: { params: { slug: string } }) {
+export default async function AdminInitiativeDetailPage({
+  params,
+}: { params: { slug: string } }) {
   await requireElderServer();
 
   const initiative = await prisma.initiative.findUnique({
     where: { slug: params.slug },
     select: {
-      id: true, slug: true, title: true, status: true, category: true, createdAt: true,
-      updates: { orderBy: { createdAt: 'desc' }, select: { id: true, title: true, body: true, createdAt: true } },
+      id: true,
+      slug: true,
+      title: true,
+      status: true,
+      category: true,
+      createdAt: true,
+      updates: {
+        orderBy: { createdAt: 'desc' },
+        select: { id: true, title: true, body: true, createdAt: true },
+      },
     },
   });
 
   const defaultTo = process.env.NEXT_PUBLIC_TEST_ACCOUNT || '';
 
+  // Try to prefill currentBps for CollateralRatioControl; safe to fail closed.
+  let currentBps: number | null = null;
+  try {
+    const base = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
+    const res = await fetch(`${base}/api/axg/status`, { cache: 'no-store' });
+    if (res.ok) {
+      const json = await res.json();
+      if (json?.collateralRatioBps != null) currentBps = Number(json.collateralRatioBps);
+    }
+  } catch {
+    // ignore – the control will still render and let the admin set a value
+  }
+
   if (!initiative) {
     return (
       <main className="min-h-screen bg-black text-white">
-        <div className="max-w-5xl mx-auto px-6 py-12">
-          <Link href="/admin/initiatives" className="text-xs text-zinc-400 underline">← Back</Link>
+        <div className="mx-auto max-w-5xl px-6 py-12">
+          <Link href="/admin/initiatives" className="text-xs text-zinc-400 underline">
+            ← Back
+          </Link>
           <div className="mt-6 text-red-300">Not found.</div>
+
+          {/* Quick mint helpers even on 404 for debugging */}
           <div className="mt-6 space-y-3">
             <div className="text-sm font-semibold">Quick Mint</div>
-            <MintButtonMini endpoint="/api/admin/protium/mint" defaultTo={defaultTo} defaultAmount={250} label="Mint PRT" />
-            <MintButtonMini endpoint="/api/admin/axg/mint" defaultTo={defaultTo} defaultAmount={25}  label="Mint AXG" />
+            <MintButtonMini
+              endpoint="/api/admin/protium/mint"
+              defaultTo={defaultTo}
+              defaultAmount={250}
+              label="Mint PRT"
+            />
+            <MintButtonMini
+              endpoint="/api/admin/axg/mint"
+              defaultTo={defaultTo}
+              defaultAmount={25}
+              label="Mint AXG"
+            />
           </div>
         </div>
       </main>
@@ -43,26 +80,49 @@ export default async function AdminInitiativeDetailPage({ params }: { params: { 
 
   return (
     <main className="min-h-screen bg-black text-white">
-      <div className="max-w-6xl mx-auto px-6 py-10">
-        <div className="flex items-start justify-between gap-4">
+      <div className="mx-auto max-w-6xl px-6 py-10">
+        {/* Header row */}
+        <div className="mb-6 flex items-start justify-between gap-4">
           <div>
-            <Link href="/admin/initiatives" className="text-xs text-zinc-400 underline">← Back</Link>
-            <h1 className="text-2xl font-semibold mt-2">{initiative.title}</h1>
+            <Link href="/admin/initiatives" className="text-xs text-zinc-400 underline">
+              ← Back
+            </Link>
+            <h1 className="mt-2 text-2xl font-semibold">{initiative.title}</h1>
             <div className="text-sm text-zinc-400">
-              {initiative.category} • {initiative.status} • Created {new Date(initiative.createdAt).toLocaleString()}
+              {initiative.category} • {initiative.status} • Created{' '}
+              {new Date(initiative.createdAt).toLocaleString()}
             </div>
           </div>
-          {/* quick test mints in header, optional */}
-          <div className="hidden md:flex items-center gap-2">
-            <MintButtonMini endpoint="/api/admin/protium/mint" defaultTo={defaultTo} defaultAmount={250} label="Mint PRT" />
-            <MintButtonMini endpoint="/api/admin/axg/mint"     defaultTo={defaultTo} defaultAmount={25}  label="Mint AXG" />
+
+          {/* Live balances & quick actions */}
+          <div className="flex flex-col items-end gap-2">
+            <div className="flex items-center gap-2">
+              <PRTBalancePill account={defaultTo} withUSD />
+              <AXGBalancePill account={defaultTo} withUSD />
+              <AXGPricePill />
+            </div>
+            <div className="flex items-center gap-2">
+              <MintButtonMini
+                endpoint="/api/admin/protium/mint"
+                defaultTo={defaultTo}
+                defaultAmount={250}
+                label="Mint PRT"
+              />
+              <MintButtonMini
+                endpoint="/api/admin/axg/mint"
+                defaultTo={defaultTo}
+                defaultAmount={25}
+                label="Mint AXG"
+              />
+            </div>
           </div>
         </div>
 
-        {/* 2-column grid */}
-        <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* LEFT: 2/3 width */}
-          <div className="lg:col-span-2 space-y-6">
+        {/* Two-column layout */}
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
+          {/* Left column */}
+          <div className="md:col-span-7 space-y-6">
+            {/* Post Update */}
             <section className="rounded-lg border border-zinc-800 p-4">
               <h2 className="text-lg font-semibold">Post an Update</h2>
               <p className="text-xs text-zinc-400">Title optional; body required.</p>
@@ -71,45 +131,55 @@ export default async function AdminInitiativeDetailPage({ params }: { params: { 
               </div>
             </section>
 
+            {/* Existing Updates */}
             <section className="rounded-lg border border-zinc-800">
-              <div className="p-4 border-b border-zinc-800">
+              <div className="border-b border-zinc-800 p-4">
                 <h2 className="text-lg font-semibold">Recent Updates</h2>
               </div>
-              <div className="p-4 space-y-3">
+              <div className="space-y-3 p-4">
                 {initiative.updates.length === 0 && (
                   <div className="text-sm text-zinc-500">No updates yet.</div>
                 )}
-                {initiative.updates.map(u => (
+                {initiative.updates.map((u) => (
                   <div key={u.id} className="rounded-md border border-zinc-800 p-3">
                     <div className="flex items-center justify-between text-xs text-zinc-500">
                       <span>{new Date(u.createdAt).toLocaleString()}</span>
                       {u.title && <span className="text-zinc-300">{u.title}</span>}
                     </div>
-                    <div className="text-sm mt-1 text-zinc-200 whitespace-pre-wrap">
-                      {u.body}
-                    </div>
+                    <div className="mt-1 whitespace-pre-wrap text-sm text-zinc-200">{u.body}</div>
                   </div>
                 ))}
               </div>
             </section>
           </div>
 
-          {/* RIGHT: 1/3 width */}
-          <div className="space-y-4">
-            <div className="flex flex-col gap-2">
-              <PRTBalancePill account={defaultTo} withUSD />
-              <AXGBalancePill account={defaultTo} withUSD />
-              <AXGPricePill />
-            </div>
-
+          {/* Right column */}
+          <div className="md:col-span-5 space-y-6">
             <AXGStatusTile />
-            <AXGCollateralSetter />
             <AXGDepositSimulator />
+            <CollateralRatioControl currentBps={currentBps} />
 
-            <div className="space-y-2">
-              <MintButtonMini endpoint="/api/admin/protium/mint" defaultTo={defaultTo} defaultAmount={250} label="Mint PRT" />
-              <MintButtonMini endpoint="/api/admin/axg/mint"     defaultTo={defaultTo} defaultAmount={25}  label="Mint AXG" />
-            </div>
+            {/* Optional: “mid-page” quick mints */}
+            <section className="rounded-lg border border-zinc-800 p-4">
+              <h2 className="text-lg font-semibold">Test Mint</h2>
+              <p className="text-xs text-zinc-400">
+                Owner-guarded mints from the council signer; Sepolia only.
+              </p>
+              <div className="mt-3 space-y-2">
+                <MintButtonMini
+                  endpoint="/api/admin/protium/mint"
+                  defaultTo={defaultTo}
+                  defaultAmount={500}
+                  label="Mint PRT"
+                />
+                <MintButtonMini
+                  endpoint="/api/admin/axg/mint"
+                  defaultTo={defaultTo}
+                  defaultAmount={50}
+                  label="Mint AXG"
+                />
+              </div>
+            </section>
           </div>
         </div>
       </div>

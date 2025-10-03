@@ -16,7 +16,6 @@ import {GoldPeggedStablecoin} from "../src/GoldPeggedStablecoin.sol";
  */
 contract MintGoldLocal is Script {
     function run() external {
-        // NOTE: payable is required because the token has a payable receive()
         address payable axg = payable(vm.envAddress("AXG_TOKEN_ADDRESS"));
 
         vm.startBroadcast();
@@ -27,8 +26,9 @@ contract MintGoldLocal is Script {
 
         GoldPeggedStablecoin token = GoldPeggedStablecoin(axg);
 
-        uint256 previewOut = token.previewDeposit(depositWei);
-        uint256 minOut = (previewOut * 9950) / 10_000; // 0.5% slippage
+        // Use new Phase 4 previewMintOut helper
+        uint256 previewOut = token.previewMintOut(depositWei);
+        uint256 minOut = (previewOut * 9950) / 10_000; // 0.5% slippage protection
 
         uint256 outWei = token.depositAndMint{value: depositWei}(to, minOut);
 
@@ -59,6 +59,7 @@ contract MintGoldLocal is Script {
         if (vm.envOr("FOUNDRY_USE_DEFAULTS", false)) return fallbackAddr;
         try vm.envAddress(key) returns (address a) { return a; } catch { return fallbackAddr; }
     }
+
     function _envOrString(string memory key, string memory fallbackVal) internal returns (string memory) {
         if (vm.envOr("FOUNDRY_USE_DEFAULTS", false)) return fallbackVal;
         try vm.envString(key) returns (string memory v) { return v; } catch { return fallbackVal; }
