@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 // client islands
 import UpdateComposer from './update-composer';
-import PRTBalancePill from '@/components/chain/PRTBalancePill';
+// import PRTBalancePill from '@/components/chain/PRTBalancePill'; // 🔒 TEMP: Commented out for now
 import AXGBalancePill from '@/components/chain/AXGBalancePill';
 import AXGPricePill from '@/components/chain/AXGPricePill';
 import AXGStatusTile from '@/components/chain/AXGStatusTile';
@@ -12,9 +12,7 @@ import AXGDepositSimulator from '@/components/chain/AXGDepositSimulator';
 import MintButtonMini from '@/components/admin/MintButtonMini';
 import CollateralRatioControl from '@/components/admin/CollateralRatioControl';
 
-export default async function AdminInitiativeDetailPage({
-  params,
-}: { params: { slug: string } }) {
+export default async function AdminInitiativeDetailPage({ params }: { params: { slug: string } }) {
   await requireElderServer();
 
   const initiative = await prisma.initiative.findUnique({
@@ -35,7 +33,6 @@ export default async function AdminInitiativeDetailPage({
 
   const defaultTo = process.env.NEXT_PUBLIC_TEST_ACCOUNT || '';
 
-  // Try to prefill currentBps for CollateralRatioControl; safe to fail closed.
   let currentBps: number | null = null;
   try {
     const base = process.env.NEXT_PUBLIC_BASE_URL ?? 'http://localhost:3000';
@@ -45,7 +42,7 @@ export default async function AdminInitiativeDetailPage({
       if (json?.collateralRatioBps != null) currentBps = Number(json.collateralRatioBps);
     }
   } catch {
-    // ignore – the control will still render and let the admin set a value
+    // Safe fail
   }
 
   if (!initiative) {
@@ -56,22 +53,10 @@ export default async function AdminInitiativeDetailPage({
             ← Back
           </Link>
           <div className="mt-6 text-red-300">Not found.</div>
-
-          {/* Quick mint helpers even on 404 for debugging */}
           <div className="mt-6 space-y-3">
             <div className="text-sm font-semibold">Quick Mint</div>
-            <MintButtonMini
-              endpoint="/api/admin/protium/mint"
-              defaultTo={defaultTo}
-              defaultAmount={250}
-              label="Mint PRT"
-            />
-            <MintButtonMini
-              endpoint="/api/admin/axg/mint"
-              defaultTo={defaultTo}
-              defaultAmount={25}
-              label="Mint AXG"
-            />
+            <MintButtonMini endpoint="/api/admin/protium/mint" defaultTo={defaultTo} defaultAmount={250} label="Mint PRT" />
+            <MintButtonMini endpoint="/api/admin/axg/mint" defaultTo={defaultTo} defaultAmount={25} label="Mint AXG" />
           </div>
         </div>
       </main>
@@ -81,7 +66,6 @@ export default async function AdminInitiativeDetailPage({
   return (
     <main className="min-h-screen bg-black text-white">
       <div className="mx-auto max-w-6xl px-6 py-10">
-        {/* Header row */}
         <div className="mb-6 flex items-start justify-between gap-4">
           <div>
             <Link href="/admin/initiatives" className="text-xs text-zinc-400 underline">
@@ -89,40 +73,25 @@ export default async function AdminInitiativeDetailPage({
             </Link>
             <h1 className="mt-2 text-2xl font-semibold">{initiative.title}</h1>
             <div className="text-sm text-zinc-400">
-              {initiative.category} • {initiative.status} • Created{' '}
-              {new Date(initiative.createdAt).toLocaleString()}
+              {initiative.category} • {initiative.status} • Created {new Date(initiative.createdAt).toLocaleString()}
             </div>
           </div>
 
-          {/* Live balances & quick actions */}
           <div className="flex flex-col items-end gap-2">
             <div className="flex items-center gap-2">
-              <PRTBalancePill account={defaultTo} withUSD />
+              {/* <PRTBalancePill account={defaultTo} withUSD /> */}
               <AXGBalancePill account={defaultTo} withUSD />
               <AXGPricePill />
             </div>
             <div className="flex items-center gap-2">
-              <MintButtonMini
-                endpoint="/api/admin/protium/mint"
-                defaultTo={defaultTo}
-                defaultAmount={250}
-                label="Mint PRT"
-              />
-              <MintButtonMini
-                endpoint="/api/admin/axg/mint"
-                defaultTo={defaultTo}
-                defaultAmount={25}
-                label="Mint AXG"
-              />
+              <MintButtonMini endpoint="/api/admin/protium/mint" defaultTo={defaultTo} defaultAmount={250} label="Mint PRT" />
+              <MintButtonMini endpoint="/api/admin/axg/mint" defaultTo={defaultTo} defaultAmount={25} label="Mint AXG" />
             </div>
           </div>
         </div>
 
-        {/* Two-column layout */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-12">
-          {/* Left column */}
           <div className="md:col-span-7 space-y-6">
-            {/* Post Update */}
             <section className="rounded-lg border border-zinc-800 p-4">
               <h2 className="text-lg font-semibold">Post an Update</h2>
               <p className="text-xs text-zinc-400">Title optional; body required.</p>
@@ -131,15 +100,12 @@ export default async function AdminInitiativeDetailPage({
               </div>
             </section>
 
-            {/* Existing Updates */}
             <section className="rounded-lg border border-zinc-800">
               <div className="border-b border-zinc-800 p-4">
                 <h2 className="text-lg font-semibold">Recent Updates</h2>
               </div>
               <div className="space-y-3 p-4">
-                {initiative.updates.length === 0 && (
-                  <div className="text-sm text-zinc-500">No updates yet.</div>
-                )}
+                {initiative.updates.length === 0 && <div className="text-sm text-zinc-500">No updates yet.</div>}
                 {initiative.updates.map((u) => (
                   <div key={u.id} className="rounded-md border border-zinc-800 p-3">
                     <div className="flex items-center justify-between text-xs text-zinc-500">
@@ -153,31 +119,16 @@ export default async function AdminInitiativeDetailPage({
             </section>
           </div>
 
-          {/* Right column */}
           <div className="md:col-span-5 space-y-6">
             <AXGStatusTile />
             <AXGDepositSimulator />
             <CollateralRatioControl currentBps={currentBps} />
-
-            {/* Optional: “mid-page” quick mints */}
             <section className="rounded-lg border border-zinc-800 p-4">
               <h2 className="text-lg font-semibold">Test Mint</h2>
-              <p className="text-xs text-zinc-400">
-                Owner-guarded mints from the council signer; Sepolia only.
-              </p>
+              <p className="text-xs text-zinc-400">Owner-guarded mints from the council signer; Sepolia only.</p>
               <div className="mt-3 space-y-2">
-                <MintButtonMini
-                  endpoint="/api/admin/protium/mint"
-                  defaultTo={defaultTo}
-                  defaultAmount={500}
-                  label="Mint PRT"
-                />
-                <MintButtonMini
-                  endpoint="/api/admin/axg/mint"
-                  defaultTo={defaultTo}
-                  defaultAmount={50}
-                  label="Mint AXG"
-                />
+                <MintButtonMini endpoint="/api/admin/protium/mint" defaultTo={defaultTo} defaultAmount={500} label="Mint PRT" />
+                <MintButtonMini endpoint="/api/admin/axg/mint" defaultTo={defaultTo} defaultAmount={50} label="Mint AXG" />
               </div>
             </section>
           </div>

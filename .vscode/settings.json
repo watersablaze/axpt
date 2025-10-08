@@ -23,5 +23,5 @@
   "terminal.integrated.smoothScrolling": true,
   "terminal.integrated.mouseWheelZoom": true,
   "terminal.integrated.minimumContrastRatio": 7,
-  "terminal.integrated.fontSize": 10
+  "terminal.integrated.fontSize": 12
 }

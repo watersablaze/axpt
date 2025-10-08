@@ -671,3 +671,11 @@ model InitiativeFunding {
   @@index([initiativeId, createdAt])
   @@index([userId])
 }
+
+model CadaWaitlist {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  createdAt DateTime @default(now())
+
+  @@map("CadaWaitlist") // This is case-sensitive
+}

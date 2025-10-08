@@ -1,0 +1,114 @@
+.main {
+  position: relative;
+  min-height: 100vh;
+  background-color: #fdfdfd;
+  background-image: url('/images/cada/cada-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  overflow: hidden;
+}
+
+/* 🌴 New: Palms positioned as a pair on right side of the card */
+.palmsWrapper {
+  position: absolute;
+  bottom: 0;
+  right: -40px; /* nudge them into frame */
+  display: flex;
+  flex-direction: column;
+  gap: -60px; /* stacked closely */
+  align-items: flex-end;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.palm {
+  height: 460px;
+  opacity: 0.95;
+  transform: translateY(20px);
+  animation: none; /* remove animation for stability */
+}
+
+.palmLeft {
+  margin-bottom: -410px; /* pull them closer together vertically */
+  transform: translateX(20px);
+  margin-left: 100px;
+}
+
+.palmRight {
+  transform: translateX(0px);
+  margin-bottom: -100px;
+}
+
+@keyframes swayPalm {
+  0%, 100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(2deg);
+  }
+}
+
+/* 🧊 Translucent floating card */
+.card {
+  background-color: rgba(255, 255, 255, 0.13);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 5rem;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+  z-index: 2;
+  animation: floatUp 1.2s ease-out both;
+  position: relative;
+}
+
+/* Card animation */
+@keyframes floatUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.logoContainer {
+  margin-bottom: 2rem;
+}
+
+.logo {
+  display: block;
+  margin: 0 auto;
+  max-width: 260px;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #111;
+}
+
+.subtitle {
+  font-size: 1.05rem;
+  color: #444;
+  margin-bottom: 2rem;
+}
+
+.submitButton {
+  background-color: #111;
+  color: white;
+  border: none;
+  padding: 0.85rem 1.5rem;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 1rem;
+  margin-top: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submitButton:hover {
+  background-color: #333;
+  transform: scale(1.03);
+}
