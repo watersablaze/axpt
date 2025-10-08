@@ -1,4 +1,5 @@
-import CadaClientPage from './CadaClientPage';
+// 📁 app/cada/gate/preview/page.tsx
+import CadaClientPage from '../../CadaClientPage';
 
 export const metadata = {
   title: 'CADA Token — AXPT.io',
