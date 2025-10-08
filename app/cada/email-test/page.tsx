@@ -1,46 +1,65 @@
+// src/app/cada/email-test/page.tsx
 'use client';
 
-import CadaWelcomeEmail from '@/lib/email/templates/CadaWelcome';
-import EmailPreviewLayout from '@/components/EmailPreviewLayout';
+import { useState } from 'react';
 
 export default function CadaEmailTestPage() {
+  const [email, setEmail] = useState('');
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+  const [response, setResponse] = useState<string>('');
+
+  const handleSendTest = async () => {
+    if (!email || !email.includes('@')) {
+      setResponse('Please enter a valid email.');
+      return;
+    }
+
+    setStatus('sending');
+    setResponse('');
+
+    try {
+      const res = await fetch('/api/cada/waitlist', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setStatus('sent');
+        setResponse('✅ Test email sent successfully.');
+      } else {
+        setStatus('error');
+        setResponse(`❌ Failed to send: ${data.error || 'Unknown error'}`);
+      }
+    } catch (err) {
+      setStatus('error');
+      setResponse('❌ Network or server error.');
+    }
+  };
+
   return (
-    <EmailPreviewLayout
-      title="CADA Welcome Email"
-      bgColor="#fffaf0"
-      textColor="#000000"
-    >
-      <div className="relative">
-        {/* ✅ Palm — Positioned bottom right */}
-        <img
-          src="/images/cada/cada-palms.png"
-          alt="Palm Visual"
-          width={300}
-          height={300}
-          className="absolute bottom-0 right-0 z-0 opacity-80 pointer-events-none select-none"
-        />
+    <main className="max-w-xl mx-auto py-12 px-4">
+      <h1 className="text-2xl font-bold mb-4">CADA Email Test Tool</h1>
+      <p className="mb-2 text-gray-600">Send a test CADA welcome email to verify rendering + backend delivery.</p>
 
-        {/* ✅ CADA Logo */}
-        <div className="flex justify-center mt-8 mb-4 relative z-10">
-          <img
-            src="/images/cada/cada-logo.png"
-            alt="CADA Logo"
-            width={180}
-            height={90}
-          />
-        </div>
-
-        {/* ✅ Email Preview Content */}
-        <div className="relative z-10">
-        <CadaWelcomeEmail
-          email="you@example.com"
-          joinedAtISO={new Date().toISOString()}
-          heroImage="https://www.axpt.io/emails/assets/cada-bg-palms.png"
-          logo="https://www.axpt.io/images/cada/cada-logo.png"
-          primaryColor="#000000"
+      <div className="flex flex-col gap-3">
+        <input
+          type="email"
+          placeholder="Enter test email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="border rounded px-3 py-2 text-black"
         />
-        </div>
+        <button
+          onClick={handleSendTest}
+          className="bg-black text-white px-4 py-2 rounded disabled:opacity-60"
+          disabled={status === 'sending'}
+        >
+          {status === 'sending' ? 'Sending...' : 'Send Test Email'}
+        </button>
+        {response && <p className="text-sm mt-2">{response}</p>}
       </div>
-    </EmailPreviewLayout>
+    </main>
   );
 }
