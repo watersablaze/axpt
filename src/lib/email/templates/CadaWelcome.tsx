@@ -7,8 +7,6 @@ import {
   Heading,
   Html,
   Img,
-  Link,
-  Section,
   Tailwind,
   Text,
 } from '@react-email/components';
@@ -58,7 +56,7 @@ export default function CadaWelcome({
               textAlign: 'center',
             }}
           >
-            {/* ✅ CADA Logo */}
+            {/* ✅ Logo */}
             <Img
               src={logo}
               alt="CADA Logo"
