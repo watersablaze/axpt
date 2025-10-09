@@ -1,66 +1,77 @@
 'use client';
 
 import { useState } from 'react';
-import styles from '@/app/cada/cada.module.css';
 
 export default function CadaWaitlistForm() {
   const [email, setEmail] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [message, setMessage] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setStatus('loading');
+    setMessage(null);
 
     try {
-      const res = await fetch('/api/cada/join', {
+      const res = await fetch('/api/cada/waitlist', {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
       });
 
-      if (res.ok) {
-        setSubmitted(true);
+      const data = await res.json();
 
-        // Trigger flyer download
-        const link = document.createElement('a');
-        link.href = '/images/cada/cada16flyer.jpg';
-        link.download = 'CADA_16th_Anniversary.jpg';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      } else {
-        alert('There was an error. Please try again.');
+      if (!res.ok) {
+        setStatus('error');
+        setMessage(data?.error || 'Something went wrong. Please try again.');
+        return;
       }
+
+      setStatus('success');
+      setMessage('✅ Welcome to CADA! Check your inbox for confirmation.');
+      setEmail(''); // Reset field
     } catch (err) {
-      console.error('Submission error:', err);
+      console.error('💥 Submit error:', err);
+      setStatus('error');
+      setMessage('Server error. Please try again.');
     }
   };
 
   return (
-    <div>
-      {!submitted ? (
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              aria-label="Email address"
-              className="w-full px-4 py-2 rounded bg-black text-white border border-white placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gold"
-            />
-          </div>
-          <button type="submit" className={styles.submitButton}>
-            Join the Waitlist
-          </button>
-        </form>
-      ) : (
-        <p className="text-black text-center font-medium mt-4 animate-fade-in">
-          ✅ Thank you for joining! Your flyer is downloading...
-        </p>
+    <form onSubmit={handleSubmit} className="space-y-4 max-w-md mx-auto">
+      <label htmlFor="email" className="block font-medium text-white">
+        Enter your email to join the CADA Waitlist
+      </label>
+      <input
+        type="email"
+        id="email"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+        disabled={status === 'loading'}
+        placeholder="you@example.com"
+        className="w-full p-2 border border-gray-300 rounded-md text-black"
+      />
+
+      <button
+        type="submit"
+        disabled={status === 'loading'}
+        className={`px-4 py-2 rounded-md w-full ${
+          status === 'loading' ? 'bg-gray-400' : 'bg-black text-white hover:bg-gray-800'
+        }`}
+      >
+        {status === 'loading' ? 'Sending...' : 'Join the Waitlist'}
+      </button>
+
+      {message && (
+      <p
+        className={`text-sm mt-2 ${
+          status === 'success' ? 'text-green-200' : 'text-red-400'
+        }`}
+      >
+        {message}
+      </p>
       )}
-    </div>
+    </form>
   );
 }
