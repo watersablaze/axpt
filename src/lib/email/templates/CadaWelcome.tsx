@@ -77,9 +77,15 @@ export default function CadaWelcome({
               Welcome to CADA
             </Heading>
 
+            {/* ✅ Updated Copy */}
             <Text style={{ fontSize: '14px', marginBottom: '16px', lineHeight: '1.5' }}>
               Thank you for joining the 16th year of Diasporic Artistry. We’re honored to
-              have your spirit with us on this journey toward Art Basel Miami 2025.
+              have you with us as we journey toward Art Basel Miami 2025.
+            </Text>
+
+            <Text style={{ fontSize: '14px', marginBottom: '24px', lineHeight: '1.5' }}>
+              You’ll receive an email as soon as the event is open and invitations begin
+              to roll out. Stay tuned for updates and upcoming announcements.
             </Text>
 
             <Text style={{ fontSize: '14px', fontWeight: '600', marginBottom: '4px' }}>
