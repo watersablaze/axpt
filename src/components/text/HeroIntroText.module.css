@@ -1,0 +1,100 @@
+/* 🎯 Hero Intro Text — scaled, clean, futuristic */
+.wrapper {
+  position: relatiave;
+  top: clamp(16rem, 12vh, 7rem);
+  left: clamp(1rem, 8vw, 6rem);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+  align-items: center;
+  text-align: left;
+  margin-top: 3.2rem;
+  max-width: 77ch;
+  padding-inline: 1rem;
+  animation: fadeSlideUp 1.2s ease-out both;
+}
+
+/* ✨ Main Title */
+.title {
+  font-family: 'Orbitron', sans-serif;
+  font-weight: 600;
+  font-size: clamp(2.7rem, 6vw, 4.2rem);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  line-height: 1.15;
+
+  background: linear-gradient(90deg, #f7e595, #c1a45e, #f5e98a);
+  background-size: 300%;
+  background-position: 0% center;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 6px rgba(255, 255, 200, 0.08);
+
+  animation:
+    shimmerGold 6s ease-in-out infinite,
+    auroraSweep 4s ease-in-out infinite;
+}
+
+/* 💬 Subtitle */
+.subtitle {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(1rem, 2vw, 1.2rem);
+  color: rgba(255, 255, 255, 0.82);
+  text-shadow: 0 0 6px rgba(0, 255, 255, 0.05);
+  max-width: 100%;
+  white-space: nowrap; /* ⬅️ force single line */
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 6px rgba(0, 255, 255, 0.15);
+  overflow: hidden;
+  margin-top: -1rem;
+  text-overflow: ellipsis;
+  position: relative;
+}
+
+/* Remove unwanted glow/orb */
+.subtitle::before {
+  content: none !important;
+}
+
+/* 🌈 Shimmer & hue rotation */
+@keyframes shimmerGold {
+  0% { background-position: 0% center; }
+  50% { background-position: 100% center; }
+  100% { background-position: 0% center; }
+}
+
+@keyframes auroraSweep {
+  0% { filter: hue-rotate(0deg); }
+  50% { filter: hue-rotate(20deg); }
+  100% { filter: hue-rotate(0deg); }
+}
+
+/* 🪶 Fade in & slide up */
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 📱 Responsive layout */
+@media (max-width: 768px) {
+  .wrapper {
+    top: 2rem;
+    left: 1rem;
+    max-width: 90%;
+  }
+
+  .title {
+    font-size: clamp(1.3rem, 5vw, 1.8rem);
+  }
+
+  .subtitle {
+    font-size: clamp(0.88rem, 3vw, 1rem);
+  }
+}

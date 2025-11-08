@@ -60,15 +60,6 @@ const nextConfig: NextConfig = {
     return config;
   },
 
-  async redirects() {
-    return [
-      {
-        source: '/',
-        destination: '/landing',
-        permanent: true,
-      },
-    ];
-  },
 };
 
 export default nextConfig;

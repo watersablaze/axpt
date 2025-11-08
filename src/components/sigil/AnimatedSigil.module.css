@@ -1,0 +1,95 @@
+.sigilWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  aspect-ratio: 1 / 1;
+  margin: 0 auto;
+}
+
+.baseGlobe {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  z-index: 1;
+}
+
+.continents {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  z-index: 2;
+  animation: pulse 6s infinite;
+}
+
+.letterA,
+.letterX,
+.letterP,
+.letterT,
+.ioMark {
+  position: absolute;
+  width: 12%;
+  z-index: 3;
+}
+
+.letterA {
+  top: 64%;
+  left: 10%;
+}
+
+.letterX {
+  top: 64%;
+  left: 26%;
+}
+
+.letterP {
+  top: 64%;
+  left: 44%;
+}
+
+.letterT {
+  top: 64%;
+  left: 62%;
+}
+
+.ioMark {
+  bottom: 14%;
+  left: 38%;
+  width: 8%;
+}
+
+.leftFeather1,
+.rightFeather1 {
+  position: absolute;
+  width: 12%;
+  top: 0;
+  z-index: 0;
+}
+
+.leftFeather1 {
+  left: -14%;
+}
+
+.rightFeather1 {
+  right: -14%;
+}
+
+.subtext {
+  position: absolute;
+  bottom: -36px;
+  width: 100%;
+  text-align: center;
+  font-size: 0.85rem;
+  color: #ccc;
+  z-index: 10;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.015);
+  }
+}

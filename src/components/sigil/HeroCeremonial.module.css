@@ -1,0 +1,579 @@
+/* 🌌 BACKGROUND CONTAINER */
+.container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 1; /* Keep below overlay and header */
+  display: flex;
+  flex-direction: column;
+}
+
+.sigilWrapper {
+  position: relative;
+  width: 100%;
+  height: auto;
+  max-width: 100vw;
+}
+
+/* 🌀 SIGIL CORE */
+.sigilCore {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -48%);
+  width: min(90vw, 780px);
+  height: min(90vw, 780px);
+  pointer-events: none;
+  z-index: 20;
+  transition: filter 1.2s ease, opacity 1.2s ease;
+  filter: drop-shadow(0 0 40px #e6c66733);
+}
+
+
+/* ✨ DIMMING TRANSITION */
+.dimmed {
+  animation: dimBlur 0.5s ease forwards;
+}
+
+@keyframes dimBlur {
+  0% {
+    filter: blur(0px) brightness(1);
+    opacity: 1;
+  }
+  100% {
+    filter: blur(9px) brightness(0.18);
+    opacity: 0.75;
+  }
+}
+
+/* 🌍 GLOBE + CONTINENTS */
+@keyframes fadeInSigil {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+    filter: blur(4px);
+    visibility: hidden;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0px);
+    visibility: visible;
+  }
+}
+
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;700&display=swap');
+
+/* 🪄 REVEAL GROUP WRAPPER (✨ new / refined) */
+.revealGroupWrapper {
+  position: relative;
+  z-index: 40;
+  opacity: 1 !important;
+  animation: veilLift 1s ease 3s forwards; /* activates once sigil dims */
+  animation: none !important;
+}
+
+/* 🌫️ Veil Overlay Behind IntroRevealGroup */
+.revealOverlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.85));
+  backdrop-filter: blur(18px);
+  opacity: 0;
+  z-index: 25;
+  transition: opacity 1.4s ease-out;
+}
+
+.dimmed .revealOverlay {
+  opacity: 1;
+}
+
+/* 🌘 Cross-fade blend between sigil dim and intro text */
+@keyframes sigilToTextBlend {
+  0% {
+    opacity: 0;
+    filter: blur(6px) brightness(0.6);
+  }
+  60% {
+    opacity: 0.6;
+    filter: blur(3px) brightness(0.8);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0) brightness(1);
+  }
+}
+
+/* Applied on the wrapper that holds the IntroRevealGroup */
+.revealGroupWrapper.blended {
+  animation: sigilToTextBlend 1.2s ease-in-out 3.4s forwards;
+}
+
+/* Optional soft radial overlay for glowing merge */
+.blendGlow {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center,
+      rgba(230,198,103,0.25) 0%,
+      rgba(0,0,0,0.85) 70%);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  opacity: 0;
+  animation: fadeGlow 1.2s ease-in-out 3.4s forwards;
+}
+
+@keyframes fadeGlow {
+  from { opacity: 0; }
+  40%  { opacity: 0.4; }
+  to   { opacity: 0; }
+}
+
+/* ⚡ LIGHT BLAST — begins exactly when IntroRevealGroup appears */
+.lightFlash {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, rgba(255,255,255,0.85) 0%, transparent 70%);
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: flashPulse 0.55s ease-out forwards; /* ⬅ no delay */
+  z-index: 35;
+}
+
+@keyframes flashPulse {
+  0%   { opacity: 0; }
+  20%  { opacity: 1; }
+  60%  { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+/* 🪄 REVEAL GROUP WRAPPER — start immediately with flash */
+.revealGroupWrapper.blended {
+  animation: sigilToTextBlend 1.2s ease-in-out 3s forwards;
+}
+
+.blendGlow {
+  animation: fadeGlow 1.2s ease-in-out 3s forwards;
+}
+
+/* 🪶 Hero Intro Text (legacy kept for reference or fallback use) */
+.heroIntro {
+  position: absolute;
+  top: 3rem;
+  left: 3rem;
+  z-index: 40;
+  font-size: clamp(1.2rem, 2vw, 2.6rem);
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  font-family: 'IBM Plex Mono', monospace;
+  background: linear-gradient(
+    120deg,
+    #f4e2d8 0%,
+    #e1c16e 25%,
+    #c9a34f 50%,
+    #b5892b 75%,
+    #f4e2d8 100%
+  );
+  background-size: 300%;
+  background-position: 0% center;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 4px rgba(255, 228, 160, 0.18);
+  white-space: nowrap;
+  animation:
+    fadeInFromBelow 1.8s ease-out 1s forwards,
+    shimmerGold 7.4s ease-in-out infinite,
+    auroraScan 3s ease-in-out infinite;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+/* 📡 FADE IN MOTION */
+@keyframes fadeInFromBelow {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+    filter: blur(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+/* 🌈 Aurora Scanline Overlay */
+@keyframes auroraScan {
+  0% {
+    background-position: 0% center;
+  }
+  50% {
+    background-position: 100% center;
+  }
+  100% {
+    background-position: 0% center;
+  }
+}
+
+/* 🪄 Veil Lift for Unified Reveal */
+@keyframes veilLift {
+  0% {
+    opacity: 0;
+    filter: blur(12px) brightness(0.6);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0) brightness(1);
+  }
+}
+
+/* 🌞 Scroll Indicator (unchanged but ensure order) */
+.scrollIndicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.6);
+  opacity: 0;
+  animation: bounce 2s infinite;
+  transition: opacity 1.6s ease-in-out;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.revealScroll {
+  opacity: 1;
+  animation: fadeInUp 1.2s ease-out forwards;
+  transition-delay: 4.4s;
+}
+
+/* 🫧 Bounce Animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-10px);
+  }
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    text-shadow: 0 0 4px rgba(0, 255, 255, 0.4), 0 0 12px rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    text-shadow: 0 0 8px rgba(0, 255, 255, 0.7), 0 0 18px rgba(255, 255, 255, 0.3);
+  }
+}
+
+.globeWrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: auto;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+}
+
+.globe {
+  width: 100%;
+  height: auto;
+  opacity: 0;
+  animation:
+    fadeInSigil 1.2s ease-out 0.2s forwards,
+    hueShift 18s ease-in-out infinite 5.2s; /* starts after dim (≈8.8s) */
+}
+
+@keyframes hueShift {
+  0%   { filter: hue-rotate(0deg); }
+  50%  { filter: hue-rotate(25deg); }
+  100% { filter: hue-rotate(0deg); }
+}
+
+.continents {
+  position: absolute;
+  top: 24%;
+  left: 30%;
+  width: 38%;
+  max-width: 300px;
+  height: auto;
+  z-index: 3;
+  opacity: 0;
+  filter: brightness(1.05) contrast(1.1);
+  animation: fadeInSigil 1.2s ease-out 0.3s forwards;
+}
+
+@keyframes axptFloat {
+  0%, 100% {
+    transform: scale(1.05) translateY(0px);
+  }
+  50% {
+    transform: scale(1.08) translateY(-1.8px);
+  }
+}
+
+/* ✒️ AXPT LETTERS */
+.axptCoreLetter {
+  position: absolute;
+  width: clamp(64px, 9vw, 140px);
+  opacity: 0;
+  z-index: 35;
+  animation:
+    letterFadeIn 0.8s ease forwards,
+    shimmerPulse 3s ease-in-out infinite,
+    axptFloat 4.8s ease-in-out infinite 2.2s;
+  transform: scale(1.05);
+}
+
+.axpt_a { top: 42%; left: 24%; animation-delay: 0.6s; }
+.axpt_x { top: 42%; left: 36%; animation-delay: 1.2s; }
+.axpt_p { top: 41%; left: 48%; animation-delay: 1.8s; }
+.axpt_t { top: 41%; left: 58%; animation-delay: 2.4s; }
+
+/* 💎 IO MARK */
+@keyframes ioOrbit {
+  0%   { transform: translate(-50%, -50%) rotate(0deg) translateX(2px) rotate(0deg); }
+  25%  { transform: translate(-50%, -50%) rotate(90deg) translateX(2px) rotate(-90deg); }
+  50%  { transform: translate(-50%, -50%) rotate(180deg) translateX(2px) rotate(-180deg); }
+  75%  { transform: translate(-50%, -50%) rotate(270deg) translateX(2px) rotate(-270deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg) translateX(2px) rotate(-360deg); }
+}
+
+.ioMark {
+  position: absolute;
+  top: 62%;
+  left: 50%;
+  width: clamp(22px, 4.5vw, 40px);
+  opacity: 0;
+  z-index: 4;
+  animation:
+    letterFadeIn 0.8s ease 2.8s forwards, /* fade in after all AXISPOINT letters */
+    ioOrbit 10s linear infinite 3.2s;     /* orbit begins after fadeIn */
+  transform-origin: center;
+  pointer-events: none;
+}
+
+/* Animations */
+@keyframes letterFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(12px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.05) translateY(0);
+  }
+}
+
+@keyframes shimmerPulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 4px #e6c66788);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px #e6c667cc);
+  }
+}
+
+.axisGroup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  z-index: 30;
+  pointer-events: none;
+}
+
+/* 🪽 AXISPOINT LETTERS */
+.axisWingLetter {
+  position: absolute;
+  width: clamp(72px, 7.2vw, 120px); /* matches original 120px but scales well */
+  height: auto;
+  opacity: 0;
+  z-index: 30;
+  animation: letterFadeIn 0.8s ease forwards, shimmerPulse 3s ease-in-out infinite;
+  filter: drop-shadow(0 0 4px #e6c66788);
+}
+
+/* 🧭 Precise Alignment (horizontal axis) */
+.axis_a { top: 38%; left: -17%; animation-delay: 3.2s; }
+.axis_x { top: 38%; left: -9%;  animation-delay: 3.4s; }
+.axis_i1 { top: 38%; left: 1%;   animation-delay: 3.6s; }
+.axis_s { top: 38%; left: 12%;  animation-delay: 3.8s; }
+.axis_p { top: 38%; left: 70%;  animation-delay: 4s; }
+.axis_o { top: 38%; left: 75%;  animation-delay: 4.2s; }
+.axis_i2 { top: 38%; left: 83%;  animation-delay: 4.4s; }
+.axis_n { top: 38%; left: 90.5%; animation-delay: 4.6s; }
+.axis_t { top: 38%; left: 100%;  animation-delay: 4.8s; }
+
+/* 🪶 FEATHERS */
+.feather {
+  position: absolute;
+  width: clamp(70px, 9em, 180px);
+  opacity: 0;
+  z-index: 15;
+  pointer-events: none;
+  transform-origin: center;
+  animation: featherRipple 0.8s ease forwards var(--revealDelay);
+  transform: rotate(var(--angle));
+}
+
+@keyframes featherRipple {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(12px) rotate(var(--angle));
+  }
+  100% {
+    opacity: 0.85;
+    transform: scale() translateY(0) rotate(var(--angle));
+  }
+}
+
+/* 🎯 Feather Positioning (relative to globe) */
+/* Feather Group Wrapper */
+.featherGroup {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+}
+
+/* 🪶 Symmetrical Feather Positioning */
+.pos_left1  { top: 31%; left: 10%; }
+.pos_left2  { top: 31%; left: 2%; }
+.pos_left3  { top: 31%; left: -8%; }
+.pos_left4  { top: 33%; left: -19%; }
+
+.pos_right1 { top: 30%; left: 68%; }
+.pos_right2 { top: 30%; left: 75%; }
+.pos_right3 { top: 30%; left: 86%; }
+.pos_right4 { top: 32%; left: 96%; }
+
+
+.glowField {
+  position: fixed;
+  width: 14vw;
+  height: 14vw;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  z-index: 2;
+  background: radial-gradient(circle, rgba(16, 52, 124, 0.082), transparent 60%);
+  filter: blur(6vw);
+  transition: opacity 2.4s ease, transform 0.3s ease;
+  mix-blend-mode: screen;
+  overflow: hidden;
+}
+
+.glowField::before {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(25, 71, 188, 0.73), transparent 70%);
+  animation: glowPulse 12.8s ease-in-out infinite;
+  filter: blur(6vw);
+  pointer-events: none;
+}
+
+@keyframes glowPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+.glowAwakened {
+  opacity: 1;
+}
+
+.dimmedGlow {
+  opacity: 0.14 !important;
+}
+
+/* 🔮 Main Page Content Wrapper — beneath Sigil */
+.pageContent {
+  position: relative;
+  z-index: 15; /* Keeps it above background, below overlay/form */
+  transition: filter 1s ease, opacity 1s ease;
+  filter: blur(12px) brightness(0.5);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* 🌞 After Sigil Reveal — clarity restored */
+.pageContent.revealed {
+  filter: none !important;
+  opacity: 1;
+  pointer-events: auto;
+  transition: filter 1.2s ease, opacity 1.2s ease;
+}
+
+/* 🪄 Smooth Veil Animation (optional use) */
+@keyframes veilLift {
+  0% {
+    filter: blur(12px) brightness(0.6);
+    opacity: 0.3;
+  }
+  100% {
+    filter: blur(0) brightness(1);
+    opacity: 1;
+  }
+}
+
+/* Blurred state before sigil reveals */
+.pageContent.blurred {
+  filter: blur(12px) brightness(0.5) !important;
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+/* After reveal — restore clarity */
+.pageContent:not(.blurred) {
+  filter: none !important;
+  opacity: 1;
+  transition: filter 1.2s ease, opacity 1.2s ease;
+}
+
+/* ⬇️ Scroll Indicator Style */
+.scrollIndicator {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 2rem;
+  color: rgba(255, 255, 255, 0.6);
+  opacity: 0;
+  animation: bounce 2s infinite;
+  transition: opacity 1.6s ease-in-out;
+  pointer-events: none;
+  z-index: 50; /* Above sigil, below form */
+}
+
+/* ✨ Reveal the Scroll Indicator after sigil */
+.revealScroll {
+  opacity: 1; 
+  animation: fadeInUp 1.2s ease-out forwards;
+  transition-delay: 4.4s;
+}
+
+/* 🫧 Bounce Animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-10px);
+  }
+}
+

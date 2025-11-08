@@ -1,0 +1,138 @@
+/* 🧱 Outer Wrapper */
+.wrapper {
+  position: absolute;
+  bottom: 16vh;
+  left: 2vw;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 20;
+  transform: scale(0.88);
+  transform-origin: left bottom;
+}
+
+/* Block Container */
+.introBlockWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+  padding-left: 6vw;
+  padding-bottom: 8vh;
+  z-index: 20;
+}
+
+/* 🏷️ Tagline + Ripple Wrapper */
+.taglineWrapper {
+  position: relative;
+  margin-left: 1.3vw;
+  margin-bottom: 9rem;
+  height: 1.8rem;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* 🌟 Tagline Text */
+.tagline {
+  position: relative;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(0.7rem, 0.95vw, 1rem);
+  color: rgba(60, 145, 21, 0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.6;
+  filter: blur(0.2px) brightness(1.05);
+  mix-blend-mode: screen;
+  animation:
+  taglineGlitch 4.8s infinite ease-in-out alternate,
+  taglineFadeIn 1.2s ease-out 3.2s both;
+}
+
+/* 🌫️ Ghost Echo */
+.tagline::before {
+  content: 'Fintech, for the Culture.';
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: -1;
+  color: #d9ffb2;
+  opacity: 0.16;
+  filter: blur(4px) brightness(1.4);
+  transform: scale(1.02);
+  pointer-events: none;
+  animation: echoFloat 6s ease-in-out infinite alternate;
+}
+
+/* ✨ Glyphs */
+.glyphGroupRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: flex-start;
+  gap: 13vw;
+  z-index: 10;
+  padding-top: 2rem;
+}
+
+.glyphColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.glyphIcon {
+  width: clamp(90px, 13vw, 100px);
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.4s ease, filter 0.3s ease;
+  transform: rotate(-2deg);
+  opacity: 0.72 !important;
+  transition: transform 0.4s ease, filter 0.3s ease, opacity 0.3s ease;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.08));
+}
+
+.glyphIcon:hover {
+  opacity: 1;
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 16px rgba(255, 255, 255, 0.2));
+}
+
+.glyphLabel {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: clamp(0.85rem, 1.1vw, 1rem);
+  color: #f7e595;
+  letter-spacing: 0.04em;
+  text-shadow:
+    0 0 6px rgba(255, 230, 160, 0.25),
+    0 0 12px rgba(255, 230, 160, 0.1);
+  opacity: 0.16 !important;
+  transition: opacity 0.4s ease, transform 0.4s ease, text-shadow 0.4s ease;
+}
+
+.glyphLabel:hover {
+  opacity: 1;
+  text-shadow:
+    0 0 12px rgba(255, 240, 180, 0.6),
+    0 0 24px rgba(255, 250, 200, 0.3);
+}
+
+/* ✨ Animations */
+@keyframes taglineFadeIn {
+  0% { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 0.6; transform: translateY(0); }
+}
+
+@keyframes taglineGlitch {
+  0% { transform: translate(0, 0); opacity: 0.6; }
+  7% { transform: translate(-0.5px, 0.3px) scale(1.01); opacity: 0.65; }
+  14% { transform: translate(0.5px, -0.5px) scale(0.99); opacity: 0.6; }
+  25% { transform: translate(0, 0.6px); opacity: 0.66; }
+  100% { transform: translate(0.2px, -0.2px) scale(1.02); opacity: 0.62; }
+}
+
+@keyframes echoFloat {
+  0% { transform: scale(1.02) translateY(0); opacity: 0.12; }
+  100% { transform: scale(1.03) translateY(0.6px); opacity: 0.18; }
+}

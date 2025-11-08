@@ -1,0 +1,42 @@
+:root {
+  /* === 🕰 Timing Tokens === */
+  --sigil-reveal-delay: 9.2s;
+  --nebula-fade-delay: 7.2s;
+  --pulse-duration: 12s;
+  --sigil-float-duration: 14s;
+  --starfield-drift-duration: 90s;
+  --fade-in-duration: 2.5s;
+
+  /* === 🌌 Colors === */
+  --color-bg-dark: rgba(10, 10, 10, 0.92);
+  --color-text: #fdf6e3;
+  --color-primary: #8328ff;
+  --color-secondary: #ffc300;
+
+  --color-aura-1: rgba(150, 90, 210, 0.35);
+  --color-aura-2: rgba(80, 180, 255, 0.25);
+  --color-aura-3: rgba(0, 255, 180, 0.22);
+  --color-aura-4: rgba(255, 255, 255, 0.15);
+
+  --color-glow-purple: rgba(110, 85, 190, 0.35);
+  --color-glow-center: rgba(20, 10, 40, 0.82);
+  --color-glow-outer: #070511;
+
+  /* === 🎭 Fonts === */
+  --font-body: 'Helvoni', sans-serif;
+
+  /* === 🌀 Effects === */
+  --blur-soft: blur(14px);
+  --nebula-brightness: brightness(1.25);
+  --nebula-saturation: saturate(1.25);
+  --blend-soft: screen;
+
+  /* === 🔠 Typography Sizes === */
+  --font-size-body: clamp(14px, 1.2vw, 18px);
+
+    /* 🌐 Responsive orb scaling tokens */
+  --orb-size-sm: 240px;
+  --orb-size-md: 360px;
+  --orb-size-lg: 520px;
+  --orb-size-xl: 720px;
+}

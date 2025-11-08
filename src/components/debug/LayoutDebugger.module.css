@@ -1,0 +1,38 @@
+.toggleButton {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  z-index: 9999;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid #e6c667;
+  color: #fff;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  transition: all 0.3s ease;
+}
+.toggleButton:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-image: linear-gradient(
+      rgba(230, 198, 103, 0.15) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(230, 198, 103, 0.15) 1px,
+      transparent 1px
+    );
+  background-size: 24px 24px;
+  pointer-events: none;
+  z-index: 9998;
+}

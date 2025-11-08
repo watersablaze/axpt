@@ -3,7 +3,6 @@
 'use client';
 
 import '@/styles/globals.css';
-import FloatingDashboardButton from '@/components/onboarding/FloatingDashboardButton';
 import { useEffect, useState } from 'react';
 
 export default function DocsLayout({ children }: { children: React.ReactNode }) {
@@ -17,7 +16,6 @@ export default function DocsLayout({ children }: { children: React.ReactNode }) 
   return (
     <div>
       {children}
-      {mounted && <FloatingDashboardButton />}
       <div id="portal-root" />
     </div>
   );

@@ -1,0 +1,49 @@
+.sectionButton {
+  padding: 0.75rem 1.8rem;
+  font-family: 'IBM Plex Mono', monospace;
+  border-radius: 9px;
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.05);
+  transition: all 0.35s ease;
+}
+
+/* Vault: Emerald Glow */
+.vault {
+  color: #f7e595;
+}
+
+.vault:hover {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 24px rgba(0, 255, 100, 0.35);
+}
+
+/* Nommo: Violet Glow */
+.nommo {
+  color: #cfaaff;
+}
+
+.nommo:hover {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 28px rgba(180, 100, 255, 0.4), 0 0 10px rgba(250, 210, 255, 0.2);
+}
+
+/* Vision: Blue Gold Pulse */
+.vision {
+  color: #a3c7ff;
+}
+
+.vision:hover {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 24px rgba(100, 180, 255, 0.4), 0 0 12px rgba(255, 220, 150, 0.15);
+}
+
+/* Contracts: Token Gold */
+.contracts {
+  color: #f8d97b;
+}
+
+.contracts:hover {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 24px rgba(255, 230, 130, 0.45), 0 0 10px rgba(255, 210, 80, 0.25);
+}

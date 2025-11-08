@@ -1,43 +1,25 @@
+// src/components/SigilWatermark.tsx
 'use client';
-
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import styles from './SigilWatermark.module.css';
 
-type Props = {
-  scrolled?: boolean;
-};
-
-export default function SigilWatermark({ scrolled = false }: Props) {
-  const [hasHydrated, setHasHydrated] = useState(false);
-
-  useEffect(() => {
-    setHasHydrated(true);
-  }, []);
-
-  if (!hasHydrated) return null;
+export default function SigilWatermark() {
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => setHydrated(true), []);
+  if (!hydrated) return null;
 
   return (
     <motion.div
       className={styles.wrapper}
-      initial={{ opacity: 0, scale: 1 }}
-      animate={{
-        opacity: [scrolled ? 0.18 : 0.26, scrolled ? 0.32 : 0.42, scrolled ? 0.18 : 0.26],
-        scale: [scrolled ? 1.01 : 1.03, scrolled ? 1.035 : 1.05, scrolled ? 1.01 : 1.03],
-      }}
-      transition={{
-        duration: 10,
-        repeat: Infinity,
-        repeatType: 'loop',
-        ease: 'easeInOut',
-      }}
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 0.38, scale: 1 }}
+      transition={{ duration: 2.2, ease: 'easeInOut' }}
     >
       <img
-        src="/images/axpt-sigil-main.png"
+        src="/sigil/axpt_base_clean.png"
         alt="AXPT Sigil Watermark"
         className={styles.sigil}
-        onError={() => console.error('[AXPT] ❌ Sigil image failed to load')}
-        onLoad={() => console.log('[AXPT] ✅ Sigil image loaded')}
       />
     </motion.div>
   );

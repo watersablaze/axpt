@@ -1,0 +1,36 @@
+.contractsButton {
+  padding: 0.75rem 1.8rem;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 9px;
+  color: #f8d97b; /* token gold */
+  font-family: 'IBM Plex Mono', monospace;
+  cursor: pointer;
+  transition: all 0.35s ease;
+}
+
+.contractsButton:hover {
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 24px rgba(255, 230, 130, 0.45), 0 0 10px rgba(255, 210, 80, 0.25);
+  transform: translateY(-2px);
+}
+
+.section {
+  position: relative;
+  padding: 6rem 1.5rem;
+  overflow: visible;
+  scroll-margin-top: 80px;
+  text-align: center;
+}
+
+.heading {
+  color: white;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.text {
+  color: #ccc;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+}

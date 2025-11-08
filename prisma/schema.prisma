@@ -89,28 +89,28 @@ model User {
 
 // prisma/schema.prisma (add near your token models)
 model AccessCode {
-  id             String   @id @default(cuid())
-  codeHash       String   @unique  // sha256(code + salt)
-  humanCode      String?            // optional for admin UI display only (not required)
-  partner        String
-  tier           String             // "Investor" | "Partner" | ...
-  email          String?
-  docs           String[] @default([])
-  displayName    String?
-  greeting       String?
-  popupMessage   String?
+  id           String   @id @default(cuid())
+  codeHash     String   @unique // sha256(code + salt)
+  humanCode    String? // optional for admin UI display only (not required)
+  partner      String
+  tier         String // "Investor" | "Partner" | ...
+  email        String?
+  docs         String[] @default([])
+  displayName  String?
+  greeting     String?
+  popupMessage String?
 
   // lifecycle
-  expiresAt      DateTime?
-  maxUses        Int      @default(1)
-  usedCount      Int      @default(0)
-  enabled        Boolean  @default(true)
+  expiresAt DateTime?
+  maxUses   Int       @default(1)
+  usedCount Int       @default(0)
+  enabled   Boolean   @default(true)
 
   // audit
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  lastUsedAt     DateTime?
-  lastUsedIp     String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  lastUsedAt DateTime?
+  lastUsedIp String?
 }
 
 model SessionLog {
@@ -401,19 +401,19 @@ model LogoutLog {
 }
 
 model GemIntake {
-  id           String   @id @default(cuid())
-  name         String
-  email        String
-  phone        String?
-  desiredGem   String
-  format       String?
-  size         String?
-  quantity     String?
-  notes        String?
-  createdAt    DateTime @default(now())
+  id         String   @id @default(cuid())
+  name       String
+  email      String
+  phone      String?
+  desiredGem String
+  format     String?
+  size       String?
+  quantity   String?
+  notes      String?
+  createdAt  DateTime @default(now())
 
   // New
-  status       String   @default("new")
+  status       String  @default("new")
   internalNote String?
 }
 
@@ -678,4 +678,50 @@ model CadaWaitlist {
   createdAt DateTime @default(now())
 
   @@map("CadaWaitlist") // This is case-sensitive
+}
+
+model AxisJourneySubscriber {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  name            String?
+  origin          String?    // e.g. "AXPT.io", "Nommo Portal", "Referral"
+  confirmed       Boolean   @default(false)
+  confirmationAt  DateTime?
+  lastOpenedAt    DateTime?
+  userAgent       String?
+  ipAddress       String?
+  notes           String?
+  joinedAt        DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([confirmed])
+  @@index([joinedAt])
+  @@index([origin])
+  @@map("axis_journey_subscribers")
+}
+
+model EmailLog {
+  id          Int      @id @default(autoincrement())
+
+  // Email metadata
+  type        String?      // e.g. "AxisConfirmation", "CadaWelcome"
+  from        String?      // sender address
+  to          String?      // recipient address
+  subject     String?
+  messageId   String?      // message ID returned by Resend or provider
+  status      String?      // "queued", "sent", "delivered", "failed", etc.
+
+  // Payload snapshot
+  rawPayload  Json?
+
+  // Timestamps
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([type])
+  @@index([status])
+  @@index([createdAt, type])
+  @@index([to])
+  @@index([messageId])
+  @@map("email_logs") // optional: custom table name for clarity
 }

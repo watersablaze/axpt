@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
-import FloatingDashboardButton from '@/components/onboarding/FloatingDashboardButton';
 import { SessionProvider } from 'next-auth/react';
 
 export default function ClientLayoutWrapper({ children }: { children: React.ReactNode }) {
@@ -24,8 +23,6 @@ export default function ClientLayoutWrapper({ children }: { children: React.Reac
   return (
     <SessionProvider>
       {children}
-      {showFloatingButton && <FloatingDashboardButton />}
-      <div id="portal-root" />
     </SessionProvider>
   );
 }

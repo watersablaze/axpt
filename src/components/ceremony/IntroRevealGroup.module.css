@@ -1,0 +1,55 @@
+.introGroup {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  pointer-events: none; /* ensures interaction only happens on form panel */
+}
+
+.contentColumn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 2rem;
+  max-width: 720px;
+  padding: 0 1.5rem;
+  pointer-events: auto; /* allows interaction with child elements like form */
+}
+
+/* Optional: a subtle fade-in blur background */
+.blurOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: blur(16px);
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.groupWrapper {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  width: 100%;
+  height: 100vh;
+  padding: 0 5%;
+  z-index: 3;
+}
+
+@media (max-width: 768px) {
+  .groupWrapper {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding-top: 6rem;
+  }
+}

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import styles from './DocCardGrid.module.css';
-import DocCard from './DocCard';
+import DocCard from '../../_archive/DocCard';
 import clsx from 'clsx';
 
 type DocCardGridProps = {

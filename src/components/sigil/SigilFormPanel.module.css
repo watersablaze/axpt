@@ -1,0 +1,347 @@
+/* 🧰 SigilFormPanel.module.css */
+
+/* === CORE LAYOUT === */
+.formOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  padding: clamp(1rem, 3vw, 3rem);
+  z-index: 25;
+  pointer-events: auto;
+  width: 100%;
+  height: 100%;
+}
+
+.confettiCanvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 40;
+}
+
+@keyframes formFadeIn {
+  0%   { opacity: 0; transform: translateY(20px) scale(0.96); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* === FORM BOX === */
+.formBox {
+  background: rgba(10, 10, 20, 0.35);
+  border: 1px solid rgba(0, 255, 200, 0.2);
+  box-shadow: 0 0 24px rgba(0, 255, 200, 0.05);
+  border-radius: 12px;
+
+  width: 100%;
+  max-width: clamp(280px, 34vw, 380px);  /* was up to 440px */
+  min-height: clamp(220px, 32vh, 280px); /* was up to 320px */
+  padding: clamp(1.2rem, 1.8vw, 1.6rem) clamp(1rem, 1.5vw, 1.2rem); /* slightly tighter padding */
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-right: 5rem;
+
+  gap: clamp(0.6rem, 1vw, 1.2rem);
+  color: white;
+  text-align: center;
+  font-family: 'Space Grotesk', sans-serif;
+
+  opacity: 0;
+  pointer-events: auto;
+  animation: formFadeIn 1s ease-out 3.6s forwards; /* start ~0.4 s after text */
+  transition: opacity 1.6s ease-in-out, transform 1s ease-in-out;
+
+  backdrop-filter: blur(18px);
+  position: relative;
+  z-index: 25;
+}
+
+@media (max-width: 640px) {
+  .formBox {
+    max-width: 85%;
+    padding: 1rem;
+    gap: 0.8rem;
+  }
+
+  .miniSigil {
+    max-width: 180px; /* reduced from 220px */
+  }
+
+  .titleBanner {
+    font-size: clamp(1rem, 3.5vw, 1.4rem);
+  }
+}
+
+/* 🧯 Soft Fade In From Below */
+@keyframes fadeInFromBelow {
+  0% {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+    filter: blur(4px);
+  }
+  60% {
+    opacity: 0.8;
+    transform: translateY(4px) scale(1.01);
+    filter: blur(1px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* === SIGIL === */
+.sigilWrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: clamp(0.7rem, 1vw, 0.3rem);
+}
+
+.miniSigil {
+  width: clamp(180px, 30vw, 260px);
+  opacity: 0.3;
+  animation: floatSigil 10s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 22px rgba(0, 255, 200, 0.25))
+          drop-shadow(0 0 28px rgba(218, 128, 240, 0.15));
+  transition: opacity 1.4s ease, transform 1.4s ease;
+}
+
+@keyframes floatSigil {
+  0% { transform: translateY(0px) scale(1); }
+  100% { transform: translateY(-10px) scale(1.02); }
+}
+
+/* === TEXT === */
+.description {
+  font-size: clamp(0.75rem, 1vw, 0.9rem);
+  line-height: 1.5;
+  font-weight: 300;
+  color: #d7fdf4;
+  letter-spacing: 0.20em;
+  text-shadow: 0 0 6px rgba(0, 255, 200, 0.2);
+  text-align: left;
+  max-width: 80%;
+  margin: 0 auto;
+  margin-bottom: 3rem;
+}
+
+/* === INPUT GROUP === */
+.inputGroup {
+  position: relative;
+  width: 100%;
+  margin-top: 0.6rem;
+}
+
+.inputGroup input {
+  width: 100%;
+  padding: clamp(0.6rem, 1vw, 0.75rem) clamp(0.8rem, 1vw, 1rem);
+  background: linear-gradient(135deg, rgba(0, 255, 255, 0.06), rgba(255, 255, 255, 0.01));
+  border: 1px solid rgba(0, 255, 200, 0.25);
+  border-radius: 8px;
+  color: #e2fef8;
+  font-size: clamp(0.8rem, 1vw, 0.9rem);
+  font-family: 'Space Grotesk', sans-serif;
+  outline: none;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(2px);
+  caret-color: #00ffd7;
+  box-shadow: inset 0 0 12px rgba(0, 255, 215, 0.03);
+}
+
+.inputGroup input:focus {
+  border-color: rgba(0, 255, 200, 0.7);
+  box-shadow: 0 0 12px rgba(0, 255, 200, 0.3),
+              inset 0 0 6px rgba(0, 255, 200, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.inputGroup label {
+  position: absolute;
+  top: 50%;
+  left: 0.9rem;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.45);
+  pointer-events: none;
+  transition: all 0.3s ease;
+  font-size: clamp(0.75rem, 1vw, 0.85rem);
+  font-family: 'Space Grotesk', sans-serif;
+}
+
+.inputGroup input:focus + label,
+.inputGroup input:not(:placeholder-shown) + label,
+.filled {
+  top: -0.6rem;
+  left: 0.6rem;
+  background: #0a0a0a;
+  padding: 0 0.3rem;
+  font-size: 0.7rem;
+  color: #00ffd7;
+}
+
+/* === BUTTON === */
+.cta {
+  margin-top: 0.8rem;
+  width: 100%;
+  padding: clamp(0.55rem, 1vw, 0.7rem) 0;
+  font-size: clamp(0.85rem, 1vw, 0.95rem);
+  border-radius: 8px;
+  background: linear-gradient(135deg,
+    rgba(185, 255, 215, 0.12),
+    rgba(218, 128, 240, 0.08)
+  );
+  color: #ffffff;
+  font-weight: 500;
+  font-family: 'Space Grotesk', sans-serif;
+  cursor: pointer;
+  border: 1px solid rgba(0, 255, 200, 0.3);
+  transition: all 0.35s ease;
+}
+
+.cta:hover {
+  background: linear-gradient(135deg,
+    rgba(0, 255, 200, 0.2),
+    rgba(218, 128, 240, 0.12)
+  );
+  box-shadow: 0 0 10px rgba(0, 255, 200, 0.4),
+              0 0 20px rgba(218, 128, 240, 0.25);
+  animation: buttonPulse 2.4s ease-in-out infinite;
+}
+
+.cta.loading {
+  color: rgba(255, 255, 255, 0.85);
+  background: linear-gradient(
+    90deg,
+    rgba(0, 255, 200, 0.1) 25%,
+    rgba(218, 128, 240, 0.25) 50%,
+    rgba(0, 255, 200, 0.1) 75%
+  );
+  background-size: 400% 100%;
+  animation: shimmer 2.5s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes buttonPulse {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(0, 255, 200, 0.3),
+                0 0 18px rgba(218, 128, 240, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(0, 255, 200, 0.6),
+                0 0 26px rgba(218, 128, 240, 0.4);
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -400px 0; }
+  100% { background-position: 400px 0; }
+}
+
+/* === CONFIRMATION === */
+.confirmation {
+  text-align: center;
+  padding-top: 1.2rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #baffea;
+  position: relative;
+  z-index: 10;
+}
+
+.glowRing {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 180px;
+  height: 180px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgba(0, 255, 215, 0.45) 0%,
+    rgba(218, 128, 240, 0.25) 50%,
+    transparent 80%
+  );
+  filter: blur(24px);
+  animation: pulseGlow 3.5s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+  0% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.75; }
+  50% { transform: translate(-50%, -50%) scale(1.05); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.75; }
+}
+
+/* === AURORA BACKDROP === */
+.auroraOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 140%;
+  height: 140%;
+  pointer-events: none;
+  z-index: 5;
+  background: radial-gradient(
+      ellipse at 20% 40%,
+      rgba(0, 255, 200, 0.15),
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 70% 60%,
+      rgba(218, 128, 240, 0.12),
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 50% 50%,
+      rgba(0, 200, 255, 0.08),
+      transparent 50%
+    );
+  background-blend-mode: screen;
+  animation: auroraDrift 16s ease-in-out infinite;
+  filter: blur(24px);
+}
+
+@keyframes auroraDrift {
+  0% {
+    transform: translate(0%, 0%) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-8%, -6%) scale(1.05);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0%, 0%) scale(1);
+    opacity: 0.6;
+  }
+}
+
+/* === RESPONSIVE TUNING === */
+@media (max-width: 640px) {
+  .formOverlay {
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 1.25rem;
+  }
+
+  .formBox {
+    max-width: 90%;
+    padding: 1.25rem;
+    gap: 1rem;
+  }
+
+  .miniSigil {
+    max-width: 220px;
+  }
+
+  .titleBanner {
+    font-size: clamp(1rem, 4vw, 1.5rem);
+  }
+}

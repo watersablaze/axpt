@@ -1,0 +1,34 @@
+/* 🎴 MiniSigil.module.css */
+
+.wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.image {
+  width: 800px;
+  max-width: 100%;
+  opacity: 0.85;
+  animation: floatSigil 10s ease-in-out infinite alternate;
+  filter: drop-shadow(0 0 18px rgba(0, 183, 255, 0.18));
+  transition: opacity 1.4s ease, transform 1.4s ease;
+}
+
+@keyframes floatSigil {
+  0% {
+    transform: translateY(0px) rotate(0.2deg);
+  }
+  100% {
+    transform: translateY(-6px) rotate(-0.8deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .image {
+    width: 100%;
+    max-width: 320px;
+  }
+}

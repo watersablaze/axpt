@@ -1,17 +1,17 @@
 {
   "compilerOptions": {
-    "target": "es2020",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "module": "esnext",
-    "moduleResolution": "node",
-    "jsx": "preserve",
+    "target": "ES2022",
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "jsx": "preserve",                          // ✅ required for JSX in .tsx
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "isolatedModules": true,
+    "isolatedModules": true,                   // ✅ ensures .tsx with JSX compiles
     "allowJs": true,
     "checkJs": false,
     "resolveJsonModule": true,
@@ -21,7 +21,6 @@
     "paths": {
       "@/*": ["src/*"],
 
-      /* Lib Aliases */
       "@/lib/*": ["src/lib/*"],
       "@/env/*": ["src/lib/env/*"],
       "@/auth/*": ["src/lib/auth/*"],
@@ -33,23 +32,17 @@
       "@/lotties/*": ["src/lib/lotties/*"],
       "@/prisma": ["src/lib/prisma.ts"],
 
-      /* Components */
       "@/components/*": ["src/components/*"],
       "@/onboarding/*": ["src/components/onboarding/*"],
       "@/styles/*": ["src/styles/*"],
       "@/hooks/*": ["src/hooks/*"],
-
-      /* Stores */
       "@/stores/*": ["src/stores/*"],
 
-      /* CLI + Scripts */
       "@/cli/*": ["cli/*"],
       "@/scripts/*": ["scripts/*"],
       "@/flows/*": ["scripts/partner-tokens/utils/flows/*"],
 
-      /* Types */
-      "@/types/*": ["src/types/*"],
-    
+      "@/types/*": ["src/types/*"]
     },
     "plugins": [
       {
@@ -61,17 +54,27 @@
     "src",
     "app/api",
     "cli",
-    "types/global.d.ts",
     "lib",
     "scripts",
     "middleware.ts",
     "next-env.d.ts",
-    ".next/types/**/*.ts", "staging/SessionInitializer.tsx", "staging/useSessionStore.ts", "staging/getSessionFromCookie.ts", "staging/generateTokenForCLI.ts", "staging/generateTokenCLIFlow.ts", "staging/SharedDocViewer.tsx", "src/lib/prisma.ts", 
+    ".next/types/**/*.ts",
+    "types/global.d.ts",
+    "src/lib/prisma.ts",
+
+    // Explicit .tsx files
+    "staging/SessionInitializer.tsx",
+    "staging/useSessionStore.ts",
+    "staging/getSessionFromCookie.ts",
+    "staging/generateTokenForCLI.ts",
+    "staging/generateTokenCLIFlow.ts",
+    "staging/SharedDocViewer.tsx"
   ],
   "exclude": [
     "node_modules",
-    "staging/**/*",
     ".next",
-    "archived/**/*"
+    "dist",
+    "src/_archive",
+    "src/**/_archive/**"
   ]
 }

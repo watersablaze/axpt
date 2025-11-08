@@ -1,0 +1,134 @@
+/* 🌫️ Central Nebula Field Container */
+
+.field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0;
+  mix-blend-mode: var(--blend-soft);
+  filter: var(--blur-soft) var(--nebula-brightness) var(--nebula-saturation);
+  will-change: opacity, transform;
+  transition:
+    opacity 4.2s ease-in-out,
+    filter 2.2s ease-in-out;
+  transition-delay: var(--nebula-fade-delay);
+}
+
+.fadeIn {
+  opacity: 1;
+}
+
+/* 🌌 Primary Pulsing Orb */
+
+.centralOrb {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(2.6);
+  transform-origin: center;
+  opacity: 0.48;
+  filter: blur(16px) brightness(1.1) saturate(1.4);
+  animation: pulseDrift infinite ease-in-out alternate;
+  will-change: transform, filter, opacity;
+  width: var(--orb-size-lg);
+  height: var(--orb-size-lg);
+  z-index: 0;
+}
+
+/* 🌟 Secondary Subtle Rotating Glow */
+
+.secondaryOrb {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(2.4);
+  transform-origin: center;
+  opacity: 0.2;
+  animation: slowRotate 60s linear infinite;
+  will-change: transform, opacity;
+  width: var(--orb-size-xl);
+  height: var(--orb-size-xl);
+  z-index: -1;
+}
+
+/* 📱 Mobile Scaling */
+
+@media (max-width: 640px) {
+  .centralOrb {
+    width: var(--orb-size-md);
+    height: var(--orb-size-md);
+    transform: translate(-50%, -50%) scale(1.2);
+  }
+  .secondaryOrb {
+    width: var(--orb-size-lg);
+    height: var(--orb-size-lg);
+    transform: translate(-50%, -50%) scale(1.8);
+  }
+}
+
+/* 🖥️ Ultra-wide */
+
+@media (min-width: 1440px) {
+  .centralOrb {
+    width: var(--orb-size-xl);
+    height: var(--orb-size-xl);
+    transform: translate(-50%, -50%) scale(2.2);
+  }
+  .secondaryOrb {
+    width: calc(var(--orb-size-xl) * 1.2);
+    height: calc(var(--orb-size-xl) * 1.2);
+  }
+}
+
+/* 🌌 Pulse Drift Animation */
+
+@keyframes pulseDrift {
+  0% {
+    transform: translate(-50%, -50%) scale(1.0) rotate(0deg);
+    filter: brightness(0.6) saturate(1.2) blur(0px) drop-shadow(0 0 6px rgba(173, 216, 230, 0.1));
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-50%, -48%) scale(1.08) rotate(0.8deg);
+    filter: brightness(1.2) saturate(1.6) blur(0.4px) drop-shadow(0 0 8px rgba(173, 216, 230, 0.25));
+    opacity: 0.9;
+  }
+  100% {
+    transform: translate(-50%, -52%) scale(1.1) rotate(-1deg);
+    filter: brightness(1.6) saturate(1.9) blur(0.7px) drop-shadow(0 0 10px rgba(173, 216, 230, 0.4));
+    opacity: 0.7;
+  }
+}
+
+/* 🌠 Slow Rotation for Background Glow */
+
+@keyframes slowRotate {
+  0% {
+    transform: translate(-50%, -50%) scale(2.4) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.4) rotate(360deg);
+  }
+}
+
+.secondaryMist {
+  position: absolute;
+  top: 55%;
+  left: 45%;
+  transform: translate(-50%, -50%) scale(3.6);
+  opacity: 0.15;
+  filter: blur(24px);
+  animation: mistDrift 60s ease-in-out infinite alternate;
+  z-index: -2;
+}
+
+@keyframes mistDrift {
+  0% {
+    transform: translate(-50%, -50%) scale(3.4) rotate(0deg);
+  }
+  100% {
+    transform: translate(-52%, -52%) scale(3.8) rotate(3deg);
+  }
+}

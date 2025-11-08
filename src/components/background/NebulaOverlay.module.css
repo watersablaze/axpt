@@ -1,0 +1,49 @@
+.overlayWrapper {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* 🌌 Central soft orb glow */
+.nebulaOrb {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 480px;
+  height: 280px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(200, 0, 255, 0.12), transparent 70%);
+  filter: blur(90px);
+  animation: pulseOrb 12s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0% {
+    background-position: 0 0;
+  }
+  25% {
+    background-position: 200px -100px;
+  }
+  50% {
+    background-position: 400px 100px;
+  }
+  75% {
+    background-position: 600px -150px;
+  }
+  100% {
+    background-position: 800px 200px;
+  }
+}
+
+@keyframes pulseOrb {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.15);
+    opacity: 0.9;
+  }
+}
