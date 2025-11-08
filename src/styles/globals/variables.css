@@ -6,6 +6,7 @@
   --sigil-float-duration: 14s;
   --starfield-drift-duration: 90s;
   --fade-in-duration: 2.5s;
+  --bloom-strength: 1;
 
   /* === 🌌 Colors === */
   --color-bg-dark: rgba(10, 10, 10, 0.92);

@@ -13,6 +13,7 @@
   --blur-soft: blur(20px);
   --nebula-brightness: brightness(1.15);
   --nebula-saturation: saturate(1.5);
+  --bloom-strength: 1; /* 1 = balanced | 0.8 = faint | 1.5 = cinematic | 2 = strong */
   --sigil-reveal-delay: 4.8s;
   --orb-size-sm: 160px;
   --orb-size-md: 220px;
