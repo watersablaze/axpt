@@ -11,10 +11,9 @@ export default function SigilFormPanel() {
   const [visible, setVisible] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [loadingDots, setLoadingDots] = useState('.');
-  const [canvasDims, setCanvasDims] = useState({ width: 0, height: 0 });
   const confettiRef = useRef<HTMLCanvasElement>(null);
 
-  // Reveal form after sigil animation delay
+  // 🌗 Reveal form after delay (smooth fade-in)
   useEffect(() => {
     const fallbackDelayMs = 3600;
     const getDelay = () => {
@@ -31,13 +30,12 @@ export default function SigilFormPanel() {
 
     const timer = setTimeout(() => {
       setVisible(true);
-      setCanvasDims({ width: window.innerWidth, height: window.innerHeight });
-    }, getDelay() - 300);
+    }, getDelay() - 200);
 
     return () => clearTimeout(timer);
   }, []);
 
-  // Animate loading dots
+  // ✨ Loading dots
   useEffect(() => {
     if (!isSending) return;
     let dots = 0;
@@ -48,22 +46,20 @@ export default function SigilFormPanel() {
     return () => clearInterval(interval);
   }, [isSending]);
 
-  // Trigger confetti animation on canvas
+  // 🎉 Confetti
   const triggerConfetti = () => {
     const canvas = confettiRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
-
-    const particles = Array.from({ length: 30 }).map(() => ({
+    const particles = Array.from({ length: 25 }).map(() => ({
       x: canvas.width / 2,
       y: canvas.height / 2,
       vx: (Math.random() - 0.5) * 6,
       vy: (Math.random() - 1.2) * 5,
       color: `hsl(${Math.random() * 360}, 100%, 70%)`,
-      life: 120,
+      life: 100,
     }));
-
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach((p) => {
@@ -72,7 +68,7 @@ export default function SigilFormPanel() {
         p.vy += 0.12;
         p.life -= 2;
         ctx.fillStyle = p.color;
-        ctx.globalAlpha = Math.max(p.life / 120, 0);
+        ctx.globalAlpha = Math.max(p.life / 100, 0);
         ctx.fillRect(p.x, p.y, 4, 4);
       });
       if (particles.some((p) => p.life > 0)) requestAnimationFrame(animate);
@@ -94,7 +90,6 @@ export default function SigilFormPanel() {
       if (res.ok) {
         setSubmitted(true);
         triggerConfetti();
-        setTimeout(() => setVisible(false), 2800);
       } else {
         const data = await res.json();
         console.error('Submit failed:', data.error);
@@ -114,76 +109,62 @@ export default function SigilFormPanel() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 1.2, ease: 'easeInOut' }}
+          transition={{ duration: 1.2, ease: 'easeOut' }}
         >
-          <canvas
-            ref={confettiRef}
-            width={canvasDims.width}
-            height={canvasDims.height}
-            className={styles.confettiCanvas}
-          />
+          <canvas ref={confettiRef} className={styles.confettiCanvas} />
 
           <motion.div
             className={styles.formBox}
-            initial={{ opacity: 0, y: 32 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 16 }}
+            exit={{ opacity: 0, y: 10 }}
             transition={{ duration: 1.2, ease: 'easeOut' }}
           >
             <div className={styles.auroraOverlay} />
-
             <div className={styles.sigilWrapper}>
               <MiniSigil />
             </div>
 
-            <AnimatePresence>
-              {!submitted && (
-                <>
-                  <p className={styles.description}>
-                    Enter your email to unlock exclusive insights into sustainable cultural finance
-                    and decentralized innovation.
-                  </p>
+            {!submitted ? (
+              <>
+                <p className={styles.description}>
+                  Enter your email to unlock exclusive insights into sustainable cultural finance
+                  and decentralized innovation.
+                </p>
 
-                  <div className={styles.inputGroup}>
-                    <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      required
-                      placeholder="you@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      disabled={isSending}
-                    />
-                    <label htmlFor="email">Email address</label>
-                  </div>
-
-                  <button
-                    className={`${styles.cta} ${isSending ? styles.loading : ''}`}
+                <div className={styles.inputGroup}>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    required
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     disabled={isSending}
-                    onClick={handleSubmit}
-                  >
-                    {isSending ? `Sending${loadingDots}` : 'Enter the Axis'}
-                  </button>
-                </>
-              )}
-            </AnimatePresence>
+                  />
+                  <label htmlFor="email">Email address</label>
+                </div>
 
-            <AnimatePresence>
-              {submitted && (
-                <motion.div
-                  key="confirmation"
-                  className={styles.confirmation}
-                  initial={{ opacity: 0, scale: 0.7 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.8, ease: 'easeOut' }}
+                <button
+                  className={`${styles.cta} ${isSending ? styles.loading : ''}`}
+                  disabled={isSending}
+                  onClick={handleSubmit}
                 >
-                  <div className={styles.glowRing} />
-                  <p>Thank you — you're in.</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                  {isSending ? `Sending${loadingDots}` : 'Enter the Axis'}
+                </button>
+              </>
+            ) : (
+              <motion.div
+                className={styles.confirmation}
+                initial={{ opacity: 0, scale: 0.7 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
+              >
+                <div className={styles.glowRing} />
+                <p>Thank you — you're in.</p>
+              </motion.div>
+            )}
           </motion.div>
         </motion.div>
       )}

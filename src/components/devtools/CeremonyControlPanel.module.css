@@ -1,0 +1,68 @@
+.panel {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background: rgba(8, 8, 8, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 1rem 1.2rem;
+  backdrop-filter: blur(10px);
+  z-index: 9999;
+  color: #eee;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.9rem;
+  width: 240px;
+}
+
+.heading {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.6rem;
+  color: #f8e9b2;
+}
+
+.label {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0.8rem;
+}
+
+.label span {
+  font-size: 0.85rem;
+  color: #a0a0a0;
+  margin-left: auto;
+}
+
+/* ✅ Scoped range input */
+.rangeInput[type='range'] {
+  width: 100%;
+  accent-color: #f6cd63;
+  cursor: pointer;
+}
+
+.buttonRow {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.button {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  color: #f4e2d8;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+.button:hover {
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-1px);
+}
+
+.secondary {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ccc;
+}
