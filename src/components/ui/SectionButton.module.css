@@ -3,47 +3,80 @@
   font-family: 'IBM Plex Mono', monospace;
   border-radius: 9px;
   cursor: pointer;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.22);
   background: rgba(255, 255, 255, 0.05);
   transition: all 0.35s ease;
+  backdrop-filter: blur(6px) saturate(120%);
+  letter-spacing: 0.05em;
+  position: relative;
+  overflow: hidden;
+  animation: auraPulse 8s ease-in-out infinite;
 }
 
-/* Vault: Emerald Glow */
+/* Subtle breathing pulse to unify all section buttons */
+@keyframes auraPulse {
+  0%, 100% {
+    filter: brightness(1) saturate(1);
+    transform: translateY(0);
+  }
+  50% {
+    filter: brightness(1.25) saturate(1.2);
+    transform: translateY(-1px);
+  }
+}
+
+.sectionButton::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.sectionButton:hover::before {
+  opacity: 1;
+}
+
+/* === VARIANTS === */
+
+/* Vault: Emerald-Gold Aura */
 .vault {
   color: #f7e595;
+  text-shadow: 0 0 8px rgba(0, 255, 100, 0.3);
 }
-
 .vault:hover {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 24px rgba(0, 255, 100, 0.35);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 28px rgba(0, 255, 100, 0.35), 0 0 12px rgba(230, 198, 103, 0.25);
 }
 
-/* Nommo: Violet Glow */
+/* Nommo: Violet-Electric Aura */
 .nommo {
   color: #cfaaff;
+  text-shadow: 0 0 8px rgba(180, 100, 255, 0.3);
 }
-
 .nommo:hover {
-  background: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 28px rgba(180, 100, 255, 0.4), 0 0 10px rgba(250, 210, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 28px rgba(180, 100, 255, 0.4), 0 0 12px rgba(250, 210, 255, 0.2);
 }
 
-/* Vision: Blue Gold Pulse */
+/* Vision: Blue-Gold Pulse */
 .vision {
   color: #a3c7ff;
+  text-shadow: 0 0 8px rgba(120,180,255,0.3);
 }
-
 .vision:hover {
   background: rgba(255, 255, 255, 0.1);
   box-shadow: 0 0 24px rgba(100, 180, 255, 0.4), 0 0 12px rgba(255, 220, 150, 0.15);
 }
 
-/* Contracts: Token Gold */
+/* Contracts: Token-Gold Radiance */
 .contracts {
   color: #f8d97b;
+  text-shadow: 0 0 8px rgba(255, 210, 120, 0.3);
 }
-
 .contracts:hover {
-  background: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 24px rgba(255, 230, 130, 0.45), 0 0 10px rgba(255, 210, 80, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 28px rgba(255, 230, 130, 0.45), 0 0 14px rgba(255, 210, 80, 0.25);
 }

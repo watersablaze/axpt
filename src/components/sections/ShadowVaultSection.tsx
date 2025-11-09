@@ -2,10 +2,9 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Link from 'next/link';
 import SectionTemplate from './SectionTemplate';
 import GemBackdrop from './GemBackdrop';
-import styles from './ShadowVaultSection.module.css';
+import SectionButton from '../ui/SectionButton';
 
 export default function ShadowVaultSection() {
   const [visible, setVisible] = useState(false);
@@ -23,9 +22,9 @@ export default function ShadowVaultSection() {
         description="A hidden archive of frequency signatures, visions, and encrypted gems. Guarded by thresholds of resonance."
         visual={<GemBackdrop />}
       >
-        <Link href="/french-ward/shadow-vault">
-          <button className={styles.vaultButton}>Enter the Vault</button>
-        </Link>
+        <SectionButton href="/french-ward/shadow-vault" variant="vault">
+          Enter the Vault
+        </SectionButton>
       </SectionTemplate>
     </div>
   );

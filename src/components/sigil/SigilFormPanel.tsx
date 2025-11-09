@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './SigilFormPanel.module.css';
 import MiniSigil from './MiniSigil';
@@ -11,9 +11,8 @@ export default function SigilFormPanel() {
   const [visible, setVisible] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [loadingDots, setLoadingDots] = useState('.');
-  const confettiRef = useRef<HTMLCanvasElement>(null);
 
-  // 🌗 Reveal form after delay (smooth fade-in)
+  // 🌗 Reveal form after sigil delay
   useEffect(() => {
     const fallbackDelayMs = 3600;
     const getDelay = () => {
@@ -27,15 +26,11 @@ export default function SigilFormPanel() {
         return fallbackDelayMs;
       }
     };
-
-    const timer = setTimeout(() => {
-      setVisible(true);
-    }, getDelay() - 200);
-
+    const timer = setTimeout(() => setVisible(true), getDelay() - 200);
     return () => clearTimeout(timer);
   }, []);
 
-  // ✨ Loading dots
+  // ✨ Loading dots animation
   useEffect(() => {
     if (!isSending) return;
     let dots = 0;
@@ -46,36 +41,7 @@ export default function SigilFormPanel() {
     return () => clearInterval(interval);
   }, [isSending]);
 
-  // 🎉 Confetti
-  const triggerConfetti = () => {
-    const canvas = confettiRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-    const particles = Array.from({ length: 25 }).map(() => ({
-      x: canvas.width / 2,
-      y: canvas.height / 2,
-      vx: (Math.random() - 0.5) * 6,
-      vy: (Math.random() - 1.2) * 5,
-      color: `hsl(${Math.random() * 360}, 100%, 70%)`,
-      life: 100,
-    }));
-    const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      particles.forEach((p) => {
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.12;
-        p.life -= 2;
-        ctx.fillStyle = p.color;
-        ctx.globalAlpha = Math.max(p.life / 100, 0);
-        ctx.fillRect(p.x, p.y, 4, 4);
-      });
-      if (particles.some((p) => p.life > 0)) requestAnimationFrame(animate);
-    };
-    animate();
-  };
-
+  // 🌊 Submission handler
   const handleSubmit = async () => {
     if (email.trim() === '') return;
     setIsSending(true);
@@ -89,10 +55,8 @@ export default function SigilFormPanel() {
 
       if (res.ok) {
         setSubmitted(true);
-        triggerConfetti();
       } else {
-        const data = await res.json();
-        console.error('Submit failed:', data.error);
+        console.error('Submit failed:', await res.json());
       }
     } catch (err) {
       console.error('Submit error:', err);
@@ -111,16 +75,20 @@ export default function SigilFormPanel() {
           exit={{ opacity: 0 }}
           transition={{ duration: 1.2, ease: 'easeOut' }}
         >
-          <canvas ref={confettiRef} className={styles.confettiCanvas} />
-
           <motion.div
             className={styles.formBox}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, x: 40, y: 20, scale: 0.98 }}
+            animate={{ opacity: 1, x: 0, y: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 1.2, ease: 'easeOut' }}
+            whileHover={{
+              scale: 1.02,
+              boxShadow: '0 0 40px rgba(230,198,103,0.25)',
+              transition: { duration: 0.8, ease: 'easeInOut' },
+            }}
           >
             <div className={styles.auroraOverlay} />
+
             <div className={styles.sigilWrapper}>
               <MiniSigil />
             </div>
@@ -128,8 +96,8 @@ export default function SigilFormPanel() {
             {!submitted ? (
               <>
                 <p className={styles.description}>
-                  Enter your email to unlock exclusive insights into sustainable cultural finance
-                  and decentralized innovation.
+                  Enter your email to receive the coordinates of our cultural portal — where sustainable
+                  finance and sacred innovation converge.
                 </p>
 
                 <div className={styles.inputGroup}>
@@ -156,13 +124,23 @@ export default function SigilFormPanel() {
               </>
             ) : (
               <motion.div
+                key="confirmation"
                 className={styles.confirmation}
                 initial={{ opacity: 0, scale: 0.7 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.8, ease: 'easeOut' }}
               >
-                <div className={styles.glowRing} />
-                <p>Thank you — you're in.</p>
+                {/* 🌊 Ripple Ascension Animation */}
+                <div className={styles.ripplePulse} />
+                <div className={styles.verticalBeam} />
+
+                <motion.p
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 1.2, delay: 0.3 }}
+                >
+                  Thank you — your signal has been received.
+                </motion.p>
               </motion.div>
             )}
           </motion.div>

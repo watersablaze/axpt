@@ -1,16 +1,19 @@
-
-.vaultButton {
-  padding: 0.75rem 1.8rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 9px;
-  color: #f7e595;
-  cursor: pointer;
-  font-family: 'IBM Plex Mono', monospace;
-  transition: all 0.3s ease;
+.section {
+  position: relative;
+  padding: 6rem 1.5rem;
+  overflow: visible;
+  scroll-margin-top: 80px;
+  text-align: center;
 }
 
-.vaultButton:hover {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 24px rgba(0, 255, 100, 0.35);
+.heading {
+  color: white;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.text {
+  color: #ccc;
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
 }
