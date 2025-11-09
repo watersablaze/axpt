@@ -18,8 +18,16 @@ export default function SectionButton({
   variant = 'vault',
 }: SectionButtonProps) {
   return (
-    <a href={href} target={target} rel={target === '_blank' ? 'noopener noreferrer' : undefined}>
-      <button className={clsx(styles.sectionButton, styles[variant])}>{children}</button>
+    <a
+      href={href}
+      target={target}
+      rel={target === '_blank' ? 'noopener noreferrer' : undefined}
+    >
+      <button
+        className={clsx(styles.sectionButton, styles[variant], 'aura-pulse')}
+      >
+        {children}
+      </button>
     </a>
   );
 }

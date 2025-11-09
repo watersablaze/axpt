@@ -1,49 +1,86 @@
+/* 🌌 Nebula Overlay — visible, cinematic violet depth field */
 .overlayWrapper {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
+
+  /* ✅ Use your actual purple nebula texture */
+  background: url('/textures/nebula_purple.png') center/cover no-repeat;
+  mix-blend-mode: normal;
+  opacity: 0.65; /* visible but not washed out */
+
+  /* 🎥 Filmic treatment */
+  filter: 
+    brightness(1.05)
+    contrast(1.2)
+    saturate(1.25)
+    blur(1.5px);
+
+  /* 🌪 Slow, subtle motion to prevent stagnancy */
+  animation: nebulaOrbit 240s ease-in-out infinite alternate;
+  will-change: transform, filter, opacity;
+  transform-origin: center center;
 }
 
-/* 🌌 Central soft orb glow */
-.nebulaOrb {
+/* 🌫 Atmospheric veil layer — adds dimensional haze */
+.nebulaVeil {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 480px;
-  height: 280px;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(200, 0, 255, 0.12), transparent 70%);
-  filter: blur(90px);
-  animation: pulseOrb 12s ease-in-out infinite;
+  inset: 0;
+  background:
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(80, 0, 160, 0.1) 0%,
+      rgba(10, 0, 30, 0.85) 100%
+    );
+  mix-blend-mode: soft-light;
+  opacity: 0.18;
+  filter: blur(40px) saturate(1.05);
+  animation: veilDrift 120s ease-in-out infinite alternate;
 }
 
-@keyframes drift {
+/* 🌌 Orbital rotation — gives a sense of parallax and depth */
+@keyframes nebulaOrbit {
   0% {
-    background-position: 0 0;
+    transform: scale(1.02) rotate(0deg);
   }
   25% {
-    background-position: 200px -100px;
+    transform: scale(1.03) rotate(2deg);
   }
   50% {
-    background-position: 400px 100px;
+    transform: scale(1.04) rotate(4deg);
   }
   75% {
-    background-position: 600px -150px;
+    transform: scale(1.03) rotate(2deg);
   }
   100% {
-    background-position: 800px 200px;
+    transform: scale(1.02) rotate(0deg);
   }
 }
 
-@keyframes pulseOrb {
+/* 🌬 Gentle haze motion for the veil */
+@keyframes veilDrift {
   0%, 100% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.6;
+    opacity: 0.18;
+    transform: translateY(0);
   }
   50% {
-    transform: translate(-50%, -50%) scale(1.15);
-    opacity: 0.9;
+    opacity: 0.28;
+    transform: translateY(-16px);
+  }
+}
+
+/* 📱 Mobile tuning — keeps clarity and color depth */
+@media (max-width: 768px) {
+  .overlayWrapper {
+    opacity: 0.55;
+    filter: brightness(1.05) contrast(1.15) saturate(1.2);
+    animation-duration: 300s; /* slower drift */
+  }
+
+  .nebulaVeil {
+    opacity: 0.12;
+    filter: blur(30px);
   }
 }

@@ -14,13 +14,15 @@ export default function Header() {
 
       if (scrollPosition < 200) {
         setActiveSection('');
+        document.body.removeAttribute('data-section');
         return;
       }
 
       for (const section of sections) {
         const el = document.getElementById(section);
-        if (el && scrollPosition >= el.offsetTop) {
+        if (el && scrollPosition >= el.offsetTop - 150) {
           setActiveSection(section);
+          document.body.setAttribute('data-section', section);
           break;
         }
       }
@@ -28,7 +30,6 @@ export default function Header() {
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
-
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 

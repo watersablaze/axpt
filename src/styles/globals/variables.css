@@ -1,43 +1,110 @@
 :root {
-  /* === 🕰 Timing Tokens === */
+  /* === 🕰️ TIMING TOKENS === */
   --sigil-reveal-delay: 9.2s;
   --nebula-fade-delay: 7.2s;
   --pulse-duration: 12s;
   --sigil-float-duration: 14s;
   --starfield-drift-duration: 90s;
   --fade-in-duration: 2.5s;
+
+  /* 🌐 Unified Surge Field */
+  --surge-color: rgba(255, 230, 150, 0.5);
+  --surge-strength: 1;
+  --surge-blur: 12px;
+  --surge-hue-shift: 0deg;
+  --surge-brightness: 1.0;
+
+  /* ✨ Glow + Bloom */
   --bloom-strength: 1;
 
-  /* === 🌌 Colors === */
+  /* 🌠 Aura System */
+  --aura-pulse-duration: 5.5s;
+  --aura-pulse-color: rgba(255, 230, 150, 0.5);
+  --aura-pulse-blur: 12px;
+
+  /* 🌌 Colors */
   --color-bg-dark: rgba(10, 10, 10, 0.92);
   --color-text: #fdf6e3;
   --color-primary: #8328ff;
   --color-secondary: #ffc300;
 
+  /* Aura hues — used for multi-layered gradients and offsets */
   --color-aura-1: rgba(150, 90, 210, 0.35);
   --color-aura-2: rgba(80, 180, 255, 0.25);
   --color-aura-3: rgba(0, 255, 180, 0.22);
   --color-aura-4: rgba(255, 255, 255, 0.15);
 
+  /* 🌈 Glow Gradients */
   --color-glow-purple: rgba(110, 85, 190, 0.35);
   --color-glow-center: rgba(20, 10, 40, 0.82);
   --color-glow-outer: #070511;
 
-  /* === 🎭 Fonts === */
+  /* 🎭 Fonts */
   --font-body: 'Helvoni', sans-serif;
 
-  /* === 🌀 Effects === */
+  /* 🌀 Effects */
   --blur-soft: blur(14px);
   --nebula-brightness: brightness(1.25);
   --nebula-saturation: saturate(1.25);
   --blend-soft: screen;
 
-  /* === 🔠 Typography Sizes === */
+  /* 🔠 Typography */
   --font-size-body: clamp(14px, 1.2vw, 18px);
 
-    /* 🌐 Responsive orb scaling tokens */
+  /* 🪶 Orb Scaling */
   --orb-size-sm: 240px;
   --orb-size-md: 360px;
   --orb-size-lg: 520px;
   --orb-size-xl: 720px;
+}
+
+/* === 💫 AURA PULSE KEYFRAMES === */
+@keyframes auraPulse {
+  0%, 100% {
+    filter: brightness(0.9);
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    filter: brightness(1.25);
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+
+/* === 🔮 UNIVERSAL AURA CLASS === */
+.aura-pulse {
+  animation: auraPulse var(--aura-pulse-duration) ease-in-out infinite;
+  box-shadow: 0 0 var(--aura-pulse-blur) var(--aura-pulse-color);
+  will-change: transform, filter, opacity;
+  transition: filter 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* === 🧭 DESYNC STATE VARIANT === */
+html[data-aura-desync='true'] .aura-pulse {
+  animation-delay: calc(var(--random-delay, 0s));
+  opacity: 0.95;
+}
+
+html[data-aura-desync='true'] body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 230, 150, 0.05),
+    rgba(150, 90, 210, 0.02),
+    transparent 80%
+  );
+  mix-blend-mode: screen;
+  animation: slowDrift 80s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.45;
+  filter: blur(80px);
+}
+
+@keyframes slowDrift {
+  from { transform: rotate(0deg) scale(1.02); }
+  to { transform: rotate(360deg) scale(1.02); }
 }

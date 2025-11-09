@@ -6,7 +6,8 @@ import { Toaster } from 'sonner';
 import NeonWake from '@/components/NeonWake';
 import NebulaOverlay from '@/components/background/NebulaOverlay'; 
 import BloomControl from '@/components/dev/BloomControl';
-import CeremonyControlPanel from '@/components/devtools/CeremonyControlPanel'; // ✅ moved here at top
+import CeremonyControlPanel from '@/components/devtools/CeremonyControlPanel';
+import AuraDebugPanel from '@/components/devtools/AuraDebugPanel'; // ✅ added here
 
 const inter = Inter({
   subsets: ['latin'],
@@ -26,11 +27,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <NebulaOverlay /> {/* 🌀 Appears behind all content */}
         {children}
 
-        {/* 🌙 Dev-only control panel */}
-        {process.env.NODE_ENV === 'development' && <CeremonyControlPanel />}
-
-        {/* Existing bloom slider */}
-        {process.env.NODE_ENV === 'development' && <BloomControl />}
+    {process.env.NODE_ENV === 'development' && <CeremonyControlPanel />}
+    {process.env.NODE_ENV === 'development' && <BloomControl />}
+    {process.env.NODE_ENV === 'development' && <AuraDebugPanel />}
 
         <Toaster richColors position="top-right" />
         <div id="portal-root" />

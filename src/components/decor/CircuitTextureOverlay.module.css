@@ -1,72 +1,107 @@
-/* 🔲 Circuit Texture Background */
+/* 🌐 Base circuit overlay */
 .circuitTexture {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: none;
   background-image: url('/textures/circuit_board.png');
   background-repeat: repeat;
-  background-size: 540px auto;
-
-  opacity: 0.9;
-  pointer-events: none;
-  z-index: 1;
+  background-size: 480px auto;
   mix-blend-mode: soft-light;
-
-  animation:
-    circuitFloat 12s ease-in-out infinite,
-    chromaPulse 20s ease-in-out infinite;
-
-filter:
-  drop-shadow(-0.5px 0 rgba(255, 0, 0, 0.3))
-  drop-shadow(0.5px 0 rgba(0, 160, 255, 0.3))
-  blur(0.2px)
-  saturate(1.1)
-  contrast(1.05);
-
-  transition: filter 0.4s ease, opacity 0.4s ease;
-}
-
-/* ⚡ On hover anywhere in the window, intensify */
-body:hover .circuitTexture {
-  filter:
-    drop-shadow(-1px 0 rgba(255, 0, 0, 0.5))
-    drop-shadow(1px 0 rgba(0, 160, 255, 0.5))
-    blur(0.3px)
-    saturate(1.35)
-    contrast(1.15);
   opacity: 0.14;
+  transition:
+    opacity 1.2s ease,
+    filter 1.2s ease,
+    background-color 1.5s ease,
+    --surge-color 1.8s ease; /* 🌈 smooth hue morph */
+  animation: circuitDrift 42s ease-in-out infinite;
+  will-change: transform, filter, opacity;
 }
 
-/* 🌀 During sigil reveal, add an electric jolt */
-body.revealed .circuitTexture {
+/* Default chroma tone when no section active */
+body:not([data-section]) .circuitTexture {
   filter:
-    drop-shadow(-1.3px 0 rgba(255, 0, 0, 0.55))
-    drop-shadow(1.3px 0 rgba(0, 160, 255, 0.55))
-    blur(0.4px)
-    saturate(1.4)
-    contrast(1.2);
-  opacity: 0.16;
+    drop-shadow(-0.6px 0 rgba(255, 100, 100, 0.3))
+    drop-shadow(0.6px 0 rgba(100, 200, 255, 0.3))
+    blur(0.25px);
 }
 
-/* 🎞️ Smooth circuit floating motion */
-@keyframes circuitFloat {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-  100% { transform: translateY(0); }
+/* ✨ Section-based tints — adaptive “charges” */
+body[data-section="vision"] .circuitTexture {
+  --surge-color: rgba(100, 180, 255, 0.55); /* cool blue-gold */
+}
+body[data-section="nommo"] .circuitTexture {
+  --surge-color: rgba(180, 100, 255, 0.55); /* electric violet */
+}
+body[data-section="vault"] .circuitTexture {
+  --surge-color: rgba(0, 255, 160, 0.48); /* emerald teal */
+}
+body[data-section="contracts"] .circuitTexture {
+  --surge-color: rgba(255, 230, 100, 0.48); /* golden amber */
 }
 
-/* 🌈 Chromatic easing */
-@keyframes chromaPulse {
+/* ⚡ Surge behavior */
+.surge {
+  animation:
+    circuitSurge 2.4s ease-in-out forwards,
+    colorShift 6s ease-in-out infinite alternate; /* 💫 hue shimmer overlay */
+}
+
+/* ⚡ Surge keyframes */
+@keyframes circuitSurge {
   0% {
-    filter: drop-shadow(-1px 0 rgba(255,0,0,0.35)) drop-shadow(1px 0 rgba(0,140,255,0.35));
+    opacity: 0.14;
+    filter: brightness(1) saturate(1.1);
   }
-  50% {
-    filter: drop-shadow(-1.5px 0 rgba(255,0,0,0.45)) drop-shadow(1.5px 0 rgba(0,160,255,0.45));
+  40% {
+    opacity: 0.34;
+    filter: brightness(1.45)
+            saturate(1.55)
+            drop-shadow(0 0 24px var(--surge-color))
+            blur(0.3px);
+  }
+  70% {
+    opacity: 0.24;
+    filter: brightness(1.25)
+            saturate(1.3)
+            drop-shadow(0 0 12px var(--surge-color))
+            blur(0.25px);
   }
   100% {
-    filter: drop-shadow(-1px 0 rgba(255,0,0,0.35)) drop-shadow(1px 0 rgba(0,140,255,0.35));
+    opacity: 0.14;
+    filter: brightness(1) saturate(1.1);
+  }
+}
+
+/* 🌈 Gentle hue oscillation — continuous spectral life */
+@keyframes colorShift {
+  0%, 100% { filter: hue-rotate(0deg); }
+  50%      { filter: hue-rotate(6deg); }
+}
+
+/* 🎞 Ambient drift and shimmer */
+@keyframes circuitDrift {
+  0%, 100% {
+    filter:
+      drop-shadow(-0.6px 0 rgba(255, 60, 60, 0.3))
+      drop-shadow(0.6px 0 rgba(60, 180, 255, 0.3))
+      blur(0.25px);
+  }
+  50% {
+    filter:
+      drop-shadow(-1px 0 rgba(255, 80, 80, 0.4))
+      drop-shadow(1px 0 rgba(80, 200, 255, 0.4))
+      blur(0.35px);
+  }
+}
+
+/* 📱 Mobile balance */
+@media (max-width: 768px) {
+  .circuitTexture {
+    background-size: 360px auto;
+    opacity: 0.1;
+    animation-duration: 55s;
   }
 }

@@ -11,7 +11,7 @@ export default function StickyNav() {
         <li><a href="#vision">Vision</a></li>
         <li><a href="#nommo">Nommo</a></li>
         <li><a href="#vault">Vault</a></li>
-        <li><a href="#contracts">Contracts</a></li>
+        <li><a href="#contracts">debug</a></li>
       </ul>
     </nav>
   );

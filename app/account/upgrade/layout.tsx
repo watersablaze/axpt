@@ -1,4 +1,4 @@
-// app/account/upgrade/layout.tsx
+// app/account/upgrade/
 import type { ReactNode } from 'react';
 import '@/styles/upgrade.css';
 
