@@ -8,6 +8,12 @@ import NebulaOverlay from '@/components/background/NebulaOverlay';
 import BloomControl from '@/components/dev/BloomControl';
 import CeremonyControlPanel from '@/components/devtools/CeremonyControlPanel';
 import AuraDebugPanel from '@/components/devtools/AuraDebugPanel'; // ✅ added here
+import { useEffect } from 'react';
+import { initAuraDesync } from '@/lib/aura/desyncAura';
+
+useEffect(() => {
+  initAuraDesync();
+}, []);
 
 const inter = Inter({
   subsets: ['latin'],

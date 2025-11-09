@@ -12,28 +12,29 @@ export default function AuraDebugPanel() {
   const [visible, setVisible] = useState(false);
   const [syncLock, setSyncLock] = useState(true);
 
-  // 🗄️ Load stored preferences
+  // 🗄️ Load stored preferences (including desync)
   useEffect(() => {
     const savedDuration = localStorage.getItem('auraPulseDuration');
     const savedColor = localStorage.getItem('auraPulseColor');
     const savedBlur = localStorage.getItem('auraPulseBlur');
     const savedSync = localStorage.getItem('auraPulseSyncLock');
+    const savedDesync = localStorage.getItem('auraDesyncEnabled');
 
     if (savedDuration) setDuration(parseFloat(savedDuration));
     if (savedColor) setColor(savedColor);
     if (savedBlur) setBlur(parseInt(savedBlur));
     if (savedSync) setSyncLock(savedSync === 'true');
+    if (savedDesync === 'true') setSyncLock(false); // reflect prior desync mode
   }, []);
 
-  // 🌀 Apply global aura variables
+  // 🌀 Apply global aura variables and persist settings
   useEffect(() => {
     const root = document.documentElement;
 
+    // Update timing based on sync state
     if (syncLock) {
-      // unified global timing
       root.style.setProperty('--aura-pulse-duration', `${duration}s`);
     } else {
-      // slightly desynced timing per element
       const offsetDur = duration + (Math.random() - 0.5) * 1.2;
       root.style.setProperty('--aura-pulse-duration', `${offsetDur}s`);
     }
@@ -41,10 +42,15 @@ export default function AuraDebugPanel() {
     root.style.setProperty('--aura-pulse-color', color);
     root.style.setProperty('--aura-pulse-blur', `${blur}px`);
 
+    // Persist values
     localStorage.setItem('auraPulseDuration', duration.toString());
     localStorage.setItem('auraPulseColor', color);
     localStorage.setItem('auraPulseBlur', blur.toString());
     localStorage.setItem('auraPulseSyncLock', syncLock.toString());
+    localStorage.setItem('auraDesyncEnabled', (!syncLock).toString());
+
+    // Apply aura state to document
+    applyAuraDesync?.(!syncLock);
   }, [duration, color, blur, syncLock]);
 
   // 🔁 Manual reshuffle (re-randomize desyncs)
@@ -54,7 +60,7 @@ export default function AuraDebugPanel() {
         '--aura-pulse-duration',
         `${duration + (Math.random() - 0.5) * 1.2}s`
       );
-      applyAuraDesync?.();
+      applyAuraDesync?.(!syncLock); // ✅ now type-safe and persistent
     }
   };
 
