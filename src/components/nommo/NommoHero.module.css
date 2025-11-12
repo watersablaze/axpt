@@ -1,0 +1,133 @@
+/* ──────────────────────────────
+   NOMMO HERO : MOTION POLISH LAYER
+   Nebula drift, shimmer pulse, depth field
+────────────────────────────── */
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+}
+
+/* 🌌 New subtle parallax drift */
+@keyframes nebulaDrift {
+  0% {
+    transform: scale(1.03) translateY(0px);
+  }
+  50% {
+    transform: scale(1.05) translateY(-8px);
+  }
+  100% {
+    transform: scale(1.03) translateY(0px);
+  }
+}
+
+/* ✨ Light breathing shimmer for text */
+@keyframes shimmerPulse {
+  0%, 100% {
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.2);
+    filter: brightness(1);
+  }
+  50% {
+    text-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+    filter: brightness(1.15);
+  }
+}
+
+.container {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: #000;
+  color: #fff;
+}
+
+.nebula {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  opacity: 0.4;
+  animation: fadeIn 3s ease-out forwards, nebulaDrift 40s ease-in-out infinite;
+}
+
+.textBlock {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 1.5rem;
+  max-width: 48rem;
+}
+
+.title {
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: 0.01em;
+  margin-bottom: 1.5rem;
+  animation: shimmerPulse 8s ease-in-out infinite;
+}
+
+.subtitle {
+  color: #d1d1d1;
+  line-height: 1.7;
+  font-size: clamp(1rem, 2vw, 1.25rem);
+  margin-bottom: 2.5rem;
+  max-width: 42rem;
+}
+
+.cta {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 9999px;
+  padding: 0.75rem 2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.85rem;
+  transition: all 0.35s ease;
+}
+
+.cta:hover {
+  background: #fff;
+  color: #000;
+  border-color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
+}
+
+.bottomFade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 140px;
+  background: linear-gradient(to bottom, transparent, #000);
+  pointer-events: none;
+}
+
+/* Fade bridge connecting Hero → Feature */
+.fadeBridge {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 40vh;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.85) 70%, #000 100%);
+  z-index: 5;
+}

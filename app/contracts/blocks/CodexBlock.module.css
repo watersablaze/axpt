@@ -1,0 +1,139 @@
+@import './common/SubtleGlow.css';
+
+/* === 🜍 CODEX OF TRUST — Emerald-Aqua Chamber === */
+.codexSection {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  scroll-snap-align: start;
+  overflow: hidden;
+  background: radial-gradient(
+    circle at 50% 40%,
+    rgba(0, 255, 180, 0.04),
+    rgba(0, 0, 0, 0.96) 80%
+  );
+}
+
+/* 🌫 Soft auric diffusion */
+.codexMist {
+  position: absolute;
+  inset: 0;
+  filter: blur(100px);
+  opacity: 0.35;
+  pointer-events: none;
+  mix-blend-mode: lighten;
+  transition: opacity 2s ease, filter 2s ease;
+  animation: gentleBreath 18s ease-in-out infinite;
+  background: radial-gradient(circle at 50% 35%, rgba(255,230,120,0.15), rgba(0,0,0,0.9));
+}
+
+/* === Core content === */
+.codexContent {
+  position: relative;
+  z-index: 3;
+  max-width: 760px;
+  padding: 2rem;
+  color: rgba(235, 255, 245, 0.92);
+}
+
+.codexTitle {
+  font-size: clamp(2.8rem, 6vw, 4.4rem);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: -0.015em;
+  background: linear-gradient(90deg, #9effef, #5affd0, #a0fff0);
+  background-size: 250% 250%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: titleFlowEmerald 16s ease-in-out infinite;
+  text-shadow:
+    0 0 10px rgba(0, 255, 180, 0.15),
+    0 0 20px rgba(0, 255, 180, 0.08);
+}
+
+@keyframes titleFlowEmerald {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.codexText {
+  margin-top: 1.5rem;
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: rgba(255, 255, 255, 0.9);
+  text-shadow:
+    0 0 6px rgba(0, 255, 190, 0.1),
+    0 0 12px rgba(0, 255, 190, 0.05);
+}
+
+.codexText span {
+  color: #b0fff0;
+  text-shadow: 0 0 12px rgba(0, 255, 180, 0.15);
+}
+
+/* ✨ Gentle sub-glow highlight */
+.codexGlow {
+  display: inline-block;
+  margin-top: 0.5rem;
+  font-weight: 500;
+  text-shadow: 0 0 12px rgba(0, 255, 180, 0.25);
+  animation: softPulse 10s ease-in-out infinite;
+}
+
+@keyframes softPulse {
+  0%, 100% {
+    opacity: 0.8;
+    text-shadow: 0 0 8px rgba(0,255,180,0.2);
+  }
+  50% {
+    opacity: 1;
+    text-shadow: 0 0 18px rgba(0,255,210,0.25);
+  }
+}
+
+/* 💫 Micro shimmer ripple (now a low amplitude shimmer) */
+.codexSection::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 18vh;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.9),
+    rgba(0, 255, 180, 0.04),
+    transparent
+  );
+  mix-blend-mode: lighten;
+  filter: blur(24px);
+  opacity: 0.25;
+  animation: rippleGlow 18s ease-in-out infinite;
+  z-index: 2;
+}
+
+@keyframes rippleGlow {
+  0%, 100% {
+    opacity: 0.25;
+    transform: translateY(0px) scaleY(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: translateY(-20px) scaleY(1.05);
+  }
+}
+
+/* Scroll indicator */
+.scrollHint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.4rem;
+  color: rgba(255, 255, 255, 0.55);
+  z-index: 4;
+}

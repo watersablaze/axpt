@@ -1,0 +1,83 @@
+@import './common/SubtleGlow.css';
+
+.proofsSection {
+  position:relative;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  scroll-snap-align:start;
+  overflow:hidden;
+  background:radial-gradient(circle at 50% 55%,rgba(255,255,255,0.08),rgba(0,0,0,0.9));
+}
+
+.proofsMist {
+  position:absolute;
+  inset:0;
+  filter:blur(100px);
+  opacity:.35;
+  pointer-events:none;
+  mix-blend-mode:lighten;
+  animation:gentleBreath 18s ease-in-out infinite;
+  background:radial-gradient(circle at 50% 50%,rgba(255,255,255,0.1),rgba(0,0,0,0.9));
+}
+
+.proofsContent {
+  position:relative;
+  z-index:3;
+  max-width:760px;
+  padding:2rem;
+  color:rgba(255,255,255,0.9);
+}
+
+.proofsTitle {
+  font-size:clamp(2.8rem,6vw,4.4rem);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:-0.015em;
+  background:linear-gradient(90deg,#fefefe,#ffffff,#eafcff);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:gentleBreath 18s ease-in-out infinite;
+}
+
+.proofsText {
+  margin-top:1.5rem;
+  font-size:1.05rem;
+  line-height:1.8;
+  color:rgba(255,255,255,0.92);
+  text-shadow:0 0 6px rgba(255,255,255,0.1);
+}
+.proofsText span {
+  color:#ffffff;
+  text-shadow:0 0 10px rgba(255,255,255,0.2);
+}
+
+.proofsGlow {
+  display:inline-block;
+  margin-top:0.5rem;
+  text-shadow:0 0 8px rgba(255,255,255,0.25);
+  animation:whitePulse 20s ease-in-out infinite;
+}
+@keyframes whitePulse {
+  0%,100%{opacity:.7}
+  50%{opacity:1}
+}
+
+.proofsSection::after{
+  content:'';
+  position:absolute;
+  bottom:0;left:0;right:0;
+  height:16vh;
+  background:linear-gradient(to top,rgba(255,255,255,0.05),transparent);
+  mix-blend-mode:lighten;
+  animation:rippleGlowDown 20s ease-in-out infinite;
+  filter:blur(24px);
+  z-index:2;
+}
+@keyframes rippleGlowDown {
+  0%,100%{opacity:.25;transform:translateY(0)}
+  50%{opacity:.45;transform:translateY(-12px)}
+}

@@ -1,0 +1,95 @@
+/* ============================================================
+   SubtleGlow.css
+   Shared animation & motion utilities for auric layers.
+   No Tailwind @layer syntax required.
+   ============================================================ */
+
+/* 🌬 Gentle breathing motion */
+@keyframes gentleBreath {
+  0%, 100% {
+    opacity: 0.85;
+    filter: brightness(0.95);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.05);
+  }
+}
+
+/* ✨ Soft pulse glow */
+@keyframes softPulse {
+  0%, 100% {
+    opacity: 0.8;
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
+  }
+  50% {
+    opacity: 1;
+    text-shadow: 0 0 18px rgba(255, 255, 255, 0.35);
+  }
+}
+
+/* 🌊 Ripple shimmer */
+@keyframes rippleGlowUp {
+  0%, 100% {
+    opacity: 0.4;
+    transform: translateY(0) scaleY(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(20px) scaleY(1.1);
+  }
+}
+
+@keyframes rippleGlowDown {
+  0%, 100% {
+    opacity: 0.3;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0.6;
+    transform: translateY(-20px);
+  }
+}
+
+/* 🫧 Universal mist fade */
+@keyframes mistDrift {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  50% {
+    transform: translateY(-30px) scale(1.03);
+  }
+}
+
+/* 🎇 Gentle shimmer flicker */
+@keyframes shimmerFlicker {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.15); }
+}
+
+/* Common utility classes (optional) */
+.subtle-breath {
+  animation: gentleBreath 18s ease-in-out infinite;
+}
+
+.subtle-pulse {
+  animation: softPulse 10s ease-in-out infinite;
+}
+
+.subtle-mist {
+  animation: mistDrift 20s ease-in-out infinite;
+  mix-blend-mode: lighten;
+  opacity: 0.4;
+}
+
+.subtle-ripple-up {
+  animation: rippleGlowUp 16s ease-in-out infinite;
+}
+
+.subtle-ripple-down {
+  animation: rippleGlowDown 16s ease-in-out infinite;
+}
+
+.subtle-shimmer {
+  animation: shimmerFlicker 12s ease-in-out infinite;
+}

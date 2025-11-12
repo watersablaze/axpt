@@ -1,0 +1,102 @@
+/* ============================================================
+   SubtleDepth.css
+   Depth dynamics and parallax illumination system.
+   Complements SubtleGlow.css by adding spatial and scroll-
+   reactive realism to auric scenes.
+   ============================================================ */
+
+/* 🌌 Depth breathing (slow focus change) */
+@keyframes depthFocus {
+  0%, 100% {
+    transform: scale(1);
+    filter: blur(120px) brightness(1);
+  }
+  50% {
+    transform: scale(1.05);
+    filter: blur(150px) brightness(1.1);
+  }
+}
+
+/* 🌫 Mist layering drift (vertical movement + slight skew) */
+@keyframes depthMistDrift {
+  0%, 100% {
+    transform: translateY(0px) skewY(0deg);
+  }
+  50% {
+    transform: translateY(-40px) skewY(1deg);
+  }
+}
+
+/* 🌠 Light ray parallax (horizontal sweep illusion) */
+@keyframes lightSweep {
+  0% {
+    background-position: -200% 50%;
+    opacity: 0.1;
+  }
+  50% {
+    background-position: 200% 50%;
+    opacity: 0.3;
+  }
+  100% {
+    background-position: -200% 50%;
+    opacity: 0.1;
+  }
+}
+
+/* 🪶 Shadow diffusion (slight inward fade) */
+@keyframes shadowFade {
+  0%, 100% {
+    box-shadow: 0 0 120px rgba(0, 0, 0, 0.4) inset;
+  }
+  50% {
+    box-shadow: 0 0 160px rgba(0, 0, 0, 0.25) inset;
+  }
+}
+
+/* 🜍 Depth base: subtle ambient parallax + mist */
+.depth-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  animation: depthMistDrift 30s ease-in-out infinite;
+  filter: blur(140px);
+}
+
+/* 💫 Light rays with parallax sweep */
+.light-rays {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    110deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.15) 25%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0.1) 75%,
+    rgba(255, 255, 255, 0.03) 100%
+  );
+  background-size: 400% 400%;
+  mix-blend-mode: overlay;
+  animation: lightSweep 20s linear infinite;
+  opacity: 0.25;
+}
+
+/* 🎚 Depth scaling layer for scroll-reactive transforms */
+.depth-focus {
+  animation: depthFocus 40s ease-in-out infinite;
+}
+
+/* 🕳 Ambient inset shadow fade */
+.shadow-fade {
+  animation: shadowFade 22s ease-in-out infinite;
+  mix-blend-mode: multiply;
+}
+
+/* 📏 Utility combination classes */
+.depth-ambient {
+  composes: depth-layer light-rays;
+}
+
+.depth-full {
+  composes: depth-layer depth-focus light-rays shadow-fade;
+}

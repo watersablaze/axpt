@@ -1,0 +1,41 @@
+/* ──────────────────────────────
+   NOMMO MANIFESTO : POETIC INTERTITLE
+────────────────────────────── */
+
+.section {
+  position: relative;
+  background: linear-gradient(to bottom, #000 0%, #080808 60%, #000 100%);
+  color: #fff;
+  text-align: center;
+  padding-block: clamp(6rem, 10vw, 8rem);
+  overflow: hidden;
+}
+
+.content {
+  max-width: 48rem;
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.title {
+  font-size: clamp(1.8rem, 3vw, 2.4rem);
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: none;
+  background: linear-gradient(90deg, #e6c667, #fff);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.text {
+  color: #d0d0d0;
+  line-height: 1.8;
+  font-size: clamp(1rem, 1.5vw, 1.15rem);
+  max-width: 40rem;
+  margin-inline: auto;
+}

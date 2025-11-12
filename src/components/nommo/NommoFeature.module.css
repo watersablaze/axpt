@@ -1,0 +1,143 @@
+/* ──────────────────────────────
+   NOMMO FEATURE : TIGHTER AXIS
+────────────────────────────── */
+
+.section {
+  position: relative;
+  z-index: 6; /* sits above Hero fadeBridge */
+  background: linear-gradient(to bottom, #000 10%, #0b0b0b 50%, #000 90%);
+  color: #fff;
+  padding-block: clamp(3.5rem, 6vw, 5rem); /* reduced from 4–6rem */
+  text-align: center;
+  overflow: hidden;
+}
+
+/* Unified fade-up group */
+.featureContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem; /* tighter vertical rhythm */
+  opacity: 1;
+  transform: translateY(0);
+  will-change: opacity, transform;
+}
+
+/* ✨ BackGlow continuity */
+.backGlow {
+  position: absolute;
+  top: -15vh;
+  left: 0;
+  width: 100%;
+  height: 40vh;
+  pointer-events: none;
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(0, 0, 0, 0) 80%
+  );
+  filter: blur(80px);
+  z-index: 0;
+  opacity: 0.35;
+}
+
+.title {
+  font-size: clamp(1.8rem, 3.2vw, 2.3rem);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  margin-bottom: 1.2rem; /* pulled closer to video frame */
+  z-index: 2;
+  position: relative;
+}
+
+.videoFrame {
+  position: relative;
+  width: 100%;
+  max-width: 58rem; /* slightly narrower */
+  margin-inline: auto;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 40px rgba(255, 255, 255, 0.04);
+  background: #000;
+  z-index: 2;
+}
+
+/* 🎞️ Placeholder appearance */
+.placeholderFrame {
+  background: radial-gradient(circle at center, #1a1a1a 0%, #000 100%);
+  position: relative;
+}
+
+.placeholderInner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.placeholderText {
+  position: relative;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1.05rem; /* slightly smaller */
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  z-index: 2;
+}
+
+.placeholderGlow {
+  position: absolute;
+  width: 160%;
+  height: 160%;
+  background: conic-gradient(
+    from 0deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.12),
+    rgba(255, 255, 255, 0.05)
+  );
+  animation: rotateGlow 20s linear infinite, pulseGlow 6s ease-in-out infinite;
+  top: -30%;
+  left: -30%;
+  z-index: 1;
+  opacity: 0.25;
+  filter: blur(40px);
+  border-radius: 50%;
+}
+
+.description {
+  color: #cfcfcf;
+  max-width: 34rem;
+  margin: 1.2rem auto 0; /* closer to frame */
+  line-height: 1.55;
+  font-size: 0.92rem;
+  z-index: 2;
+  position: relative;
+}
+
+.meta {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: #777;
+  letter-spacing: 0.15em;
+  margin-top: 0.15rem;
+  z-index: 2;
+  position: relative;
+}
+
+/* ── Placeholder Motion ── */
+@keyframes rotateGlow {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(1.05); }
+}

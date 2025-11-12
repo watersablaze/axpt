@@ -62,18 +62,16 @@ module.exports = {
           '50%': { transform: 'scale(1.07)', opacity: '0.15' },
         },
         emeraldShimmer: {
-          '0%': {
-            backgroundPosition: '-150% 0',
-          },
-          '100%': {
-            backgroundPosition: '150% 0',
-          },
+          '0%': { backgroundPosition: '-150% 0' },
+          '100%': { backgroundPosition: '150% 0' },
         },
       },
     },
   },
-  plugins: [],
   corePlugins: {
     preflight: true,
   },
+  plugins: [
+    require('@tailwindcss/line-clamp'), // ✅ for NommoUpcoming text truncation
+  ],
 };

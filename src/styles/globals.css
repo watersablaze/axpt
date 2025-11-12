@@ -217,3 +217,27 @@ html.scroll-unlocked {
   50% { transform: translateY(-6px); }
 }
 .animate-float { animation: floatSlow 6s ease-in-out infinite; }
+
+/* Gentle water shimmer for Nommo Media titles (for future phase) */
+.nommo-title {
+  background: linear-gradient(90deg, #e0fff8, #a7f0ff, #e0fff8);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: shimmer 6s infinite linear;
+}
+
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+/* --- LINE CLAMP FALLBACK --- */
+/* Works without Tailwind plugin support */
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;       /* Number of lines to show */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

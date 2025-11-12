@@ -49,9 +49,15 @@ export default function AuraDebugPanel() {
     localStorage.setItem('auraPulseSyncLock', syncLock.toString());
     localStorage.setItem('auraDesyncEnabled', (!syncLock).toString());
 
+    // 🔊 Notify the aura logger in real-time
+window.dispatchEvent(new CustomEvent('auraUpdate'));
+
     // Apply aura state to document
     applyAuraDesync?.(!syncLock);
   }, [duration, color, blur, syncLock]);
+
+  // 🪶 Notify AuraInitializer (for live console updates)
+window.dispatchEvent(new CustomEvent('auraUpdate'));
 
   // 🔁 Manual reshuffle (re-randomize desyncs)
   const reshuffleDesync = () => {

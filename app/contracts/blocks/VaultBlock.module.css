@@ -1,0 +1,83 @@
+@import './common/SubtleGlow.css';
+
+.vaultSection {
+  position:relative;
+  height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  scroll-snap-align:start;
+  overflow:hidden;
+  background:radial-gradient(circle at 50% 45%,rgba(240,240,255,0.05),rgba(0,0,0,0.94));
+}
+
+.vaultMist {
+  position:absolute;
+  inset:0;
+  filter:blur(100px);
+  opacity:.35;
+  mix-blend-mode:lighten;
+  pointer-events:none;
+  animation:gentleBreath 18s ease-in-out infinite;
+  background:radial-gradient(circle at 50% 50%,rgba(255,255,255,0.1),rgba(0,0,0,0.9));
+}
+
+.vaultContent {
+  position:relative;
+  z-index:3;
+  max-width:760px;
+  padding:2rem;
+  color:rgba(250,250,255,0.9);
+}
+
+.vaultTitle {
+  font-size:clamp(2.8rem,6vw,4.4rem);
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:-0.015em;
+  background:linear-gradient(90deg,#f0f0ff,#ffffff,#cfdfff);
+  -webkit-background-clip:text;
+  background-clip:text;
+  color:transparent;
+  animation:gentleBreath 18s ease-in-out infinite;
+}
+
+.vaultText {
+  margin-top:1.5rem;
+  font-size:1.05rem;
+  line-height:1.8;
+  color:rgba(255,255,255,0.9);
+  text-shadow:0 0 6px rgba(255,255,255,0.1);
+}
+.vaultText span {
+  color:#f9f9ff;
+  text-shadow:0 0 12px rgba(255,255,255,0.25);
+}
+
+.vaultGlow {
+  display:inline-block;
+  margin-top:0.5rem;
+  text-shadow:0 0 10px rgba(255,255,255,0.25);
+  animation:platinumPulse 14s ease-in-out infinite;
+}
+@keyframes platinumPulse {
+  0%,100%{opacity:.75}
+  50%{opacity:1}
+}
+
+.vaultSection::before{
+  content:'';
+  position:absolute;
+  top:0;left:0;right:0;
+  height:14vh;
+  background:linear-gradient(to bottom,rgba(255,255,255,0.05),transparent);
+  mix-blend-mode:lighten;
+  animation:rippleGlowUp 18s ease-in-out infinite;
+  filter:blur(24px);
+  z-index:2;
+}
+@keyframes rippleGlowUp {
+  0%,100%{opacity:.25;transform:translateY(0)}
+  50%{opacity:.45;transform:translateY(12px)}
+}

@@ -1,18 +1,15 @@
-// 📁 lib/prisma.ts
-
-// ✅ Remove any explicit default import, like: import prisma from '@prisma/client';
 import { PrismaClient } from '@prisma/client';
 
-declare global {
-  var prisma: PrismaClient | undefined;
-}
+const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 
-const prisma =
-  globalThis.prisma ??
+export const prisma =
+  globalForPrisma.prisma ||
   new PrismaClient({
-    log: ['error', 'warn'], // Keep minimal logs for production safety
+    datasources: {
+      db: {
+        url: process.env.DATABASE_URL,
+      },
+    },
   });
 
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma;
-
-export { prisma };
+if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;

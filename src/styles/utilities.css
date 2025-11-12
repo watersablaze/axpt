@@ -1,0 +1,89 @@
+/* ──────────────────────────────
+   AXPT GLOBAL UTILITIES LAYER
+   Unifying fallbacks and ambient motion
+────────────────────────────── */
+
+/* --- LINE CLAMP FALLBACKS --- */
+.line-clamp-2,
+.line-clamp-3,
+.line-clamp-4 {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.line-clamp-2 { -webkit-line-clamp: 2; }
+.line-clamp-3 { -webkit-line-clamp: 3; }
+.line-clamp-4 { -webkit-line-clamp: 4; }
+
+/* --- SHIMMER / EMERALD EFFECT --- */
+.axpt-shimmer {
+  background: linear-gradient(90deg, #e0fff8, #a7f0ff, #e0fff8);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  color: transparent;
+  animation: axptShimmer 6s infinite linear;
+}
+@keyframes axptShimmer {
+  from { background-position: 200% 0; }
+  to { background-position: -200% 0; }
+}
+
+/* --- BLUR OVERLAY / PORTAL VEIL --- */
+.axpt-blur-overlay {
+  backdrop-filter: blur(18px) saturate(1.2);
+  background-color: rgba(0, 0, 0, 0.35);
+  pointer-events: none;
+}
+
+/* --- SOFT GLOW UTILITY --- */
+.axpt-glow {
+  box-shadow: 0 0 20px rgba(140, 255, 210, 0.25);
+}
+
+/* --- FADE-IN SEQUENCE (simple fallback if FramerMotion fails) --- */
+.axpt-fade-in {
+  opacity: 0;
+  animation: axptFadeIn 1.2s ease-out forwards;
+}
+@keyframes axptFadeIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* --- SCROLL INDICATOR --- */
+.axpt-scroll-indicator {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.7), transparent);
+  animation: scrollPulse 2s infinite;
+}
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.2; transform: translateX(-50%) translateY(0); }
+  50% { opacity: 1; transform: translateX(-50%) translateY(6px); }
+}
+
+/* in utilities.css */
+.axpt-card-hover:hover {
+  box-shadow: 0 0 18px rgba(140, 255, 210, 0.15);
+  transform: translateY(-3px);
+  transition: all 0.4s ease;
+}
+
+/* Section transitions */
+.axpt-section-divider {
+  height: 1px;
+  width: 80%;
+  margin: 0 auto;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+}
+
+/* Cinematic frame shadow */
+.axpt-frame-shadow {
+  box-shadow: 0 0 80px rgba(255,255,255,0.08);
+}

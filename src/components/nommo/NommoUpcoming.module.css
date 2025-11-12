@@ -1,0 +1,87 @@
+.section {
+  position: relative;
+  background: linear-gradient(to bottom, #000 0%, #0b0b0b 50%, #000 100%);
+  color: #fff;
+  padding-block: clamp(6rem, 10vw, 8rem);
+  z-index: 5;
+}
+
+.inner {
+  max-width: 80rem;
+  margin-inline: auto;
+  text-align: center;
+  padding-inline: 1.5rem;
+}
+
+.title {
+  font-size: clamp(1.8rem, 3.5vw, 2.75rem);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  margin-bottom: 1.5rem;
+}
+
+.subtitle {
+  color: #a8a8a8;
+  font-size: 1rem;
+  max-width: 38rem;
+  margin: 0 auto 3rem;
+  line-height: 1.7;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2.5rem;
+  justify-items: center;
+}
+
+.card {
+  background: #0d0d0d;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 25px rgba(255, 255, 255, 0.05);
+}
+
+.thumb {
+  width: 100%;
+  height: 12rem;
+  object-fit: cover;
+}
+
+.textWrap {
+  padding: 1.25rem 1.5rem 1.75rem;
+  text-align: left;
+}
+
+.cardTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.tagline {
+  color: #aaa;
+  font-size: 0.9rem;
+  font-style: italic;
+  margin-bottom: 0.5rem;
+}
+
+.desc {
+  color: #8f8f8f;
+  font-size: 0.85rem;
+  line-height: 1.55;
+  margin-bottom: 1rem;
+}
+
+.status {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #777;
+}

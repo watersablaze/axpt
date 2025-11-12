@@ -215,15 +215,36 @@ model Transaction {
 }
 
 model SmartContract {
-  id        String   @id @default(cuid())
-  name      String
-  address   String   @unique
-  abi       Json
-  network   String
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id              String   @id @default(cuid())
+  name            String
+  address         String   @unique
+  abi             Json
+  network         String
+  description     String?
+  status          String   @default("Live")
+  isActive        Boolean  @default(true)
+  verified        Boolean  @default(false)
+  lastSyncedBlock Int?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 
-  interactions ContractInteractionLog[]
+  interactions   ContractInteractionLog[]
+  culturalProofs CulturalProof[] // ✅ opposite relation field
+}
+
+model CulturalProof {
+  id              String        @id @default(cuid())
+  smartContractId String
+  smartContract   SmartContract @relation(fields: [smartContractId], references: [id])
+
+  artist    String
+  title     String
+  medium    String?
+  statement String?
+  ipfsHash  String?
+  signature String?
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 model ContractInteractionLog {
@@ -681,18 +702,18 @@ model CadaWaitlist {
 }
 
 model AxisJourneySubscriber {
-  id              String    @id @default(cuid())
-  email           String    @unique
-  name            String?
-  origin          String?    // e.g. "AXPT.io", "Nommo Portal", "Referral"
-  confirmed       Boolean   @default(false)
-  confirmationAt  DateTime?
-  lastOpenedAt    DateTime?
-  userAgent       String?
-  ipAddress       String?
-  notes           String?
-  joinedAt        DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id             String    @id @default(cuid())
+  email          String    @unique
+  name           String?
+  origin         String? // e.g. "AXPT.io", "Nommo Portal", "Referral"
+  confirmed      Boolean   @default(false)
+  confirmationAt DateTime?
+  lastOpenedAt   DateTime?
+  userAgent      String?
+  ipAddress      String?
+  notes          String?
+  joinedAt       DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
 
   @@index([confirmed])
   @@index([joinedAt])
@@ -701,22 +722,22 @@ model AxisJourneySubscriber {
 }
 
 model EmailLog {
-  id          Int      @id @default(autoincrement())
+  id Int @id @default(autoincrement())
 
   // Email metadata
-  type        String?      // e.g. "AxisConfirmation", "CadaWelcome"
-  from        String?      // sender address
-  to          String?      // recipient address
-  subject     String?
-  messageId   String?      // message ID returned by Resend or provider
-  status      String?      // "queued", "sent", "delivered", "failed", etc.
+  type      String? // e.g. "AxisConfirmation", "CadaWelcome"
+  from      String? // sender address
+  to        String? // recipient address
+  subject   String?
+  messageId String? // message ID returned by Resend or provider
+  status    String? // "queued", "sent", "delivered", "failed", etc.
 
   // Payload snapshot
-  rawPayload  Json?
+  rawPayload Json?
 
   // Timestamps
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([type])
   @@index([status])

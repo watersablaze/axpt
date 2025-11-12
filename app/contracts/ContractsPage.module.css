@@ -1,0 +1,115 @@
+/* === CONTRACTS PAGE LAYOUT FOUNDATION === */
+.container {
+  color: #f5f8f3;
+  font-family: 'Inter', sans-serif;
+  background: black;
+}
+
+/* === SCROLL SNAP WRAPPER === */
+.snapContainer {
+  height: 100vh;
+  width: 100%;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+  position: relative;
+}
+
+/* === SECTION DIVIDER (optional) === */
+.blockDivider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.08),
+    transparent
+  );
+  margin: 0;
+}
+
+/* === ELDER ADMIN AREA (still used for console or actions) === */
+.elderActions {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  margin-top: 4rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 1rem;
+  padding: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 0 20px rgba(0, 255, 180, 0.08);
+}
+
+/* === REVISIT / PROCEED BUTTON (kept for future use) === */
+.revisitButton {
+  margin: 4rem auto;
+  padding: 0.9rem 2.4rem;
+  font-size: 1.1rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(255, 255, 255, 0.08),
+    rgba(0, 0, 0, 0.3)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  color: #d0ffe9;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  animation: sigilGlow 6s ease-in-out infinite;
+  display: block;
+}
+
+@keyframes sigilGlow {
+  0%, 100% {
+    box-shadow:
+      0 0 20px rgba(90, 255, 210, 0.2),
+      0 0 60px rgba(90, 255, 210, 0.1),
+      inset 0 0 15px rgba(90, 255, 210, 0.1);
+    border-color: rgba(90, 255, 210, 0.25);
+    color: #d6fff0;
+  }
+  50% {
+    box-shadow:
+      0 0 40px rgba(255, 240, 150, 0.3),
+      0 0 80px rgba(255, 220, 100, 0.2),
+      inset 0 0 25px rgba(255, 210, 120, 0.1);
+    border-color: rgba(255, 240, 180, 0.4);
+    color: #fff6c8;
+  }
+}
+
+/* === SCROLL SHIMMER (✨ Section Transition Line) === */
+.scrollShimmer {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  width: 2px;
+  height: 100%;
+  transform: translateX(-50%);
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(0, 255, 200, 0.4),
+    rgba(255, 220, 120, 0.5),
+    transparent
+  );
+  opacity: 0.6;
+  filter: blur(3px);
+  pointer-events: none;
+  z-index: 5;
+  animation: shimmerPulse 12s ease-in-out infinite alternate;
+}
+
+@keyframes shimmerPulse {
+  0%, 100% {
+    opacity: 0.3;
+    filter: blur(3px);
+  }
+  50% {
+    opacity: 0.7;
+    filter: blur(6px);
+  }
+}

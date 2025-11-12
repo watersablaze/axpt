@@ -6,6 +6,8 @@
   --sigil-float-duration: 14s;
   --starfield-drift-duration: 90s;
   --fade-in-duration: 2.5s;
+  --font-hero-heading: clamp(2.8rem, 6vw, 5rem);
+  --font-subheading: clamp(1.2rem, 2vw, 1.5rem);
 
   /* 🌐 Unified Surge Field */
   --surge-color: rgba(255, 230, 150, 0.5);
@@ -107,4 +109,28 @@ html[data-aura-desync='true'] body::before {
 @keyframes slowDrift {
   from { transform: rotate(0deg) scale(1.02); }
   to { transform: rotate(360deg) scale(1.02); }
+}
+
+/* Section transitions */
+.axpt-section-divider {
+  height: 1px;
+  width: 80%;
+  margin: 0 auto;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
+}
+
+/* Cinematic frame shadow */
+.axpt-frame-shadow {
+  box-shadow: 0 0 80px rgba(255,255,255,0.08);
+}
+
+.axpt-heading {
+  font-size: var(--font-hero-heading);
+  letter-spacing: 0.02em;
+  line-height: 1.1;
+}
+
+.axpt-subheading {
+  font-size: var(--font-subheading);
+  color: #d1d1d1;
 }

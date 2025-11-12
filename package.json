@@ -78,11 +78,14 @@
     "deploy:protium": "DEPLOY_TARGET=protium bash scripts/deploy.sh",
     "deploy:axg": "DEPLOY_TARGET=axg bash scripts/deploy.sh",
     "verify:protium": "VERIFY_TARGET=protium bash scripts/verify-latest.sh",
-    "verify:axg": "VERIFY_TARGET=axg bash scripts/verify-latest.sh"
+    "verify:axg": "VERIFY_TARGET=axg bash scripts/verify-latest.sh",
+    "postinstall": "if [ ! -d node_modules/@tailwindcss/line-clamp ]; then echo '⚠️ Installing @tailwindcss/line-clamp...'; pnpm add -D @tailwindcss/line-clamp; fi"
+
   },
   "devDependencies": {
     "@eslint/eslintrc": "2.1.4",
     "@faker-js/faker": "^9.9.0",
+    "@tailwindcss/line-clamp": "^0.4.4",
     "@types/bcryptjs": "^3.0.0",
     "@types/chalk": "^2.2.4",
     "@types/figlet": "^1.7.0",

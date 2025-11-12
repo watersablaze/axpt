@@ -1,0 +1,85 @@
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+import { requireElderServer } from '@/lib/auth/requireElderServer';
+import { ethers } from 'ethers';
+import fs from 'fs';
+import path from 'path';
+import fetch from 'node-fetch';
+
+export async function POST() {
+  await requireElderServer();
+
+  const rpc = process.env.SEPOLIA_RPC_URL || process.env.RPC_URL_MAINNET;
+  const provider = new ethers.JsonRpcProvider(rpc);
+  const networkName = process.env.CHAIN_NETWORK || 'sepolia';
+  const buildDir = path.resolve('./contracts/out');
+  const deployDir = path.resolve(`./deployments/${networkName}`);
+  const etherscanKey = process.env.ETHERSCAN_API_KEY;
+  const results: any[] = [];
+
+  if (!fs.existsSync(buildDir)) {
+    return NextResponse.json({ error: 'Build folder not found.' }, { status: 500 });
+  }
+
+  const files = fs.readdirSync(buildDir).filter(f => f.endsWith('.json'));
+  const blockNumber = await provider.getBlockNumber();
+
+  for (const file of files) {
+    const name = file.replace('.json', '');
+    const artifact = JSON.parse(fs.readFileSync(path.join(buildDir, file), 'utf8'));
+    const deployFile = path.join(deployDir, `${name}.json`);
+    if (!fs.existsSync(deployFile)) continue;
+
+    const { address } = JSON.parse(fs.readFileSync(deployFile, 'utf8'));
+    if (!address) continue;
+
+    const code = await provider.getCode(address);
+    if (!code || code === '0x') {
+      results.push({ name, address, status: 'not_on_chain' });
+      continue;
+    }
+
+    // 🔍 Verify via Etherscan API
+    let verified = false;
+    try {
+      if (etherscanKey) {
+        const url = `https://api-sepolia.etherscan.io/api?module=contract&action=getsourcecode&address=${address}&apikey=${etherscanKey}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.status === '1' && data.result?.[0]?.SourceCode) verified = true;
+      }
+    } catch (err) {
+      console.warn(`Verification check failed for ${name}`, err);
+    }
+
+    await prisma.smartContract.upsert({
+      where: { address },
+      update: {
+        name,
+        abi: artifact.abi ?? null,
+        network: networkName,
+        description: artifact.metadata?.output?.devdoc?.title || null,
+        status: 'Live',
+        isActive: true,
+        verified,
+        lastSyncedBlock: blockNumber,
+        updatedAt: new Date(),
+      },
+      create: {
+        name,
+        address,
+        abi: artifact.abi ?? null,
+        network: networkName,
+        description: artifact.metadata?.output?.devdoc?.title || null,
+        status: 'Live',
+        isActive: true,
+        verified,
+        lastSyncedBlock: blockNumber,
+      },
+    });
+
+    results.push({ name, address, verified, block: blockNumber, status: 'synced' });
+  }
+
+  return NextResponse.json({ ok: true, results });
+}
