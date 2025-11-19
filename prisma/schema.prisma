@@ -746,3 +746,9 @@ model EmailLog {
   @@index([messageId])
   @@map("email_logs") // optional: custom table name for clarity
 }
+
+model LiveStream {
+  id        String   @id @default("primary")
+  isLive    Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+}
