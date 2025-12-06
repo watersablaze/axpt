@@ -79,7 +79,9 @@ export interface OwncastStatusResponse {
   sessionPeakViewerCount?: number;
   overallPeakViewerCount?: number;
   broadcaster?: {
+    viewerCount?: number;
     bitrate?: number;
+    bitrateKbps?: number;
   };
 }
 

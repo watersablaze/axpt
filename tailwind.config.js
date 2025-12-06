@@ -8,6 +8,7 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx}',
     './lib/**/*.{js,ts,jsx,tsx}',
   ],
+
   safelist: [
     'axptRadialBackground',
     'axptSigil',
@@ -15,6 +16,7 @@ module.exports = {
     'axptSigil.burst',
     'axptSigil.float',
   ],
+
   theme: {
     extend: {
       colors: {
@@ -36,6 +38,7 @@ module.exports = {
           700: '#2e86de',
         },
       },
+
       screens: {
         xs: '400px',
         sm: '640px',
@@ -43,15 +46,18 @@ module.exports = {
         lg: '1024px',
         xl: '1280px',
       },
+
       fontFamily: {
         mono: ['var(--font-fira-code)', 'monospace'],
         axis: ['Inter', 'sans-serif'],
       },
+
       animation: {
         'slide-fade-in': 'slideFadeIn 0.6s ease-out forwards',
         'pulse-slow': 'pulseSlow 12s ease-in-out infinite',
         'emerald-shimmer': 'emeraldShimmer 2.5s ease-in-out infinite',
       },
+
       keyframes: {
         slideFadeIn: {
           '0%': { opacity: '0', transform: 'translateY(-1rem)' },
@@ -68,10 +74,12 @@ module.exports = {
       },
     },
   },
+
   corePlugins: {
     preflight: true,
   },
+
   plugins: [
-    require('@tailwindcss/line-clamp'), // ✅ for NommoUpcoming text truncation
+    require('@tailwindcss/line-clamp'),
   ],
 };
