@@ -1,0 +1,54 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.heading {
+  font-size: 1.8rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.grid {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.card {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 20px;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+}
+
+.card.large {
+  grid-column: span 2;
+}
+
+.online {
+  color: #23d160;
+  font-weight: bold;
+}
+
+.offline {
+  color: #ff3860;
+  font-weight: bold;
+}
+
+.previewVideo {
+  width: 100%;
+  border-radius: 8px;
+  margin-top: 12px;
+}
+
+.dim {
+  opacity: 0.6;
+}
+
+.error {
+  color: #ff5555;
+  font-size: 1.1rem;
+}

@@ -1,0 +1,38 @@
+.panel {
+  padding: 14px 18px;
+  background: rgba(20, 20, 26, 0.8);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(12px);
+}
+
+.title {
+  font-size: 1.1rem;
+  margin-bottom: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #fff;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  color: #ddd;
+  font-size: 0.9rem;
+}
+
+.errorBox {
+  margin-top: 10px;
+  font-size: 0.82rem;
+  color: #f88;
+  border-left: 2px solid #f66;
+  padding-left: 8px;
+}
+
+.timestamp {
+  margin-top: 16px;
+  font-size: 0.78rem;
+  opacity: 0.6;
+  text-align: right;
+}

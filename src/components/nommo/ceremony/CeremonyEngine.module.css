@@ -1,0 +1,82 @@
+/* src/components/nommo/ceremony/CeremonyEngine.module.css */
+
+.root {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+}
+
+/* Base variable defaults */
+:root,
+.root {
+  --audio-level: 0;
+}
+
+/* AURA — reacts to audio */
+.aura {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, #00ffbf22, transparent 70%);
+  opacity: 0;
+  transition: opacity 0.18s ease-out, box-shadow 0.18s ease-out;
+  box-shadow: 0 0 40px rgba(0, 255, 191, 0.15);
+}
+
+/* In ACTIVE / SURGE / PERFORMANCE modes, aura is responsive */
+.root[data-phase="active"] .aura,
+.root[data-phase="surge"] .aura {
+  opacity: calc(0.18 + var(--audio-level) * 0.6);
+  box-shadow: 0 0 calc(30px + var(--audio-level) * 55px) rgba(0, 255, 191, 0.4);
+}
+
+/* If performance mode is on, push it slightly more */
+.root[data-performance="on"][data-phase="active"] .aura,
+.root[data-performance="on"][data-phase="surge"] .aura {
+  opacity: calc(0.25 + var(--audio-level) * 0.75);
+}
+
+/* GATE — ceremony opening */
+.gate {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, #00ffbf33, transparent 75%);
+  opacity: 0;
+  transform: scale(0.85);
+  transition: opacity 1.2s ease, transform 1.8s ease;
+}
+
+.root[data-phase="opening"] .gate {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.root[data-phase="active"] .gate {
+  opacity: 0.35;
+}
+
+/* SURGE — viewer spike */
+.surge {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, #00ffbf77, transparent 80%);
+  opacity: 0;
+  transition: opacity 0.35s ease-out;
+}
+
+.root[data-phase="surge"] .surge {
+  opacity: 0.6;
+}
+
+/* WARNING — ingest unstable */
+.warning {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle, #ff004066, transparent 80%);
+  opacity: 0;
+  transition: opacity 0.4s ease-in-out;
+}
+
+.root[data-phase="warning"] .warning {
+  opacity: 0.55;
+}

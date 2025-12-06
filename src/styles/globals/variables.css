@@ -1,3 +1,6 @@
+/* ============================================================
+   AXPT GLOBAL VARIABLE SYSTEM
+   ============================================================ */
 :root {
   /* === 🕰️ TIMING TOKENS === */
   --sigil-reveal-delay: 9.2s;
@@ -6,131 +9,91 @@
   --sigil-float-duration: 14s;
   --starfield-drift-duration: 90s;
   --fade-in-duration: 2.5s;
+  --hud-color-live: #ff3c3c;
+  --hud-color-offline: #777;
+  --hud-color-wait: #aaa;
+
+  /* === 🔠 TYPOGRAPHY === */
   --font-hero-heading: clamp(2.8rem, 6vw, 5rem);
   --font-subheading: clamp(1.2rem, 2vw, 1.5rem);
+  --font-size-body: clamp(14px, 1.2vw, 18px);
+  --font-body: 'Helvoni', sans-serif;
 
-  /* 🌐 Unified Surge Field */
+  /* === 🔧 HUD TOKENS === */
+  --hud-width: 300px;
+  --hud-padding: 1rem;
+  --hud-radius: 14px;
+  --hud-blur: 10px;
+  --hud-bg: rgba(10, 14, 20, 0.92);
+  --hud-border: rgba(255, 255, 255, 0.12);
+  --hud-text: #e6e6e6;
+  --hud-glow: rgba(0, 255, 191, 0.16);
+  --orb-size: 52px;
+
+  /* === 🎛 PERFORMANCE COLORS === */
+  --perf-low-bg: rgba(70, 20, 20, 0.55);
+  --perf-med-bg: rgba(40, 10, 55, 0.45);
+  --perf-high-bg: rgba(20, 35, 25, 0.35);
+
+  /* === 🌐 SURGE FIELD === */
   --surge-color: rgba(255, 230, 150, 0.5);
   --surge-strength: 1;
   --surge-blur: 12px;
   --surge-hue-shift: 0deg;
   --surge-brightness: 1.0;
 
-  /* ✨ Glow + Bloom */
+  /* === ✨ BLOOM === */
   --bloom-strength: 1;
 
-  /* 🌠 Aura System */
+  /* === 🌠 AURA === */
   --aura-pulse-duration: 5.5s;
   --aura-pulse-color: rgba(255, 230, 150, 0.5);
   --aura-pulse-blur: 12px;
 
-  /* 🌌 Colors */
+  /* === 🌌 COLORS === */
   --color-bg-dark: rgba(10, 10, 10, 0.92);
   --color-text: #fdf6e3;
   --color-primary: #8328ff;
   --color-secondary: #ffc300;
 
-  /* Aura hues — used for multi-layered gradients and offsets */
   --color-aura-1: rgba(150, 90, 210, 0.35);
   --color-aura-2: rgba(80, 180, 255, 0.25);
   --color-aura-3: rgba(0, 255, 180, 0.22);
   --color-aura-4: rgba(255, 255, 255, 0.15);
 
-  /* 🌈 Glow Gradients */
   --color-glow-purple: rgba(110, 85, 190, 0.35);
   --color-glow-center: rgba(20, 10, 40, 0.82);
   --color-glow-outer: #070511;
 
-  /* 🎭 Fonts */
-  --font-body: 'Helvoni', sans-serif;
-
-  /* 🌀 Effects */
+  /* === 🎛 EFFECTS === */
   --blur-soft: blur(14px);
   --nebula-brightness: brightness(1.25);
   --nebula-saturation: saturate(1.25);
   --blend-soft: screen;
 
-  /* 🔠 Typography */
-  --font-size-body: clamp(14px, 1.2vw, 18px);
-
-  /* 🪶 Orb Scaling */
+  /* === 🪶 ORB SIZES === */
   --orb-size-sm: 240px;
   --orb-size-md: 360px;
   --orb-size-lg: 520px;
   --orb-size-xl: 720px;
 }
 
-/* === 💫 AURA PULSE KEYFRAMES === */
-@keyframes auraPulse {
-  0%, 100% {
-    filter: brightness(0.9);
-    transform: scale(1);
-    opacity: 0.8;
-  }
-  50% {
-    filter: brightness(1.25);
-    transform: scale(1.04);
-    opacity: 1;
-  }
+/* ============================================================
+   MODE-REACTIVE VARIABLE OVERRIDES
+   ============================================================ */
+html[data-ui-mode='oracle'] {
+  --bloom-strength: 1.3;
+  --aura-pulse-duration: 5.5s;
 }
 
-/* === 🔮 UNIVERSAL AURA CLASS === */
-.aura-pulse {
-  animation: auraPulse var(--aura-pulse-duration) ease-in-out infinite;
-  box-shadow: 0 0 var(--aura-pulse-blur) var(--aura-pulse-color);
-  will-change: transform, filter, opacity;
-  transition: filter 0.4s ease, box-shadow 0.4s ease;
+html[data-ui-mode='elder'] {
+  --bloom-strength: 0.8;
+  --aura-pulse-duration: 7s;
 }
 
-/* === 🧭 DESYNC STATE VARIANT === */
-html[data-aura-desync='true'] .aura-pulse {
-  animation-delay: calc(var(--random-delay, 0s));
-  opacity: 0.95;
-}
-
-html[data-aura-desync='true'] body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: radial-gradient(
-    circle at 50% 50%,
-    rgba(255, 230, 150, 0.05),
-    rgba(150, 90, 210, 0.02),
-    transparent 80%
-  );
-  mix-blend-mode: screen;
-  animation: slowDrift 80s linear infinite;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.45;
-  filter: blur(80px);
-}
-
-@keyframes slowDrift {
-  from { transform: rotate(0deg) scale(1.02); }
-  to { transform: rotate(360deg) scale(1.02); }
-}
-
-/* Section transitions */
-.axpt-section-divider {
-  height: 1px;
-  width: 80%;
-  margin: 0 auto;
-  background: linear-gradient(to right, transparent, rgba(255,255,255,0.2), transparent);
-}
-
-/* Cinematic frame shadow */
-.axpt-frame-shadow {
-  box-shadow: 0 0 80px rgba(255,255,255,0.08);
-}
-
-.axpt-heading {
-  font-size: var(--font-hero-heading);
-  letter-spacing: 0.02em;
-  line-height: 1.1;
-}
-
-.axpt-subheading {
-  font-size: var(--font-subheading);
-  color: #d1d1d1;
+html[data-ui-mode='nommo'] {
+  --bloom-strength: 0.3;
+  --aura-pulse-duration: 9s;
+  --nebula-brightness: brightness(0.9);
+  --surge-strength: 0.5;
 }

@@ -1,8 +1,10 @@
+// src/components/nommo/player/NommoPlayer.tsx
 'use client';
 
 import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
+import CeremonyEngine from '../ceremony/CeremonyEngine';
 
 interface NommoPlayerProps {
   src: string;
@@ -26,8 +28,9 @@ export default function NommoPlayer({
   const handleTogglePlay = () => {
     const el = videoRef.current;
     if (!el) return;
+
     if (el.paused) {
-      el.play();
+      void el.play();
       setIsPlaying(true);
     } else {
       el.pause();
@@ -61,12 +64,17 @@ export default function NommoPlayer({
       >
         <video
           ref={videoRef}
+          data-nommo-player
           src={src}
           poster={poster}
           onEnded={handleVideoEnd}
           className="w-full h-full object-cover"
           controls
+          playsInline
         />
+
+        {/* Ceremony / aura overlay */}
+        <CeremonyEngine />
 
         {/* Cinematic vignette */}
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,transparent_55%,rgba(0,0,0,0.6)_100%)]" />

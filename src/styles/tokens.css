@@ -1,0 +1,35 @@
+:root {
+  /* 🌌 COLORS */
+  --color-bg: #080b10;
+  --color-bg-panel: #0e1218;
+  --color-bg-alt: #11151c;
+
+  --color-primary: #00ffbf;
+  --color-secondary: #4ad6ff;
+  --color-accent: #ff94e0;
+
+  --color-text: #e6e6e6;
+  --color-text-dim: #9ea3b0;
+  --color-border: rgba(255,255,255,0.08);
+
+  /* 🌀 RADIUS */
+  --radius-sm: 0.35rem;
+  --radius-md: 0.6rem;
+  --radius-lg: 0.8rem;
+
+  /* 🌬 SPACING */
+  --space-1: 0.35rem;
+  --space-2: 0.65rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+  --space-5: 2rem;
+
+  /* 🔮 DEPTH */
+  --shadow-glow: 0 0 25px rgba(0,255,191,0.2);
+
+  /* ✨ MOTION */
+  --ease-ceremony: cubic-bezier(0.25, 0.1, 0.25, 1.0);
+  --motion-fast: 0.25s var(--ease-ceremony);
+  --motion-medium: 0.45s var(--ease-ceremony);
+  --motion-slow: 0.75s var(--ease-ceremony);
+}

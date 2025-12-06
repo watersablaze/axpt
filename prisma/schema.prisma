@@ -748,7 +748,9 @@ model EmailLog {
 }
 
 model LiveStream {
-  id        String   @id @default("primary")
-  isLive    Boolean  @default(false)
+  id        String   @id @default(cuid())
+  streamId  String   @unique
+  status    String?
   updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
 }

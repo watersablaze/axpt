@@ -1,0 +1,55 @@
+/* =========================================================
+   NOMMO ORACLE — GLOBAL DEBUG HUD SYSTEM
+   Uses variables from variables.css for precision + harmony
+   ========================================================= */
+
+.nommoDebugHUD {
+  position: fixed;
+  z-index: 99999;
+  width: var(--hud-width, 300px);
+  padding: var(--hud-padding, 1rem);
+  border-radius: var(--hud-radius, 14px);
+
+  background: var(--hud-bg, rgba(12, 16, 22, 0.92));
+  border: 1px solid var(--hud-border, rgba(255, 255, 255, 0.12));
+  backdrop-filter: blur(var(--hud-blur, 10px));
+  box-shadow: 0 0 22px var(--hud-glow, rgba(0, 255, 191, 0.16));
+
+  color: var(--hud-text, #e6e6e6);
+  font-size: 0.85rem;
+  cursor: grab;
+  user-select: none;
+}
+
+.nommoDebugHUD:active {
+  cursor: grabbing;
+}
+
+/* Header */
+.nommoHUDTabs button {
+  transition: background 0.25s, border 0.25s;
+}
+
+/* Performance Notice */
+.performanceWarning {
+  margin-top: 10px;
+  padding: 10px;
+
+  background: rgba(40, 10, 55, 0.45);
+  border: 1px solid rgba(0, 255, 191, 0.25);
+
+  border-radius: 8px;
+  line-height: 1.25;
+  font-size: 0.78rem;
+
+  box-shadow: 0 0 12px rgba(0, 255, 191, 0.15);
+}
+
+.performanceWarning strong {
+  color: var(--mirror, #00ffbf);
+  text-shadow: 0 0 4px currentColor;
+}
+
+.nommoOrb {
+  transition: opacity 0.3s, transform 0.25s;
+}

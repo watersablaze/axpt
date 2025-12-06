@@ -1,0 +1,51 @@
+.sidebarNav {
+  width: 220px;
+  background: var(--color-bg-panel);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  border-right: 1px solid var(--color-border);
+}
+
+.sidebarHeader {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: var(--space-2);
+}
+
+.consoleLogo {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--color-primary);
+}
+
+.sideNavList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.navLink {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  color: var(--color-text);
+  opacity: 0.7;
+  transition: all var(--motion-fast);
+}
+
+.navLink:hover {
+  opacity: 1;
+  background: var(--color-bg-alt);
+}
+
+.activeNav {
+  color: var(--color-primary);
+  background: rgba(0,255,191,0.08);
+  opacity: 1;
+  border-left: 3px solid var(--color-primary);
+}

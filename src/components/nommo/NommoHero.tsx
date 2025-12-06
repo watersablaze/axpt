@@ -29,7 +29,7 @@ export default function NommoHero() {
     >
       {/* 🌌 Nebula Background */}
       <motion.img
-        src="/images/backgrounds/Nebula@2x.png"
+        src="/images/backgrounds.nebula_purpblue.png"
         alt="Nommo Nebula"
         className={styles.nebula}
         style={{ y: nebulaY }}

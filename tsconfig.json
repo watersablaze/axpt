@@ -4,14 +4,14 @@
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "module": "ESNext",
     "moduleResolution": "Node",
-    "jsx": "preserve",                          // ✅ required for JSX in .tsx
+    "jsx": "preserve",                         
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "isolatedModules": true,                   // ✅ ensures .tsx with JSX compiles
+    "isolatedModules": true,                  
     "allowJs": true,
     "checkJs": false,
     "resolveJsonModule": true,

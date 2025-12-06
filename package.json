@@ -8,7 +8,8 @@
     "pnpm": ">=8.15.5 <9"
   },
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "node server.js",
+    "dev:next": "next dev -p 3000",
     "dev:net": "cross-env NODE_ENV=development NEXT_PUBLIC_AXPT_ENV=net next dev -H 0.0.0.0",
     "cli:dev:mobile": "tsx scripts/dev/devMobile.ts",
     "tunnel": "cloudflared tunnel run axpt-dev-tunnel",
@@ -80,7 +81,6 @@
     "verify:protium": "VERIFY_TARGET=protium bash scripts/verify-latest.sh",
     "verify:axg": "VERIFY_TARGET=axg bash scripts/verify-latest.sh",
     "postinstall": "if [ ! -d node_modules/@tailwindcss/line-clamp ]; then echo '⚠️ Installing @tailwindcss/line-clamp...'; pnpm add -D @tailwindcss/line-clamp; fi"
-
   },
   "devDependencies": {
     "@eslint/eslintrc": "2.1.4",
@@ -89,6 +89,7 @@
     "@types/bcryptjs": "^3.0.0",
     "@types/chalk": "^2.2.4",
     "@types/figlet": "^1.7.0",
+    "@types/hls.js": "^1.0.0",
     "@types/inquirer": "^9.0.8",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/jwt-decode": "^3.1.0",
@@ -145,6 +146,7 @@
     "figlet": "^1.8.1",
     "framer-motion": "^10.18.0",
     "gradient-string": "^3.0.0",
+    "hls.js": "^1.6.15",
     "howler": "^2.2.4",
     "jose": "^6.0.11",
     "jsonwebtoken": "^9.0.2",
@@ -164,6 +166,7 @@
     "resend": "^6.0.1",
     "sonner": "^2.0.6",
     "swr": "^2.3.3",
+    "ws": "^8.18.3",
     "zod": "^3.25.74",
     "zustand": "^5.0.6"
   }

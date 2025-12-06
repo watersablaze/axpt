@@ -1,0 +1,62 @@
+.wrapper {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  padding: 12px 14px;
+  margin-top: 10px;
+
+  background: rgba(18, 12, 25, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+
+  backdrop-filter: blur(10px) saturate(1.2);
+  color: #ddd;
+
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.78rem;
+
+  position: relative;
+  overflow: hidden;
+}
+
+/* Mystic Glyph */
+.glyph {
+  font-size: 1.5rem;
+  line-height: 1;
+  margin-top: 2px;
+  color: #fff;
+  pointer-events: none;
+}
+
+/* Text column */
+.textBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* Title */
+.title {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Description */
+.desc {
+  color: #bbb;
+  font-size: 0.72rem;
+  line-height: 1.2rem;
+  max-width: 230px;
+}
+
+/* Technical diagnostic line */
+.techline {
+  margin-top: 4px;
+  font-size: 0.7rem;
+  opacity: 0.8;
+  color: #999;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding-top: 4px;
+}

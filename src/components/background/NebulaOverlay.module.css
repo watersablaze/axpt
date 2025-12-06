@@ -7,7 +7,7 @@
   overflow: hidden;
 
   /* ✅ Use your actual purple nebula texture */
-  background: url('/textures/nebula_purple.png') center/cover no-repeat;
+  background: url('/images/backgrounds/nebula_purpblue.png') center/cover no-repeat;
   mix-blend-mode: normal;
   opacity: 0.65; /* visible but not washed out */
 

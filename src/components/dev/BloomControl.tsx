@@ -2,35 +2,46 @@
 
 import { useEffect, useState } from 'react';
 
-export default function BloomControl() {
+export default function BloomControl({ embedded = false }: { embedded?: boolean }) {
   const [bloom, setBloom] = useState(1);
 
-  // 🧭 Load stored bloom value from localStorage on mount
+  // Load saved value
   useEffect(() => {
     const stored = localStorage.getItem('bloom-strength');
-    if (stored) {
-      const parsed = parseFloat(stored);
-      if (!isNaN(parsed)) {
-        setBloom(parsed);
-        document.documentElement.style.setProperty('--bloom-strength', parsed.toString());
-      }
-    } else {
-      // initialize CSS variable with default
-      document.documentElement.style.setProperty('--bloom-strength', '1');
-    }
+    const parsed = stored ? parseFloat(stored) : NaN;
+
+    const initial = !isNaN(parsed) ? parsed : 1;
+    setBloom(initial);
+    document.documentElement.style.setProperty('--bloom-strength', initial.toString());
   }, []);
 
-  // 💾 Whenever bloom changes, save & apply immediately
+  // Save & apply
   useEffect(() => {
     document.documentElement.style.setProperty('--bloom-strength', bloom.toString());
     localStorage.setItem('bloom-strength', bloom.toString());
   }, [bloom]);
 
-  useEffect(() => {
-  console.log(`🌟 Bloom strength now: ${bloom.toFixed(2)}`);
-}, [bloom]);
+  /* ───────── EMBEDDED MODE ───────── */
+  if (embedded) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+        <div style={{ fontSize: '0.85rem', opacity: 0.8 }}>
+          ✨ Bloom {bloom.toFixed(2)}
+        </div>
+        <input
+          type="range"
+          min="0.5"
+          max="2.0"
+          step="0.05"
+          value={bloom}
+          onChange={(e) => setBloom(parseFloat(e.target.value))}
+          style={{ width: '100%', accentColor: '#e6c667' }}
+        />
+      </div>
+    );
+  }
 
-  // only show this overlay during development
+  /* ───────── STANDALONE MODE (OLD FLOATING PANEL) ───────── */
   if (process.env.NODE_ENV !== 'development') return null;
 
   return (
@@ -48,7 +59,6 @@ export default function BloomControl() {
         color: 'white',
         fontFamily: 'monospace',
         fontSize: '14px',
-        userSelect: 'none',
       }}
     >
       <label style={{ display: 'block', marginBottom: '6px' }}>
@@ -61,11 +71,7 @@ export default function BloomControl() {
         step="0.05"
         value={bloom}
         onChange={(e) => setBloom(parseFloat(e.target.value))}
-        style={{
-          width: '140px',
-          accentColor: '#e6c667',
-          cursor: 'pointer',
-        }}
+        style={{ width: '140px', accentColor: '#e6c667' }}
       />
     </div>
   );

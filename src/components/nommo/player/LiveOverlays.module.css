@@ -1,0 +1,33 @@
+.overlayRoot {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+}
+
+.aura {
+  position: absolute;
+  inset: 0;
+  transition: 0.8s ease;
+}
+
+.pulse {
+  position: absolute;
+  inset: 0;
+  animation: pulse 2.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.2; }
+  50% { opacity: 0.5; }
+  100% { opacity: 0.2; }
+}
+
+.viewers {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  padding: 6px 12px;
+  background: rgba(0,0,0,0.4);
+  border-radius: 6px;
+  font-size: 0.9rem;
+}

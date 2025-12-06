@@ -1,0 +1,41 @@
+/* AXPT Overlay Engine Styles */
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: transparent !important;
+}
+
+.overlay-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hidden {
+  opacity: 0;
+  transition: opacity 1s ease-out;
+}
+
+.visible {
+  opacity: 1;
+  transition: opacity 1s ease-in;
+}
+
+/* Example: shimmering invocation text */
+#invocation {
+  font-family: "Cinzel", serif;
+  font-size: 3rem;
+  text-align: center;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255,255,255,0.9);
+  text-shadow: 0 0 20px #4effff;
+  animation: shimmer 6s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { text-shadow: 0 0 8px #1affff; }
+  50% { text-shadow: 0 0 22px #33ffff; }
+  100% { text-shadow: 0 0 8px #1affff; }
+}

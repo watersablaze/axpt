@@ -1,14 +1,9 @@
-import "server-only";
-import { db } from "@/lib/db";
+import { prisma } from "@/lib/prisma";
 
-export async function getLiveState() {
-  const row = await db.liveStream.findUnique({
-    where: { id: "primary" },
+export async function getLiveState(streamId: string) {
+  const row = await prisma.liveStream.findUnique({
+    where: { streamId },
   });
 
-  return {
-    isLive: row?.isLive ?? false,
-    owncastHls: process.env.OWNC_HLS_URL!,
-    fallbackHls: process.env.CF_HLS_URL || process.env.OWNC_HLS_URL!,
-  };
+  return row ?? null;
 }
