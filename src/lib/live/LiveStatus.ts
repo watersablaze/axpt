@@ -11,9 +11,20 @@ export function useLiveStatus() {
   });
 
   useEffect(() => {
-    const handler = (data: LiveStatus) => setStatus(data);
-    eventBus.on('live:status:update', handler);
-    return () => eventBus.off('live:status:update', handler);
+    const unsubscribe = eventBus.on('live:status:update', ({ data }) => {
+      const viewerCount =
+        typeof data.viewers === 'number'
+          ? data.viewers
+          : // legacy fields
+            (data as any).viewerCount ?? 0;
+
+      setStatus({
+        online: !!data.online,
+        viewerCount,
+      });
+    });
+
+    return () => unsubscribe();
   }, []);
 
   return status;

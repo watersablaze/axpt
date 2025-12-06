@@ -5,22 +5,43 @@ export async function GET() {
   try {
     const status = await fetchOwncastStatus();
 
+    // --- Normalize fields from Owncast ---
+    const isOnline = Boolean(status?.online);
+    const currentViewers =
+      status?.viewerCount ??
+      status?.broadcaster?.viewerCount ??
+      0;
+
+    const peakViewers =
+      status?.sessionPeakViewerCount ??
+      status?.overallPeakViewerCount ??
+      currentViewers ??
+      0;
+
+    const bitrateKbps =
+      status?.broadcaster?.bitrate ??
+      status?.broadcaster?.bitrateKbps ??
+      null;
+
+    // --- Construct API response ---
     const payload = {
-      online: Boolean(status.online),
-      viewers: status.viewerCount ?? 0,
-      peakViewers:
-        status.sessionPeakViewerCount ??
-        status.overallPeakViewerCount ??
-        status.viewerCount ??
-        0,
-      bitrateKbps: status.broadcaster?.bitrate ?? null,
-      ingestHealthy: Boolean(status.online),
+      online: isOnline,
+      viewers: currentViewers,
+      peakViewers,
+      bitrateKbps,
+
+      // Treat ingest health as "online"
+      ingestHealthy: isOnline,
+
+      // Owncast does not expose uptime, so null for now
       uptimeSeconds: null,
+
       error: null,
     };
 
     return NextResponse.json(payload, { status: 200 });
   } catch (err: any) {
+    // Graceful degradation
     return NextResponse.json(
       {
         online: false,

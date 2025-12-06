@@ -1,29 +1,31 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import styles from "./page.module.css";
 
 type StatusResponse = {
   online: boolean;
-  viewerCount: number;
+  viewerCount?: number;
 };
 
 export default function LivePage() {
   const videoRef = useRef<HTMLVideoElement>(null);
+
   const [isLive, setIsLive] = useState(false);
   const [viewerCount, setViewerCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // 🔍 Poll stream status
+  // 🔍 Poll stream status — now using SAME-ORIGIN route to avoid CORS
   useEffect(() => {
     async function checkStatus() {
       try {
-        const res = await fetch("https://live.axpt.io/api/status");
+        const res = await fetch("/api/live/status", { cache: "no-store" });
         const data: StatusResponse = await res.json();
 
         setIsLive(data.online);
         setViewerCount(data.viewerCount ?? 0);
-      } catch (err) {
-        console.error("Status fetch failed:", err);
+      } catch (e) {
+        console.warn("Status check failed:", e);
         setIsLive(false);
       } finally {
         setLoading(false);
@@ -35,71 +37,81 @@ export default function LivePage() {
     return () => clearInterval(interval);
   }, []);
 
-  // 🎥 Attach HLS when live
+  // 🎥 Attach HLS video when live
   useEffect(() => {
     if (!isLive || !videoRef.current) return;
 
     import("hls.js").then((Hls) => {
       if (Hls.isSupported()) {
         const hls = new Hls.default();
-        hls.loadSource("https://live.axpt.io/hls/stream.m3u8");
+
+        hls.loadSource("https://live.axpt.io/hls/0/stream.m3u8");
         hls.attachMedia(videoRef.current!);
+
+        hls.on(Hls.Events.ERROR, (evt, data) => {
+          console.error("HLS error:", data);
+        });
       } else {
-        videoRef.current!.src = "https://live.axpt.io/hls/stream.m3u8";
+        // native fallback
+        videoRef.current!.src = "https://live.axpt.io/hls/0/stream.m3u8";
       }
     });
   }, [isLive]);
 
   return (
-    <main className="min-h-screen w-full flex flex-col items-center justify-start py-10 px-4 bg-black text-white relative">
-      {/* 🌌 Title */}
-      <h1 className="text-3xl font-light tracking-wide mb-6 opacity-80">
-        AXPT • Nommo Transmission
-      </h1>
+    <main className={styles.pageRoot}>
+      {/* 🌌 Nebula Background */}
+      <div className={styles.nebulaLayer} />
 
-      {/* 🔴 LIVE BADGE + Viewer Counter */}
-      <div className="absolute top-6 left-6 z-30 flex items-center gap-4">
+      {/* ✨ Soft Gradient */}
+      <div className={styles.gradientVeil} />
 
-        {/* Live Badge */}
+      {/* 🕯 Title */}
+      <h1 className={styles.pageTitle}>AXPT • Nommo Transmission</h1>
+
+      {/* 🔴 Status Bar */}
+      <div className={styles.statusBar}>
         {isLive && (
-          <div className="flex items-center px-4 py-1 bg-red-600/80 rounded-full shadow-[0_0_18px_rgba(255,0,0,0.8)] animate-pulse">
-            <span className="w-2 h-2 bg-red-300 rounded-full animate-ping mr-2" />
-            <span className="text-sm font-semibold">LIVE</span>
+          <div className={styles.liveBadge}>
+            <span className={styles.liveDot} />
+            <span>LIVE</span>
           </div>
         )}
-
-        {/* Viewer Count */}
-        <div className="px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-sm border border-white/10">
-          👁 {viewerCount} watching
-        </div>
+        <div className={styles.viewerBadge}>👁 {viewerCount} watching</div>
       </div>
 
-      {/* 📺 OFFLINE STATE */}
+      {/* 🜁 Offline State */}
       {!isLive && !loading && (
-        <div className="w-full max-w-4xl rounded-xl overflow-hidden border border-white/10 shadow-[0_0_25px_rgba(255,255,255,0.05)]">
-          <img
-            src="/live/offline.png"
-            alt="Stream Offline"
-            className="w-full h-auto object-cover"
-          />
+        <div className={styles.frameWrapper}>
+          <div className={styles.auraRing} />
+          <div className={styles.ceremonyFrame}>
+            <img
+              src="/live/offline.png"
+              alt="Transmission Offline"
+              className={styles.offlineImage}
+            />
+          </div>
         </div>
       )}
 
-      {/* 🎥 LIVE PLAYER */}
+      {/* 🜂 Live Player */}
       {isLive && (
-        <video
-          ref={videoRef}
-          controls
-          autoPlay
-          playsInline
-          className="w-full max-w-4xl rounded-xl shadow-[0_0_35px_rgba(0,0,0,0.6)] border border-white/10 transition-transform duration-500 hover:scale-[1.01]"
-        />
+        <div className={styles.frameWrapper}>
+          <div className={styles.auraRing} />
+          <div className={styles.ceremonyFrame}>
+            <video
+              ref={videoRef}
+              className={styles.videoLive}
+              controls
+              autoPlay
+              playsInline
+              muted
+            />
+          </div>
+        </div>
       )}
 
-      {/* Footer */}
-      <p className="mt-6 text-sm opacity-50">
-        Streaming via AXPT Live Engine
-      </p>
+      <p className={styles.footerNote}>Streaming via AXPT Live Engine</p>
     </main>
   );
 }

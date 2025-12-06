@@ -13,15 +13,15 @@ import PerformanceWarning from './PerformanceWarning';
 import ModeTab from './tabs/ModeTab';
 
 import LiveTab from '@/components/devtools/LiveTab';
-import { eventBus } from '@/lib/oracle/EventBus';
+import { eventBus, type NommoTabName } from '@/lib/oracle/EventBus';
 
 export default function NommoDebugPanel() {
   const pathname = usePathname();
   const performanceMode = usePerformanceMode();
   const { color, uiMode } = useMirrorRay();
 
-  const TABS = ['live', 'system', 'aura', 'bloom', 'ceremony', 'mode'] as const;
-  const [selectedTab, setSelectedTab] = useState<(typeof TABS)[number]>('live');
+  const TABS: NommoTabName[] = ['live', 'system', 'aura', 'bloom', 'ceremony', 'mode'];
+  const [selectedTab, setSelectedTab] = useState<NommoTabName>('live');
   const [open, setOpen] = useState(false);
 
   const [pos, setPos] = useState(() => ({
@@ -55,7 +55,7 @@ export default function NommoDebugPanel() {
   useEffect(() => {
     const unsub = eventBus.on('nommo:switch-tab', ({ data }) => {
       if (TABS.includes(data.tab)) {
-        setSelectedTab(data.tab as typeof TABS[number]);
+        setSelectedTab(data.tab);
         setOpen(true);
       }
     });

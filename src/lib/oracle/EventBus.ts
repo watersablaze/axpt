@@ -12,7 +12,24 @@ type EventName =
   | 'debug:log'
   | 'nommo:switch-tab'       // ⭐ NEW
   | 'live:open-mini'         // ⭐ NEW
-  | 'live:open-full';        // ⭐ NEW
+  | 'live:open-full'         // ⭐ NEW
+  | 'nommo:ceremony:opened'  // ⭐ NEW
+  | 'nommo:spike'            // ⭐ NEW
+  | 'nommo:warning'          // ⭐ NEW
+  | 'live:ws:connected'      // ⭐ NEW
+  | 'live:ws:disconnected'   // ⭐ NEW
+  | 'live:ws:open'           // ⭐ legacy bridge
+  | 'live:ws:closed'         // ⭐ legacy bridge
+  | 'live:command';          // ⭐ NEW
+
+// Shared tab registry for nommo debug panel
+export type NommoTabName =
+  | 'live'
+  | 'system'
+  | 'aura'
+  | 'bloom'
+  | 'ceremony'
+  | 'mode';
 
 /************************************************************
  * PAYLOAD TYPES
@@ -36,13 +53,21 @@ export interface CeremonyPhasePayload {
 export type EventPayload =
   | { name: 'live:status:update'; data: LiveStatusEventPayload }
   | { name: 'live:status:change'; data: LiveStatusEventPayload }
-  | { name: 'live:error'; data: { message: string; at: number } }
+  | { name: 'live:error'; data: { message: string; at: number; error?: string | null } }
   | { name: 'ceremony:phase'; data: CeremonyPhasePayload }
   | { name: 'performance:mode'; data: { mode: 'low' | 'medium' | 'high' } }
   | { name: 'debug:log'; data: { channel: string; message: string; meta?: any } }
-  | { name: 'nommo:switch-tab'; data: { tab: string } }            // ⭐ NEW
-  | { name: 'live:open-mini'; data: void }                         // ⭐ NEW
-  | { name: 'live:open-full'; data: void };                        // ⭐ NEW
+  | { name: 'nommo:switch-tab'; data: { tab: NommoTabName } }               // ⭐ NEW
+  | { name: 'live:open-mini'; data: Record<string, never> }                // ⭐ NEW
+  | { name: 'live:open-full'; data: Record<string, never> }                // ⭐ NEW
+  | { name: 'nommo:ceremony:opened'; data: Record<string, never> }         // ⭐ NEW
+  | { name: 'nommo:spike'; data: { peakViewers?: number } }                // ⭐ NEW
+  | { name: 'nommo:warning'; data: { reason?: string } }                   // ⭐ NEW
+  | { name: 'live:ws:connected'; data: { at: number } }                    // ⭐ NEW
+  | { name: 'live:ws:disconnected'; data: { at: number; error?: boolean } }// ⭐ NEW
+  | { name: 'live:ws:open'; data: { url?: string } }                       // ⭐ legacy bridge
+  | { name: 'live:ws:closed'; data: { error?: boolean } }                  // ⭐ legacy bridge
+  | { name: 'live:command'; data: { command: string; [key: string]: any } }; // ⭐ NEW
 
 type Listener<T extends EventPayload = EventPayload> = (event: T) => void;
 
@@ -59,12 +84,10 @@ class EventBus {
     if (!this.listeners.has(name)) {
       this.listeners.set(name, new Set());
     }
-    // @ts-expect-error internal dispatch mechanism
-    this.listeners.get(name)!.add(listener);
+    this.listeners.get(name)!.add(listener as any);
 
     return () => {
-      // @ts-expect-error internal dispatch mechanism
-      this.listeners.get(name)?.delete(listener);
+      this.listeners.get(name)?.delete(listener as any);
     };
   }
 
@@ -79,12 +102,18 @@ class EventBus {
 
     for (const listener of set) {
       try {
-        // @ts-expect-error runtime dispatch
-        listener(payload);
+        listener(payload as any);
       } catch (err) {
         console.error('[EventBus] listener error:', name, err);
       }
     }
+  }
+
+  off<T extends EventPayload['name']>(
+    name: T,
+    listener: Listener<Extract<EventPayload, { name: T }>>,
+  ) {
+    this.listeners.get(name)?.delete(listener as any);
   }
 
   clearAll() {

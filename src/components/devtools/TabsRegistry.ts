@@ -1,9 +1,9 @@
 // src/components/devtools/TabsRegistry.ts
 import LiveTab from '@/components/devtools/LiveTab';
-import SystemTab from './tabs/SystemTab';
-import AuraTab from './tabs/AuraTab';
-import BloomTab from './tabs/BloomTab';
-import CeremonyTab from './tabs/CeremonyTab';
+import SystemTab from '@/components/nommo/panel/tabs/SystemTab';
+import AuraTab from '@/components/nommo/panel/tabs/AuraTab';
+import BloomTab from '@/components/nommo/panel/tabs/BloomTab';
+import CeremonyTab from '@/components/nommo/panel/tabs/CeremonyTab';
 
 export const TABS = {
   live: LiveTab, // ⭐ entry portal

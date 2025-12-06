@@ -5,6 +5,7 @@ import styles from './LiveOverlays.module.css';
 
 export default function LiveOverlays() {
   const live = useLive();
+  const bitrate = live.bitrateKbps ?? 0;
 
   return (
     <div className={styles.overlayRoot}>
@@ -14,7 +15,7 @@ export default function LiveOverlays() {
         style={{
           opacity: live.online ? 1 : 0,
           boxShadow: live.online
-            ? `0 0 40px ${live.bitrateKbps > 2000 ? '#00ffbfcc' : '#ff0066aa'}`
+            ? `0 0 40px ${bitrate > 2000 ? '#00ffbfcc' : '#ff0066aa'}`
             : 'none'
         }}
       />
@@ -22,7 +23,7 @@ export default function LiveOverlays() {
       {/* Bitrate pulse */}
       <div
         className={styles.pulse}
-        data-strength={live.bitrateKbps ?? 0}
+        data-strength={bitrate}
       />
 
       {/* Viewer count indicator */}

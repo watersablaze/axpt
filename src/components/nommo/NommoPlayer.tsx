@@ -4,7 +4,7 @@
 import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import clsx from 'clsx';
-import CeremonyEngine from '../ceremony/CeremonyEngine';
+import CeremonyEngine from './ceremony/CeremonyEngine';
 
 interface NommoPlayerProps {
   src: string;
