@@ -7,6 +7,8 @@ import '@/styles/debug.css';
 import { Inter } from 'next/font/google';
 import { Toaster } from 'sonner';
 
+import Script from 'next/script';
+
 import NeonWake from '@/components/NeonWake';
 import NebulaOverlay from '@/components/background/NebulaOverlay';
 import AuraInitializer from '@/components/devtools/AuraInitializer';
@@ -28,8 +30,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="en">
+      <head>
+        {/* 🔥 Required for embedding Jitsi in OBS without login */}
+        <Script
+          src="https://meet.jit.si/external_api.js"
+          strategy="beforeInteractive"
+        />
+      </head>
+
       <body className={`${inter.className} text-white bg-black`}>
-        
         {/* Energetic Layers */}
         <NeonWake />
         <NebulaOverlay />
