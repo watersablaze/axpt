@@ -1,0 +1,187 @@
+{
+  "format_version": 1,
+  "name": "AXPT Matriarch Monday Ceremony",
+  "sources": [
+    {
+      "sourceName": "JitsiCore",
+      "sourceKind": "browser_source",
+      "settings": {
+        "url": "https://meet.jit.si/MatriarchMondayWarriorsGarden#layoutType=tile&config.prejoinPageEnabled=false",
+        "width": 1920,
+        "height": 1080,
+        "fps": 30,
+        "shutdown": false
+      }
+    },
+    {
+      "sourceName": "CeremonyFrame",
+      "sourceKind": "image_source",
+      "settings": {
+        "file": "public/live/frame-sacred-ceremony.png"
+      }
+    },
+    {
+      "sourceName": "WaitingPoster",
+      "sourceKind": "image_source",
+      "settings": {
+        "file": "public/live/matriarch-monday.png"
+      }
+    },
+    {
+      "sourceName": "LowerThirdTemplate",
+      "sourceKind": "text_gdiplus",
+      "settings": {
+        "text": "",
+        "font": {
+          "face": "Inter",
+          "size": 42,
+          "style": "Regular"
+        },
+        "color1": 4281479731,
+        "outline": true,
+        "outline_color": 4278190080,
+        "outline_size": 3
+      }
+    }
+  ],
+  "scenes": [
+    {
+      "sceneName": "00 - Waiting Ceremony",
+      "sources": [
+        {
+          "name": "WaitingPoster",
+          "alignment": 2,
+          "pos": { "x": 0, "y": 0 }
+        }
+      ]
+    },
+    {
+      "sceneName": "01 - Full Grid",
+      "sources": [
+        { "name": "JitsiCore", "pos": { "x": 0, "y": 0 } },
+        { "name": "CeremonyFrame", "pos": { "x": 0, "y": 0 } }
+      ]
+    },
+
+    {
+      "sceneName": "02 - Spotlight - Ma'ya",
+      "sources": [
+        {
+          "name": "JitsiCore",
+          "crop": { "top": 180, "bottom": 180, "left": 480, "right": 480 },
+          "pos": { "x": 0, "y": 0 }
+        },
+        { "name": "CeremonyFrame", "pos": { "x": 0, "y": 0 } },
+        {
+          "name": "LowerThirdTemplate",
+          "settings": { "text": "Ma’yá — Ceremonial Guide" },
+          "pos": { "x": 120, "y": 900 }
+        }
+      ]
+    },
+
+    {
+      "sceneName": "03 - Spotlight - Mama Kali",
+      "sources": [
+        {
+          "name": "JitsiCore",
+          "crop": { "top": 180, "bottom": 180, "left": 480, "right": 480 },
+          "pos": { "x": 0, "y": 0 }
+        },
+        { "name": "CeremonyFrame", "pos": { "x": 0, "y": 0 } },
+        {
+          "name": "LowerThirdTemplate",
+          "settings": { "text": "Mama Kali — Matriarch" },
+          "pos": { "x": 120, "y": 900 }
+        }
+      ]
+    },
+
+    {
+      "sceneName": "04 - Spotlight - MACDAM",
+      "sources": [
+        {
+          "name": "JitsiCore",
+          "crop": { "top": 180, "bottom": 180, "left": 480, "right": 480 }
+        },
+        { "name": "CeremonyFrame" },
+        {
+          "name": "LowerThirdTemplate",
+          "settings": { "text": "MâdXm — Agricultural Steward" },
+          "pos": { "x": 120, "y": 900 }
+        }
+      ]
+    },
+
+    {
+      "sceneName": "05 - Spotlight - Xoma Kai",
+      "sources": [
+        { "name": "JitsiCore", "crop": { "top": 180, "bottom": 180, "left": 480, "right": 480 } },
+        { "name": "CeremonyFrame" },
+        {
+          "name": "LowerThirdTemplate",
+          "settings": { "text": "Xoma Kai Ferdill Vilander — Khoi Healer" },
+          "pos": { "x": 120, "y": 900 }
+        }
+      ]
+    },
+
+    {
+      "sceneName": "06 - Spotlight - Tarakai",
+      "sources": [
+        { "name": "JitsiCore", "crop": { "top": 180, "bottom": 180, "left": 480, "right": 480 } },
+        { "name": "CeremonyFrame" },
+        {
+          "name": "LowerThirdTemplate",
+          "settings": { "text": "N/um Tarakai Charné — Khoi Healer" },
+          "pos": { "x": 120, "y": 900 }
+        }
+      ]
+    },
+
+    {
+      "sceneName": "07 - Spotlight - Jo Baka",
+      "sources": [
+        { "name": "JitsiCore", "crop": { "top": 180, "bottom": 180, "left": 480, "right": 480 } },
+        { "name": "CeremonyFrame" },
+        {
+          "name": "LowerThirdTemplate",
+          "settings": { "text": "Jo Baka — Community Leader" },
+          "pos": { "x": 120, "y": 900 }
+        }
+      ]
+    },
+
+    {
+      "sceneName": "08 - Spotlight - Majestic",
+      "sources": [
+        { "name": "JitsiCore", "crop": { "top": 180, "bottom": 180, "left": 480, "right": 480 } },
+        { "name": "CeremonyFrame" },
+        {
+          "name": "LowerThirdTemplate",
+          "settings": { "text": "Majestic — Poet, Griot & MC" },
+          "pos": { "x": 120, "y": 900 }
+        }
+      ]
+    },
+
+    {
+      "sceneName": "09 - Closing Ceremony",
+      "sources": [
+        { "name": "WaitingPoster" },
+        { "name": "CeremonyFrame" }
+      ]
+    }
+  ],
+  "transitions": [
+    {
+      "name": "AXPT Stinger",
+      "kind": "stinger_transition",
+      "settings": {
+        "path": "public/live/axpt-stinger.webm",
+        "transition_point_type": 0,
+        "transition_point": 550
+      }
+    }
+  ]
+}

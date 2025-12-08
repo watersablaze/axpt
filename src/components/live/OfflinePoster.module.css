@@ -1,0 +1,16 @@
+.wrapper {
+  animation: breathe 6s ease-in-out infinite, drift 18s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes breathe {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.015); opacity: 0.96; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes drift {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-6px); }
+  100% { transform: translateY(0px); }
+}

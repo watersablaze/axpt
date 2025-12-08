@@ -1,0 +1,50 @@
+.frame {
+  position: relative;
+  width: 100%;
+  max-width: 1000px;
+  margin: 2rem auto;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 0 40px rgba(0, 255, 200, 0.15);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(12px);
+}
+
+/* OFFLINE SCREEN */
+.offlineWrapper {
+  position: relative;
+  width: 100%;
+  height: 56.25vw; /* 16:9 ratio */
+  max-height: 560px;
+}
+
+.offlineImage {
+  object-fit: cover;
+  opacity: 0.92;
+  filter: drop-shadow(0 0 10px rgba(0,255,200,0.3));
+}
+
+/* ✨ Breathing Pulse */
+@keyframes axptBreath {
+  0%   { opacity: 0.92; transform: scale(1); }
+  50%  { opacity: 1; transform: scale(1.015); }
+  100% { opacity: 0.92; transform: scale(1); }
+}
+
+/* 🌌 Subtle Nebula Drift */
+@keyframes axptDrift {
+  0%   { transform: translate3d(0px, 0px, 0px) scale(1); }
+  50%  { transform: translate3d(-6px, 4px, 0px) scale(1.01); }
+  100% { transform: translate3d(0px, 0px, 0px) scale(1); }
+}
+
+/* Apply both simultaneously */
+.offlineImage {
+  object-fit: cover;
+  opacity: 0.92;
+  filter: drop-shadow(0 0 10px rgba(0,255,200,0.3));
+
+  animation:
+    axptBreath 12s ease-in-out infinite,
+    axptDrift 22s ease-in-out infinite;
+}

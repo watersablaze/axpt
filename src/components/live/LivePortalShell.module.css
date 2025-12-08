@@ -1,0 +1,19 @@
+.shell {
+  position: relative;
+  width: 100%;
+  padding: 40px 0;
+}
+
+.inner {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.invocation {
+  margin-bottom: 40px;
+}
+
+.frame {
+  margin-bottom: 40px;
+}
