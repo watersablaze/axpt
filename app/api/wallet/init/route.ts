@@ -14,7 +14,7 @@ export async function POST() {
       wallet: {
         id: wallet.id,
         createdAt: wallet.createdAt,
-        balances: wallet.balances.map(b => ({
+        balances: wallet.balances.map((b: any) => ({
           id: b.id,
           label: b.token ? b.token.symbol : b.tokenType,
           amount: b.amount,

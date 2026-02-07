@@ -1,86 +1,48 @@
-/* 🌌 Nebula Overlay — visible, cinematic violet depth field */
-.overlayWrapper {
+/* 🌌 Nebula Overlay v2
+   Atmospheric, inert, authoritative
+*/
+
+.nebula {
   position: fixed;
   inset: 0;
-  pointer-events: none;
   z-index: 0;
-  overflow: hidden;
+  pointer-events: none;
 
-  /* ✅ Use your actual purple nebula texture */
-  background: url('/images/backgrounds/nebula_purpblue.png') center/cover no-repeat;
-  mix-blend-mode: normal;
-  opacity: 0.65; /* visible but not washed out */
+  /* Base texture */
+  background: url('/images/backgrounds/nebula_purpblue.png')
+    center / cover no-repeat;
 
-  /* 🎥 Filmic treatment */
-  filter: 
-    brightness(1.05)
-    contrast(1.2)
-    saturate(1.25)
-    blur(1.5px);
+  /* Presence tuning */
+  opacity: 0;
+  filter:
+    brightness(1.04)
+    contrast(1.12)
+    saturate(1.18);
 
-  /* 🌪 Slow, subtle motion to prevent stagnancy */
-  animation: nebulaOrbit 240s ease-in-out infinite alternate;
-  will-change: transform, filter, opacity;
-  transform-origin: center center;
+  /* One-time veil lift */
+  animation: nebulaFadeIn 6s ease-out forwards;
+
+  /* Prevent repaint churn */
+  transform: translateZ(0);
 }
 
-/* 🌫 Atmospheric veil layer — adds dimensional haze */
-.nebulaVeil {
-  position: absolute;
-  inset: 0;
-  background:
-    radial-gradient(
-      circle at 50% 50%,
-      rgba(80, 0, 160, 0.1) 0%,
-      rgba(10, 0, 30, 0.85) 100%
-    );
-  mix-blend-mode: soft-light;
-  opacity: 0.18;
-  filter: blur(40px) saturate(1.05);
-  animation: veilDrift 120s ease-in-out infinite alternate;
-}
-
-/* 🌌 Orbital rotation — gives a sense of parallax and depth */
-@keyframes nebulaOrbit {
-  0% {
-    transform: scale(1.02) rotate(0deg);
+/* Gentle entrance only — no looping */
+@keyframes nebulaFadeIn {
+  from {
+    opacity: 0;
   }
-  25% {
-    transform: scale(1.03) rotate(2deg);
-  }
-  50% {
-    transform: scale(1.04) rotate(4deg);
-  }
-  75% {
-    transform: scale(1.03) rotate(2deg);
-  }
-  100% {
-    transform: scale(1.02) rotate(0deg);
-  }
-}
-
-/* 🌬 Gentle haze motion for the veil */
-@keyframes veilDrift {
-  0%, 100% {
-    opacity: 0.18;
-    transform: translateY(0);
-  }
-  50% {
-    opacity: 0.28;
-    transform: translateY(-16px);
-  }
-}
-
-/* 📱 Mobile tuning — keeps clarity and color depth */
-@media (max-width: 768px) {
-  .overlayWrapper {
+  to {
     opacity: 0.55;
-    filter: brightness(1.05) contrast(1.15) saturate(1.2);
-    animation-duration: 300s; /* slower drift */
   }
+}
 
-  .nebulaVeil {
-    opacity: 0.12;
-    filter: blur(30px);
+/* 📱 Mobile tuning */
+@media (max-width: 768px) {
+  .nebula {
+    opacity: 0.45;
+    filter:
+      brightness(1.03)
+      contrast(1.08)
+      saturate(1.12);
   }
 }

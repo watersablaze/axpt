@@ -1,0 +1,1 @@
+export { runChainMirrorWorker } from './worker';

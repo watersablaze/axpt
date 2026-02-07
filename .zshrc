@@ -4,6 +4,12 @@ if [ -f "./app/scripts/ultraPreflightDeploy.sh" ]; then
   ./app/scripts/ultraPreflightDeploy.sh
 fi
 
+if [ -f "$HOME/axpt/.env" ]; then
+  set -a
+  source "$HOME/axpt/.env"
+  set +a
+fi
+
 # ~/.zshrc — AXPT Ritual Shell Config
 
 # Ensure Volta (if used)

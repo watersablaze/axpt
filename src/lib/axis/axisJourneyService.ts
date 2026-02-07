@@ -22,7 +22,7 @@ export async function countSubscribersByOrigin() {
     _count: { origin: true },
     orderBy: { _count: { origin: 'desc' } },
   });
-  return result.map((r) => ({
+  return result.map((r: any) => ({
     origin: r.origin ?? 'unknown',
     count: r._count.origin,
   }));

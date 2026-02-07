@@ -54,7 +54,7 @@ export async function countEmailsByType() {
     _count: { type: true },
     orderBy: { _count: { type: 'desc' } },
   });
-  return result.map(r => ({ type: r.type ?? 'unknown', count: r._count.type }));
+  return result.map((r: any) => ({ type: r.type ?? 'unknown', count: r._count.type }));
 }
 
 /** Search (with pagination) */

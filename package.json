@@ -8,7 +8,7 @@
     "pnpm": ">=8.15.5 <9"
   },
   "scripts": {
-    "dev": "node server.js",
+    "dev": "next dev",
     "dev:next": "next dev -p 3000",
     "dev:net": "cross-env NODE_ENV=development NEXT_PUBLIC_AXPT_ENV=net next dev -H 0.0.0.0",
     "cli:dev:mobile": "tsx scripts/dev/devMobile.ts",
@@ -24,6 +24,7 @@
     "check:etherscan": "bash scripts/check-etherscan.sh",
     "clean": "sh ./scripts/clean-install-pnpm.sh",
     "clean:build": "rm -rf node_modules .next .turbo && pnpm install",
+    "db:ping": "ts-node --esm scripts/db-ping.ts",
     "generate": "pnpm prisma generate",
     "typecheck": "tsc --noEmit",
     "token": "ts-node cli/token.ts",
@@ -65,6 +66,7 @@
     "validate:env": "tsx app/scripts/env.validate.ts",
     "revoke": "tsx cli/revoke.ts",
     "seed": "tsx prisma/seed.ts",
+    "studio": "NODE_ENV=development prisma studio",
     "abi:export": "node scripts/export-abi.mjs",
     "forge:build:abi": "forge build && node scripts/export-abi.mjs",
     "watch:sol": "chokidar \"contracts/contracts/**/*.sol\" -c \"forge build && pnpm abi:export\"",
@@ -80,12 +82,14 @@
     "deploy:axg": "DEPLOY_TARGET=axg bash scripts/deploy.sh",
     "verify:protium": "VERIFY_TARGET=protium bash scripts/verify-latest.sh",
     "verify:axg": "VERIFY_TARGET=axg bash scripts/verify-latest.sh",
-    "postinstall": "if [ ! -d node_modules/@tailwindcss/line-clamp ]; then echo '⚠️ Installing @tailwindcss/line-clamp...'; pnpm add -D @tailwindcss/line-clamp; fi"
+    "postinstall": "if [ ! -d node_modules/@tailwindcss/line-clamp ]; then echo '⚠️ Installing @tailwindcss/line-clamp...'; pnpm add -D @tailwindcss/line-clamp; fi",
+    "prisma:safe": "bash scripts/prisma-safe-migrate.sh"
   },
   "devDependencies": {
     "@eslint/eslintrc": "2.1.4",
     "@faker-js/faker": "^9.9.0",
     "@tailwindcss/line-clamp": "^0.4.4",
+    "@types/archiver": "^7.0.0",
     "@types/bcryptjs": "^3.0.0",
     "@types/chalk": "^2.2.4",
     "@types/figlet": "^1.7.0",
@@ -118,6 +122,7 @@
     "qrcode-terminal": "^0.12.0",
     "supabase": "^2.31.4",
     "tailwindcss": "^3.4.17",
+    "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
     "typescript": "5.4.5"
   },
@@ -136,6 +141,7 @@
     "@react-email/tailwind": "^1.2.2",
     "@react-email/text": "^0.1.5",
     "@supabase/supabase-js": "^2.52.0",
+    "archiver": "^7.0.1",
     "base64url": "^3.0.1",
     "bcryptjs": "^3.0.2",
     "chalk": "^5.4.1",
@@ -157,6 +163,8 @@
     "next-auth": "^4.24.11",
     "node-fetch": "^3.3.2",
     "open": "^10.1.2",
+    "pdf-lib": "^1.17.1",
+    "pdfkit": "^0.17.2",
     "postmark": "^4.0.5",
     "qrcode": "^1.5.4",
     "react": "^19.1.0",
@@ -166,6 +174,7 @@
     "resend": "^6.0.1",
     "sonner": "^2.0.6",
     "swr": "^2.3.3",
+    "viem": "^2.45.0",
     "ws": "^8.18.3",
     "zod": "^3.25.74",
     "zustand": "^5.0.6"

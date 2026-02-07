@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: any) => {
       // Check if token exists for symbol
       let token = await tx.token.findUnique({ where: { symbol: reqRow.symbol } });
 

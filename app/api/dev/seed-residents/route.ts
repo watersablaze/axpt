@@ -40,7 +40,7 @@ async function seed() {
     where: { userId: A.id },
     include: { balances: true },
   });
-  const axg = Awallet?.balances.find((b) => b.tokenType === 'AXG');
+  const axg = Awallet?.balances.find((b: any) => b.tokenType === 'AXG');
   const needs = Math.max(0, 10 - (axg?.amount ?? 0));
   if (needs > 0) {
     await creditAxg(A.id, needs, 'DEV seed');

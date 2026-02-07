@@ -1,36 +1,35 @@
-// src/lib/auth/requireResidentServer.ts
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
+ /**
+ * AUTH BYPASS NOTICE
+ * ------------------
+ * This function is intentionally bypassed during infra build-out.
+ * Reintroduce auth AFTER:
+ * - custodial flows are complete
+ * - escrow lifecycle is validated
+ * - admin UX is finalized
+ */
+
 import { prisma } from '@/lib/prisma';
-import { decodeSessionToken } from '@/lib/auth/session';
 
 export async function requireResidentServer() {
-  const jar = await cookies();
-  const sessionCookie = jar.get('axpt_session')?.value || null;
+  // TEMPORARY AUTH BYPASS — INFRA BUILD PHASE
+  // This will be removed when auth is reintroduced intentionally
 
-  // Try real app session first
-  if (sessionCookie) {
-    const payload = await decodeSessionToken(sessionCookie).catch(() => null);
-    if (payload?.userId) {
-      const user = await prisma.user.findUnique({
-        where: { id: String(payload.userId) },
-        select: { id: true, email: true, name: true, tier: true },
-      });
-      if (user) return { userId: user.id, user };
-    }
-  }
+  const user = await prisma.user.findFirst({
+    select: { id: true, email: true, name: true, tier: true },
+    orderBy: { createdAt: 'asc' },
+  });
 
-  // Dev fallback: allow impersonation cookie outside production
-  if (process.env.NODE_ENV !== 'production') {
-    const imp = jar.get('dev_impersonate_email')?.value || null;
-    if (imp) {
-      const user = await prisma.user.findUnique({
-        where: { email: imp },
-        select: { id: true, email: true, name: true, tier: true },
-      });
-      if (user) return { userId: user.id, user };
-    }
-  }
+  if (!user) {
+    return {
+    userId: 'DEV_USER',
+    user: {
+      id: 'DEV_USER',
+      email: 'dev@axpt.local',
+      name: 'Dev Resident',
+      tier: 'DEV',
+    },
+  };
+}
 
-  redirect('/'); // not authenticated
+  return { userId: user.id, user };
 }

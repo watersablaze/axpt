@@ -1,4 +1,5 @@
-// /app/api/ping/route.ts
 export async function GET() {
-  return new Response('pong');
+  return new Response(JSON.stringify({ pong: true }), {
+    headers: { 'Content-Type': 'application/json' },
+  });
 }

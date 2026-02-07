@@ -58,9 +58,9 @@ export async function POST(req: NextRequest) {
       where: { proposalId },
     });
 
-    const yes = allVotes.filter(v => v.choice === 'yes').length;
-    const no = allVotes.filter(v => v.choice === 'no').length;
-    const abstain = allVotes.filter(v => v.choice === 'abstain').length;
+    const yes = allVotes.filter((v: any) => v.choice === 'yes').length;
+    const no = allVotes.filter((v: any) => v.choice === 'no').length;
+    const abstain = allVotes.filter((v: any) => v.choice === 'abstain').length;
     const total = allVotes.length;
 
     const quorum = proposal.quorum ?? 0;

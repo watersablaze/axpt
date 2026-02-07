@@ -26,7 +26,7 @@ export async function transferAxg({ fromUserId, toUserId, amount, note }: Transf
   // Ensure recipient has a wallet/balances (sender is expected to have one already)
   await createResidentWallet(toUserId);
 
-  return await prisma.$transaction(async (tx) => {
+  return await prisma.$transaction(async (tx: any) => {
     // Fetch wallets
     const [fromWallet, toWallet] = await Promise.all([
       tx.wallet.findUnique({
@@ -43,13 +43,13 @@ export async function transferAxg({ fromUserId, toUserId, amount, note }: Transf
     if (!toWallet) throw new Error('Recipient wallet not found.');
 
     // Ensure AXG balances exist
-    let fromAxg = fromWallet.balances.find((b) => b.tokenType === 'AXG');
+    let fromAxg = fromWallet.balances.find((b: any) => b.tokenType === 'AXG');
     if (!fromAxg) {
       fromAxg = await tx.balance.create({
         data: { userId: fromUserId, walletId: fromWallet.id, tokenType: 'AXG', amount: 0 },
       });
     }
-    let toAxg = toWallet.balances.find((b) => b.tokenType === 'AXG');
+    let toAxg = toWallet.balances.find((b: any) => b.tokenType === 'AXG');
     if (!toAxg) {
       toAxg = await tx.balance.create({
         data: { userId: toUserId, walletId: toWallet.id, tokenType: 'AXG', amount: 0 },

@@ -17,7 +17,7 @@
     "resolveJsonModule": true,
     "incremental": true,
     "baseUrl": ".",
-    "types": ["bcryptjs", "chalk"],
+    "types": ["bcryptjs", "chalk", "node"],
     "paths": {
       "@/*": ["src/*"],
 
@@ -37,6 +37,8 @@
       "@/styles/*": ["src/styles/*"],
       "@/hooks/*": ["src/hooks/*"],
       "@/stores/*": ["src/stores/*"],
+
+      "staging/*": ["staging/*"],
 
       "@/cli/*": ["cli/*"],
       "@/scripts/*": ["scripts/*"],
@@ -63,12 +65,9 @@
     "src/lib/prisma.ts",
 
     // Explicit .tsx files
-    "staging/SessionInitializer.tsx",
-    "staging/useSessionStore.ts",
-    "staging/getSessionFromCookie.ts",
-    "staging/generateTokenForCLI.ts",
-    "staging/generateTokenCLIFlow.ts",
-    "staging/SharedDocViewer.tsx"
+    "staging/decodeTokenCLIFlow.ts",
+    "staging/SharedDocViewer.tsx",
+    "staging/hooks/useOrbSize.ts"
   ],
   "exclude": [
     "node_modules",

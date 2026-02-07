@@ -24,8 +24,8 @@ async function previewForEmails(emails: string[]) {
 
   return {
     existingCount: existing.length,
-    existingEmails: existing.map(u => u.email),
-    willDelete: existing.map(u => ({
+    existingEmails: existing.map((u: any) => u.email),
+    willDelete: existing.map((u: any) => ({
       email: u.email,
       relatedTables: [
         'transaction', 'balance', 'blockchainWallet', 'wallet',
@@ -38,7 +38,7 @@ async function previewForEmails(emails: string[]) {
 
 async function hardDeleteByEmails(emails: string[]) {
   const existing = await prisma.user.findMany({ where: { email: { in: emails } }, select: { id: true } });
-  const ids = existing.map(u => u.id);
+  const ids = existing.map((u: any) => u.id);
   if (!ids.length) return { deletedUsers: 0 };
 
   await prisma.$transaction([

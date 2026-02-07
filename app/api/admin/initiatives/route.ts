@@ -28,17 +28,17 @@ export async function GET() {
     const totals = await prisma.initiativeFunding.groupBy({
       by: ['initiativeId'],
       _sum: { amount: true },
-      where: { initiativeId: { in: initiatives.map(i => i.id) } },
+      where: { initiativeId: { in: initiatives.map((i: any) => i.id) } },
     });
 
     const totalsMap = new Map(
-      totals.map(t => [
+      totals.map((t: any) => [
         t.initiativeId,
         (t._sum.amount as any)?.toNumber?.() ?? Number(t._sum.amount) ?? 0,
       ])
     );
 
-    const items = initiatives.map(i => ({
+    const items = initiatives.map((i: any) => ({
       ...i,
       fundingReceived: totalsMap.get(i.id) ?? 0,
     }));

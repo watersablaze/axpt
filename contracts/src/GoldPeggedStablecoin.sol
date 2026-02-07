@@ -1,3 +1,7 @@
+/// @dev AXG_TEST
+/// This contract is a demo / oracle-collateralized test token.
+/// Production AXG issuance is governed off-chain and mirrored on-chain
+/// via MirrorBridge (TREASURY_MIRROR model).
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 

@@ -1,116 +1,76 @@
-// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
-}
-
-/**
- * =========================
- * Shared / core domain
- * =========================
- */
-
-enum TokenType {
-  AXG
-  NMP
-  USD
-  OTHER
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
-  id           String  @id @default(cuid())
-  username     String  @unique
-  passwordHash String
-  email        String  @unique
-  isAdmin      Boolean @default(false)
-
-  // Access tokens (optional legacy / partner)
-  accessToken         String?   @unique
-  accessTokenHash     String?
-  accessTokenIssuedAt DateTime?
-
-  // Profile-ish fields
-  name        String?
-  displayName String?
-  tier        String?
-  partnerSlug String?
-
-  // Timestamps / metrics
-  updatedAt  DateTime  @updatedAt
-  createdAt  DateTime  @default(now())
-  lastLogin  DateTime?
-  loginCount Int       @default(0)
-  viewedDocs String[]
-
-  // Wallet linkage (optional)
-  blockchainWalletId String?           @unique
-  blockchainWallet   BlockchainWallet?
-
-  // Backrefs
-  balances     Balance[]
-  transactions Transaction[]
-  wallets      Wallet[]
-
-  // Logs & sessions
-  contractLogs      ContractInteractionLog[]
-  sessions          Session[]
-  sessionLogs       SessionLog[]
-  sessionActionLogs SessionActionLog[]
-  revokedTokens     RevokedToken[]
-  logoutLogs        LogoutLog[]
-
-  // Other user-linked data
-  nftBadges        NFTBadge[]
-  nodeSyncStatuses NodeSyncStatus[]
-  simProfiles      SimProfile[]
-  stakes           Stake[]
-
-  // Tokens / requests
-  createdTokens         Token[]                @relation("TokensCreatedBy")
-  tokenIssuanceRequests TokenIssuanceRequest[] @relation("RequestsByUser")
+  id                    String                   @id @default(cuid())
+  username              String                   @unique
+  passwordHash          String
+  email                 String                   @unique
+  isAdmin               Boolean                  @default(false)
+  accessToken           String?                  @unique
+  accessTokenHash       String?
+  accessTokenIssuedAt   DateTime?
+  name                  String?
+  displayName           String?
+  tier                  String?
+  partnerSlug           String?
+  updatedAt             DateTime                 @updatedAt
+  createdAt             DateTime                 @default(now())
+  lastLogin             DateTime?
+  loginCount            Int                      @default(0)
+  viewedDocs            String[]
+  blockchainWalletId    String?                  @unique
+  balances              Balance[]
+  blockchainWallet      BlockchainWallet?
+  contractLogs          ContractInteractionLog[]
+  councilElder          CouncilElder?
+  initiativesAuthored   Initiative[]             @relation("InitiativesCreatedBy")
+  initiativeFundings    InitiativeFunding[]
+  initiativeUpdates     InitiativeUpdate[]       @relation("InitiativeUpdatesByUser")
   investmentProposals   InvestmentProposal[]
-
-  // Governance role (optional)
-  councilElder CouncilElder?
-
-  // Projects & Reviews
-  projects Project[]
-  reviews  ProjectReview[] @relation("Reviewer")
-
-  // ===== Initiatives backrefs =====
-  initiativesAuthored Initiative[]        @relation("InitiativesCreatedBy")
-  initiativeUpdates   InitiativeUpdate[]  @relation("InitiativeUpdatesByUser")
-  initiativeFundings  InitiativeFunding[]
+  logoutLogs            LogoutLog[]
+  nftBadges             NFTBadge[]
+  nodeSyncStatuses      NodeSyncStatus[]
+  projects              Project[]
+  reviews               ProjectReview[]          @relation("Reviewer")
+  revokedTokens         RevokedToken[]
+  sessions              Session[]
+  sessionActionLogs     SessionActionLog[]
+  sessionLogs           SessionLog[]
+  simProfiles           SimProfile[]
+  stakes                Stake[]
+  createdTokens         Token[]                  @relation("TokensCreatedBy")
+  tokenIssuanceRequests TokenIssuanceRequest[]   @relation("RequestsByUser")
+  transactions          Transaction[]
+  wallets               Wallet?
 }
 
-// prisma/schema.prisma (add near your token models)
 model AccessCode {
-  id           String   @id @default(cuid())
-  codeHash     String   @unique // sha256(code + salt)
-  humanCode    String? // optional for admin UI display only (not required)
+  id           String    @id @default(cuid())
+  codeHash     String    @unique
+  humanCode    String?
   partner      String
-  tier         String // "Investor" | "Partner" | ...
+  tier         String
   email        String?
-  docs         String[] @default([])
+  docs         String[]  @default([])
   displayName  String?
   greeting     String?
   popupMessage String?
-
-  // lifecycle
-  expiresAt DateTime?
-  maxUses   Int       @default(1)
-  usedCount Int       @default(0)
-  enabled   Boolean   @default(true)
-
-  // audit
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  lastUsedAt DateTime?
-  lastUsedIp String?
+  expiresAt    DateTime?
+  maxUses      Int       @default(1)
+  usedCount    Int       @default(0)
+  enabled      Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  lastUsedAt   DateTime?
+  lastUsedIp   String?
 }
 
 model SessionLog {
@@ -123,8 +83,7 @@ model SessionLog {
   action    String   @default("login")
   path      String?
   details   Json?
-
-  user User @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId, timestamp])
 }
@@ -138,36 +97,26 @@ model PinLoginRequest {
 }
 
 model Wallet {
-  id        String   @id @default(cuid())
-  userId    String   @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  user         User          @relation(fields: [userId], references: [id])
-  balances     Balance[]
-  transactions Transaction[]
-
-  // Backref to on-chain mirror (optional)
+  id               String            @id @default(cuid())
+  userId           String            @unique
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  balances         Balance[]
   blockchainWallet BlockchainWallet?
+  transactions     Transaction[]
+  user             User              @relation(fields: [userId], references: [id])
 }
 
 model Balance {
-  id String @id @default(cuid())
-
-  // Relations
-  walletId String
-  wallet   Wallet @relation(fields: [walletId], references: [id])
-
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
-
-  // Either a core enum token OR a dynamic Token row
+  id        String     @id @default(cuid())
+  walletId  String
+  userId    String
   tokenType TokenType?
   tokenId   String?
+  amount    Float      @default(0)
   token     Token?     @relation(fields: [tokenId], references: [id])
-
-  // Ledger values
-  amount Float @default(0)
+  user      User       @relation(fields: [userId], references: [id])
+  wallet    Wallet     @relation(fields: [walletId], references: [id])
 
   @@unique([walletId, tokenType, tokenId])
   @@index([walletId])
@@ -177,36 +126,30 @@ model Balance {
 }
 
 model BlockchainWallet {
-  id String @id @default(cuid())
-
-  walletId String @unique
-  wallet   Wallet @relation(fields: [walletId], references: [id])
-
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id])
-
+  id        String   @id @default(cuid())
+  walletId  String   @unique
+  userId    String   @unique
   address   String?  @unique
-  network   String?
   createdAt DateTime @default(now())
+  network   String?
+  user      User     @relation(fields: [userId], references: [id])
+  wallet    Wallet   @relation(fields: [walletId], references: [id])
 }
 
 model Transaction {
-  id       String @id @default(cuid())
-  userId   String
-  walletId String
-  type     String
-  amount   Float
-
+  id        String     @id @default(cuid())
+  userId    String
+  walletId  String
+  type      String
+  amount    Float
   tokenType TokenType?
   tokenId   String?
-  token     Token?     @relation(fields: [tokenId], references: [id])
-
   txHash    String?
   metadata  Json?
-  createdAt DateTime @default(now())
-
-  user   User   @relation(fields: [userId], references: [id])
-  wallet Wallet @relation(fields: [walletId], references: [id])
+  createdAt DateTime   @default(now())
+  token     Token?     @relation(fields: [tokenId], references: [id])
+  user      User       @relation(fields: [userId], references: [id])
+  wallet    Wallet     @relation(fields: [walletId], references: [id])
 
   @@index([userId, createdAt])
   @@index([walletId, createdAt])
@@ -215,40 +158,38 @@ model Transaction {
 }
 
 model SmartContract {
-  id              String   @id @default(cuid())
+  id              String                   @id @default(cuid())
   name            String
-  address         String   @unique
+  address         String                   @unique
   abi             Json
   network         String
+  isActive        Boolean                  @default(true)
+  createdAt       DateTime                 @default(now())
   description     String?
-  status          String   @default("Live")
-  isActive        Boolean  @default(true)
-  verified        Boolean  @default(false)
   lastSyncedBlock Int?
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-
-  interactions   ContractInteractionLog[]
-  culturalProofs CulturalProof[] // ✅ opposite relation field
+  status          String                   @default("Live")
+  updatedAt       DateTime                 @updatedAt
+  verified        Boolean                  @default(false)
+  interactions    ContractInteractionLog[]
+  culturalProofs  CulturalProof[]
 }
 
 model CulturalProof {
   id              String        @id @default(cuid())
   smartContractId String
+  artist          String
+  title           String
+  medium          String?
+  statement       String?
+  ipfsHash        String?
+  signature       String?
+  verified        Boolean       @default(false)
+  createdAt       DateTime      @default(now())
   smartContract   SmartContract @relation(fields: [smartContractId], references: [id])
-
-  artist    String
-  title     String
-  medium    String?
-  statement String?
-  ipfsHash  String?
-  signature String?
-  verified  Boolean  @default(false)
-  createdAt DateTime @default(now())
 }
 
 model ContractInteractionLog {
-  id           String   @id @default(cuid())
+  id           String        @id @default(cuid())
   userId       String
   contractId   String
   functionName String
@@ -256,10 +197,9 @@ model ContractInteractionLog {
   result       Json?
   txHash       String?
   status       String
-  createdAt    DateTime @default(now())
-
-  contract SmartContract @relation(fields: [contractId], references: [id])
-  user     User          @relation(fields: [userId], references: [id])
+  createdAt    DateTime      @default(now())
+  contract     SmartContract @relation(fields: [contractId], references: [id])
+  user         User          @relation(fields: [userId], references: [id])
 
   @@index([contractId, createdAt])
   @@index([userId, createdAt])
@@ -275,8 +215,7 @@ model Session {
   status     String    @default("active")
   startedAt  DateTime  @default(now())
   endedAt    DateTime?
-
-  user User @relation(fields: [userId], references: [id])
+  user       User      @relation(fields: [userId], references: [id])
 
   @@index([userId, startedAt])
 }
@@ -302,21 +241,19 @@ model Stake {
   startDate DateTime
   endDate   DateTime
   isActive  Boolean  @default(true)
-
-  user User @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId, isActive])
 }
 
 model InvestmentProposal {
-  id          String   @id @default(cuid())
-  userId      String
-  title       String
-  description String
-  amount      Float
-  status      String?  @default("pending")
-  createdAt   DateTime @default(now())
-
+  id                    String                 @id @default(cuid())
+  userId                String
+  title                 String
+  description           String
+  amount                Float
+  status                String?                @default("pending")
+  createdAt             DateTime               @default(now())
   user                  User                   @relation(fields: [userId], references: [id])
   tokenIssuanceRequests TokenIssuanceRequest[] @relation("RequestsForProject")
 
@@ -330,8 +267,7 @@ model NFTBadge {
   description String?
   imageUrl    String?
   mintedAt    DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
 
   @@index([userId, mintedAt])
 }
@@ -344,8 +280,7 @@ model SimProfile {
   country   String
   simHash   String
   createdAt DateTime @default(now())
-
-  user User @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId, createdAt])
 }
@@ -355,8 +290,7 @@ model NodeSyncStatus {
   userId   String
   status   String
   syncedAt DateTime
-
-  user User @relation(fields: [userId], references: [id])
+  user     User     @relation(fields: [userId], references: [id])
 
   @@index([userId, syncedAt])
 }
@@ -367,9 +301,8 @@ model RevokedToken {
   partner   String
   tier      String
   createdAt DateTime @default(now())
-
-  userId String?
-  user   User?   @relation(fields: [userId], references: [id])
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
 }
 
 model Partner {
@@ -415,27 +348,24 @@ model LogoutLog {
   reason    String
   ip        String
   userAgent String?
-
-  user User @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 
   @@index([userId, timestamp])
 }
 
 model GemIntake {
-  id         String   @id @default(cuid())
-  name       String
-  email      String
-  phone      String?
-  desiredGem String
-  format     String?
-  size       String?
-  quantity   String?
-  notes      String?
-  createdAt  DateTime @default(now())
-
-  // New
-  status       String  @default("new")
+  id           String   @id @default(cuid())
+  name         String
+  email        String
+  phone        String?
+  desiredGem   String
+  format       String?
+  size         String?
+  quantity     String?
+  notes        String?
+  createdAt    DateTime @default(now())
   internalNote String?
+  status       String   @default("new")
 }
 
 model DbPulseLog {
@@ -445,63 +375,49 @@ model DbPulseLog {
   createdAt DateTime @default(now())
 }
 
-/**
- * =========================
- * Token & Governance
- * =========================
- */
-
 model Token {
-  id          String   @id @default(cuid())
-  symbol      String   @unique
-  name        String
-  decimals    Int      @default(2)
-  description String?
-  isCore      Boolean  @default(false)
-  status      String   @default("active")
-  totalSupply Float    @default(0)
-  metadata    Json?
-  createdAt   DateTime @default(now())
-
-  createdById String?
-  createdBy   User?   @relation("TokensCreatedBy", fields: [createdById], references: [id])
-
-  approvedById String?
-  approvedBy   CouncilElder? @relation("TokensApprovedBy", fields: [approvedById], references: [id])
-
-  // Backrefs
+  id                  String                 @id @default(cuid())
+  symbol              String                 @unique
+  name                String
+  decimals            Int                    @default(2)
+  description         String?
+  isCore              Boolean                @default(false)
+  status              String                 @default("active")
+  totalSupply         Float                  @default(0)
+  metadata            Json?
+  createdAt           DateTime               @default(now())
+  createdById         String?
+  approvedById        String?
   balances            Balance[]
-  transactions        Transaction[]
+  approvedBy          CouncilElder?          @relation("TokensApprovedBy", fields: [approvedById], references: [id])
+  createdBy           User?                  @relation("TokensCreatedBy", fields: [createdById], references: [id])
   approvedForRequests TokenIssuanceRequest[] @relation("ApprovedTokenForRequests")
+  transactions        Transaction[]
 }
 
 model CouncilElder {
-  id       String   @id @default(cuid())
-  userId   String   @unique
-  title    String?
-  joinedAt DateTime @default(now())
-  isActive Boolean  @default(true)
-
-  user User @relation(fields: [userId], references: [id])
-
-  // Backrefs
+  id             String               @id @default(cuid())
+  userId         String               @unique
+  title          String?
+  joinedAt       DateTime             @default(now())
+  isActive       Boolean              @default(true)
+  user           User                 @relation(fields: [userId], references: [id])
   proposals      GovernanceProposal[] @relation("ElderAuthoredProposals")
   votes          GovernanceVote[]
   approvedTokens Token[]              @relation("TokensApprovedBy")
 }
 
 model GovernanceProposal {
-  id            String    @id @default(cuid())
-  authorElderId String
-  title         String
-  description   String?
-  kind          String
-  status        String    @default("pending")
-  payload       Json?
-  createdAt     DateTime  @default(now())
-  decidedAt     DateTime?
-
-  updatedAt         DateTime  @updatedAt
+  id                String           @id @default(cuid())
+  authorElderId     String
+  title             String
+  description       String?
+  kind              String
+  status            String           @default("pending")
+  payload           Json?
+  createdAt         DateTime         @default(now())
+  decidedAt         DateTime?
+  updatedAt         DateTime         @updatedAt
   quorum            Int?
   approvalThreshold Int?
   votingEndsAt      DateTime?
@@ -509,24 +425,22 @@ model GovernanceProposal {
   approvedAt        DateTime?
   readyAt           DateTime?
   executedAt        DateTime?
-
-  authorElder CouncilElder     @relation(name: "ElderAuthoredProposals", fields: [authorElderId], references: [id])
-  votes       GovernanceVote[]
+  authorElder       CouncilElder     @relation("ElderAuthoredProposals", fields: [authorElderId], references: [id])
+  votes             GovernanceVote[]
 
   @@index([status, createdAt])
   @@index([votingEndsAt])
 }
 
 model GovernanceVote {
-  id         String   @id @default(cuid())
+  id         String             @id @default(cuid())
   elderId    String
   proposalId String
   choice     String
   reason     String?
-  createdAt  DateTime @default(now())
-
-  elder    CouncilElder       @relation(fields: [elderId], references: [id])
-  proposal GovernanceProposal @relation(fields: [proposalId], references: [id])
+  createdAt  DateTime           @default(now())
+  elder      CouncilElder       @relation(fields: [elderId], references: [id])
+  proposal   GovernanceProposal @relation(fields: [proposalId], references: [id])
 
   @@unique([elderId, proposalId])
   @@index([proposalId, createdAt])
@@ -534,55 +448,37 @@ model GovernanceVote {
 }
 
 model TokenIssuanceRequest {
-  id          String    @id @default(cuid())
-  requestedBy String
-  projectId   String?
-  symbol      String
-  name        String
-  decimals    Int       @default(2)
-  purpose     String?
-  metadata    Json?
-  status      String    @default("pending")
-  createdAt   DateTime  @default(now())
-  decidedAt   DateTime?
-
+  id              String              @id @default(cuid())
+  requestedBy     String
+  projectId       String?
+  symbol          String
+  name            String
+  decimals        Int                 @default(2)
+  purpose         String?
+  metadata        Json?
+  status          String              @default("pending")
+  createdAt       DateTime            @default(now())
+  decidedAt       DateTime?
   approvedTokenId String?
-  approvedToken   Token?  @relation("ApprovedTokenForRequests", fields: [approvedTokenId], references: [id])
-
-  requester User                @relation("RequestsByUser", fields: [requestedBy], references: [id])
-  project   InvestmentProposal? @relation("RequestsForProject", fields: [projectId], references: [id])
+  approvedToken   Token?              @relation("ApprovedTokenForRequests", fields: [approvedTokenId], references: [id])
+  project         InvestmentProposal? @relation("RequestsForProject", fields: [projectId], references: [id])
+  requester       User                @relation("RequestsByUser", fields: [requestedBy], references: [id])
 
   @@index([requestedBy, createdAt])
   @@index([status, createdAt])
 }
 
-/**
- * =========================
- * Projects (resident-only)
- * =========================
- */
-
-enum ProjectStatus {
-  DRAFT
-  SUBMITTED
-  UNDER_REVIEW
-  APPROVED
-  DENIED
-  FUNDED
-}
-
 model Project {
-  id           String        @id @default(cuid())
+  id           String          @id @default(cuid())
   userId       String
   title        String
-  summary      String        @db.Text
-  requestedAxg Decimal       @db.Decimal(18, 2)
-  status       ProjectStatus @default(SUBMITTED)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-
-  user    User            @relation(fields: [userId], references: [id], onDelete: Cascade)
-  reviews ProjectReview[]
+  summary      String
+  requestedAxg Decimal         @db.Decimal(18, 2)
+  status       ProjectStatus   @default(SUBMITTED)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviews      ProjectReview[]
 
   @@index([userId, status])
   @@index([createdAt])
@@ -595,9 +491,8 @@ model ProjectReview {
   action     String
   note       String?
   createdAt  DateTime @default(now())
-
-  project  Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  reviewer User    @relation("Reviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  reviewer   User     @relation("Reviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
 
   @@index([projectId, reviewerId])
   @@index([createdAt])
@@ -613,81 +508,49 @@ model CouncilSettings {
   createdAt       DateTime @default(now())
 }
 
-/**
- * =========================
- * Initiatives
- * =========================
- */
-
-enum InitiativeStatus {
-  DRAFT
-  ACTIVE
-  PAUSED
-  ARCHIVED
-  COMPLETED
-}
-
-enum InitiativeCategory {
-  ENERGY
-  FINTECH
-  DATA
-  SECURITY
-  OTHER
-}
-
 model Initiative {
-  id        String             @id @default(cuid())
-  slug      String             @unique
-  title     String
-  summary   String             @db.Text
-  category  InitiativeCategory @default(OTHER)
-  status    InitiativeStatus   @default(DRAFT)
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @updatedAt
-
-  // Optional author
-  createdById String?
-  createdBy   User?   @relation("InitiativesCreatedBy", fields: [createdById], references: [id])
-
-  // Optional cached totals
-  fundingGoal     Decimal? @db.Decimal(18, 2)
-  fundingReceived Decimal  @default(0) @db.Decimal(18, 2)
-
-  // Backrefs
-  fundings InitiativeFunding[]
-  updates  InitiativeUpdate[]
+  id              String              @id @default(cuid())
+  slug            String              @unique
+  title           String
+  summary         String
+  category        InitiativeCategory  @default(OTHER)
+  status          InitiativeStatus    @default(DRAFT)
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+  createdById     String?
+  fundingGoal     Decimal?            @db.Decimal(18, 2)
+  fundingReceived Decimal             @default(0) @db.Decimal(18, 2)
+  createdBy       User?               @relation("InitiativesCreatedBy", fields: [createdById], references: [id])
+  fundings        InitiativeFunding[]
+  updates         InitiativeUpdate[]
 
   @@index([slug])
   @@index([status, category])
 }
 
 model InitiativeUpdate {
-  id        String   @id @default(cuid())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  title String?
-  body  String
-
+  id           String     @id @default(cuid())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  title        String?
+  body         String
   initiativeId String
+  authorId     String?
+  author       User?      @relation("InitiativeUpdatesByUser", fields: [authorId], references: [id])
   initiative   Initiative @relation(fields: [initiativeId], references: [id], onDelete: Cascade)
-
-  authorId String?
-  author   User?   @relation("InitiativeUpdatesByUser", fields: [authorId], references: [id])
 
   @@index([initiativeId, createdAt])
 }
 
 model InitiativeFunding {
-  id           String   @id @default(cuid())
+  id           String     @id @default(cuid())
   initiativeId String
   userId       String?
-  amount       Decimal  @db.Decimal(18, 2)
+  amount       Decimal    @db.Decimal(18, 2)
   note         String?
-  createdAt    DateTime @default(now())
-
-  initiative Initiative @relation(fields: [initiativeId], references: [id])
-  user       User?      @relation(fields: [userId], references: [id])
+  createdAt    DateTime   @default(now())
+  initiative   Initiative @relation(fields: [initiativeId], references: [id])
+  user         User?      @relation(fields: [userId], references: [id])
 
   @@index([initiativeId, createdAt])
   @@index([userId])
@@ -698,14 +561,14 @@ model CadaWaitlist {
   email     String   @unique
   createdAt DateTime @default(now())
 
-  @@map("CadaWaitlist") // This is case-sensitive
+  @@map("CadaWaitlist")
 }
 
 model AxisJourneySubscriber {
   id             String    @id @default(cuid())
   email          String    @unique
   name           String?
-  origin         String? // e.g. "AXPT.io", "Nommo Portal", "Referral"
+  origin         String?
   confirmed      Boolean   @default(false)
   confirmationAt DateTime?
   lastOpenedAt   DateTime?
@@ -722,35 +585,177 @@ model AxisJourneySubscriber {
 }
 
 model EmailLog {
-  id Int @id @default(autoincrement())
-
-  // Email metadata
-  type      String? // e.g. "AxisConfirmation", "CadaWelcome"
-  from      String? // sender address
-  to        String? // recipient address
-  subject   String?
-  messageId String? // message ID returned by Resend or provider
-  status    String? // "queued", "sent", "delivered", "failed", etc.
-
-  // Payload snapshot
+  id         Int      @id @default(autoincrement())
+  type       String?
+  from       String?
+  to         String?
+  subject    String?
+  messageId  String?
+  status     String?
   rawPayload Json?
-
-  // Timestamps
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
   @@index([type])
   @@index([status])
   @@index([createdAt, type])
   @@index([to])
   @@index([messageId])
-  @@map("email_logs") // optional: custom table name for clarity
+  @@map("email_logs")
 }
 
-model LiveStream {
-  id        String   @id @default(cuid())
-  streamId  String   @unique
-  status    String?
-  updatedAt DateTime @updatedAt
-  createdAt DateTime @default(now())
+model playing_with_neon {
+  id    Int    @id @default(autoincrement())
+  name  String
+  value Float? @db.Real
+}
+
+model Case {
+  id                  String               @id @default(cuid())
+  title               String
+  jurisdiction        String?
+  referencecode       String?              @unique
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  mode                CaseMode             @default(COORDINATION_ONLY)
+  status              CaseStatus           @default(DRAFT)
+  artifacts           Artifact[]
+  events              EventLog[]
+  gates               Gate[]
+  parties             Party[]
+  publicVerifications PublicVerification[]
+}
+
+model Party {
+  id                  String    @id @default(cuid())
+  caseId              String
+  role                String
+  entityName          String
+  authorizedSignatory String?
+  email               String?
+  phone               String?
+  notes               String?
+  createdAt           DateTime? @default(now()) @db.Timestamp(6)
+  case                Case      @relation(fields: [caseId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Gate {
+  id        String             @id @default(cuid())
+  caseId    String
+  name      String
+  ord       Int
+  createdAt DateTime           @default(now())
+  updatedAt DateTime           @updatedAt
+  status    GateStatus         @default(PENDING)
+  case      Case               @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  items     VerificationItem[]
+
+  @@unique([caseId, ord])
+}
+
+model VerificationItem {
+  id          String    @id @default(cuid())
+  gateId      String
+  description String
+  status      String    @default("PENDING")
+  verifiedBy  String?
+  verifiedAt  DateTime? @db.Timestamp(6)
+  createdAt   DateTime? @default(now()) @db.Timestamp(6)
+  updatedAt   DateTime? @default(now()) @updatedAt @db.Timestamp(6)
+  ord         Int?
+  gate        Gate      @relation(fields: [gateId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model EventLog {
+  id        String    @id @default(cuid())
+  caseId    String
+  actor     String
+  action    String
+  detail    Json?
+  createdAt DateTime? @default(now()) @db.Timestamp(6)
+  case      Case      @relation(fields: [caseId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model Artifact {
+  id         String    @id @default(cuid())
+  caseId     String
+  type       String
+  name       String
+  hash       String?
+  url        String?
+  uploadedBy String?
+  notes      String?
+  createdAt  DateTime? @default(now()) @db.Timestamp(6)
+  case       Case      @relation(fields: [caseId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model PublicVerification {
+  id            String    @id
+  caseId        String
+  artifactId    String
+  scope         String
+  createdAt     DateTime  @default(now())
+  expiresAt     DateTime?
+  revokedAt     DateTime?
+  revokedReason String?
+  revokedBy     String?
+  supersededBy  String?
+  case          Case      @relation(fields: [caseId], references: [id])
+}
+
+enum CaseStatus {
+  DRAFT
+  ACTIVE
+  ESCROW_INITIATED
+  CLOSED
+}
+
+enum CaseMode {
+  COORDINATION_ONLY
+  FULL_ESCROW
+}
+
+enum GateStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum ItemAudience {
+  ALL
+  SELLER
+  BUYER
+  INTERNAL
+}
+
+enum TokenType {
+  AXG
+  NMP
+  USD
+  OTHER
+}
+
+enum ProjectStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  APPROVED
+  DENIED
+  FUNDED
+}
+
+enum InitiativeStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  ARCHIVED
+  COMPLETED
+}
+
+enum InitiativeCategory {
+  ENERGY
+  FINTECH
+  DATA
+  SECURITY
+  OTHER
 }

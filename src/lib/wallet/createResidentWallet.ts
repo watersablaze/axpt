@@ -25,7 +25,7 @@ export async function createResidentWallet(userId: string) {
   const want = ['AXG', 'NMP'] as const;
   const have = new Set(
     wallet.balances
-      .map(b => (b.token ? b.token.symbol : b.tokenType))
+      .map((b: any) => (b.token ? b.token.symbol : b.tokenType))
       .filter(Boolean) as string[]
   );
 

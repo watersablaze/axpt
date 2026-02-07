@@ -6,7 +6,7 @@ export async function GET() {
   // if (process.env.NODE_ENV === 'production') return NextResponse.json({ ok:false }, { status: 404 });
 
   try {
-    const [info] = await prisma.$queryRawUnsafe<any[]>(`
+    const [info] = await prisma.$queryRawUnsafe(`
       SELECT
         current_database()                       AS db,
         current_schema()                          AS schema,
@@ -14,7 +14,7 @@ export async function GET() {
         current_setting('search_path', true)      AS search_path
     `);
 
-    const tables = await prisma.$queryRawUnsafe<any[]>(`
+    const tables = await prisma.$queryRawUnsafe(`
       SELECT table_name
       FROM information_schema.tables
       WHERE table_schema = 'public'
@@ -25,7 +25,7 @@ export async function GET() {
       ok: true,
       info,
       count: tables.length,
-      tables: tables.map(t => t.table_name),
+      tables: tables.map((t: any) => t.table_name),
     });
   } catch (e: any) {
     return NextResponse.json({ ok: false, error: e?.message || 'unknown' }, { status: 500 });

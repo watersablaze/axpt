@@ -1,36 +1,29 @@
-.visionButton {
-  padding: 0.75rem 1.8rem;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 9px;
-  color: #a3c7ff; /* cool light blue */
-  font-family: 'IBM Plex Mono', monospace;
-  cursor: pointer;
-  transition: all 0.35s ease;
-}
-
-.visionButton:hover {
-  background: rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 24px rgba(100, 180, 255, 0.4), 0 0 12px rgba(255, 220, 150, 0.15);
-  transform: translateY(-2px);
-}
-
 .section {
-  position: relative;
-  padding: 6rem 1.5rem;
-  overflow: visible;
-  scroll-margin-top: 80px;
-  text-align: center;
+  padding: clamp(6rem, 12vh, 10rem) 6vw;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
-.heading {
-  color: white;
-  font-size: 2rem;
-  margin-bottom: 1rem;
+.visionIntro {
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
 }
 
-.text {
-  color: #ccc;
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
+.title {
+  font-size: clamp(2.2rem, 5vw, 3.4rem);
+  letter-spacing: 0.12em;
+  font-weight: 500;
+}
+
+.subtitle {
+  font-size: 1.2rem;
+  opacity: 0.75;
+}
+
+.body {
+  max-width: 720px;
+  line-height: 1.7;
+  font-size: 1.05rem;
+  opacity: 0.85;
 }

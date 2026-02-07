@@ -24,8 +24,8 @@ export async function loadPortal(userId: string) {
   ]);
 
   const balances = (wallet?.balances ?? [])
-    .map(b => ({ label: b.token ? b.token.symbol : (b.tokenType ?? '—'), amount: b.amount }))
-    .sort((a, b) => (a.label === 'AXG' ? -1 : b.label === 'AXG' ? 1 : a.label.localeCompare(b.label)));
+    .map((b: any) => ({ label: b.token ? b.token.symbol : (b.tokenType ?? '—'), amount: b.amount }))
+    .sort((a: any, b: any) => (a.label === 'AXG' ? -1 : b.label === 'AXG' ? 1 : a.label.localeCompare(b.label)));
 
   return { wallet, balances, proposals, issuance };
 }
