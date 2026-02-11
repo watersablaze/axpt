@@ -1,7 +1,13 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+
+type TxClient = Omit<
+  PrismaClient,
+  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+>;
 
 export async function POST(
   req: Request,
@@ -29,7 +35,7 @@ export async function POST(
     );
   }
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: TxClient) => {
     await tx.gate.update({
       where: { id: gateId },
       data: { status: 'VERIFIED' },

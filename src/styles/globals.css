@@ -1,372 +1,194 @@
+/* ──────────────────────────────
+   AXPT GLOBAL SYSTEM
+   Identity: Sovereign Vault / Regulatory Surface
+   Mode: Institutional Daylight
+────────────────────────────── */
+
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-@font-face {
-  font-family: 'Helvoni';
-  src: url('/fonts/HELVONI-regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
-:root {
-  --nebula-fade-delay: 3.2s;
-  --blend-soft: screen;
-  --blur-soft: blur(20px);
-  --nebula-brightness: brightness(1.15);
-  --nebula-saturation: saturate(1.5);
-  --bloom-strength: 1; /* 1 = balanced | 0.8 = faint | 1.5 = cinematic | 2 = strong */
-  --sigil-reveal-delay: 4.8s;
-  --orb-size-sm: 160px;
-  --orb-size-md: 220px;
-  --orb-size-lg: 320px;
-  --orb-size-xl: 420px;
-}
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html,
-body {
+/* ──────────────────────────────
+   DESIGN TOKENS
+────────────────────────────── */
+
+:root {
+
+  /* SURFACE SYSTEM — mineral daylight */
+  --axpt-surface-base: #ece9e2;
+  --axpt-surface-elevated: #ffffff;
+  --axpt-surface-muted: #e2ded6;
+
+  /* STRUCTURE */
+  --axpt-border-subtle: rgba(0, 0, 0, 0.06);
+  --axpt-border-strong: rgba(0, 0, 0, 0.14);
+
+  /* TYPOGRAPHY */
+  --axpt-text-primary: #1d1f22;
+  --axpt-text-secondary: rgba(29, 31, 34, 0.72);
+  --axpt-text-muted: rgba(29, 31, 34, 0.48);
+
+  /* ACCENT — restrained sovereign green */
+  --axpt-accent: #1c6e5b;
+  --axpt-accent-soft: rgba(28, 110, 91, 0.08);
+
+  /* FONTS */
+  --axpt-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --axpt-mono: "Share Tech Mono", monospace;
+
+  /* TYPE SCALE */
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-lg: 1.125rem;
+  --fs-xl: 1.375rem;
+  --fs-2xl: 1.75rem;
+}
+
+/* ──────────────────────────────
+   BASE DOCUMENT
+────────────────────────────── */
+
+/* ──────────────────────────────
+   BASE DOCUMENT — ARCHITECTURAL DAYLIGHT
+────────────────────────────── */
+
+html, body {
   margin: 0;
   padding: 0;
-  font-family: 'Helvoni', sans-serif;
-  background-color: rgba(10, 10, 10, 0.92);
-  color: #fdf6e3;
-  font-size: clamp(14px, 1.2vw, 18px);
-  scroll-behavior: smooth;
-  scroll-padding-top: 80px;
-  overflow-x: hidden;
   width: 100%;
   height: 100%;
-  position: relative;
-  isolation: isolate;
+  font-family: 'Helvoni', sans-serif;
+  color: var(--axpt-text-primary);
+  overflow-x: hidden;
 }
 
-html.scroll-unlocked {
-  overflow-y: auto;
-  scroll-behavior: smooth;
+/* Mineral base surface */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+
+ background:
+  linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.10),
+    transparent 22%
+  ),
+
+  linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.06),
+    transparent 40%
+  ),
+
+ #d8cfbf;
 }
+
+/* ──────────────────────────────
+   STRUCTURAL CONTAINERS
+────────────────────────────── */
 
 .responsivePageContainer {
-  max-width: 1440px;
+  max-width: 1280px;
   width: 100%;
   margin: 0 auto;
-  padding-inline: clamp(1rem, 4vw, 3rem);
+  padding-inline: clamp(1rem, 4vw, 2.5rem);
 }
 
-* {
-  box-sizing: border-box;
+/* Divider */
+.axpt-divider {
+  height: 1px;
+  background: var(--axpt-border-subtle);
+  width: 100%;
 }
 
-/* ✨ Utility Layers */
-
-@layer utilities {
-  .techFont {
-    font-family: 'Share Tech Mono', monospace;
-    letter-spacing: 0.08em;
-  }
+/* Label */
+.axpt-label {
+  font-size: var(--fs-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--axpt-text-muted);
 }
 
-@layer utilities {
-  .sectionAura {
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    mix-blend-mode: screen;
-    z-index: 1;
-  }
+/* Card */
+.axpt-card {
+  background: var(--axpt-surface-elevated);
+  border: 1px solid var(--axpt-border-subtle);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
 
-  .aura-1 {
-    background: radial-gradient(circle at center, rgba(150, 90, 210, 0.35), transparent 80%);
-  }
+/* Button */
+.axpt-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
 
-  .aura-2 {
-    background: radial-gradient(circle at center, rgba(80, 180, 255, 0.25), transparent 80%);
-  }
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
 
-  .aura-3 {
-    background: radial-gradient(circle at center, rgba(0, 255, 180, 0.22), transparent 80%);
-  }
+  border: 1px solid var(--axpt-border-strong);
+  background: var(--axpt-surface-muted);
+  color: var(--axpt-text-primary);
 
-  .aura-4 {
-    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.15), transparent 80%);
-  }
+  font-size: var(--fs-sm);
+  cursor: pointer;
 
-  .axptRadialBackground {
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    background: radial-gradient(
-      ellipse at center,
-      rgba(110, 85, 190, 0.35),
-      rgba(20, 10, 40, 0.82) 70%,
-      #070511 100%
+  transition: background 0.2s ease, border 0.2s ease;
+}
+
+.axpt-btn:hover {
+  border-color: var(--axpt-accent);
+  background: var(--axpt-accent-soft);
+}
+
+/* Mono utility */
+.techFont {
+  font-family: var(--axpt-mono);
+  letter-spacing: 0.05em;
+}
+
+.chamberThreshold {
+  min-height: 70vh;
+  padding-top: 6rem;
+  padding-bottom: 6rem;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(0,0,0,0.05),
+      transparent 30%
     );
-    pointer-events: none;
-  }
-
-  .gradientBackground {
-    position: fixed;
-    top: -25%;
-    left: -25%;
-    width: 150vw;
-    height: 150vh;
-    background: radial-gradient(circle, rgba(125, 85, 185, 0.5), transparent 100%);
-    opacity: 0.4;
-    animation: pulseGradient 12s ease-in-out infinite;
-    filter: blur(65px);
-    transition: opacity 0.5s ease;
-    z-index: 0;
-    pointer-events: none;
-  }
-
-  .starfieldLayer {
-    position: fixed;
-    inset: 0;
-    background-image: url('/images/starfield.png');
-    background-size: cover;
-    background-position: center;
-    z-index: 0;
-    opacity: 0.33;
-    filter: brightness(1.25) saturate(1.35);
-    animation: driftStarfield 90s linear infinite, twinkleStars 4s ease-in-out infinite alternate;
-    pointer-events: none;
-    mix-blend-mode: screen;
-    transition: opacity 0.4s ease-in-out;
-    will-change: transform, opacity, filter;
-  }
-
-  .axptSigil {
-    position: absolute;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 75vw;
-    max-width: 480px;
-    opacity: 0.85;
-    z-index: 5;
-    pointer-events: none;
-    mix-blend-mode: screen;
-    filter: brightness(2.5) saturate(1.5) drop-shadow(0 0 45px rgba(255, 255, 255, 0.4));
-    transition: opacity 1.8s ease-out, filter 1.2s ease-in-out;
-  }
-
-  .axptSigil.visible {
-    opacity: 0.5;
-  }
-
-  .axptSigil.float {
-    animation: sigilFloat 14s ease-in-out infinite;
-  }
-
-  @keyframes sigilFloat {
-    0%, 100% {
-      transform: translate(-50%, -50%) scale(1);
-    }
-    50% {
-      transform: translate(-50%, -52%) scale(1.015);
-    }
-  }
-
-  @keyframes pulseGradient {
-    0%, 100% { opacity: 0.4; }
-    50% { opacity: 0.6; }
-  }
-
-  @keyframes twinkleStars {
-    0% { filter: brightness(1) saturate(1); }
-    50% { filter: brightness(1.3) saturate(1.1); }
-    100% { filter: brightness(1) saturate(1); }
-  }
-
-  @keyframes driftStarfield {
-    0% { transform: scale(1.02) translateY(0); }
-    50% { transform: scale(1.05) translateY(-2%); }
-    100% { transform: scale(1.02) translateY(0); }
-  }
-
-  @keyframes emeraldShimmer {
-    0% { background-position: -150% 0; }
-    100% { background-position: 150% 0; }
-  }
 }
 
-/* 🌬️ Motion Helpers */
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-.animate-float { animation: float 5s ease-in-out infinite; }
-
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.thresholdStatement {
+  max-width: 720px;
+  margin-bottom: 4rem;
 }
 
-@keyframes fadeIn {
-  0% { opacity: 0; transform: translateY(10px); }
-  60% { opacity: 0.8; transform: translateY(0); }
-  100% { opacity: 1; }
-}
-.animate-fade-in { animation: fadeIn 2.5s ease-out forwards; }
-.animate-fade-in.delay-300 { animation-delay: 0.3s; }
-.animate-fade-in.delay-600 { animation-delay: 0.6s; }
-
-@keyframes floatSlow {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
-}
-.animate-float { animation: floatSlow 6s ease-in-out infinite; }
-
-/* Gentle water shimmer for Nommo Media titles (for future phase) */
-.nommo-title {
-  background: linear-gradient(90deg, #e0fff8, #a7f0ff, #e0fff8);
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  color: transparent;
-  animation: shimmer 6s infinite linear;
+.thresholdStatement h2 {
+  font-size: clamp(1.3rem, 2.4vw, 2rem);
+  font-weight: 500;
+  margin: 1rem 0;
+  color: var(--axpt-text-primary);
 }
 
-@keyframes shimmer {
-  from { background-position: 200% 0; }
-  to { background-position: -200% 0; }
+.statementSub {
+  color: var(--axpt-text-secondary);
+  font-size: var(--fs-base);
 }
 
-/* --- LINE CLAMP FALLBACK --- */
-/* Works without Tailwind plugin support */
-.line-clamp-3 {
-  display: -webkit-box;
-  -webkit-line-clamp: 3;       /* Number of lines to show */
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.accessBlock {
+  border-top: 1px solid var(--axpt-border-subtle);
+  padding-top: 2rem;
 }
 
-.stream-live .header {
-  box-shadow: 0 0 20px rgba(255, 0, 80, 0.6);
-  transition: 0.6s ease;
-}
-
-.stream-live .ceremony-layer {
-  opacity: 1;
-}
-
-.bg-nebula {
-  background: radial-gradient(
-    circle at 50% 30%,
-    rgba(0, 120, 255, 0.12),
-    transparent 70%
-  );
-}
-
-@keyframes pulse-slow {
-  0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; }
-}
-
-.animate-pulse-slow {
-  animation: pulse-slow 8s ease-in-out infinite;
-}
-
-.animate-fadeIn {
-  animation: fadeIn 1.4s ease-out forwards;
-}
-
-.live-frame-wrapper {
-  position: relative;
-  display: inline-block;
-}
-
-.live-frame-wrapper::before {
-  content: "";
-  position: absolute;
-  inset: -8px;
-  border-radius: 18px;
-  pointer-events: none;
-  background: linear-gradient(
-    120deg,
-    rgba(0, 200, 255, 0.25),
-    rgba(0, 120, 255, 0.35),
-    rgba(0, 200, 255, 0.25)
-  );
-  filter: blur(18px);
-  opacity: 0.7;
-  animation: liveFramePulse 6s ease-in-out infinite;
-}
-
-@keyframes liveFramePulse {
-  0%, 100% {
-    opacity: 0.45;
-  }
-  50% {
-    opacity: 1;
-  }
-}
-
-.sigil-watermark {
-  position: fixed;
-  right: 18px;
-  bottom: 18px;
-  width: 60px;
-  height: auto;
-  opacity: 0.35;
-  z-index: 40;
-  filter: drop-shadow(0 0 12px rgba(0, 200, 255, 0.4));
-  animation: sigilFloat 7s ease-in-out infinite;
-}
-
-@keyframes sigilFloat {
-  0%, 100% {
-    transform: translateY(0);
-    opacity: 0.35;
-  }
-  50% {
-    transform: translateY(-4px);
-    opacity: 0.55;
-  }
-}
-
-@media (max-width: 480px) {
-  .sigil-watermark {
-    width: 38px;
-    right: 12px;
-    bottom: 12px;
-  }
-}
-
-.fade-wrap {
-  opacity: 0;
-  animation: fadeInLive 1.2s ease forwards;
-}
-
-@keyframes fadeInLive {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.video-live {
-  opacity: 0;
-  animation: fadeVideo 1.2s ease forwards;
-  animation-delay: 0.2s;
-}
-
-@keyframes fadeVideo {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-.offline-img {
-  opacity: 0;
-  animation: fadeOffline 1.4s ease forwards;
-}
-
-@keyframes fadeOffline {
-  from { opacity: 0; transform: scale(0.98); }
-  to { opacity: 1; transform: scale(1); }
+.accessRow {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
 }

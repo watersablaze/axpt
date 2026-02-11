@@ -10,6 +10,9 @@ type Props = {
 
 export default function HeroCeremonial({ onResolve }: Props) {
   const [resolved, setResolved] = useState(false);
+  const [entered, setEntered] = useState(false);
+  const [resting, setResting] = useState(false);
+
   const performanceMode = usePerformanceMode();
 
   useEffect(() => {
@@ -17,19 +20,35 @@ export default function HeroCeremonial({ onResolve }: Props) {
     if (performanceMode === 'medium') delay = 2200;
     if (performanceMode === 'low') delay = 2600;
 
-    const t = setTimeout(() => {
+    const resolveTimer = setTimeout(() => {
       setResolved(true);
       onResolve?.();
+
+      // breath before sentence
+      setTimeout(() => {
+        setEntered(true);
+
+        // settle into resting state
+        setTimeout(() => {
+          setResting(true);
+
+          // unlock scroll + set global flag
+          document.documentElement.classList.add('scroll-unlocked');
+          document.documentElement.dataset.axptEntered = 'true';
+        }, 1800);
+
+      }, 400);
+
     }, delay);
 
-    return () => clearTimeout(t);
+    return () => clearTimeout(resolveTimer);
   }, [performanceMode, onResolve]);
 
   return (
-    <section className={styles.container} aria-hidden={resolved}>
+    <section className={styles.container}>
+
       <div className={`${styles.sigilStage} ${resolved ? styles.resolved : ''}`}>
         
-        {/* 🌍 Globe (anchor) */}
         <img
           src="/sigil/v4/axpt_sigil_V4_globe.png"
           alt=""
@@ -37,7 +56,6 @@ export default function HeroCeremonial({ onResolve }: Props) {
           draggable={false}
         />
 
-        {/* 🪽 Wings (directional expansion) */}
         <img
           src="/sigil/v4/axpt_sigil_V4_wing_show.png"
           alt=""
@@ -45,7 +63,6 @@ export default function HeroCeremonial({ onResolve }: Props) {
           draggable={false}
         />
 
-        {/* 🔮 Final transparent seal */}
         <img
           src="/sigil/v4/axpt_sigil_V4_transparent.png"
           alt="AXPT Sigil"
@@ -54,7 +71,13 @@ export default function HeroCeremonial({ onResolve }: Props) {
         />
       </div>
 
-      {/* ⬇ Scroll affordance */}
+      {/* Threshold Sentence */}
+      {entered && (
+        <div className={`${styles.threshold} ${resting ? styles.resting : ''}`}>
+          You are now within AXPT
+        </div>
+      )}
+
       <div
         className={`${styles.scrollIndicator} ${
           resolved ? styles.visible : ''
@@ -63,6 +86,7 @@ export default function HeroCeremonial({ onResolve }: Props) {
       >
         ↓
       </div>
+
     </section>
   );
 }

@@ -1,22 +1,16 @@
 // app/layout.tsx
 import '@/styles/globals.css';
-import '@/styles/globals/variables.css';
-import '@/styles/utilities.css';
-import '@/styles/debug.css';
+// import '@/styles/debug.css';
 
 import { Inter } from 'next/font/google';
 import { Toaster } from 'sonner';
-
 import Script from 'next/script';
 
-import NeonWake from '@/components/NeonWake';
+import AuraDiagnostics from '@/components/devtools/AuraDiagnostics';
 import NebulaOverlay from '@/components/background/NebulaOverlay';
-import AuraInitializer from '@/components/devtools/AuraInitializer';
 
-import { MirrorRayProvider } from '@/lib/context/MirrorRayContext';
-
-// Unified Developer Oracle
-import NommoDebugPanel from '@/components/debug/NommoDebugPanel';
+// import { MirrorRayProvider } from '@/lib/context/MirrorRayContext';
+// import NommoDebugPanel from '@/components/debug/NommoDebugPanel';
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' });
 
@@ -38,17 +32,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
 
-      <body className={`${inter.className} text-white bg-black`}>
-        {/* Energetic Layers */}
-        <NeonWake />
-        <NebulaOverlay />
-        <AuraInitializer />
+      <body className={inter.className}>
+        {/* Global Atmosphere (single authority) */}
+       <NebulaOverlay />
+        {/* Developer Instrumentation (DEV ONLY) */}
+        {isDev && <AuraDiagnostics />}
 
-        {/* Nommo Engineering Console */}
-        <MirrorRayProvider>
-          {isDev && <NommoDebugPanel />}
-          {children}
-        </MirrorRayProvider>
+        {/* Application + Dev Console */}
+        <>
+        {children}
+        </>
 
         <Toaster richColors position="top-right" />
         <div id="portal-root" />

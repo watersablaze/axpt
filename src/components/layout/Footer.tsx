@@ -7,26 +7,27 @@ export default function Footer() {
   return (
     <motion.footer
       className={styles.footer}
-      initial={{ opacity: 0, y: 10 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1.2, ease: 'easeOut', delay: 0.5 }}
+      transition={{ duration: 1.2, ease: 'easeOut', delay: 0.4 }}
     >
-      {/* 🌗 Floating sigil emblem */}
-      <div className={styles.footerSigil}>
-        <img
-          src="/sigil/io@2x.webp"
-          alt="AXPT Sigil Fragment"
-          className={styles.footerSigilImg}
-        />
-      </div>
+      <div className={styles.inner}>
+        <div className={styles.brand}>AXPT</div>
 
-      {/* 🪶 Text */}
-      <p className={styles.line}>
-        <span className={styles.brand}>AXPT</span> © 2025 — All Rights Reserved
-      </p>
-      <p className={styles.contact}>
-        <a href="mailto:connect@axpt.io">connect@axpt.io</a>
-      </p>
+        <div className={styles.legal}>
+          © 2025 — All Rights Reserved
+        </div>
+
+        <div className={styles.contact}>
+          <a href="mailto:connect@axpt.io">
+            connect@axpt.io
+          </a>
+        </div>
+
+        <div className={styles.access}>
+          private regulatory access
+        </div>
+      </div>
     </motion.footer>
   );
 }

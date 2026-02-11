@@ -759,3 +759,45 @@ enum InitiativeCategory {
   SECURITY
   OTHER
 }
+
+model ChainMirrorCursor {
+  id          String   @id @default(cuid())
+  network     String
+  contract    String
+  lastBlock   Int      @default(0)
+  updatedAt   DateTime @updatedAt
+  createdAt   DateTime @default(now())
+
+  @@unique([network, contract])
+  @@index([network])
+}
+
+model ChainMirrorEvent {
+  id              String   @id @default(cuid())
+  network         String
+  contract        String
+
+  // Onchain identity
+  txHash          String
+  logIndex        Int
+  blockNumber     BigInt
+  blockHash       String?
+  chainTimestamp  DateTime?
+
+  // MirrorTransfer payload
+  idempotencyKey  String
+  walletEventId   String
+  tokenType       String
+  fromAddress     String
+  toAddress       String
+  amount          String
+
+  // raw JSON (optional but useful for debugging)
+  raw             Json?
+
+  createdAt       DateTime @default(now())
+
+  @@unique([network, txHash, logIndex])
+  @@index([network, blockNumber])
+  @@index([network, contract])
+}

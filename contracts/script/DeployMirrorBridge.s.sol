@@ -6,14 +6,14 @@ import "../src/MirrorBridge.sol";
 
 contract DeployMirrorBridge is Script {
     function run() external {
-        uint256 pk = vm.envUint("TREASURY_PRIVATE_KEY");
-        address treasurySigner = vm.addr(pk);
+        uint256 pk = vm.envUint("PRIVATE_KEY"); // fallback-safe
+        address owner = vm.addr(pk);
 
         vm.startBroadcast(pk);
-        MirrorBridge bridge = new MirrorBridge(treasurySigner);
+        MirrorBridge bridge = new MirrorBridge(owner);
         vm.stopBroadcast();
 
         console2.log("MirrorBridge deployed at:", address(bridge));
-        console2.log("Treasury signer:", treasurySigner);
+        console2.log("Treasury / Owner:", owner);
     }
 }

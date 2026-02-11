@@ -1,7 +1,13 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
+
+type TxClient = Omit<
+  PrismaClient,
+  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+>;
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -15,7 +21,7 @@ export async function POST(req: Request) {
     );
   }
 
-  const result = await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx: TxClient) => {
     const c = await tx.case.create({
       data: {
         title,

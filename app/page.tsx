@@ -3,10 +3,6 @@
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import HeroCeremonial from '@/components/sigil/HeroCeremonial';
-import VisionSection from '@/components/sections/VisionSection';
-// import NommoMediaSection from '@/components/sections/NommoMediaSection';
-// import ShadowVaultSection from '@/components/sections/ShadowVaultSection';
-// import TokenContractsSection from '@/components/sections/TokenContractsSection';
 
 export default function Home() {
   return (
@@ -14,18 +10,46 @@ export default function Home() {
       <Header />
 
       <main>
+
+        {/* Vestibule */}
         <HeroCeremonial />
 
-        {/* PRIMARY READING SURFACE */}
-        <VisionSection />
+        {/* Chamber Threshold */}
+        <section className="chamberThreshold">
+          <div className="responsivePageContainer">
 
-        {/*
-        Uncomment ONE at a time as you refine:
+            <div className="thresholdDivider" />
 
-        <NommoMediaSection />
-        <ShadowVaultSection />
-        <TokenContractsSection />
-        */}
+            <div className="thresholdStatement">
+              <p className="techFont axpt-label">
+                Sovereign Declaration
+              </p>
+
+              <h2>
+                AXPT serves as a neutral public standard for
+                culturally rooted economic continuity.
+              </h2>
+
+              <p className="statementSub">
+                Governance clarity. Indigenous alignment.
+                Regenerative capital architecture.
+              </p>
+            </div>
+
+            <div className="accessBlock">
+              <p className="techFont axpt-label">
+                Access
+              </p>
+
+              <div className="accessRow">
+                <button className="axpt-btn">Council Access</button>
+                <button className="axpt-btn">Partner Entry</button>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
       </main>
 
       <Footer />

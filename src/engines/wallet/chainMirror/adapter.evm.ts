@@ -2,7 +2,7 @@
 import { createWalletClient, http } from 'viem'
 import { privateKeyToAccount } from 'viem/accounts'
 import { sepolia } from 'viem/chains'
-import MirrorBridgeAbi from '@/abi/MirrorBridge.json'
+import MirrorBridgeAbi from '../../../../abi/MirrorBridge.json'
 
 const account = privateKeyToAccount(
   process.env.TREASURY_PRIVATE_KEY as `0x${string}`

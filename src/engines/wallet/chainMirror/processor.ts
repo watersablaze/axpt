@@ -13,7 +13,7 @@ export async function processJob(jobId: string) {
     where: { id: jobId },
     data: {
       status: 'SUBMITTED',
-      txHash: tx.hash,
+      txHash: tx,
       submittedAt: new Date()
     }
   })

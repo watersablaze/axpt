@@ -2,8 +2,14 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
+import { PrismaClient } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
-import { assertCaseCanActivate } from '@/src/lib/guards/caseState';
+import { assertCaseCanActivate } from '@/lib/guards/caseState';
+
+type TxClient = Omit<
+  PrismaClient,
+  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
+>;
 
 export async function POST(
   _req: Request,
@@ -18,7 +24,7 @@ export async function POST(
   }
 
   try {
-    const updated = await prisma.$transaction(async (tx) => {
+    const updated = await prisma.$transaction(async (tx: TxClient) => {
       const c = await tx.case.findUnique({
         where: { id: caseId },
       });

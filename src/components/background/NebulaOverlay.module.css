@@ -1,48 +1,24 @@
-/* 🌌 Nebula Overlay v2
-   Atmospheric, inert, authoritative
-*/
-
 .nebula {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
 
-  /* Base texture */
   background: url('/images/backgrounds/nebula_purpblue.png')
     center / cover no-repeat;
 
-  /* Presence tuning */
   opacity: 0;
   filter:
-    brightness(1.04)
-    contrast(1.12)
-    saturate(1.18);
+    brightness(0.95)
+    contrast(1.1)
+    saturate(0.95);
 
-  /* One-time veil lift */
-  animation: nebulaFadeIn 6s ease-out forwards;
+  mix-blend-mode: soft-light;
 
-  /* Prevent repaint churn */
-  transform: translateZ(0);
+  animation: nebulaFadeIn 5s ease-out forwards;
 }
 
-/* Gentle entrance only — no looping */
 @keyframes nebulaFadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 0.55;
-  }
-}
-
-/* 📱 Mobile tuning */
-@media (max-width: 768px) {
-  .nebula {
-    opacity: 0.45;
-    filter:
-      brightness(1.03)
-      contrast(1.08)
-      saturate(1.12);
-  }
+  from { opacity: 0; }
+  to   { opacity: 0.42; }
 }

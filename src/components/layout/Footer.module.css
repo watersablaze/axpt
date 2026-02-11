@@ -1,86 +1,67 @@
 .footer {
   position: relative;
   width: 100%;
-  padding: 48px 16px 32px; /* extra top padding for sigil hover */
-  text-align: center;
-  color: #bbb;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(6px);
-  font-size: 0.85rem;
-  z-index: 50;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
-  letter-spacing: 0.05em;
-  overflow: hidden;
+  padding: 64px clamp(24px, 4vw, 60px) 48px;
+
+  background: rgba(220, 213, 202, 0.88);
+  backdrop-filter: blur(8px);
+
+  border-top: 1px solid rgba(0,0,0,0.08);
+
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+
+  color: rgba(45, 45, 45, 0.75);
 }
 
-/* 🌞 Soft golden pulse underlay */
-.footer::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(
-    circle at 50% 120%,
-    rgba(230, 198, 103, 0.08),
-    transparent 80%
-  );
-  opacity: 0.25;
-  mix-blend-mode: screen;
-  animation: footerPulse 10s ease-in-out infinite;
-  pointer-events: none;
+/* Inner alignment */
+.inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
-@keyframes footerPulse {
-  0%, 100% { opacity: 0.25; filter: blur(4px); }
-  50% { opacity: 0.45; filter: blur(6px); }
-}
-
-/* ✨ Floating Sigil */
-.footerSigil {
-  position: absolute;
-  top: -30px;
-  left: 50%;
-  transform: translateX(-50%);
-  opacity: 0.45;
-  pointer-events: none;
-  animation: sigilHover 12s ease-in-out infinite;
-  filter: drop-shadow(0 0 10px rgba(230, 198, 103, 0.25))
-          drop-shadow(0 0 20px rgba(230, 198, 103, 0.15));
-}
-
-.footerSigilImg {
-  width: clamp(40px, 4vw, 56px);
-  height: auto;
-  opacity: 0.8;
-}
-
-@keyframes sigilHover {
-  0%, 100% { transform: translate(-50%, -2px) scale(1); opacity: 0.45; }
-  50% { transform: translate(-50%, -4px) scale(1.03); opacity: 0.6; }
-}
-
-/* 🪶 Text styles */
-.line {
-  margin: 0;
-  opacity: 0.85;
-}
-
+/* AXPT mark */
 .brand {
-  color: #f4e2b8;
-  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.22em;
+  font-weight: 500;
+  color: #2f2f2f;
+}
+
+/* Legal line */
+.legal {
+  font-size: 0.75rem;
+  letter-spacing: 0.06em;
+  color: rgba(80,75,68,0.65);
+}
+
+/* Contact */
+.contact {
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
 }
 
-.contact {
-  margin-top: 4px;
-}
-
 .contact a {
-  color: #86fff2;
+  color: rgba(70,85,95,0.8);
   text-decoration: none;
-  transition: color 0.3s ease, text-shadow 0.3s ease;
+  transition: color 0.25s ease;
 }
 
 .contact a:hover {
-  color: #c6ffe4;
-  text-shadow: 0 0 8px rgba(0, 255, 200, 0.25);
+  color: rgba(40,60,75,0.95);
+}
+
+/* Subtle private access indicator */
+.access {
+  margin-top: 18px;
+  font-size: 0.65rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: rgba(80,70,60,0.4);
 }
