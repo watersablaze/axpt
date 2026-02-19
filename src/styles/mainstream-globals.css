@@ -1,0 +1,233 @@
+@import "./mainstream-tokens.css";
+
+/* =======================================================
+   ROOT ISOLATION
+======================================================= */
+
+.mainstream-root {
+  background-color: var(--ms-bg-primary);
+  color: var(--ms-text-primary);
+  font-family: var(--ms-font-body);
+  min-height: 100vh;
+}
+
+/* =======================================================
+   LAYOUT STRUCTURE
+======================================================= */
+
+.mainstream-root .ms-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* =======================================================
+   SIDEBAR — INTERNAL WALL
+======================================================= */
+
+.mainstream-root .ms-sidebar {
+  width: 240px;
+  border-right: 1px solid var(--ms-divider);
+  background:
+    radial-gradient(circle at 20% 20%, rgba(0,0,0,0.03), transparent 40%),
+    radial-gradient(circle at 80% 80%, rgba(0,0,0,0.025), transparent 50%),
+    var(--ms-bg-secondary);
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  transition: width 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.mainstream-root .ms-sidebar.collapsed {
+  width: 60px;
+}
+
+.mainstream-root .ms-sidebar-inner {
+  padding: 1.2rem 1.25rem;
+}
+
+.mainstream-root .ms-sidebar-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--ms-font-registry);
+  font-size: 0.75rem;
+  color: var(--ms-text-subtle);
+  margin-bottom: 1.5rem;
+  text-align: right;
+}
+
+.mainstream-root .ms-sidebar-section {
+  margin-bottom: 2rem;
+}
+
+.mainstream-root .ms-sidebar-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  color: var(--ms-text-subtle);
+  margin-bottom: 0.75rem;
+}
+
+.mainstream-root .ms-sidebar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.mainstream-root .ms-sidebar li {
+  font-size: 0.85rem;
+  margin-bottom: 0.6rem;
+  color: var(--ms-text-primary);
+  cursor: pointer;
+}
+
+.mainstream-root .ms-sidebar li:hover {
+  color: var(--ms-accent);
+}
+
+/* Institutional Seal */
+
+.mainstream-root .ms-seal {
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--ms-divider);
+}
+
+.mainstream-root .ms-seal-title {
+  font-size: 0.95rem;
+  letter-spacing: 0.18em;
+  font-weight: 600;
+}
+
+/* =======================================================
+   CONTENT AREA
+======================================================= */
+
+.mainstream-root .ms-content {
+  flex: 1;
+  padding: 3rem 3.5rem;
+}
+
+.mainstream-root .ms-section--featured {
+  padding-top: 6rem;   /* increase separation */
+  padding-bottom: 6rem;
+}
+
+/* =======================================================
+   TYPOGRAPHY SYSTEM
+======================================================= */
+
+.mainstream-root .ms-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ms-text-subtle);
+  margin-bottom: 0.6rem;
+}
+
+.mainstream-root .ms-registry {
+  font-family: var(--ms-font-registry);
+  font-size: 0.65rem;
+  letter-spacing: 0.18em;
+  color: var(--ms-text-subtle);
+  opacity: 0.5;
+  margin-bottom: 0.4rem;
+}
+
+.mainstream-root .ms-link {
+  text-decoration: none;
+  border-bottom: 1px solid var(--ms-text-primary);
+  padding-bottom: 2px;
+  display: inline-block;
+  margin-top: 1rem;
+}
+
+.mainstream-root .ms-link:hover {
+  border-color: var(--ms-accent);
+}
+
+/* =======================================================
+   SIGNAL RAIL — STICKY CONTROL LINE
+======================================================= */
+
+.mainstream-root .ms-signal-rail {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  width: 100%;
+  padding: 0.75rem 0;
+
+  background: var(--ms-bg-secondary);
+  border-bottom: 1px solid var(--ms-divider);
+}
+
+.mainstream-root .ms-signal-inner {
+  display: flex;
+  justify-content: flex-end; /* RIGHT ALIGN */
+  align-items: center;
+
+  padding-right: 3.5rem; /* align with content padding */
+  font-family: var(--ms-font-registry);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  gap: 1.2rem;
+}
+
+.mainstream-root .ms-signal-label {
+  color: var(--ms-text-subtle);
+  opacity: 0.6;
+}
+
+.mainstream-root .ms-signal-value {
+  color: var(--ms-text-primary);
+  font-weight: 600;
+}
+
+.mainstream-root .ms-signal-separator {
+  opacity: 0.3;
+}
+
+.mainstream-root .ms-signal-rail--dark {
+  background: #0f0f0f;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+/* LIVE DOT */
+
+.mainstream-root .ms-live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--ms-live-dot);
+  box-shadow: 0 0 0 rgba(154, 46, 46, 0.4);
+  animation: ms-pulse 1.8s infinite;
+}
+
+@keyframes ms-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(154, 46, 46, 0.6);
+  }
+  70% {
+    box-shadow: 0 0 0 6px rgba(154, 46, 46, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(154, 46, 46, 0);
+  }
+}
+
+.mainstream-root .ms-signal-rail--live {
+  background: #160000;
+  border-bottom: 1px solid rgba(200,0,0,0.3);
+}
+
+.mainstream-root .ms-signal-rail--live .ms-signal-value {
+  color: #ff3a3a;
+  letter-spacing: 0.18em;
+}
+
+.mainstream-root .ms-signal-rail--dark {
+  background: #0f0f0f;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}

@@ -1,0 +1,25 @@
+:root {
+  /* Backgrounds */
+  --ms-bg-primary: #e8e4db;     /* Warm stone */
+  --ms-bg-secondary: #d2cbbd;
+
+  /* Text */
+  --ms-text-primary: #2a2926;
+  --ms-text-secondary: #6b665c;
+  --ms-text-subtle: #8a8376;
+
+  /* Dividers */
+  --ms-divider: rgba(0, 0, 0, 0.06);
+
+  /* Accent */
+  --ms-accent: #8c6f3f;
+  --ms-live-dot: #9a2e2e;
+
+  /* Typography */
+  --ms-font-body: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --ms-font-registry: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Layout */
+  --ms-container-padding: 2rem;
+  --ms-max-width: 1100px;
+}

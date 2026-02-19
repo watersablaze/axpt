@@ -1,7 +1,5 @@
 /* ──────────────────────────────
    AXPT GLOBAL SYSTEM
-   Identity: Sovereign Vault / Regulatory Surface
-   Mode: Institutional Daylight
 ────────────────────────────── */
 
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
@@ -10,176 +8,137 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ──────────────────────────────
-   DESIGN TOKENS
-────────────────────────────── */
+/* Design Tokens */
 
 :root {
-
-  /* SURFACE SYSTEM — mineral daylight */
-  --axpt-surface-base: #ece9e2;
-  --axpt-surface-elevated: #ffffff;
-  --axpt-surface-muted: #e2ded6;
-
-  /* STRUCTURE */
-  --axpt-border-subtle: rgba(0, 0, 0, 0.06);
-  --axpt-border-strong: rgba(0, 0, 0, 0.14);
-
-  /* TYPOGRAPHY */
-  --axpt-text-primary: #1d1f22;
-  --axpt-text-secondary: rgba(29, 31, 34, 0.72);
-  --axpt-text-muted: rgba(29, 31, 34, 0.48);
-
-  /* ACCENT — restrained sovereign green */
   --axpt-accent: #1c6e5b;
-  --axpt-accent-soft: rgba(28, 110, 91, 0.08);
-
-  /* FONTS */
-  --axpt-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --axpt-border-subtle: rgba(0,0,0,0.06);
+  --axpt-border-strong: rgba(0,0,0,0.14);
+  --axpt-text-primary: #1d1f22;
+  --axpt-text-secondary: rgba(29,31,34,0.72);
+  --axpt-text-muted: rgba(29,31,34,0.48);
   --axpt-mono: "Share Tech Mono", monospace;
-
-  /* TYPE SCALE */
-  --fs-xs: 0.75rem;
-  --fs-sm: 0.875rem;
-  --fs-base: 1rem;
-  --fs-lg: 1.125rem;
-  --fs-xl: 1.375rem;
-  --fs-2xl: 1.75rem;
 }
 
-/* ──────────────────────────────
-   BASE DOCUMENT
-────────────────────────────── */
+/* Base Document */
 
-/* ──────────────────────────────
-   BASE DOCUMENT — ARCHITECTURAL DAYLIGHT
-────────────────────────────── */
-
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
-  width: 100%;
-  height: 100%;
-  font-family: 'Helvoni', sans-serif;
+  font-family: system-ui, -apple-system, sans-serif;
   color: var(--axpt-text-primary);
-  overflow-x: hidden;
+
+  background:
+    radial-gradient(
+      circle at 50% 38%,
+      rgba(210, 175, 120, 0.45),
+      transparent 60%
+    ),
+    #d8cfc0;
+
+  background-attachment: fixed;
 }
 
-/* Mineral base surface */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
+/* Council active state (ONLY global effect allowed) */
 
- background:
-  linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.10),
-    transparent 22%
-  ),
+html.council-active body {
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(0,0,0,0.35),
+      rgba(0,0,0,0.75)
+    ),
+    #1a1c1f;
 
-  linear-gradient(
-    to top,
-    rgba(0, 0, 0, 0.06),
-    transparent 40%
-  ),
-
- #d8cfbf;
+  transition: background 150ms linear;
 }
+
+/* Dim + blur sigil when council active */
+
+html.council-active .sigilStage {
+  opacity: 0.12;
+  filter: blur(2px);
+  transform: scale(0.96);
+  transition: all 150ms linear;
+}
+
 
 /* ──────────────────────────────
-   STRUCTURAL CONTAINERS
+   AXPT UI PRIMITIVES (PUBLIC)
 ────────────────────────────── */
 
-.responsivePageContainer {
-  max-width: 1280px;
-  width: 100%;
-  margin: 0 auto;
-  padding-inline: clamp(1rem, 4vw, 2.5rem);
-}
-
-/* Divider */
-.axpt-divider {
-  height: 1px;
-  background: var(--axpt-border-subtle);
-  width: 100%;
-}
-
-/* Label */
-.axpt-label {
-  font-size: var(--fs-xs);
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--axpt-text-muted);
-}
-
-/* Card */
-.axpt-card {
-  background: var(--axpt-surface-elevated);
-  border: 1px solid var(--axpt-border-subtle);
-  border-radius: 12px;
-  padding: 1.5rem;
-}
-
-/* Button */
-.axpt-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  padding: 0.6rem 1rem;
-  border-radius: 8px;
-
-  border: 1px solid var(--axpt-border-strong);
-  background: var(--axpt-surface-muted);
-  color: var(--axpt-text-primary);
-
-  font-size: var(--fs-sm);
-  cursor: pointer;
-
-  transition: background 0.2s ease, border 0.2s ease;
-}
-
-.axpt-btn:hover {
-  border-color: var(--axpt-accent);
-  background: var(--axpt-accent-soft);
-}
-
-/* Mono utility */
 .techFont {
   font-family: var(--axpt-mono);
   letter-spacing: 0.05em;
 }
 
-.chamberThreshold {
+.axpt-label {
+  font-size: 0.75rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--axpt-text-muted);
+}
+
+.axpt-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  padding: 0.65rem 1.05rem;
+  border-radius: 10px;
+
+  border: 1px solid var(--axpt-border-strong);
+  background: rgba(255,255,255,0.55);
+
+  color: var(--axpt-text-primary);
+  font-size: 0.875rem;
+  cursor: pointer;
+
+  transition: background 150ms linear, border-color 150ms linear, transform 150ms linear;
+}
+
+.axpt-btn:hover {
+  border-color: var(--axpt-accent);
+  background: rgba(28, 110, 91, 0.08);
+}
+
+.axpt-btn:active {
+  transform: translateY(1px);
+}
+
+.constitutionalSurface {
   min-height: 70vh;
-  padding-top: 6rem;
-  padding-bottom: 6rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 6rem 2rem;
 
   background:
     linear-gradient(
       to bottom,
       rgba(0,0,0,0.05),
-      transparent 30%
+      transparent 40%
     );
 }
 
-.thresholdStatement {
-  max-width: 720px;
-  margin-bottom: 4rem;
+.constitutionalInner {
+  max-width: 760px;
+  width: 100%;
 }
 
-.thresholdStatement h2 {
-  font-size: clamp(1.3rem, 2.4vw, 2rem);
+.constitutionalInner h2 {
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
   font-weight: 500;
-  margin: 1rem 0;
-  color: var(--axpt-text-primary);
+  margin: 1rem 0 1.5rem 0;
 }
 
 .statementSub {
   color: var(--axpt-text-secondary);
-  font-size: var(--fs-base);
+  margin-bottom: 3rem;
 }
 
 .accessBlock {

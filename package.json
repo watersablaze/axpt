@@ -21,6 +21,7 @@
     "lint:fix": "next lint --fix",
     "dev:css": "pnpm exec tailwindcss -i ./app/src/styles/input.css -o ./public/output.css --watch",
     "build:css": "pnpm exec tailwindcss -i ./app/src/styles/input.css -o ./public/output.css --minify",
+    "chainmirror:ro": "tsx src/engines/wallet/chainMirror/bootstrap.ts",
     "check:etherscan": "bash scripts/check-etherscan.sh",
     "clean": "sh ./scripts/clean-install-pnpm.sh",
     "clean:build": "rm -rf node_modules .next .turbo && pnpm install",

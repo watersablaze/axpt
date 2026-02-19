@@ -1,0 +1,257 @@
+/* ──────────────────────────────
+   FULL VIEWPORT LAYER
+────────────────────────────── */
+
+.layer {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+  linear-gradient(
+    to right,
+    rgba(10,12,16,0.98) 0%,
+    rgba(8,10,14,0.99) 100%
+);
+
+  opacity: 0;
+  pointer-events: none;
+
+  transition: opacity 120ms linear;
+}
+
+.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+
+/* ──────────────────────────────
+   STRUCTURAL FRAME
+────────────────────────────── */
+
+.frame {
+  width: min(1300px, 96vw);
+  height: 82vh;
+  position: relative;
+
+  transform: translateY(4px);
+  transition: transform 180ms ease-out;
+
+  display: grid;
+  grid-template-columns: 240px 1fr;
+
+  border-radius: 18px;
+  overflow: hidden;
+
+  background: rgba(16,18,22,1);
+
+  box-shadow:
+    0 40px 120px rgba(0,0,0,0.8);
+
+  border: 1px solid rgba(255,255,255,0.04);
+}
+
+.frame::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      to right,
+      rgba(255,255,255,0.02) 1px,
+      transparent 1px
+    );
+
+  background-size: 80px 100%;
+
+  pointer-events: none;
+  opacity: 0.3;
+}
+
+.open .frame {
+  transform: translateY(0);
+}
+
+
+/* ──────────────────────────────
+   LEFT RAIL
+────────────────────────────── */
+
+.sideNav {
+  background: rgba(16,18,22,1);
+  border-right: 1px solid rgba(255,255,255,0.08);
+
+  display: flex;
+  flex-direction: column;
+  padding: 2.4rem 1.6rem;
+}
+
+.navHeader {
+  font-size: 0.62rem;
+  letter-spacing: 0.28em;
+  opacity: 0.7;
+  margin-bottom: 2.5rem;
+}
+
+.navItem {
+  background: none;
+  border: none;
+  color: rgba(200,210,220,0.6);
+  text-align: left;
+  padding: 0.7rem 0;
+  cursor: pointer;
+  font-size: 0.85rem;
+  letter-spacing: 0.05em;
+
+  transition: color 120ms linear;
+}
+
+.navItem:hover {
+  color: white;
+}
+
+.active {
+  color: white;
+  position: relative;
+}
+
+.active::before {
+  content: "";
+  position: absolute;
+  left: -1.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 16px;
+  background: var(--axpt-accent);
+  border-radius: 2px;
+}
+
+.navFooter {
+  margin-top: auto;
+  font-size: 0.7rem;
+  opacity: 0.5;
+}
+
+.navFooter button {
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+
+/* ──────────────────────────────
+   MAIN PANEL
+────────────────────────────── */
+
+.mainPanel {
+  padding: 4rem 5rem;
+  display: flex;
+  content: "STATE: AWAITING_KEY";
+  position: absolute;
+  top: 1.5rem;
+  right: 2rem;
+
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  opacity: 0.25;
+  flex-direction: column;
+    background: linear-gradient(
+    180deg,
+    rgba(20,22,26,0.9),
+    rgba(14,16,20,0.95)
+  );
+}
+
+.panelHeader {
+  font-size: 1.05rem;
+  letter-spacing: 0.06em;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+
+  color: rgba(230,235,240,0.92);
+}
+
+/* Subtle defense-grade live dot */
+.sessionDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--axpt-accent);
+  opacity: 0.6;
+  animation: pulse 2.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 0.4; }
+  50% { opacity: 1; }
+  100% { opacity: 0.4; }
+}
+
+
+/* ──────────────────────────────
+   TERMINAL INPUT
+────────────────────────────── */
+
+.terminal {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 2.5rem;
+  max-width: 680px;
+}
+
+.terminal input {
+  flex: 1;
+  padding: 0.9rem 1.2rem;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.035);
+
+  background: rgba(255,255,255,0.04);
+  color: white;
+
+  font-family: var(--axpt-mono);
+
+  transition: border 150ms linear;
+}
+
+.terminal input:focus {
+  outline: none;
+  border-color: var(--axpt-accent);
+}
+
+.terminal button {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 6px;
+  padding: 0.75rem 1.2rem;
+  font-weight: 500;
+
+  color: rgba(240,245,250,0.95);   /* ← explicit */
+  transition: background 120ms linear;
+}
+
+.terminal button:hover {
+  background: rgba(28,110,91,0.25);
+}
+
+.enterButton {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.18);
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  color: rgba(240,245,250,0.95);
+  font-weight: 500;
+  transition: background 120ms linear;
+}
+
+.enterButton:hover {
+  background: rgba(28,110,91,0.35);
+}

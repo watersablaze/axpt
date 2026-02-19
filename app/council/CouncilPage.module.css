@@ -1,0 +1,329 @@
+/* ──────────────────────────────
+   CHAMBER LAYER
+────────────────────────────── */
+
+.layer {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0b0f14;
+  padding: 4rem;
+}
+
+.layer::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+
+  background-image:
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.015'/%3E%3C/svg%3E");
+
+  mix-blend-mode: overlay;
+}
+
+
+/* ──────────────────────────────
+   FRAME
+────────────────────────────── */
+
+.frame {
+  width: min(1200px, 95vw);
+  height: 80vh;
+
+  display: flex;
+
+  border-radius: 22px;
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(28,32,38,0.98),
+      rgba(18,22,28,0.99)
+    );
+
+  border: 1px solid rgba(200,180,120,0.08);
+
+  box-shadow:
+    0 60px 120px rgba(0,0,0,0.6);
+}
+
+
+/* ──────────────────────────────
+   LEFT RAIL
+────────────────────────────── */
+
+.sideNav {
+  width: 240px;
+  padding: 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(12,16,22,0.95),
+      rgba(18,24,30,0.95)
+    );
+
+  position: relative;
+}
+
+/* Vertical Light Seam (C) */
+.sideNav::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.015),
+      rgba(255,255,255,0.015) 1px,
+      transparent 1px,
+      transparent 4px
+    );
+
+  opacity: 0.25;
+  pointer-events: none;
+}
+
+
+/* NAV TEXT */
+
+.navHeader {
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  opacity: 0.5;
+  margin-bottom: 2rem;
+  color: rgba(220,210,180,0.6);
+}
+
+.navItem {
+  background: none;
+  border: none;
+
+  text-align: left;
+
+  padding: 0.6rem 0;
+
+  font-size: 0.9rem;
+  color: rgba(220,225,230,0.6);
+
+  cursor: pointer;
+  transition: color 120ms linear;
+}
+
+.navItem:hover {
+  color: rgba(240,235,210,0.9);
+}
+
+.active {
+  color: rgba(240,235,210,0.95);
+}
+
+
+.navFooter {
+  margin-top: auto;
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.navFooter button {
+  background: none;
+  border: none;
+  color: rgba(240,235,210,0.7);
+  cursor: pointer;
+}
+
+
+/* ──────────────────────────────
+   MAIN PANEL
+────────────────────────────── */
+
+.mainPanel {
+  position: relative;
+  flex: 1;
+  padding: 4rem;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.mainPanel::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background-image: url('/sigil/v4/axpt_sigil_V4_transparent.png');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 60%;
+
+  opacity: 0.035;
+
+  filter: blur(1.5px);
+
+  pointer-events: none;
+  z-index: 0;
+}
+
+
+/* Axial Warm Glow (A) */
+
+.mainPanel::before {
+  content: "";
+  position: absolute;
+  inset: -180px;
+  z-index: 0;
+  pointer-events: none;
+
+background:
+  radial-gradient(
+    ellipse at 50% 58%,
+    rgba(170,140,75,0.12) 0%,
+    rgba(90,70,40,0.08) 30%,
+    rgba(40,30,15,0.05) 50%,
+    rgba(0,0,0,0) 75%
+  );
+
+  filter: blur(160px);
+  opacity: 0.7;
+}
+
+
+/* HEADER */
+
+.panelHeader {
+  position: relative;
+
+  font-size: 1.4rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+
+  color: rgba(230,215,180,0.92);
+
+  margin-bottom: 2rem;
+
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+
+.sessionDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(200,180,120,0.8);
+}
+
+
+/* SESSION BLOCK */
+
+.sessionLabel {
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  opacity: 0.5;
+  margin-bottom: 0.8rem;
+}
+
+.sessionValue {
+  font-size: 1.1rem;
+  color: rgba(240,235,210,0.9);
+}
+
+.sealButton {
+  width: 100%;
+  padding: 0.75rem 1rem;
+
+  background: linear-gradient(
+    145deg,
+    rgba(180,150,90,0.18),
+    rgba(120,95,45,0.12)
+  );
+
+  border: 1px solid rgba(200,170,110,0.35);
+  border-radius: 8px;
+
+  color: rgba(230,215,180,0.9);
+  font-size: 0.8rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+
+  cursor: pointer;
+  transition: all 180ms ease;
+}
+
+.sealButton:hover {
+  background: linear-gradient(
+    145deg,
+    rgba(200,170,110,0.28),
+    rgba(150,120,70,0.2)
+  );
+
+  border-color: rgba(220,190,130,0.6);
+  box-shadow: 0 0 12px rgba(200,170,110,0.25);
+}
+
+.sealButton:active {
+  transform: scale(0.98);
+}
+
+.terminalLine {
+  margin-top: 2rem;
+
+  font-family: var(--axpt-mono);
+  font-size: 0.9rem;
+
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+
+  color: rgba(200,190,160,0.85);
+
+  cursor: pointer;
+
+  transition:
+    opacity 200ms ease,
+    transform 200ms ease;
+}
+
+.terminalLine:hover {
+  opacity: 0.75;
+}
+
+.collapsed {
+  opacity: 0.4;
+  transform: translateY(-6px);
+}
+
+.chamberBody {
+  margin-top: 3.5rem;
+}
+
+.prompt {
+  letter-spacing: 0.12em;
+  font-size: 0.75rem;
+  opacity: 0.6;
+}
+
+.status {
+  color: rgba(235,220,185,0.95);
+  position: relative;
+}
+
+/* subtle cursor pulse */
+.status::after {
+  content: "▍";
+  margin-left: 6px;
+  animation: blink 1.4s infinite;
+  opacity: 0.6;
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 0.2; }
+  25%, 75% { opacity: 0.8; }
+}

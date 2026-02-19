@@ -767,6 +767,7 @@ model ChainMirrorCursor {
   lastBlock   Int      @default(0)
   updatedAt   DateTime @updatedAt
   createdAt   DateTime @default(now())
+  chainId     Int @default(11155111)
 
   @@unique([network, contract])
   @@index([network])
@@ -776,6 +777,7 @@ model ChainMirrorEvent {
   id              String   @id @default(cuid())
   network         String
   contract        String
+  chainId         Int @default(11155111)
 
   // Onchain identity
   txHash          String

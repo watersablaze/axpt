@@ -1,4 +1,4 @@
-import { createPublicClient, http } from 'viem'
+import { createPublicClient, http, parseAbiItem } from 'viem'
 import MirrorBridgeAbi from '../../../../abi/MirrorBridge.json'
 import { validateChainMirrorEnv } from '@/lib/env/validateChainMirrorEnv'
 
@@ -12,6 +12,9 @@ const client = createPublicClient({
 })
 
 let lastBlock: bigint | null = null
+const MIRROR_TRANSFER_EVENT = parseAbiItem(
+  'event MirrorTransfer(bytes32 idempotencyKey, bytes32 walletEventId, bytes32 tokenType, address from, address to, uint256 amount)'
+)
 
 async function pollOnce() {
   const currentBlock = await client.getBlockNumber()
@@ -31,10 +34,10 @@ async function pollOnce() {
 
   const logs = await client.getLogs({
     address: env.mirrorBridge,
-    abi: MirrorBridgeAbi,
-    eventName: 'MirrorTransfer',
+    event: MIRROR_TRANSFER_EVENT,
     fromBlock: lastBlock + 1n,
     toBlock: currentBlock,
+    strict: true,
   })
 
   for (const log of logs) {
