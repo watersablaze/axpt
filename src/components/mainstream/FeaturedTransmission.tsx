@@ -1,6 +1,6 @@
 import Link from "next/link";
 import styles from "./FeaturedTransmission.module.css";
-import { transmissions } from "@/src/lib/mainstream/transmissions";
+import { transmissions } from "@/lib/mainstream/transmissions";
 
 export default function FeaturedTransmission() {
   const featured =

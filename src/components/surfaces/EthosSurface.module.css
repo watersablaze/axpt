@@ -1,0 +1,156 @@
+/* ─────────────────────────────────────
+   AXPT — ETHOS SURFACE
+   Institutional Circulation Layer
+───────────────────────────────────── */
+
+.ethosSurface {
+  width:100%;
+  min-height:80vh;
+  position:relative;
+}
+
+.ethosInner {
+  opacity: 1;
+  transform: translateY(8px);
+  transition:
+    opacity 500ms ease,
+    transform 720ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.surface--active .ethosInner {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 120ms;
+}
+
+/* ─────────────────────────────────────
+   Atmosphere
+───────────────────────────────────── */
+
+.seamMelt {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 180px;
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      ellipse at 40% 0%,
+      rgba(170, 210, 230, 0.06),
+      transparent 62%
+    );
+
+  opacity: 0.5;
+  filter: blur(14px);
+}
+
+.ledgerBaseline {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(820px, 70%);
+  height: 1px;
+  pointer-events: none;
+
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(170,210,230,0.22),
+    rgba(255,255,255,0.08),
+    rgba(170,210,230,0.22),
+    transparent
+  );
+
+  opacity: 0.45;
+  filter: blur(0.4px);
+}
+
+/* ───────────────────────────────────── */
+
+.inner {
+  display: flex;
+  flex-direction: column;
+  gap: 56px;
+}
+
+/* ─────────────────────────────────────
+   PILLARS
+───────────────────────────────────── */
+
+.pillars {
+  display: flex;
+  flex-direction: column;
+  gap: 64px;
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.pillars::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 8px;
+  width: 1px;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(200,170,110,0.35),
+    rgba(255,240,210,0.12),
+    rgba(200,170,110,0.35)
+  );
+
+  opacity: 0.5;
+}
+
+.pillar {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  gap: 18px;
+  align-items: start;
+  opacity: 0.6;
+  transition: transform 400ms ease, opacity 400ms ease;
+}
+
+.pillarActive {
+  opacity: 1;
+  transform: translateX(6px);
+}
+
+.pillarActive h3 {
+  color: rgba(255,235,195,0.95);
+  text-shadow:
+    0 0 10px rgba(255,220,170,0.25),
+    0 0 20px rgba(200,170,110,0.18);
+}
+
+.pillarActive .index {
+  color: rgba(220,190,120,0.85);
+}
+
+.index {
+  font-family: var(--axpt-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.28em;
+  color: rgba(200,170,110,0.55);
+  padding-top: 3px;
+}
+
+/* ─────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────── */
+
+@media (max-width: 1000px) {
+  .pillars {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 620px) {
+  .pillars {
+    grid-template-columns: 1fr;
+  }
+}

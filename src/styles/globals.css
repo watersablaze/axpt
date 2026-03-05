@@ -8,69 +8,315 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design Tokens */
+/* ──────────────────────────────
+   DESIGN TOKENS
+────────────────────────────── */
 
 :root {
   --axpt-accent: #1c6e5b;
   --axpt-border-subtle: rgba(0,0,0,0.06);
   --axpt-border-strong: rgba(0,0,0,0.14);
-  --axpt-text-primary: #1d1f22;
-  --axpt-text-secondary: rgba(29,31,34,0.72);
-  --axpt-text-muted: rgba(29,31,34,0.48);
+  --axpt-text-primary: #e8edf2;
+  --axpt-text-secondary: rgba(232,237,242,0.72);
+  --axpt-text-muted: rgba(232,237,242,0.48);
   --axpt-mono: "Share Tech Mono", monospace;
+  --rail-inset: clamp(42px, 6vw, 72px);
+  --rail-opacity: 0.14;     
+  --fog-opacity: 0.72;
+  --system-cycle: 5.8s;
+  --field-current-alpha: 0.15;
+  --field-current-band: 0.08;
+  --field-current-sheen: 1.05;
+  --field-current-blur: 0.75px;
+  --axis-center: 50%;
 }
 
-/* Base Document */
+/* ──────────────────────────────
+   BASE DOCUMENT
+────────────────────────────── */
 
 html,
 body {
   margin: 0;
   padding: 0;
-  font-family: system-ui, -apple-system, sans-serif;
-  color: var(--axpt-text-primary);
-
-  background:
-    radial-gradient(
-      circle at 50% 38%,
-      rgba(210, 175, 120, 0.45),
-      transparent 60%
-    ),
-    #d8cfc0;
-
-  background-attachment: fixed;
+  background: transparent;
+  color: rgba(245,242,235,0.92);
+  position: relative;
+  min-height: 100%;
 }
-
-/* Council active state (ONLY global effect allowed) */
-
-html.council-active body {
-  background:
-    radial-gradient(
-      circle at center,
-      rgba(0,0,0,0.35),
-      rgba(0,0,0,0.75)
-    ),
-    #1a1c1f;
-
-  transition: background 150ms linear;
-}
-
-/* Dim + blur sigil when council active */
-
-html.council-active .sigilStage {
-  opacity: 0.12;
-  filter: blur(2px);
-  transform: scale(0.96);
-  transition: all 150ms linear;
-}
-
 
 /* ──────────────────────────────
-   AXPT UI PRIMITIVES (PUBLIC)
+   MASTER DESCENT FIELD (OCEAN)
 ────────────────────────────── */
 
-.techFont {
+html {
+  background:
+    linear-gradient(
+      180deg,
+      #243f4d 0%,
+      #1b3443 20%,
+      #152d3b 42%,
+      #102634 70%,
+      #0b1f2c 100%
+    );
+}
+
+body {
+  position: relative;
+}
+
+html::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -2;
+
+  background:
+  linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(140,200,210, calc(var(--field-current-band) * 0.45)) 46%,
+    rgba(160,210,220, calc(var(--field-current-band) * 0.7)) 50%,
+    rgba(140,200,210, calc(var(--field-current-band) * 0.45)) 54%,
+    transparent 100%
+  ),
+  linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(140,200,210, calc(var(--field-current-band) * 0.25)) 30%,
+    transparent 70%
+  ),
+  linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(140,200,210, calc(var(--field-current-band) * 0.18)) 70%,
+    transparent 100%
+  ),
+
+  radial-gradient(
+    ellipse at 50% 48%,
+    rgba(110, 170, 185, calc(var(--field-current-alpha) * 0.22)) 0%,
+    rgba(110, 170, 185, calc(var(--field-current-alpha) * 0.14)) 30%,
+    rgba(110, 170, 185, calc(var(--field-current-alpha) * 0.05)) 55%,
+    transparent 75%
+  );
+
+  opacity: 0.55;
+  filter: blur(60px);
+  transition:
+    opacity 1400ms cubic-bezier(0.22, 1, 0.36, 1),
+    filter 1400ms cubic-bezier(0.22, 1, 0.36, 1),
+    background 1400ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  animation: fieldPressure 18s ease-in-out infinite;
+  mix-blend-mode: soft-light;
+}
+
+@keyframes fieldPressure {
+  0%   { opacity: 0.48; }
+  50%  { opacity: 0.65; }
+  100% { opacity: 0.48; }
+}
+
+html[data-scroll-dir="down"] .surface {
+  transform: translateY(50px) scale(0.985);
+}
+
+html[data-scroll-dir="up"] .surface {
+  transform: translateY(-40px) scale(0.985);
+}
+
+/* ──────────────────────────────
+   GLOBAL RAILS — STRUCTURAL BREATH
+────────────────────────────── */
+
+html::after {
+
+  content:"";
+  position:fixed;
+  inset:0;
+
+  pointer-events:none;
+  z-index:-0.35;
+
+  width:1px;
+
+  left:var(--axis-center);
+
+  background:
+    repeating-linear-gradient(
+      to top,
+      transparent 0px,
+      transparent 20px,
+      rgba(160,220,240,0.75) 22px,
+      transparent 24px
+    );
+
+  animation: axisUpstream 4.5s linear infinite;
+
+}
+
+@keyframes axisUpstream {
+
+  0% {
+    transform:translateX(-50%) translateY(120vh);
+    opacity:0;
+  }
+
+  20% { opacity:1; }
+
+  100% {
+    transform:translateX(-50%) translateY(-120vh);
+    opacity:0;
+  }
+
+}
+
+/* DATA PACKETS */
+
+body::before {
+
+  content:"";
+  position:fixed;
+  inset:0;
+
+  pointer-events:none;
+  z-index:-0.4;
+
+  width:1px;
+
+  left:var(--axis-center);
+
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0px,
+      transparent 16px,
+      rgba(220,240,255,0.55) 18px,
+      transparent 20px
+    );
+
+  animation: axisDownstream 11s linear infinite;
+
+}
+
+@keyframes axisDownstream {
+
+  0% {
+    transform:translateX(-50%) translateY(-120vh);
+    opacity:0;
+  }
+
+  15% { opacity:.9; }
+
+  100% {
+    transform:translateX(-50%) translateY(120vh);
+    opacity:0;
+  }
+
+}
+
+body::after {
+
+  content:"";
+  position:fixed;
+
+  top:0;
+  bottom:0;
+
+  left:50%;
+  transform:translateX(-50%);
+
+  width:2px;
+
+  background:red;
+
+  z-index:9999;
+  pointer-events:none;
+
+}
+
+/* LEFT + RIGHT STRUCTURAL RAILS */
+
+body .rails::before,
+body .rails::after {
+  content:"";
+  position:fixed;
+  top:0;
+  bottom:0;
+
+  width:1px;
+
+  pointer-events:none;
+  z-index:-0.6;
+
+  background:rgba(200,220,230,var(--rail-opacity));
+}
+
+body .rails::before {
+  left:var(--rail-inset);
+}
+
+body .rails::after {
+  right:var(--rail-inset);
+}
+
+.originViewport {
+  position: relative;
+  min-height: 100vh;
+  z-index: 1;
+  isolation: isolate; /* important: creates a clean stacking context */
+}
+
+.originViewport::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1; /* now it sits behind Header+Origin inside this isolated context */
+
+  background:
+    radial-gradient(ellipse at 50% 22%, rgba(120, 200, 220, 0.11), transparent 62%),
+    radial-gradient(ellipse at 50% 92%, rgba(0, 0, 0, 0.35), transparent 70%),
+    linear-gradient(to bottom, rgba(4, 12, 20, 0.55), rgba(4, 12, 20, 0.0));
+
+  opacity: 0.9;
+}
+
+/* ──────────────────────────────
+   AXPT UI PRIMITIVES
+────────────────────────────── */
+
+.atmosphere[data-layer="FOUNDATION"] .nebula {
+  opacity: 0.8;
+}
+
+.atmosphere[data-layer="FRAMEWORK"] .nebula {
+  opacity: 0.6;
+}
+
+.atmosphere[data-layer="INTERFACES"] .nebula {
+  opacity: 0.9;
+}
+
+.globalLayerIndicator {
   font-family: var(--axpt-mono);
-  letter-spacing: 0.05em;
+  font-size: 0.58rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+
+  color: rgba(140,210,175,0.75);
+  opacity: 0.92;
+
+  /* keeps it calm + embedded */
+  filter: blur(0.1px);
+  white-space: nowrap;
+}
+
+.globalLayerIndicator::before {
+  content: "SYS // ";
+  color: rgba(200,210,220,0.30);
 }
 
 .axpt-label {
@@ -90,7 +336,7 @@ html.council-active .sigilStage {
   border-radius: 10px;
 
   border: 1px solid var(--axpt-border-strong);
-  background: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.08);
 
   color: var(--axpt-text-primary);
   font-size: 0.875rem;
@@ -101,53 +347,252 @@ html.council-active .sigilStage {
 
 .axpt-btn:hover {
   border-color: var(--axpt-accent);
-  background: rgba(28, 110, 91, 0.08);
+  background: rgba(28,110,91,0.12);
 }
 
 .axpt-btn:active {
   transform: translateY(1px);
 }
 
-.constitutionalSurface {
-  min-height: 70vh;
+/* ──────────────────────────────
+   DISTORTION LAYER
+────────────────────────────── */
+
+#distortion-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 40;
+
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+
+  transition:
+    backdrop-filter 420ms cubic-bezier(0.2,0.8,0.2,1),
+    background 420ms cubic-bezier(0.2,0.8,0.2,1);
+}
+
+html.council-active #distortion-layer {
+  backdrop-filter:
+    blur(1.3px)
+    contrast(1.05)
+    saturate(1.05);
+
+  -webkit-backdrop-filter:f
+    blur(1.3px)
+    contrast(1.05)
+    saturate(1.05);
+
+  background:
+    radial-gradient(
+      circle at 50% 52%,
+      rgba(200,170,110,0.06),
+      transparent 60%
+    );
+}
+
+/* AXPT CONTINUOUS FIELD */
+
+.originViewport {
+  position: relative;
+}
+
+.originViewport > section {
+  position: relative;
+  z-index: 2;
+}
+
+.originViewport > section + section {
+  margin-top: -2vh;
+}
+
+/* =========================================
+   AXPT SURFACE SYSTEM (STABLE BASELINE)
+========================================= */
+
+/* =====================================
+   AXPT SURFACE STACK
+===================================== */
+
+.surfaceStack {
+
+  position: relative;
+  width: 100%;
 
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
 
-  padding: 6rem 2rem;
+}
+
+/* guarantees surfaces never collapse */
+
+.surfaceStack > section {
+
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+
+}
+
+.surface {
+
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+
+  opacity: 1;
+  transform: none;
+  filter: none;
+
+  transition:
+    opacity 900ms ease,
+    transform 1100ms cubic-bezier(0.22,1,0.36,1),
+    filter 900ms ease;
+
+}
+
+.surface::before {
+  content:"";
+  position:absolute;
+  left:var(--rail-inset);
+  right:0;
+  top:0;
+  bottom:0;
 
   background:
     linear-gradient(
       to bottom,
-      rgba(0,0,0,0.05),
-      transparent 40%
+      rgba(255,255,255,0.02),
+      rgba(255,255,255,0.005)
     );
+
+  pointer-events:none;
 }
 
-.constitutionalInner {
-  max-width: 760px;
+.surfaceFrame {
+
   width: 100%;
+  max-width: 1100px;
+
+  margin: 0 auto;
+
+  padding-left: clamp(32px, 5vw, 80px);
+  padding-right: clamp(32px, 5vw, 80px);
+
 }
 
-.constitutionalInner h2 {
-  font-size: clamp(1.4rem, 2.5vw, 2rem);
-  font-weight: 500;
-  margin: 1rem 0 1.5rem 0;
+.surfaceStack > section:nth-child(odd) {
+  padding-top: 8vh;
+  padding-bottom: 6vh;
 }
 
-.statementSub {
-  color: var(--axpt-text-secondary);
-  margin-bottom: 3rem;
+.surfaceStack > section:nth-child(even) {
+  padding-top: 14vh;
+  padding-bottom: 10vh;
 }
 
-.accessBlock {
-  border-top: 1px solid var(--axpt-border-subtle);
-  padding-top: 2rem;
+.surfaceStack > section:first-child {
+  padding-top: 0;
 }
 
-.accessRow {
-  display: flex;
-  gap: 1rem;
-  flex-wrap: wrap;
+section[data-layer="FRAMEWORK"] {
+  padding-top: 16vh;
+  padding-bottom: 14vh;
+}
+
+[data-layer="ORIGIN"]::before {
+  display:none;
+}
+
+/* surface spacing rhythm */
+
+.originViewport > section + section {
+  margin-top: -2vh;
+}
+
+.axisFieldBreath {
+
+  position: fixed;
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      circle at 40% 35%,
+      rgba(120,160,220,0.08),
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 70% 60%,
+      rgba(140,210,175,0.06),
+      transparent 45%
+    );
+
+  animation: fieldBreath 18s ease-in-out infinite;
+
+  z-index: -1;
+}
+
+@keyframes fieldBreath {
+
+  0% {
+    opacity: .6;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: .9;
+    transform: scale(1.05);
+  }
+
+  100% {
+    opacity: .6;
+    transform: scale(1);
+  }
+
+}
+
+
+.axisSignal {
+
+  position: fixed;
+
+  left: var(--axis-center);
+  transform: translateX(-50%);
+
+  width: 2px;
+  height: 120px;
+
+  pointer-events: none;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(210,240,255,0),
+    rgba(210,240,255,0.85),
+    rgba(210,240,255,0)
+  );
+
+  filter: blur(2px);
+
+  animation: axisSignalMove 1.6s ease-out forwards;
+
+}
+
+@keyframes axisSignalMove {
+
+  0% {
+    top: -120px;
+    opacity: 0;
+  }
+
+  10% {
+    opacity: 1;
+  }
+
+  100% {
+    top: 100vh;
+    opacity: 0;
+  }
+
 }

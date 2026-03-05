@@ -1,0 +1,41 @@
+.axisSpine {
+
+  position: fixed;
+
+  left: var(--rail-inset);
+
+  top: 0;
+  bottom: 0;
+
+  width: 2px;
+  margin-left: 20px;;
+
+  background:
+    linear-gradient(
+    to bottom,
+    transparent,
+    rgba(180,200,220,0.12),
+    rgba(180,200,220,0.18),
+    transparent
+);
+
+  z-index: 3;
+}
+
+.node {
+
+  position: absolute;
+
+  left: -4px;
+
+  width: 10px;
+  height: 10px;
+
+  border-radius: 999px;
+
+  background: rgba(160,220,240,.55);
+
+  box-shadow:
+    0 0 8px rgba(160,220,240,.35);
+
+}

@@ -703,6 +703,80 @@ model PublicVerification {
   case          Case      @relation(fields: [caseId], references: [id])
 }
 
+model ChainMirrorCursor {
+  id        String   @id @default(cuid())
+  network   String
+  contract  String
+  lastBlock Int      @default(0)
+  updatedAt DateTime @updatedAt
+  createdAt DateTime @default(now())
+  chainId   Int      @default(11155111)
+
+  @@unique([chainId, contract])
+  @@index([chainId])
+}
+
+model ChainMirrorEvent {
+  id             String    @id @default(cuid())
+  network        String
+  contract       String
+  txHash         String
+  logIndex       Int
+  blockNumber    BigInt
+  blockHash      String?
+  chainTimestamp DateTime?
+  idempotencyKey String
+  walletEventId  String
+  tokenType      String
+  fromAddress    String
+  toAddress      String
+  amount         String
+  raw            Json?
+  createdAt      DateTime  @default(now())
+  chainId        Int       @default(11155111)
+
+  @@unique([chainId, txHash, logIndex])
+  @@index([chainId, blockNumber])
+  @@index([chainId, contract])
+}
+
+model LedgerAccount {
+  id        String            @id @default(cuid())
+  chainId   Int               @default(11155111)
+  tokenType String
+  type      LedgerAccountType
+  label     String?
+  address   String?
+  createdAt DateTime          @default(now())
+  entries   LedgerEntry[]
+
+  @@unique([chainId, tokenType, type, address])
+  @@index([chainId, tokenType])
+}
+
+model LedgerEntry {
+  id             String          @id @default(cuid())
+  chainId        Int             @default(11155111)
+  tokenType      String
+  walletEventId  String
+  idempotencyKey String
+  txHash         String
+  logIndex       Int
+  blockNumber    BigInt
+  chainTimestamp DateTime?
+  accountId      String
+  direction      LedgerDirection
+  amount         String
+  memo           String?
+  createdAt      DateTime        @default(now())
+  account        LedgerAccount   @relation(fields: [accountId], references: [id])
+
+  @@unique([chainId, txHash, logIndex, direction, accountId])
+  @@index([chainId, walletEventId])
+  @@index([chainId, accountId, blockNumber])
+  @@index([chainId, tokenType])
+}
+
 enum CaseStatus {
   DRAFT
   ACTIVE
@@ -760,46 +834,27 @@ enum InitiativeCategory {
   OTHER
 }
 
-model ChainMirrorCursor {
-  id          String   @id @default(cuid())
-  network     String
-  contract    String
-  lastBlock   Int      @default(0)
-  updatedAt   DateTime @updatedAt
-  createdAt   DateTime @default(now())
-  chainId     Int @default(11155111)
-
-  @@unique([network, contract])
-  @@index([network])
+enum LedgerAccountType {
+  TREASURY
+  USER
+  EXTERNAL
+  SYSTEM
 }
 
-model ChainMirrorEvent {
-  id              String   @id @default(cuid())
-  network         String
-  contract        String
-  chainId         Int @default(11155111)
+enum LedgerDirection {
+  DEBIT
+  CREDIT
+}
 
-  // Onchain identity
-  txHash          String
-  logIndex        Int
-  blockNumber     BigInt
-  blockHash       String?
-  chainTimestamp  DateTime?
+model CouncilAccessLog {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
 
-  // MirrorTransfer payload
-  idempotencyKey  String
-  walletEventId   String
-  tokenType       String
-  fromAddress     String
-  toAddress       String
-  amount          String
+  success       Boolean
+  ipAddress     String?
+  userAgent     String?
+  seatHash      String?
 
-  // raw JSON (optional but useful for debugging)
-  raw             Json?
-
-  createdAt       DateTime @default(now())
-
-  @@unique([network, txHash, logIndex])
-  @@index([network, blockNumber])
-  @@index([network, contract])
+  // derived from token if success
+  sessionIssued Boolean  @default(false)
 }

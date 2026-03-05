@@ -1,18 +1,18 @@
 // app/mainstream/page.tsx
 
-import TransmissionStatusBar from "@/src/components/mainstream/TransmissionStatusBar";
-import IdentityStatement from "@/src/components/mainstream/IdentityStatement";
-import FeaturedTransmission from "@/src/components/mainstream/FeaturedTransmission";
-import TransmissionLedger from "@/src/components/mainstream/TransmissionLedger";
-import ChannelDirectory from "@/src/components/mainstream/ChannelDirectory";
-import UpcomingTransmission from "@/src/components/mainstream/UpcomingTransmission";
+import InstitutionHeader from "@/components/mainstream/InstitutionHeader";
+import FeaturedTransmission from "@/components/mainstream/FeaturedTransmission";
+import TransmissionGrid from "@/components/mainstream/TransmissionGrid";
+import TransmissionLedger from "@/components/mainstream/TransmissionLedger";
+import ChannelDirectory from "@/components/mainstream/ChannelDirectory";
+import UpcomingTransmission from "@/components/mainstream/UpcomingTransmission";
 
 export default function MainstreamPage() {
   return (
     <main>
-      <TransmissionStatusBar />
-      <IdentityStatement />
+      <InstitutionHeader />
       <FeaturedTransmission />
+      <TransmissionGrid />
       <TransmissionLedger />
       <ChannelDirectory />
       <UpcomingTransmission />

@@ -1,33 +1,46 @@
-'use client';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
+import crypto from 'crypto';
+import CouncilChamber from './CouncilChamber';
 
-import styles from './CouncilPage.module.css';
-import { useState } from 'react';
+function verifySession(token: string | undefined) {
+  if (!token) return null;
+
+  const secret = process.env.COUNCIL_SESSION_SECRET;
+  if (!secret) return null;
+
+  const parts = token.split('.');
+  if (parts.length !== 3) return null;
+
+  const [header, body, signature] = parts;
+  const data = `${header}.${body}`;
+
+  const expected = crypto
+    .createHmac('sha256', secret)
+    .update(data)
+    .digest('base64url');
+
+  if (!crypto.timingSafeEqual(
+    Buffer.from(signature),
+    Buffer.from(expected)
+  )) return null;
+
+  const payload = JSON.parse(Buffer.from(body, 'base64url').toString());
+
+  if (!payload.exp || Date.now() > payload.exp) return null;
+
+  return payload;
+}
 
 export default function CouncilPage() {
-  const [collapsed, setCollapsed] = useState(false);
+  const cookieStore = cookies();
+  const session = cookieStore.get('axpt_council')?.value;
 
-  return (
-    <>
-      <div className={styles.panelHeader}>
-        Verification Portal
-        <span className={styles.sessionDot} />
-      </div>
+  const payload = verifySession(session);
 
-      <div
-        className={`${styles.terminalLine} ${
-          collapsed ? styles.collapsed : ''
-        }`}
-        onClick={() => setCollapsed(!collapsed)}
-      >
-        <span className={styles.prompt}>AXPT://SESSION</span>
-        <span className={styles.status}>
-          Council Seat Verified
-        </span>
-      </div>
+  if (!payload) {
+    redirect('/');
+  }
 
-      <div className={styles.chamberBody}>
-        {/* Future chamber content goes here */}
-      </div>
-    </>
-  );
+  return <CouncilChamber session={payload} />;
 }

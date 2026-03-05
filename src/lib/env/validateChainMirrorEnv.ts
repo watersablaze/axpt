@@ -1,7 +1,7 @@
 import { config } from 'dotenv'
 import { isAddress } from 'viem'
 
-// Load both, with .env.local winning (matches expected dev precedence)
+// Load .env first, then override with .env.local
 config({ path: '.env' })
 config({ path: '.env.local', override: true })
 
@@ -21,59 +21,78 @@ function reqPk(name: string): `0x${string}` {
 
 function reqAddr(name: string): `0x${string}` {
   const v = req(name)
-  if (!isAddress(v)) throw new Error(`[ENV] ${name} is not a valid EVM address`)
+  if (!isAddress(v)) {
+    throw new Error(`[ENV] ${name} is not a valid EVM address`)
+  }
   return v as `0x${string}`
 }
 
-function reqInt(name: string): number {
+function reqPositiveInt(name: string): number {
   const n = Number(req(name))
-  if (!Number.isInteger(n) || n <= 0) throw new Error(`[ENV] ${name} must be a positive integer`)
+  if (!Number.isInteger(n) || n <= 0) {
+    throw new Error(`[ENV] ${name} must be a positive integer`)
+  }
   return n
 }
 
-function optInt(name: string, fallback: number): number {
+function reqNonNegativeInt(name: string): number {
+  const n = Number(req(name))
+  if (!Number.isInteger(n) || n < 0) {
+    throw new Error(`[ENV] ${name} must be a non-negative integer`)
+  }
+  return n
+}
+
+function optNonNegativeInt(name: string, fallback: number): number {
   const raw = process.env[name]
   if (!raw || !raw.trim()) return fallback
-  const n = Number(raw.trim())
-  if (!Number.isInteger(n) || n <= 0) throw new Error(`[ENV] ${name} must be a positive integer`)
+  const n = Number(raw)
+  if (!Number.isInteger(n) || n < 0) {
+    throw new Error(`[ENV] ${name} must be a non-negative integer`)
+  }
   return n
 }
 
 export function validateChainMirrorEnv() {
   console.log('[ENV] Validating ChainMirror…')
 
-  const network = req('CHAIN_NETWORK')
-  const rpcUrl = req('SEPOLIA_RPC_URL')
+  const network   = req('CHAIN_NETWORK')
+  const rpcUrl    = req('CHAIN_MIRROR_RPC_URL')
+  const chainId   = reqPositiveInt('CHAIN_ID')
 
-  // authority
-  reqPk('TREASURY_PRIVATE_KEY')
+  const treasuryPk    = reqPk('TREASURY_PRIVATE_KEY')
+  const mirrorBridge  = reqAddr('CHAIN_MIRROR_BRIDGE')
 
-  // contract binding
-  const mirrorBridge = reqAddr('EVM_MIRROR_BRIDGE_ADDRESS')
+  const pollMs    = reqPositiveInt('CHAIN_MIRROR_POLL_MS')
+  const batchSize = reqPositiveInt('CHAIN_MIRROR_BATCH_SIZE')
+  const maxBlocks = reqPositiveInt('CHAIN_MIRROR_MAX_BLOCKS')
+  const confirmations = optNonNegativeInt('CHAIN_MIRROR_CONFIRMATIONS', 2)
 
-  // worker knobs
-  const pollMs = reqInt('CHAIN_MIRROR_POLL_MS')
-  const batchSize = reqInt('CHAIN_MIRROR_BATCH_SIZE')
-
-  // provider limits (Alchemy Free default)
-  const maxBlocks = optInt('CHAIN_MIRROR_MAX_BLOCKS', 10)
-
-  // start block (used when cursor not yet created)
-  const startBlock = BigInt(optInt('CHAIN_MIRROR_START_BLOCK', 0))
+  // 👇 THIS is the key fix
+  const startBlock = reqNonNegativeInt('CHAIN_MIRROR_START_BLOCK')
 
   console.log('[ENV] ChainMirror OK')
   console.log('[ENV] Summary:')
   console.log('  network:', network)
+  console.log('  chainId:', chainId)
   console.log('  rpc:', rpcUrl)
   console.log('  mirror bridge:', mirrorBridge)
   console.log('  poll ms:', pollMs)
   console.log('  batch size:', batchSize)
   console.log('  max blocks:', maxBlocks)
-  console.log('  start block:', startBlock.toString())
+  console.log('  confirmations:', confirmations)
+  console.log('  start block:', startBlock)
 
-  return { network, rpcUrl, mirrorBridge, pollMs, batchSize, maxBlocks, startBlock }
-}
-
-if (require.main === module) {
-  validateChainMirrorEnv()
+  return {
+    network,
+    rpcUrl,
+    treasuryPk,
+    mirrorBridge,
+    pollMs,
+    batchSize,
+    maxBlocks,
+    confirmations,
+    startBlock,
+    chainId,
+  }
 }

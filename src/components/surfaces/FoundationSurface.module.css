@@ -1,0 +1,81 @@
+.foundationSurface {
+  width:100%;
+  min-height:80vh;
+  position:relative;
+  outline: 1px solid red;
+}
+
+/* ======================================================
+   LAYER MARKER
+====================================================== */
+
+.layerMarker {
+  position: absolute;
+  left: var(--rail-inset);
+  top: 6vh;
+
+  font-family: var(--axpt-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+
+  color: rgba(200,210,220,0.38);
+  transition: color 320ms ease, opacity 320ms ease;
+}
+
+.layerMarkerActive {
+  color: rgba(140,210,175,0.65);
+}
+
+/* ======================================================
+   TYPOGRAPHY
+====================================================== */
+
+.headline {
+  font-size: clamp(2.15rem, 3vw, 2.6rem);
+  line-height: 1.18;
+  font-weight: 500;
+  letter-spacing: -0.012em;
+
+  margin: 0 0 22px 0;
+  color: rgba(250,245,230,0.95);
+}
+
+.subline {
+  font-size: 1rem;
+  line-height: 1.75;
+  max-width: 66ch;
+
+  color: rgba(220,235,245,0.75);
+  margin-bottom: 34px;
+}
+
+.pillars {
+  display: flex;
+  gap: 34px;
+  flex-wrap: wrap;
+
+  font-family: var(--axpt-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  color: rgba(190,210,220,0.6);
+}
+
+.pillars span {
+  position: relative;
+  padding-bottom: 10px;
+}
+
+.pillars span::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+
+  width: 22px;
+  height: 1px;
+
+  background: rgba(190,210,220,0.34);
+}

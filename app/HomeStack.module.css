@@ -1,0 +1,28 @@
+.mainStack {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Base section rhythm */
+.mainStack > section {
+  position: relative;
+  padding: 6.5rem 2rem;
+}
+
+/* Soft compression — no hard lines */
+.mainStack > section::after {
+  content: "";
+  position: absolute;
+  bottom: -2rem;
+  left: 0;
+  right: 0;
+  height: 4rem;
+
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0,0,0,0.12)
+  );
+
+  pointer-events: none;
+}

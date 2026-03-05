@@ -1,32 +1,129 @@
 .header {
   width: 100%;
-  padding: 22px clamp(24px, 4vw, 60px);
+  padding: 10px clamp(24px, 4vw, 60px);
 
-  /* No panel effect */
+  position: sticky;
+  top: 0;
+  z-index: 50;
+
   background: transparent;
 
-  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  /* ✅ ensures ::before can blur what's behind */
+  isolation: isolate;
+}
+
+/* soft fade edge under header (no border line) */
+.header::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 24px;
+  pointer-events: none;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(6, 18, 30, 0.18),
+    transparent
+  );
+}
+
+
+/* atmospheric “lens” */
+.header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  /* ✅ keep it IN FRONT of the page, behind header content */
+  z-index: 0;
+
+  backdrop-filter: blur(6px) saturate(1.05);
+  -webkit-backdrop-filter: blur(6px) saturate(1.05);
+
+  /* very faint tint so it reads but doesn’t become a “panel” */
+  background: linear-gradient(
+    to bottom,
+    rgba(6, 18, 30, 0.18),
+    rgba(6, 18, 30, 0.08),
+    rgba(6, 18, 30, 0.0)
+  );
+}
+
+.scrolled::before {
+  backdrop-filter: blur(10px) saturate(1.08);
+  -webkit-backdrop-filter: blur(10px) saturate(1.08);
+
+  background: linear-gradient(
+    to bottom,
+    rgba(6, 18, 30, 0.26),
+    rgba(6, 18, 30, 0.12),
+    rgba(6, 18, 30, 0.0)
+  );
+}
+
+/* ✅ make sure header content sits above the lens */
+.headerShell {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.4rem var(--rail-inset);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 24px;
+  pointer-events: none;
+
+  z-index: 0;
+
+  background: linear-gradient(
+    to bottom,
+    rgba(6, 18, 30, 0.18),
+    transparent
+  );
+}
+
+.layerSlot {
+  display: flex;
+  align-items: flex-end;
+  padding-bottom: 6px;
 }
 
 .inner {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
 }
 
-/* AXPT wordmark */
-.brand {
-  font-size: 0.95rem;
-  letter-spacing: 0.24em;
-  font-weight: 600;
-  color: #1f2327;
+.brandMark {
+  display: flex;
+  align-items: center;
 }
 
-/* Institutional descriptor */
-.tagline {
-  font-size: 0.60rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
+.brandImage {
+  height: 60px;
+  width: auto;
 
-  color: rgba(40, 45, 50, 0.55);
+  opacity: 0.88;
+  mix-blend-mode: luminosity;
+
+  filter:
+    brightness(1.06)
+    contrast(1.12)
+    saturate(0.18)
+    drop-shadow(0 0 0.6px rgba(0,0,0,0.4));
 }

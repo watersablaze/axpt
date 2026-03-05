@@ -7,7 +7,8 @@
   background: url('/images/backgrounds/nebula_purpblue.png')
     center / cover no-repeat;
 
-  opacity: 0;
+  opacity: 0.42;
+
   filter:
     brightness(0.95)
     contrast(1.1)
@@ -15,10 +16,12 @@
 
   mix-blend-mode: soft-light;
 
-  animation: nebulaFadeIn 5s ease-out forwards;
+  transition: opacity 900ms ease;
 }
 
-@keyframes nebulaFadeIn {
-  from { opacity: 0; }
-  to   { opacity: 0.42; }
-}
+body[data-surface="origin"] .nebula { opacity: 0.42; }
+body[data-surface="foundation"] .nebula { opacity: 0.36; }
+body[data-surface="framework"] .nebula { opacity: 0.32; }
+body[data-surface="interfaces"] .nebula { opacity: 0.38; }
+body[data-surface="ethos"] .nebula { opacity: 0.34; }
+body[data-surface="presence"] .nebula { opacity: 0.28; }

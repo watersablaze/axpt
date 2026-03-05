@@ -1,0 +1,85 @@
+.wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 12px;
+  border-radius: 14px;
+
+  background: rgba(0,0,0,0.18);
+  border: 1px solid rgba(210,230,240,0.10);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0.20) inset,
+    0 12px 30px rgba(0,0,0,0.20);
+
+  transform: translateZ(0);
+}
+
+.compact {
+  padding: 8px 10px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+
+  background: radial-gradient(circle at 35% 35%,
+    rgba(255,255,255,0.35),
+    rgba(140,200,210,0.85) 55%,
+    rgba(0,0,0,0.35) 100%
+  );
+
+  box-shadow:
+    0 0 10px rgba(140,200,210,0.22),
+    0 0 22px rgba(200,170,110,0.10);
+
+  animation: indicatorPulse var(--system-cycle) ease-in-out infinite;
+}
+
+@keyframes indicatorPulse {
+  0%   { opacity: 0.55; transform: scale(1); }
+  18%  { opacity: 0.95; transform: scale(1.35); }
+  35%  { opacity: 0.70; transform: scale(1.06); }
+  100% { opacity: 0.55; transform: scale(1); }
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.kicker {
+  font-family: var(--axpt-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+  color: rgba(200,210,220,0.40);
+}
+
+.value {
+  font-family: var(--axpt-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(245,242,235,0.92);
+}
+
+.sub {
+  font-size: 0.74rem;
+  line-height: 1.2;
+  color: rgba(232,237,242,0.52);
+}
+
+/* Cinematic: react to your existing html[data-layer="..."] */
+:global(html[data-layer="ENTRY"]) .dot { filter: hue-rotate(0deg) brightness(1.02); }
+:global(html[data-layer="FOUNDATION"]) .dot { filter: hue-rotate(-8deg) brightness(1.05); }
+:global(html[data-layer="FRAMEWORK"]) .dot { filter: hue-rotate(10deg) brightness(1.08); }
+:global(html[data-layer="INTERFACES"]) .dot { filter: hue-rotate(18deg) brightness(1.12); }
+:global(html[data-layer="ETHOS"]) .dot { filter: hue-rotate(-14deg) brightness(1.04); }
+:global(html[data-layer="PRESENCE"]) .dot { filter: hue-rotate(26deg) brightness(0.98); }

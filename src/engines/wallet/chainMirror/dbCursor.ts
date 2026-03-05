@@ -1,22 +1,24 @@
 import { prisma } from '@/lib/prisma'
 
 /**
- * Get existing cursor or create it.
- * Boundary rule:
- *   - Chain = bigint
- *   - DB = number
+ * Cursor boundary rules:
+ *  - Chain = bigint
+ *  - DB = number
+ *  - Uniqueness = (chainId, contract)
  */
+
 export async function getOrCreateCursor(opts: {
+  chainId: number
   network: string
   contract: string
   startBlock: bigint
 }) {
-  const { network, contract, startBlock } = opts
+  const { chainId, network, contract, startBlock } = opts
 
   const existing = await prisma.chainMirrorCursor.findUnique({
     where: {
-      network_contract: {
-        network,
+      chainId_contract: {
+        chainId,
         contract,
       },
     },
@@ -26,9 +28,10 @@ export async function getOrCreateCursor(opts: {
 
   return prisma.chainMirrorCursor.create({
     data: {
+      chainId,
       network,
       contract,
-      lastBlock: Number(startBlock), // 🔒 convert here
+      lastBlock: Number(startBlock), // 🔒 convert bigint → number at boundary
     },
   })
 }
@@ -38,21 +41,28 @@ export async function getOrCreateCursor(opts: {
  * Accepts bigint from chain layer.
  */
 export async function advanceCursor(opts: {
-  network: string
+  chainId: number
   contract: string
+  network: string
   lastBlock: bigint
 }) {
-  const { network, contract, lastBlock } = opts
+  const { chainId, contract, network, lastBlock } = opts
 
-  return prisma.chainMirrorCursor.update({
+  return prisma.chainMirrorCursor.upsert({
     where: {
-      network_contract: {
-        network,
+      chainId_contract: {
+        chainId,
         contract,
       },
     },
-    data: {
-      lastBlock: Number(lastBlock), // 🔒 convert here
+    update: {
+      lastBlock: Number(lastBlock),
+    },
+    create: {
+      chainId,
+      contract,
+      network,
+      lastBlock: Number(lastBlock),
     },
   })
 }

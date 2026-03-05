@@ -1,0 +1,118 @@
+.interfacesSurface {
+  width:100%;
+  min-height:100vh;
+  position:relative;
+}
+
+/* headline */
+
+.headline{
+  margin-top:14px;
+
+  font-size:clamp(1.9rem,2.8vw,2.6rem);
+
+  color:rgba(240,230,210,0.9);
+}
+
+/* description */
+
+.subline{
+
+  margin-top:12px;
+  margin-bottom:44px;
+
+  max-width:640px;
+
+  line-height:1.65;
+
+  color:rgba(235,225,205,0.58);
+}
+
+/* grid */
+
+.interfaceGrid{
+
+  display:grid;
+
+  grid-template-columns:1fr 1fr;
+
+  gap:clamp(24px,3vw,40px);
+}
+
+/* cards */
+
+.interfaceCard{
+
+  padding:24px 22px;
+
+  border-top:1px solid rgba(255,255,255,0.05);
+
+  background:transparent;
+}
+
+.interfaceCard h3{
+
+  font-family:var(--axpt-mono);
+
+  letter-spacing:0.18em;
+
+  font-size:0.82rem;
+
+  margin-bottom:10px;
+}
+
+.interfaceCard p{
+
+  line-height:1.65;
+
+  color:rgba(235,225,205,0.55);
+
+  margin-bottom:18px;
+}
+
+/* triggers */
+
+.inlineTrigger{
+
+  font-family:var(--axpt-mono);
+
+  font-size:0.7rem;
+
+  letter-spacing:0.18em;
+
+  text-transform:uppercase;
+
+  background:transparent;
+
+  border:none;
+
+  cursor:pointer;
+
+  color:rgba(235,225,205,0.7);
+}
+
+.inlineTrigger:hover{
+
+  color:rgba(255,248,232,0.95);
+}
+
+.inlineDisabled{
+
+  font-family:var(--axpt-mono);
+
+  font-size:0.7rem;
+
+  letter-spacing:0.18em;
+
+  color:rgba(235,225,205,0.35);
+}
+
+/* responsive */
+
+@media (max-width:880px){
+
+  .interfaceGrid{
+    grid-template-columns:1fr;
+  }
+
+}

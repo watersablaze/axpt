@@ -1,0 +1,207 @@
+.veil {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+}
+
+.backdrop {
+  position: absolute;
+  inset: 0;
+
+  background:
+    radial-gradient(circle at 45% 30%, rgba(200,170,110,0.08), transparent 55%),
+    radial-gradient(circle at 70% 62%, rgba(140,200,210,0.06), transparent 58%),
+    rgba(5, 8, 12, 0.88);
+
+  backdrop-filter: blur(8px);
+}
+
+.shell {
+  position: relative;
+  width: min(760px, calc(100vw - 42px));
+  padding: 34px 30px 26px 30px;
+
+  background: linear-gradient(180deg, rgba(18, 22, 28, 0.92), rgba(12, 16, 22, 0.94));
+  border: 1px solid rgba(200, 180, 120, 0.10);
+
+  box-shadow: 0 70px 160px rgba(0,0,0,0.65);
+  overflow: hidden;
+}
+
+.shell::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  background-image: url('/textures/subtle-noise.png');
+  background-size: 520px 520px;
+  opacity: 0.05;
+  mix-blend-mode: soft-light;
+}
+
+.sigil {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.03;
+  background: url('/sigil/v4/axpt_sigil_V4_transparent.png') center / 62% no-repeat;
+  filter: blur(1.2px);
+}
+
+.glow {
+  position: absolute;
+  inset: -160px;
+  pointer-events: none;
+
+  background: radial-gradient(ellipse at 50% 58%, rgba(170,140,75,0.14), transparent 62%);
+  filter: blur(140px);
+  opacity: 0.7;
+}
+
+.topLine {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.header {
+  font-family: var(--axpt-mono);
+  font-size: 0.78rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(235, 225, 205, 0.82);
+}
+
+.pulseDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  opacity: 0.75;
+
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.20), rgba(140,200,210,0.60));
+  animation: dotPulse 2.9s ease-in-out infinite;
+}
+
+.ok {
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.22), rgba(200,180,120,0.75));
+}
+
+@keyframes dotPulse {
+  0% { transform: scale(1); opacity: 0.55; }
+  35% { transform: scale(1.25); opacity: 0.88; }
+  100% { transform: scale(1); opacity: 0.55; }
+}
+
+.hint {
+  position: relative;
+  z-index: 2;
+  margin: 0 0 18px 0;
+  color: rgba(235, 225, 205, 0.58);
+  line-height: 1.6;
+  max-width: 62ch;
+}
+
+.promptRow {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 14px;
+
+  padding-top: 8px;
+  padding-bottom: 12px;
+}
+
+.prompt {
+  font-family: var(--axpt-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: rgba(180, 200, 210, 0.58);
+  opacity: 0.9;
+}
+
+.inputWrap {
+  position: relative;
+  border-bottom: 1px solid rgba(255,255,255,0.10);
+  padding-bottom: 10px;
+}
+
+.input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+
+  font-family: var(--axpt-mono);
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  color: rgba(245, 238, 218, 0.90);
+
+  padding: 6px 0 0 0;
+}
+
+.input::placeholder {
+  color: rgba(235,225,205,0.28);
+}
+
+.cursor {
+  position: absolute;
+  right: 0;
+  bottom: 12px;
+  width: 10px;
+  height: 14px;
+  background: rgba(235,225,205,0.20);
+  opacity: 0.5;
+  animation: blink 1.35s infinite;
+}
+
+@keyframes blink {
+  0%, 50%, 100% { opacity: 0.15; }
+  25%, 75% { opacity: 0.72; }
+}
+
+.actions {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+
+  font-family: var(--axpt-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.inlineAction {
+  background: transparent;
+  border: none;
+  color: rgba(235, 225, 205, 0.70);
+  cursor: pointer;
+  padding: 8px 0;
+  transition: color 140ms linear, opacity 140ms linear;
+}
+
+.inlineAction:hover {
+  color: rgba(255, 248, 232, 0.95);
+}
+
+.inlineAction:disabled {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.sep {
+  width: 1px;
+  height: 14px;
+  background: rgba(255,255,255,0.10);
+  opacity: 0.55;
+}

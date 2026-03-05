@@ -79,6 +79,7 @@
     "mint:protium:to": "MINT_TARGET=protium MINT_TO=$NEXT_PUBLIC_TEST_ACCOUNT bash scripts/mint.sh",
     "mint:gold": "MINT_TARGET=gold bash scripts/mint.sh",
     "mint:gold:to": "MINT_TARGET=gold MINT_TO=$NEXT_PUBLIC_TEST_ACCOUNT bash scripts/mint.sh",
+    "mirror:ro": "tsx src/engines/wallet/chainMirror/bootstrap.ts",
     "deploy:protium": "DEPLOY_TARGET=protium bash scripts/deploy.sh",
     "deploy:axg": "DEPLOY_TARGET=axg bash scripts/deploy.sh",
     "verify:protium": "VERIFY_TARGET=protium bash scripts/verify-latest.sh",

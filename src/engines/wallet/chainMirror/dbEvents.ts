@@ -1,10 +1,14 @@
+// src/engines/wallet/chainMirror/dbEvents.ts
 import { prisma } from '@/lib/prisma'
 import { decodeEventLog } from 'viem'
 import MirrorBridgeAbi from '../../../../abi/MirrorBridge.json'
+import { buildDoubleEntryRows } from './ledgerWriter'
+import { resolveLedgerAccountId } from './ledgerAccounts'
 
-export async function persistLogs(opts: {
+type PersistOpts = {
   network: string
   contract: string
+  chainId: number
   logs: Array<{
     blockNumber: bigint
     blockHash?: `0x${string}` | null
@@ -13,66 +17,107 @@ export async function persistLogs(opts: {
     topics: readonly `0x${string}`[]
     data: `0x${string}`
   }>
-}) {
-  const { network, contract, logs } = opts
+}
+
+export async function persistLogs(opts: PersistOpts) {
+  const { network, contract, chainId, logs } = opts
   if (!logs.length) return { inserted: 0 }
 
-  const rows = []
+  let inserted = 0
 
   for (const l of logs) {
     try {
       const decoded = decodeEventLog({
         abi: MirrorBridgeAbi as any,
         eventName: 'MirrorTransfer',
-        // decodeEventLog expects a mutable tuple; cast our readonly topics
         topics: [...l.topics] as [`0x${string}`, ...`0x${string}`[]],
         data: l.data,
       })
 
-      const {
+      const { idempotencyKey, walletEventId, tokenType, from, to, amount } =
+        decoded.args as {
+          idempotencyKey: `0x${string}`
+          walletEventId: `0x${string}`
+          tokenType: `0x${string}`
+          from: `0x${string}`
+          to: `0x${string}`
+          amount: bigint
+        }
+
+      // ✅ Pre-resolve account IDs OUTSIDE the transaction (removes interactive timeout risk)
+      const debitAccountId = await resolveLedgerAccountId({
+        chainId,
+        tokenType,
+        treasuryAddress: contract as any, // if your resolver needs treasury, pass the right value; otherwise remove
+        address: from,
+      })
+
+      const creditAccountId = await resolveLedgerAccountId({
+        chainId,
+        tokenType,
+        treasuryAddress: contract as any,
+        address: to,
+      })
+
+      const d = {
+        chainId,
+        tokenType,
         idempotencyKey,
         walletEventId,
-        tokenType,
-        from,
-        to,
-        amount,
-      } = decoded.args as any
-
-      rows.push({
-        network,
-        contract,
-
-        txHash: l.transactionHash,
-        logIndex: l.logIndex,
-
-        blockNumber: Number(l.blockNumber),
-        blockHash: l.blockHash ?? null,
-
-        idempotencyKey,
-        walletEventId,
-        tokenType,
         fromAddress: from,
         toAddress: to,
-        amount: amount.toString(),
+        amountWei: amount.toString(),
+        txHash: l.transactionHash,
+        logIndex: l.logIndex,
+        blockNumber: l.blockNumber,
+        chainTimestamp: null,
+      }
 
-        raw: {
-          blockNumber: l.blockNumber.toString(),
-          transactionHash: l.transactionHash,
-          topics: [...l.topics],
-          data: l.data,
-        },
+      const ledgerRows = buildDoubleEntryRows({
+        d,
+        debitAccountId,
+        creditAccountId,
       })
-    } catch (err) {
-      console.warn('[ChainMirror] failed to decode log', err)
+
+      // ✅ Batched transaction (NOT interactive callback) => eliminates P2028
+      await prisma.$transaction([
+        prisma.chainMirrorEvent.create({
+          data: {
+            network,
+            contract,
+            chainId,
+            txHash: l.transactionHash,
+            logIndex: l.logIndex,
+            blockNumber: l.blockNumber,
+            blockHash: l.blockHash ?? null,
+            idempotencyKey,
+            walletEventId,
+            tokenType,
+            fromAddress: from,
+            toAddress: to,
+            amount: amount.toString(),
+            raw: {
+              blockNumber: l.blockNumber.toString(),
+              transactionHash: l.transactionHash,
+              topics: [...l.topics],
+              data: l.data,
+            },
+          },
+        }),
+        prisma.ledgerEntry.createMany({
+          data: ledgerRows,
+          skipDuplicates: true,
+        }),
+      ])
+
+      inserted++
+    } catch (err: any) {
+      // If your unique constraints throw P2002, treat as idempotent duplicate
+      if (err?.code === 'P2002') continue
+
+      console.warn('[ChainMirror] failed to process log', err)
     }
   }
 
-  if (!rows.length) return { inserted: 0 }
-
-  const res = await prisma.chainMirrorEvent.createMany({
-    data: rows,
-    skipDuplicates: true,
-  })
-
-  return { inserted: res.count }
+  return { inserted }
 }

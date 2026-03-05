@@ -1,56 +1,41 @@
-'use client';
+'use client'
 
-import { useRouter } from 'next/navigation';
-import Header from '@/components/layout/Header';
-import Footer from '@/components/layout/Footer';
-import HeroCeremonial from '@/components/sigil/HeroCeremonial';
+import Header from '@/components/layout/Header'
+
+import OriginSurface from '@/components/surfaces/OriginSurface'
+import FoundationSurface from '@/components/surfaces/FoundationSurface'
+import FrameworkSurface from '@/components/surfaces/FrameworkSurface'
+import InterfacesSurface from '@/components/surfaces/InterfacesSurface'
+import EthosSurface from '@/components/surfaces/EthosSurface'
+import PresenceSurface from '@/components/surfaces/PresenceSurface'
+import SurfaceStack from '@/components/system/SurfaceStack'
 
 export default function Home() {
-  const router = useRouter();
 
   return (
-    <>
+
+    <main>
+
       <Header />
 
-      <main>
-        <HeroCeremonial />
+      <SurfaceStack>
 
-        <section className="constitutionalSurface">
-          <div className="constitutionalInner">
-            <p className="techFont axpt-label">
-              Sovereign Declaration
-            </p>
+          <OriginSurface />
 
-            <h2>
-              AXPT serves as a neutral public standard for culturally
-              rooted economic continuity.
-            </h2>
+          <FoundationSurface />
 
-            <p className="statementSub">
-              Governance clarity. Indigenous alignment.
-              Regenerative capital architecture.
-            </p>
+          <FrameworkSurface />
 
-            <div className="accessBlock">
-              <div className="accessRow">
-            <button
-              type="button"
-              className="axpt-btn"
-              onClick={() => router.push('/council/login')}
-            >
-              Council Access
-            </button>
+          <InterfacesSurface />
 
-                <button className="axpt-btn">
-                  Partner Entry
-                </button>
-              </div>
-            </div>
-          </div>
-        </section>
-      </main>
+          <EthosSurface />
 
-      <Footer />
-    </>
-  );
+          <PresenceSurface />
+
+      </SurfaceStack>
+
+    </main>
+
+  )
+
 }

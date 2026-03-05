@@ -1,0 +1,18 @@
+.globalLayerIndicator {
+  font-family: var(--axpt-mono);
+  font-size: 0.58rem;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+
+  color: rgba(140,210,175,0.75);
+  opacity: 0.92;
+
+  /* keeps it calm + embedded */
+  filter: blur(0.1px);
+  white-space: nowrap;
+}
+
+.globalLayerIndicator::before {
+  content: "SYS // ";
+  color: rgba(200,210,220,0.30);
+}

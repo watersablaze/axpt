@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  nethermind:
+    image: nethermind/nethermind:latest
+    container_name: nethermind
+    restart: unless-stopped
+    ports:
+      - "8545:8545"
+    volumes:
+      - ./data:/nethermind/data
+    command: >
+      --config sepolia
+      --JsonRpc.Enabled true
+      --JsonRpc.Host 0.0.0.0
+      --JsonRpc.Port 8545
+      --JsonRpc.EnabledModules Eth,Net,Web3
+      --Sync.SnapSync true
+      --HealthChecks.Enabled true
