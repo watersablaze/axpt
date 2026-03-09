@@ -1,11 +1,7 @@
 .presenceSurface {
   width:100%;
-  min-height: auto !important;
   position:relative;
-}
-
-.presenceSurface.surface {
-  min-height: auto;
+  overflow: hidden;
 }
 
 .presenceSurface::after {
@@ -17,28 +13,7 @@
 
   pointer-events:none;
 
-  background:
-    radial-gradient(
-      circle at 50% 52%,
-      rgba(150,220,230,0.15),
-      rgba(10,30,40,0.45) 40%,
-      rgba(6,18,28,0.9)
-    );
-
-  opacity:.7;
-
-  mask-image:
-    radial-gradient(circle at 50% 52%, black 0%, transparent 70%);
-
-  background:
-    radial-gradient(
-      ellipse at 50% 52%,
-      rgba(140,210,220,0.08),
-      rgba(10,30,44,0.35) 60%,
-      rgba(6,18,28,0.65)
-    );
-
-  opacity:.65;
+  opacity:.55;
 
   animation: portalRest 18s ease-in-out infinite;
 
@@ -46,39 +21,9 @@
 
 @keyframes portalRest {
 
-  0% { opacity:.55; }
-  50% { opacity:.35; }
-  100% { opacity:.55; }
-
-}
-
-/* Soft closure field */
-.presenceSurface::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-
-  background:
-    radial-gradient(ellipse at 50% 70%, rgba(255,255,255,0.04), transparent 62%),
-    radial-gradient(ellipse at 40% 40%, rgba(140,200,210,0.025), transparent 68%);
-
-  opacity: 0.55;
-  filter: blur(18px);
-}
-
-.presenceField {
-
-  max-width: 640px;
-
-  margin: 0 auto 80px;
-
-  font-size: 1.02rem;
-
-  color: rgba(220,205,180,0.65);
-
-  line-height: 1.75;
+  0% { opacity:.42; }
+  50% { opacity:.30; }
+  100% { opacity:.42; }
 
 }
 
@@ -86,42 +31,192 @@
 
   position: relative;
 
-  padding: 100px var(--rail-inset) 80px;
+  min-height: 100vh;
 
   display: flex;
   flex-direction: column;
+
+  justify-content: center;
   align-items: center;
+
+  padding: 80px var(--rail-inset);
 
   text-align: center;
 
 }
 
+body[data-surface="PRESENCE"] .axisMagnetism {
+
+  opacity:.4;
+
+}
+
+body[data-surface="PRESENCE"] .sigil {
+
+  animation:
+    sealBreath 26s ease-in-out infinite alternate,
+    presenceGlow 6s ease-in-out infinite 2.2s;
+
+}
+
+@keyframes sealChargeIdle {
+
+  0%   { filter: brightness(1); }
+
+  50%  { filter: brightness(1.05); }
+
+  100% { filter: brightness(1); }
+
+}
+
+body.axis-lock .sigil {
+
+  animation:
+    sealBreath 26s ease-in-out infinite alternate,
+    sealChargePulse 0.9s ease-out;
+
+}
+
+@keyframes sealChargePulse {
+
+  0% { filter: brightness(1); }
+
+  40% {
+    filter:
+      brightness(1.08)
+      drop-shadow(0 0 6px rgba(180,240,255,.35));
+  }
+
+  100% { filter: brightness(1); }
+
+}
+
+body[data-surface="PRESENCE"] .presenceSurface::after {
+
+  background:
+    radial-gradient(
+      circle at 50% 55%,
+      rgba(170,235,255,0.16),
+      rgba(20,40,60,0.35) 50%,
+      rgba(6,18,28,0.8)
+    );
+
+}
+
+@keyframes sealPulse {
+
+  0% { filter: brightness(1); }
+
+  50% {
+    filter:
+      brightness(1.08)
+      drop-shadow(0 0 6px rgba(160,220,240,.4));
+  }
+
+  100% { filter: brightness(1); }
+
+}
+
 /* Sigil watermark layer */
+
 .sigilWrapper {
 
-  position:absolute;
-  inset:0;
+  position: absolute;
+  top: 50%;
+  left: var(--axis-center);
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  transform: translate(-50%, -50%);
+
+  pointer-events: none;
+
+  opacity: .18;
+
+}
+
+body[data-surface="PRESENCE"] .sigilWrapper {
+
+  animation:
+    presenceSigilReveal 2.2s cubic-bezier(.22,1,.36,1) forwards,
+    presenceGlow 6s ease-in-out infinite 2.2s;
+
+}
+
+@keyframes presenceGlow {
+
+  0% {
+    filter: brightness(1);
+  }
+
+  50% {
+    filter: brightness(1.05);
+  }
+
+  100% {
+    filter: brightness(1);
+  }
+
+}
+
+@keyframes presenceSigilReveal {
+
+  0% {
+
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.92);
+    filter: blur(8px);
+
+  }
+
+  50% {
+
+    opacity: .55;
+    filter: blur(3px);
+
+  }
+
+  100% {
+
+    opacity: .6;
+    transform: translate(-50%, -50%) scale(1);
+    filter: blur(0);
+
+  }
 
 }
 
 .sigil {
+
   width: min(520px, 46vw);
   height: auto;
 
-  opacity: 0.085;
-  filter: grayscale(100%) contrast(0.98) blur(0.8px);
   mix-blend-mode: luminosity;
-  outline: red;
 
-  transform: none;
-  pointer-events: none;
-  user-select: none;
+  filter:
+    grayscale(100%)
+    contrast(0.96)
+    blur(.6px);
 
-  animation: sealBreath 26s ease-in-out infinite alternate;
+  animation: sigilBreath 26s ease-in-out infinite alternate;
+
+}
+
+@keyframes sigilBreath {
+
+  0% {
+    transform: scale(.996);
+    filter: grayscale(100%) contrast(.96) blur(.6px);
+  }
+
+  50% {
+    transform: scale(1.003);
+    filter: grayscale(100%) contrast(.98) blur(.4px);
+  }
+
+  100% {
+    transform: scale(.996);
+    filter: grayscale(100%) contrast(.96) blur(.6px);
+  }
+
 }
 
 @keyframes sealBreath {
@@ -131,7 +226,8 @@
 
 .footerBar {
 
-  margin-top: 80px;
+  margin-top: auto;
+  position: relative;
 
   width: 100%;
 
@@ -237,10 +333,6 @@
 
 .col:nth-child(2) { text-align: center; }
 .col:nth-child(3) { text-align: right; }
-
-.footerLink:hover {
-  color: rgba(140, 210, 175, 0.82);
-}
 
 .colLeft,
 .colMid,

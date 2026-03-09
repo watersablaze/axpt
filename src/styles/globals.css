@@ -8,6 +8,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* global layout stability */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 /* ──────────────────────────────
    DESIGN TOKENS
 ────────────────────────────── */
@@ -21,19 +29,32 @@
   --axpt-text-muted: rgba(232,237,242,0.48);
   --axpt-mono: "Share Tech Mono", monospace;
   --rail-inset: clamp(42px, 6vw, 72px);
-  --rail-opacity: 0.14;     
+  --rail-opacity: 0.08;     
   --fog-opacity: 0.72;
   --system-cycle: 5.8s;
   --field-current-alpha: 0.15;
   --field-current-band: 0.08;
   --field-current-sheen: 1.05;
   --field-current-blur: 0.75px;
-  --axis-center: 50%;
+  --axis-center: calc(50% + 0.5px);
+  --axis-gap:120px;
+  --axis-offset:120px;
 }
 
 /* ──────────────────────────────
    BASE DOCUMENT
 ────────────────────────────── */
+
+
+html {
+
+  scroll-behavior: smooth;
+
+  scroll-padding-top: 120px;
+
+  overscroll-behavior-y: none;
+
+}
 
 html,
 body {
@@ -43,6 +64,7 @@ body {
   color: rgba(245,242,235,0.92);
   position: relative;
   min-height: 100%;
+  overflow-x: clip;
 }
 
 /* ──────────────────────────────
@@ -92,18 +114,10 @@ html::before {
     transparent 0%,
     rgba(140,200,210, calc(var(--field-current-band) * 0.18)) 70%,
     transparent 100%
-  ),
-
-  radial-gradient(
-    ellipse at 50% 48%,
-    rgba(110, 170, 185, calc(var(--field-current-alpha) * 0.22)) 0%,
-    rgba(110, 170, 185, calc(var(--field-current-alpha) * 0.14)) 30%,
-    rgba(110, 170, 185, calc(var(--field-current-alpha) * 0.05)) 55%,
-    transparent 75%
   );
 
-  opacity: 0.55;
-  filter: blur(60px);
+  opacity: 0.38;
+  filter: blur(70px);
   transition:
     opacity 1400ms cubic-bezier(0.22, 1, 0.36, 1),
     filter 1400ms cubic-bezier(0.22, 1, 0.36, 1),
@@ -127,113 +141,93 @@ html[data-scroll-dir="up"] .surface {
   transform: translateY(-40px) scale(0.985);
 }
 
-/* ──────────────────────────────
-   GLOBAL RAILS — STRUCTURAL BREATH
-────────────────────────────── */
-
 html::after {
+  display:none;
+}
 
-  content:"";
-  position:fixed;
-  inset:0;
+html::pressure {
+  display:none;
+}
 
-  pointer-events:none;
-  z-index:-0.35;
+/* =========================
+   AXIS DEBUG GRID
+========================= */
 
-  width:1px;
+body.debug-grid::before {
 
-  left:var(--axis-center);
+  content: "";
+
+  position: fixed;
+  inset: 0;
+
+  pointer-events: none;
+  z-index: 9998;
 
   background:
-    repeating-linear-gradient(
-      to top,
-      transparent 0px,
-      transparent 20px,
-      rgba(160,220,240,0.75) 22px,
-      transparent 24px
+
+    /* center axis */
+    linear-gradient(
+      to right,
+      transparent calc(50% - 0.5px),
+      rgba(255,0,0,.8) calc(50% - 0.5px),
+      rgba(255,0,0,.8) calc(50% + 0.5px),
+      transparent calc(50% + 0.5px)
+    ),
+
+    /* viewport thirds */
+    linear-gradient(
+      to right,
+      transparent 33.333%,
+      rgba(0,200,255,.35) 33.333%,
+      rgba(0,200,255,.35) calc(33.333% + 1px),
+      transparent calc(33.333% + 1px)
+    ),
+
+    linear-gradient(
+      to right,
+      transparent 66.666%,
+      rgba(0,200,255,.35) 66.666%,
+      rgba(0,200,255,.35) calc(66.666% + 1px),
+      transparent calc(66.666% + 1px)
     );
 
-  animation: axisUpstream 4.5s linear infinite;
-
 }
 
-@keyframes axisUpstream {
-
-  0% {
-    transform:translateX(-50%) translateY(120vh);
-    opacity:0;
-  }
-
-  20% { opacity:1; }
-
-  100% {
-    transform:translateX(-50%) translateY(-120vh);
-    opacity:0;
-  }
-
-}
-
-/* DATA PACKETS */
+/* debug */
 
 body::before {
-
-  content:"";
-  position:fixed;
-  inset:0;
-
-  pointer-events:none;
-  z-index:-0.4;
-
-  width:1px;
-
-  left:var(--axis-center);
-
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0px,
-      transparent 16px,
-      rgba(220,240,255,0.55) 18px,
-      transparent 20px
-    );
-
-  animation: axisDownstream 11s linear infinite;
-
+  content: attr(data-surface);
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  color: white;
+  font-size: 14px;
+  z-index: 9999;
 }
 
-@keyframes axisDownstream {
-
-  0% {
-    transform:translateX(-50%) translateY(-120vh);
-    opacity:0;
-  }
-
-  15% { opacity:.9; }
-
-  100% {
-    transform:translateX(-50%) translateY(120vh);
-    opacity:0;
-  }
-
-}
 
 body::after {
 
   content:"";
+
   position:fixed;
+  inset:0;
 
-  top:0;
-  bottom:0;
-
-  left:50%;
-  transform:translateX(-50%);
-
-  width:2px;
-
-  background:red;
-
-  z-index:9999;
   pointer-events:none;
+
+  z-index:-2;
+
+  background:
+
+    radial-gradient(
+      ellipse 320px 90vh at var(--axis-center) 50%,
+      rgba(120,200,220,0.08),
+      transparent 70%
+    );
+
+  filter: blur(80px);
+
+  opacity:.35;
 
 }
 
@@ -254,6 +248,12 @@ body .rails::after {
   background:rgba(200,220,230,var(--rail-opacity));
 }
 
+body .rails {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+
 body .rails::before {
   left:var(--rail-inset);
 }
@@ -262,43 +262,9 @@ body .rails::after {
   right:var(--rail-inset);
 }
 
-.originViewport {
-  position: relative;
-  min-height: 100vh;
-  z-index: 1;
-  isolation: isolate; /* important: creates a clean stacking context */
-}
-
-.originViewport::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: -1; /* now it sits behind Header+Origin inside this isolated context */
-
-  background:
-    radial-gradient(ellipse at 50% 22%, rgba(120, 200, 220, 0.11), transparent 62%),
-    radial-gradient(ellipse at 50% 92%, rgba(0, 0, 0, 0.35), transparent 70%),
-    linear-gradient(to bottom, rgba(4, 12, 20, 0.55), rgba(4, 12, 20, 0.0));
-
-  opacity: 0.9;
-}
-
 /* ──────────────────────────────
    AXPT UI PRIMITIVES
 ────────────────────────────── */
-
-.atmosphere[data-layer="FOUNDATION"] .nebula {
-  opacity: 0.8;
-}
-
-.atmosphere[data-layer="FRAMEWORK"] .nebula {
-  opacity: 0.6;
-}
-
-.atmosphere[data-layer="INTERFACES"] .nebula {
-  opacity: 0.9;
-}
 
 .globalLayerIndicator {
   font-family: var(--axpt-mono);
@@ -358,43 +324,31 @@ body .rails::after {
    DISTORTION LAYER
 ────────────────────────────── */
 
-#distortion-layer {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 40;
-
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-
-  transition:
-    backdrop-filter 420ms cubic-bezier(0.2,0.8,0.2,1),
-    background 420ms cubic-bezier(0.2,0.8,0.2,1);
-}
-
-html.council-active #distortion-layer {
-  backdrop-filter:
-    blur(1.3px)
-    contrast(1.05)
-    saturate(1.05);
-
-  -webkit-backdrop-filter:f
-    blur(1.3px)
-    contrast(1.05)
-    saturate(1.05);
-
-  background:
-    radial-gradient(
-      circle at 50% 52%,
-      rgba(200,170,110,0.06),
-      transparent 60%
-    );
-}
-
-/* AXPT CONTINUOUS FIELD */
-
 .originViewport {
   position: relative;
+  min-height: 100vh;
+  z-index: 1;
+  isolation: isolate; /* important: creates a clean stacking context */
+}
+
+.originViewport::after {
+
+  content:"";
+
+  position:absolute;
+
+  left:var(--axis-center);
+  top:0;
+  bottom:0;
+
+  width:3px;
+
+  background:rgba(200,240,255,.25);
+
+  filter:blur(6px);
+
+  opacity:.15;
+
 }
 
 .originViewport > section {
@@ -402,97 +356,248 @@ html.council-active #distortion-layer {
   z-index: 2;
 }
 
-.originViewport > section + section {
+.originViewport > section + section:not(:last-child) {
   margin-top: -2vh;
 }
 
-/* =========================================
-   AXPT SURFACE SYSTEM (STABLE BASELINE)
-========================================= */
+.originViewport::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1; /* now it sits behind Header+Origin inside this isolated context */
+
+  background:
+    radial-gradient(ellipse at 50% 22%, rgba(120, 200, 220, 0.11), transparent 62%),
+    radial-gradient(ellipse at 50% 92%, rgba(0, 0, 0, 0.35), transparent 70%),
+    linear-gradient(to bottom, rgba(4, 12, 20, 0.55), rgba(4, 12, 20, 0.0));
+
+  opacity: 0.75;
+}
 
 /* =====================================
    AXPT SURFACE STACK
 ===================================== */
 
 .surfaceStack {
-
   position: relative;
   width: 100%;
-
   display: flex;
   flex-direction: column;
-
+  scroll-snap-type: y proximity;
+  z-index: 2;
 }
 
-/* guarantees surfaces never collapse */
+/* each section fills viewport */
 
 .surfaceStack > section {
-
   position: relative;
   width: 100%;
   min-height: 100vh;
+  perspective: 1200px;
+  scroll-snap-align: center;
+}
+
+.surfaceStack > section + section {
+  margin-top: 48vh;
+}
+
+.surfaceStack > section::after {
+
+  content:"";
+
+  position:absolute;
+
+  left:0;
+  right:0;
+
+  bottom:-120px;
+
+  height:160px;
+
+  pointer-events:none;
+
+  background:
+
+    linear-gradient(
+      to bottom,
+      rgba(0,0,0,0),
+      rgba(0,0,0,0.10),
+      rgba(0,0,0,0.20)
+    );
+
+  opacity:.14;
+
+}
+
+.surfaceStack > section::before {
+
+  content:"";
+
+  position:absolute;
+
+  left:0;
+  right:0;
+
+  top:-120px;
+
+  height:120px;
+
+  pointer-events:none;
+
+  background:
+
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(140,200,210,0.08),
+      transparent 70%
+    );
+
+  opacity:.35;
 
 }
 
 .surface {
 
-  position: relative;
-  width: 100%;
-  min-height: 100vh;
+  --axis-depth: 0;
+  --axis-emerge: calc(1 - var(--axis-depth));
+  --axis-lock: calc(1 - var(--axis-depth));
+  --axis-gravity: calc(1 - var(--axis-depth));
 
-  opacity: 1;
-  transform: none;
-  filter: none;
+  position: relative;
+  max-width: 100vw;
+
+  will-change: transform, filter, opacity;
+  backface-visibility: hidden;
+
+  opacity: calc(0.55 + var(--axis-emerge) * 0.45);
+
+  transform:
+    translate3d(
+      0,
+      calc(var(--axis-depth) * 28px - var(--axis-gravity) * 8px),
+      0
+    )
+    scale(calc(0.985 + var(--axis-emerge) * 0.015));
+
+    filter: blur(calc(var(--axis-depth) * 1.8px));
 
   transition:
-    opacity 900ms ease,
-    transform 1100ms cubic-bezier(0.22,1,0.36,1),
-    filter 900ms ease;
+    transform 180ms cubic-bezier(.22,1,.36,1),
+    filter 180ms cubic-bezier(.22,1,.36,1),
+    opacity 180ms cubic-bezier(.22,1,.36,1);
+
+  padding-top:120px;
+  padding-bottom:120px;
 
 }
+
+/* atmospheric wash */
 
 .surface::before {
-  content:"";
-  position:absolute;
-  left:var(--rail-inset);
-  right:0;
-  top:0;
-  bottom:0;
-
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(255,255,255,0.02),
-      rgba(255,255,255,0.005)
-    );
-
-  pointer-events:none;
+  display:none;
 }
 
-.surfaceFrame {
+/* content container */
 
+.surfaceFrame {
   width: 100%;
   max-width: 1100px;
 
   margin: 0 auto;
 
-  padding-left: clamp(32px, 5vw, 80px);
-  padding-right: clamp(32px, 5vw, 80px);
+  padding-left: clamp(32px,5vw,80px);
+  padding-right: clamp(32px,5vw,80px);
+}
+
+.surfaceFrame > * {
+
+  transition:
+    transform 600ms cubic-bezier(.22,1,.36,1),
+    opacity 600ms cubic-bezier(.22,1,.36,1);
+
+  transform:
+    translateX(calc((1 - var(--axis-lock)) * 18px))
+    translateZ(0);
 
 }
 
-.surfaceStack > section:nth-child(odd) {
-  padding-top: 8vh;
-  padding-bottom: 6vh;
-}
-
-.surfaceStack > section:nth-child(even) {
-  padding-top: 14vh;
-  padding-bottom: 10vh;
-}
+/* section rhythm */
 
 .surfaceStack > section:first-child {
   padding-top: 0;
+}
+
+.surfaceFrame > *:nth-child(even) {
+
+  transform:
+    translateX(calc((1 - var(--axis-lock)) * -18px))
+    translateZ(0);
+
+}
+
+.surface > * {
+  position: relative;
+  z-index: 1;
+  transform: translateZ(0);
+}
+
+section[data-layer="ORIGIN"] {
+
+  --axis-depth: 0 !important;
+
+  filter: none !important;
+
+  opacity: 1 !important;
+
+  transform: none !important;
+
+}
+
+section[data-layer="ORIGIN"].surface {
+
+  opacity: calc(1 - (var(--axis-depth) * 0.6));
+
+}
+
+section[data-layer="FOUNDATION"] {
+
+  transform-origin: center top;
+
+}
+
+section[data-layer="FOUNDATION"]::before {
+
+  content:"";
+
+  position:absolute;
+
+  inset:0;
+
+  pointer-events:none;
+
+  background:
+
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(120,200,210,0.06),
+      transparent 70%
+    );
+
+  opacity:.35;
+
+}
+
+section[data-layer="FOUNDATION"].surface {
+
+  transform:
+    translate3d(
+      0,
+      calc(var(--axis-depth) * 24px),
+      0
+    )
+    scale(calc(0.992 + var(--axis-emerge) * 0.008));
+
 }
 
 section[data-layer="FRAMEWORK"] {
@@ -500,59 +605,61 @@ section[data-layer="FRAMEWORK"] {
   padding-bottom: 14vh;
 }
 
+section[data-layer="FRAMEWORK"] .surfaceFrame {
+  position: relative;
+  z-index: 2;
+  transform: none !important;
+}
+
+section[data-layer="FRAMEWORK"] * {
+  transform: translateZ(0);
+}
+
+section[data-layer="PRESENCE"] {
+  padding-top: 6vh;
+  padding-bottom: 6vh;
+}
+
+/* ORIGIN has no wash */
+
 [data-layer="ORIGIN"]::before {
   display:none;
 }
 
-/* surface spacing rhythm */
+body.axis-resonance .surface {
 
-.originViewport > section + section {
-  margin-top: -2vh;
-}
-
-.axisFieldBreath {
-
-  position: fixed;
-  inset: 0;
-
-  pointer-events: none;
-
-  background:
-    radial-gradient(
-      circle at 40% 35%,
-      rgba(120,160,220,0.08),
-      transparent 40%
-    ),
-    radial-gradient(
-      circle at 70% 60%,
-      rgba(140,210,175,0.06),
-      transparent 45%
-    );
-
-  animation: fieldBreath 18s ease-in-out infinite;
-
-  z-index: -1;
-}
-
-@keyframes fieldBreath {
-
-  0% {
-    opacity: .6;
-    transform: scale(1);
-  }
-
-  50% {
-    opacity: .9;
-    transform: scale(1.05);
-  }
-
-  100% {
-    opacity: .6;
-    transform: scale(1);
-  }
+  transform: scale(0.996);
+  transition-duration: 320ms;
 
 }
 
+body[data-surface="PRESENCE"] .axisLine {
+
+  opacity: .32;
+
+  filter:
+    blur(.4px)
+    drop-shadow(0 0 10px rgba(170,230,255,.55));
+
+}
+
+.frameworkAxis,
+.axisLine,
+.axisNode {
+
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+
+}
+
+.axisLine,
+.systemDot,
+.cornerTicks,
+.sigil {
+
+  will-change: transform, opacity;
+
+}
 
 .axisSignal {
 
@@ -595,4 +702,210 @@ section[data-layer="FRAMEWORK"] {
     opacity: 0;
   }
 
+}
+
+.axisCurrent {
+
+  position: fixed;
+
+  top: -20vh;
+  bottom: -20vh;
+
+  left: var(--axis-center);
+
+  width: 3px;
+
+  pointer-events: none;
+
+  z-index: 1;
+
+  background:
+    linear-gradient(
+      to bottom,
+      transparent,
+      rgba(150,210,220,0.18),
+      rgba(150,210,220,0.35),
+      rgba(150,210,220,0.18),
+      transparent
+    );
+
+  filter: blur(3px);
+
+  opacity: 0.45;
+
+  animation:
+    axisDrift 14s linear infinite,
+    axisPulse 6s ease-in-out infinite;
+
+}
+
+@keyframes axisPulse {
+
+  0%   { filter: blur(3px); opacity: .42; }
+  50%  { filter: blur(4px); opacity: .55; }
+  100% { filter: blur(3px); opacity: .42; }
+
+}
+
+@keyframes axisDrift {
+
+  0% {
+    transform: translate(-50%, -40vh);
+  }
+
+  25% {
+    transform: translate(calc(-50% + 1px), -10vh);
+  }
+
+  50% {
+    transform: translate(calc(-50% - 1px), 10vh);
+  }
+
+  75% {
+    transform: translate(calc(-50% + 1px), 30vh);
+  }
+
+  100% {
+    transform: translate(-50%, 40vh);
+  }
+
+}
+
+.axisMagnetism {
+
+  position: fixed;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  z-index: -1;
+
+  opacity: 0;
+
+  background:
+
+    radial-gradient(
+      ellipse 420px 160px at var(--axis-center) 50%,
+      rgba(160,220,230,0.22),
+      rgba(160,220,230,0.12),
+      transparent 70%
+    );
+
+  filter: blur(18px);
+
+}
+
+body.axis-resonance .axisMagnetism {
+
+  animation: axisMagPulse 900ms cubic-bezier(.22,1,.36,1);
+
+}
+
+@keyframes axisMagPulse {
+
+  0% {
+
+    opacity: 0;
+    transform: scaleX(.7);
+
+  }
+
+  40% {
+
+    opacity: .8;
+    transform: scaleX(1.05);
+
+  }
+
+  100% {
+
+    opacity: 0;
+    transform: scaleX(1.2);
+
+  }
+
+}
+
+.axisWake {
+
+  position: fixed;
+
+  left: var(--axis-center);
+  transform: translateX(-50%);
+
+  width: 6px;
+  height: 220px;
+
+  pointer-events: none;
+
+  z-index: -1;
+
+  background:
+
+    linear-gradient(
+      to bottom,
+      rgba(160,220,230,0),
+      rgba(160,220,230,0.22),
+      rgba(160,220,230,0.12),
+      rgba(160,220,230,0)
+    );
+
+  filter: blur(4px);
+
+  opacity: 0;
+
+}
+
+@keyframes axisWakeFlow {
+
+  0% {
+
+    top: -180px;
+    opacity: 0;
+
+  }
+
+  20% {
+
+    opacity: .55;
+
+  }
+
+  100% {
+
+    top: 100vh;
+    opacity: 0;
+
+  }
+
+}
+
+body.axis-resonance .axisWake {
+
+  animation: axisWakeFlow 2.4s linear forwards;
+
+}
+
+.axisField {
+
+  position: fixed;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  z-index: 0;
+
+  overflow: hidden;
+
+  contain: layout paint;
+
+  transition: filter 600ms ease;
+
+}
+
+
+body.axis-resonance .axisField {
+  filter: brightness(1.08);
 }

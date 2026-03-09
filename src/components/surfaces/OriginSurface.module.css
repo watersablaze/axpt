@@ -59,9 +59,8 @@
 
   position: relative;
 
-  width: min(52vw,392px);
+  width: min(52vw,400px);
   aspect-ratio:1/1;
-  outline: 1px solid red;
   transform: translateX(2px);
 
   margin:0 auto;
@@ -145,6 +144,96 @@
   pointer-events: none;
 }
 
+.globe {
+
+  opacity: 0;
+  transform: scale(.9);
+
+  animation: globeResolve 2s cubic-bezier(.22,1,.36,1) forwards;
+
+}
+
+@keyframes globeResolve {
+
+  0% {
+    opacity: 0;
+    transform: scale(.88);
+    filter: blur(6px);
+  }
+
+  60% {
+    opacity: .9;
+    transform: scale(1.02);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+
+}
+
+.wings {
+
+  opacity: 0;
+
+  transform: scaleX(.6) scaleY(.92);
+
+  animation: wingsUnfold 2.4s cubic-bezier(.22,1,.36,1) forwards;
+
+  animation-delay: .4s;
+
+}
+
+@keyframes wingsUnfold {
+
+  0% {
+    opacity: 0;
+    transform: scaleX(.55) scaleY(.9);
+  }
+
+  50% {
+    opacity: .8;
+  }
+
+  100% {
+    opacity: 1;
+    transform: scaleX(1) scaleY(1);
+  }
+
+}
+
+.seal {
+
+  opacity: 0;
+
+  transform: scale(.82);
+
+  animation: sealLock 2.2s cubic-bezier(.22,1,.36,1) forwards;
+
+  animation-delay: .8s;
+
+}
+
+@keyframes sealLock {
+
+  0% {
+    opacity: 0;
+    transform: scale(.8);
+  }
+
+  60% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+
+}
+
 .axisStack {
   position: absolute;
 
@@ -197,9 +286,21 @@
 
   mix-blend-mode: screen;
 
-  opacity: .35;
+  opacity: 0;
+
+  animation: axisFieldBoot 2.4s ease forwards;
 
 }
+
+  @keyframes axisFieldBoot {
+
+    0% { opacity: 0 }
+
+    40% { opacity: .25 }
+
+    100% { opacity: .12 }
+
+  }
 
 /* ──────────────────────────────
    TEXT BLOCK — RESOLVES FIRST
@@ -216,6 +317,70 @@
   gap:1.2rem;
 
   margin:0 auto;
+
+  transform: translateY(12px);
+
+  animation: identityReveal 1.2s cubic-bezier(.22,1,.36,1) forwards;
+
+  animation-delay: 1.1s;
+}
+
+@keyframes identityReveal {
+
+  0% {
+
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(4px);
+
+  }
+
+  70% {
+
+    opacity: .95;
+    transform: translateY(-2px);
+
+  }
+
+  100% {
+
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+
+  }
+
+}
+
+.identityName {
+
+  animation: namePresence 1.8s ease-out forwards;
+
+  animation-delay: 1.1s;
+
+}
+
+@keyframes namePresence {
+
+  0% { letter-spacing: .08em; }
+
+  60% {
+
+    letter-spacing: .12em;
+
+    text-shadow:
+      0 0 8px rgba(180,240,255,.4);
+
+  }
+
+  100% {
+
+    letter-spacing: .1em;
+
+    text-shadow: none;
+
+  }
+
 }
 
 .enter .textBlock {
@@ -322,4 +487,51 @@ html.council-active .sigilStage {
 @keyframes classCurrent {
   0% { background-position: 220% 0; }
   100% { background-position: -220% 0; }
+}
+
+.originBoot {
+
+  opacity: 0;
+
+  transform: scale(.94);
+
+  filter: blur(8px);
+
+  animation: sigilBoot 2.4s cubic-bezier(.22,1,.36,1) forwards;
+
+}
+
+@keyframes sigilBoot {
+
+  0% {
+
+    opacity: 0;
+    transform: scale(.92);
+    filter: blur(10px);
+
+  }
+
+  40% {
+
+    opacity: .6;
+    filter: blur(4px);
+
+  }
+
+  70% {
+
+    opacity: .95;
+    transform: scale(1.01);
+    filter: blur(1px);
+
+  }
+
+  100% {
+
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+
+  }
+
 }

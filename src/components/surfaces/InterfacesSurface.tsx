@@ -44,7 +44,7 @@ export default function InterfacesSurface({ onCouncilOpen }: Props) {
 
           <article className={styles.interfaceCard}>
 
-            <h3>COUNCIL</h3>
+          <h3>COUNCIL</h3>
 
             <p>
               Mandate review, policy enforcement, and governance execution.
@@ -63,7 +63,7 @@ export default function InterfacesSurface({ onCouncilOpen }: Props) {
 
           </article>
 
-          <article className={styles.interfaceCard}>
+          <article className={`${styles.interfaceCard} ${styles.interfaceDormant}`}>
 
             <h3>INSTITUTION</h3>
 

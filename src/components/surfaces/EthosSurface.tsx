@@ -2,6 +2,7 @@
 
 import styles from './EthosSurface.module.css'
 import SurfaceHeader from '@/components/surfaces/SurfaceHeader'
+import { useEffect, useRef } from 'react'
 
 function EthosPillar({
   index,
@@ -18,7 +19,7 @@ function EthosPillar({
 
       <span className={styles.index}>{index}</span>
 
-      <div>
+      <div className={styles.pillarBody}>
         <h3>{title}</h3>
         <p>{text}</p>
       </div>
@@ -28,6 +29,8 @@ function EthosPillar({
 }
 
 export default function EthosSurface() {
+
+  const containerRef = useRef<HTMLDivElement>(null)
 
   const pillars = [
     {
@@ -52,6 +55,42 @@ export default function EthosSurface() {
     },
   ]
 
+  useEffect(() => {
+
+    const nodes = containerRef.current?.querySelectorAll(`.${styles.pillar}`)
+
+    if (!nodes) return
+
+    const observer = new IntersectionObserver(
+
+      (entries) => {
+
+        entries.forEach(entry => {
+
+          if (entry.isIntersecting) {
+
+            nodes.forEach(n => n.classList.remove(styles.isActive))
+
+            entry.target.classList.add(styles.isActive)
+
+          }
+
+        })
+
+      },
+
+      {
+        threshold: 0.6,
+      }
+
+    )
+
+    nodes.forEach(n => observer.observe(n))
+
+    return () => observer.disconnect()
+
+  }, [])
+
   return (
 
     <section
@@ -62,21 +101,29 @@ export default function EthosSurface() {
 
       <div className="surfaceFrame">
 
-        <SurfaceHeader
-          kicker="CIRCULATION"
-          title="Custodial Systems in Motion"
-          subline="AXPT aligns capital, culture, and narrative so exchange remains accountable and regenerative."
-        />
+        <div className={styles.ethosInner}>
 
-        <div className={styles.pillars}>
-          {pillars.map((pillar) => (
-            <EthosPillar
-              key={pillar.index}
-              index={pillar.index}
-              title={pillar.title}
-              text={pillar.text}
-            />
-          ))}
+          <SurfaceHeader
+            kicker="CIRCULATION"
+            title="Custodial Systems in Motion"
+            subline="AXPT aligns capital, culture, and narrative so exchange remains accountable and regenerative."
+          />
+
+          <div ref={containerRef} className={styles.pillars}>
+
+            {pillars.map((pillar) => (
+
+              <EthosPillar
+                key={pillar.index}
+                index={pillar.index}
+                title={pillar.title}
+                text={pillar.text}
+              />
+
+            ))}
+
+          </div>
+
         </div>
 
       </div>

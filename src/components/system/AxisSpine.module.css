@@ -1,0 +1,243 @@
+/* ─────────────────────────────────────
+   AXPT — AXIS SPINE SYSTEM
+───────────────────────────────────── */
+
+.axisLayer {
+
+  position: fixed;
+  inset: 0;
+
+  pointer-events: none;
+
+  z-index: -0.35;
+
+}
+
+/* ─────────────────────────────────────
+   REFRACTION STRIP
+   bends background gradients slightly
+───────────────────────────────────── */
+
+.axisField::after {
+
+  content:"";
+
+  position:absolute;
+
+  left:var(--axis-center);
+  transform:translateX(-50%);
+
+  top:0;
+  bottom:0;
+
+  width:18px;
+
+  backdrop-filter: blur(6px) saturate(110%);
+  -webkit-backdrop-filter: blur(6px) saturate(110%);
+
+  opacity:.35;
+
+}
+
+/* ─────────────────────────────────────
+   CENTER AXIS LINE
+───────────────────────────────────── */
+
+.axisLine {
+
+  position:absolute;
+
+  top:0;
+  bottom:0;
+
+  left:var(--axis-center);
+  transform:translateX(-50%);
+
+  width:1px;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(200,220,230,.08),
+      rgba(200,220,230,.22),
+      rgba(200,220,230,.08)
+    );
+
+  opacity:.22;
+
+}
+
+/* subtle moving sheen */
+
+.axisLine::after {
+
+  content:"";
+
+  position:absolute;
+  inset:0;
+
+  background:
+
+    linear-gradient(
+      to bottom,
+      transparent,
+      rgba(210,240,255,.35),
+      transparent
+    );
+
+  opacity:.18;
+
+}
+
+/* ─────────────────────────────────────
+   PACKET FLOW
+───────────────────────────────────── */
+
+.axisPacketsUp {
+
+  position:absolute;
+
+  left:var(--axis-center);
+  transform:translateX(-50%);
+
+  width:2px;
+  height:90px;
+
+  top:-90px;
+
+  background:
+
+    linear-gradient(
+      to bottom,
+      transparent,
+      rgba(210,240,255,.65),
+      transparent
+    );
+
+  filter:blur(1.2px);
+
+  opacity:.55;
+
+  animation: axisPacket 4.8s linear infinite;
+
+}
+
+@keyframes axisPacket {
+
+  0% {
+    top:-90px;
+    opacity:0;
+  }
+
+  12% {
+    opacity:.55;
+  }
+
+  100% {
+    top:100vh;
+    opacity:0;
+  }
+
+}
+
+/* ─────────────────────────────────────
+   SURFACE TEMPO MODULATION
+───────────────────────────────────── */
+
+body[data-surface="INTERFACES"] .axisPacketsUp {
+  animation-duration:2.2s;
+}
+
+body[data-surface="PRESENCE"] .axisPacketsUp {
+  animation-duration:5s;
+}
+
+body[data-surface="PRESENCE"] .axisBurst {
+  animation-duration:14s;
+  opacity:.4;
+}
+
+/* ─────────────────────────────────────
+   AXIS LOCK PULSE
+───────────────────────────────────── */
+
+body.axis-lock .axisLine {
+
+  animation: axisLockPulse .9s ease-out;
+
+}
+
+@keyframes axisLockPulse {
+
+  0% {
+    opacity:.25;
+  }
+
+  40% {
+
+    opacity:.9;
+
+    box-shadow:
+      0 0 12px rgba(200,240,255,.9),
+      0 0 36px rgba(160,220,240,.45);
+
+  }
+
+  100% {
+    opacity:.25;
+  }
+
+}
+
+/* ─────────────────────────────
+   AXIS RESONANCE
+   fired when surface activates
+───────────────────────────── */
+
+body.axis-resonance .axisLine {
+
+  animation: axisResonancePulse .9s ease-out;
+  transform: translateX(-50%) scaleY(1.05);
+
+}
+
+@keyframes axisResonancePulse {
+
+  0% {
+    opacity:.25;
+    filter:
+      blur(.35px)
+      drop-shadow(0 0 6px rgba(170,230,255,.35));
+  }
+
+  40% {
+
+    opacity:.9;
+
+    filter:
+      blur(.6px)
+      drop-shadow(0 0 10px rgba(200,240,255,.9))
+      drop-shadow(0 0 28px rgba(160,220,240,.45));
+
+  }
+
+  100% {
+
+    opacity:.25;
+
+    filter:
+      blur(.35px)
+      drop-shadow(0 0 6px rgba(170,230,255,.35));
+
+  }
+
+}
+
+body.axis-resonance .axisPacketsUp {
+
+  animation-duration: 1.6s;
+
+  opacity: .8;
+
+}
+

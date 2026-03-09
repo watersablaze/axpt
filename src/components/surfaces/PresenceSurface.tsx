@@ -25,15 +25,6 @@ export default function PresenceSurface() {
             />
           </div>
 
-          {/* Presence copy */}
-          <div className={styles.presenceField}>
-            <p>
-              The system holds record, authority, and witness.
-              Presence is the moment when structure and humanity
-              remain visible to one another.
-            </p>
-          </div>
-
           {/* Footer */}
           <footer className={styles.footerBar} aria-label="Footer">
 

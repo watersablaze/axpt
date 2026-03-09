@@ -34,33 +34,40 @@ export default function OriginSurface() {
             </div>
 
 
-            {/* SIGIL CORE */}
-            <div className={styles.sigilStage} aria-hidden="true">
+            {/* SIGIL CORE — BOOT SEQUENCE */}
+            <div className={styles.originBoot}>
 
-              <div className={styles.sigilField} />
+              <div className={styles.sigilStage} aria-hidden="true">
 
-              <div className={styles.sigilDrift}>
+                <div className={styles.sigilField} />
 
-                <img
-                  src="/sigil/v4/axis_sigil_full.png"
-                  alt=""
-                  className={styles.globe}
-                  draggable={false}
-                />
+                <div className={styles.sigilDrift}>
 
-                <img
-                  src="/sigil/v4/axpt_sigil_V4_wing_show.png"
-                  alt=""
-                  className={styles.wings}
-                  draggable={false}
-                />
+                  {/* AXIS FIELD GLOBE */}
+                  <img
+                    src="/sigil/v4/axis_sigil_full.png"
+                    alt=""
+                    className={styles.globe}
+                    draggable={false}
+                  />
 
-                <img
-                  src="/sigil/v4/axis_sigil_full.png"
-                  alt="AXPT Sigil"
-                  className={styles.seal}
-                  draggable={false}
-                />
+                  {/* WINGS */}
+                  <img
+                    src="/sigil/v4/axpt_sigil_V4_wing_show.png"
+                    alt=""
+                    className={styles.wings}
+                    draggable={false}
+                  />
+
+                  {/* CENTRAL SEAL */}
+                  <img
+                    src="/sigil/v4/axis_sigil_full.png"
+                    alt="AXPT Sigil"
+                    className={styles.seal}
+                    draggable={false}
+                  />
+
+                </div>
 
               </div>
 
@@ -91,5 +98,7 @@ export default function OriginSurface() {
       </div>
 
     </section>
+
   )
+
 }
