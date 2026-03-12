@@ -92,7 +92,7 @@ export default async function DevGuard() {
             </div>
             <div>
               <div className="text-zinc-400">Database (masked)</div>
-              <div className="text-zinc-200">{maskUrl(process.env.DATABASE_URL)}</div>
+              <div className="text-zinc-200">{maskUrl(env.DATABASE_URL)}</div>
             </div>
           </div>
         </section>

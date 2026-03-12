@@ -775,6 +775,7 @@ model LedgerEntry {
   @@index([chainId, walletEventId])
   @@index([chainId, accountId, blockNumber])
   @@index([chainId, tokenType])
+  @@index([accountId, tokenType, chainId], map: "idx_ledger_account")
 }
 
 enum CaseStatus {
@@ -844,17 +845,4 @@ enum LedgerAccountType {
 enum LedgerDirection {
   DEBIT
   CREDIT
-}
-
-model CouncilAccessLog {
-  id            String   @id @default(cuid())
-  createdAt     DateTime @default(now())
-
-  success       Boolean
-  ipAddress     String?
-  userAgent     String?
-  seatHash      String?
-
-  // derived from token if success
-  sessionIssued Boolean  @default(false)
 }

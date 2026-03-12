@@ -6,11 +6,7 @@ export default function OriginSurface() {
 
   return (
 
-    <section
-      className={`surface ${styles.container}`}
-      data-layer="ORIGIN"
-      aria-label="Entry Layer"
-    >
+    <div className={styles.originSurface}>
 
       <div className="surfaceFrame">
 
@@ -33,9 +29,10 @@ export default function OriginSurface() {
               </div>
             </div>
 
-
             {/* SIGIL CORE — BOOT SEQUENCE */}
             <div className={styles.originBoot}>
+
+              <div className={styles.originAxisIgnition} />
 
               <div className={styles.sigilStage} aria-hidden="true">
 
@@ -73,7 +70,6 @@ export default function OriginSurface() {
 
             </div>
 
-
             {/* IDENTITY */}
             <div className={styles.textBlock}>
 
@@ -97,7 +93,7 @@ export default function OriginSurface() {
 
       </div>
 
-    </section>
+    </div>
 
   )
 

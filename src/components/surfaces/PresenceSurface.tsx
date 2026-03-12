@@ -5,11 +5,7 @@ import styles from './PresenceSurface.module.css'
 export default function PresenceSurface() {
 
   return (
-    <section
-      className={`surface ${styles.presenceSurface}`}
-      data-layer="PRESENCE"
-      aria-label="Presence Layer"
-    >
+    <div className={styles.presenceSurface}>
 
       <div className="surfaceFrame">
 
@@ -56,6 +52,6 @@ export default function PresenceSurface() {
 
       </div>
 
-    </section>
+    </div>
   )
 }

@@ -1,4 +1,4 @@
-const crypto = require("crypto");
+import { createHash } from "node:crypto";
 
 const seatKey = process.argv[2];
 
@@ -7,8 +7,7 @@ if (!seatKey) {
   process.exit(1);
 }
 
-const hash = crypto
-  .createHash("sha256")
+const hash = createHash("sha256")
   .update(seatKey, "utf8")
   .digest("hex");
 

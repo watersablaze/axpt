@@ -11,7 +11,7 @@ const DISPLAY_LAYER: Record<string, string> = {
   PRESENCE: 'SEAL',      // ✅ this is the key change
 };
 
-export default function GlobalLayerIndicator() {
+export default function DevLayerIndicator() {
   const { activeLayer } = useLayer();
   const label = DISPLAY_LAYER[activeLayer] ?? activeLayer;
 

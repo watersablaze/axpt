@@ -1,31 +1,28 @@
+/* ──────────────────────────────
+   PRESENCE SURFACE
+   Closing chamber of the AXPT field
+────────────────────────────── */
+
 .presenceSurface {
-  width:100%;
-  position:relative;
+  width: 100%;
+  position: relative;
   overflow: hidden;
 }
 
+/* Atmospheric chamber glow */
+
 .presenceSurface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
 
-  content:"";
-
-  position:absolute;
-  inset:0;
-
-  pointer-events:none;
-
-  opacity:.55;
-
-  animation: portalRest 18s ease-in-out infinite;
-
+  pointer-events: none;
+  opacity: 0.35;
 }
 
-@keyframes portalRest {
-
-  0% { opacity:.42; }
-  50% { opacity:.30; }
-  100% { opacity:.42; }
-
-}
+/* ──────────────────────────────
+   CHAMBER LAYOUT
+────────────────────────────── */
 
 .chamber {
 
@@ -36,92 +33,22 @@
   display: flex;
   flex-direction: column;
 
-  justify-content: center;
-  align-items: center;
+  justify-content: space-between;
 
-  padding: 80px var(--rail-inset);
+  padding: 120px var(--rail-inset) 60px;
 
   text-align: center;
 
 }
 
-body[data-surface="PRESENCE"] .axisMagnetism {
-
-  opacity:.4;
-
-}
-
-body[data-surface="PRESENCE"] .sigil {
-
-  animation:
-    sealBreath 26s ease-in-out infinite alternate,
-    presenceGlow 6s ease-in-out infinite 2.2s;
-
-}
-
-@keyframes sealChargeIdle {
-
-  0%   { filter: brightness(1); }
-
-  50%  { filter: brightness(1.05); }
-
-  100% { filter: brightness(1); }
-
-}
-
-body.axis-lock .sigil {
-
-  animation:
-    sealBreath 26s ease-in-out infinite alternate,
-    sealChargePulse 0.9s ease-out;
-
-}
-
-@keyframes sealChargePulse {
-
-  0% { filter: brightness(1); }
-
-  40% {
-    filter:
-      brightness(1.08)
-      drop-shadow(0 0 6px rgba(180,240,255,.35));
-  }
-
-  100% { filter: brightness(1); }
-
-}
-
-body[data-surface="PRESENCE"] .presenceSurface::after {
-
-  background:
-    radial-gradient(
-      circle at 50% 55%,
-      rgba(170,235,255,0.16),
-      rgba(20,40,60,0.35) 50%,
-      rgba(6,18,28,0.8)
-    );
-
-}
-
-@keyframes sealPulse {
-
-  0% { filter: brightness(1); }
-
-  50% {
-    filter:
-      brightness(1.08)
-      drop-shadow(0 0 6px rgba(160,220,240,.4));
-  }
-
-  100% { filter: brightness(1); }
-
-}
-
-/* Sigil watermark layer */
+/* ──────────────────────────────
+   SIGIL WATERMARK
+────────────────────────────── */
 
 .sigilWrapper {
 
   position: absolute;
+
   top: 50%;
   left: var(--axis-center);
 
@@ -129,60 +56,41 @@ body[data-surface="PRESENCE"] .presenceSurface::after {
 
   pointer-events: none;
 
-  opacity: .18;
+  opacity: 0.12;
 
 }
+
+/* Sigil reveal when section becomes active */
 
 body[data-surface="PRESENCE"] .sigilWrapper {
 
   animation:
-    presenceSigilReveal 2.2s cubic-bezier(.22,1,.36,1) forwards,
-    presenceGlow 6s ease-in-out infinite 2.2s;
-
-}
-
-@keyframes presenceGlow {
-
-  0% {
-    filter: brightness(1);
-  }
-
-  50% {
-    filter: brightness(1.05);
-  }
-
-  100% {
-    filter: brightness(1);
-  }
+    presenceSigilReveal 2.2s cubic-bezier(.22,1,.36,1) forwards;
 
 }
 
 @keyframes presenceSigilReveal {
 
   0% {
-
     opacity: 0;
-    transform: translate(-50%, -50%) scale(.92);
+    transform: translate(-50%, -50%) scale(.94);
     filter: blur(8px);
-
   }
 
-  50% {
-
-    opacity: .55;
-    filter: blur(3px);
-
+  60% {
+    opacity: .18;
+    filter: blur(2px);
   }
 
   100% {
-
-    opacity: .6;
+    opacity: .12;
     transform: translate(-50%, -50%) scale(1);
     filter: blur(0);
-
   }
 
 }
+
+/* Sigil watermark behavior */
 
 .sigil {
 
@@ -193,171 +101,145 @@ body[data-surface="PRESENCE"] .sigilWrapper {
 
   filter:
     grayscale(100%)
-    contrast(0.96)
+    contrast(.95)
     blur(.6px);
 
-  animation: sigilBreath 26s ease-in-out infinite alternate;
+  animation: sigilDrift 18s ease-in-out infinite alternate;
 
 }
 
-@keyframes sigilBreath {
+@keyframes sigilDrift {
 
   0% {
-    transform: scale(.996);
-    filter: grayscale(100%) contrast(.96) blur(.6px);
-  }
-
-  50% {
-    transform: scale(1.003);
-    filter: grayscale(100%) contrast(.98) blur(.4px);
+    transform: scale(.998);
   }
 
   100% {
-    transform: scale(.996);
-    filter: grayscale(100%) contrast(.96) blur(.6px);
+    transform: scale(1.004);
   }
 
 }
 
-@keyframes sealBreath {
-  from { transform: scale(0.998); }
-  to   { transform: scale(1.004); }
-}
+/* ──────────────────────────────
+   FOOTER BAR
+────────────────────────────── */
 
 .footerBar {
 
   margin-top: auto;
-  position: relative;
 
   width: 100%;
 
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+
+  grid-template-columns: 1fr auto 1fr;
+
+  align-items: end;
+
+  padding-top: 40px;
+
+  position: relative;
 
 }
 
-/* Subtle grounding strip */
+/* Grounding strip */
+
 .footerBar::before {
+
   content: "";
+
   position: absolute;
+
   left: -4vw;
   right: -4vw;
+
   bottom: -32px;
+
   height: 110px;
 
   background: linear-gradient(
     to top,
-    rgba(8, 20, 32, 0.36),
-    rgba(8, 20, 32, 0.18),
+    rgba(8,20,32,0.32),
+    rgba(8,20,32,0.16),
     transparent
   );
 
   filter: blur(18px);
-  opacity: 0.6;
+  opacity: .35;
 
   pointer-events: none;
   z-index: -1;
+
 }
 
+/* ──────────────────────────────
+   FOOTER TYPOGRAPHY
+────────────────────────────── */
+
 .footerTitle {
+
   font-family: var(--axpt-mono);
   font-size: 0.56rem;
+
   letter-spacing: 0.32em;
   text-transform: uppercase;
 
-  color: rgba(200, 210, 220, 0.45);
-}
+  color: rgba(200,210,220,0.45);
 
-.footerSub {
-  margin-top: 8px;
-  font-family: var(--axpt-mono);
-  font-size: 0.56rem;
-  letter-spacing: 0.20em;
-  text-transform: uppercase;
-
-  color: rgba(210, 200, 170, 0.32);
-}
-
-.footerLink {
-  margin-top: 8px;
-
-  font-family: var(--axpt-mono);
-  font-size: 0.58rem;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-
-  color: rgba(140, 210, 175, 0.62);
 }
 
 .footerValue {
+
   font-family: var(--axpt-mono);
   font-size: 0.54rem;
+
   letter-spacing: 0.22em;
   text-transform: uppercase;
 
-  color: rgba(210, 200, 170, 0.24);
+  color: rgba(210,200,170,0.24);
+
   line-height: 1.2;
+
 }
 
 .footerLink {
+
+  margin-top: 8px;
+
   font-family: var(--axpt-mono);
   font-size: 0.58rem;
+
   letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: rgba(140, 210, 175, 0.62);
+
+  color: rgba(140,210,175,0.62);
+
   text-decoration: none;
-  line-height: 1.2;
+
 }
 
 .footerLink:hover {
-  color: rgba(140, 210, 175, 0.82);
+  color: rgba(140,210,175,0.82);
 }
 
-@media (max-width: 860px) {
-  .footerBar {
-    grid-template-columns: 1fr;
-    gap: 18px;
-  }
-  .col:nth-child(2),
-  .col:nth-child(3) {
-    text-align: left;
-  }
-}
-
-.col {
-  display: grid;
-  grid-template-rows: auto auto; /* title row, value row */
-  row-gap: 10px;                /* identical spacing everywhere */
-  min-width: 0;
-}
-
-.col:nth-child(2) { text-align: center; }
-.col:nth-child(3) { text-align: right; }
-
-.colLeft,
-.colMid,
-.colRight {
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-}
-
-.colMid {
-  align-items: center;
-  text-align: center;
-}
-
-.colRight {
-  align-items: flex-end;
-}
+/* ──────────────────────────────
+   FOOTER COLUMNS
+────────────────────────────── */
 
 .col,
 .colCenter {
+
   min-width: 0;
+
   display: flex;
   flex-direction: column;
+
   justify-content: flex-end;
+
+}
+
+.col:first-child {
+  text-align: left;
 }
 
 .colCenter {
@@ -367,17 +249,25 @@ body[data-surface="PRESENCE"] .sigilWrapper {
 
 .col:last-child {
   align-items: flex-end;
+  text-align: right;
 }
 
+/* ──────────────────────────────
+   MOBILE
+────────────────────────────── */
+
 @media (max-width: 860px) {
+
   .footerBar {
     grid-template-columns: 1fr;
+    gap: 18px;
     text-align: left;
-    padding-bottom: 10px;
   }
 
-  .colMid,
-  .colRight {
+  .col,
+  .colCenter {
+    align-items: flex-start;
     text-align: left;
   }
+
 }

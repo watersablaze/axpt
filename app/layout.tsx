@@ -9,8 +9,7 @@ import AuraDiagnostics from '@/components/devtools/AuraDiagnostics'
 
 import { LayerProvider } from '@/lib/context/LayerContext'
 /* import AxisGravity from '@/components/system/AxisGravity' */
-import AxisSpine from '@/components/system/AxisSpine'
-import AxisRuntime from '@/components/system/AxisRuntime'
+import DeploymentBanner from "@/components/system/DeploymentBanner";
 
 const inter = Inter({ subsets: ['latin'], display: 'swap' })
 
@@ -42,10 +41,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
           {/* atmospheric layer */}
           {/* <NebulaOverlay /> */}
-         
-           <AxisSpine />
-
-           <AxisRuntime />
 
           {/* main portal content */}
           <div id="app-content">
@@ -56,6 +51,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {isDev && <AuraDiagnostics />}
 
         </LayerProvider>
+
+         <DeploymentBanner />
 
         <Toaster richColors position="top-right" />
 

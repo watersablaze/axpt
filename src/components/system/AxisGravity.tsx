@@ -1,7 +1,16 @@
 'use client'
 
-import styles from './AxisGravity.module.css'
+import { useLayer } from '@/lib/context/LayerContext'
 
 export default function AxisGravity() {
-  return <div className={styles.axisGravity} aria-hidden="true" />
+
+  const { activeLayer } = useLayer()
+
+  return (
+    <div
+      className="axisGravityField"
+      data-layer={activeLayer}
+      aria-hidden="true"
+    />
+  )
 }

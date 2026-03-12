@@ -14,6 +14,7 @@ export default function useSurfaceTimeline() {
 
         entries.forEach(entry => {
 
+          if (!(entry.target instanceof HTMLElement)) return
           const layer = entry.target.dataset.layer
 
           if (!layer) return

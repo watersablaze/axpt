@@ -10,39 +10,13 @@
   justify-content:center;
 
   padding-top:120px;
-  padding-bottom:180px;
+  padding-bottom:110px;
 }
 
 .surfaceFrame{
   position:relative;
-
-  left:var(--axis-center);
-  transform:translateX(-50%);
-
   width:min(920px,86vw);
-}
-
-.frameworkSurface::after{
-  content:"";
-  position:absolute;
-
-  left:50%;
-  transform:translateX(-50%);
-
-  bottom:40px;
-
-  width:min(920px,86vw);
-  height:1px;
-
-  background:
-    linear-gradient(
-      to right,
-      transparent,
-      rgba(200,240,255,.25),
-      transparent
-    );
-
-  opacity:.35;
+  margin:0 auto;
 }
 
 /* -----------------------------------
@@ -55,7 +29,7 @@
 
   position:absolute;
 
-  left:50%;
+  left: var(--axis-center);
   transform:translateX(-50%);
 
   bottom:-120px;
@@ -66,16 +40,15 @@
   pointer-events:none;
 
   background:
-
     radial-gradient(
       ellipse at center top,
-      rgba(200,240,255,0.10),
+      rgba(200,240,255,0.05),
       transparent 70%
     );
 
-  opacity:.35;
+  filter:blur(10px);
 
-  filter:blur(18px);
+  opacity:.2;
 
 }
 
@@ -87,35 +60,16 @@
 
   position:absolute;
 
-  content:"";
-
-  left:var(--axis-center);
+  left: var(--axis-center);
   transform:translateX(-50%);
 
   top:128px;
   height:340px;
-  bottom:-40px;
-  left:50%;
 
   pointer-events:none;
-  z-index:2;
+  z-index:3;
 
-    transform:translateX(-50%);
-
-  width:3px;
-  height:60px;
-
-  background:
-
-    linear-gradient(
-      to bottom,
-      rgba(200,240,255,.35),
-      transparent
-    );
-
-  filter:blur(1px);
-
-  opacity:.6;
+  display:block;
 
 }
 
@@ -132,7 +86,7 @@
 
   transition:opacity 600ms ease;
 
-  animation: connectorBreath 10s ease-in-out infinite;
+  animation: connectorBreath var(--system-cycle) ease-in-out infinite;
 
   filter:drop-shadow(0 0 4px rgba(200,230,255,.35));
 }
@@ -170,32 +124,55 @@
       transparent
     );
 
-  opacity:.85;
-  filter:blur(.25px);
+  opacity:.08;
+  z-index:1;
+  filter:blur(.08px);
 }
 
 .axisLine::after{
+
   content:"";
+
   position:absolute;
   inset:0;
 
   background:
-  linear-gradient(
-    to bottom,
-    transparent,
-    rgba(200,240,255,.18),
-    transparent
-  );
+    linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(200,240,255,.25) 35%,
+      rgba(200,240,255,.45) 50%,
+      rgba(200,240,255,.25) 65%,
+      transparent 100%
+    );
 
-  animation:axisDrift 14s linear infinite;
+  opacity:.55;
 
-  opacity:.5;
+  animation: axisCurrent 12s linear infinite;
+
 }
 
-@keyframes axisDrift{
-  0%{ transform:translateY(-40%) }
-  100%{ transform:translateY(40%) }
+.axisLine::before{
+
+  content:"";
+
+  position:absolute;
+  inset:0;
+
+  background:
+    linear-gradient(
+      to bottom,
+      transparent,
+      rgba(200,240,255,.18),
+      transparent
+    );
+
+  opacity:.35;
+
+  animation: axisCurrent 22s linear infinite reverse;
+
 }
+
 
 /* ======================================================
    GRID LAYOUT
@@ -222,46 +199,16 @@
 
 }
 
+@keyframes axisCurrent {
 
-.grid::before{
+  0% {
+    transform: translateY(-120%);
+  }
 
-  content:"";
+  100% {
+    transform: translateY(120%);
+  }
 
-  position:absolute;
-
-  inset:-40px;
-
-  background:
-    radial-gradient(
-      ellipse at 50% 50%,
-      rgba(200,240,255,.08),
-      transparent 70%
-    );
-
-  opacity:.7;
-  z-index:-1;
-
-  pointer-events:none;
-
-}
-
-.grid::after{
-  content:"";
-  position:absolute;
-  bottom:-40px;
-  left:50%;
-  transform:translateX(-50%);
-  width:60%;
-  height:1px;
-
-  background:linear-gradient(
-    to right,
-    transparent,
-    rgba(200,240,255,.2),
-    transparent
-  );
-
-  opacity:.35;
 }
 
 .headline{
@@ -286,21 +233,32 @@
 
 .axisNode{
 
-  position:absolute;
-
-  left:50%;
-  transform:translateX(-50%);
-
-  width:6px;
-  height:6px;
+  width:8px;
+  height:8px;
 
   border-radius:50%;
 
   background:rgba(200,230,255,.9);
 
   box-shadow:
-    0 0 8px rgba(200,230,255,.9),
-    0 0 22px rgba(200,230,255,.4);
+    0 0 10px rgba(200,230,255,.95),
+    0 0 28px rgba(200,230,255,.45);
+
+  position:relative;
+
+  transition:
+    transform 320ms cubic-bezier(.22,1,.36,1),
+    box-shadow 320ms ease;
+
+  animation: axisHeartbeat 6s ease-in-out infinite;
+
+}
+
+@keyframes axisHeartbeat{
+
+  0%{ transform:scale(.9); opacity:.6; }
+  50%{ transform:scale(1.15); opacity:1; }
+  100%{ transform:scale(.9); opacity:.6; }
 
 }
 
@@ -334,7 +292,7 @@
   height:1px;
   width:64px;
 
-  transform:translate(-12px,-50%);
+  transform:translateY(-50%);
 
   background:linear-gradient(
     to left,
@@ -355,7 +313,7 @@
   height:1px;
   width:64px;
 
-  transform:translate(12px,-50%);
+  transform:translateY(-50%);
 
   background:linear-gradient(
     to right,
@@ -377,6 +335,7 @@
 
   position:relative;
   z-index:2;
+  will-change: transform;
 
   display:flex;
   flex-direction:column;
@@ -389,8 +348,8 @@
   background:
   linear-gradient(
     180deg,
-    rgba(255,255,255,.08),
-    rgba(255,255,255,.015)
+  rgba(255,255,255,.10),
+  rgba(255,255,255,.02)
   ),
   radial-gradient(
     circle at 30% -20%,
@@ -415,8 +374,101 @@
 }
 
 .frameworkSurface .slab {
-  opacity: 1;
-  transform: translateY(0) scale(1);
+
+  opacity: 0;
+  transform: translateY(18px) scale(.98);
+
+  animation: slabReveal 700ms cubic-bezier(.22,1,.36,1) forwards;
+
+}
+
+.continuity { animation-delay: 0ms; }
+.governance { animation-delay: 120ms; }
+.systems { animation-delay: 240ms; }
+
+@keyframes slabReveal {
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+}
+
+.nodeDot{
+  position:relative;
+
+  width:6px;
+  height:6px;
+
+  border-radius:50%;
+
+  background:#c7b06a;
+
+  box-shadow:
+    0 0 6px rgba(199,176,106,.7),
+    0 0 12px rgba(199,176,106,.35);
+
+  flex-shrink:0;
+  animation: nodePulse 4.8s ease-in-out infinite;
+
+}
+
+@keyframes nodePulse{
+
+  0%{
+    opacity:.45;
+    box-shadow:
+      0 0 4px rgba(199,176,106,.45),
+      0 0 10px rgba(199,176,106,.25);
+  }
+
+  50%{
+    opacity:1;
+    box-shadow:
+      0 0 10px rgba(255,215,120,.9),
+      0 0 22px rgba(255,215,120,.55),
+      0 0 40px rgba(255,215,120,.25);
+  }
+
+  100%{
+    opacity:.45;
+    box-shadow:
+      0 0 4px rgba(199,176,106,.45),
+      0 0 10px rgba(199,176,106,.25);
+  }
+
+}
+
+.continuity .nodeDot{
+  animation-delay:0s;
+}
+
+.governance .nodeDot{
+  animation-delay:1.6s;
+}
+
+.systems .nodeDot{
+  animation-delay:3.2s;
+}
+
+.nodeDot::after{
+  content:"";
+  position:absolute;
+  inset:-4px;
+  border-radius:50%;
+  border:1px solid rgba(199,176,106,.25);
+  opacity:.45;
+
+  animation: haloPulse 4.8s ease-in-out infinite;
+}
+
+@keyframes haloPulse{
+
+  0%{ opacity:.15; }
+  50%{ opacity:.55; }
+  100%{ opacity:.15; }
+
 }
 
 /* corner ticks */
@@ -447,8 +499,8 @@
     linear-gradient(to top, rgba(255,255,255,0.04), transparent 70%) 100% 100% / 1px 120px no-repeat;
 
   animation:
-    tickBreath 10s ease-in-out infinite,
-    tickSheen 18s linear infinite;
+    tickBreath var(--system-cycle) ease-in-out infinite,
+    tickSheen calc(var(--system-cycle) * 1.5) linear infinite;
 }
 
 @keyframes tickBreath {
@@ -521,21 +573,21 @@
 
   background:
 
-  radial-gradient(
-    circle at 30% -20%,
-    rgba(200,240,255,.26),
-    transparent 70%
-  ),
-  linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.025),
-    rgba(255,255,255,0.01)
-  );
+    radial-gradient(
+      circle at 30% -20%,
+      rgba(200,240,255,.18),
+      transparent 65%
+    ),
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,.04),
+      rgba(255,255,255,.012)
+    );
 
   box-shadow:
-    0 12px 42px rgba(0,0,0,.38),
-    inset 0 1px 0 rgba(255,255,255,.16),
-    inset 0 -1px 0 rgba(255,255,255,.05);
+    0 10px 32px rgba(0,0,0,.30),
+    inset 0 1px 0 rgba(255,255,255,.14),
+    inset 0 -1px 0 rgba(255,255,255,.04);
 
 }
 
@@ -601,15 +653,18 @@
 
   position:absolute;
 
-  left:0;
-  height:1px;
-  width:1px;
+  left:50%;
+  transform:translateX(-50%);
+
+  width:160px;
+  height:20px;
 
   display:flex;
   align-items:center;
   justify-content:center;
 
 }
+
 /* ======================================================
    SLAB HEADER
 ====================================================== */
@@ -657,14 +712,6 @@
 /* ======================================================
    TYPOGRAPHY
 ====================================================== */
-
-.systemTitle{
-  font-family:var(--axpt-mono);
-  font-size:.74rem;
-  letter-spacing:.16em;
-  text-transform:uppercase;
-  color:rgba(230,235,240,.8);
-}
 
 .systemTitle{
 
@@ -752,7 +799,7 @@
     0 0 6px rgba(199,176,106,.6),
     0 0 12px rgba(199,176,106,.35);
 
-  animation:systemPulse 12s ease-in-out infinite;
+  animation: systemPulse var(--system-cycle) ease-in-out infinite;
 
 }
 
@@ -823,6 +870,7 @@
 .nodeLabel{
 
   font-family:var(--axpt-mono);
+  white-space:nowrap;
 
   font-size:.64rem;
 
@@ -858,32 +906,37 @@
 
 }
 
-.ledgerBaseline {
-  position: absolute;
-  bottom: 28px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(880px, 78%);
-  height: 1px;
-  pointer-events: none;
+.continuity:hover ~ .frameworkAxis .axisRow:nth-child(1) .axisNode,
+.governance:hover ~ .frameworkAxis .axisRow:nth-child(2) .axisNode,
+.systems:hover ~ .frameworkAxis .axisRow:nth-child(3) .axisNode {
+  
 
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(200,170,110,0.28),
-    rgba(255,255,255,0.08),
-    rgba(200,170,110,0.28),
-    transparent
-  );
+  transform: scale(1.35);
+  box-shadow:
+    0 0 18px rgba(200,230,255,1),
+    0 0 40px rgba(200,230,255,.65);
 
-  opacity: 0.55;
-  filter: blur(0.4px);
-  animation: ledgerPulse var(--system-cycle) ease-in-out infinite;
+
+  animation: connectorSignal 1.2s ease-out;
+
+  opacity: 1;
 }
 
-@keyframes ledgerPulse {
-  0%   { opacity: 0.45; }
-  16%  { opacity: 0.9; }
-  28%  { opacity: 0.65; }
-  100% { opacity: 0.45; }
+@keyframes connectorSignal {
+
+  0% {
+    opacity: .2;
+    transform: scaleX(.2);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+  100% {
+    opacity: .2;
+    transform: scaleX(.2);
+  }
+
 }

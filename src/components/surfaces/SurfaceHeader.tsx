@@ -8,7 +8,7 @@ type Props = {
   title?: string;
   subline?: string;
   active?: boolean;
-  align?: 'left' | 'center';
+  align?: 'left' | 'center' | 'axis'
   size?: 'sm' | 'md';
   showRule?: boolean;
   className?: string;

@@ -1,6 +1,7 @@
 // 📁 cli/onboard.ts
 
 import 'dotenv/config';
+import { env } from '../src/lib/env'
 import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
@@ -23,13 +24,13 @@ async function runOnboarding() {
     '\n'
   );
 
-  if (!process.env.DATABASE_URL) {
+  if (!env.DATABASE_URL) {
     console.error(chalk.red('❌ Error: DATABASE_URL is not defined in the environment.'));
     console.warn(chalk.yellow('👉 Please ensure .env is present and loaded correctly.'));
     process.exit(1);
   }
 
-  console.log(chalk.magenta(`🔌 DATABASE_URL:`), chalk.gray(process.env.DATABASE_URL));
+  console.log(chalk.magenta(`🔌 DATABASE_URL:`), chalk.gray(env.DATABASE_URL));
 
   try {
     const tokenInfo = await promptAndGenerateToken();

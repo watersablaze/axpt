@@ -68,8 +68,6 @@ async function isLockedOut(ip?: string) {
 
 export async function POST(req: Request) {
   const body = (await req.json().catch(() => ({}))) as VerifyBody;
-  console.log("Allowed:", getAllowedHashes());
-  console.log("Incoming:", incomingHash);
 
   const userAgent = req.headers.get("user-agent") || undefined;
   const ipAddress =
@@ -112,6 +110,8 @@ export async function POST(req: Request) {
   }
 
   const incomingHash = sha256Hex(seatKey);
+  console.log("Allowed:", allowed);
+  console.log("Incoming:", incomingHash);
 
   const match = allowed.some(
     (h) =>

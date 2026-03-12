@@ -8,6 +8,10 @@
     "pnpm": ">=8.15.5 <9"
   },
   "scripts": {
+    "axpt:check": "pnpm prisma generate && pnpm tsc --noEmit",
+    "axpt:build": "pnpm prisma generate && next build",
+    "axpt:deploy": "pnpm axpt:check && pnpm axpt:build && git add . && git commit -m 'AXPT deploy' && git push origin master",
+    "axpt:env": "tsx scripts/verify-env.ts",
     "dev": "next dev",
     "dev:next": "next dev -p 3000",
     "dev:net": "cross-env NODE_ENV=development NEXT_PUBLIC_AXPT_ENV=net next dev -H 0.0.0.0",
@@ -59,7 +63,6 @@
     "check:env": "tsx scripts/env.validate.ts",
     "env:check": "tsx scripts/env.validate.ts",
     "check:env:sh": "bash scripts/check-env.sh",
-    "axpt:deploy": "sh bin/deploy.sh",
     "deployritual-local": "sh bin/deployritual-local.sh",
     "doctor": "tsx app/scripts/doctor.ts",
     "env:use:dev": "tsx app/scripts/switchEnv.ts development",

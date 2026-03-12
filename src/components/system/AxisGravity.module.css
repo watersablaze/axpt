@@ -1,20 +1,22 @@
-.axisGravity {
+.axisGravityField {
+
   position: fixed;
   inset: 0;
+
   pointer-events: none;
-  z-index: -1;
+
+  z-index: 1;
 
   background:
+
     radial-gradient(
-      ellipse at 40% 50%,
-      rgba(120,180,220,0.05),
-      transparent 45%
-    ),
-    radial-gradient(
-      ellipse at 60% 50%,
-      rgba(120,180,220,0.05),
-      transparent 45%
+      circle at var(--axis-center) 50%,
+      rgba(180,230,255,.08),
+      rgba(0,0,0,0) 420px
     );
 
-  opacity: 0.7;
+  transition:
+    filter 600ms ease,
+    opacity 600ms ease;
+
 }

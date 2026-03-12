@@ -16,11 +16,7 @@ export default function InterfacesSurface({ onCouncilOpen }: Props) {
 
   return (
 
-    <section
-      className={`surface ${styles.interfacesSurface}`}
-      data-layer="INTERFACES"
-      aria-label="Interfaces"
-    >
+    <div className={styles.interfacesSurface}>
 
       <CouncilGate
         open={councilGateOpen}
@@ -82,7 +78,7 @@ export default function InterfacesSurface({ onCouncilOpen }: Props) {
 
       </div>
 
-    </section>
+    </div>
 
   )
 }

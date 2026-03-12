@@ -4,17 +4,9 @@ import styles from './FoundationSurface.module.css'
 import SurfaceHeader from '@/components/surfaces/SurfaceHeader'
 
 export default function FoundationSurface() {
-
   return (
-
-    <section
-      className={`surface ${styles.foundationSurface}`}
-      data-layer="FOUNDATION"
-      aria-label="Foundation Layer"
-    >
-
+    <div className={styles.foundationSurface}>
       <div className="surfaceFrame">
-
         <SurfaceHeader kicker="FOUNDATION LAYER" />
 
         <h2 className={styles.headline}>
@@ -31,9 +23,7 @@ export default function FoundationSurface() {
           <span>Authority</span>
           <span>Continuity</span>
         </div>
-
       </div>
-
-    </section>
+    </div>
   )
 }

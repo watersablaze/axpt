@@ -5,12 +5,8 @@ import SurfaceHeader from '@/components/surfaces/SurfaceHeader'
 
 export default function FrameworkSurface() {
   return (
-    <section
-      className={`surface ${styles.frameworkSurface}`}
-      data-layer="FRAMEWORK"
-      aria-label="Framework"
-    >
-      <div className="surfaceFrame">
+    <div className={styles.frameworkSurface}>
+      <div className={styles.surfaceFrame}>
 
         <SurfaceHeader kicker="FRAMEWORK" />
 
@@ -158,9 +154,8 @@ export default function FrameworkSurface() {
 
         {/* DATA HORIZON */}
         <div className={styles.bottomField} aria-hidden="true" />
-        <div className={styles.ledgerBaseline} aria-hidden="true" />
 
       </div>
-    </section>
+    </div>
   )
 }

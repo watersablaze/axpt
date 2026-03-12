@@ -5,13 +5,11 @@ import { sleep, clampToRange } from './utils'
 import { getOrCreateCursor, advanceCursor } from './dbCursor'
 import { persistLogs } from './dbEvents'
 
-console.log("DB URL:", process.env.DATABASE_URL)
 const MIRROR_TRANSFER_EVENT = parseAbiItem(
   'event MirrorTransfer(bytes32 idempotencyKey, bytes32 walletEventId, bytes32 tokenType, address from, address to, uint256 amount)'
 )
 
 export async function startReadOnlyChainMirror() {
-  console.log('[ChainMirror:RO] starting read-only loop…')
 
   const env = validateChainMirrorEnv()
 

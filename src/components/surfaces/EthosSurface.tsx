@@ -93,11 +93,7 @@ export default function EthosSurface() {
 
   return (
 
-    <section
-      className={`surface ${styles.ethosSurface}`}
-      data-layer="ETHOS"
-      aria-label="Institutional Ethos"
-    >
+    <div className={styles.ethosSurface}>
 
       <div className="surfaceFrame">
 
@@ -128,6 +124,6 @@ export default function EthosSurface() {
 
       </div>
 
-    </section>
+    </div>
   )
 }
