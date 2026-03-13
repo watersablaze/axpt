@@ -85,7 +85,7 @@ async function loop() {
   }
 }
 
-loop().catch((err) => {
-  console.error('[ChainMirror:RO] fatal error', err)
-  process.exit(1)
-})
+export async function startReadOnlyMirror() {
+  console.log('[ChainMirror:RO] starting read-only loop…')
+  await loop()
+}
