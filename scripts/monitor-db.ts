@@ -1,5 +1,5 @@
 // 📁 scripts/monitor-db.ts
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import fs from 'fs';
 import path from 'path';
 

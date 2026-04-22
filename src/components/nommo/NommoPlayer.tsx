@@ -105,7 +105,7 @@ export default function NommoPlayer({
         {(title || subtitle) && (
           <div className="pointer-events-none absolute left-4 top-4 max-w-xs text-left">
             {title && (
-              <div className="inline-flex items-center rounded-full bg-black/60 px-3 py-1 border border-white/10 text-xs uppercase tracking-[0.12em] text-white/80 mb-2">
+              <div className="inline-flex items-center rounded-full bg-black/70 backdrop-blur-[2px] px-3 py-1 border border-white/10 text-xs uppercase tracking-[0.12em] text-white/80 mb-2">
                 {title}
               </div>
             )}

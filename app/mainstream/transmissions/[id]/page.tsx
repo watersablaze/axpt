@@ -15,6 +15,7 @@ export default function TransmissionPage({
   if (!transmission) return notFound();
 
   const isLive = transmission.status === "live";
+  const hasVideo = Boolean(transmission.video);
 
   return (
     <div className={styles.wrapper}>
@@ -26,18 +27,29 @@ export default function TransmissionPage({
         {/* LEFT COLUMN */}
         <div className={styles.leftColumn}>
 
-          <div className={styles.videoFrame}>
-            <video
-              className={styles.videoPlayer}
-              src={transmission.video}
-              autoPlay={isLive}
-              muted={isLive}
-              loop={!isLive}
-              controls
-              playsInline
-              preload="metadata"
-            />
-          </div>
+          {hasVideo ? (
+            <div className={styles.videoFrame}>
+              <video
+                className={styles.videoPlayer}
+                src={transmission.video}
+                autoPlay={isLive}
+                muted={isLive}
+                loop={!isLive}
+                controls
+                playsInline
+                preload="metadata"
+              />
+            </div>
+          ) : (
+            <div className={styles.posterFrame}>
+              <div
+                className={styles.posterImage}
+                style={{
+                  backgroundImage: `url(${transmission.image})`,
+                }}
+              />
+            </div>
+          )}
 
           <div className={styles.recordBlock}>
             <p className="ms-registry">{transmission.registry}</p>
@@ -47,6 +59,7 @@ export default function TransmissionPage({
             </h1>
 
             <div className={styles.metaRow}>
+              <span>Channel — {transmission.channel}</span>
               <span>Location — {transmission.location}</span>
               <span>Date — {transmission.date}</span>
               <span>Status — {transmission.status}</span>

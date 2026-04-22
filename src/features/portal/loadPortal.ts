@@ -1,5 +1,5 @@
 // src/features/portal/loadPortal.ts
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 
 export async function loadPortal(userId: string) {
   const [wallet, proposals, issuance] = await Promise.all([

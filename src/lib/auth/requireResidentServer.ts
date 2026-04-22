@@ -8,7 +8,7 @@
  * - admin UX is finalized
  */
 
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 
 export async function requireResidentServer() {
   // TEMPORARY AUTH BYPASS — INFRA BUILD PHASE

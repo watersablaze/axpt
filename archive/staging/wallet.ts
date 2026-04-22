@@ -1,5 +1,5 @@
 // app/src/lib/wallet.ts
-import prisma from '@/lib/prisma';
+import prisma from '@/infrastructure/db/prisma';
 
 export async function createWalletForUser(userId: string) {
   const existing = await prisma.wallet.findFirst({ where: { userId } });

@@ -1,7 +1,7 @@
 // app/api/governance/issuance/approve/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { decodeSessionToken } from '@/lib/auth/session';
 
 function now() { return new Date(); }

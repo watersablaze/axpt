@@ -1,7 +1,7 @@
 // app/api/intake/axis-journey/route.ts
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { sendAxisConfirmation } from '@/lib/email/sendAxisConfirmation';
+import { prisma } from '@/infrastructure/db/prisma';
+import { sendAxisConfirmation } from '@/infrastructure/email/sendAxisConfirmation';
 
 export async function POST(req: Request) {
   try {

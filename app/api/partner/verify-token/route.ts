@@ -1,8 +1,8 @@
 // app/api/partner/verify-token/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { verifyToken } from '@/lib/token/verifyToken';
-import type { TokenPayload } from '@/types/token';
+import type { TokenPayload } from '@/shared/types/token';
 import crypto from 'crypto';
 
 export const runtime = 'nodejs';

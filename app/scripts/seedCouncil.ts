@@ -1,6 +1,6 @@
 // app/scripts/seedCouncil.ts
 import 'dotenv/config';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 
 type ElderSpec = { email: string; title?: string };
 

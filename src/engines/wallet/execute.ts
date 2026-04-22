@@ -5,11 +5,11 @@ export function executeTransaction(
   balance: Balance,
   tx: WalletTransaction
 ): Balance {
-  if (tx.currency !== balance.currency) {
-    throw new Error('Currency mismatch');
+  if (tx.assetCode !== balance.assetCode) {
+    throw new Error('Asset mismatch');
   }
 
-  return tx.direction === 'CREDIT'
-    ? credit(balance, tx.amount)
-    : debit(balance, tx.amount);
+  return tx.direction === type: TRANSACTION_TYPES.CREDIT'
+    ? credit(balance, tx.amountBaseUnits)
+    : debit(balance, tx.amountBaseUnits);
 }

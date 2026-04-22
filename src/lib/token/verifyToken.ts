@@ -1,6 +1,6 @@
 import { jwtVerify } from 'jose';
 import { TokenPayloadSchema, type TokenPayload } from './tokenSchema';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 // import { hashToken } from './utils'; // not used if we compare raw
 
 function toUint8(secretRaw: string) {
@@ -30,15 +30,19 @@ export async function verifyToken(token: string): Promise<{
   error?: string;
 }> {
   try {
+    console.log('[verifyToken] token received', !!token);
+
     // 1) Verify signature (HS256) with a little clock tolerance; no iss/aud constraint
     const { payload } = await jwtVerify(token, secret, {
       algorithms: ['HS256'],
       clockTolerance: 60,
     });
+    console.log('[verifyToken] jwt payload', payload);
 
     // 2) Shape validation
     const v = TokenPayloadSchema.safeParse(payload);
     if (!v.success) {
+      console.log('[verifyToken] final valid?', false);
       return { valid: false, payload: null, error: 'Token payload validation failed.' };
     }
 
@@ -46,10 +50,13 @@ export async function verifyToken(token: string): Promise<{
     const revoked = await prisma.revokedToken.findUnique({
       where: { rawToken: token },
     });
+    console.log('[verifyToken] revoked?', !!revoked);
     if (revoked) {
+      console.log('[verifyToken] final valid?', false);
       return { valid: false, payload: null, error: 'Token has been revoked.' };
     }
 
+    console.log('[verifyToken] final valid?', true);
     return { valid: true, payload: v.data };
   } catch (err: any) {
     // Helpful diagnostics
@@ -58,6 +65,7 @@ export async function verifyToken(token: string): Promise<{
       code: err?.code,
       message: err?.message,
     });
+    console.log('[verifyToken] final valid?', false);
     return { valid: false, payload: null, error: 'Token verification failed' };
   }
 }

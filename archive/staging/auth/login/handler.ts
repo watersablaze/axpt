@@ -2,7 +2,7 @@
 // TEMPORARILY DISABLED FOR CLEAN DEPLOYMENT
 
 // import { NextResponse } from 'next/server';
-// import prisma from '@/lib/prisma';
+// import prisma from '@/infrastructure/db/prisma';
 // import bcrypt from 'bcryptjs';
 // import { createSessionCookie } from '@/lib/auth/session';
 

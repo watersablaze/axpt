@@ -1,9 +1,9 @@
 // app/api/dev/reseed-residents/route.ts
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
-import { prisma } from '@/lib/prisma';
-import { createResidentWallet } from '@/lib/wallet/createResidentWallet';
-import { creditAxg } from '@/lib/wallet/creditAxg';
+import { prisma } from '@/infrastructure/db/prisma';
+import { createResidentWallet } from '@/domains/wallet/createResidentWallet';
+import { creditAxg } from '@/domains/wallet/creditAxg';
 
 const A = 'resident.a@example.com';
 const B = 'resident.b@example.com';

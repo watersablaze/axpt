@@ -1,13 +1,14 @@
 import { WalletError } from './errors';
-import type { Currency } from './types';
+import { getAsset, type AssetCode } from '@/lib/assets/registry';
+import { parseDisplayToBaseUnits } from '@/lib/money/baseUnits';
 
 export type WalletRole = 'USER' | 'PARTNER' | 'ELDER';
 
 export type WalletPolicyContext = {
   fromUserId: string;
   toUserId: string;
-  tokenType: Currency;
-  amount: number;
+  assetCode: AssetCode;
+  amountBaseUnits: bigint;
   role: WalletRole;
   // room for future:
   // dailyVolume?: number;
@@ -15,17 +16,22 @@ export type WalletPolicyContext = {
 };
 
 export function assertWalletPolicy(ctx: WalletPolicyContext) {
+  const asset = getAsset(ctx.assetCode);
+  const globalLimit = parseDisplayToBaseUnits('1000000', asset.decimals);
+  const userLimit = parseDisplayToBaseUnits('10000', asset.decimals);
+  const partnerLimit = parseDisplayToBaseUnits('100000', asset.decimals);
+
   // Global hard ceiling (safety rail)
-  if (ctx.amount > 1_000_000) {
+  if (ctx.amountBaseUnits > globalLimit) {
     throw new WalletError('POLICY_LIMIT', 'Transfer exceeds global max', 400);
   }
 
   // Tiered limits (v0)
-  if (ctx.role === 'USER' && ctx.amount > 10_000) {
+  if (ctx.role === 'USER' && ctx.amountBaseUnits > userLimit) {
     throw new WalletError('POLICY_LIMIT', 'User transfer limit exceeded', 400);
   }
 
-  if (ctx.role === 'PARTNER' && ctx.amount > 100_000) {
+  if (ctx.role === 'PARTNER' && ctx.amountBaseUnits > partnerLimit) {
     throw new WalletError('POLICY_LIMIT', 'Partner transfer limit exceeded', 400);
   }
 

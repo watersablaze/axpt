@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 
 export async function getRecentEmails(limit = 50) {
   return await prisma.emailLog.findMany({

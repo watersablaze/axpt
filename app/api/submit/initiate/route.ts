@@ -1,7 +1,7 @@
 // app/api/submit/initiate/route.ts
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma'; // ✅ named import
-import { createResidentWallet } from '@/lib/wallet/createResidentWallet';
+import { prisma } from '@/infrastructure/db/prisma'; // ✅ named import
+import { createResidentWallet } from '@/domains/wallet/createResidentWallet';
 import { switchToResidentSession } from '@/lib/auth/switchToResidentSession';
 
 export async function POST(req: Request) {

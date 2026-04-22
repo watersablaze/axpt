@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import { ethers } from 'ethers';
 import { requireElderApi } from '@/lib/auth/requireElderApi';
-import protiumTokenAbi from '@/lib/chain/abis/protiumToken.json';
+import protiumTokenAbi from '@/infrastructure/chain/abis/protiumToken.json';
 
 function assertEnv(name: string, v?: string) {
   if (!v || !v.trim()) throw new Error(`Missing env: ${name}`);

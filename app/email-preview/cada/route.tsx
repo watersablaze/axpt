@@ -1,4 +1,4 @@
-import CadaWelcome from '@/lib/email/templates/CadaWelcome';
+import CadaWelcome from '@/infrastructure/email/templates/CadaWelcome';
 
 export default function Page() {
   return (

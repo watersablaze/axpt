@@ -1,45 +1,91 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { switchToResidentSession } from '@/lib/auth/switchToResidentSession';
+import { prisma } from '@/infrastructure/db/prisma';
+import { createSessionToken } from '@/lib/auth/session';
+import { COOKIE_NAME } from '@/shared/constants/cookies';
+import type { SessionPayload } from '@/shared/types/auth';
 
 function notAllowed() {
   return new NextResponse('Not allowed in production', { status: 403 });
 }
 
+function normalizeResidentTier(
+  tier: string | null | undefined
+): SessionPayload['tier'] | null {
+  const normalized = tier?.trim().toLowerCase();
+
+  switch (normalized) {
+    case 'investor':
+      return 'Investor';
+    case 'partner':
+      return 'Partner';
+    case 'farmer':
+      return 'Farmer';
+    case 'merchant':
+      return 'Merchant';
+    case 'nomad':
+      return 'Nomad';
+    case 'board':
+      return 'Board';
+    case 'resident':
+      // Legacy resident tier collapses to the default resident portal tier.
+      return 'Nomad';
+    default:
+      return null;
+  }
+}
+
 function clearCookiesAndRedirect(req: Request) {
   const res = NextResponse.redirect(new URL('/dev/portal', req.url));
-  // clear both dev + app session markers
   res.cookies.set('dev_impersonate_email', '', { expires: new Date(0), path: '/' });
-  res.cookies.set('axpt_session_email', '', { expires: new Date(0), path: '/' });
+  res.cookies.set(COOKIE_NAME, '', { expires: new Date(0), path: '/' });
   return res;
 }
 
 async function handle(email: string, req: Request) {
   const user = await prisma.user.findUnique({
     where: { email },
-    select: { id: true, email: true, tier: true },
+    select: { id: true, email: true, tier: true, name: true, displayName: true },
   });
   if (!user) {
     return NextResponse.json({ ok: false, error: 'User not found' }, { status: 404 });
   }
 
-  // Optional: write your real session too if available
-  try {
-    await switchToResidentSession({
-      userId: user.id,
-      email: user.email,
-      tier: user.tier ?? undefined,
-    });
-  } catch {
-    // dev path should work even if this is a no-op locally
+  const canonicalTier = normalizeResidentTier(user.tier);
+  if (!canonicalTier) {
+    return NextResponse.json(
+      { ok: false, error: 'User does not have a resident-eligible tier' },
+      { status: 400 }
+    );
   }
+
+  const token = await createSessionToken({
+    userId: user.id,
+    tier: canonicalTier,
+    roles: [],
+    displayName: user.displayName ?? user.name ?? 'Resident',
+    popupMessage: 'Development Resident Session',
+    greeting: 'Welcome back',
+    email: user.email,
+    partner: 'AXPT',
+    docs: ['whitepaper'],
+  });
 
   // Always set the dev cookie and redirect RELATIVE to req.url (so CF domain is preserved)
   const res = NextResponse.redirect(new URL('/dev/portal', req.url));
+  const isProd = process.env.NODE_ENV === 'production';
+
+  res.cookies.set(COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
+    path: '/',
+    maxAge: 60 * 60 * 24 * 7,
+  });
+
   res.cookies.set('dev_impersonate_email', user.email, {
     httpOnly: true,
     sameSite: 'lax',
-    secure: true,
+    secure: isProd,
     path: '/',
   });
   return res;

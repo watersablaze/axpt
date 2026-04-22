@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { requireElderServer } from '@/lib/auth/requireElderServer';
 
 export async function GET(_: Request, { params }: { params: { slug: string } }) {
@@ -13,7 +13,7 @@ export async function GET(_: Request, { params }: { params: { slug: string } }) 
 
     const agg = await prisma.initiativeFunding.aggregate({
       where: { initiativeId: item.id },
-      _sum: { amount: true },
+      _sum: { amountBaseUnits: true },
     });
     const fundingReceived =
       (agg._sum.amount as any)?.toNumber?.() ?? Number(agg._sum.amount) ?? 0;

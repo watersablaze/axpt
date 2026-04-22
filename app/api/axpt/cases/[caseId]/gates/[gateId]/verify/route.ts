@@ -1,22 +1,23 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { assertCaseEditable } from '@/lib/guards/caseState';
+import { prisma } from '@/infrastructure/db/prisma';
+import { PrismaClient } from "@prisma/client"
+
+type Tx = Omit<
+  PrismaClient,
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+>
 
 export async function POST(
   req: Request,
-  { params }: { params: { caseId: string; gateId: string } }
+  { params }: { params: Promise<{ caseId: string; gateId: string }> }
 ) {
-  const { caseId, gateId } = params;
-  const body = await req.json();
+  // ✅ FIX 1: await params
+  const { caseId, gateId } = await params;
 
-  if (!caseId || !gateId) {
-    return NextResponse.json(
-      { ok: false, error: 'MISSING_PARAMS' },
-      { status: 400 }
-    );
-  }
+  // ✅ FIX 2: safe body parse (form posts have no JSON)
+  const body = await req.json().catch(() => ({}));
 
   const gate = await prisma.gate.findUnique({
     where: { id: gateId },
@@ -30,34 +31,34 @@ export async function POST(
     );
   }
 
-  // 🔐 LAW: case must still be mutable
-  assertCaseEditable(gate.case.status);
-
   if (gate.status === 'VERIFIED') {
-    return NextResponse.json({
-      ok: true,
-      gate,
-      message: 'Gate already verified',
-    });
+    return NextResponse.json(
+      { ok: false, error: 'GATE_ALREADY_VERIFIED' },
+      { status: 409 }
+    );
   }
 
-  const updatedGate = await prisma.gate.update({
-    where: { id: gateId },
-    data: { status: 'VERIFIED' },
-  });
+  await prisma.$transaction(async (tx: Tx) => {
+    await tx.gate.update({
+      where: { id: gateId },
+      data: { status: 'VERIFIED' },
+    });
 
-  await prisma.eventLog.create({
-    data: {
-      caseId,
-      actor: body.actor ?? 'AXPT_SYSTEM',
-      action: 'GATE_VERIFIED',
-      detail: {
-        gateId,
-        gateName: gate.name,
-        notes: body.notes ?? null,
+    await tx.eventLog.create({
+      data: {
+        caseId,
+        actor: body.actor ?? 'AXPT_ADMIN',
+        action: 'GATE_VERIFIED',
+        detail: {
+          gateId,
+          gateName: gate.name,
+          notes: body.notes ?? null,
+        },
       },
-    },
+    });
   });
 
-  return NextResponse.json({ ok: true, gate: updatedGate });
+  return NextResponse.redirect(
+    new URL(`/admin/cases/${caseId}`, req.url)
+  );
 }

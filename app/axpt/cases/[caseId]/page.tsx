@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 
-import { CaseHeader } from '@/components/case/CaseHeader';
+import CaseHeader from "@/components/cases/workspace/CaseHeader"
 import { GateTimeline } from '@/components/case/GateTimeline';
 import { ArtifactsPanel } from '@/components/case/ArtifactsPanel';
 import { EventLogPanel } from '@/components/case/EventLogPanel';

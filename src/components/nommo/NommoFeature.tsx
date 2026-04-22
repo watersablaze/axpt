@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import styles from './NommoFeature.module.css';
 import AxptMotionBridge from '@/components/motion/AxptMotionBridge';
-import { AXPT_CINEMATIC_EASE } from '@/lib/constants/motion';
+import { AXPT_CINEMATIC_EASE } from '@/shared/constants/motion';
 
 export default function NommoFeature() {
   return (

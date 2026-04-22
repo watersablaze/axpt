@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 // 📁 cli/token.ts
 
-import '@/lib/env/loadEnv';
+import '@/infrastructure/env/loadEnv';
 import 'dotenv/config';
 import chalk from 'chalk';
 import inquirer from 'inquirer';

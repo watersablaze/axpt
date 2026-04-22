@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { requireElderServer } from '@/lib/auth/requireElderServer';
 import ReviewAction from './review-action';
 import FundButton from './FundButton';

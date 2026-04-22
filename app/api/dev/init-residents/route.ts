@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import bcrypt from 'bcryptjs';
-import { createResidentWallet } from '@/lib/wallet/createResidentWallet';
-import { creditAxg } from '@/lib/wallet/creditAxg';
+import { createResidentWallet } from '@/domains/wallet/createResidentWallet';
+import { creditAxg } from '@/domains/wallet/creditAxg';
 
 const A = 'resident.a@example.com';
 const B = 'resident.b@example.com';
@@ -41,7 +41,7 @@ async function ensureResident(email: string, displayName: string) {
 
   const axg = await prisma.balance.findFirst({
     where: { walletId: wallet.id, userId: user.id, tokenType: 'AXG' },
-    select: { id: true, amount: true },
+    select: { id: true, amountBaseUnits: true },
   });
 
   if (!axg) {

@@ -1,7 +1,7 @@
 // app/api/debug/whoami/route.ts
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { decodeSessionToken } from '@/lib/auth/session';
 
 export async function GET() {

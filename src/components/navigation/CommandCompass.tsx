@@ -23,7 +23,10 @@ export default function CommandCompass() {
 
   return (
 
-    <nav className={styles.commandCompass}>
+    <nav
+      className={styles.commandCompass}
+      aria-label="Surface navigation"
+    >
 
       {SURFACES.map((surface) => {
 
@@ -35,6 +38,9 @@ export default function CommandCompass() {
             key={surface.id}
             onClick={() => jumpToSurface(surface.id)}
             className={`${styles.node} ${active ? styles.active : ''}`}
+            aria-label={`Jump to ${surface.title}`}
+            title={surface.title}
+            type="button"
           />
 
         )

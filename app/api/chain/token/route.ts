@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { ethers } from 'ethers';
-import abi from '@/lib/chain/abis/protiumToken.json';
+import abi from '@/infrastructure/chain/abis/protiumToken.json';
 
 const provider = new ethers.JsonRpcProvider(process.env.SEPOLIA_RPC_URL);
 const tokenAddress = process.env.PROTIUM_TOKEN_ADDRESS as string;

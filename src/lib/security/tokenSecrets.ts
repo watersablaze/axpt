@@ -1,6 +1,6 @@
 // 📁 app/src/lib/security/tokenSecrets.ts
 
-import { env } from '@/lib/env/loadEnv';
+import { env } from '@/infrastructure/env/loadEnv';
 import crypto from 'crypto';
 
 const encoder = new TextEncoder();

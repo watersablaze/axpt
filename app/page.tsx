@@ -1,5 +1,3 @@
-import AxisSpine from '@/components/system/AxisSpine'
-import AxisGravity from '@/components/system/AxisGravity'
 import AxisRuntime from '@/components/system/AxisRuntime'
 import SurfaceStack from '@/components/system/SurfaceStack'
 import SurfaceBoundary from '@/components/system/SurfaceBoundary'
@@ -15,8 +13,9 @@ import { SURFACES } from '@/lib/surfaces/registry'
 export default function Home() {
   return (
     <main>
-      <AxisSpine />
-      <AxisGravity />
+
+      <div className="rails" />
+
       <AxisRuntime />
       <SurfaceObserver />
       <SurfaceMagnet />

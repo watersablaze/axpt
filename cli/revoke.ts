@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 // 📁 cli/revoke.ts
 
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { verifyToken } from '@/lib/token/verifyToken';
 import { hashToken } from '@/lib/token/utils'; // We'll generate this
 import chalk from 'chalk';

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { requireElderServer } from '@/lib/auth/requireElderServer';
-import { runChainMirrorWorker } from '@/engines/wallet/chainMirror';
+import { runChainMirrorWorker } from '@/domains/mirror/worker';
 
 export async function POST() {
   await requireElderServer();

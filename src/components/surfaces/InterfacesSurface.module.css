@@ -336,6 +336,12 @@
 
 @media (max-width:880px){
 
+  .surfaceFrame{
+    left: auto;
+    transform: none;
+    width: 100%;
+  }
+
   .interfaceGrid{
     grid-template-columns:1fr;
   }

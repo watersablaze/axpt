@@ -1,12 +1,12 @@
 // FILE: cli/dev.ts
-import '@/lib/env/loadEnv';
+import '@/infrastructure/env/loadEnv';
 
 import chalk from 'chalk';
 import clipboard from 'clipboardy';
 
 import { signToken } from '@/lib/token';
 import { TokenPayloadSchema } from '@/lib/token/tokenSchema';
-import type { TokenPayload } from '@/types/token';
+import type { TokenPayload } from '@/shared/types/token';
 
 (async () => {
   const now = Math.floor(Date.now() / 1000);

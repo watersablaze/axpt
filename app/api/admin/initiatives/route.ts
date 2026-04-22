@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { requireElderServer } from '@/lib/auth/requireElderServer';
 import {
   INITIATIVE_CATEGORIES,
@@ -7,7 +7,7 @@ import {
   coerceEnum,
   type InitiativeCategoryLiteral,
   type InitiativeStatusLiteral,
-} from '@/config/initiatives';
+} from '@/shared/config/initiatives';
 
 export async function GET() {
   try {
@@ -27,7 +27,7 @@ export async function GET() {
 
     const totals = await prisma.initiativeFunding.groupBy({
       by: ['initiativeId'],
-      _sum: { amount: true },
+      _sum: { amountBaseUnits: true },
       where: { initiativeId: { in: initiatives.map((i: any) => i.id) } },
     });
 

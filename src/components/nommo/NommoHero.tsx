@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import AxptMotionBridge from '@/components/motion/AxptMotionBridge';
 import styles from './NommoHero.module.css';
 import { useRef } from 'react';
-import { AXPT_CINEMATIC_EASE } from '@/lib/constants/motion';
+import { AXPT_CINEMATIC_EASE } from '@/shared/constants/motion';
 
 export default function NommoHero() {
   const ref = useRef<HTMLDivElement>(null);

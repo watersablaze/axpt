@@ -1,8 +1,8 @@
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
-import { SESSION_COOKIE_NAME } from '@/constants/cookies';
-import { SIGNING_SECRET } from '@/lib/env/secrets';
-import type { SessionPayload } from '@/types/auth';
+import { SESSION_COOKIE_NAME } from '@/shared/constants/cookies';
+import { SIGNING_SECRET } from '@/infrastructure/env/secrets';
+import type { SessionPayload } from '@/shared/types/auth';
 
 const allowedDocs = ['whitepaper', 'hemp', 'chinje'] as const;
 type DocType = typeof allowedDocs[number];
@@ -46,6 +46,12 @@ export async function decodeSessionToken(token: string): Promise<SessionPayload 
     return {
       userId,
       tier: tier as SessionPayload['tier'],
+      roles: Array.isArray(payload.roles)
+        ? payload.roles.filter(
+            (role): role is SessionPayload['roles'][number] =>
+              typeof role === 'string'
+          )
+        : [],
       displayName,
       popupMessage,
       greeting,

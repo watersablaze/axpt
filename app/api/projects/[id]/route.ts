@@ -1,6 +1,6 @@
 // app/api/projects/[id]/route.ts  (GET: resident can view own item)
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { requireResidentServer } from '@/lib/auth/requireResidentServer';
 import { assertProjectOwner } from '@/lib/access/projects';
 

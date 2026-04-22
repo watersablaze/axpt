@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { signToken } from '@/lib/token/signToken'; // ✅ Correct import
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 
 export const runtime = 'nodejs';
 

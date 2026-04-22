@@ -1,7 +1,7 @@
 // 📁 cli/onboard.ts
 
 import 'dotenv/config';
-import { env } from '../src/lib/env'
+import { env } from '../src/infrastructure/env/env'
 import path from 'path';
 import fs from 'fs';
 import chalk from 'chalk';
@@ -9,7 +9,7 @@ import figlet from 'figlet';
 
 import { promptAndGenerateToken } from '@/lib/token/tokenService';
 import { verifyToken } from '@/lib/token/verifyToken';
-import { TokenPayload } from '@/types/token';
+import { TokenPayload } from '@/shared/types/token';
 
 const isDryRun = process.argv.includes('--dry');
 

@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { requireElderServer } from '@/lib/auth/requireElderServer';
 import { ethers } from 'ethers';
+import { requireSystemHealthy } from '@/domains/system/requireSystemHealthy';
 
 const ERC20_MINT_ABI = [
   'function mint(address to, uint256 amount) external',
@@ -24,6 +25,11 @@ function safeJson(obj: any): any {
 
 export async function POST(req: Request) {
   try {
+    const health = await requireSystemHealthy();
+    if (!health.allowed) {
+      return NextResponse.json({ ok: false, error: health.reason }, { status: 503 });
+    }
+
     const devBypass =
       process.env.NODE_ENV !== 'production' && req.headers.get('x-dev-bypass') === '1';
     if (!devBypass) {

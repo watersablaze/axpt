@@ -1,6 +1,6 @@
 // app/api/webhooks/resend/route.ts
 import { NextResponse } from 'next/server';
-import { logEmailEvent } from '@/lib/email/logEmailEvent';
+import { logEmailEvent } from '@/infrastructure/email/logEmailEvent';
 import crypto from 'crypto';
 
 const RESEND_WEBHOOK_SECRET = process.env.RESEND_WEBHOOK_SECRET!;

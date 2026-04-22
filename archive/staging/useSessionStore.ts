@@ -4,7 +4,7 @@
 
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { SessionPayload } from '@/types/auth'; // ✅
+import { SessionPayload } from '@/shared/types/auth'; // ✅
 
 interface SessionStore {
   session: SessionPayload | null;

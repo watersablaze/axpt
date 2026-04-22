@@ -1,5 +1,5 @@
 // cli/ascii.ts
-import '@/lib/env/loadEnv';
+import '@/infrastructure/env/loadEnv';
 
 import chalk from 'chalk';
 import figlet from 'figlet';

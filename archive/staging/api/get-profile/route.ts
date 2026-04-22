@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import prisma from '@/lib/prisma'; // ✅ FIXED
+import prisma from '@/infrastructure/db/prisma'; // ✅ FIXED
 
 export async function POST(req: Request) {
   const { token } = await req.json();

@@ -1,15 +1,16 @@
 // src/components/case/CaseProgressionBar.tsx
+
 import {
   CaseProgressionInput,
   deriveProgression,
-} from './caseProgression';
+} from './caseProgression'
 
 interface Props {
-  caseData: CaseProgressionInput;
+  caseData: CaseProgressionInput
 }
 
 export default function CaseProgressionBar({ caseData }: Props) {
-  const progression = deriveProgression(caseData);
+  const progression = deriveProgression(caseData)
 
   return (
     <section
@@ -24,13 +25,13 @@ export default function CaseProgressionBar({ caseData }: Props) {
         Case Progression
       </h3>
 
-      {/* Case status */}
+      {/* STATUS */}
       <div style={{ marginBottom: '1rem' }}>
         <strong>Status:</strong>{' '}
         <span
           style={{
             color:
-              progression.isEscrowInitiated
+              progression.isEscrowActive
                 ? '#7a1'
                 : progression.isClosed
                 ? '#555'
@@ -42,7 +43,7 @@ export default function CaseProgressionBar({ caseData }: Props) {
         </span>
       </div>
 
-      {/* Gates */}
+      {/* GATES */}
       <ol style={{ paddingLeft: '1.25rem', marginBottom: '1rem' }}>
         {progression.gates.map((g) => (
           <li
@@ -50,7 +51,7 @@ export default function CaseProgressionBar({ caseData }: Props) {
             style={{
               marginBottom: '0.5rem',
               opacity:
-                progression.isEscrowInitiated &&
+                progression.isEscrowActive &&
                 g.status !== 'VERIFIED'
                   ? 0.5
                   : 1,
@@ -77,12 +78,12 @@ export default function CaseProgressionBar({ caseData }: Props) {
         ))}
       </ol>
 
-      {/* Escrow indicator */}
+      {/* ESCROW STATE */}
       <div>
         <strong>Escrow:</strong>{' '}
-        {progression.isEscrowInitiated ? (
+        {progression.isEscrowActive ? (
           <span style={{ color: 'green', fontWeight: 600 }}>
-            Initiated
+            {progression.escrowLabel}
           </span>
         ) : (
           <span style={{ color: '#999' }}>
@@ -91,5 +92,5 @@ export default function CaseProgressionBar({ caseData }: Props) {
         )}
       </div>
     </section>
-  );
+  )
 }

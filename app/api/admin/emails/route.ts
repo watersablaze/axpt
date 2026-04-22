@@ -1,12 +1,12 @@
 // app/api/admin/emails/route.ts
 import { NextResponse } from 'next/server';
 import { requireElderServer } from '@/lib/auth/requireElderServer';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import {
   getRecentEmailLogs,
   countEmailsByType,
   searchEmailLogs,
-} from '@/lib/email/emailLogService';
+} from '@/infrastructure/email';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

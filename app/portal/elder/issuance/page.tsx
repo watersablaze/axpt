@@ -1,5 +1,5 @@
 // app/portal/elder/issuance/page.tsx
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import IssuanceRow from '@/components/elder/IssuanceRow';
 import { requireElderServer } from '@/lib/auth/requireElderServer';
 

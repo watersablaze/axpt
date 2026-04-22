@@ -1,5 +1,5 @@
 // app/api/wallet/create/route.ts
-import prisma from '@/lib/prisma';
+import prisma from '@/infrastructure/db/prisma';
 import { getLoggedInUserId } from '@/utils/session';
 import { NextResponse } from 'next/server';
 import { randomBytes, createHash } from 'crypto';

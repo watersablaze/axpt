@@ -1,6 +1,6 @@
 // app/api/admin/initiatives/[slug]/updates/route.ts
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { requireElderServer } from '@/lib/auth/requireElderServer';
 
 type Ctx = { params: Promise<{ slug: string }> };

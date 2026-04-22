@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { creditAxg } from '@/lib/wallet/creditAxg';
+import { prisma } from '@/infrastructure/db/prisma';
+import { creditAxg } from '@/domains/wallet/creditAxg';
 import { requireElderServer } from '@/lib/auth/requireElderServer';
 
 export async function POST(req: Request) {
@@ -26,6 +26,6 @@ export async function POST(req: Request) {
     const result = await creditAxg(userId, amount, note);
     return NextResponse.json({ ok: true, ...result });
   } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message || 'credit failed' }, { status: 500 });
+    return NextResponse.json({ ok: false, error: e?.message || type: TRANSACTION_TYPES.CREDIT failed' }, { status: 500 });
   }
 }

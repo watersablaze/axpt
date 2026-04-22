@@ -16,7 +16,7 @@ export function EscrowAuthorizationModal({
   if (!open) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+    <div className="fixed inset-0 bg-black/70 backdrop-blur-[2px] flex items-center justify-center z-50">
       <div className="bg-black border border-white/10 rounded-lg p-6 max-w-md w-full space-y-4">
         <h2 className="text-lg font-medium text-white">
           Escrow Handoff Authorized

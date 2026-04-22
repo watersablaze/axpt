@@ -1,6 +1,6 @@
 // src/lib/token/decodeToken.ts
 import { jwtDecode } from 'jwt-decode';
-import type { SessionPayload } from '@/types/auth';
+import type { SessionPayload } from '@/shared/types/auth';
 
 const valid = new Set(['Investor','Partner','Farmer','Merchant','Nomad','Board']);
 
@@ -16,6 +16,9 @@ export function decodeToken(token: string): SessionPayload | null {
       return null;
     }
     d.tier = tierNorm; // normalize
+    d.roles = Array.isArray(d?.roles)
+      ? d.roles.filter((role: unknown): role is string => typeof role === 'string')
+      : [];
     return d as SessionPayload;
   } catch (err) {
     console.error('[AXPT] decodeToken failed:', err);

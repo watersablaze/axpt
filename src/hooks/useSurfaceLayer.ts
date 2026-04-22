@@ -19,7 +19,7 @@ export default function useSurfaceLayer() {
 
         const layer = section.dataset.layer
 
-        if (layer === "ORIGIN") {
+        if (layer === "ENTRY") {
           section.style.setProperty("--axis-depth", "0")
           return
         }

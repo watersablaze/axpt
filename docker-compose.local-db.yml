@@ -1,0 +1,16 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: axpt-postgres-local
+    restart: always
+    environment:
+      POSTGRES_USER: axpt
+      POSTGRES_PASSWORD: axpt
+      POSTGRES_DB: axpt_local
+    ports:
+      - "5432:5432"
+    volumes:
+      - axpt_pgdata:/var/lib/postgresql/data
+
+volumes:
+  axpt_pgdata:

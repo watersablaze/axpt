@@ -1,7 +1,7 @@
 // 📁 app/api/admin/shadow-vault/entry/[id]/route.ts
 
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 
 export const runtime = 'nodejs';
 

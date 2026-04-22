@@ -3,7 +3,7 @@ export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
 import { PrismaClient } from '@prisma/client';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { assertCaseCanActivate } from '@/lib/guards/caseState';
 
 type TxClient = Omit<
@@ -12,16 +12,25 @@ type TxClient = Omit<
 >;
 
 export async function POST(
-  _req: Request,
-  { params }: { params: { caseId: string } }
+  req: Request,
+  { params }: { params: Promise<{ caseId: string }> }
 ) {
-  const { caseId } = params;
+  const { caseId } = await params
+
   if (!caseId) {
     return NextResponse.json(
-      { ok: false, error: 'MISSING_CASE_ID' },
+      { ok: false, error: "MISSING_CASE_ID" },
       { status: 400 }
-    );
+    )
   }
+
+  await prisma.case.update({
+    where: { id: caseId },
+    data: {
+      status: "ACTIVE",
+      openedAt: new Date(),
+    },
+  })
 
   try {
     const updated = await prisma.$transaction(async (tx: TxClient) => {

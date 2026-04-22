@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-import { createResidentWallet } from '@/lib/wallet/createResidentWallet';
-import { creditAxg } from '@/lib/wallet/creditAxg';
+import { prisma } from '@/infrastructure/db/prisma';
+import { createResidentWallet } from '@/domains/wallet/createResidentWallet';
+import { creditAxg } from '@/domains/wallet/creditAxg';
 
 async function seed() {
   const A_EMAIL = 'resident.a@example.com';
@@ -33,6 +33,20 @@ async function seed() {
       select: { id: true, email: true, tier: true, name: true },
     }),
   ]);
+
+  const residentRole = await prisma.role.findUnique({
+    where: { key: 'RESIDENT' },
+  });
+
+  if (residentRole) {
+    await prisma.userRole.createMany({
+      data: [
+        { userId: A.id, roleId: residentRole.id },
+        { userId: B.id, roleId: residentRole.id },
+      ],
+      skipDuplicates: true,
+    });
+  }
 
   await Promise.all([createResidentWallet(A.id), createResidentWallet(B.id)]);
 

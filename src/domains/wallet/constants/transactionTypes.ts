@@ -1,0 +1,7 @@
+export const TRANSACTION_TYPES = {
+  CREDIT: 'CREDIT',
+  DEBIT: 'DEBIT',
+  FEE: 'FEE',
+  TREASURY: 'TREASURY',
+  ADJUSTMENT: 'ADJUSTMENT',
+} as const

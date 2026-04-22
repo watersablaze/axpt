@@ -82,20 +82,13 @@
   height:1px;
   width:48px;
 
-  opacity:.0;
+  opacity:.72;
 
   transition:opacity 600ms ease;
 
   animation: connectorBreath var(--system-cycle) ease-in-out infinite;
 
   filter:drop-shadow(0 0 4px rgba(200,230,255,.35));
-}
-
-.surface--active .axisConnectorLeft,
-.surface--active .axisConnectorRight{
-
-  opacity:.85;
-
 }
 
 @keyframes connectorBreath {

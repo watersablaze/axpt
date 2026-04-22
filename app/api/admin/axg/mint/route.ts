@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import { requireElderServer } from '@/lib/auth/requireElderServer';
 import { ethers } from 'ethers';
+import { requireSystemHealthy } from '@/domains/system/requireSystemHealthy';
 
 const ERC20_MINT_ABI = [
   'function mint(address to, uint256 amount) external',
@@ -15,6 +16,11 @@ function isHexAddress(a: string): a is `0x${string}` {
 
 export async function POST(req: Request) {
   try {
+    const health = await requireSystemHealthy();
+    if (!health.allowed) {
+      return NextResponse.json({ ok: false, error: health.reason }, { status: 503 });
+    }
+
     // Same dev-bypass behavior as your PRT route (requireElderServer already honors it)
     await requireElderServer();
 

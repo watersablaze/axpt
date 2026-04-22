@@ -1,17 +1,16 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
+import { PrismaClient } from "@prisma/client"
 
-type TxClient = Omit<
+type Tx = Omit<
   PrismaClient,
-  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
->;
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+>
 
 export async function POST(req: Request) {
   const body = await req.json();
-
   const { title, jurisdiction, mode } = body;
 
   if (!title) {
@@ -21,13 +20,16 @@ export async function POST(req: Request) {
     );
   }
 
-  const result = await prisma.$transaction(async (tx: TxClient) => {
+  const result = await prisma.$transaction(async (tx: Tx) => {
     const c = await tx.case.create({
       data: {
         title,
         jurisdiction,
         mode: mode ?? 'COORDINATION_ONLY',
-        status: 'DRAFT',
+
+        // ✅ ACTIVATION = STRUCTURE EXISTS
+        status: 'ACTIVE',
+
         gates: {
           create: [
             { ord: 1, name: 'Identity Verification' },

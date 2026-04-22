@@ -1,5 +1,3 @@
-'use client'
-
 import styles from './PresenceSurface.module.css'
 
 export default function PresenceSurface() {

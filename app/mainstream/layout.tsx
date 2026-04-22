@@ -1,5 +1,5 @@
-import "@/src/styles/mainstream-globals.css";
-import Sidebar from "@/src/components/mainstream/Sidebar";
+import "@/styles/mainstream-globals.css";
+import Sidebar from "@/components/mainstream/Sidebar";
 
 export default function MainstreamLayout({
   children,

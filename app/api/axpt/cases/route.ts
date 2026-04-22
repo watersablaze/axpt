@@ -1,7 +1,7 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { DEFAULT_GATES } from '@/lib/axpt/defaultGates';
 import { DEFAULT_GATE_ITEM_TEMPLATES } from '@/lib/axpt/gateTemplates';
 

@@ -1,0 +1,3 @@
+- Local wallet/ledger development uses local Postgres
+- Shared/staging/production workflows use Neon
+- Never benchmark local ledger throughput against Neon

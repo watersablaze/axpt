@@ -4,7 +4,7 @@ import { useRef } from 'react';
 import VerifiedDashboardMobile from './VerifiedDashboardMobile';
 import VerifiedDashboardDesktop from './VerifiedDashboardDesktop';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { SessionPayload } from '@/types/auth';
+import { SessionPayload } from '@/shared/types/auth';
 
 interface VerifiedDashboardProps {
   tokenPayload: SessionPayload;

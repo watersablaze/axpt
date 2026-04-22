@@ -1,8 +1,9 @@
 // app/api/wallet/balance/route.ts
 
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
-import { resolveLedgerAccountId } from '@/engines/wallet/chainMirror/ledgerAccounts'
+import { prisma } from '@/infrastructure/db/prisma'
+import { resolveLedgerAccountId } from '@/domains/mirror/ledgerAccounts'
+import { TRANSACTION_TYPES } from '@/domains/wallet/constants/transactionTypes'
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -44,7 +45,7 @@ export async function GET(req: NextRequest) {
       accountId,
     },
     _sum: {
-      amount: true,
+      amountBaseUnits: true,
     },
   })
 
@@ -53,9 +54,9 @@ export async function GET(req: NextRequest) {
       chainId,
       tokenType,
       accountId,
-      direction: 'CREDIT',
+      direction: type: TRANSACTION_TYPES.CREDIT',
     },
-    _sum: { amount: true },
+    _sum: { amountBaseUnits: true },
   })
 
   const debits = await prisma.ledgerEntry.aggregate({
@@ -63,9 +64,9 @@ export async function GET(req: NextRequest) {
       chainId,
       tokenType,
       accountId,
-      direction: 'DEBIT',
+      direction: type: TRANSACTION_TYPES.DEBIT,
     },
-    _sum: { amount: true },
+    _sum: { amountBaseUnits: true },
   })
 
   const creditSum = BigInt(credits._sum.amount ?? '0')

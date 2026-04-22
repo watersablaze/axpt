@@ -1,5 +1,5 @@
 // app/portal/elder/proposals/[id]/page.tsx
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { requireElderServer } from '@/lib/auth/requireElderServer';
 import VotePanel from '@/components/elder/VotePanel';
 

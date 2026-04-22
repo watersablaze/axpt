@@ -1,5 +1,3 @@
-'use client'
-
 import styles from './FoundationSurface.module.css'
 import SurfaceHeader from '@/components/surfaces/SurfaceHeader'
 

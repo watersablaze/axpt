@@ -2,7 +2,7 @@ import React from 'react';
 import { render } from '@react-email/render';
 import fs from 'fs';
 import path from 'path';
-import CadaWelcome from '../src/lib/email/templates/CadaWelcome';
+import CadaWelcome from '../src/infrastructure/email/templates/CadaWelcome';
 
 const outputDir = path.join(process.cwd(), 'preview-output');
 const outputPath = path.join(outputDir, 'cada-preview.html');

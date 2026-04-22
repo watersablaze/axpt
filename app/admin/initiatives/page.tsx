@@ -1,6 +1,6 @@
 // app/admin/initiatives/page.tsx
 import { requireElderServer } from '@/lib/auth/requireElderServer';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import Link from 'next/link';
 
 type SearchParams = { page?: string; limit?: string };
@@ -73,7 +73,7 @@ export default async function InitiativesAdminPage({
 
   const totals = await prisma.initiativeFunding.groupBy({
     by: ['initiativeId'],
-    _sum: { amount: true },
+    _sum: { amountBaseUnits: true },
     where: { initiativeId: { in: initiatives.map((i) => i.id) } },
   });
 

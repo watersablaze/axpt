@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getProtiumToken } from '@/lib/chain/contracts';
+import { getProtiumToken } from '@/infrastructure/chain/contracts';
 
 export async function GET() {
   try {

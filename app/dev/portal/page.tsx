@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 import { redirect } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import DevBanner from '@/components/dev/DevBanner';
 import ResidentPicker from './ResidentPicker';
 import SendAxgForm from './SendAxgForm';
@@ -73,7 +73,7 @@ export default async function DevPortalPreview() {
         select: {
           id: true,
           type: true,
-          amount: true,
+          amountBaseUnits: true,
           tokenType: true,
           createdAt: true,
           metadata: true,

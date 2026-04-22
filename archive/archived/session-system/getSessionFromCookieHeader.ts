@@ -1,7 +1,7 @@
 // 📁 app/src/lib/auth/getSessionFromCookieHeader.ts
 
 import { decodeSessionToken } from '@/lib/auth/session';
-import { SESSION_COOKIE_NAME } from '@/constants/cookies';
+import { COOKIE_NAME } from '@/shared/constants/cookies'
 
 /**
  * 🍪 Extract and decode session token from raw cookie header (Edge-safe)

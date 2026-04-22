@@ -1,7 +1,7 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import PDFDocument from 'pdfkit';
 import { PassThrough } from 'stream';
 import crypto from 'crypto';

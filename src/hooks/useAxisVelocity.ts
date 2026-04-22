@@ -34,31 +34,35 @@ export default function useAxisVelocity() {
 
     window.addEventListener("scroll", update, { passive: true })
 
-    let idleTimer: any
+    let idleTimer: ReturnType<typeof setTimeout> | undefined
 
-const handleIdle = () => {
+    const handleIdle = () => {
 
-  clearTimeout(idleTimer)
+      if (idleTimer) clearTimeout(idleTimer)
 
-  idleTimer = setTimeout(() => {
+      idleTimer = setTimeout(() => {
 
-    if (document.body.dataset.surface === "PRESENCE") {
+        if (document.body.dataset.surface === "PRESENCE") {
 
-      document.body.classList.add("axis-lock")
+          document.body.classList.add("axis-lock")
 
-      setTimeout(() => {
-        document.body.classList.remove("axis-lock")
-      }, 900)
+          setTimeout(() => {
+            document.body.classList.remove("axis-lock")
+          }, 900)
+
+        }
+
+      }, 350)
 
     }
 
-  }, 350)
+    window.addEventListener("scroll", handleIdle, { passive: true })
 
-}
-
-window.addEventListener("scroll", handleIdle)
-
-    return () => window.removeEventListener("scroll", update)
+    return () => {
+      window.removeEventListener("scroll", update)
+      window.removeEventListener("scroll", handleIdle)
+      if (idleTimer) clearTimeout(idleTimer)
+    }
 
   }, [])
 

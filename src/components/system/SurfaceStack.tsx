@@ -6,8 +6,8 @@ export default function SurfaceStack({
   children: React.ReactNode
 }) {
   return (
-    <main className="surfaceStack">
+    <div className="surfaceStack">
       {children}
-    </main>
+    </div>
   )
 }

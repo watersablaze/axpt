@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { requireResidentServer } from '@/lib/auth/requireResidentServer';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { fmtDateTime } from '@/lib/dates';
 import StatusBadge from '@/components/ui/StatusBadge';
 

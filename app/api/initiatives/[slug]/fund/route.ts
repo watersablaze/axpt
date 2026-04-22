@@ -1,6 +1,6 @@
 // app/api/initiatives/[slugs]/fund/route.ts
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { requireResidentServer } from '@/lib/auth/requireResidentServer';
 import { sendCouncilNotification, sendSlack } from '@/lib/notify';
 
@@ -47,7 +47,7 @@ export async function POST(req: Request, { params }: { params: { slugs: string }
     // Recompute total from ledger rows (no cached column)
     const agg = await prisma.initiativeFunding.aggregate({
       where: { initiativeId: initiative.id },
-      _sum: { amount: true },
+      _sum: { amountBaseUnits: true },
     });
     const fundingReceived =
       (agg._sum.amount as any)?.toNumber?.() ?? Number(agg._sum.amount) ?? 0;

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { verifyPublicToken } from '@/lib/axpt/verifyPublicToken';
 import { GateTimeline } from '@/components/case/GateTimeline';
 

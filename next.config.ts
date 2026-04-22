@@ -4,6 +4,7 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   productionBrowserSourceMaps: true,
+  turbopack: {},
 
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',
@@ -12,10 +13,6 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizeCss: true,
     serverActions: {},
-  },
-
-  eslint: {
-    ignoreDuringBuilds: true,
   },
 
   images: {
@@ -38,7 +35,7 @@ const nextConfig: NextConfig = {
       '@/utils': path.resolve(__dirname, 'lib/utils'),
       '@/components': path.resolve(__dirname, 'app/src/components'),
       '@/styles': path.resolve(__dirname, 'app/src/styles'),
-      '@/types': path.resolve(__dirname, 'types'),
+      '@/shared/types': path.resolve(__dirname, 'types'),
       '@/cli': path.resolve(__dirname, 'cli'),
       '@/scripts': path.resolve(__dirname, 'app/scripts'),
       '@/flows': path.resolve(__dirname, 'app/scripts/partner-tokens/utils/flows'),

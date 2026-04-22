@@ -1,5 +1,5 @@
 // 📁 scripts/wake-db.ts
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 
 async function wakeDB() {
   try {

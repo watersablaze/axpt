@@ -3,8 +3,8 @@
     "target": "ES2022",
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "module": "ESNext",
-    "moduleResolution": "Node",
-    "jsx": "preserve",
+    "moduleResolution": "bundler",
+    "jsx": "react-jsx",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
@@ -20,31 +20,30 @@
     "types": ["bcryptjs", "chalk", "node"],
     "paths": {
       "@/*": ["src/*"],
-
       "@/lib/*": ["src/lib/*"],
       "@/env/*": ["src/lib/env/*"],
       "@/auth/*": ["src/lib/auth/*"],
       "@/token/*": ["src/lib/token/*"],
       "@/token": ["src/lib/token/index.ts"],
       "@/utils/*": ["src/lib/utils/*"],
-      "@/constants/*": ["src/constants/*"],
-      "@/logging/*": ["src/lib/logging/*"],
+      "@/infrastructure/*": ["src/infrastructure/*"],
+      "@/shared/*": ["src/shared/*"],
+      "@/domains/*": ["src/domains/*"],
+      "@/shared/constants/*": ["src/shared/constants/*"],
+      "@/logging/*": ["src/infrastructure/logging/*"],
+      "@/prisma": ["src/infrastructure/db/prisma.ts"],
       "@/lotties/*": ["src/lib/lotties/*"],
-      "@/prisma": ["src/lib/prisma.ts"],
-
       "@/components/*": ["src/components/*"],
       "@/onboarding/*": ["src/components/onboarding/*"],
       "@/styles/*": ["src/styles/*"],
       "@/hooks/*": ["src/hooks/*"],
       "@/stores/*": ["src/stores/*"],
-
       "staging/*": ["staging/*"],
-
       "@/cli/*": ["cli/*"],
       "@/scripts/*": ["scripts/*"],
       "@/flows/*": ["scripts/partner-tokens/utils/flows/*"],
-
-      "@/types/*": ["src/types/*"]
+      "@/types/*": ["src/shared/types/*"],
+      "@/shared/types/*": ["src/shared/types/*"]
     },
     "plugins": [
       {
@@ -63,13 +62,15 @@
     ".next/types/**/*.ts",
     "types/global.d.ts",
     "src/lib/prisma.ts",
-
     // Explicit .tsx files
     "staging/decodeTokenCLIFlow.ts",
     "staging/SharedDocViewer.tsx",
     "staging/hooks/useOrbSize.ts",
-    "staging/sendCadaNotification.tsx"
-, "staging/cada", "staging/test-email"  ],
+    "staging/sendCadaNotification.tsx",
+    "staging/cada",
+    "staging/test-email",
+    ".next/dev/types/**/*.ts"
+  ],
   "exclude": [
     "node_modules",
     ".next",

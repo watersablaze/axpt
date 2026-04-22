@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import { ethers } from 'ethers';
 import { requireElderServer } from '@/lib/auth/requireElderServer';
+import { requireSystemHealthy } from '@/domains/system/requireSystemHealthy';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -30,6 +31,11 @@ function isAddr(a: string) { return /^0x[a-fA-F0-9]{40}$/.test(a); }
 
 export async function POST(req: Request) {
   try {
+    const health = await requireSystemHealthy();
+    if (!health.allowed) {
+      return err(health.reason ?? 'System degraded', 503);
+    }
+
     // Elder-gated, but allow dev-bypass header just like your mint endpoints.
     try { await requireElderServer(); } catch {
       if (process.env.NODE_ENV === 'development' && req.headers.get('x-dev-bypass') === '1') {

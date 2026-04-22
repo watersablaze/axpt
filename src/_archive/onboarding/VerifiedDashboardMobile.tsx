@@ -10,7 +10,7 @@ import MobileDocumentVault from './MobileDocumentVault';
 import SigilWatermark from '../SigilWatermark';
 import styles from './VerifiedDashboardMobile.module.css';
 
-import { SessionPayload } from '@/types/auth';
+import { SessionPayload } from '@/shared/types/auth';
 
 interface VerifiedDashboardMobileProps {
   scrollRef: React.RefObject<HTMLDivElement>;

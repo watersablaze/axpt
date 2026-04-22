@@ -1,5 +1,5 @@
 // app/portal/elder/proposals/page.tsx
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import Link from 'next/link';
 import { requireElderServer } from '@/lib/auth/requireElderServer';
 

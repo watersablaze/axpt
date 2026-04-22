@@ -1,6 +1,6 @@
 // 📁 app/scripts/partner-tokens/token.ts
 
-import '@/lib/env/loadEnv';
+import '@/infrastructure/env/loadEnv';
 import { promptAndGenerateToken } from '@/lib/token/tokenService';
 import type { TokenEntry } from '@/lib/token/tokenService';
 

@@ -2,7 +2,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { SignJWT } from 'jose';
 import crypto from 'node:crypto';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 
 const signingSecret = process.env.SIGNING_SECRET;
 const salt = process.env.ACCESS_CODE_SALT || signingSecret;

@@ -1,19 +1,20 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { PrismaClient } from '@prisma/client';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
+import { PrismaClient } from "@prisma/client"
 
-type TxClient = Omit<
+type Tx = Omit<
   PrismaClient,
-  '$connect' | '$disconnect' | '$on' | '$transaction' | '$use' | '$extends'
->;
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+>
 
 export async function POST(
   req: Request,
-  { params }: { params: { caseId: string; gateId: string } }
+  { params }: { params: Promise<{ caseId: string; gateId: string }> }
 ) {
-  const { caseId, gateId } = params;
+  const { caseId, gateId } = await params;
+
   const body = await req.json().catch(() => ({}));
 
   const gate = await prisma.gate.findUnique({
@@ -35,25 +36,25 @@ export async function POST(
     );
   }
 
-  await prisma.$transaction(async (tx: TxClient) => {
-    await tx.gate.update({
-      where: { id: gateId },
-      data: { status: 'VERIFIED' },
-    });
-
-    await tx.eventLog.create({
-      data: {
-        caseId,
-        actor: body.actor ?? 'AXPT_ADMIN',
-        action: 'GATE_VERIFIED',
-        detail: {
-          gateId,
-          gateName: gate.name,
-          notes: body.notes ?? null,
-        },
-      },
-    });
+await prisma.$transaction(async (tx: Tx) => {
+  await tx.gate.update({
+    where: { id: gateId },
+    data: { status: 'VERIFIED' },
   });
+
+  await tx.eventLog.create({
+    data: {
+      caseId,
+      actor: body.actor ?? 'AXPT_ADMIN',
+      action: 'GATE_VERIFIED',
+      detail: {
+        gateId,
+        gateName: gate.name,
+        notes: body.notes ?? null,
+      },
+    },
+  });
+});
 
   return NextResponse.redirect(
     new URL(`/admin/cases/${caseId}`, req.url)

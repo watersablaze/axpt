@@ -1,5 +1,3 @@
-'use client'
-
 import styles from './OriginSurface.module.css'
 
 export default function OriginSurface() {

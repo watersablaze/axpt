@@ -1,6 +1,6 @@
 // app/api/projects/route.ts
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { requireResidentServer } from '@/lib/auth/requireResidentServer';
 import { ProjectCreateSchema } from '@/lib/validation/project';
 import { ProjectStatus } from '@/lib/projects/constants';

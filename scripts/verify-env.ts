@@ -1,3 +1,3 @@
-import { env } from "../src/lib/env";
+import { env } from "../src/infrastructure/env";
 
 console.log("Environment validated successfully.");

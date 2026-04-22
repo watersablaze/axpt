@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { notFound } from 'next/navigation';
 
 export default async function EscrowInitiationPage({

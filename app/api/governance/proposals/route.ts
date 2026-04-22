@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { decodeSessionToken } from '@/lib/auth/session'; // uses your existing util
 import { cookies } from 'next/headers';
 

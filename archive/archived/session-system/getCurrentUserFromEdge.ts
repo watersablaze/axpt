@@ -1,5 +1,5 @@
 import { decodeToken } from '@/lib/token/decodeToken';
-import type { SessionPayload } from '@/types/auth';
+import type { SessionPayload } from '@/shared/types/auth';
 
 /**
  * 🍪 Extract and decode session token from raw cookie header (Edge-safe)

@@ -2,7 +2,7 @@
 import { NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs';
-import { TokenPayload } from '@/types/token';
+import { TokenPayload } from '@/shared/types/token';
 
 export async function GET() {
   try {

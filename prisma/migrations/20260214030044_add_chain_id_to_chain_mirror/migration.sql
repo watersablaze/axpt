@@ -1,5 +1,0 @@
--- AlterTable
-ALTER TABLE "ChainMirrorCursor" ADD COLUMN     "chainId" INTEGER NOT NULL DEFAULT 11155111;
-
--- AlterTable
-ALTER TABLE "ChainMirrorEvent" ADD COLUMN     "chainId" INTEGER NOT NULL DEFAULT 11155111;

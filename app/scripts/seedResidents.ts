@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import bcrypt from 'bcryptjs';
 
 async function ensureResident({ name, email, password }: {name:string;email:string;password:string}) {

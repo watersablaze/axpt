@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { ethers } from 'ethers';
 import { requireElderServer } from '@/lib/auth/requireElderServer';
+import { requireSystemHealthy } from '@/domains/system/requireSystemHealthy';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -13,6 +14,11 @@ function isAddr(a?: string | null): a is `0x${string}` {
 
 export async function POST(req: Request) {
   try {
+    const health = await requireSystemHealthy();
+    if (!health.allowed) {
+      return NextResponse.json({ ok: false, error: health.reason }, { status: 503 });
+    }
+
     // dev bypass allowed like other admin routes
     const bypass = req.headers.get('x-dev-bypass') === '1';
     if (!bypass) await requireElderServer();

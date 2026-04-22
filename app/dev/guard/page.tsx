@@ -1,7 +1,7 @@
 // app/dev/guard/page.tsx
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import DevBanner from '@/components/dev/DevBanner';
 
 type CheckRow = { table: string; present: boolean };

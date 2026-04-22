@@ -3,7 +3,7 @@
 //import { NextResponse } from 'next/server';
 //import bcrypt from 'bcryptjs';
 //import { z } from 'zod';
-//import prisma from '@/lib/prisma';
+//import prisma from '@/infrastructure/db/prisma';
 //import { generateSecureToken } from '@/utils/secureToken';
 
 //const schema = z.object({

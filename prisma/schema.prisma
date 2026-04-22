@@ -27,10 +27,16 @@ model User {
   loginCount            Int                      @default(0)
   viewedDocs            String[]
   blockchainWalletId    String?                  @unique
+  metadata              Json?
   balances              Balance[]
   blockchainWallet      BlockchainWallet?
+  Case                  Case[]
+  CaseArtifact          CaseArtifact[]
+  CaseEvent             CaseEvent[]
+  CaseParty             CaseParty[]
   contractLogs          ContractInteractionLog[]
   councilElder          CouncilElder?
+  documents             Document[]
   initiativesAuthored   Initiative[]             @relation("InitiativesCreatedBy")
   initiativeFundings    InitiativeFunding[]
   initiativeUpdates     InitiativeUpdate[]       @relation("InitiativeUpdatesByUser")
@@ -49,7 +55,54 @@ model User {
   createdTokens         Token[]                  @relation("TokensCreatedBy")
   tokenIssuanceRequests TokenIssuanceRequest[]   @relation("RequestsByUser")
   transactions          Transaction[]
+  userRoles             UserRole[]
   wallets               Wallet?
+}
+
+model UserTrustEdge {
+  id              String    @id @default(cuid())
+  fromUserId      String
+  toUserId        String
+  transferCount   Int       @default(0)
+  successfulCount Int       @default(0)
+  failedCount     Int       @default(0)
+  lastTransferAt  DateTime?
+  trustScore      Float     @default(0)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  lastUpdatedAt   DateTime  @default(now())
+
+  @@unique([fromUserId, toUserId])
+  @@index([fromUserId])
+  @@index([toUserId])
+}
+
+model UserRole {
+  id        String    @id @default(cuid())
+  userId    String
+  roleId    String
+  grantedBy String?
+  grantedAt DateTime  @default(now())
+  revokedAt DateTime?
+  isActive  Boolean   @default(true)
+  role      Role      @relation(fields: [roleId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+
+  @@unique([userId, roleId])
+  @@index([userId, isActive])
+  @@index([roleId, isActive])
+}
+
+model Role {
+  id              String           @id @default(cuid())
+  key             String           @unique
+  label           String
+  description     String?
+  isSystem        Boolean          @default(false)
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  rolePermissions RolePermission[]
+  userRoles       UserRole[]
 }
 
 model AccessCode {
@@ -88,6 +141,29 @@ model SessionLog {
   @@index([userId, timestamp])
 }
 
+model Permission {
+  id              String           @id @default(cuid())
+  key             String           @unique
+  label           String
+  description     String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+  rolePermissions RolePermission[]
+}
+
+model RolePermission {
+  id           String     @id @default(cuid())
+  roleId       String
+  permissionId String
+  createdAt    DateTime   @default(now())
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  role         Role       @relation(fields: [roleId], references: [id])
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+}
+
 model PinLoginRequest {
   id        String   @id @default(cuid())
   email     String   @unique
@@ -108,21 +184,24 @@ model Wallet {
 }
 
 model Balance {
-  id        String     @id @default(cuid())
-  walletId  String
-  userId    String
-  tokenType TokenType?
-  tokenId   String?
-  amount    Float      @default(0)
-  token     Token?     @relation(fields: [tokenId], references: [id])
-  user      User       @relation(fields: [userId], references: [id])
-  wallet    Wallet     @relation(fields: [walletId], references: [id])
+  id              String     @id @default(cuid())
+  walletId        String
+  userId          String
+  tokenType       TokenType?
+  tokenId         String?
+  amount          Float      @default(0)
+  amountBaseUnits Decimal?   @db.Decimal(78, 0)
+  assetCode       String?
+  token           Token?     @relation(fields: [tokenId], references: [id])
+  user            User       @relation(fields: [userId], references: [id])
+  wallet          Wallet     @relation(fields: [walletId], references: [id])
 
   @@unique([walletId, tokenType, tokenId])
   @@index([walletId])
   @@index([userId])
   @@index([tokenType])
   @@index([tokenId])
+  @@index([assetCode])
 }
 
 model BlockchainWallet {
@@ -137,24 +216,29 @@ model BlockchainWallet {
 }
 
 model Transaction {
-  id        String     @id @default(cuid())
-  userId    String
-  walletId  String
-  type      String
-  amount    Float
-  tokenType TokenType?
-  tokenId   String?
-  txHash    String?
-  metadata  Json?
-  createdAt DateTime   @default(now())
-  token     Token?     @relation(fields: [tokenId], references: [id])
-  user      User       @relation(fields: [userId], references: [id])
-  wallet    Wallet     @relation(fields: [walletId], references: [id])
+  id              String     @id @default(cuid())
+  userId          String
+  walletId        String
+  type            String
+  amount          Float
+  tokenType       TokenType?
+  tokenId         String?
+  txHash          String?
+  metadata        Json?
+  createdAt       DateTime   @default(now())
+  amountBaseUnits Decimal?   @db.Decimal(78, 0)
+  assetCode       String?
+  feeBaseUnits    Decimal?   @db.Decimal(78, 0)
+  intent          String?
+  token           Token?     @relation(fields: [tokenId], references: [id])
+  user            User       @relation(fields: [userId], references: [id])
+  wallet          Wallet     @relation(fields: [walletId], references: [id])
 
   @@index([userId, createdAt])
   @@index([walletId, createdAt])
   @@index([tokenId])
   @@index([tokenType])
+  @@index([assetCode])
 }
 
 model SmartContract {
@@ -206,18 +290,23 @@ model ContractInteractionLog {
 }
 
 model Session {
-  id         String    @id @default(cuid())
-  userId     String
-  deviceInfo String?
-  ip         String?
-  location   String?
-  userAgent  String?
-  status     String    @default("active")
-  startedAt  DateTime  @default(now())
-  endedAt    DateTime?
-  user       User      @relation(fields: [userId], references: [id])
+  id            String    @id @default(cuid())
+  userId        String
+  deviceInfo    String?
+  ip            String?
+  location      String?
+  userAgent     String?
+  status        String    @default("active")
+  startedAt     DateTime  @default(now())
+  endedAt       DateTime?
+  expiresAt     DateTime?
+  invalidatedAt DateTime?
+  lastSeenAt    DateTime?
+  tokenId       String?   @unique
+  user          User      @relation(fields: [userId], references: [id])
 
   @@index([userId, startedAt])
+  @@index([status, expiresAt])
 }
 
 model SessionActionLog {
@@ -611,44 +700,146 @@ model playing_with_neon {
 }
 
 model Case {
-  id                  String               @id @default(cuid())
-  title               String
-  jurisdiction        String?
-  referencecode       String?              @unique
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
-  mode                CaseMode             @default(COORDINATION_ONLY)
-  status              CaseStatus           @default(DRAFT)
-  artifacts           Artifact[]
-  events              EventLog[]
-  gates               Gate[]
-  parties             Party[]
-  publicVerifications PublicVerification[]
+  id                   String               @id @default(cuid())
+  title                String
+  description          String?
+  jurisdiction         String?
+  referenceCode        String?              @unique
+  workflowType         CaseWorkflowType     @default(COORDINATION)
+  mode                 CaseMode             @default(COORDINATION_ONLY)
+  status               CaseStatus           @default(DRAFT)
+  createdById          String?
+  openedAt             DateTime?
+  completedAt          DateTime?
+  createdAt            DateTime             @default(now())
+  updatedAt            DateTime             @updatedAt
+  automationEnabled    Boolean              @default(false)
+  caratsText           String?
+  commodity            String?
+  commodityForm        String?
+  currency             String?
+  destination          String?
+  isPrincipalBuyerCase Boolean              @default(false)
+  notesInternal        String?
+  originCountry        String?
+  pricingFormula       String?
+  protocolTemplate     String?
+  purityText           String?
+  quantityText         String?
+  titleTransferRule    String?
+  transactionType      String?
+  artifacts            Artifact[]
+  createdBy            User?                @relation(fields: [createdById], references: [id])
+  CaseArtifact         CaseArtifact[]
+  CaseEvent            CaseEvent[]
+  CaseGate             CaseGate[]
+  CaseParty            CaseParty[]
+  documents            Document[]
+  Escrow               Escrow[]
+  events               EventLog[]
+  gates                Gate[]
+  parties              Party[]
+  publicVerifications  PublicVerification[]
+
+  @@index([workflowType])
+  @@index([status])
+  @@index([protocolTemplate])
+}
+
+model CaseParty {
+  id       String        @id @default(cuid())
+  caseId   String
+  userId   String?
+  role     CasePartyRole
+  label    String?
+  joinedAt DateTime      @default(now())
+  case     Case          @relation(fields: [caseId], references: [id])
+  user     User?         @relation(fields: [userId], references: [id])
+
+  @@index([caseId])
+}
+
+model CaseGate {
+  id          String     @id @default(cuid())
+  caseId      String
+  name        String
+  description String?
+  order       Int
+  status      GateStatus @default(PENDING)
+  activatedAt DateTime?
+  resolvedAt  DateTime?
+  createdAt   DateTime   @default(now())
+  case        Case       @relation(fields: [caseId], references: [id])
+
+  @@index([caseId])
+  @@index([status])
+}
+
+model CaseArtifact {
+  id           String   @id @default(cuid())
+  caseId       String
+  title        String
+  type         String
+  storageUrl   String?
+  metadata     Json?
+  uploadedById String?
+  verified     Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  case         Case     @relation(fields: [caseId], references: [id])
+  uploadedBy   User?    @relation(fields: [uploadedById], references: [id])
+
+  @@index([caseId])
+}
+
+model CaseEvent {
+  id          String        @id @default(cuid())
+  caseId      String
+  type        CaseEventType
+  payload     Json?
+  createdById String?
+  createdAt   DateTime      @default(now())
+  case        Case          @relation(fields: [caseId], references: [id])
+  createdBy   User?         @relation(fields: [createdById], references: [id])
+
+  @@index([caseId])
 }
 
 model Party {
-  id                  String    @id @default(cuid())
+  id                  String        @id @default(cuid())
   caseId              String
-  role                String
   entityName          String
   authorizedSignatory String?
   email               String?
   phone               String?
   notes               String?
-  createdAt           DateTime? @default(now()) @db.Timestamp(6)
-  case                Case      @relation(fields: [caseId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  createdAt           DateTime      @default(now())
+  address             String?
+  companyName         String?
+  country             String?
+  isPrimary           Boolean       @default(false)
+  passportNo          String?
+  registrationNo      String?
+  updatedAt           DateTime      @updatedAt
+  role                CasePartyRole
+  case                Case          @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([caseId, role])
 }
 
 model Gate {
-  id        String             @id @default(cuid())
-  caseId    String
-  name      String
-  ord       Int
-  createdAt DateTime           @default(now())
-  updatedAt DateTime           @updatedAt
-  status    GateStatus         @default(PENDING)
-  case      Case               @relation(fields: [caseId], references: [id], onDelete: Cascade)
-  items     VerificationItem[]
+  id          String             @id @default(cuid())
+  caseId      String
+  name        String
+  description String?
+  ord         Int
+  gateType    GateType           @default(MANUAL)
+  status      GateStatus         @default(PENDING)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+  activatedAt DateTime?
+  resolvedAt  DateTime?
+  case        Case               @relation(fields: [caseId], references: [id], onDelete: Cascade)
+  items       VerificationItem[]
 
   @@unique([caseId, ord])
 }
@@ -676,8 +867,24 @@ model EventLog {
   case      Case      @relation(fields: [caseId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
+model RiskEvent {
+  id              String   @id @default(cuid())
+  eventType       String   @default("RISK_EVALUATION")
+  userId          String
+  toUserId        String?
+  riskScore       Int
+  riskLevel       String?
+  amountBaseUnits Decimal  @db.Decimal(78, 0)
+  intent          String?
+  metadata        Json?
+  createdAt       DateTime @default(now())
+
+  @@index([userId, createdAt])
+  @@index([eventType, createdAt])
+}
+
 model Artifact {
-  id         String    @id @default(cuid())
+  id         String   @id @default(cuid())
   caseId     String
   type       String
   name       String
@@ -685,8 +892,13 @@ model Artifact {
   url        String?
   uploadedBy String?
   notes      String?
-  createdAt  DateTime? @default(now()) @db.Timestamp(6)
-  case       Case      @relation(fields: [caseId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  createdAt  DateTime @default(now())
+  status     String   @default("MISSING")
+  updatedAt  DateTime @updatedAt
+  version    Int      @default(1)
+  case       Case     @relation(fields: [caseId], references: [id], onDelete: Cascade)
+
+  @@index([caseId, type])
 }
 
 model PublicVerification {
@@ -716,28 +928,85 @@ model ChainMirrorCursor {
   @@index([chainId])
 }
 
+model ChainMirrorJob {
+  id                  String               @id @default(cuid())
+  walletEventId       String               @unique
+  idempotencyKey      String               @unique
+  assetCode           String
+  amountBaseUnits     Decimal              @db.Decimal(78, 0)
+  fromAddress         String
+  toAddress           String
+  status              ChainMirrorJobStatus @default(PENDING)
+  attemptCount        Int                  @default(0)
+  claimOwner          String?
+  claimedAt           DateTime?
+  nextRetryAt         DateTime?
+  submittedTxHash     String?
+  submittedAt         DateTime?
+  confirmedAt         DateTime?
+  failedAt            DateTime?
+  deadLetteredAt      DateTime?
+  lastError           String?
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  version             Int                  @default(0)
+  lastHeartbeatAt     DateTime?
+  submissionStartedAt DateTime?
+
+  @@index([status, nextRetryAt])
+  @@index([status, claimOwner, claimedAt])
+  @@index([status, submissionStartedAt])
+  @@index([assetCode])
+}
+
 model ChainMirrorEvent {
-  id             String    @id @default(cuid())
-  network        String
-  contract       String
-  txHash         String
-  logIndex       Int
-  blockNumber    BigInt
-  blockHash      String?
-  chainTimestamp DateTime?
-  idempotencyKey String
-  walletEventId  String
-  tokenType      String
-  fromAddress    String
-  toAddress      String
-  amount         String
-  raw            Json?
-  createdAt      DateTime  @default(now())
-  chainId        Int       @default(11155111)
+  id              String    @id @default(cuid())
+  network         String
+  contract        String
+  txHash          String
+  logIndex        Int
+  blockNumber     BigInt
+  blockHash       String?
+  chainTimestamp  DateTime?
+  idempotencyKey  String
+  walletEventId   String
+  tokenType       String
+  fromAddress     String
+  toAddress       String
+  raw             Json?
+  createdAt       DateTime  @default(now())
+  chainId         Int       @default(11155111)
+  amountBaseUnits Decimal   @db.Decimal(78, 0)
 
   @@unique([chainId, txHash, logIndex])
   @@index([chainId, blockNumber])
   @@index([chainId, contract])
+}
+
+model ChainSyncState {
+  id        String   @id @default("mirror")
+  lastBlock BigInt
+  updatedAt DateTime @updatedAt
+}
+
+model SystemState {
+  id           String   @id @default("global")
+  globalPaused Boolean  @default(false)
+  reason       String?
+  pausedAssets Json?
+  pausedLayers Json?
+  updatedAt    DateTime @updatedAt
+}
+
+model CircuitEvent {
+  id        String   @id @default(cuid())
+  type      String
+  severity  String
+  message   String
+  metadata  Json?
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
 }
 
 model LedgerAccount {
@@ -778,22 +1047,492 @@ model LedgerEntry {
   @@index([accountId, tokenType, chainId], map: "idx_ledger_account")
 }
 
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String?
+  caseId    String?
+  message   String
+  type      String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([caseId])
+}
+
+model NotificationReadModel {
+  id          String   @id @default(cuid())
+  actorRole   String?
+  actorUserId String?
+  caseId      String?
+  message     String
+  severity    String   @default("INFO")
+  read        Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([actorUserId])
+  @@index([caseId])
+}
+
+model Escrow {
+  id        String   @id @default(cuid())
+  caseId    String
+  status    String
+  createdAt DateTime @default(now())
+  case      Case     @relation(fields: [caseId], references: [id])
+
+  @@index([caseId])
+}
+
+model Document {
+  id            String                @id @default(cuid())
+  title         String
+  description   String?
+  fileName      String
+  fileUrl       String
+  fileSize      Int?
+  mimeType      String?
+  caseId        String?
+  uploadedById  String?
+  category      DocumentCategory      @default(GENERAL)
+  signingStatus DocumentSigningStatus @default(UNSIGNED)
+  createdAt     DateTime              @default(now())
+  updatedAt     DateTime              @updatedAt
+  case          Case?                 @relation(fields: [caseId], references: [id])
+  uploadedBy    User?                 @relation(fields: [uploadedById], references: [id])
+  signatures    DocumentSignature[]
+
+  @@index([caseId])
+}
+
+model DocumentSignature {
+  id                String    @id @default(cuid())
+  documentId        String
+  signerName        String
+  signerEmail       String
+  signatureImageUrl String?
+  signedAt          DateTime?
+  createdAt         DateTime  @default(now())
+  document          Document  @relation(fields: [documentId], references: [id])
+}
+
+model DomainEvent {
+  id           String    @id @default(cuid())
+  streamType   String
+  streamId     String
+  eventType    String
+  eventVersion Int       @default(1)
+  payload      Json
+  metadata     Json?
+  occurredAt   DateTime  @default(now())
+  processedAt  DateTime?
+  failedAt     DateTime?
+  errorMessage String?
+  createdAt    DateTime  @default(now())
+
+  @@index([streamType, streamId])
+  @@index([eventType])
+  @@index([processedAt])
+  @@index([occurredAt])
+}
+
+model CaseReadModel {
+  caseId          String   @id
+  title           String
+  status          String
+  workflowType    String?
+  currentGateName String?
+  nextActionLabel String?
+  responsibleRole String?
+  escrowStatus    String?
+  createdAt       DateTime
+  updatedAt       DateTime @updatedAt
+  currentStage    String?
+
+  @@index([status])
+}
+
+model TreasuryAction {
+  id              String             @id @default(cuid())
+  initiatorUserId String
+  fromUserId      String
+  toUserId        String
+  assetCode       String
+  amountBaseUnits Decimal
+  intent          String
+  approvalType    String
+  status          String
+  executedAt      DateTime?
+  executionError  String?
+  idempotencyKey  String             @unique
+  metadata        Json?
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  approvals       TreasuryApproval[]
+}
+
+model TreasuryApproval {
+  id             String         @id @default(cuid())
+  actionId       String
+  approverUserId String
+  decision       String
+  metadata       Json?
+  createdAt      DateTime       @default(now())
+  action         TreasuryAction @relation(fields: [actionId], references: [id])
+
+  @@unique([actionId, approverUserId])
+}
+
+model TreasuryPulseLog {
+  id          String   @id @default(cuid())
+  status      String
+  reasonsJson Json?
+  totalsJson  Json
+  createdAt   DateTime @default(now())
+}
+
+model TreasuryAlertLog {
+  id          String   @id @default(cuid())
+  code        String
+  level       String
+  title       String
+  message     String
+  walletId    String?
+  txHash      String?
+  fingerprint String   @unique
+  createdAt   DateTime @default(now())
+}
+
+model TreasuryExecutionQueue {
+  id               String    @id @default(cuid())
+  treasuryActionId String    @unique
+  status           String
+  claimOwner       String?
+  claimedAt        DateTime?
+  nextRetryAt      DateTime?
+  attempts         Int       @default(0)
+  lastError        String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+  retryCount       Int
+  transactionId    String?
+}
+
+model QueueLock {
+  id         String   @id @default(cuid())
+  caseId     String
+  operatorId String
+  acquiredAt DateTime @default(now())
+  expiresAt  DateTime
+
+  @@index([caseId])
+}
+
+model QueueItem {
+  id            String   @id @default(cuid())
+  caseId        String
+  assignedTo    String?
+  status        String   @default("PENDING")
+  priorityScore Float
+  urgency       Float
+  risk          Float
+  value         Float
+  escalated     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  type          String
+
+  @@index([caseId])
+  @@index([status])
+}
+
+model QueueHistory {
+  id         String   @id @default(cuid())
+  caseId     String
+  operatorId String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+  action     String
+
+  @@index([caseId])
+}
+
+model InterventionDecision {
+  id         String   @id @default(cuid())
+  caseId     String
+  decision   String
+  createdAt  DateTime @default(now())
+  reason     String?
+  operatorId String
+  operator   Operator @relation(fields: [operatorId], references: [id])
+
+  @@index([caseId])
+}
+
+model Operator {
+  id        String                 @id @default(cuid())
+  name      String
+  archetype OperatorArchetype
+  isActive  Boolean                @default(true)
+  createdAt DateTime               @default(now())
+  updatedAt DateTime               @updatedAt
+  decisions InterventionDecision[]
+  profile   OperatorProfile?
+}
+
+model OperatorProfile {
+  id                         String    @id @default(cuid())
+  operatorId                 String    @unique
+  totalDecisions             Int       @default(0)
+  approveCount               Int       @default(0)
+  delayCount                 Int       @default(0)
+  overrideCount              Int       @default(0)
+  lastActiveAt               DateTime?
+  createdAt                  DateTime  @default(now())
+  updatedAt                  DateTime  @updatedAt
+  averageDecisionLatency     Float     @default(0)
+  interventionAcceptanceRate Float     @default(0)
+  correctDecisions           Int       @default(0)
+  weightedScore              Float     @default(1.0)
+  operator                   Operator  @relation(fields: [operatorId], references: [id])
+}
+
+model OperatorTrust {
+  id                String   @id @default(cuid())
+  fromOperatorId    String
+  toOperatorId      String
+  agreementCount    Int      @default(0)
+  disagreementCount Int      @default(0)
+  trustScore        Float    @default(1.0)
+  lastUpdatedAt     DateTime @updatedAt
+  influenceScore    Float    @default(1)
+  respectScore      Float    @default(1)
+
+  @@unique([fromOperatorId, toOperatorId])
+}
+
+model OperatorAlliance {
+  id                String   @id @default(cuid())
+  operatorAId       String
+  operatorBId       String
+  alignmentScore    Float    @default(1)
+  disagreementScore Float    @default(0)
+  updatedAt         DateTime @updatedAt
+
+  @@unique([operatorAId, operatorBId])
+}
+
+model OperatorPowerSnapshot {
+  id         String   @id @default(cuid())
+  caseId     String
+  operatorId String
+  power      Float
+  createdAt  DateTime @default(now())
+}
+
+model PredictiveExecution {
+  id         String   @id @default(cuid())
+  intent     String
+  assetCode  String?
+  confidence Float
+  executedAt DateTime @default(now())
+  success    Boolean
+  signalHash String
+}
+
+model SystemGovernor {
+  id             String    @id @default("global")
+  currentState   String
+  lastTransition DateTime
+  holdUntil      DateTime?
+}
+
+model StrategyOutcome {
+  id          String   @id @default(cuid())
+  intent      String
+  scenarioId  String
+  confidence  Float
+  success     Boolean
+  impactScore Float?
+  createdAt   DateTime @default(now())
+  assetCode   String?
+
+  @@index([intent, scenarioId])
+  @@index([assetCode])
+  @@index([createdAt])
+}
+
+model IntentWeightProfile {
+  id            String   @id @default(cuid())
+  intent        String
+  successWeight Float    @default(0.5)
+  impactWeight  Float    @default(0.3)
+  patternWeight Float    @default(0.2)
+  sampleCount   Int      @default(0)
+  updatedAt     DateTime @updatedAt
+  assetCode     String?
+  systemState   String?
+
+  @@unique([intent, assetCode, systemState])
+}
+
+model DecisionExplanation {
+  id          String   @id @default(cuid())
+  intent      String
+  scenarioId  String?
+  assetCode   String?
+  systemState String?
+  summary     String
+  factors     Json
+  metadata    Json?
+  createdAt   DateTime @default(now())
+
+  @@index([intent, createdAt])
+  @@index([assetCode])
+}
+
+model ReplayAudit {
+  id              String   @id @default(cuid())
+  decisionId      String
+  originalIntent  String
+  replayIntent    String?
+  intentChanged   Boolean
+  addedFactors    Json
+  removedFactors  Json
+  divergenceScore Float
+  createdAt       DateTime @default(now())
+
+  @@index([decisionId])
+  @@index([createdAt])
+  @@index([intentChanged])
+}
+
+enum OperatorArchetype {
+  EXECUTOR
+  GUARDIAN
+  ANALYST
+  DIPLOMAT
+}
+
 enum CaseStatus {
   DRAFT
+  OPEN
+  IN_REVIEW
   ACTIVE
   ESCROW_INITIATED
-  CLOSED
+  COMPLETED
+  CANCELLED
+  ARCHIVED
+  ESCROW_HOLD
+  ESCROW_DISPUTED
 }
 
 enum CaseMode {
   COORDINATION_ONLY
   FULL_ESCROW
+  GOLD_SPA_PROTOCOL
+}
+
+enum GateType {
+  MANUAL
+  ARTIFACT_REQUIRED
+  SIGNATURE_REQUIRED
+  ESCROW_LOCK
+  ORACLE_CHECK
+  INTAKE
+  KYC
+  COMPLIANCE
+  COMMERCIAL
+  SIGNATURE
+  DOCUMENT
+  ESCROW
+  FUNDING
+  ASSAY
+  RELEASE
+  COMPLETION
 }
 
 enum GateStatus {
   PENDING
+  ACTIVE
   VERIFIED
   REJECTED
+  FAILED
+  SKIPPED
+}
+
+enum ArtifactType {
+  SPA_DRAFT
+  SPA_FINAL
+  BUYER_PASSPORT
+  SELLER_PASSPORT
+  BUYER_KYC
+  SELLER_KYC
+  COMPANY_REGISTRATION
+  PROOF_OF_FUNDS
+  ASSAY_REPORT
+  COMMERCIAL_INVOICE
+  ESCROW_INSTRUCTIONS
+  BANK_COORDINATES
+  SHIPPING_DOCS
+  EXPORT_DOCS
+  POP_VIDEO_CONFIRMATION
+  REFINERY_CONFIRMATION
+  OTHER
+}
+
+enum CaseWorkflowType {
+  COORDINATION
+  ESCROW
+  FUNDING
+  GOVERNANCE
+  ARCHIVE
+  ONBOARDING
+  GOLD_SPA
+}
+
+enum CasePartyRole {
+  OWNER
+  PARTICIPANT
+  VERIFIER
+  FUNDER
+  ARBITER
+  COUNCIL
+  BUYER
+  SELLER
+  BUYER_MANDATE
+  SELLER_MANDATE
+  ESCROW_AGENT
+  INTERNAL_OPERATOR
+  REFINERY
+  CUSTOMS_AGENT
+  LOGISTICS_AGENT
+}
+
+enum CaseEventType {
+  CASE_CREATED
+  PARTY_ADDED
+  ARTIFACT_UPLOADED
+  GATE_ACTIVATED
+  GATE_PASSED
+  GATE_FAILED
+  CASE_COMPLETED
+}
+
+enum DocumentCategory {
+  GENERAL
+  OFFER
+  CONTRACT
+  ESCROW_AGREEMENT
+  INVOICE
+  PROOF
+  GOVERNANCE_RECORD
+}
+
+enum DocumentSigningStatus {
+  UNSIGNED
+  PARTIALLY_SIGNED
+  SIGNED
 }
 
 enum ItemAudience {
@@ -845,4 +1584,15 @@ enum LedgerAccountType {
 enum LedgerDirection {
   DEBIT
   CREDIT
+}
+
+enum ChainMirrorJobStatus {
+  PENDING
+  CLAIMED
+  SUBMITTED
+  CONFIRMED
+  RETRYABLE
+  FAILED
+  DEAD_LETTER
+  SUBMITTING
 }

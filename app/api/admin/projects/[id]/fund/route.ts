@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { requireElderServer } from '@/lib/auth/requireElderServer';
-import { creditAxg } from '@/lib/wallet/creditAxg';
+import { creditAxg } from '@/domains/wallet/creditAxg';
 import { sendCouncilNotification, sendSlackNotification } from '@/lib/notify';
 
 function decimalToNumber(d: any): number {

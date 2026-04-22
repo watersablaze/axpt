@@ -1,4 +1,13 @@
-import { prisma } from '@/lib/prisma';
+import type { PrismaClient, TransactionClient } from '@prisma/client';
+import { prisma } from '@/infrastructure/db/prisma';
+import { getAsset, type AssetCode } from '@/lib/assets/registry';
+import {
+  bigintToDecimal,
+  decimalToBigInt,
+  formatBaseUnits,
+  parseDisplayToBaseUnits,
+} from '@/lib/money/baseUnits';
+import { createMirrorJob } from '@/domains/mirror/createJob';
 import { executeTransaction } from './execute';
 import type { TransferRequest, TransferResult } from './types.service';
 import { assertWalletPolicy, type WalletRole } from './policy';
@@ -7,22 +16,201 @@ import {
   NotFoundError,
   WalletError,
 } from './errors';
+import { assertSystemActive } from '@/lib/system/pause'
+import { findProcessedWalletDebitEvent } from './journal';
+import { evaluateTransferPolicy } from '@/domains/wallet/policy/evaluateTransferPolicy'
+import { computePolicySignal } from '@/domains/adaptive/computePolicySignal'
+import { checkCooldown } from '@/domains/risk/checkCooldown'
+import { computeDynamicTransferCapacity } from '@/domains/risk/computeDynamicTransferCapacity'
+import { computeRiskScore } from '@/domains/risk/computeRiskScore'
+import { learnIntentWeights } from '@/domains/adaptive/learnIntentWeights';
+import { getUserTrustScore } from '@/domains/trust/getUserTrustScore'
+import { freezeUserIfCriticalRisk } from '@/domains/security/freezeUserIfCriticalRisk'
+import { isUserQuarantined } from '@/domains/security/quarantineState'
+import { gradualTrustRecovery } from '@/domains/trust/gradualTrustRecovery';
+import { persistRiskSnapshot } from '@/domains/security/persistRiskSnapshotBatch'
+import { getSystemSecurityState } from '@/domains/security/systemSecurityState'
+import { systemModeGuard } from '@/domains/security/systemModeGuard'
+import { quarantineGate } from '@/domains/security/quarantineGate'
+import { propagateThreatGraph } from '@/domains/security/propagateThreatGraph';
+import { clusterContainmentEngine } from '@/domains/security/clusterContainmentEngine'
+import {
+  getEffectiveZoneThrottle,
+  type EffectiveZoneThrottle,
+} from '@/domains/security/getEffectiveZoneThrottle';
 
-/**
- * Lock a Balance row for update (Postgres).
- * Must be called inside a transaction.
- */
-async function lockBalanceRow(tx: any, balanceId: string) {
+import { TRANSACTION_TYPES } from '@/domains/wallet/constants/transactionTypes'
+
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+
+async function lockBalanceRow(
+  tx: TransactionClient | PrismaClient,
+  balanceId: string
+) {
   await tx.$queryRawUnsafe(
     `SELECT id FROM "Balance" WHERE id = $1 FOR UPDATE`,
     balanceId
   );
 }
 
-function computeFee(amount: number, feeBps?: number) {
-  const bps = feeBps ?? 0;
-  if (bps <= 0) return 0;
-  return (amount * bps) / 10_000;
+function toLegacyTokenType(assetCode: AssetCode) {
+  return assetCode as 'AXG' | 'NMP' | 'USD';
+}
+
+function toLegacyFloat(amountBaseUnits: bigint, decimals: number): number {
+  return Number(formatBaseUnits(amountBaseUnits, decimals));
+}
+
+function computeFeeBaseUnits(amountBaseUnits: bigint, feeBps = 0): bigint {
+  const normalizedFeeBps = Math.max(0, Math.floor(feeBps))
+  if (normalizedFeeBps <= 0) return 0n
+  return (amountBaseUnits * BigInt(normalizedFeeBps)) / 10_000n;
+}
+
+async function computeTransferWeight(params: {
+  amountBaseUnits: bigint
+  intent?: string
+  role?: string
+}): Promise<number> {
+  const { amountBaseUnits, intent = 'PEER', role = 'USER' } = params
+
+  // Normalize amount (AXG has 6 decimals)
+  const amount = Number(amountBaseUnits) / 1_000_000
+
+  // Base weight from size
+  let weight = 1
+
+  const learned = await learnIntentWeights()
+
+  if (intent && learned[intent]) {
+    weight += Math.round(learned[intent] * 2)
+  }
+
+  if (amount >= 50) weight += 2
+  else if (amount >= 10) weight += 1
+
+  // Intent multiplier
+  if (intent === 'TREASURY') weight += 3
+  if (intent === 'INVESTMENT') weight += 2
+  if (intent === 'REWARD') weight += 1
+
+  // Role adjustment (trusted actors get slightly more room)
+  if (role === 'ADMIN_PLATFORM') weight -= 1
+
+  return Math.max(weight, 1)
+}
+
+async function computeUserCapacity(params: {
+  roles: string[]
+  trustScore?: number
+  userId: string
+}) {
+  const { roles, trustScore = 0, userId } = params
+
+  let base = 6
+
+  if (roles.includes('ADMIN_PLATFORM')) base = 20
+  else if (roles.includes('TREASURY_OPERATOR')) base = 15
+  else if (roles.includes('RESIDENT')) base = 6
+
+  const trustBoost = Math.floor(trustScore / 20)
+
+  const signal = await computePolicySignal(userId)
+
+  if (signal.failureRate > 0.3) {
+    base -= 2
+  }
+
+  if (signal.failureRate === 0 && signal.pressure > 10) {
+    base += 2
+  }
+
+  return base + trustBoost
+}
+
+function buildTransferResult(args: {
+  transactionId: string;
+  debitEventId: string;
+  creditEventId: string;
+  feeEventId?: string | null;
+  assetCode: AssetCode;
+  decimals: number;
+  fromNextBaseUnits: bigint;
+  toNextBaseUnits: bigint;
+  feeBaseUnits?: bigint;
+  requestId: string;
+  idempotentReplay: boolean;
+}): TransferResult {
+  const {
+    transactionId,
+    debitEventId,
+    creditEventId,
+    feeEventId,
+    assetCode,
+    decimals,
+    fromNextBaseUnits,
+    toNextBaseUnits,
+    feeBaseUnits,
+    requestId,
+    idempotentReplay,
+  } = args;
+
+  return {
+    transactionId,
+    debitEventId,
+    creditEventId,
+    feeEventId: feeEventId ?? null,
+    assetCode,
+    fromNext: formatBaseUnits(fromNextBaseUnits, decimals),
+    toNext: formatBaseUnits(toNextBaseUnits, decimals),
+    feeAmount:
+      typeof feeBaseUnits === 'bigint'
+        ? formatBaseUnits(feeBaseUnits, decimals)
+        : undefined,
+    fromNextBaseUnits: fromNextBaseUnits.toString(),
+    toNextBaseUnits: toNextBaseUnits.toString(),
+    feeBaseUnits:
+      typeof feeBaseUnits === 'bigint' ? feeBaseUnits.toString() : undefined,
+    idempotentReplay,
+    requestId,
+  };
+}
+
+async function maybeReplayExistingTransfer(
+  idempotencyKey: string,
+  assetCode: AssetCode,
+  decimals: number
+): Promise<TransferResult | null> {
+  const debitTx = await findProcessedWalletDebitEvent(idempotencyKey);
+
+  if (!debitTx) return null;
+
+  const meta = (debitTx.metadata as Record<string, unknown> | null) ?? {};
+  const creditEventId = String(meta.creditEventId ?? '');
+  const feeEventId =
+    meta.feeEventId === null || typeof meta.feeEventId === 'undefined'
+      ? null
+      : String(meta.feeEventId);
+  const toNextBaseUnits = BigInt(String(meta.toNextBaseUnits ?? '0'));
+  const feeBaseUnitsRaw = meta.feeBaseUnits;
+  const feeBaseUnits =
+    typeof feeBaseUnitsRaw === 'undefined' || feeBaseUnitsRaw === null
+      ? undefined
+      : BigInt(String(feeBaseUnitsRaw));
+
+  return buildTransferResult({
+    transactionId: String(meta.transactionId ?? debitTx.id),
+    debitEventId: debitTx.id,
+    creditEventId,
+    feeEventId,
+    assetCode,
+    decimals,
+    fromNextBaseUnits: decimalToBigInt(debitTx.amountBaseUnits ?? 0),
+    toNextBaseUnits,
+    feeBaseUnits,
+    requestId: String(meta.requestId ?? 'replay'),
+    idempotentReplay: true,
+  });
 }
 
 export async function transferToken(
@@ -32,383 +220,749 @@ export async function transferToken(
     fromUserId,
     toUserId,
     amount,
-    tokenType,
+    assetCode,
     note,
+    metadata,
     idempotencyKey,
     source = 'api',
     feeBps = 0,
     feeMode = 'SENDER_PAYS',
-  } = req;
+  } = req
 
-  /* ───────────────────────────────
-     Validation
-  ─────────────────────────────── */
+  const quarantined = await isUserQuarantined(fromUserId)
 
-  if (!Number.isFinite(amount) || amount <= 0) {
-    throw new WalletError('BAD_REQUEST', 'amount (positive number) is required', 400);
+  if (quarantined) {
+    throw new WalletError(
+      'QUARANTINED',
+      'Account under review',
+      403
+    )
+  }
+
+  await assertSystemActive({
+    assetCode,
+    layer: 'TRANSFER',
+  })
+
+  await systemModeGuard()
+  await quarantineGate(fromUserId)
+
+  const asset = getAsset(assetCode)
+  const amountDisplay = String(amount).trim()
+  const amountBaseUnits = parseDisplayToBaseUnits(
+    amountDisplay,
+    asset.decimals
+  )
+
+  if (amountBaseUnits <= 0n) {
+    throw new WalletError('BAD_REQUEST', 'amount (positive) is required', 400)
+  }
+
+  let zoneThrottle: EffectiveZoneThrottle = {
+    zoneId: null,
+    severity: 'NORMAL',
+    feeMultiplier: 1,
+    throttleMultiplier: 1,
+    cooldownMs: 0,
+    rejectTransfers: false,
+  }
+
+  try {
+    zoneThrottle = await getEffectiveZoneThrottle(fromUserId)
+  } catch (err) {
+    console.error('[ZONE_THROTTLE_LOOKUP_FAILED]', {
+      userId: fromUserId,
+      err,
+    })
+  }
+
+  if (zoneThrottle.rejectTransfers) {
+    throw new WalletError(
+      'ZONE_RESTRICTED',
+      `Transfers blocked due to ${zoneThrottle.severity} containment zone.`,
+      403
+    )
   }
 
   if (!idempotencyKey) {
-    throw new WalletError('BAD_REQUEST', 'Missing idempotencyKey', 400);
+    throw new WalletError('BAD_REQUEST', 'Missing idempotencyKey', 400)
   }
 
   if (fromUserId === toUserId) {
-    throw new WalletError('BAD_REQUEST', 'Cannot transfer to self', 400);
+    throw new WalletError('BAD_REQUEST', 'Cannot transfer to self', 400)
   }
 
-  /* ───────────────────────────────
-     Idempotency replay (journal-first)
-  ─────────────────────────────── */
+  const requestId = req.requestId ?? crypto.randomUUID()
+  let riskScore: number | undefined
+  let riskLevel: string | undefined
 
-  const existing = await prisma.walletEvent.findUnique({
-    where: { idempotencyKey },
-  });
+  if (req.context) {
+    const { principal, intent } = req.context
+    const policy = await evaluateTransferPolicy(req.context)
 
-  if (existing) {
-    return {
-      transactionId: (existing.payload as any)?.transactionId ?? '',
-      debitEventId: existing.id,
-      creditEventId: (existing.payload as any)?.creditEventId ?? '',
-      feeEventId: (existing.payload as any)?.feeEventId ?? null,
-      fromNext: existing.nextAmount ?? 0,
-      toNext: (existing.payload as any)?.toNext ?? 0,
-      feeAmount: (existing.payload as any)?.feeAmount ?? 0,
-      idempotentReplay: true,
-      requestId: (existing.payload as any)?.requestId ?? 'replay',
-    };
+    if (policy.action === 'DENY') {
+      let status = 400
+
+      if (
+        policy.code === 'FORBIDDEN' ||
+        policy.code === 'FORBIDDEN_ACTOR_SCOPE' ||
+        policy.code === 'TREASURY_FORBIDDEN' ||
+        policy.code === 'INVESTMENT_FORBIDDEN' ||
+        policy.code === 'REWARD_FORBIDDEN'
+      ) {
+        status = 403
+      }
+
+      if (policy.code === 'DAILY_LIMIT_EXCEEDED') {
+        status = 429
+      }
+
+      throw new WalletError(policy.code, policy.reason, status)
+    }
+
+    if (policy.action === 'REQUIRE_APPROVAL') {
+      riskScore = policy.riskScore
+      riskLevel = policy.riskLevel
+
+      const action = await prisma.treasuryAction.create({
+        data: {
+          initiatorUserId: principal.userId,
+          fromUserId,
+          toUserId,
+          assetCode,
+          amountBaseUnits: bigintToDecimal(amountBaseUnits),
+          intent,
+          approvalType: policy.approvalType,
+          status: 'PENDING',
+          metadata: {
+            note: note ?? null,
+            requestId,
+            riskScore,
+            riskLevel,
+          },
+        },
+      })
+
+      throw new WalletError(
+        'TREASURY_ACTION_CREATED',
+        `Approval required (${policy.approvalType}). Action ID: ${action.id}`,
+        409
+      )
+    }
+
+    riskScore = policy.riskScore
+    riskLevel = policy.riskLevel
   }
 
-  const requestId = req.requestId ?? crypto.randomUUID();
-  const feeAmount = computeFee(amount, feeBps);
+  const perfStart = performance.now()
 
-  /* ───────────────────────────────
-     Policy-as-code
-  ─────────────────────────────── */
+  function logStep(label: string) {
+    const elapsed = (performance.now() - perfStart).toFixed(1)
+    console.log(`[wallet/transfer] ${label}: ${elapsed}ms`)
+  }
 
-  const role: WalletRole = (req as any).role ?? 'USER';
+  const replay = await maybeReplayExistingTransfer(
+    idempotencyKey,
+    assetCode,
+    asset.decimals
+  )
+
+  if (replay) return replay
+
+  const transferMetadata = metadata ?? {}
+  const roles = (req as { roles?: string[] }).roles ?? ['USER']
+
+  const trust = await getUserTrustScore(fromUserId)
+  let dynamicFeeBps = feeBps
+
+  if (trust.score > 80) {
+    dynamicFeeBps = Math.floor(dynamicFeeBps / 2)
+  }
+
+  if (trust.score < 30) {
+    dynamicFeeBps = Math.ceil((dynamicFeeBps * 3) / 2)
+  }
+
+  dynamicFeeBps = Math.ceil(
+    dynamicFeeBps * zoneThrottle.feeMultiplier
+  )
+
+  const feeBaseUnits = computeFeeBaseUnits(
+    amountBaseUnits,
+    dynamicFeeBps
+  )
+
+  const role: WalletRole =
+    (req as { role?: WalletRole }).role ?? 'USER'
+  const currentWeight = await computeTransferWeight({
+    amountBaseUnits,
+    intent:
+      typeof transferMetadata.intent === 'string'
+        ? transferMetadata.intent
+        : undefined,
+    role,
+  })
 
   assertWalletPolicy({
     fromUserId,
     toUserId,
-    tokenType,
-    amount,
+    assetCode,
+    amountBaseUnits,
     role,
-  });
+  })
 
-  /* ───────────────────────────────
-     Fee distribution
-  ─────────────────────────────── */
-
-  const senderDebitAmount =
+  const senderDebitBaseUnits =
     feeMode === 'SENDER_PAYS'
-      ? amount + feeAmount
+      ? amountBaseUnits + feeBaseUnits
       : feeMode === 'SPLIT'
-      ? amount + feeAmount / 2
-      : amount;
+      ? amountBaseUnits + feeBaseUnits / 2n
+      : amountBaseUnits
 
-  const recipientCreditAmount =
+  const recipientCreditBaseUnits =
     feeMode === 'RECIPIENT_PAYS'
-      ? amount - feeAmount
+      ? amountBaseUnits - feeBaseUnits
       : feeMode === 'SPLIT'
-      ? amount - feeAmount / 2
-      : amount;
+      ? amountBaseUnits - feeBaseUnits / 2n
+      : amountBaseUnits
 
-  if (recipientCreditAmount <= 0) {
-    throw new WalletError('BAD_REQUEST', 'Fee too large for amount', 400);
+  if (recipientCreditBaseUnits <= 0n) {
+    throw new WalletError('BAD_REQUEST', 'Fee too large for amount', 400)
   }
 
-  /* ───────────────────────────────
-     Atomic transaction
-  ─────────────────────────────── */
+  const [fromWallet, toWallet] = await Promise.all([
+    prisma.wallet.findFirst({
+      where: { userId: fromUserId },
+      select: {
+        id: true,
+        userId: true,
+        blockchainWallet: { select: { address: true } },
+      },
+    }),
+    prisma.wallet.findFirst({
+      where: { userId: toUserId },
+      select: {
+        id: true,
+        userId: true,
+        blockchainWallet: { select: { address: true } },
+      },
+    }),
+  ])
+
+  if (!fromWallet || !toWallet) {
+    throw new NotFoundError(
+      'Wallet not found for sender or recipient'
+    )
+  }
+
+  logStep('wallets fetched')
 
   try {
-    const result = await prisma.$transaction(async (tx: any) => {
-      // Wallets
-      const fromWallet = await tx.wallet.findFirst({
-        where: { userId: fromUserId },
-        select: { id: true },
-      });
+    const transfer = await prisma.$transaction(
+      async (tx: TransactionClient) => {
+        await tx.$queryRawUnsafe(
+          `SELECT id FROM "User" WHERE id = $1 FOR UPDATE`,
+          fromUserId
+        )
 
-      const toWallet = await tx.wallet.findFirst({
-        where: { userId: toUserId },
-        select: { id: true },
-      });
-
-      if (!fromWallet || !toWallet) {
-        throw new NotFoundError('Wallet not found for sender or recipient');
-      }
-
-      // Balances
-      const fromBalance = await tx.balance.findFirst({
-        where: { walletId: fromWallet.id, tokenType },
-      });
-
-      const toBalance = await tx.balance.findFirst({
-        where: { walletId: toWallet.id, tokenType },
-      });
-
-      if (!fromBalance || !toBalance) {
-        throw new NotFoundError('Balance row missing for token');
-      }
-
-      // Locks
-      await lockBalanceRow(tx, fromBalance.id);
-      await lockBalanceRow(tx, toBalance.id);
-
-      const fromLocked = await tx.balance.findUnique({ where: { id: fromBalance.id } });
-      const toLocked = await tx.balance.findUnique({ where: { id: toBalance.id } });
-
-      if (!fromLocked || !toLocked) {
-        throw new NotFoundError('Locked balances not found');
-      }
-
-      // Engine math
-      let fromNext;
-      try {
-        fromNext = executeTransaction(
-          { currency: tokenType, amount: fromLocked.amount },
-          { currency: tokenType, amount: senderDebitAmount, direction: 'DEBIT' }
-        );
-      } catch {
-        throw new InsufficientFundsError();
-      }
-
-      const toNext = executeTransaction(
-        { currency: tokenType, amount: toLocked.amount },
-        { currency: tokenType, amount: recipientCreditAmount, direction: 'CREDIT' }
-      );
-
-      // DEBIT
-      const debitEvent = await tx.walletEvent.create({
-        data: {
-          walletId: fromWallet.id,
-          userId: fromUserId,
-          type: 'DEBIT',
-          tokenType,
-          amount: senderDebitAmount,
-          prevAmount: fromLocked.amount,
-          nextAmount: fromNext.amount,
-          idempotencyKey,
-          requestId,
-          source,
-          payload: {
-            toUserId,
-            note: note ?? null,
-            baseAmount: amount,
-            feeAmount,
-            feeMode,
+        const user = await tx.user.findUnique({
+          where: { id: fromUserId },
+          select: {
+            id: true,
+            tier: true,
           },
-        },
-      });
+        })
 
-      // CREDIT
-      const creditEvent = await tx.walletEvent.create({
-        data: {
-          walletId: toWallet.id,
-          userId: toUserId,
-          type: 'CREDIT',
-          tokenType,
-          amount: recipientCreditAmount,
-          prevAmount: toLocked.amount,
-          nextAmount: toNext.amount,
-          source,
-          payload: {
-            fromUserId,
-            note: note ?? null,
-            baseAmount: amount,
-            feeAmount,
-            feeMode,
-            debitEventId: debitEvent.id,
-          },
-        },
-      });
-
-      /* ───────── Fee handling (treasury-aware) ───────── */
-
-      let feeEventId: string | null = null;
-      const treasuryWalletId = process.env.TREASURY_WALLET_ID?.trim() || null;
-
-      if (feeAmount > 0) {
-        if (treasuryWalletId) {
-          const treasuryBalance = await tx.balance.findFirst({
-            where: { walletId: treasuryWalletId, tokenType },
-          });
-
-          if (!treasuryBalance) {
-            throw new NotFoundError('Treasury balance row missing for token');
-          }
-
-          await lockBalanceRow(tx, treasuryBalance.id);
-
-          const treasuryLocked = await tx.balance.findUnique({
-            where: { id: treasuryBalance.id },
-          });
-
-          if (!treasuryLocked) {
-            throw new NotFoundError('Locked treasury balance not found');
-          }
-
-          const treasuryNext = executeTransaction(
-            { currency: tokenType, amount: treasuryLocked.amount },
-            { currency: tokenType, amount: feeAmount, direction: 'CREDIT' }
-          );
-
-          const feeEvent = await tx.walletEvent.create({
-            data: {
-              walletId: treasuryWalletId,
-              type: 'FEE',
-              tokenType,
-              amount: feeAmount,
-              prevAmount: treasuryLocked.amount,
-              nextAmount: treasuryNext.amount,
-              source,
-              payload: {
-                requestId,
-                baseAmount: amount,
-                feeAmount,
-                feeMode,
-                fromUserId,
-                toUserId,
-                debitEventId: debitEvent.id,
-                creditEventId: creditEvent.id,
-              },
-            },
-          });
-
-          await tx.balance.update({
-            where: { id: treasuryLocked.id },
-            data: { amount: treasuryNext.amount },
-          });
-
-          feeEventId = feeEvent.id;
-        } else {
-          const feeEvent = await tx.walletEvent.create({
-            data: {
+        const [fromBalance, toBalance] = await Promise.all([
+          tx.balance.findFirst({
+            where: {
               walletId: fromWallet.id,
-              userId: fromUserId,
-              type: 'FEE',
-              tokenType,
-              amount: feeAmount,
-              prevAmount: fromNext.amount,
-              nextAmount: fromNext.amount,
-              source,
-              payload: {
-                requestId,
-                baseAmount: amount,
-                feeAmount,
-                feeMode,
-                debitEventId: debitEvent.id,
-                creditEventId: creditEvent.id,
-              },
+              assetCode,
             },
-          });
+          }),
+          tx.balance.findFirst({
+            where: {
+              walletId: toWallet.id,
+              assetCode,
+            },
+          }),
+        ])
 
-          feeEventId = feeEvent.id;
+        if (!fromBalance) {
+          throw new Error('Sender balance missing')
         }
-      }
 
-      // Snapshots
-      await tx.balance.update({
-        where: { id: fromLocked.id },
-        data: { amount: fromNext.amount },
-      });
+        let resolvedToBalance = toBalance
 
-      await tx.balance.update({
-        where: { id: toLocked.id },
-        data: { amount: toNext.amount },
-      });
+        if (!resolvedToBalance) {
+          resolvedToBalance = await tx.balance.create({
+            data: {
+              walletId: toWallet.id,
+              userId: toWallet.userId,
+              assetCode,
+              tokenType: toLegacyTokenType(assetCode),
+              amount: 0,
+              amountBaseUnits: bigintToDecimal(0n),
+            },
+          })
 
-      // Transaction record
-      const trx = await tx.transaction.create({
-        data: {
+          console.warn(`[TRANSFER] Created missing balance for receiver`)
+        }
+
+        logStep('balances fetched')
+
+        await lockBalanceRow(tx, fromBalance.id)
+        await lockBalanceRow(tx, resolvedToBalance.id)
+
+        logStep('rows locked')
+
+        const fromLocked = await tx.balance.findUnique({
+          where: { id: fromBalance.id },
+        })
+
+        const toLocked = await tx.balance.findUnique({
+          where: { id: resolvedToBalance.id },
+        })
+
+        if (!fromLocked || !toLocked) {
+          throw new NotFoundError('Locked balances not found')
+        }
+
+        logStep('locked balances re-read')
+
+        const recentTransfers = await tx.transaction.findMany({
+          where: {
+            userId: fromUserId,
+            createdAt: {
+              gte: new Date(Date.now() - 60 * 1000),
+            },
+            type: TRANSACTION_TYPES.DEBIT,
+          },
+          select: {
+            metadata: true,
+          },
+        })
+
+        const recentWeight = recentTransfers.reduce(
+          (
+            sum: number,
+            tx: { metadata: unknown }
+          ) => {
+          const meta = tx.metadata as Record<string, unknown> | null
+          const w = Number(meta?.weight ?? 1)
+          return sum + (isNaN(w) ? 1 : w)
+          },
+          0
+        )
+
+        const fromLockedBaseUnits = decimalToBigInt(
+          fromLocked.amountBaseUnits ?? 0
+        )
+
+        const toLockedBaseUnits = decimalToBigInt(
+          toLocked.amountBaseUnits ?? 0
+        )
+
+        if (fromLockedBaseUnits < senderDebitBaseUnits) {
+          throw new InsufficientFundsError()
+        }
+
+        const trust = await getUserTrustScore(fromUserId)
+
+        const riskAssessment = await computeRiskScore({
           userId: fromUserId,
-          walletId: fromWallet.id,
-          type: 'TRANSFER',
-          amount,
-          tokenType,
-          metadata: {
-            requestId,
-            idempotencyKey,
-            note: note ?? null,
-            baseAmount: amount,
-            feeAmount,
-            feeMode,
-            debitEventId: debitEvent.id,
-            creditEventId: creditEvent.id,
-            feeEventId,
-          },
-        },
-      });
+          amountBaseUnits,
+          recipientUserId: toUserId,
+        })
 
-      // Patch debit payload for replay
-      await tx.walletEvent.update({
-        where: { id: debitEvent.id },
-        data: {
-          payload: {
+        const transactionRiskScore = riskAssessment.score
+
+        const baseCapacity = await computeUserCapacity({
+          roles,
+          trustScore: trust.score,
+          userId: fromUserId,
+        })
+
+        const dynamicCapacity = computeDynamicTransferCapacity({
+          riskScore: transactionRiskScore,
+          baseCapacity,
+        })
+
+        const system = await getSystemSecurityState()
+        const globalMultiplier = system.throttle.multiplier
+        const globalCooldown = system.throttle.cooldownMs
+
+        await persistRiskSnapshot({
+          userId: fromUserId,
+          riskScore: transactionRiskScore,
+          riskLevel: dynamicCapacity.riskLevel,
+          anomalyScore: transactionRiskScore,
+          trustScore: trust.score,
+          reason: 'Transfer runtime evaluation',
+        })
+
+        await freezeUserIfCriticalRisk({
+          userId: fromUserId,
+          riskScore: transactionRiskScore,
+          reasons: ['High dynamic risk'],
+        })
+
+        if (transactionRiskScore > 8) {
+          await clusterContainmentEngine()
+        }
+
+        await clusterContainmentEngine({ triggerUserId: fromUserId })
+
+        if (transactionRiskScore > 7) {
+          await propagateThreatGraph({
+            triggerUserId: fromUserId,
+            depth: 2,
+          })
+        }
+
+        const cooldown = await checkCooldown({
+          userId: fromUserId,
+          cooldownMs: Math.max(
+            dynamicCapacity.cooldownMs,
+            globalCooldown,
+            zoneThrottle.cooldownMs
+          ),
+          intent:
+            typeof transferMetadata.intent === 'string'
+              ? transferMetadata.intent
+              : undefined,
+        })
+
+        if (cooldown.blocked) {
+          throw new WalletError(
+            'COOLDOWN_ACTIVE',
+            `Transfer cooldown active. Try again in ${Math.ceil((cooldown.remainingMs ?? 0) / 1000)}s`,
+            429
+          )
+        }
+
+        const adjustedWeight = Math.ceil(
+          currentWeight *
+            dynamicCapacity.throttleMultiplier *
+            globalMultiplier *
+            zoneThrottle.throttleMultiplier
+        )
+
+        const transactionRiskLevel = dynamicCapacity.riskLevel
+
+        riskScore = transactionRiskScore
+        riskLevel = transactionRiskLevel
+
+        await tx.riskEvent.create({
+          data: {
+            userId: fromUserId,
             toUserId,
-            note: note ?? null,
-            baseAmount: amount,
-            feeAmount,
-            feeMode,
-            requestId,
-            transactionId: trx.id,
-            creditEventId: creditEvent.id,
-            feeEventId,
-            toNext: toNext.amount,
+            riskScore: transactionRiskScore,
+            riskLevel: transactionRiskLevel,
+            amountBaseUnits: bigintToDecimal(amountBaseUnits),
+            intent:
+              typeof transferMetadata.intent === 'string'
+                ? transferMetadata.intent
+                : 'UNKNOWN',
+            metadata: {
+              adjustedWeight,
+              currentWeight,
+              effectiveCapacity:
+                dynamicCapacity.effectiveCapacity,
+              cooldownMs: dynamicCapacity.cooldownMs,
+              throttleMultiplier:
+                dynamicCapacity.throttleMultiplier,
+            },
           },
-        },
-      });
+        })
 
-      // Outbox (ChainMirror)
-      await tx.chainMirrorJob.create({
-        data: {
-          transactionId: trx.id,
-          walletEventId: debitEvent.id,
-          walletId: fromWallet.id,
-          tokenType,
-          amount,
-          direction: 'TRANSFER',
-          network: 'ethereum',
-          idempotencyKey: `mirror-${idempotencyKey}`,
-          requestId,
-          status: 'PENDING',
-        },
-      });
+        if (
+          recentWeight + adjustedWeight >
+          dynamicCapacity.effectiveCapacity
+        ) {
+          throw new WalletError(
+            'RATE_LIMIT',
+            `Dynamic transfer limit exceeded (${dynamicCapacity.riskLevel})`,
+            429
+          )
+        }
 
-      return {
-        transactionId: trx.id,
-        debitEventId: debitEvent.id,
-        creditEventId: creditEvent.id,
-        feeEventId,
-        fromNext: fromNext.amount,
-        toNext: toNext.amount,
-        feeAmount,
-        requestId,
-      };
-    });
+        const fromNext = executeTransaction(
+          {
+            assetCode,
+            amountBaseUnits: fromLockedBaseUnits,
+          },
+          {
+            assetCode,
+            amountBaseUnits: senderDebitBaseUnits,
+            direction: type: TRANSACTION_TYPES.DEBIT,
+          }
+        )
 
-    return { ...result, idempotentReplay: false };
-  } catch (err: any) {
-    const raced = await prisma.walletEvent.findUnique({
-      where: { idempotencyKey },
-    });
+        const toNext = executeTransaction(
+          {
+            assetCode,
+            amountBaseUnits: toLockedBaseUnits,
+          },
+          {
+            assetCode,
+            amountBaseUnits: recipientCreditBaseUnits,
+            direction: type: TRANSACTION_TYPES.CREDIT',
+          }
+        )
 
-    if (raced) {
-      return {
-        transactionId: (raced.payload as any)?.transactionId ?? '',
-        debitEventId: raced.id,
-        creditEventId: (raced.payload as any)?.creditEventId ?? '',
-        feeEventId: (raced.payload as any)?.feeEventId ?? null,
-        fromNext: raced.nextAmount ?? 0,
-        toNext: (raced.payload as any)?.toNext ?? 0,
-        feeAmount: (raced.payload as any)?.feeAmount ?? 0,
-        idempotentReplay: true,
-        requestId: (raced.payload as any)?.requestId ?? 'replay',
-      };
+        const legacyTokenType = toLegacyTokenType(assetCode)
+
+        const debitTx = await tx.transaction.create({
+          data: {
+            userId: fromUserId,
+            walletId: fromWallet.id,
+            type: TRANSACTION_TYPES.DEBIT,
+            amount: toLegacyFloat(
+              senderDebitBaseUnits,
+              asset.decimals
+            ),
+            tokenType: legacyTokenType,
+            assetCode,
+            amountBaseUnits: bigintToDecimal(
+              senderDebitBaseUnits
+            ),
+            feeBaseUnits: bigintToDecimal(feeBaseUnits),
+            metadata: {
+              ...transferMetadata,
+              riskScore,
+              riskLevel,
+              zoneId: zoneThrottle.zoneId,
+              zoneSeverity: zoneThrottle.severity,
+              zoneFeeMultiplier: zoneThrottle.feeMultiplier,
+              zoneThrottleMultiplier: zoneThrottle.throttleMultiplier,
+              zoneCooldownMs: zoneThrottle.cooldownMs,
+              weight: adjustedWeight,
+              direction: type: TRANSACTION_TYPES.DEBIT,
+              requestId,
+              idempotencyKey,
+              toUserId,
+              source,
+              note: note ?? null,
+              transferAmountBaseUnits:
+                amountBaseUnits.toString(),
+              feeBaseUnits: feeBaseUnits.toString(),
+              feeMode,
+              prevAmountBaseUnits:
+                fromLockedBaseUnits.toString(),
+              nextAmountBaseUnits:
+                fromNext.amountBaseUnits.toString(),
+            },
+          },
+        })
+
+        const creditTx = await tx.transaction.create({
+          data: {
+            userId: toUserId,
+            walletId: toWallet.id,
+            type: TRANSACTION_TYPES.CREDIT',
+            amount: toLegacyFloat(
+              recipientCreditBaseUnits,
+              asset.decimals
+            ),
+            tokenType: legacyTokenType,
+            assetCode,
+            amountBaseUnits: bigintToDecimal(
+              recipientCreditBaseUnits
+            ),
+            feeBaseUnits: bigintToDecimal(feeBaseUnits),
+            metadata: {
+              ...transferMetadata,
+              riskScore,
+              riskLevel,
+              zoneId: zoneThrottle.zoneId,
+              zoneSeverity: zoneThrottle.severity,
+              zoneFeeMultiplier: zoneThrottle.feeMultiplier,
+              zoneThrottleMultiplier: zoneThrottle.throttleMultiplier,
+              zoneCooldownMs: zoneThrottle.cooldownMs,
+              weight: adjustedWeight,
+              direction: type: TRANSACTION_TYPES.CREDIT',
+              requestId,
+              fromUserId,
+              source,
+              note: note ?? null,
+              transferAmountBaseUnits:
+                amountBaseUnits.toString(),
+              feeBaseUnits: feeBaseUnits.toString(),
+              feeMode,
+              prevAmountBaseUnits:
+                toLockedBaseUnits.toString(),
+              nextAmountBaseUnits:
+                toNext.amountBaseUnits.toString(),
+              debitEventId: debitTx.id,
+            },
+          },
+        })
+
+        logStep('journal entries created')
+
+        await tx.balance.update({
+          where: { id: fromLocked.id },
+          data: {
+            amount: toLegacyFloat(
+              fromNext.amountBaseUnits,
+              asset.decimals
+            ),
+            assetCode,
+            amountBaseUnits: {
+              decrement: bigintToDecimal(senderDebitBaseUnits),
+            },
+          },
+        })
+
+        await tx.balance.update({
+          where: { id: resolvedToBalance.id },
+          data: {
+            amount: toLegacyFloat(
+              toNext.amountBaseUnits,
+              asset.decimals
+            ),
+            assetCode,
+            amountBaseUnits: {
+              increment: bigintToDecimal(
+                recipientCreditBaseUnits
+              ),
+            },
+          },
+        })
+
+        logStep('balances updated')
+
+        await tx.transaction.update({
+          where: { id: debitTx.id },
+          data: {
+            metadata: {
+              ...transferMetadata,
+              riskScore,
+              riskLevel,
+              zoneId: zoneThrottle.zoneId,
+              zoneSeverity: zoneThrottle.severity,
+              zoneFeeMultiplier: zoneThrottle.feeMultiplier,
+              zoneThrottleMultiplier: zoneThrottle.throttleMultiplier,
+              zoneCooldownMs: zoneThrottle.cooldownMs,
+              weight: adjustedWeight,
+              direction: type: TRANSACTION_TYPES.DEBIT,
+              requestId,
+              transactionId: debitTx.id,
+              idempotencyKey,
+              toUserId,
+              source,
+              note: note ?? null,
+              transferAmountBaseUnits:
+                amountBaseUnits.toString(),
+              feeBaseUnits: feeBaseUnits.toString(),
+              feeMode,
+              creditEventId: creditTx.id,
+              toNextBaseUnits:
+                toNext.amountBaseUnits.toString(),
+              nextAmountBaseUnits:
+                fromNext.amountBaseUnits.toString(),
+            },
+          },
+        })
+
+        return {
+          result: buildTransferResult({
+            transactionId: debitTx.id,
+            debitEventId: debitTx.id,
+            creditEventId: creditTx.id,
+            assetCode,
+            decimals: asset.decimals,
+            fromNextBaseUnits: fromNext.amountBaseUnits,
+            toNextBaseUnits: toNext.amountBaseUnits,
+            feeBaseUnits,
+            requestId,
+            idempotentReplay: false,
+          }),
+          mirrorJob:
+            asset.settlementMode === 'MIRRORED'
+              ? {
+                  walletEventId: debitTx.id,
+                  idempotencyKey,
+                  assetCode,
+                  amountBaseUnits,
+                  fromAddress:
+                    fromWallet.blockchainWallet?.address ??
+                    ZERO_ADDRESS,
+                  toAddress:
+                    toWallet.blockchainWallet?.address ??
+                    ZERO_ADDRESS,
+                }
+              : null,
+        }
+      },
+      {
+        maxWait: 10_000,
+        timeout: 15_000,
+      }
+    )
+
+    logStep('transaction committed')
+
+    if ((riskScore ?? 0) <= 2) {
+      await gradualTrustRecovery({
+        userId: fromUserId,
+      })
     }
 
-    if (err?.code && err?.status) throw err;
+    if (transfer.mirrorJob) {
+      try {
+        await createMirrorJob(prisma, transfer.mirrorJob)
+      } catch (err: unknown) {
+        const prismaErr = err as { code?: string }
+        if (prismaErr.code !== 'P2002') {
+          console.error(
+            '[wallet/transfer] mirror job create failed after commit',
+            {
+              idempotencyKey: transfer.mirrorJob.idempotencyKey,
+              walletEventId: transfer.mirrorJob.walletEventId,
+              error: err,
+            }
+          )
+          throw err
+        }
+        console.warn(
+          '[wallet/transfer] mirror job already exists',
+          transfer.mirrorJob.idempotencyKey
+        )
+      }
 
-    throw new WalletError('TRANSFER_FAILED', err?.message ?? 'transfer failed', 400);
+      logStep('mirror job created')
+    }
+
+    return transfer.result
+  } catch (err: unknown) {
+    const replay = await maybeReplayExistingTransfer(
+      idempotencyKey,
+      assetCode,
+      asset.decimals
+    )
+
+    if (replay) return replay
+
+    if (err instanceof WalletError) throw err
+
+    const prismaErr = err as {
+      code?: string
+      message?: string
+    }
+
+    if (prismaErr?.code === 'P2002') {
+      throw new WalletError(
+        'IDEMPOTENCY_CONFLICT',
+        'Transfer already processed',
+        409
+      )
+    }
+
+    throw new WalletError(
+      'TRANSFER_FAILED',
+      prismaErr?.message ?? 'transfer failed',
+      400
+    )
   }
 }

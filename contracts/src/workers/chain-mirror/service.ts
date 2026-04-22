@@ -1,5 +1,5 @@
 import { ethers } from 'ethers';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { ENV } from './env';
 import { MIRROR_BRIDGE_ABI } from './abi';
 import { log } from './logger';

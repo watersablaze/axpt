@@ -1,6 +1,6 @@
 // 📁 app/dashboard/shadow-vault/[id]/page.tsx
 
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 

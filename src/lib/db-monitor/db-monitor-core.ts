@@ -2,7 +2,7 @@
 
 import fs from 'fs';
 import path from 'path';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { wakeDatabase } from '@/scripts/wake-db';
 
 const LOG_DIR = path.resolve(__dirname, '../../../logs');

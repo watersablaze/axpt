@@ -1,5 +1,5 @@
 import 'dotenv/config';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 
 async function main() {
   const initiative = await prisma.initiative.findUnique({ where: { slug: 'protium' } });

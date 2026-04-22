@@ -1,7 +1,7 @@
 // app/api/admin/axis-journey/route.ts
 import { NextResponse } from 'next/server';
 import { requireElderServer } from '@/lib/auth/requireElderServer';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';

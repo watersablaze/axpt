@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getLatestUsdPrice } from '@/lib/chain/contracts';
-import { getUniswapV3TwapUSD } from '@/lib/chain/prices/uniswapV3';
+import { getLatestUsdPrice } from '@/infrastructure/chain/contracts';
+import { getUniswapV3TwapUSD } from '@/infrastructure/chain/prices/uniswapV3';
 
 export async function GET() {
   try {

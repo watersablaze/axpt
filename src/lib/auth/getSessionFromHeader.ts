@@ -1,5 +1,5 @@
 // 📁 src/lib/auth/getSessionFromHeader.ts
-import type { TokenPayload } from '@/types/token';
+import type { TokenPayload } from '@/shared/types/token';
 
 /**
  * Extract and parse session payload from middleware-injected header.

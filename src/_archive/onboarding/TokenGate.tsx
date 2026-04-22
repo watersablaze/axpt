@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { decodeToken } from '@/lib/token/decodeToken';
 import { useTokenStore } from '@/stores/useTokenStore';
 import { useConsentStore } from '@/stores/useConsentStore';
-import type { SessionPayload } from '@/types/auth';
+import type { SessionPayload } from '@/shared/types/auth';
 import styles from './TokenGate.module.css';
 
 const VALID_TIERS: SessionPayload['tier'][] = [

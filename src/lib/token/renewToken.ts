@@ -1,6 +1,6 @@
 import { decodeToken } from './decodeToken';
 import { signToken } from './signToken';
-import type { TokenPayload } from '@/types/token';
+import type { TokenPayload } from '@/shared/types/token';
 
 const DEFAULT_EXP_SECONDS = 60 * 60 * 24 * 30; // 30 days
 

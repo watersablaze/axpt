@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
-import type { LayerName } from '@/types/layers';
+import type { LayerName } from '@/shared/types/layers';
 
 type LayerContextType = {
   activeLayer: LayerName;

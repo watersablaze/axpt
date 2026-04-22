@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { jwtVerify } from 'jose';
-import { env } from '@/lib/env/readEnv';
+import { env } from '@/infrastructure/env/readEnv';
 
 export const runtime = 'nodejs';
 

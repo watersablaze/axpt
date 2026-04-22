@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import PriceBadge from '@/components/chain/PriceBadge';
 // import PRTBalancePill from '@/components/chain/PRTBalancePill'; // 🔒 TEMP: Commented out
 import PledgeForm from './PledgeForm';
@@ -13,7 +13,7 @@ const axgFmt = new Intl.NumberFormat(undefined, {
 async function getFundingTotal(initiativeId: string) {
   const agg = await prisma.initiativeFunding.aggregate({
     where: { initiativeId },
-    _sum: { amount: true },
+    _sum: { amountBaseUnits: true },
   });
   return (agg._sum.amount as any)?.toNumber?.() ?? Number(agg._sum.amount) ?? 0;
 }

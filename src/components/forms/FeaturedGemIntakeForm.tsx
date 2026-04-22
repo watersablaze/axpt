@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import styles from '@/app/french-ward/shadow-vault/ShadowVaultForm.module.css';
+import styles from "@/components/forms/ShadowVaultForm.module.css"
 
 type Props = { compact?: boolean };
 

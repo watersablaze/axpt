@@ -1,12 +1,15 @@
-export type Currency = 'AXG' | 'NMP' | 'USD';
+import type { AssetCode } from '@/lib/assets/registry';
+import { TRANSACTION_TYPES } from '../wallet/constants/transactionTypes'
+
+export type Currency = AssetCode;
 
 export interface Balance {
-  currency: Currency;
-  amount: number;
+  assetCode: AssetCode;
+  amountBaseUnits: bigint;
 }
 
 export interface WalletTransaction {
-  currency: Currency;
-  amount: number;
-  direction: 'DEBIT' | 'CREDIT';
+  assetCode: AssetCode;
+  amountBaseUnits: bigint;
+  direction: type: TRANSACTION_TYPES.DEBIT | type: TRANSACTION_TYPES.CREDIT';
 }

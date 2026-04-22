@@ -1,6 +1,6 @@
 // app/api/owncast/stream/status/route.ts
 import { NextResponse } from 'next/server';
-import { withTimeout } from '@/lib/utils/withTimeout';
+import { withTimeout } from '@/shared/utils/withTimeout';
 
 export async function GET() {
   const base = process.env.OWNCAST_URL;

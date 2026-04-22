@@ -3,7 +3,7 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 
 type AnchorDetail = {
   verificationId?: string;
@@ -117,7 +117,7 @@ export async function GET(req: Request) {
       title: record.case.title,
       jurisdiction: record.case.jurisdiction,
       mode: record.case.mode,
-      status: record.case.status,
+      status: record.case.currentStage,
     },
 
     proceduralReadiness: {

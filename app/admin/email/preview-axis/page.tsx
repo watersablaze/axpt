@@ -1,7 +1,7 @@
 'use client';
 
 import { Html } from '@react-email/html';
-import AxisConfirmationEmail from '@/lib/email/templates/AxisConfirmationEmail';
+import AxisConfirmationEmail from '@/infrastructure/email/templates/AxisConfirmationEmail';
 
 export default function PreviewAxisEmailPage() {
   return (

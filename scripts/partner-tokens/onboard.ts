@@ -1,6 +1,6 @@
 // ✅ FILE: app/scripts/partner-tokens/onboard.ts
 
-import '@/lib/env/loadEnv';
+import '@/infrastructure/env/loadEnv';
 import chalk from 'chalk';
 import { PrismaClient } from '@prisma/client';
 import { promptAndGenerateToken as generateTokenCLIFlow } from '@/lib/token/tokenService';

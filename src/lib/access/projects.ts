@@ -1,5 +1,5 @@
 // src/lib/access/projects.ts
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 
 export async function assertProjectOwner(projectId: string, userId: string) {
   const p = await prisma.project.findUnique({ where: { id: projectId }, select: { userId: true } });

@@ -2,7 +2,7 @@
 export const runtime = 'nodejs';
 
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import { assertCaseCanInitiateEscrow } from '@/lib/guards/caseState';
 import archiver from 'archiver';
 import { PassThrough } from 'stream';

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from 'react'
 import { useLayer } from '@/lib/context/LayerContext'
-import type { LayerName } from '@/types/layers'
+import type { LayerName } from '@/shared/types/layers'
 
 export default function SurfaceObserver() {
 
@@ -31,6 +31,7 @@ export default function SurfaceObserver() {
         if (currentLayer.current === layer) return
 
         currentLayer.current = layer
+        document.body.dataset.surface = layer
         setActiveLayer(layer)
 
       },

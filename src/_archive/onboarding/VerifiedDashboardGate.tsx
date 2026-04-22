@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import VerifiedDashboardMobile from './VerifiedDashboardMobile';
 import VerifiedDashboardDesktop from './VerifiedDashboardDesktop';
 import OrbAnimation from '@/components/shared/OrbAnimation';
-import { SessionPayload } from '@/types/auth';
+import { SessionPayload } from '@/shared/types/auth';
 
 interface VerifiedDashboardGateProps {
   tokenPayload: SessionPayload | null;

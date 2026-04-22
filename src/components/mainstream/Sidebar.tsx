@@ -1,6 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
+import {
+  mainstreamChannels,
+  transmissions,
+} from "@/lib/mainstream/transmissions";
 
 export default function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
@@ -28,18 +33,22 @@ export default function Sidebar() {
             <div className="ms-sidebar-section">
               <p className="ms-sidebar-label">LEDGER</p>
               <ul>
-                <li>MS-0000</li>
-                <li>MS-0001</li>
+                {transmissions.map((transmission) => (
+                  <li key={transmission.id}>
+                    <Link href={`/mainstream/transmissions/${transmission.id}`}>
+                      {transmission.registry}
+                    </Link>
+                  </li>
+                ))}
               </ul>
             </div>
 
             <div className="ms-sidebar-section">
               <p className="ms-sidebar-label">CHANNELS</p>
               <ul>
-                <li>NOMMO MEDIA</li>
-                <li>FIELD RECORD</li>
-                <li>SYMPOSIUM</li>
-                <li>ARCHIVE</li>
+                {mainstreamChannels.map((channel) => (
+                  <li key={channel.slug}>{channel.name.toUpperCase()}</li>
+                ))}
               </ul>
             </div>
           </>

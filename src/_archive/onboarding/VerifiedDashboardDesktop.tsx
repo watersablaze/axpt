@@ -10,7 +10,7 @@ import ParticleOverlay from '@/components/shared/ParticleOverlay';
 import ProfilesRadial from '@/components/onboarding/ProfilesRadial';
 import DocCardGrid from '@/components/shared/DocCardGrid';
 import OrbAnimation from '@/components/shared/OrbAnimation';
-import { SessionPayload } from '@/types/auth';
+import { SessionPayload } from '@/shared/types/auth';
 
 import styles from './VerifiedDashboardDesktop.module.css';
 

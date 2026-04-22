@@ -1,5 +1,5 @@
 // ✅ FILE: cli/utils/fixTokenLog.ts
-import '@/lib/env/loadEnv';
+import '@/infrastructure/env/loadEnv';
 
 import fs from 'fs';
 import path from 'path';

@@ -1,5 +1,3 @@
-'use client'
-
 import styles from './FrameworkSurface.module.css'
 import SurfaceHeader from '@/components/surfaces/SurfaceHeader'
 

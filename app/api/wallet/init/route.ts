@@ -1,13 +1,15 @@
-// app/api/wallet/init/route.ts
-import { NextResponse } from 'next/server';
-import { createResidentWallet } from '@/lib/wallet/createResidentWallet';
-import { requireResidentServer } from '@/lib/auth/requireResidentServer';
+import { NextResponse } from 'next/server'
+import { createResidentWallet } from '@/domains/wallet/createResidentWallet'
+import { requirePermission } from '@/domains/auth/requirePermission'
+import { PERMISSIONS } from '@/domains/auth/permissions'
 
 export async function POST() {
-  const { userId } = await requireResidentServer();
+  const principal = await requirePermission(PERMISSIONS.WALLET_INIT)
+  const userId = principal.userId
 
   try {
-    const wallet = await createResidentWallet(userId);
+    const wallet = await createResidentWallet(userId)
+
     return NextResponse.json({
       ok: true,
       message: 'Wallet initialized for resident.',
@@ -27,8 +29,11 @@ export async function POST() {
             }
           : null,
       },
-    });
+    })
   } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message || 'wallet init failed' }, { status: 500 });
+    return NextResponse.json(
+      { ok: false, error: e?.message || 'wallet init failed' },
+      { status: 500 }
+    )
   }
 }

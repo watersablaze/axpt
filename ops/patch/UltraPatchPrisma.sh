@@ -2,11 +2,11 @@
 
 # === AXPT ULTRA PATCH: TEMP PRISMA SCRUB ===
 # This script will search for all files in /app/api and /lib
-# that import '@/lib/prisma' and rename them to *.temp.ts
+# that import '@/infrastructure/db/prisma' and rename them to *.temp.ts
 
 # === CONFIG ===
 SEARCH_DIRS=("app/api" "lib")
-PRISMA_IMPORT="@/lib/prisma"
+PRISMA_IMPORT="@/infrastructure/db/prisma"
 
 # === FUNCTIONS ===
 echo "\n🔍 Scanning for Prisma-dependent files..."

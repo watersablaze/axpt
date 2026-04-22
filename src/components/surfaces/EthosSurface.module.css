@@ -41,18 +41,6 @@
   gap:56px;
 }
 
-.surface--active .ethosInner {
-  opacity: 1;
-  transform: translateY(0);
-  transition-delay: 120ms;
-}
-
-.ethosComplete .ethosNode {
-
-  filter: drop-shadow(0 0 4px rgba(140,210,175,.35));
-
-}
-
 /* ─────────────────────────────────────
    PILLARS
 ───────────────────────────────────── */
@@ -119,6 +107,7 @@
 }
 
 .pillar {
+  position: relative;
 
   display:grid;
   grid-template-columns:42px 1fr;

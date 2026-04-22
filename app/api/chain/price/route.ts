@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getLatestUsdPrice } from '@/lib/chain/contracts';
+import { getLatestUsdPrice } from '@/infrastructure/chain/contracts';
 
 export async function GET() {
   try {

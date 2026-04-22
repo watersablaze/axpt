@@ -6,7 +6,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { useTokenStore } from '@/stores/useTokenStore';
 import { useConsentStore } from '@/stores/useConsentStore';
 import { decodeToken } from '@/lib/token/decodeToken';
-import type { SessionPayload } from '@/types/auth';
+import type { SessionPayload } from '@/shared/types/auth';
 
 type Tier = SessionPayload['tier'];
 

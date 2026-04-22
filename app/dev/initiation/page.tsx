@@ -1,7 +1,7 @@
 // app/dev/initiation/page.tsx
 import { redirect } from 'next/navigation';
 import Image from 'next/image';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import DevBanner from '@/components/dev/DevBanner';
 
 export default async function DevInitiationPreview() {

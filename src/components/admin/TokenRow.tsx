@@ -4,7 +4,7 @@
 
 import React, { useState } from 'react';
 import styles from './TokenRow.module.css';
-import { TokenPayload } from '@/types/token';
+import { TokenPayload } from '@/shared/types/token';
 
 export interface TokenRowProps {
   token: TokenPayload & {

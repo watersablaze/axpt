@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import type { NommoPhase, NommoSignal } from './types';
 
 const STATE_ID = 'global';

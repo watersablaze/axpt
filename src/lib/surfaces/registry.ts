@@ -1,6 +1,6 @@
 import dynamic from "next/dynamic";
 import type { ComponentType } from "react";
-import type { LayerName } from "@/types/layers";
+import type { LayerName } from "@/shared/types/layers";
 
 const OriginSurface = dynamic(() => import("@/components/surfaces/OriginSurface"));
 const FoundationSurface = dynamic(() => import("@/components/surfaces/FoundationSurface"));

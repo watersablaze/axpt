@@ -2,7 +2,7 @@ export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 import Link from 'next/link';
-import { prisma } from '@/lib/prisma';
+import { prisma } from '@/infrastructure/db/prisma';
 import PriceBadge from '@/components/chain/PriceBadge';
 import { InitiativeStatus } from '@prisma/client';
 
@@ -34,7 +34,7 @@ export default async function InitiativesPublicListPage() {
     if (items.length) {
       const sums = await prisma.initiativeFunding.groupBy({
         by: ['initiativeId'],
-        _sum: { amount: true },
+        _sum: { amountBaseUnits: true },
         where: { initiativeId: { in: items.map((i) => i.id) } },
       });
       totals = new Map<string, number>(

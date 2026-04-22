@@ -1,8 +1,8 @@
 // 📁 src/lib/token/signToken.ts
 
-import { env } from '@/lib/env/readEnv';
+import { env } from '@/infrastructure/env/readEnv';
 import { SignJWT } from 'jose';
-import type { TokenPayload } from '@/types/token';
+import type { TokenPayload } from '@/shared/types/token';
 
 export async function signToken(payload: TokenPayload): Promise<string> {
   const secret = new TextEncoder().encode(env.SIGNING_SECRET);

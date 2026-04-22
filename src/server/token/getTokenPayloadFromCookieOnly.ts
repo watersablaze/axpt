@@ -2,9 +2,9 @@
 
 import { cookies } from 'next/headers';
 import { jwtVerify } from 'jose';
-import type { SessionPayload } from '@/types/auth';
-import { SESSION_COOKIE_NAME } from '@/constants/cookies';
-import { SIGNING_SECRET } from '@/lib/env/secrets';
+import type { SessionPayload } from '@/shared/types/auth';
+import { SESSION_COOKIE_NAME } from '@/shared/constants/cookies';
+import { SIGNING_SECRET } from '@/infrastructure/env/secrets';
 
 export async function getTokenPayloadFromCookieOnly(): Promise<SessionPayload | null> {
   const cookieStore = await cookies(); // ✅ FIXED
@@ -16,6 +16,12 @@ export async function getTokenPayloadFromCookieOnly(): Promise<SessionPayload | 
     return {
       userId: payload.userId as string,
       tier: payload.tier as SessionPayload['tier'],
+      roles: Array.isArray(payload.roles)
+        ? payload.roles.filter(
+            (role): role is SessionPayload['roles'][number] =>
+              typeof role === 'string'
+          )
+        : [],
       displayName: payload.displayName as string,
       popupMessage: payload.popupMessage as string,
       greeting: payload.greeting as string,

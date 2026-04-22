@@ -2,7 +2,7 @@
 
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { SessionPayload } from '@/types/auth';
+import type { SessionPayload } from '@/shared/types/auth';
 
 interface TokenStore {
   token: string | null;
