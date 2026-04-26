@@ -224,6 +224,8 @@ model Transaction {
   tokenType       TokenType?
   tokenId         String?
   txHash          String?
+  journalGroupId  String?
+  idempotencyKey  String?    @unique
   metadata        Json?
   createdAt       DateTime   @default(now())
   amountBaseUnits Decimal?   @db.Decimal(78, 0)
@@ -239,6 +241,7 @@ model Transaction {
   @@index([tokenId])
   @@index([tokenType])
   @@index([assetCode])
+  @@index([journalGroupId])
 }
 
 model SmartContract {
