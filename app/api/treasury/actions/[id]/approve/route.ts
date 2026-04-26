@@ -4,11 +4,18 @@ import { prisma } from '@/infrastructure/db/prisma'
 import { getPrincipal } from '@/domains/auth/getPrincipal'
 import { resolveApproval } from '@/domains/treasury/resolveApproval'
 import { triggerTreasuryExecution } from '@/domains/treasury/triggerExecution'
+import {
+  TREASURY_ACTION_STATUS,
+  type TreasuryActionStatus,
+} from '@/domains/treasury/stateMachine'
+import { transitionTreasuryAction } from '@/domains/treasury/transitionTreasuryAction'
 
 export async function POST(
-  req: Request,
-  { params }: { params: { id: string } }
-) {
+  _req: Request,
+  context: {
+    params: Promise<{ id: string }>
+  }
+){
   try {
     const principal = await getPrincipal()
 
@@ -19,17 +26,38 @@ export async function POST(
       )
     }
 
+    const { id } = await context.params
+
     /**
-     * 🔐 Governance Gate: Must be Council Elder
+     * 🔐 Governance Gate
+     *
+     * TEMP DEV MODE:
+     * allow either:
+     * - council elder
+     * - treasury approval permission
      */
+
     const isElder = await prisma.councilElder.findUnique({
-      where: { userId: principal.userId },
+      where: {
+        userId: principal.userId,
+      },
     })
 
-    if (!isElder) {
+    const canApprove =
+      isElder ||
+      principal.permissions.includes(
+        'TREASURY_APPROVE'
+      )
+
+    if (!canApprove) {
       return NextResponse.json(
-        { ok: false, error: 'Not authorized to approve' },
-        { status: 403 }
+        {
+          ok: false,
+          error: 'Not authorized to approve',
+        },
+        {
+          status: 403,
+        }
       )
     }
 
@@ -39,11 +67,14 @@ export async function POST(
     const result = await prisma.$transaction(
       async (tx: TransactionClient) => {
         const action = await tx.treasuryAction.findUnique({
-          where: { id: params.id },
+          where: { id },
           include: { approvals: true },
         })
 
-        if (!action || action.status !== 'PENDING') {
+        if (
+          !action ||
+          action.status !== TREASURY_ACTION_STATUS.PENDING
+        ) {
           throw new Error('INVALID_STATE')
         }
 
@@ -81,14 +112,16 @@ export async function POST(
         /**
          * 🧾 Persist final status
          */
-        const finalStatus = resolution.status
+        const finalStatus =
+          resolution.status as TreasuryActionStatus
 
-        await tx.treasuryAction.update({
-          where: { id: action.id },
-          data: {
-            status: finalStatus,
-          },
-        })
+        if (finalStatus !== action.status) {
+          await transitionTreasuryAction({
+            id: action.id,
+            to: finalStatus,
+            client: tx,
+          })
+        }
 
         return {
           actionId: action.id,
@@ -100,7 +133,7 @@ export async function POST(
     /**
      * 🚀 Trigger execution AFTER transaction commits
      */
-    if (result.status === 'APPROVED') {
+    if (result.status === TREASURY_ACTION_STATUS.APPROVED) {
       triggerTreasuryExecution(result.actionId).catch((err) => {
         console.error('[TREASURY_EXECUTION_TRIGGER_FAILED]', {
           actionId: result.actionId,

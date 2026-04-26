@@ -2,6 +2,11 @@ import { NextResponse } from 'next/server'
 import { prisma } from '@/infrastructure/db/prisma'
 import { getPrincipal } from '@/domains/auth/getPrincipal'
 import { resolveApproval } from '@/domains/treasury/resolveApproval'
+import {
+  TREASURY_ACTION_STATUS,
+  type TreasuryActionStatus,
+} from '@/domains/treasury/stateMachine'
+import { transitionTreasuryAction } from '@/domains/treasury/transitionTreasuryAction'
 
 export async function POST(
   req: Request,
@@ -30,7 +35,10 @@ export async function POST(
       include: { approvals: true },
     })
 
-    if (!action || action.status !== 'PENDING') {
+    if (
+      !action ||
+      action.status !== TREASURY_ACTION_STATUS.PENDING
+    ) {
       return NextResponse.json(
         { ok: false, error: 'Invalid action state' },
         { status: 400 }
@@ -65,16 +73,19 @@ export async function POST(
       totalElders,
     })
 
-    await prisma.treasuryAction.update({
-      where: { id: action.id },
-      data: {
-        status: resolution.status,
-      },
-    })
+    const finalStatus =
+      resolution.status as TreasuryActionStatus
+
+    if (finalStatus !== action.status) {
+      await transitionTreasuryAction({
+        id: action.id,
+        to: finalStatus,
+      })
+    }
 
     return NextResponse.json({
       ok: true,
-      status: resolution.status,
+      status: finalStatus,
     })
   } catch (err) {
     const prismaErr = err as { code?: string }
