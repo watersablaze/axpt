@@ -69,13 +69,17 @@ function computeFeeBaseUnits(amountBaseUnits: bigint, feeBps = 0): bigint {
 
 async function computeTransferWeight(params: {
   amountBaseUnits: bigint
+  decimals: number
   intent?: string
   role?: string
 }): Promise<number> {
-  const { amountBaseUnits, intent = 'PEER', role = 'USER' } = params
-
-  // Normalize amount (AXG has 6 decimals)
-  const amount = Number(amountBaseUnits) / 1_000_000
+  const {
+    amountBaseUnits,
+    decimals,
+    intent = 'PEER',
+    role = 'USER',
+  } = params
+  const amount = Number(formatBaseUnits(amountBaseUnits, decimals))
 
   // Base weight from size
   let weight = 1
