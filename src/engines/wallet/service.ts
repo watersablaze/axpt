@@ -297,6 +297,7 @@ export async function transferToken(
   }
 
   const requestId = req.requestId ?? crypto.randomUUID()
+  const journalGroupId = crypto.randomUUID()
   let riskScore: number | undefined
   let riskLevel: string | undefined
 
@@ -721,6 +722,7 @@ export async function transferToken(
             userId: fromUserId,
             walletId: fromWallet.id,
             type: TRANSACTION_TYPES.DEBIT,
+            journalGroupId,
             amount: toLegacyFloat(
               senderDebitBaseUnits,
               asset.decimals
@@ -744,6 +746,7 @@ export async function transferToken(
               direction: type: TRANSACTION_TYPES.DEBIT,
               requestId,
               idempotencyKey,
+              linkedCreditEventId: null,
               toUserId,
               source,
               note: note ?? null,
@@ -764,6 +767,7 @@ export async function transferToken(
             userId: toUserId,
             walletId: toWallet.id,
             type: TRANSACTION_TYPES.CREDIT',
+            journalGroupId,
             amount: toLegacyFloat(
               recipientCreditBaseUnits,
               asset.decimals
@@ -786,6 +790,7 @@ export async function transferToken(
               weight: adjustedWeight,
               direction: type: TRANSACTION_TYPES.CREDIT',
               requestId,
+              linkedDebitEventId: debitTx.id,
               fromUserId,
               source,
               note: note ?? null,
