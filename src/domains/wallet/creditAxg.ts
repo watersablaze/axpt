@@ -1,5 +1,6 @@
 // src/domains/wallet/creditAxg.ts
 
+import type { Prisma } from '@prisma/client'
 import { prisma } from '@/infrastructure/db/prisma'
 import { getAsset } from '@/lib/assets/registry'
 import {
@@ -8,6 +9,9 @@ import {
   formatBaseUnits,
   parseDisplayToBaseUnits,
 } from '@/lib/money/baseUnits'
+import { TRANSACTION_TYPES } from '@/domains/wallet/constants/transactionTypes'
+
+type Tx = Prisma.TransactionClient
 
 export async function creditAxg(
   userId: string,
@@ -25,7 +29,7 @@ export async function creditAxg(
     throw new Error('Amount must be positive')
   }
 
-  return await prisma.$transaction(async (tx: any) => {
+  return await prisma.$transaction(async (tx: Tx) => {
     const wallet = await tx.wallet.findUnique({
       where: { userId },
     })
