@@ -19,10 +19,10 @@ export async function computeSystemPressure(): Promise<SystemPressure> {
     }),
     prisma.eventLog.findMany({
       where: {
-        type: 'RISK_SNAPSHOT_PERSISTED',
+        action: 'RISK_SNAPSHOT_PERSISTED',
         createdAt: { gte: oneMinuteAgo },
       },
-      select: { metadata: true },
+      select: { detail: true },
     }),
   ])
 

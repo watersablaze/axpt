@@ -42,14 +42,17 @@ export async function persistRiskSnapshot(
 
   await prisma.eventLog.create({
     data: {
-      type: 'RISK_SNAPSHOT_PERSISTED',
-      metadata: {
+      actor: 'SYSTEM',
+
+      action: 'RISK_SNAPSHOT_PERSISTED',
+
+      detail: {
         userId,
         riskScore,
         riskLevel,
-        anomalyScore: anomalyScore ?? null,
-        trustScore: trustScore ?? null,
-        reason: reason ?? null,
+        anomalyScore,
+        trustScore,
+        reason,
       },
     },
   })

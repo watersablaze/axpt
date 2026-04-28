@@ -8,8 +8,8 @@ export async function gradualTrustRecovery(params: {
 
   const events = await prisma.eventLog.findMany({
     where: {
-      eventType: 'RISK_EVALUATION',
-      metadata: {
+      action: 'RISK_EVALUATION',
+      detail: {
         path: ['userId'],
         equals: userId,
       },
@@ -28,7 +28,7 @@ export async function gradualTrustRecovery(params: {
   let lowRiskCount = 0
 
   for (const event of events) {
-    const meta = event.metadata as Record<string, unknown> | null
+    const meta = event.detail as Record<string, unknown> | null
     const score = Number(meta?.riskScore ?? 0)
 
     if (score <= 2) {
@@ -62,8 +62,9 @@ export async function gradualTrustRecovery(params: {
 
     await prisma.eventLog.create({
       data: {
-        type: 'TRUST_RECOVERY',
-        metadata: {
+        actor: 'SYSTEM',
+        action: 'TRUST_RECOVERY',
+        detail: {
           userId,
           recoveryRatio,
           lowRiskCount,

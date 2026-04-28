@@ -6,14 +6,14 @@ export async function computeUserTrustState(
 ): Promise<UserTrustState> {
   const events = await prisma.eventLog.findMany({
     where: {
-      eventType: 'RISK_EVALUATION',
-      metadata: {
+      action: 'RISK_EVALUATION',
+      detail: {
         path: ['userId'],
         equals: userId,
       },
     },
     orderBy: { createdAt: 'desc' },
-    take: 100, // rolling window
+    take: 100,
   })
 
   let successCount = 0
@@ -21,7 +21,7 @@ export async function computeUserTrustState(
   let totalRisk = 0
 
   for (const e of events) {
-    const meta = e.metadata as any
+    const meta = e.detail as any
 
     const risk = Number(meta?.riskScore ?? 0)
     totalRisk += risk
@@ -45,6 +45,7 @@ export async function computeUserTrustState(
 
     avgRisk: totalRisk / safeTotal,
 
-    lastEvaluatedAt: events[0]?.createdAt?.toISOString() ?? null,
+    lastEvaluatedAt:
+      events[0]?.createdAt?.toISOString() ?? null,
   }
 }
