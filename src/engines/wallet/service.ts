@@ -399,6 +399,10 @@ export async function transferToken(
   if (replay) return replay
 
   const transferMetadata = metadata ?? {}
+  const transferIntent =
+    typeof transferMetadata.intent === 'string'
+      ? transferMetadata.intent
+      : req.context?.intent ?? null
   const roles = (req as { roles?: string[] }).roles ?? ['USER']
 
   const trust = await getUserTrustScore(fromUserId)
@@ -694,6 +698,8 @@ export async function transferToken(
             walletId: fromWallet.id,
             type: TRANSACTION_TYPES.DEBIT,
             journalGroupId,
+            idempotencyKey,
+            intent: transferIntent,
             amount: toLegacyFloat(
               senderDebitBaseUnits,
               asset.decimals
