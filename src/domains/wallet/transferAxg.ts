@@ -4,7 +4,7 @@ import { transferToken } from '@/engines/wallet/service';
 type TransferParams = {
   fromUserId: string;
   toUserId: string;
-  amount: number | string;
+  amount: string;
   note?: string;
 };
 

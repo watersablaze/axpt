@@ -11,7 +11,7 @@ import {
 
 export async function creditAxg(
   userId: string,
-  amount: number | string,
+  amount: string,
   note?: string
 ) {
   const asset = getAsset('AXG')
