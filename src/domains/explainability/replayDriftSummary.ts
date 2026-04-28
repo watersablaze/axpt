@@ -1,10 +1,28 @@
 import { prisma } from '@/infrastructure/db/prisma'
 
+type ReplayAuditSummaryRow = {
+  originalIntent: string
+  intentChanged: boolean
+  divergenceScore: number
+}
+
+type IntentDriftSummary = {
+  intent: string
+  averageDivergence: number
+  count: number
+  intentChangedRate: number
+}
+
 export async function getReplayDriftSummary() {
   const audits = await prisma.replayAudit.findMany({
+    select: {
+      originalIntent: true,
+      intentChanged: true,
+      divergenceScore: true,
+    },
     orderBy: { createdAt: 'desc' },
     take: 200,
-  })
+  }) as ReplayAuditSummaryRow[]
 
   if (!audits.length) {
     return {
@@ -22,14 +40,21 @@ export async function getReplayDriftSummary() {
   }
 
   const averageDivergence =
-    audits.reduce((sum, a) => sum + a.divergenceScore, 0) / audits.length
+    audits.reduce(
+      (sum: number, audit: ReplayAuditSummaryRow) =>
+        sum + audit.divergenceScore,
+      0
+    ) /
+    audits.length
 
   const highDivergenceCount = audits.filter(
-    (a) => a.divergenceScore >= 0.6
+    (audit: ReplayAuditSummaryRow) => audit.divergenceScore >= 0.6
   ).length
 
   const intentDriftRate =
-    audits.filter((a) => a.intentChanged).length / audits.length
+    audits.filter(
+      (audit: ReplayAuditSummaryRow) => audit.intentChanged
+    ).length / audits.length
 
   const grouped = new Map<
     string,
@@ -51,14 +76,19 @@ export async function getReplayDriftSummary() {
     grouped.set(key, current)
   }
 
-  const byIntent = Array.from(grouped.entries()).map(([intent, g]) => ({
+  const byIntent: IntentDriftSummary[] = Array.from(
+    grouped.entries()
+  ).map(([intent, group]) => ({
     intent,
-    averageDivergence: g.divergence / g.count,
-    count: g.count,
-    intentChangedRate: g.intentChanged / g.count,
+    averageDivergence: group.divergence / group.count,
+    count: group.count,
+    intentChangedRate: group.intentChanged / group.count,
   }))
 
-  byIntent.sort((a, b) => b.averageDivergence - a.averageDivergence)
+  byIntent.sort(
+    (left: IntentDriftSummary, right: IntentDriftSummary) =>
+      right.averageDivergence - left.averageDivergence
+  )
 
   return {
     averageDivergence,
