@@ -1,5 +1,3 @@
-// src/domains/wallet/creditAxg.ts
-
 import type { Prisma } from '@prisma/client'
 import { prisma } from '@/infrastructure/db/prisma'
 import { getAsset } from '@/lib/assets/registry'
@@ -15,13 +13,13 @@ type Tx = Prisma.TransactionClient
 
 export async function creditAxg(
   userId: string,
-  amount: string,
+  amount: number,
   note?: string
 ) {
   const asset = getAsset('AXG')
 
   const amountBaseUnits = parseDisplayToBaseUnits(
-    String(amount),
+    amount.toString(),
     asset.decimals
   )
 
@@ -51,7 +49,7 @@ export async function creditAxg(
         data: {
           userId,
           walletId: wallet.id,
-          tokenType: asset.code as any, // legacy bridge
+          tokenType: asset.code as any,
           assetCode: asset.code,
           amount: 0,
           amountBaseUnits: bigintToDecimal(0n),
@@ -76,7 +74,6 @@ export async function creditAxg(
       },
     })
 
-    // ✅ FIX: Transaction records DELTA, not resulting balance
     const transaction = await tx.transaction.create({
       data: {
         userId,
@@ -87,9 +84,9 @@ export async function creditAxg(
         ),
         tokenType: asset.code as any,
         assetCode: asset.code,
-        amountBaseUnits: bigintToDecimal(amountBaseUnits), // ✅ FIXED
-        feeBaseUnits: bigintToDecimal(0n), // explicit
-        intent: 'MANUAL_CREDIT', // ✅ promote out of metadata
+        amountBaseUnits: bigintToDecimal(amountBaseUnits),
+        feeBaseUnits: bigintToDecimal(0n),
+        intent: 'MANUAL_CREDIT',
         metadata: {
           note: note ?? null,
         },
@@ -101,13 +98,11 @@ export async function creditAxg(
       balanceId: updatedBalance.id,
       transactionId: transaction.id,
 
-      // display
       newAmount: formatBaseUnits(
         nextBaseUnits,
         asset.decimals
       ),
 
-      // truth
       newAmountBaseUnits: nextBaseUnits.toString(),
     }
   })
