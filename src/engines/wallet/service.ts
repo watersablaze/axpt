@@ -674,7 +674,7 @@ export async function transferToken(
           {
             assetCode,
             amountBaseUnits: senderDebitBaseUnits,
-            direction: type: TRANSACTION_TYPES.DEBIT,
+            direction: TRANSACTION_TYPES.DEBIT,
           }
         )
 
@@ -686,7 +686,7 @@ export async function transferToken(
           {
             assetCode,
             amountBaseUnits: recipientCreditBaseUnits,
-            direction: type: TRANSACTION_TYPES.CREDIT',
+            direction: TRANSACTION_TYPES.CREDIT,
           }
         )
 
@@ -720,7 +720,7 @@ export async function transferToken(
               zoneThrottleMultiplier: zoneThrottle.throttleMultiplier,
               zoneCooldownMs: zoneThrottle.cooldownMs,
               weight: adjustedWeight,
-              direction: type: TRANSACTION_TYPES.DEBIT,
+              direction: TRANSACTION_TYPES.DEBIT,
               requestId,
               idempotencyKey,
               linkedCreditEventId: null,
@@ -743,7 +743,7 @@ export async function transferToken(
           data: {
             userId: toUserId,
             walletId: toWallet.id,
-            type: TRANSACTION_TYPES.CREDIT',
+            type: TRANSACTION_TYPES.CREDIT,
             journalGroupId,
             amount: toLegacyFloat(
               recipientCreditBaseUnits,
@@ -765,7 +765,7 @@ export async function transferToken(
               zoneThrottleMultiplier: zoneThrottle.throttleMultiplier,
               zoneCooldownMs: zoneThrottle.cooldownMs,
               weight: adjustedWeight,
-              direction: type: TRANSACTION_TYPES.CREDIT',
+              direction: TRANSACTION_TYPES.CREDIT,
               requestId,
               linkedDebitEventId: debitTx.id,
               fromUserId,
