@@ -851,9 +851,74 @@ export async function transferToken(
 
     logStep('transaction committed')
 
-    if ((riskScore ?? 0) <= 2) {
-      await gradualTrustRecovery({
+    void persistRiskSnapshot({
+      userId: fromUserId,
+      riskScore: transactionRiskScore,
+      riskLevel: transactionRiskLevel,
+      anomalyScore: transactionRiskScore,
+      trustScore: trust.score,
+      reason: 'Transfer runtime evaluation',
+    }).catch((err) => {
+      console.error('[wallet/transfer] persist risk snapshot failed after commit', err)
+    })
+
+    void freezeUserIfCriticalRisk({
+      userId: fromUserId,
+      riskScore: transactionRiskScore,
+      reasons: ['High dynamic risk'],
+    }).catch((err) => {
+      console.error('[wallet/transfer] critical risk freeze failed after commit', err)
+    })
+
+    void prisma.riskEvent.create({
+      data: {
         userId: fromUserId,
+        toUserId,
+        riskScore: transactionRiskScore,
+        riskLevel: transactionRiskLevel,
+        amountBaseUnits: bigintToDecimal(amountBaseUnits),
+        intent:
+          typeof transferMetadata.intent === 'string'
+            ? transferMetadata.intent
+            : 'UNKNOWN',
+        metadata: {
+          adjustedWeight,
+          currentWeight,
+          effectiveCapacity:
+            dynamicCapacity.effectiveCapacity,
+          cooldownMs: dynamicCapacity.cooldownMs,
+          throttleMultiplier:
+            dynamicCapacity.throttleMultiplier,
+        },
+      },
+    }).catch((err) => {
+      console.error('[wallet/transfer] risk event create failed after commit', err)
+    })
+
+    if (transactionRiskScore > 8) {
+      void clusterContainmentEngine().catch((err) => {
+        console.error('[wallet/transfer] cluster containment failed after commit', err)
+      })
+    }
+
+    void clusterContainmentEngine({ triggerUserId: fromUserId }).catch((err) => {
+      console.error('[wallet/transfer] user cluster containment failed after commit', err)
+    })
+
+    if (transactionRiskScore > 7) {
+      void propagateThreatGraph({
+        triggerUserId: fromUserId,
+        depth: 2,
+      }).catch((err) => {
+        console.error('[wallet/transfer] threat graph propagation failed after commit', err)
+      })
+    }
+
+    if ((riskScore ?? 0) <= 2) {
+      void gradualTrustRecovery({
+        userId: fromUserId,
+      }).catch((err) => {
+        console.error('[wallet/transfer] gradual trust recovery failed after commit', err)
       })
     }
 
