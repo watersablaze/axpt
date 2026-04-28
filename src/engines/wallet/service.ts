@@ -738,6 +738,8 @@ export async function transferToken(
             walletId: toWallet.id,
             type: TRANSACTION_TYPES.CREDIT,
             journalGroupId,
+            idempotencyKey: null,
+            intent: transferIntent,
             amount: toLegacyFloat(
               recipientCreditBaseUnits,
               asset.decimals
@@ -760,6 +762,7 @@ export async function transferToken(
               weight: adjustedWeight,
               direction: TRANSACTION_TYPES.CREDIT,
               requestId,
+              idempotencyKey,
               linkedDebitEventId: debitTx.id,
               fromUserId,
               source,
@@ -809,39 +812,6 @@ export async function transferToken(
         })
 
         logStep('balances updated')
-
-        await tx.transaction.update({
-          where: { id: debitTx.id },
-          data: {
-            metadata: {
-              ...transferMetadata,
-              riskScore,
-              riskLevel,
-              zoneId: zoneThrottle.zoneId,
-              zoneSeverity: zoneThrottle.severity,
-              zoneFeeMultiplier: zoneThrottle.feeMultiplier,
-              zoneThrottleMultiplier: zoneThrottle.throttleMultiplier,
-              zoneCooldownMs: zoneThrottle.cooldownMs,
-              weight: adjustedWeight,
-              direction: type: TRANSACTION_TYPES.DEBIT,
-              requestId,
-              transactionId: debitTx.id,
-              idempotencyKey,
-              toUserId,
-              source,
-              note: note ?? null,
-              transferAmountBaseUnits:
-                amountBaseUnits.toString(),
-              feeBaseUnits: feeBaseUnits.toString(),
-              feeMode,
-              creditEventId: creditTx.id,
-              toNextBaseUnits:
-                toNext.amountBaseUnits.toString(),
-              nextAmountBaseUnits:
-                fromNext.amountBaseUnits.toString(),
-            },
-          },
-        })
 
         return {
           result: buildTransferResult({
