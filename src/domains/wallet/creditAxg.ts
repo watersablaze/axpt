@@ -77,7 +77,7 @@ export async function creditAxg(
       data: {
         userId,
         walletId: wallet.id,
-        type: TRANSACTION_TYPES.CREDIT', 
+        type: TRANSACTION_TYPES.CREDIT,
         amount: Number(
           formatBaseUnits(amountBaseUnits, asset.decimals)
         ),
