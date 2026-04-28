@@ -16,6 +16,7 @@ export type TransferRequest = {
   source?: string
   feeBps?: number
   feeMode?: 'SENDER_PAYS' | 'RECIPIENT_PAYS' | 'SPLIT'
+  bypassPolicy?: boolean
   context?: TransferContext
 };
 
