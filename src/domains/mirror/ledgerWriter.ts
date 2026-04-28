@@ -1,3 +1,5 @@
+import { TRANSACTION_TYPES } from '@/domains/wallet/constants/transactionTypes'
+
 export type MirrorDecoded = {
   chainId: number
   tokenType: string
@@ -22,7 +24,9 @@ type LedgerEntryCreateManyInput = {
   blockNumber: bigint
   chainTimestamp: Date | null
   accountId: string
-  direction: type: TRANSACTION_TYPES.DEBIT | type: TRANSACTION_TYPES.CREDIT'
+  direction:
+    | typeof TRANSACTION_TYPES.DEBIT
+    | typeof TRANSACTION_TYPES.CREDIT
   amount: string
   memo: string
 }
@@ -45,7 +49,7 @@ export function buildDoubleEntryRows(opts: {
       blockNumber: d.blockNumber,
       chainTimestamp: d.chainTimestamp ?? null,
       accountId: debitAccountId,
-      direction: type: TRANSACTION_TYPES.DEBIT,
+      direction: TRANSACTION_TYPES.DEBIT,
       amount: d.amountWei,
       memo: 'MirrorTransfer debit',
     },
@@ -59,7 +63,7 @@ export function buildDoubleEntryRows(opts: {
       blockNumber: d.blockNumber,
       chainTimestamp: d.chainTimestamp ?? null,
       accountId: creditAccountId,
-      direction: type: TRANSACTION_TYPES.CREDIT',
+      direction: TRANSACTION_TYPES.CREDIT,
       amount: d.amountWei,
       memo: 'MirrorTransfer credit',
     },

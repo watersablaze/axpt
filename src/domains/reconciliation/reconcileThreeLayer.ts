@@ -124,7 +124,7 @@ export async function reconcileThreeLayer(): Promise<ThreeLayerReconciliationRep
   )
 
   for (const tx of transactions) {
-    if (!tx.assetCode || tx.type !== type: TRANSACTION_TYPES.DEBIT) continue
+    if (!tx.assetCode || tx.type !== TRANSACTION_TYPES.DEBIT) continue
 
     const maybeJob = jobsByWalletEventId.get(tx.id)
     if (!maybeJob) {
