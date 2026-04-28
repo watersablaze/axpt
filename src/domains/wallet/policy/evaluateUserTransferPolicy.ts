@@ -1,6 +1,6 @@
 import { prisma } from '@/infrastructure/db/prisma'
 import type { TransferContext } from '@/domains/wallet/types/transferContext'
-import { TRANSACTION_TYPES } from '../wallet/constants/transactionTypes'
+import { TRANSACTION_TYPES } from '@/domains/wallet/constants/transactionTypes'
 
 const MAX_RESIDENT_TRANSFER = 100_000000n // 100 AXG
 const MAX_DAILY_LIMIT = 500_000000n // 500 AXG
