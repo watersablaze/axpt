@@ -92,8 +92,11 @@ export async function evaluateUserTransferPolicy(
     },
   })
 
+  const summed =
+    dailyVolume._sum.amountBaseUnits
+
   const dailyMovedBaseUnits =
-    BigInt(dailyVolume._sum.amountBaseUnits ?? 0) + amountBaseUnits
+    BigInt(String(summed ?? 0)) + amountBaseUnits
 
   if (dailyMovedBaseUnits > MAX_DAILY_LIMIT) {
     return {
