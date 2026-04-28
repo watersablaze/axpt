@@ -190,12 +190,28 @@ async function maybeReplayExistingTransfer(
   if (!debitTx) return null;
 
   const meta = (debitTx.metadata as Record<string, unknown> | null) ?? {};
-  const creditEventId = String(meta.creditEventId ?? '');
+  const creditTx = debitTx.journalGroupId
+    ? await prisma.transaction.findFirst({
+        where: {
+          journalGroupId: debitTx.journalGroupId,
+          type: TRANSACTION_TYPES.CREDIT,
+        },
+      })
+    : null
+  const creditMeta =
+    (creditTx?.metadata as Record<string, unknown> | null) ?? {}
+  const creditEventId = String(creditTx?.id ?? meta.creditEventId ?? '');
   const feeEventId =
     meta.feeEventId === null || typeof meta.feeEventId === 'undefined'
       ? null
       : String(meta.feeEventId);
-  const toNextBaseUnits = BigInt(String(meta.toNextBaseUnits ?? '0'));
+  const toNextBaseUnits = BigInt(
+    String(
+      creditMeta.nextAmountBaseUnits ??
+        meta.toNextBaseUnits ??
+        '0'
+    )
+  );
   const feeBaseUnitsRaw = meta.feeBaseUnits;
   const feeBaseUnits =
     typeof feeBaseUnitsRaw === 'undefined' || feeBaseUnitsRaw === null
@@ -802,7 +818,6 @@ export async function transferToken(
                 toLockedBaseUnits.toString(),
               nextAmountBaseUnits:
                 toNext.amountBaseUnits.toString(),
-              debitEventId: debitTx.id,
             },
           },
         })
