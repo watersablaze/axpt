@@ -590,14 +590,6 @@ export async function transferToken(
           fromUserId
         )
 
-        const user = await tx.user.findUnique({
-          where: { id: fromUserId },
-          select: {
-            id: true,
-            tier: true,
-          },
-        })
-
         const [fromBalance, toBalance] = await Promise.all([
           tx.balance.findFirst({
             where: {
