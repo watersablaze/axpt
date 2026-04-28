@@ -31,7 +31,10 @@ async function topUpAxgToTarget(
   }
 
   const axg = wallet.balances.find(
-    (balance) =>
+    (balance: {
+      assetCode?: string
+      tokenType?: string | null
+    }) =>
       balance.assetCode === 'AXG' ||
       balance.tokenType === 'AXG'
   )
@@ -46,9 +49,11 @@ async function topUpAxgToTarget(
     return
   }
 
+  const displayAmount = formatBaseUnits(topUpBaseUnits, asset.decimals)
+
   await creditAxg(
     userId,
-    formatBaseUnits(topUpBaseUnits, asset.decimals),
+    Number(displayAmount),
     note
   )
 }
