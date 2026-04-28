@@ -317,7 +317,7 @@ export async function transferToken(
   let riskScore: number | undefined
   let riskLevel: string | undefined
 
-  if (req.context) {
+  if (req.context && !req.bypassPolicy) {
     const { principal, intent } = req.context
     const policy = await evaluateTransferPolicy(req.context)
 
@@ -345,11 +345,19 @@ export async function transferToken(
       riskScore = policy.riskScore
       riskLevel = policy.riskLevel
 
-      const action = await prisma.treasuryAction.create({
+    let action = await prisma.treasuryAction.findUnique({
+      where: {
+        idempotencyKey,
+      },
+    })
+
+    if (!action) {
+      action = await prisma.treasuryAction.create({
         data: {
           initiatorUserId: principal.userId,
           fromUserId,
           toUserId,
+          idempotencyKey,
           assetCode,
           amountBaseUnits: bigintToDecimal(amountBaseUnits),
           intent,
