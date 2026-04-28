@@ -486,6 +486,98 @@ export async function transferToken(
   logStep('wallets fetched')
 
   try {
+    const recentTransfers = await prisma.transaction.findMany({
+      where: {
+        userId: fromUserId,
+        createdAt: {
+          gte: new Date(Date.now() - 60 * 1000),
+        },
+        type: TRANSACTION_TYPES.DEBIT,
+      },
+      select: {
+        metadata: true,
+      },
+    })
+
+    const recentWeight = recentTransfers.reduce(
+      (
+        sum: number,
+        tx: { metadata: unknown }
+      ) => {
+        const meta = tx.metadata as Record<string, unknown> | null
+        const w = Number(meta?.weight ?? 1)
+        return sum + (isNaN(w) ? 1 : w)
+      },
+      0
+    )
+
+    const riskAssessment = await computeRiskScore({
+      userId: fromUserId,
+      amountBaseUnits,
+      recipientUserId: toUserId,
+    })
+
+    const transactionRiskScore = riskAssessment.score
+
+    const baseCapacity = await computeUserCapacity({
+      roles,
+      trustScore: trust.score,
+      userId: fromUserId,
+    })
+
+    const dynamicCapacity = computeDynamicTransferCapacity({
+      riskScore: transactionRiskScore,
+      baseCapacity,
+    })
+
+    const system = await getSystemSecurityState()
+    const globalMultiplier = system.throttle.multiplier
+    const globalCooldown = system.throttle.cooldownMs
+
+    const cooldown = await checkCooldown({
+      userId: fromUserId,
+      cooldownMs: Math.max(
+        dynamicCapacity.cooldownMs,
+        globalCooldown,
+        zoneThrottle.cooldownMs
+      ),
+      intent:
+        typeof transferMetadata.intent === 'string'
+          ? transferMetadata.intent
+          : undefined,
+    })
+
+    if (cooldown.blocked) {
+      throw new WalletError(
+        'COOLDOWN_ACTIVE',
+        `Transfer cooldown active. Try again in ${Math.ceil((cooldown.remainingMs ?? 0) / 1000)}s`,
+        429
+      )
+    }
+
+    const adjustedWeight = Math.ceil(
+      currentWeight *
+        dynamicCapacity.throttleMultiplier *
+        globalMultiplier *
+        zoneThrottle.throttleMultiplier
+    )
+
+    const transactionRiskLevel = dynamicCapacity.riskLevel
+
+    riskScore = transactionRiskScore
+    riskLevel = transactionRiskLevel
+
+    if (
+      recentWeight + adjustedWeight >
+      dynamicCapacity.effectiveCapacity
+    ) {
+      throw new WalletError(
+        'RATE_LIMIT',
+        `Dynamic transfer limit exceeded (${dynamicCapacity.riskLevel})`,
+        429
+      )
+    }
+
     const transfer = await prisma.$transaction(
       async (tx: TransactionClient) => {
         await tx.$queryRawUnsafe(
@@ -558,31 +650,6 @@ export async function transferToken(
 
         logStep('locked balances re-read')
 
-        const recentTransfers = await tx.transaction.findMany({
-          where: {
-            userId: fromUserId,
-            createdAt: {
-              gte: new Date(Date.now() - 60 * 1000),
-            },
-            type: TRANSACTION_TYPES.DEBIT,
-          },
-          select: {
-            metadata: true,
-          },
-        })
-
-        const recentWeight = recentTransfers.reduce(
-          (
-            sum: number,
-            tx: { metadata: unknown }
-          ) => {
-          const meta = tx.metadata as Record<string, unknown> | null
-          const w = Number(meta?.weight ?? 1)
-          return sum + (isNaN(w) ? 1 : w)
-          },
-          0
-        )
-
         const fromLockedBaseUnits = decimalToBigInt(
           fromLocked.amountBaseUnits ?? 0
         )
@@ -593,126 +660,6 @@ export async function transferToken(
 
         if (fromLockedBaseUnits < senderDebitBaseUnits) {
           throw new InsufficientFundsError()
-        }
-
-        const trust = await getUserTrustScore(fromUserId)
-
-        const riskAssessment = await computeRiskScore({
-          userId: fromUserId,
-          amountBaseUnits,
-          recipientUserId: toUserId,
-        })
-
-        const transactionRiskScore = riskAssessment.score
-
-        const baseCapacity = await computeUserCapacity({
-          roles,
-          trustScore: trust.score,
-          userId: fromUserId,
-        })
-
-        const dynamicCapacity = computeDynamicTransferCapacity({
-          riskScore: transactionRiskScore,
-          baseCapacity,
-        })
-
-        const system = await getSystemSecurityState()
-        const globalMultiplier = system.throttle.multiplier
-        const globalCooldown = system.throttle.cooldownMs
-
-        await persistRiskSnapshot({
-          userId: fromUserId,
-          riskScore: transactionRiskScore,
-          riskLevel: dynamicCapacity.riskLevel,
-          anomalyScore: transactionRiskScore,
-          trustScore: trust.score,
-          reason: 'Transfer runtime evaluation',
-        })
-
-        await freezeUserIfCriticalRisk({
-          userId: fromUserId,
-          riskScore: transactionRiskScore,
-          reasons: ['High dynamic risk'],
-        })
-
-        if (transactionRiskScore > 8) {
-          await clusterContainmentEngine()
-        }
-
-        await clusterContainmentEngine({ triggerUserId: fromUserId })
-
-        if (transactionRiskScore > 7) {
-          await propagateThreatGraph({
-            triggerUserId: fromUserId,
-            depth: 2,
-          })
-        }
-
-        const cooldown = await checkCooldown({
-          userId: fromUserId,
-          cooldownMs: Math.max(
-            dynamicCapacity.cooldownMs,
-            globalCooldown,
-            zoneThrottle.cooldownMs
-          ),
-          intent:
-            typeof transferMetadata.intent === 'string'
-              ? transferMetadata.intent
-              : undefined,
-        })
-
-        if (cooldown.blocked) {
-          throw new WalletError(
-            'COOLDOWN_ACTIVE',
-            `Transfer cooldown active. Try again in ${Math.ceil((cooldown.remainingMs ?? 0) / 1000)}s`,
-            429
-          )
-        }
-
-        const adjustedWeight = Math.ceil(
-          currentWeight *
-            dynamicCapacity.throttleMultiplier *
-            globalMultiplier *
-            zoneThrottle.throttleMultiplier
-        )
-
-        const transactionRiskLevel = dynamicCapacity.riskLevel
-
-        riskScore = transactionRiskScore
-        riskLevel = transactionRiskLevel
-
-        await tx.riskEvent.create({
-          data: {
-            userId: fromUserId,
-            toUserId,
-            riskScore: transactionRiskScore,
-            riskLevel: transactionRiskLevel,
-            amountBaseUnits: bigintToDecimal(amountBaseUnits),
-            intent:
-              typeof transferMetadata.intent === 'string'
-                ? transferMetadata.intent
-                : 'UNKNOWN',
-            metadata: {
-              adjustedWeight,
-              currentWeight,
-              effectiveCapacity:
-                dynamicCapacity.effectiveCapacity,
-              cooldownMs: dynamicCapacity.cooldownMs,
-              throttleMultiplier:
-                dynamicCapacity.throttleMultiplier,
-            },
-          },
-        })
-
-        if (
-          recentWeight + adjustedWeight >
-          dynamicCapacity.effectiveCapacity
-        ) {
-          throw new WalletError(
-            'RATE_LIMIT',
-            `Dynamic transfer limit exceeded (${dynamicCapacity.riskLevel})`,
-            429
-          )
         }
 
         const fromNext = executeTransaction(
