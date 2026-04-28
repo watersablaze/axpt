@@ -4,7 +4,7 @@ import SurfaceHeader from '@/components/surfaces/SurfaceHeader'
 export default function FrameworkSurface() {
   return (
     <div className={styles.frameworkSurface}>
-      <div className={styles.surfaceFrame}>
+      <div className="surfaceFrame">
 
         <SurfaceHeader kicker="FRAMEWORK" />
 
@@ -44,8 +44,6 @@ export default function FrameworkSurface() {
           {/* CONTINUITY */}
           <article className={`${styles.slab} ${styles.continuity}`}>
 
-            <span className={styles.cornerTicks} aria-hidden="true" />
-
             <div className={styles.slabTop}>
               <div className={styles.slabLeft}>
                 <span className={styles.slabIndex}>01</span>
@@ -69,8 +67,6 @@ export default function FrameworkSurface() {
           {/* GOVERNANCE */}
           <article className={`${styles.slab} ${styles.governance}`}>
 
-            <span className={styles.cornerTicks} aria-hidden="true" />
-
             <div className={styles.slabTop}>
               <div className={styles.slabLeft}>
                 <span className={styles.slabIndex}>02</span>
@@ -93,8 +89,6 @@ export default function FrameworkSurface() {
 
 {/* SYSTEMS */}
 <article className={`${styles.slab} ${styles.systems}`}>
-
-  <span className={styles.cornerTicks} aria-hidden="true" />
 
   <div className={styles.slabTop}>
     <div className={styles.slabLeft}>

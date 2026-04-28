@@ -2,8 +2,6 @@ import AxisRuntime from '@/components/system/AxisRuntime'
 import SurfaceStack from '@/components/system/SurfaceStack'
 import SurfaceBoundary from '@/components/system/SurfaceBoundary'
 import SurfaceObserver from '@/components/system/SurfaceObserver'
-import SurfaceMagnet from '@/components/system/SurfaceMagnet'
-import SurfaceEngine from '@/components/system/SurfaceEngine'
 import SurfaceSection from '@/components/system/SurfaceSection'
 import CommandCompass from '@/components/navigation/CommandCompass'
 import Header from '@/components/layout/Header'
@@ -12,14 +10,10 @@ import { SURFACES } from '@/lib/surfaces/registry'
 
 export default function Home() {
   return (
-    <main>
-
-      <div className="rails" />
+    <main className="axptPortal">
 
       <AxisRuntime />
       <SurfaceObserver />
-      <SurfaceMagnet />
-      <SurfaceEngine />
       <CommandCompass />
       <Header />
 

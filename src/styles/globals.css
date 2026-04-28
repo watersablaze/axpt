@@ -2,7 +2,7 @@
    AXPT GLOBAL SYSTEM
 ────────────────────────────── */
 
-@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Share+Tech+Mono&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -27,6 +27,7 @@
   --axpt-text-primary: #e8edf2;
   --axpt-text-secondary: rgba(232,237,242,0.72);
   --axpt-text-muted: rgba(232,237,242,0.48);
+  --axpt-declaration: "IBM Plex Sans", system-ui, sans-serif;
   --axpt-mono: "Share Tech Mono", monospace;
   --rail-inset: clamp(42px, 6vw, 72px);
   --rail-opacity: 0.22;     
@@ -39,6 +40,7 @@
   --axis-gap:120px;
   --axis-offset:120px;
   --system-cycle: 16s;
+  --surface-content-start: 140px;
 }
 
 /* ──────────────────────────────
@@ -66,7 +68,7 @@ body {
   color: rgba(245,242,235,0.92);
   position: relative;
   min-height: 100%;
-  overflow-x: clip;
+  overflow-x: hidden;
 }
 
 /* ──────────────────────────────
@@ -120,29 +122,14 @@ html::before {
     transparent 100%
   );
 
-  opacity: 0.22;
-  filter: blur(40px);
+  opacity: 0.10;
+  filter: blur(80px);
   transition:
     opacity 1400ms cubic-bezier(0.22, 1, 0.36, 1),
     filter 1400ms cubic-bezier(0.22, 1, 0.36, 1),
     background 1400ms cubic-bezier(0.22, 1, 0.36, 1);
 
-  animation: fieldPressure 28s ease-in-out infinite;
   mix-blend-mode: soft-light;
-}
-
-@keyframes fieldPressure {
-  0%   { opacity: 0.48; }
-  50%  { opacity: 0.65; }
-  100% { opacity: 0.48; }
-}
-
-html[data-scroll-dir="down"] .surface {
-  transform: translateY(50px) scale(0.985);
-}
-
-html[data-scroll-dir="up"] .surface {
-  transform: translateY(-40px) scale(0.985);
 }
 
 html::after {
@@ -231,73 +218,6 @@ body.debug-surfaces .surface::after {
   pointer-events: none;
 }
 
-/* debug */
-
-body::before {
-
-  content: "";
-
-  position: fixed;
-
-  left: 50%;
-  top: 0;
-  bottom: 0;
-
-  width: 1px;
-
-  
-
-  pointer-events: none;
-}
-
-
-body::after {
-
-  content:"";
-
-  position:fixed;
-  inset:0;
-
-  pointer-events:none;
-
-  z-index:-2;
-
-  filter: blur(80px);
-
-  opacity:.35;
-
-}
-
-/* LEFT + RIGHT STRUCTURAL RAILS */
-
-body .rails::before,
-body .rails::after {
-  content:"";
-  position:fixed;
-  top:0;
-  bottom:0;
-
-  width:1px;
-
-  pointer-events:none;
-  z-index:-0.6;
-
-  background:rgba(200,220,230,var(--rail-opacity));
-}
-
-body .rails {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-}
-
-body .rails::before {
-  left:var(--rail-inset);
-}
-
-body .rails::after {
-  right:var(--rail-inset);
-}
 
 /* ──────────────────────────────
    AXPT UI PRIMITIVES
@@ -464,14 +384,13 @@ body[data-layer="PRESENCE"] .header::before {
 
   position: relative;
 
-  width: calc(100% - (var(--rail-inset) * 2));
-  margin-left: auto;
-  margin-right: auto;
+  width: 100%;
 
   min-height: 100svh;
 
 }
 
+/*
 .surfaceStack > section::after {
 
   content:"";
@@ -499,69 +418,32 @@ body[data-layer="PRESENCE"] .header::before {
   opacity:.14;
 
 }
-
-.surfaceStack > section::before {
-
-  content:"";
-
-  position:absolute;
-
-  left:0;
-  right:0;
-
-  top:-120px;
-
-  height:120px;
-
-  pointer-events:none;
-
-  background:
-
-    radial-gradient(
-      ellipse at 50% 0%,
-      rgba(140,200,210,0.08),
-      transparent 70%
-    );
-
-  opacity:.18;
-
-}
+  */
 
 /* core section shell */
 .surface {
+
   --axis-depth: 0;
-  --axis-emerge: calc(1 - var(--axis-depth));
-  --axis-gravity: calc(1 - var(--axis-depth));
 
   position: relative;
+
   width: calc(100% - (var(--rail-inset) * 2));
+
   margin-left: auto;
   margin-right: auto;
+
   min-height: 100svh;
-  transform-style: preserve-3d;
+
   padding-top: clamp(40px, 5vh, 72px);
   padding-bottom: clamp(80px, 8vh, 120px);
+
   overflow: hidden;
 
-  will-change: transform, filter, opacity;
-  backface-visibility: hidden;
-
-  opacity: calc(.55 + var(--axis-emerge) * .45);
-
-  transform:
-    translate3d(
-      0,
-      calc(var(--axis-depth) * 24px - var(--axis-gravity) * 8px),
-      0
-    )
-    scale(calc(.988 + var(--axis-emerge) * .012));
-
-  filter: blur(calc(var(--axis-depth) * 1.4px));
+  opacity: calc(.88 + ((1 - var(--axis-depth, 0)) * .12));
 
   transition:
-    transform 240ms cubic-bezier(.22,1,.36,1),
-    filter 240ms cubic-bezier(.22,1,.36,1),
-    opacity 240ms cubic-bezier(.22,1,.36,1);
+    opacity 420ms ease;
+
 }
 
 /* inner breathing room: this is the controlled buffer */
@@ -590,30 +472,14 @@ body[data-layer="PRESENCE"] .header::before {
   padding-bottom: clamp(64px, 8vh, 104px);
 }
 
-.surfaceFrame > * {
-
-  transition:
-    transform 600ms cubic-bezier(.22,1,.36,1),
-    opacity 600ms cubic-bezier(.22,1,.36,1);
-
-  transform:
-    translateX(calc((1 - var(--axis-lock)) * 18px))
-    translateZ(0);
-
-}
-
 /* section rhythm */
 
 .surfaceStack > section:first-child {
   padding-top: 0;
 }
 
-.surfaceFrame > *:nth-child(even) {
-
-  transform:
-    translateX(calc((1 - var(--axis-lock)) * -18px))
-    translateZ(0);
-
+.surfaceFrame > * {
+  transform: translateZ(0);
 }
 
 .surface > * {
@@ -622,87 +488,9 @@ body[data-layer="PRESENCE"] .header::before {
   transform: translateZ(0);
 }
 
-section[data-layer="ENTRY"].surface {
-
-  --axis-depth: 0 !important;
-
-  transform: none !important;
-  filter: none !important;
-
-  opacity: 1;
-
-  transition: none;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-  min-height: 80vh;
-
-}
-
-section[data-layer="FOUNDATION"] {
-
-  transform-origin: center top;
-
-}
-
-section[data-layer="FOUNDATION"]::before {
-
-  content:"";
-
-  position:absolute;
-
-  inset:0;
-
-  pointer-events:none;
-
-  background:
-
-    radial-gradient(
-      ellipse at 50% 0%,
-      rgba(120,200,210,0.06),
-      transparent 70%
-    );
-
-  opacity:.35;
-
-}
-
-section[data-layer="FOUNDATION"].surface {
-
-  transform:
-    translate3d(
-      0,
-      calc(var(--axis-depth) * 24px),
-      0
-    )
-    scale(calc(0.992 + var(--axis-emerge) * 0.008));
-
-}
-
-section[data-layer="FRAMEWORK"] .surfaceFrame {
-  position: relative;
-  z-index: 2;
-  transform: none !important;
-}
-
-section[data-layer="FRAMEWORK"] .surfaceFrame > * {
-  transform: translateZ(0);
-}
-
 section[data-layer="PRESENCE"] {
   padding-top: 6vh;
   padding-bottom: 6vh;
-}
-
-section[data-layer="PRESENCE"].surface {
-
-  min-height: 72vh;
-
-  padding-top: 6vh;
-  padding-bottom: 6vh;
-
 }
 
 /* ENTRY has no wash */
@@ -714,36 +502,12 @@ section[data-layer="PRESENCE"].surface {
 
 body[data-surface="PRESENCE"] .axisLine {
 
-  opacity: .32;
+  opacity: .18;
 
   filter:
-    blur(.4px)
-    drop-shadow(0 0 10px rgba(170,230,255,.55));
+    blur(.3px)
+    drop-shadow(0 0 4px rgba(170,230,255,.22));
 
-}
-
-body[data-layer="ENTRY"] .surface {
-  --axis-depth: .55;
-}
-
-body[data-layer="FOUNDATION"] .surface {
-  --axis-depth: .38;
-}
-
-body[data-layer="FRAMEWORK"] .surface {
-  --axis-depth: .15;
-}
-
-body[data-layer="INTERFACES"] .surface {
-  --axis-depth: .05;
-}
-
-body[data-layer="ETHOS"] .surface {
-  --axis-depth: .02;
-}
-
-body[data-layer="PRESENCE"] .surface {
-  --axis-depth: 0;
 }
 
 .frameworkAxis,
@@ -807,73 +571,6 @@ body[data-layer="PRESENCE"] .surface {
 
 }
 
-.axisCurrent {
-
-  position: fixed;
-
-  top: -20vh;
-  bottom: -20vh;
-
-  left: var(--axis-center);
-
-  width: 3px;
-
-  pointer-events: none;
-
-  z-index: 1;
-
-  background:
-    linear-gradient(
-      to bottom,
-      transparent,
-      rgba(150,210,220,0.18),
-      rgba(150,210,220,0.35),
-      rgba(150,210,220,0.18),
-      transparent
-    );
-
-  filter: blur(3px);
-
-  opacity: 0.45;
-
-  animation:
-    axisDrift 14s linear infinite,
-    axisPulse 6s ease-in-out infinite;
-
-}
-
-@keyframes axisPulse {
-
-  0%   { filter: blur(3px); opacity: .42; }
-  50%  { filter: blur(4px); opacity: .55; }
-  100% { filter: blur(3px); opacity: .42; }
-
-}
-
-@keyframes axisDrift {
-
-  0% {
-    transform: translate(-50%, -40vh);
-  }
-
-  25% {
-    transform: translate(calc(-50% + 1px), -10vh);
-  }
-
-  50% {
-    transform: translate(calc(-50% - 1px), 10vh);
-  }
-
-  75% {
-    transform: translate(calc(-50% + 1px), 30vh);
-  }
-
-  100% {
-    transform: translate(-50%, 40vh);
-  }
-
-}
-
 .axisField {
 
   position: fixed;
@@ -892,10 +589,6 @@ body[data-layer="PRESENCE"] .surface {
 
 }
 
-
-body.axis-resonance .axisField {
-  filter: brightness(1.08);
-}
 
 .interfaceCard {
   width: 100%;

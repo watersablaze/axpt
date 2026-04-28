@@ -1,80 +1,256 @@
 .foundationSurface {
-  width:100%;
-  min-height:80vh;
-  position:relative;
+  width: 100%;
+  position: relative;
+  overflow: clip;
+  isolation: isolate;
+}
+
+.foundationSurface::before {
+  content: "";
+  position: absolute;
+  inset: 12% 0 10%;
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      94deg,
+      transparent 0%,
+      rgba(0,0,0,.055) 24%,
+      rgba(180,210,220,.032) 48%,
+      rgba(0,0,0,.045) 68%,
+      transparent 100%
+    );
+
+  opacity: .42;
+  filter: blur(48px);
+  transform: translateX(5%);
+  animation: foundationFieldDrift 72s ease-in-out infinite alternate;
 }
 
 /* ======================================================
-   LAYER MARKER
+   STRUCTURE
 ====================================================== */
 
-.layerMarker {
-  position: absolute;
-  left: var(--rail-inset);
-  top: 6vh;
+.foundationInner {
+  width: 100%;
+  max-width: 1040px;
+  margin: 0 auto;
 
-  font-family: var(--axpt-mono);
-  font-size: 0.64rem;
-  letter-spacing: 0.32em;
-  text-transform: uppercase;
-
-  color: rgba(200,210,220,0.38);
-  transition: color 320ms ease, opacity 320ms ease;
+  display: grid;
+  grid-template-columns:
+    minmax(0, 620px)
+    minmax(220px, 1fr);
+  column-gap: clamp(56px, 7vw, 120px);
+  align-items: start;
 }
 
-.layerMarkerActive {
-  color: rgba(140,210,175,0.65);
+.foundationContent {
+  grid-column: 1 / -1;
+  position: relative;
+
+  display: grid;
+  grid-template-columns:
+    minmax(0, 560px)
+    minmax(260px, 360px);
+  column-gap: clamp(48px, 6vw, 92px);
+  row-gap: 34px;
+}
+
+.foundationContent::before {
+  content: "";
+  position: absolute;
+  top: 72px;
+  bottom: 6px;
+  left: clamp(584px, 61vw, 606px);
+  width: 1px;
+
+  background:
+    linear-gradient(
+      to bottom,
+      transparent,
+      rgba(190,215,225,.09),
+      transparent
+    );
+
+  opacity: .7;
+}
+
+.foundationContent > :global(.header),
+.headlineBlock,
+.headline,
+.divider,
+.subline {
+  grid-column: 1;
 }
 
 /* ======================================================
    TYPOGRAPHY
 ====================================================== */
 
+.headlineBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.doctrineCode {
+  font-family: var(--axpt-mono);
+  font-size: .58rem;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+
+  color: rgba(205,215,225,.38);
+}
+
 .headline {
-  font-size: clamp(2.15rem, 3vw, 2.6rem);
+  max-width: 24ch;
+  margin: 0;
+
+  font-family: var(--axpt-declaration);
+  font-size: clamp(1.65rem, 2.25vw, 2.35rem);
   line-height: 1.18;
   font-weight: 500;
-  letter-spacing: -0.012em;
+  letter-spacing: -0.018em;
 
-  margin: 0 0 22px 0;
-  color: rgba(250,245,230,0.95);
+  color: rgba(232,238,242,.84);
+  text-wrap: balance;
+  text-rendering: geometricPrecision;
 }
 
 .subline {
-  font-size: 1rem;
-  line-height: 1.75;
-  max-width: 66ch;
+  max-width: 54ch;
+  margin: 0;
 
-  color: rgba(220,235,245,0.75);
-  margin-bottom: 34px;
+  font-size: .98rem;
+  line-height: 1.78;
+
+  color: rgba(210,220,228,.62);
 }
 
-.pillars {
-  display: flex;
-  gap: 34px;
-  flex-wrap: wrap;
+/* ======================================================
+   DIVIDER
+====================================================== */
 
-  font-family: var(--axpt-mono);
-  font-size: 0.7rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-
-  color: rgba(190,210,220,0.6);
-}
-
-.pillars span {
-  position: relative;
-  padding-bottom: 10px;
-}
-
-.pillars span::after {
-  content: "";
-  position: absolute;
-  bottom: 2px;
-  left: 0;
-
-  width: 22px;
+.divider {
+  width: 100%;
+  max-width: 160px;
   height: 1px;
 
-  background: rgba(190,210,220,0.34);
+  background:
+    linear-gradient(
+      to right,
+      rgba(180,210,220,.22),
+      rgba(180,210,220,.035)
+    );
+}
+
+/* ======================================================
+   FOUNDATIONAL DOMAINS
+====================================================== */
+
+.domains {
+  grid-column: 2;
+  grid-row: 2 / span 4;
+  align-self: end;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
+  padding: 8px 0;
+
+  border-top: 1px solid rgba(210,225,235,.09);
+  border-bottom: 1px solid rgba(210,225,235,.055);
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,.018),
+      rgba(255,255,255,.006)
+    );
+}
+
+.domain {
+  position: relative;
+  margin: 0;
+  padding: 20px 18px 21px 20px;
+
+  border-bottom: 1px solid rgba(210,225,235,.055);
+}
+
+.domain::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 22px;
+  bottom: 22px;
+  width: 1px;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(210,225,235,.16),
+      rgba(210,225,235,.025)
+    );
+}
+
+.domainKicker {
+  margin-bottom: 8px;
+
+  font-family: var(--axpt-mono);
+  font-size: .58rem;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+
+  color: rgba(215,225,235,.62);
+}
+
+.domain p {
+  margin: 0;
+
+  font-size: .86rem;
+  line-height: 1.62;
+
+  color: rgba(210,220,228,.5);
+}
+
+@keyframes foundationFieldDrift {
+  0% {
+    transform: translateX(5%) scaleX(1);
+  }
+
+  100% {
+    transform: translateX(-5%) scaleX(1.04);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .foundationSurface::before {
+    animation: none;
+  }
+}
+
+/* ======================================================
+   RESPONSIVE
+====================================================== */
+
+@media (max-width: 980px) {
+  .foundationInner,
+  .foundationContent {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .foundationContent::before {
+    display: none;
+  }
+
+  .headline {
+    max-width: 24ch;
+  }
+
+  .domains {
+    width: 100%;
+    max-width: 560px;
+  }
 }

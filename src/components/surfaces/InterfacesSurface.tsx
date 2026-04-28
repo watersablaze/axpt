@@ -23,7 +23,7 @@ export default function InterfacesSurface({ onCouncilOpen }: Props) {
         onClose={() => setCouncilGateOpen(false)}
       />
 
-      <div className={styles.surfaceFrame}>
+      <div className="surfaceFrame">
 
         <SurfaceHeader kicker="INTERFACES" />
 

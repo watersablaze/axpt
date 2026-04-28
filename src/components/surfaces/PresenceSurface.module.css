@@ -6,18 +6,6 @@
 .presenceSurface {
   width: 100%;
   position: relative;
-  overflow: hidden;
-}
-
-/* Atmospheric chamber glow */
-
-.presenceSurface::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-
-  pointer-events: none;
-  opacity: 0.35;
 }
 
 /* ──────────────────────────────
@@ -28,16 +16,17 @@
 
   position: relative;
 
-  min-height: 100vh;
-
   display: flex;
   flex-direction: column;
 
-  justify-content: space-between;
+  justify-content: flex-end;
 
-  padding: 120px var(--rail-inset) 60px;
+  min-height: 58vh;
 
-  text-align: center;
+  padding:
+    clamp(80px, 10vh, 140px)
+    0
+    40px;
 
 }
 
@@ -49,44 +38,15 @@
 
   position: absolute;
 
-  top: 50%;
-  left: var(--axis-center);
+  inset: 0;
 
-  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   pointer-events: none;
 
-  opacity: 0.12;
-
-}
-
-/* Sigil reveal when section becomes active */
-
-body[data-surface="PRESENCE"] .sigilWrapper {
-
-  animation:
-    presenceSigilReveal 2.2s cubic-bezier(.22,1,.36,1) forwards;
-
-}
-
-@keyframes presenceSigilReveal {
-
-  0% {
-    opacity: 0;
-    transform: translate(-50%, -50%) scale(.94);
-    filter: blur(8px);
-  }
-
-  60% {
-    opacity: .18;
-    filter: blur(2px);
-  }
-
-  100% {
-    opacity: .12;
-    transform: translate(-50%, -50%) scale(1);
-    filter: blur(0);
-  }
+  opacity: .045;
 
 }
 
@@ -94,29 +54,16 @@ body[data-surface="PRESENCE"] .sigilWrapper {
 
 .sigil {
 
-  width: min(520px, 46vw);
+  width: min(360px, 32vw);
   height: auto;
+
+  opacity: .42;
 
   mix-blend-mode: luminosity;
 
   filter:
     grayscale(100%)
-    contrast(.95)
-    blur(.6px);
-
-  animation: sigilDrift 18s ease-in-out infinite alternate;
-
-}
-
-@keyframes sigilDrift {
-
-  0% {
-    transform: scale(.998);
-  }
-
-  100% {
-    transform: scale(1.004);
-  }
+    contrast(.9);
 
 }
 
@@ -126,8 +73,6 @@ body[data-surface="PRESENCE"] .sigilWrapper {
 
 .footerBar {
 
-  margin-top: auto;
-
   width: 100%;
 
   display: grid;
@@ -136,39 +81,11 @@ body[data-surface="PRESENCE"] .sigilWrapper {
 
   align-items: end;
 
-  padding-top: 40px;
+  gap: 32px;
 
-  position: relative;
+  padding-top: 28px;
 
-}
-
-/* Grounding strip */
-
-.footerBar::before {
-
-  content: "";
-
-  position: absolute;
-
-  left: -4vw;
-  right: -4vw;
-
-  bottom: -32px;
-
-  height: 110px;
-
-  background: linear-gradient(
-    to top,
-    rgba(8,20,32,0.32),
-    rgba(8,20,32,0.16),
-    transparent
-  );
-
-  filter: blur(18px);
-  opacity: .35;
-
-  pointer-events: none;
-  z-index: -1;
+  border-top: 1px solid rgba(255,255,255,.04);
 
 }
 
@@ -179,42 +96,48 @@ body[data-surface="PRESENCE"] .sigilWrapper {
 .footerTitle {
 
   font-family: var(--axpt-mono);
-  font-size: 0.56rem;
 
-  letter-spacing: 0.32em;
+  font-size: .52rem;
+
+  letter-spacing: .28em;
+
   text-transform: uppercase;
 
-  color: rgba(200,210,220,0.45);
+  color: rgba(210,220,228,.42);
 
 }
 
 .footerValue {
 
   font-family: var(--axpt-mono);
-  font-size: 0.54rem;
 
-  letter-spacing: 0.22em;
+  font-size: .52rem;
+
+  letter-spacing: .18em;
+
   text-transform: uppercase;
 
-  color: rgba(210,200,170,0.24);
+  color: rgba(200,208,216,.32);
 
-  line-height: 1.2;
+  line-height: 1.4;
 
 }
 
 .footerLink {
 
-  margin-top: 8px;
+  margin-top: 10px;
 
   font-family: var(--axpt-mono);
-  font-size: 0.58rem;
 
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
+  font-size: .56rem;
 
-  color: rgba(140,210,175,0.62);
+  letter-spacing: .18em;
+
+  color: rgba(180,210,220,.58);
 
   text-decoration: none;
+
+  transition: color 220ms ease;
 
 }
 

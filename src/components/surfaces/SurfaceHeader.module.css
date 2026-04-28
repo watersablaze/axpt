@@ -117,22 +117,6 @@
     0 0 16px rgba(130,210,235,0.35),
     0 0 42px rgba(90,180,220,0.18);
 
-  animation: nodeBreath 5.4s ease-in-out infinite;
-
-}
-
-@keyframes nodeBreath {
-
-  0%,100% {
-    transform: scale(1);
-    opacity: .82;
-  }
-
-  50% {
-    transform: scale(1.06);
-    opacity: 1;
-  }
-
 }
 
 .title {
