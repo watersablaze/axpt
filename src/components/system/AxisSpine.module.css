@@ -1,33 +1,24 @@
 /* ─────────────────────────────────────
-   AXPT — AXIS SPINE SYSTEM
+   AXPT — AXIS SPINE
 ───────────────────────────────────── */
 
 .axisLayer {
+
   position: fixed;
   inset: 0;
+
   pointer-events: none;
-  z-index: 4;
-}
 
-.active {
-
-  opacity: .8;
-
-  transform: translate(-50%, -50%) scale(1.4);
-
-  box-shadow:
-    0 0 4px rgba(200,240,255,.5),
-    0 0 10px rgba(180,220,240,.25);
+  z-index: 2;
 
 }
 
 /* ─────────────────────────────────────
-   CENTER AXIS LINE
+   CENTRAL SPINE
 ───────────────────────────────────── */
 
-/* main axis line */
-
 .axisLine {
+
   position: absolute;
 
   left: var(--axis-center);
@@ -38,46 +29,95 @@
 
   width: 1px;
 
+  opacity: .12;
+
   background:
     linear-gradient(
       to bottom,
-      rgba(200,220,230,.04),
-      rgba(200,220,230,.16),
-      rgba(200,220,230,.04)
+      rgba(200,220,230,.02),
+      rgba(200,220,230,.12),
+      rgba(200,220,230,.02)
     );
 
-  opacity: .1;
 }
 
-body.axis-resonance .axisLine::after {
+/* slow infrastructural current */
 
-  animation: axisResonanceTravel 0.9s ease-out;
+.axisLine::after {
+
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  opacity: .16;
+
+  background:
+    linear-gradient(
+      to bottom,
+      transparent,
+      rgba(210,240,255,.18),
+      transparent
+    );
+
+  animation: axisCurrentDrift 18s linear infinite;
 
 }
 
-@keyframes axisResonanceTravel {
+.axisLine::before {
+
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  opacity: .08;
+
+  background:
+    linear-gradient(
+      to bottom,
+      transparent,
+      rgba(210,240,255,.10),
+      transparent
+    );
+
+  animation: axisCurrentDrift 28s linear infinite reverse;
+
+}
+
+@keyframes axisCurrentDrift {
+
+  0% {
+    transform: translateY(-140%);
+  }
+
+  100% {
+    transform: translateY(140%);
+  }
+
+}
+
+/* ─────────────────────────────────────
+   RESONANCE
+───────────────────────────────────── */
+
+body.axis-resonance .axisLine {
+
+  animation: axisResonance 900ms ease-out;
+
+}
+
+@keyframes axisResonance {
 
   0% {
 
-    opacity: .15;
-
-    transform: scaleY(.2);
-
-    box-shadow:
-      0 0 8px rgba(200,240,255,.4),
-      0 0 18px rgba(180,230,255,.25);
+    opacity: .12;
 
   }
 
-  50% {
+  40% {
 
-    opacity: .9;
-
-    transform: scaleY(1);
-
-    box-shadow:
-      0 0 16px rgba(200,240,255,.6),
-      0 0 40px rgba(180,230,255,.35);
+    opacity: .22;
 
   }
 
@@ -85,96 +125,6 @@ body.axis-resonance .axisLine::after {
 
     opacity: .12;
 
-    transform: scaleY(1);
-
-  }
-
-}
-
-/* shimmer */
-
-.axisLine::after {
-
-  content:"";
-
-  position:absolute;
-  inset:0;
-
-  background:
-    linear-gradient(
-      to bottom,
-      transparent,
-      rgba(210,240,255,.35),
-      transparent
-    );
-
-  opacity:.2;
-
-  animation: axisCurrent 14s linear infinite;
-
-}
-
-@keyframes axisCurrent {
-
-  0% {
-    transform: translateY(-120%);
-  }
-
-  100% {
-    transform: translateY(120%);
-  }
-
-}
-
-.axisLine::before {
-
-  content:"";
-
-  position:absolute;
-  inset:0;
-
-  background:
-    linear-gradient(
-      to bottom,
-      transparent,
-      rgba(210,240,255,.15),
-      transparent
-    );
-
-  opacity:.15;
-
-  animation: axisCurrent 22s linear infinite reverse;
-
-}
-
-
-/* ─────────────────────────────────────
-   AXIS RESONANCE
-───────────────────────────────────── */
-
-body.axis-resonance .axisLine {
-
-  animation: axisResonancePulse .9s ease-out;
-  transform: translateX(-50%) scaleY(1.05);
-
-}
-
-@keyframes axisResonancePulse {
-
-  0% {
-    opacity:.25;
-  }
-
-  40% {
-    opacity:.9;
-
-    box-shadow:
-      0 0 12px rgba(200,240,255,.9),
-      0 0 36px rgba(160,220,240,.45);
-  }
-
-  100% {
-    opacity:.25;
   }
 
 }
