@@ -1,25 +1,26 @@
-export const runtime = 'nodejs';
+export const runtime = 'nodejs'
 
-import { NextResponse } from 'next/server';
-import { prisma } from '@/infrastructure/db/prisma';
-import { DEFAULT_GATES } from '@/lib/axpt/defaultGates';
-import { DEFAULT_GATE_ITEM_TEMPLATES } from '@/lib/axpt/gateTemplates';
+import { NextResponse } from 'next/server'
+import { prisma } from '@/infrastructure/db/prisma'
+import { DEFAULT_GATES } from '@/lib/axpt/defaultGates'
+import { DEFAULT_GATE_ITEM_TEMPLATES } from '@/lib/axpt/gateTemplates'
+import type { Prisma } from '@prisma/client'
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const body = await req.json()
 
     if (!body?.title || typeof body.title !== 'string') {
       return NextResponse.json(
         { ok: false, error: 'title is required' },
         { status: 400 }
-      );
+      )
     }
 
     /**
-     * 1️⃣ WRITE PHASE — short transaction
+     * 1️⃣ WRITE PHASE
      */
-    const caseId = await prisma.$transaction(async (tx: any) => {
+    const caseId = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       const c = await tx.case.create({
         data: {
           title: body.title.trim(),
@@ -27,7 +28,7 @@ export async function POST(req: Request) {
           mode: body.mode ?? 'COORDINATION_ONLY',
           status: body.status ?? 'ACTIVE',
         },
-      });
+      })
 
       const gateDefs =
         Array.isArray(DEFAULT_GATES) && DEFAULT_GATES.length
@@ -37,7 +38,7 @@ export async function POST(req: Request) {
               { ord: 2, name: 'Gate 2 — Transaction Alignment' },
               { ord: 3, name: 'Gate 3 — System Readiness' },
               { ord: 4, name: 'Gate 4 — Procedural Readiness' },
-            ];
+            ]
 
       const gates = await Promise.all(
         gateDefs.map((g) =>
@@ -49,11 +50,11 @@ export async function POST(req: Request) {
             },
           })
         )
-      );
+      )
 
       for (const gate of gates) {
-        const templates = DEFAULT_GATE_ITEM_TEMPLATES[gate.ord];
-        if (!templates) continue;
+        const templates = DEFAULT_GATE_ITEM_TEMPLATES[gate.ord]
+        if (!templates) continue
 
         await tx.verificationItem.createMany({
           data: templates.map((t, idx) => ({
@@ -62,7 +63,7 @@ export async function POST(req: Request) {
             description: t.description,
             status: 'OPEN',
           })),
-        });
+        })
       }
 
       await tx.eventLog.create({
@@ -72,14 +73,13 @@ export async function POST(req: Request) {
           action: 'CASE_CREATED',
           detail: { seededTemplates: true },
         },
-      });
+      })
 
-      // ✅ return ONLY the ID
-      return c.id;
-    });
+      return c.id
+    })
 
     /**
-     * 2️⃣ READ / HYDRATION PHASE — OUTSIDE transaction
+     * 2️⃣ READ PHASE
      */
     const hydrated = await prisma.case.findUnique({
       where: { id: caseId },
@@ -93,18 +93,19 @@ export async function POST(req: Request) {
           },
         },
       },
-    });
+    })
 
     if (!hydrated) {
-      throw new Error('CASE_HYDRATION_FAILED');
+      throw new Error('CASE_HYDRATION_FAILED')
     }
 
     return NextResponse.json(
       { ok: true, case: hydrated },
       { status: 201 }
-    );
+    )
   } catch (err: any) {
-    console.error('CASE_CREATE_FAILED', err);
+    console.error('CASE_CREATE_FAILED', err)
+
     return NextResponse.json(
       {
         ok: false,
@@ -112,6 +113,6 @@ export async function POST(req: Request) {
         message: err?.message ?? 'Unknown error',
       },
       { status: 500 }
-    );
+    )
   }
 }

@@ -65,7 +65,7 @@ export async function POST(
      * 🧠 Atomic Approval + Resolution
      */
     const result = await prisma.$transaction(
-      async (tx: TransactionClient) => {
+      async (tx: Prisma.TransactionClient) => {
         const action = await tx.treasuryAction.findUnique({
           where: { id },
           include: { approvals: true },

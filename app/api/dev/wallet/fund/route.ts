@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { TokenType } from '@prisma/client'
+import { TokenType, Prisma } from '@prisma/client'
 import { prisma } from '@/infrastructure/db/prisma'
 import { getAsset, type AssetCode } from '@/lib/assets/registry'
+import { TRANSACTION_TYPES } from '@/domains/wallet/constants/transactionTypes'
 import {
   bigintToDecimal,
   decimalToBigInt,
@@ -52,7 +53,9 @@ export async function POST(req: NextRequest) {
     } = body
 
     const email =
-      typeof rawEmail === 'string' ? rawEmail.trim().toLowerCase() : ''
+      typeof rawEmail === 'string'
+        ? rawEmail.trim().toLowerCase()
+        : ''
 
     if (!email) {
       return NextResponse.json(
@@ -92,7 +95,11 @@ export async function POST(req: NextRequest) {
       )
     }
 
-    const amountDisplay = formatBaseUnits(amountBaseUnits, asset.decimals)
+    const amountDisplay = formatBaseUnits(
+      amountBaseUnits,
+      asset.decimals
+    )
+
     const amountNumber = Number(amountDisplay)
     const note = parseOptionalNote(rawNote)
 
@@ -108,118 +115,109 @@ export async function POST(req: NextRequest) {
       )
     }
 
-const result = await prisma.$transaction(
-  async (tx) => {
-    let wallet = await tx.wallet.findUnique({
-      where: { userId: user.id },
-      select: { id: true },
-    })
+    const result = await prisma.$transaction(
+      async (tx: Prisma.TransactionClient) => {
+        let wallet = await tx.wallet.findUnique({
+          where: { userId: user.id },
+          select: { id: true },
+        })
 
-    if (!wallet) {
-      wallet = await tx.wallet.create({
-        data: { userId: user.id },
-        select: { id: true },
-      })
-    }
+        if (!wallet) {
+          wallet = await tx.wallet.create({
+            data: { userId: user.id },
+            select: { id: true },
+          })
+        }
 
-    let balance = await tx.balance.findFirst({
-      where: {
-        walletId: wallet.id,
-        userId: user.id,
-        assetCode: asset.code,
-      },
-      select: {
-        id: true,
-        amount: true,
-        amountBaseUnits: true,
-      },
-    })
+        let balance = await tx.balance.findFirst({
+          where: {
+            walletId: wallet.id,
+            userId: user.id,
+            assetCode: asset.code,
+          },
+          select: {
+            id: true,
+            amount: true,
+            amountBaseUnits: true,
+          },
+        })
 
-    if (!balance) {
-      balance = await tx.balance.create({
-        data: {
+        if (!balance) {
+          balance = await tx.balance.create({
+            data: {
+              walletId: wallet.id,
+              userId: user.id,
+              tokenType,
+              assetCode: asset.code,
+              amount: 0,
+              amountBaseUnits: bigintToDecimal(0n),
+            },
+            select: {
+              id: true,
+              amount: true,
+              amountBaseUnits: true,
+            },
+          })
+        }
+
+        const currentBaseUnits = decimalToBigInt(
+          balance.amountBaseUnits ?? 0
+        )
+
+        const nextBaseUnits =
+          currentBaseUnits + amountBaseUnits
+
+        const updated = await tx.balance.update({
+          where: { id: balance.id },
+          data: {
+            tokenType,
+            assetCode: asset.code,
+            amount: Number(
+              formatBaseUnits(nextBaseUnits, asset.decimals)
+            ),
+            amountBaseUnits: bigintToDecimal(nextBaseUnits),
+          },
+          select: {
+            id: true,
+            amount: true,
+            amountBaseUnits: true,
+          },
+        })
+
+        const entry = await tx.transaction.create({
+          data: {
+            walletId: wallet.id,
+            userId: user.id,
+            type: TRANSACTION_TYPES.CREDIT,
+            tokenType,
+            assetCode: asset.code,
+            amount: amountNumber,
+            amountBaseUnits: bigintToDecimal(amountBaseUnits),
+            metadata: {
+              source: 'dev-faucet',
+              note,
+              prevAmountBaseUnits: currentBaseUnits.toString(),
+              nextAmountBaseUnits: nextBaseUnits.toString(),
+            },
+          },
+          select: { id: true },
+        })
+
+        return {
           walletId: wallet.id,
-          userId: user.id,
-          tokenType,
-          assetCode: asset.code,
-          amount: 0,
-          amountBaseUnits: bigintToDecimal(0n),
-        },
-        select: {
-          id: true,
-          amount: true,
-          amountBaseUnits: true,
-        },
-      })
-    } else {
-      const lockedBalance = await tx.balance.findUnique({
-        where: { id: balance.id },
-        select: {
-          id: true,
-          amount: true,
-          amountBaseUnits: true,
-        },
-      })
-
-      if (!lockedBalance) {
-        throw new Error('Balance row disappeared during funding')
+          balanceId: updated.id,
+          transactionId: entry.id,
+          newBalance: updated.amount,
+          newBalanceBaseUnits: decimalToBigInt(
+            updated.amountBaseUnits ?? 0
+          ).toString(),
+        }
+      },
+      {
+        maxWait: 10_000,
+        timeout: 15_000,
       }
-
-      balance = lockedBalance
-    }
-
-    const currentBaseUnits = decimalToBigInt(balance.amountBaseUnits ?? 0)
-    const nextBaseUnits = currentBaseUnits + amountBaseUnits
-
-    const updated = await tx.balance.update({
-      where: { id: balance.id },
-      data: {
-        tokenType,
-        assetCode: asset.code,
-        amount: Number(formatBaseUnits(nextBaseUnits, asset.decimals)),
-        amountBaseUnits: bigintToDecimal(nextBaseUnits),
-      },
-      select: {
-        id: true,
-        amount: true,
-        amountBaseUnits: true,
-      },
-    })
-
-    const entry = await tx.transaction.create({
-      data: {
-        walletId: wallet.id,
-        userId: user.id,
-        type: TRANSACTION_TYPES.CREDIT',
-        tokenType,
-        assetCode: asset.code,
-        amount: amountNumber,
-        amountBaseUnits: bigintToDecimal(amountBaseUnits),
-        metadata: {
-          source: 'dev-faucet',
-          note,
-          prevAmountBaseUnits: currentBaseUnits.toString(),
-          nextAmountBaseUnits: nextBaseUnits.toString(),
-        },
-      },
-      select: { id: true },
-    })
-
-    return {
-      walletId: wallet.id,
-      balanceId: updated.id,
-      transactionId: entry.id,
-      newBalance: updated.amount,
-      newBalanceBaseUnits: decimalToBigInt(
-        updated.amountBaseUnits ?? 0
-      ).toString(),
-    }
-  },
-  {
-    maxWait: 10_000,
-    timeout: 15_000,
-  }
-)
+    )
 
     return NextResponse.json({
       ok: true,
@@ -233,13 +231,13 @@ const result = await prisma.$transaction(
   } catch (err: unknown) {
     console.error('[dev wallet fund]', err)
 
-    const message =
-      err instanceof Error ? err.message : 'Funding failed'
-
     return NextResponse.json(
       {
         ok: false,
-        error: message,
+        error:
+          err instanceof Error
+            ? err.message
+            : 'Funding failed',
       },
       { status: 500 }
     )

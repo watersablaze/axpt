@@ -1,24 +1,22 @@
 import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
-import { PrismaClient } from "@prisma/client"
-
-type Tx = Omit<
-  PrismaClient,
-  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
->
+import type { Prisma } from "@prisma/client"
 
 export async function POST(
   req: Request,
-  { params }: { params: Promise<{ caseId: string }> }
+  { params }: { params: { caseId: string } }
 ) {
-  const { caseId } = await params
+  const { caseId } = params
 
   const c = await prisma.case.findUnique({
     where: { id: caseId },
   })
 
   if (!c) {
-    return NextResponse.json({ ok: false }, { status: 404 })
+    return NextResponse.json(
+      { ok: false },
+      { status: 404 }
+    )
   }
 
   // allow dispute from BOTH states
@@ -32,10 +30,12 @@ export async function POST(
     )
   }
 
-await prisma.$transaction(async (tx: Tx) => {
+  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
     await tx.case.update({
       where: { id: caseId },
-      data: { status: "ESCROW_DISPUTED" },
+      data: {
+        status: "ESCROW_DISPUTED",
+      },
     })
 
     await tx.eventLog.create({

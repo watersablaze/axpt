@@ -3,6 +3,7 @@ import type { TransactionClient } from "@prisma/client"
 import { GOLD_SPA_V1 } from "@/lib/templates/goldSpaV1"
 import { appendDomainEvent } from "@/core/events/appendDomainEvent"
 import { EventTypes } from "@/core/events/types"
+import { Prisma } from "@prisma/client"
 
 const TEMPLATE_NAME = "GOLD_SPA_V1"
 const SYSTEM_ACTOR = "SYSTEM"
@@ -71,7 +72,7 @@ async function runPostInit(caseId: string) {
 export async function createGoldSpaCase() {
   assertGoldSpaTemplate()
 
-  const caseRecord = await prisma.$transaction(async (tx: TransactionClient) => {
+  const caseRecord = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
 
     // =========================
     // 🧾 CREATE CASE
