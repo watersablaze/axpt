@@ -1,35 +1,40 @@
- /**
- * AUTH BYPASS NOTICE
- * ------------------
- * This function is intentionally bypassed during infra build-out.
- * Reintroduce auth AFTER:
- * - custodial flows are complete
- * - escrow lifecycle is validated
- * - admin UX is finalized
- */
-
-import { prisma } from '@/infrastructure/db/prisma';
+import { prisma } from '@/infrastructure/db/prisma'
+import { getPrincipal } from '@/domains/auth/getPrincipal'
 
 export async function requireResidentServer() {
-  // TEMPORARY AUTH BYPASS — INFRA BUILD PHASE
-  // This will be removed when auth is reintroduced intentionally
+  const principal = await getPrincipal()
 
-  const user = await prisma.user.findFirst({
-    select: { id: true, email: true, name: true, tier: true },
-    orderBy: { createdAt: 'asc' },
-  });
+  if (!principal?.userId) {
+    throw new Error('Unauthorized')
+  }
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: principal.userId,
+    },
+
+    include: {
+      wallets: {
+        include: {
+          balances: true,
+          blockchainWallet: true,
+        },
+      },
+
+      userRoles: {
+        include: {
+          role: true,
+        },
+      },
+    },
+  })
 
   if (!user) {
-    return {
-    userId: 'DEV_USER',
-    user: {
-      id: 'DEV_USER',
-      email: 'dev@axpt.local',
-      name: 'Dev Resident',
-      tier: 'DEV',
-    },
-  };
-}
+    throw new Error('User not found')
+  }
 
-  return { userId: user.id, user };
+  return {
+    userId: user.id,
+    user,
+  }
 }
