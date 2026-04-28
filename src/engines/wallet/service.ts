@@ -429,6 +429,7 @@ export async function transferToken(
     (req as { role?: WalletRole }).role ?? 'USER'
   const currentWeight = await computeTransferWeight({
     amountBaseUnits,
+    decimals: asset.decimals,
     intent:
       typeof transferMetadata.intent === 'string'
         ? transferMetadata.intent
