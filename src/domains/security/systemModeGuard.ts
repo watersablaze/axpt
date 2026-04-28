@@ -1,35 +1,30 @@
 import { prisma } from '@/infrastructure/db/prisma'
 import { WalletError } from '@/engines/wallet/errors'
 
-type SystemMode = 'NORMAL' | 'ELEVATED' | 'DEFENSIVE' | 'LOCKDOWN'
-
 export async function systemModeGuard() {
-  const setting = await prisma.systemSetting.findUnique({
-    where: { key: 'SYSTEM_MODE' },
-    select: { value: true },
+  const state = await prisma.systemState.findUnique({
+    where: {
+      id: 'global',
+    },
   })
 
-  if (!setting?.value) {
-    return { mode: 'NORMAL' as SystemMode }
+  // fail-open for now if no state row exists
+  if (!state) {
+    return {
+      mode: 'NORMAL',
+    }
   }
 
-  let parsed: { mode?: SystemMode } | null = null
-
-  try {
-    parsed = JSON.parse(setting.value)
-  } catch {
-    return { mode: 'NORMAL' as SystemMode }
-  }
-
-  const mode = parsed?.mode ?? 'NORMAL'
-
-  if (mode === 'LOCKDOWN') {
+  if (state.globalPaused) {
     throw new WalletError(
       'SYSTEM_LOCKDOWN',
-      'System is in lockdown mode. Transfers are temporarily disabled.',
+      state.reason ||
+        'System transfers are temporarily paused.',
       503
     )
   }
 
-  return { mode }
+  return {
+    mode: 'NORMAL',
+  }
 }
