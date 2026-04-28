@@ -96,7 +96,6 @@ export async function POST(request: NextRequest) {
     await persistWhy({
       why,
       scenarioId,
-      assetCode: null,
       systemState: 'EXECUTED',
       metadata: {
         actions,

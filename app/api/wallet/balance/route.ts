@@ -1,83 +1,89 @@
-// app/api/wallet/balance/route.ts
-
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/infrastructure/db/prisma'
-import { resolveLedgerAccountId } from '@/domains/mirror/ledgerAccounts'
-import { TRANSACTION_TYPES } from '@/domains/wallet/constants/transactionTypes'
+import { getAsset } from '@/lib/assets/registry'
+import { formatBaseUnits } from '@/lib/money/baseUnits'
+
+type BalanceRow = {
+  id: string
+  walletId: string
+  userId: string
+  assetCode: string | null
+  tokenType: string | null
+  amount: number
+  amountBaseUnits: { toString(): string } | null
+}
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
 
-  const chainId = Number(searchParams.get('chainId'))
-  const tokenType = searchParams.get('tokenType')
-  const address = searchParams.get('address')
-  const accountIdParam = searchParams.get('accountId')
+  const userId = searchParams.get('userId')
+  const walletId = searchParams.get('walletId')
+  const assetCodeParam = searchParams.get('assetCode')
 
-  if (!chainId || !tokenType) {
+  if (!userId && !walletId) {
     return NextResponse.json(
-      { error: 'chainId and tokenType are required' },
+      { error: 'userId or walletId is required' },
       { status: 400 }
     )
   }
 
-  let accountId = accountIdParam ?? null
+  const where: Record<string, string> = {}
 
-  if (!accountId && address) {
-    accountId = await resolveLedgerAccountId({
-      chainId,
-      tokenType,
-      treasuryAddress: address as `0x${string}`,
-      address: address as `0x${string}`,
-    })
-  }
+  if (userId) where.userId = userId
+  if (walletId) where.walletId = walletId
+  if (assetCodeParam) where.assetCode = assetCodeParam
 
-  if (!accountId) {
-    return NextResponse.json(
-      { error: 'accountId or address required' },
-      { status: 400 }
-    )
-  }
-
-  const entries = await prisma.ledgerEntry.aggregate({
-    where: {
-      chainId,
-      tokenType,
-      accountId,
-    },
-    _sum: {
+  const balances = await prisma.balance.findMany({
+    where,
+    select: {
+      id: true,
+      walletId: true,
+      userId: true,
+      assetCode: true,
+      tokenType: true,
+      amount: true,
       amountBaseUnits: true,
     },
+    orderBy: [{ assetCode: 'asc' }, { tokenType: 'asc' }],
   })
 
-  const credits = await prisma.ledgerEntry.aggregate({
-    where: {
-      chainId,
-      tokenType,
-      accountId,
-      direction: type: TRANSACTION_TYPES.CREDIT',
-    },
-    _sum: { amountBaseUnits: true },
+  const normalized = balances.map((balance: BalanceRow) => {
+    const resolvedAssetCode =
+      typeof balance.assetCode === 'string'
+        ? balance.assetCode
+        : typeof balance.tokenType === 'string'
+        ? balance.tokenType
+        : null
+
+    const baseUnits = balance.amountBaseUnits?.toString() ?? '0'
+
+    if (!resolvedAssetCode) {
+      return {
+        id: balance.id,
+        walletId: balance.walletId,
+        userId: balance.userId,
+        assetCode: null,
+        balance: String(balance.amount ?? 0),
+        balanceBaseUnits: baseUnits,
+        decimals: null,
+      }
+    }
+
+    const asset = getAsset(resolvedAssetCode as 'AXG' | 'NMP' | 'USD')
+
+    return {
+      id: balance.id,
+      walletId: balance.walletId,
+      userId: balance.userId,
+      assetCode: resolvedAssetCode,
+      balance: formatBaseUnits(BigInt(baseUnits), asset.decimals),
+      balanceBaseUnits: baseUnits,
+      decimals: asset.decimals,
+    }
   })
-
-  const debits = await prisma.ledgerEntry.aggregate({
-    where: {
-      chainId,
-      tokenType,
-      accountId,
-      direction: type: TRANSACTION_TYPES.DEBIT,
-    },
-    _sum: { amountBaseUnits: true },
-  })
-
-  const creditSum = BigInt(credits._sum.amount ?? '0')
-  const debitSum = BigInt(debits._sum.amount ?? '0')
-
-  const balance = creditSum - debitSum
 
   return NextResponse.json({
-    chainId,
-    tokenType,
-    accountId,
-    balance: balance.toString(),
+    count: normalized.length,
+    balances: normalized,
   })
 }

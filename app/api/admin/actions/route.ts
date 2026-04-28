@@ -5,6 +5,7 @@ import { EventTypes } from "@/core/events/types"
 import { ActionPermissions } from "@/core/auth/permissions"
 import { getDevUser } from "@/lib/auth/devBypass"
 import { releaseLock } from "@/core/queue/lock"
+import { Prisma } from "@prisma/client"
 
 export async function POST(req: Request) {
   const { caseId, action, operatorId } = await req.json()
@@ -29,7 +30,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    await prisma.$transaction(async (tx: any) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       switch (action) {
         case "LOCK_ESCROW":
           await appendDomainEvent({
