@@ -345,42 +345,43 @@ export async function transferToken(
       riskScore = policy.riskScore
       riskLevel = policy.riskLevel
 
-    let action = await prisma.treasuryAction.findUnique({
-      where: {
-        idempotencyKey,
-      },
-    })
-
-    if (!action) {
-      action = await prisma.treasuryAction.create({
-        data: {
-          initiatorUserId: principal.userId,
-          fromUserId,
-          toUserId,
+      let action = await prisma.treasuryAction.findUnique({
+        where: {
           idempotencyKey,
-          assetCode,
-          amountBaseUnits: bigintToDecimal(amountBaseUnits),
-          intent,
-          approvalType: policy.approvalType,
-          status: 'PENDING',
-          metadata: {
-            note: note ?? null,
-            requestId,
-            riskScore,
-            riskLevel,
-          },
         },
       })
 
-      throw new WalletError(
-        'TREASURY_ACTION_CREATED',
-        `Approval required (${policy.approvalType}). Action ID: ${action.id}`,
-        409
-      )
-    }
+      if (!action) {
+        action = await prisma.treasuryAction.create({
+          data: {
+            initiatorUserId: principal.userId,
+            fromUserId,
+            toUserId,
+            idempotencyKey,
+            assetCode,
+            amountBaseUnits: bigintToDecimal(amountBaseUnits),
+            intent,
+            approvalType: policy.approvalType,
+            status: 'PENDING',
+            metadata: {
+              note: note ?? null,
+              requestId,
+              riskScore,
+              riskLevel,
+            },
+          },
+        })
 
-    riskScore = policy.riskScore
-    riskLevel = policy.riskLevel
+        throw new WalletError(
+          'TREASURY_ACTION_CREATED',
+          `Approval required (${policy.approvalType}). Action ID: ${action.id}`,
+          409
+        )
+      }
+
+      riskScore = policy.riskScore
+      riskLevel = policy.riskLevel
+    }
   }
 
   const perfStart = performance.now()
@@ -858,7 +859,7 @@ export async function transferToken(
       anomalyScore: transactionRiskScore,
       trustScore: trust.score,
       reason: 'Transfer runtime evaluation',
-    }).catch((err) => {
+    }).catch((err: unknown) => {
       console.error('[wallet/transfer] persist risk snapshot failed after commit', err)
     })
 
@@ -866,7 +867,7 @@ export async function transferToken(
       userId: fromUserId,
       riskScore: transactionRiskScore,
       reasons: ['High dynamic risk'],
-    }).catch((err) => {
+    }).catch((err: unknown) => {
       console.error('[wallet/transfer] critical risk freeze failed after commit', err)
     })
 
@@ -891,17 +892,17 @@ export async function transferToken(
             dynamicCapacity.throttleMultiplier,
         },
       },
-    }).catch((err) => {
+    }).catch((err: unknown) => {
       console.error('[wallet/transfer] risk event create failed after commit', err)
     })
 
     if (transactionRiskScore > 8) {
-      void clusterContainmentEngine().catch((err) => {
+      void clusterContainmentEngine().catch((err: unknown) => {
         console.error('[wallet/transfer] cluster containment failed after commit', err)
       })
     }
 
-    void clusterContainmentEngine({ triggerUserId: fromUserId }).catch((err) => {
+    void clusterContainmentEngine({ triggerUserId: fromUserId }).catch((err: unknown) => {
       console.error('[wallet/transfer] user cluster containment failed after commit', err)
     })
 
@@ -909,7 +910,7 @@ export async function transferToken(
       void propagateThreatGraph({
         triggerUserId: fromUserId,
         depth: 2,
-      }).catch((err) => {
+      }).catch((err: unknown) => {
         console.error('[wallet/transfer] threat graph propagation failed after commit', err)
       })
     }
@@ -917,7 +918,7 @@ export async function transferToken(
     if ((riskScore ?? 0) <= 2) {
       void gradualTrustRecovery({
         userId: fromUserId,
-      }).catch((err) => {
+      }).catch((err: unknown) => {
         console.error('[wallet/transfer] gradual trust recovery failed after commit', err)
       })
     }
@@ -978,5 +979,4 @@ export async function transferToken(
       400
     )
   }
-}
 }

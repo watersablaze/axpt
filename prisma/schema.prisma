@@ -1078,13 +1078,30 @@ model NotificationReadModel {
 }
 
 model Escrow {
-  id        String   @id @default(cuid())
-  caseId    String
-  status    String
+  id String @id @default(cuid())
+
+  caseId       String
+  fromWalletId String
+  toWalletId   String
+
+  assetCode       String
+  amountBaseUnits Decimal
+
+  status String // ESCROW_STATUS
+
+  transferId String? // link from transfer engine
+
+  lockedAt   DateTime?
+  releasedAt DateTime?
+
   createdAt DateTime @default(now())
-  case      Case     @relation(fields: [caseId], references: [id])
+  updatedAt DateTime @updatedAt
+
+  case Case @relation(fields: [caseId], references: [id])
 
   @@index([caseId])
+  @@index([status])
+  @@index([transferId])
 }
 
 model Document {
@@ -1408,6 +1425,20 @@ model ReplayAudit {
   @@index([decisionId])
   @@index([createdAt])
   @@index([intentChanged])
+}
+
+model IdempotencyRecord {
+  id         String   @id @default(cuid())
+  key        String   @unique
+
+  status     String   // PENDING | COMPLETED | FAILED
+  response   Json?
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([key])
+  @@index([status])
 }
 
 enum OperatorArchetype {
