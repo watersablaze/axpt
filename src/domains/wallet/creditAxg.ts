@@ -1,5 +1,6 @@
 import type { Prisma } from '@prisma/client'
 import { prisma } from '@/infrastructure/db/prisma'
+import type { PrismaClient } from '@prisma/client'
 import { getAsset } from '@/lib/assets/registry'
 import {
   bigintToDecimal,
@@ -9,7 +10,10 @@ import {
 } from '@/lib/money/baseUnits'
 import { TRANSACTION_TYPES } from '@/domains/wallet/constants/transactionTypes'
 
-type Tx = Prisma.TransactionClient
+type Tx = Omit<
+  PrismaClient,
+  "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
+>
 
 export async function creditAxg(
   userId: string,
