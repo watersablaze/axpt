@@ -13,18 +13,19 @@ export class AXPTImmuneFinancialSystem {
    * 🧠 DETECT ANOMALY PATTERNS
    */
   async detectPatterns() {
-    const state = await this.memory.exportFinancialState()
-
-    const risk = await this.risk.predict({
-      transactions: state.recentTransactions,
-      escrows: state.activeEscrows,
-      disputes: state.disputes,
+    const risk = await this.risk.evaluate({
+      userId: 'SYSTEM',
+      amountBaseUnits: undefined,
+      assetCode: undefined,
     })
 
     return {
       riskScore: risk.score,
-      patterns: risk.patterns,
-      anomalies: risk.anomalies,
+      patterns: risk.reasons.map((reason) => ({
+        reason,
+        severity: risk.score,
+      })),
+      anomalies: risk.reasons,
     }
   }
 

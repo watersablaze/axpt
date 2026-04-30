@@ -1,6 +1,6 @@
 import { prisma } from '@/infrastructure/db/prisma'
-import { EscrowEngine } from '../escrow/EscrowEngine'
-import { SettlementEngine } from '../settlement/SettlementEngine'
+import { EscrowEngine } from '../execution/escrow/EscrowEngine'
+import { SettlementEngine } from '../execution/settlement/SettlementEngine'
 
 export type DisputeStatus =
   | 'RAISED'
@@ -79,10 +79,10 @@ export class DisputeEngine {
      */
     await this.escrow.transition({
       escrowId: escrow.id,
-      next: 'DISPUTED',
+      next: 'ARBITRATED',
       actor: params.actor,
       metadata: {
-        decision: params.decision, // ✅ goes here instead
+        decision: params.decision,
       },
     })
 
@@ -91,9 +91,7 @@ export class DisputeEngine {
      */
     const result = await this.settlement.finalize({
       escrowId: escrow.id,
-      decision: params.decision,
       actor: params.actor,
-      reason: params.reason,
     })
 
     return {

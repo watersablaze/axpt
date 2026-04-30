@@ -9,11 +9,10 @@ export type TwinInput = {
 }
 
 export type TwinResult = {
-  projectedState: any
   riskScore: number
-  systemStress: number
-  timeline: any[]
+  stressScore: number
   recommendation: 'APPROVE' | 'ESCROW' | 'REJECT'
+  timelines: { path: string; probability: number }[]
 }
 
 export class AXPTDigitalTwinEngine {
@@ -44,10 +43,8 @@ export class AXPTDigitalTwinEngine {
     /**
      * STEP 2 — run predictive risk model
      */
-    const risk = await this.risk.predict({
-      transactions: simulatedState.recentTransactions,
-      escrows: simulatedState.activeEscrows,
-      disputes: simulatedState.disputes,
+    const risk = await this.risk.evaluate({
+      userId: this.resolveUserId(input),
     })
 
     /**
@@ -66,11 +63,10 @@ export class AXPTDigitalTwinEngine {
     const recommendation = this.recommend(risk.score, stress)
 
     return {
-      projectedState: simulatedState,
       riskScore: risk.score,
-      systemStress: stress,
-      timeline,
+      stressScore: stress,
       recommendation,
+      timelines: timeline,
     }
   }
 
@@ -78,21 +74,35 @@ export class AXPTDigitalTwinEngine {
    * 🧪 INJECT HYPOTHETICAL STATE CHANGE
    */
   private inject(state: any, input: TwinInput) {
+    const transactions = state.transactions ?? []
+    const escrows = state.escrows ?? []
+    const disputes = state.disputes ?? []
+
     return {
       ...state,
-      recentTransactions: input.transfer
-        ? [...state.recentTransactions, input.transfer]
-        : state.recentTransactions,
-      activeEscrows: state.activeEscrows,
-      disputes: state.disputes,
+      transactions: input.transfer
+        ? [...transactions, input.transfer]
+        : transactions,
+      escrows,
+      disputes,
     }
+  }
+
+  private resolveUserId(input: TwinInput) {
+    return (
+      input.transfer?.fromUserId ??
+      input.escrow?.fromUserId ??
+      input.dispute?.userId ??
+      input.dispute?.actor ??
+      'SYSTEM'
+    )
   }
 
   /**
    * ⚠ SYSTEM STRESS MODEL
    */
   private computeSystemStress(state: any, risk: any) {
-    const liquidityPressure = state.recentTransactions.length * 0.01
+    const liquidityPressure = state.transactions.length * 0.01
     const disputeLoad = state.disputes.length * 0.2
     const riskFactor = risk.score
 

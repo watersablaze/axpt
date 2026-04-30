@@ -21,7 +21,23 @@ export class GovernanceCortex {
     type: string
     intensity: number
     entityId?: string
+  } | {
+    riskScore: number
+    patterns?: any[]
   }) {
+    if ('riskScore' in signal) {
+      const intensity = signal.riskScore
+
+      this.hardenSystem(intensity)
+      this.syncToMemoryLoop()
+
+      return {
+        riskScore: intensity,
+        patterns: signal.patterns ?? [],
+        policy: this.policy,
+      }
+    }
+
     switch (signal.type) {
       case 'TRANSFER_ANOMALY':
         this.increaseTransferFriction(signal.intensity)
@@ -41,6 +57,34 @@ export class GovernanceCortex {
     }
 
     this.syncToMemoryLoop()
+
+    return {
+      riskScore: signal.intensity,
+      patterns: [],
+      policy: this.policy,
+    }
+  }
+
+  applyGovernancePatch(patch: any) {
+    if (patch?.type === 'IMMUNE_PATCH') {
+      this.hardenSystem(0.25)
+      this.syncToMemoryLoop()
+    }
+
+    return {
+      patch,
+      policy: this.policy,
+    }
+  }
+
+  enforceSystemSafeguards() {
+    this.hardenSystem(0.5)
+    this.syncToMemoryLoop()
+
+    return {
+      riskScore: 1,
+      policy: this.policy,
+    }
   }
 
   /**

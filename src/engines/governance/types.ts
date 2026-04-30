@@ -1,12 +1,12 @@
-export type GovernanceSignal =
-  | 'RISK_SPIKE'
-  | 'DISPUTE_CLUSTER'
-  | 'TRANSFER_ANOMALY'
-  | 'SETTLEMENT_FAILURE_PATTERN'
+export type ExecutionDecision =
+  | 'TRANSFER'
+  | 'ESCROW'
+  | 'REJECT'
+  | 'QUARANTINE'
 
-export type GovernancePolicy = {
-  escrowThreshold: number
-  transferRiskMultiplier: number
-  settlementStrictness: number
-  disputeSensitivity: number
+export type GovernorResult = {
+  decision: ExecutionDecision
+  riskScore: number
+  twinScore: number
+  reason?: string
 }

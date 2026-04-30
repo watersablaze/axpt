@@ -4,44 +4,44 @@ import { GovernanceCortex } from '../governance/GovernanceCortex'
 
 export class FinancialCivilizationEngine {
   constructor(
-    private memory = new MemoryGraphEngine(),
-    private risk = new PredictiveRiskEngine(),
-    private cortex = new GovernanceCortex()
+    private memory: MemoryGraphEngine,
+    private risk: PredictiveRiskEngine,
+    private cortex: GovernanceCortex
   ) {}
 
   /**
-   * 🧠 BUILD WORLD STATE
+   * 🧠 WORLD STATE SNAPSHOT
    */
   async snapshot() {
     return this.memory.exportFinancialState()
   }
 
   /**
-   * 🔮 SIMULATE FUTURE TIMELINES
+   * 🔮 SIMULATE SYSTEM TRAJECTORY
    */
   async simulate() {
     const state = await this.snapshot()
 
-    const projection = await this.risk.predict({
-      transactions: state.recentTransactions,
-      escrows: state.activeEscrows,
-      disputes: state.disputes,
+    const projection = await this.risk.evaluate({
+      userId: 'SYSTEM',
+      amountBaseUnits: undefined,
+      assetCode: undefined,
     })
 
     return {
       currentState: state,
       projectedRisk: projection.score,
-      timelineBranches: projection.timelines,
+      timelineBranches: projection.reasons,
     }
   }
 
   /**
-   * 🧬 GOVERNANCE EVOLUTION ENGINE
+   * 🧬 GOVERNANCE EVOLUTION LOOP
    */
   async evolve() {
     const simulation = await this.simulate()
 
-    const mutation = this.cortex.evolve({
+    const mutation = await this.cortex.evolve({
       riskScore: simulation.projectedRisk,
       patterns: simulation.timelineBranches,
     })

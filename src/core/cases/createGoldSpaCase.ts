@@ -72,7 +72,7 @@ async function runPostInit(caseId: string) {
 export async function createGoldSpaCase() {
   assertGoldSpaTemplate()
 
-  const caseRecord = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+  const caseRecord = await prisma.$transaction(async (tx: any) => {
 
     // =========================
     // 🧾 CREATE CASE
