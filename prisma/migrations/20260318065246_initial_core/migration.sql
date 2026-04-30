@@ -38,7 +38,7 @@ CREATE TYPE "InitiativeCategory" AS ENUM ('ENERGY', 'FINTECH', 'DATA', 'SECURITY
 CREATE TYPE "LedgerAccountType" AS ENUM ('TREASURY', 'USER', 'EXTERNAL', 'SYSTEM');
 
 -- CreateEnum
-CREATE TYPE "LedgerDirection" AS ENUM (type: TRANSACTION_TYPES.DEBIT, type: TRANSACTION_TYPES.CREDIT');
+CREATE TYPE "LedgerDirection" AS ENUM ('DEBIT', 'CREDIT');
 
 -- CreateTable
 CREATE TABLE "User" (

@@ -6,6 +6,12 @@ type Input = {
   recipientUserId: string
 }
 
+type TransactionLite = {
+  amountBaseUnits: bigint | string | number
+  toUserId: string | null
+  createdAt: Date
+}
+
 function normalize(value: number, max: number) {
   return Math.min(1, value / max)
 }
@@ -22,7 +28,7 @@ export async function computeAnomalyScore(input: Input): Promise<number> {
       toUserId: true,
       createdAt: true,
     },
-  })
+  }) as TransactionLite[]
 
   if (recentTxs.length === 0) {
     return 0.2 // new user baseline anomaly
@@ -33,8 +39,11 @@ export async function computeAnomalyScore(input: Input): Promise<number> {
   // ──────────────────────────────
 
   const avgAmount =
-    recentTxs.reduce((sum, tx) => sum + Number(tx.amountBaseUnits), 0) /
-    recentTxs.length
+    recentTxs.reduce(
+      (sum: number, tx: TransactionLite) =>
+        sum + Number(tx.amountBaseUnits),
+      0
+    ) / recentTxs.length
 
   const amountDeviation = Math.abs(Number(recentAmount) - avgAmount)
 

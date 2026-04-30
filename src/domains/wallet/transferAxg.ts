@@ -1,12 +1,12 @@
 import { prisma } from '@/infrastructure/db/prisma'
-import { TRANSACTION_TYPES } from '@/domains/wallet/constants/transactionTypes'
 import { getAsset } from '@/lib/assets/registry'
 import {
-  decimalToBigInt,
   bigintToDecimal,
+  decimalToBigInt,
   formatBaseUnits,
   parseDisplayToBaseUnits,
 } from '@/lib/money/baseUnits'
+import { TRANSACTION_TYPES } from '@/domains/wallet/constants/transactionTypes'
 
 type TransferInput = {
   fromUserId: string
@@ -14,6 +14,7 @@ type TransferInput = {
   amount: string
   assetCode: 'AXG' | 'NMP' | 'USD'
   note?: string
+  idempotencyKey?: string
 }
 
 export async function transferAxg(input: TransferInput) {
@@ -28,8 +29,7 @@ export async function transferAxg(input: TransferInput) {
     throw new Error('Transfer amount must be positive')
   }
 
-  return await prisma.$transaction(async (tx) => {
-    // 1. wallets
+  return await prisma.$transaction(async (tx: any) => {
     const fromWallet = await tx.wallet.findUnique({
       where: { userId: input.fromUserId },
     })
@@ -42,7 +42,6 @@ export async function transferAxg(input: TransferInput) {
       throw new Error('Wallet not found')
     }
 
-    // 2. balance (sender)
     const fromBalance = await tx.balance.findFirst({
       where: {
         walletId: fromWallet.id,
@@ -55,16 +54,13 @@ export async function transferAxg(input: TransferInput) {
       throw new Error('Sender balance not found')
     }
 
-    const current = decimalToBigInt(fromBalance.amountBaseUnits ?? 0n)
+    const senderCurrent = decimalToBigInt(fromBalance.amountBaseUnits ?? 0n)
 
-    if (current < amountBaseUnits) {
+    if (senderCurrent < amountBaseUnits) {
       throw new Error('Insufficient funds')
     }
 
-    const nextSender = current - amountBaseUnits
-
-    // 3. receiver balance
-    const toBalance = await tx.balance.findFirst({
+    const receiverBalance = await tx.balance.findFirst({
       where: {
         walletId: toWallet.id,
         userId: input.toUserId,
@@ -72,25 +68,29 @@ export async function transferAxg(input: TransferInput) {
       },
     })
 
-    const toCurrent = decimalToBigInt(toBalance?.amountBaseUnits ?? 0n)
-    const nextReceiver = toCurrent + amountBaseUnits
+    const receiverCurrent = decimalToBigInt(
+      receiverBalance?.amountBaseUnits ?? 0n
+    )
 
-    // 4. update sender
+    const senderNext = senderCurrent - amountBaseUnits
+    const receiverNext = receiverCurrent + amountBaseUnits
+
+    // update sender
     await tx.balance.update({
       where: { id: fromBalance.id },
       data: {
-        amount: Number(formatBaseUnits(nextSender, asset.decimals)),
-        amountBaseUnits: bigintToDecimal(nextSender),
+        amount: Number(formatBaseUnits(senderNext, asset.decimals)),
+        amountBaseUnits: bigintToDecimal(senderNext),
       },
     })
 
-    // 5. update receiver (create if missing)
-    if (toBalance) {
+    // update receiver
+    if (receiverBalance) {
       await tx.balance.update({
-        where: { id: toBalance.id },
+        where: { id: receiverBalance.id },
         data: {
-          amount: Number(formatBaseUnits(nextReceiver, asset.decimals)),
-          amountBaseUnits: bigintToDecimal(nextReceiver),
+          amount: Number(formatBaseUnits(receiverNext, asset.decimals)),
+          amountBaseUnits: bigintToDecimal(receiverNext),
         },
       })
     } else {
@@ -106,8 +106,7 @@ export async function transferAxg(input: TransferInput) {
       })
     }
 
-    // 6. ledger entries (dual write)
-    const transferId = crypto.randomUUID()
+    const transferId = input.idempotencyKey ?? crypto.randomUUID()
 
     const debit = await tx.transaction.create({
       data: {

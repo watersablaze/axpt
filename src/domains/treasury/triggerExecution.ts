@@ -9,7 +9,7 @@ import { transitionTreasuryQueue } from './transitionTreasuryQueue'
 export async function triggerTreasuryExecution(
   actionId: string
 ) {
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx: any) => {
     const action = await tx.treasuryAction.findUnique({
       where: {
         id: actionId,

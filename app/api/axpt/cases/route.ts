@@ -20,7 +20,7 @@ export async function POST(req: Request) {
     /**
      * 1️⃣ WRITE PHASE
      */
-    const caseId = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const caseId = await prisma.$transaction(async (tx: any) => {
       const c = await tx.case.create({
         data: {
           title: body.title.trim(),

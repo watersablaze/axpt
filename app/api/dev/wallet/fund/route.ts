@@ -116,7 +116,7 @@ export async function POST(req: NextRequest) {
     }
 
     const result = await prisma.$transaction(
-      async (tx: Prisma.TransactionClient) => {
+      async (tx: any) => {
         let wallet = await tx.wallet.findUnique({
           where: { userId: user.id },
           select: { id: true },

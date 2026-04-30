@@ -1,6 +1,11 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/infrastructure/db/prisma'
 
+type ResidentUser = {
+  id: string
+  email: string
+}
+
 export async function POST() {
   if (process.env.NODE_ENV === 'production') {
     return NextResponse.json(
@@ -17,7 +22,10 @@ export async function POST() {
 
     if (!adminRole || !residentRole) {
       return NextResponse.json(
-        { ok: false, error: 'Required roles missing. Run /api/dev/seed-roles first.' },
+        {
+          ok: false,
+          error: 'Required roles missing. Run /api/dev/seed-roles first.',
+        },
         { status: 400 }
       )
     }
@@ -38,7 +46,7 @@ export async function POST() {
       })
     }
 
-    const residents = await prisma.user.findMany({
+    const residents: ResidentUser[] = await prisma.user.findMany({
       where: {
         email: {
           in: ['resident.a@example.com', 'resident.b@example.com'],
@@ -65,7 +73,8 @@ export async function POST() {
           isActive: true,
         },
       }),
-      ...residents.map((user) =>
+
+      ...residents.map((user: ResidentUser) =>
         prisma.userRole.upsert({
           where: {
             userId_roleId: {
@@ -91,10 +100,11 @@ export async function POST() {
     return NextResponse.json({
       ok: true,
       admin: admin.email,
-      residents: residents.map((r) => r.email),
+      residents: residents.map((r: ResidentUser) => r.email),
     })
   } catch (err) {
     console.error('[DEV_ASSIGN_ROLES_ERROR]', err)
+
     return NextResponse.json(
       {
         ok: false,

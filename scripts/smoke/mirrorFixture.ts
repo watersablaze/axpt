@@ -172,9 +172,10 @@ async function maybeSeedSender(fromUserId: string, seedAmount: string) {
   }
 
   const needed = target - current
+  const neededDisplay = formatBaseUnits(needed, AXG.decimals)
   const result = await creditAxg(
     fromUserId,
-    formatBaseUnits(needed, AXG.decimals),
+    Number(neededDisplay),
     'runtime smoke seed'
   )
 

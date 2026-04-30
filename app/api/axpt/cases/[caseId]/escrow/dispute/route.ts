@@ -30,7 +30,7 @@ export async function POST(
     )
   }
 
-  await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+  await prisma.$transaction(async (tx: any) => {
     await tx.case.update({
       where: { id: caseId },
       data: {

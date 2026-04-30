@@ -30,7 +30,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    await prisma.$transaction(async (tx: any) => {
       switch (action) {
         case "LOCK_ESCROW":
           await appendDomainEvent({
