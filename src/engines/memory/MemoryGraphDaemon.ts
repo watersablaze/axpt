@@ -42,7 +42,7 @@ export class MemoryGraphDaemon {
       const recent = await this.query.recentTransfers(node.entityId)
 
       const avg =
-        recent.reduce((sum, n) => {
+        recent.reduce((sum: number, n: MemoryNode) => {
           return sum + Number(n.delta?.amount ?? 0)
         }, 0) / Math.max(recent.length, 1)
 

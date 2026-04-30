@@ -1,4 +1,5 @@
 import { prisma } from '@/infrastructure/db/prisma'
+import type { CFState } from '../core/state/CFState'
 import type { MemoryNode } from './MemoryGraphTypes'
 
 export class MemoryGraphEngine {
@@ -56,7 +57,7 @@ export class MemoryGraphEngine {
   /**
    * TEMPORAL REPLAY (SYSTEM MEMORY RECONSTRUCTION)
    */
-  async replay(entityId: string, at: number) {
+  async replay(entityId: string, at: number): Promise<CFState> {
     const events = await prisma.memoryNode.findMany({
       where: {
         entityId,
@@ -68,39 +69,58 @@ export class MemoryGraphEngine {
     return this.reduce(events)
   }
 
+  async exportFinancialState(): Promise<CFState> {
+    const events = await prisma.memoryNode.findMany({
+      orderBy: { timestamp: 'asc' },
+      take: 5000,
+    })
+
+    return this.reduce(events)
+  }
+
   /**
    * INTERNAL STATE RECONSTRUCTION ENGINE
    */
-  private reduce(events: MemoryNode[]) {
-    return events.reduce((state: any, event) => {
+  private reduce(events: MemoryNode[]): CFState {
+    return events.reduce<CFState>((state, event) => {
       switch (event.type) {
         case 'TRANSFER':
           return {
             ...state,
-            transfers: [...(state.transfers ?? []), event],
+            transfers: [...state.transfers, event],
+            transactions: [...state.transactions, event],
           }
 
         case 'ESCROW':
           return {
             ...state,
-            escrows: [...(state.escrows ?? []), event],
+            escrows: [...state.escrows, event],
           }
 
         case 'SETTLEMENT':
           return {
             ...state,
-            settlements: [...(state.settlements ?? []), event],
+            settlements: [...state.settlements, event],
           }
 
         case 'DISPUTE':
           return {
             ...state,
-            disputes: [...(state.disputes ?? []), event],
+            disputes: [...state.disputes, event],
           }
 
         default:
           return state
       }
-    }, {})
+    }, {
+      transfers: [],
+      escrows: [],
+      disputes: [],
+      settlements: [],
+      transactions: [],
+      liquidityIndex: 1,
+      systemStress: 0,
+      timestamp: Date.now(),
+    })
   }
 }

@@ -1,4 +1,5 @@
 import { PredictiveRiskEngine } from './PredictiveRiskEngine'
+import type { CFState } from '../core/state/CFState'
 
 export type FirewallDecision =
   | { action: 'ALLOW' }
@@ -10,10 +11,9 @@ export class RiskFirewall {
 
   async evaluate(input: {
     userId: string
-    amountBaseUnits: bigint
-    assetCode: string
+    context: CFState
   }): Promise<FirewallDecision> {
-    const risk = await this.riskEngine.evaluate(input.userId)
+    const risk = await this.riskEngine.evaluate(input)
 
     /**
      * ──────────────────────────────

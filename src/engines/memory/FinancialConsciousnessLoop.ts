@@ -35,7 +35,7 @@ export class FinancialConsciousnessLoop {
       case 'TRANSFER_DEVIATION_SPIKE':
         this.state.transferRiskMultiplier = Math.min(
           3,
-          this.state.transferRiskMultiplier + riskScore
+          (this.state.transferRiskMultiplier ?? 1) + riskScore
         )
         break
 

@@ -2,18 +2,25 @@ import { prisma } from '@/infrastructure/db/prisma'
 
 export type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
 
-export type RiskSignal = {
+export type RiskInput = {
   userId: string
+  amountBaseUnits?: bigint
+  assetCode?: string
+}
+
+export type RiskSignal = {
   score: number
-  level: RiskLevel
+  level: 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'
   reasons: string[]
 }
 
 export class PredictiveRiskEngine {
   /**
-   * MAIN ENTRYPOINT
+   * 🧠 MAIN ENTRYPOINT (AUTONOMOUS RISK COMPUTATION)
    */
-  async evaluate(userId: string): Promise<RiskSignal> {
+  async evaluate(input: RiskInput): Promise<RiskSignal> {
+    const { userId, amountBaseUnits } = input
+
     const [txs, escrows, disputes] = await Promise.all([
       prisma.transaction.findMany({
         where: { userId },
@@ -34,22 +41,21 @@ export class PredictiveRiskEngine {
 
     const velocityRisk = this.computeVelocityRisk(txs)
     const behaviorRisk = this.computeBehaviorRisk(txs)
+    const transactionRisk = this.computeTransactionRisk(txs, amountBaseUnits)
     const escrowRisk = this.computeEscrowRisk(escrows)
     const disputeRisk = disputes.length * 0.2
 
     const score =
-      velocityRisk * 0.35 +
-      behaviorRisk * 0.35 +
+      velocityRisk * 0.3 +
+      behaviorRisk * 0.3 +
+      transactionRisk * 0.1 +
       escrowRisk * 0.2 +
       disputeRisk * 0.1
 
-    const level = this.classify(score)
-
     return {
-      userId,
       score: Number(score.toFixed(4)),
-      level,
-      reasons: this.explain(score, txs, escrows, disputes),
+      level: this.classify(score),
+      reasons: this.explain(score, txs, escrows, disputes, transactionRisk),
     }
   }
 
@@ -58,14 +64,14 @@ export class PredictiveRiskEngine {
    * SIGNAL 1: VELOCITY
    * ──────────────────────────────
    */
-  private computeVelocityRisk(txs: any[]) {
+  private computeVelocityRisk(txs: any[]): number {
     if (!txs.length) return 0
 
     const now = Date.now()
-    const window = 5 * 60 * 1000
+    const windowMs = 5 * 60 * 1000
 
     const recent = txs.filter(
-      (t) => now - new Date(t.createdAt).getTime() < window
+      (t) => now - new Date(t.createdAt).getTime() < windowMs
     )
 
     return Math.min(1, recent.length / 10)
@@ -76,7 +82,7 @@ export class PredictiveRiskEngine {
    * SIGNAL 2: BEHAVIOR SHIFT
    * ──────────────────────────────
    */
-  private computeBehaviorRisk(txs: any[]) {
+  private computeBehaviorRisk(txs: any[]): number {
     if (txs.length < 5) return 0.1
 
     const amounts = txs.map((t) => Number(t.amountBaseUnits))
@@ -90,10 +96,29 @@ export class PredictiveRiskEngine {
 
   /**
    * ──────────────────────────────
-   * SIGNAL 3: ESCROW PRESSURE
+   * SIGNAL 3: TRANSACTION ANOMALY
    * ──────────────────────────────
    */
-  private computeEscrowRisk(escrows: any[]) {
+  private computeTransactionRisk(
+    txs: any[],
+    incoming?: bigint
+  ): number {
+    if (!incoming || txs.length < 3) return 0
+
+    const amounts = txs.map((t) => Number(t.amountBaseUnits))
+    const avg = amounts.reduce((a, b) => a + b, 0) / amounts.length
+
+    const incomingValue = Number(incoming)
+
+    return Math.min(1, incomingValue / (avg || incomingValue || 1))
+  }
+
+  /**
+   * ──────────────────────────────
+   * ESCROW PRESSURE
+   * ──────────────────────────────
+   */
+  private computeEscrowRisk(escrows: any[]): number {
     const open = escrows.filter(
       (e) => e.status !== 'SETTLED' && e.status !== 'RELEASED'
     )
@@ -102,7 +127,9 @@ export class PredictiveRiskEngine {
   }
 
   /**
+   * ──────────────────────────────
    * CLASSIFICATION
+   * ──────────────────────────────
    */
   private classify(score: number): RiskLevel {
     if (score < 0.2) return 'LOW'
@@ -112,14 +139,24 @@ export class PredictiveRiskEngine {
   }
 
   /**
-   * EXPLANATION LAYER
+   * ──────────────────────────────
+   * EXPLANATION ENGINE
+   * ──────────────────────────────
    */
-  private explain(score: number, txs: any[], escrows: any[], disputes: any[]) {
+  private explain(
+    score: number,
+    txs: any[],
+    escrows: any[],
+    disputes: any[],
+    transactionRisk: number
+  ): string[] {
     const reasons: string[] = []
 
     if (txs.length > 20) reasons.push('High transaction frequency')
     if (escrows.length > 3) reasons.push('Escrow concentration risk')
     if (disputes.length > 0) reasons.push('Active dispute history')
+    if (transactionRisk > 0.7)
+      reasons.push('Incoming transfer exceeds historical baseline')
     if (score > 0.7) reasons.push('Behavioral instability detected')
 
     return reasons

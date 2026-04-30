@@ -1,54 +1,56 @@
 import { prisma } from '@/infrastructure/db/prisma'
+import type { CFState } from '../core/state/CFState'
 
 export class LedgerReplayEngine {
   /**
-   * RECONSTRUCT SYSTEM STATE FROM EVENTS
+   * 🧠 FULL LEDGER RECONSTRUCTION
    */
-  async replay(caseId: string) {
-    const events = await prisma.caseEvent.findMany({
-      where: { caseId },
-      orderBy: { createdAt: 'asc' },
+  async replay(entityId: string): Promise<CFState> {
+    const events = await prisma.memoryNode.findMany({
+      where: { entityId },
+      orderBy: { timestamp: 'asc' },
     })
 
-    const state = {
-      balances: new Map<string, bigint>(),
-      escrow: null,
-      disputes: [],
-      settlements: [],
-    }
+    return this.fold(events)
+  }
 
-    for (const event of events) {
-      switch (event.type) {
-        case 'TRANSFER_EXECUTED':
-          this.applyTransfer(state, event.payload)
-          break
+  /**
+   * 🔁 DETERMINISTIC STATE REBUILD
+   */
+  private fold(events: any[]): CFState {
+    return events.reduce<CFState>(
+      (state, event) => {
+        switch (event.type) {
+          case 'TRANSFER':
+            state.transfers.push(event)
+            state.transactions.push(event)
+            break
 
-        case 'ESCROW_UPDATED':
-          this.applyEscrow(state, event.payload)
-          break
+          case 'ESCROW':
+            state.escrows.push(event)
+            break
 
-        case 'DISPUTE_RAISED':
-          state.disputes.push(event.payload)
-          break
+          case 'SETTLEMENT':
+            state.settlements.push(event)
+            break
 
-        case 'SETTLEMENT_FINALIZED':
-          state.settlements.push(event.payload)
-          break
+          case 'DISPUTE':
+            state.disputes.push(event)
+            break
+        }
+
+        return state
+      },
+      {
+        transfers: [],
+        transactions: [],
+        escrows: [],
+        disputes: [],
+        settlements: [],
+        liquidityIndex: 1,
+        systemStress: 0,
+        timestamp: Date.now(),
       }
-    }
-
-    return state
-  }
-
-  private applyTransfer(state: any, payload: any) {
-    const from = state.balances.get(payload.fromUserId) ?? 0n
-    const to = state.balances.get(payload.toUserId) ?? 0n
-
-    state.balances.set(payload.fromUserId, from - BigInt(payload.amount))
-    state.balances.set(payload.toUserId, to + BigInt(payload.amount))
-  }
-
-  private applyEscrow(state: any, payload: any) {
-    state.escrow = payload
+    )
   }
 }
