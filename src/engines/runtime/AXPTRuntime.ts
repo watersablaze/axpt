@@ -1,12 +1,12 @@
 // src/engines/runtime/AXPTRuntime.ts
 
-import { TransferEngine } from '../transfer/TransferEngine'
-import { EscrowEngine } from '../escrow/EscrowEngine'
+import { TransferEngine } from '../execution/transfer/TransferEngine'
+import { EscrowEngine } from '../execution/escrow/EscrowEngine'
 import { DisputeEngine } from '../dispute/DisputeEngine'
-import { SettlementEngine } from '../settlement/SettlementEngine'
+import { SettlementEngine } from '../execution/settlement/SettlementEngine'
 import { AXPTEventBus } from '../events/AXPTEventBus'
 
-import type { TransferRequest, TransferResult } from '../transfer/TransferTypes'
+import type { TransferRequest, TransferResult } from '../execution/transfer/TransferTypes'
 
 export class AXPTRuntime {
   private transfer = new TransferEngine()
@@ -60,7 +60,11 @@ export class AXPTRuntime {
       payload: input,
     })
 
-    return this.dispute.raise(input)
+    return this.dispute.raise({
+      escrowId: input.escrowId,
+      reason: input.reason,
+      raisedBy: input.actor,
+    })
   }
 
   async resolveDispute(input: {

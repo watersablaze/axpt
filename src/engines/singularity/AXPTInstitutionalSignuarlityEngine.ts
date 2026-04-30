@@ -17,16 +17,16 @@ export class FinancialCivilizationEngine {
   async simulate() {
     const state = await this.snapshot()
 
-    const projection = await this.risk.predict({
-      transactions: state.recentTransactions,
-      escrows: state.activeEscrows,
-      disputes: state.disputes,
+    const projection = await this.risk.evaluate({
+      userId: 'SYSTEM',
+      amountBaseUnits: undefined,
+      assetCode: undefined,
     })
 
     return {
       currentState: state,
       projectedRisk: projection.score,
-      timelineBranches: projection.timelines,
+      timelineBranches: projection.reasons,
     }
   }
 
