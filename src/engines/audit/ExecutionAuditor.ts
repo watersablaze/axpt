@@ -1,6 +1,7 @@
 import { MemoryGraphEngine } from '@/engines/memory/MemoryGraphEngine'
 import { ReconciliationEngine } from '@/engines/reconciliation/ReconciliationEngine'
 import { LedgerReplayEngine } from '@/engines/replay/LedgerReplayEngine'
+import type { LedgerReplayState } from '@/engines/replay/LedgerReplayEngine'
 import type { CFState } from '@/engines/core/state/CFState'
 
 export type AuditResult = {
@@ -25,7 +26,7 @@ export class ExecutionAuditor {
     /**
      * 1. READ CANONICAL MEMORY STATE
      */
-    const memoryState = await this.memory.exportFinancialState()
+    const memoryState = await this.memory.replay(entityId, Date.now())
 
     /**
      * 2. REPLAY LEDGER STATE (SOURCE OF TRUTH)
@@ -63,16 +64,12 @@ export class ExecutionAuditor {
    */
   private detectInconsistencies(
     memory: CFState,
-    ledger: CFState
+    ledger: LedgerReplayState
   ): string[] {
     const issues: string[] = []
 
     if (memory.transfers.length !== ledger.transfers.length) {
       issues.push('MEMORY_LEDGER_MISMATCH')
-    }
-
-    if (memory.transactions.length !== ledger.transactions.length) {
-      issues.push('TRANSACTION_STATE_MISMATCH')
     }
 
     if (memory.escrows.length !== ledger.escrows.length) {
@@ -90,10 +87,9 @@ export class ExecutionAuditor {
     return issues
   }
 
-  private computeDrift(memory: CFState, ledger: CFState): number {
+  private computeDrift(memory: CFState, ledger: LedgerReplayState): number {
     const checks = [
       memory.transfers.length === ledger.transfers.length,
-      memory.transactions.length === ledger.transactions.length,
       memory.escrows.length === ledger.escrows.length,
       memory.disputes.length === ledger.disputes.length,
       memory.settlements.length === ledger.settlements.length,

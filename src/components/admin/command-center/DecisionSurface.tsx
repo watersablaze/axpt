@@ -3,6 +3,7 @@
 import { useAwareness, type AwarenessOperator } from "../../../lib/realtime/AwarenessProvider"
 import PanelWrapper from "@/components/admin/system/PanelWrapper"
 import SystemTopologyPanel from "@/components/admin/system/SystemTopologyPanel"
+import { UnifiedOrganismState } from "@/engines/runtime/AXPTUnifiedOrganismFieldEngine"
 
 export default function DecisionSurface() {
   const { items, global } = useAwareness()

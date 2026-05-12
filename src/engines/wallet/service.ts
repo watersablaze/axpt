@@ -16,6 +16,8 @@ import {
   NotFoundError,
   WalletError,
 } from './errors';
+import { etk } from "@/engines/execution/kernel/ExecutionTruthKernel"
+import { executionSignalAssembler } from "@/engines/signals/ExecutionSignalAssembler"
 import { assertSystemActive } from '@/lib/system/pause'
 import { findProcessedWalletDebitEvent } from './journal';
 import { evaluateTransferPolicy } from '@/domains/wallet/policy/evaluateTransferPolicy'

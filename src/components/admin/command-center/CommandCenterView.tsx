@@ -8,23 +8,58 @@ import NotificationCenter from "@/components/admin/NotificationCenter"
 import CaseHeatmap from "@/components/admin/CaseHeatmap"
 import SystemFieldPanel from "@/components/admin/system/SystemFieldPanel"
 
-export default function CommandCenterView() {
-  return (
-    <div className="space-y-8">
-      <GlobalAwarenessPanel variant="strip" />
+import OrganismLivePanel from "@/components/admin/organism/OrganismLivePanel"
+import UnifiedOrganismFieldPanel from "@/components/admin/organism/UnifiedOrganismFieldPanel"
+import OrganismTopologyMap from "@/components/admin/organism/OrganismTopologyMap"
+import CausalFlowLayer from "@/components/admin/organism/CausalFlowLayer"
 
+import GlobalOrganismClock from "@/ui/organism/GlobalOrganismClock"
+
+import { useUnifiedOrganism } from "@/ui/hooks/useUnifiedOrganism"
+
+export default function CommandCenterView() {
+  const organism = useUnifiedOrganism()
+
+  return (
+    <div className="space-y-10">
+
+      {/* 🫀 GLOBAL ORGANISM HEART */}
+      <GlobalOrganismClock />
+
+      {/* ──────────────────────────────
+          LAYER 1: ORGANISM (SELF STATE)
+      ────────────────────────────── */}
+      <div className="space-y-4">
+        <GlobalAwarenessPanel variant="strip" />
+
+        <OrganismLivePanel organism={organism} />
+
+        <UnifiedOrganismFieldPanel />
+
+        <OrganismTopologyMap />
+      </div>
+
+      {/* ────────────────────────────── */}
       <div className="rounded-2xl border border-neutral-800 bg-black/80 p-4">
         <SystemFieldPanel />
       </div>
 
+      {/* ────────────────────────────── */}
+      <div className="border-t border-neutral-900 pt-6">
+        <CausalFlowLayer organism={organism} />
+      </div>
+
+      {/* ────────────────────────────── */}
       <div className="space-y-6 border-t border-neutral-900 pt-6">
         <div className="mx-auto max-w-5xl">
           <DecisionSurface />
         </div>
       </div>
 
+      {/* ────────────────────────────── */}
       <div className="space-y-6 border-t border-neutral-900 pt-6">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+
           <div className="lg:col-span-5">
             <GlobalPulsePanel />
           </div>
@@ -32,11 +67,14 @@ export default function CommandCenterView() {
           <div className="lg:col-span-7">
             <EventStreamPanel />
           </div>
+
         </div>
       </div>
 
+      {/* ────────────────────────────── */}
       <div className="space-y-6 border-t border-neutral-900 pt-6">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+
           <div className="lg:col-span-6">
             <NotificationCenter />
           </div>
@@ -44,8 +82,10 @@ export default function CommandCenterView() {
           <div className="lg:col-span-6">
             <CaseHeatmap />
           </div>
+
         </div>
       </div>
+
     </div>
   )
 }

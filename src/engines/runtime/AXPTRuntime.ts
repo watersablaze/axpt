@@ -5,8 +5,12 @@ import { EscrowEngine } from '../execution/escrow/EscrowEngine'
 import { DisputeEngine } from '../dispute/DisputeEngine'
 import { SettlementEngine } from '../execution/settlement/SettlementEngine'
 import { AXPTEventBus } from '../events/AXPTEventBus'
-
+import { GovernanceMutationLedger } from '@/engines/governance/mutations/GovernanceMutationLedger'
 import type { TransferRequest, TransferResult } from '../execution/transfer/TransferTypes'
+import { AXPTBreathEngine } from './AXPTBreathEngine'
+import { RuntimeCoherenceGuard } from './RuntimeCoherenceGuard'
+import { ReconciliationEngine } from '@/engines/reconciliation/ReconciliationEngine'
+import { MemoryGraphEngine } from '@/engines/memory/MemoryGraphEngine'
 
 export class AXPTRuntime {
   private transfer = new TransferEngine()
@@ -14,6 +18,19 @@ export class AXPTRuntime {
   private dispute = new DisputeEngine()
   private settlement = new SettlementEngine()
   private bus = new AXPTEventBus()
+  private mutationLedger = new GovernanceMutationLedger()
+  private breath: AXPTBreathEngine
+  private guard = new RuntimeCoherenceGuard()
+  private memory = new MemoryGraphEngine()
+  private reconciliation = new ReconciliationEngine()
+
+  constructor() {
+    this.breath = new AXPTBreathEngine(
+      this.bus,
+      this.reconciliation,
+      this.mutationLedger
+    )
+  }
 
   /**
    * ──────────────────────────────
@@ -21,6 +38,14 @@ export class AXPTRuntime {
    * ──────────────────────────────
    */
   async executeTransfer(req: TransferRequest): Promise<TransferResult> {
+    this.guard.validateEnvelope({
+      req,
+      ctx: null,
+      twin: null,
+      risk: null,
+      decision: null,
+    })
+
     const result = await this.transfer.execute(req)
 
     this.bus.emit({

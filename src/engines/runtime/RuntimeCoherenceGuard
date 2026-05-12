@@ -1,0 +1,111 @@
+import type { GovernorResult } from '@/engines/governance/types'
+import type { RiskSignal } from '@/engines/risk/PredictiveRiskEngine'
+import type { TwinResult } from '@/engines/twin/AXPTDigitalTwinEngine'
+
+export type CoherenceResult = {
+  ok: boolean
+  score: number
+  flags: string[]
+}
+
+export class RuntimeCoherenceGuard {
+  /**
+   * 🧠 PRIMARY COHERENCE GATE
+   */
+  validateEnvelope(envelope: {
+    req: any
+    ctx: any
+    twin: TwinResult
+    risk: RiskSignal
+    decision: GovernorResult
+  }): CoherenceResult {
+    const flags: string[] = []
+    let score = 1
+
+    /**
+     * ──────────────────────────────
+     * RISK LAYER
+     * ──────────────────────────────
+     */
+    const riskScore = envelope.risk.score
+
+    if (typeof riskScore !== 'number') {
+      throw new Error('RISK_CORRUPTION')
+    }
+
+    if (riskScore < 0 || riskScore > 1) {
+      throw new Error('RISK_OUT_OF_BOUNDS')
+    }
+
+    if (riskScore > 0.85) {
+      flags.push('HIGH_RISK')
+      score -= 0.3
+    }
+
+    /**
+     * ──────────────────────────────
+     * TWIN LAYER
+     * ──────────────────────────────
+     */
+    const twin = envelope.twin
+
+    if (typeof twin.stressScore !== 'number') {
+      throw new Error('TWIN_CORRUPTION')
+    }
+
+    if (twin.stressScore > 0.85) {
+      flags.push('HIGH_STRESS_TWIN')
+      score -= 0.3
+    }
+
+    if (!Array.isArray(twin.timelines)) {
+      throw new Error('TWIN_TIMELINE_CORRUPTION')
+    }
+
+    /**
+     * ──────────────────────────────
+     * GOVERNANCE LAYER
+     * ──────────────────────────────
+     */
+    const validDecisions = ['TRANSFER', 'ESCROW', 'REJECT', 'QUARANTINE'] as const
+
+    if (!validDecisions.includes(envelope.decision.decision)) {
+      throw new Error('GOVERNANCE_CORRUPTION')
+    }
+
+    /**
+     * ──────────────────────────────
+     * CROSS-LAYER COHERENCE
+     * ──────────────────────────────
+     */
+    if (envelope.decision.decision === 'TRANSFER' && riskScore > 0.9) {
+      flags.push('ILLOGICAL_TRANSFER')
+      score -= 0.4
+    }
+
+    if (envelope.decision.decision === 'REJECT' && twin.stressScore < 0.1) {
+      flags.push('FALSE_REJECTION')
+      score -= 0.2
+    }
+
+    if (
+      envelope.decision.riskScore < 0 ||
+      envelope.decision.riskScore > 1
+    ) {
+      throw new Error('DECISION_RISK_CORRUPTION')
+    }
+
+    /**
+     * ──────────────────────────────
+     * FINAL SCORE
+     * ──────────────────────────────
+     */
+    const finalScore = Math.max(0, Math.min(1, score))
+
+    return {
+      ok: finalScore > 0.7,
+      score: finalScore,
+      flags,
+    }
+  }
+}

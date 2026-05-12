@@ -1,25 +1,52 @@
-import { OperatorProvider } from '@/lib/operator/OperatorContext'
-import { EntityProvider } from '@/lib/context/EntityContext'
-import AuthDebugPanel from '@/components/admin/debug/AuthDebugPanel'
-import AdminShell from '@/components/admin/layout/AdminLayout'
+import { cookies } from 'next/headers'
 
-import { requirePermission } from '@/domains/auth/requirePermission'
-import { PERMISSIONS } from '@/domains/auth/permissions'
+import AdminShell from '@/components/admin/layout/AdminLayout'
+import { EntityProvider } from '@/lib/context/EntityContext'
+import { OperatorProvider } from '@/lib/operator/OperatorContext'
+import { prisma } from '@/infrastructure/db/prisma'
+
+export const dynamic = 'force-dynamic'
 
 export default async function AdminAppLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  await requirePermission(PERMISSIONS.ADMIN_ACCESS)
+  const cookieStore = await cookies()
+  const session = cookieStore.get('session')?.value
+
+  if (!session) {
+    return (
+      <main style={{ padding: '2rem' }}>
+        <h1>Unauthorized</h1>
+        <p>No active admin session was found.</p>
+      </main>
+    )
+  }
+
+  const user = await prisma.user.findFirst({
+    where: {
+      accessToken: session,
+    },
+    select: {
+      id: true,
+      isAdmin: true,
+    },
+  })
+
+  if (!user?.isAdmin) {
+    return (
+      <main style={{ padding: '2rem' }}>
+        <h1>Forbidden</h1>
+        <p>This session does not have admin access.</p>
+      </main>
+    )
+  }
 
   return (
     <OperatorProvider>
       <EntityProvider>
-        <AdminShell>
-          {children}
-          {false && process.env.NODE_ENV === 'development' && <AuthDebugPanel />}
-        </AdminShell>
+        <AdminShell>{children}</AdminShell>
       </EntityProvider>
     </OperatorProvider>
   )

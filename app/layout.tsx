@@ -1,16 +1,21 @@
 import '@/styles/globals.css'
 
+import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { Toaster } from 'sonner'
 import Script from 'next/script'
+import { Toaster } from 'sonner'
 
 import AuraDiagnostics from '@/components/devtools/AuraDiagnostics'
-import { LayerProvider } from '@/lib/context/LayerContext'
 import DeploymentBanner from '@/components/system/DeploymentBanner'
+import { LayerProvider } from '@/lib/context/LayerContext'
+import { OrganismStateProvider } from '@/ui/organism/OrganismStateProvider'
 
-const inter = Inter({ subsets: ['latin'], display: 'swap' })
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+})
 
-export const metadata = {
+export const metadata: Metadata = {
   title: 'AXPT.io Portal',
   description: 'Culturally awakened economies and regenerative systems.',
 }
@@ -25,18 +30,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <LayerProvider>
-          <div id="app-content">
-            {children}
-          </div>
+        <OrganismStateProvider>
+          <LayerProvider>
+            <div id="app-content">{children}</div>
 
-          {isDev && <AuraDiagnostics />}
-        </LayerProvider>
+            {isDev ? <AuraDiagnostics /> : null}
+          </LayerProvider>
+        </OrganismStateProvider>
 
         <DeploymentBanner />
+
         <Toaster richColors position="top-right" />
 
-        {/* Jitsi Script (correct placement) */}
         <Script
           src="https://meet.jit.si/external_api.js"
           strategy="afterInteractive"

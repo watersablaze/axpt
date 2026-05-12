@@ -1,6 +1,7 @@
 // app/dashboard/layout.tsx
 import type { ReactNode } from 'react';
 import '@/styles/dashboard.css';
+import { OrganismBreathVisualizer } from '@/ui/organism/OrganismBreathVisualizer';
 
 export default function DashboardLayout({ children }: { children: ReactNode }) {
   return (
@@ -15,6 +16,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </nav>
       </aside>
       <main className="main">
+        <OrganismBreathVisualizer />
         {children}
       </main>
     </div>

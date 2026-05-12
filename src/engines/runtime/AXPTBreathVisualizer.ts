@@ -16,34 +16,74 @@ export type BreathSignal = {
   timestamp: number
 }
 
+type BreathListener = (signal: BreathSignal) => void
+
 export class AXPTBreathVisualizer {
-  private listeners: ((s: BreathSignal) => void)[] = []
+  private listeners = new Set<BreathListener>()
+  private latest: BreathSignal | null = null
 
-  subscribe(fn: (s: BreathSignal) => void) {
-    this.listeners.push(fn)
-  }
+  subscribe(listener: BreathListener) {
+    this.listeners.add(listener)
 
-  emit(signal: BreathSignal) {
-    for (const fn of this.listeners) {
-      fn(signal)
+    if (this.latest) {
+      listener(this.latest)
+    }
+
+    return () => {
+      this.listeners.delete(listener)
     }
   }
 
-  /**
-   * 🧬 CONTROLLED BREATH CYCLE EMISSION
-   */
+  getSnapshot() {
+    return this.latest
+  }
+
   pulse(data: {
     phase: BreathPhase
     risk?: number
     drift?: number
     intensity?: number
   }) {
-    this.emit({
+    const signal: BreathSignal = {
       phase: data.phase,
-      intensity: data.intensity ?? 0.5,
-      risk: data.risk ?? 0,
-      drift: data.drift ?? 0,
+      intensity: this.clamp(data.intensity ?? this.defaultIntensity(data.phase)),
+      risk: this.clamp(data.risk ?? 0),
+      drift: this.clamp(data.drift ?? 0),
       timestamp: Date.now(),
-    })
+    }
+
+    this.latest = signal
+    this.emit(signal)
+
+    return signal
+  }
+
+  private emit(signal: BreathSignal) {
+    for (const listener of this.listeners) {
+      listener(signal)
+    }
+  }
+
+  private defaultIntensity(phase: BreathPhase) {
+    switch (phase) {
+      case 'INHALE':
+      case 'EXHALE':
+        return 0.35
+      case 'SIMULATE':
+      case 'DECIDE':
+        return 0.55
+      case 'EXECUTE':
+      case 'VERIFY':
+        return 0.7
+      case 'HEAL':
+      case 'MUTATE':
+        return 0.85
+      default:
+        return 0.5
+    }
+  }
+
+  private clamp(value: number) {
+    return Math.max(0, Math.min(1, value))
   }
 }

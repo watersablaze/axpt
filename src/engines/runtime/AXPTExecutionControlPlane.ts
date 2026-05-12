@@ -13,6 +13,8 @@ import type { TransferRequest } from '@/engines/execution/transfer/TransferTypes
 import type { TwinResult } from '@/engines/twin/AXPTDigitalTwinEngine'
 import type { RiskSignal } from '@/engines/risk/PredictiveRiskEngine'
 import type { GovernorResult } from '@/engines/governance/types'
+import { GovernanceMutationLedger } from '@/engines/governance/mutations/GovernanceMutationLedger'
+import { GovernanceEvolutionEngine } from '@/engines/governance/GovernanceEvolutionEngine'
 
 import { AXPTBreathVisualizer } from './AXPTBreathVisualizer'
 
@@ -24,6 +26,8 @@ export class AXPTExecutionControlPlane {
   private validator = new TransferValidator()
   private guard = new RuntimeCoherenceGuard()
   private breath = new AXPTBreathVisualizer()
+  private mutationLedger = new GovernanceMutationLedger()
+  private evolutionEngine: GovernanceEvolutionEngine
 
   constructor(
     private governor: ExecutionGovernorV2,
@@ -34,7 +38,13 @@ export class AXPTExecutionControlPlane {
     private reconciliation: ReconciliationEngine,
     private bus: AXPTEventBus,
     private risk: PredictiveRiskEngine = new PredictiveRiskEngine()
-  ) {}
+  ) {
+    this.evolutionEngine = new GovernanceEvolutionEngine(
+      this.memory,
+      this.reconciliation,
+      this.mutationLedger
+    )
+  }
 
   /**
    * 🧠 PRIMARY ORCHESTRATION LOOP
@@ -105,15 +115,24 @@ export class AXPTExecutionControlPlane {
     })
 
     /**
-     * 🧬 COHERENCE GATE (NEW)
+     * 🧬 COHERENCE GATE
      */
-    this.guard.validateEnvelope({
-      req: executionReq,
-      ctx,
-      twin,
-      risk,
-      decision,
+    const coherence = this.guard.validateEnvelope({
+    req: executionReq,
+    ctx,
+    twin,
+    risk,
+    decision,
     })
+
+    if (!coherence.ok) {
+    this.bus.emit({
+      type: 'COHERENCE_BLOCKED',
+      payload: coherence,
+    })
+
+    throw new Error('COHERENCE_GATE_BLOCKED')
+    }
 
     /**
      * 🧠 PRE-EXECUTION EVENT
@@ -150,9 +169,11 @@ export class AXPTExecutionControlPlane {
 
     this.breath.pulse({ phase: 'HEAL' })
 
-    this.breath.pulse({
-      phase: 'MUTATE',
-      drift: postState.ledger.driftScore ?? 0,
+    const evolution = await this.evolutionEngine.evolve(ctx.fromUserId)
+
+    this.bus.emit({
+      type: 'GOVERNANCE_EVALUATION_COMPLETED',
+      payload: evolution,
     })
 
     this.bus.emit({

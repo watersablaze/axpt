@@ -36,6 +36,16 @@ import ReplayComparisonPanel from '@/components/admin/treasury/ReplayComparisonP
 import ReplayDriftSummaryPanel from '@/components/admin/treasury/ReplayDriftSummaryPanel'
 import { ReplaySelectionProvider } from '@/lib/context/ReplaySelectionContext'
 
+type SyncStatus = {
+  lastSyncedBlock: string | null
+  latestIndexedBlock: string | null
+  latestIndexedAt: string | null
+  chainId: number
+  network: string
+  degraded: boolean
+  error: string | null
+}
+
 async function getData() {
   const snapshots = await reconcileAllAssets()
 
@@ -84,14 +94,20 @@ async function getDecisionLog() {
   }))
 }
 
-async function getSyncStatus() {
+async function getSyncStatus(): Promise<SyncStatus> {
   try {
     const [state, latestEvent] = await Promise.all([
       prisma.chainSyncState.findUnique({
         where: { id: 'mirror' },
+        select: {
+          lastBlock: true,
+        },
       }),
+
       prisma.chainMirrorEvent.findFirst({
-        orderBy: { blockNumber: 'desc' },
+        orderBy: {
+          blockNumber: 'desc',
+        },
         select: {
           blockNumber: true,
           createdAt: true,
@@ -107,10 +123,11 @@ async function getSyncStatus() {
       latestIndexedAt: latestEvent?.createdAt?.toISOString() ?? null,
       chainId: latestEvent?.chainId ?? 11155111,
       network: latestEvent?.network ?? 'sepolia',
+      degraded: false,
+      error: null,
     }
-
   } catch (err) {
-    console.error('DB unavailable:', err)
+    console.error('[treasury:getSyncStatus]', err)
 
     return {
       lastSyncedBlock: null,
@@ -118,7 +135,8 @@ async function getSyncStatus() {
       latestIndexedAt: null,
       chainId: 11155111,
       network: 'sepolia',
-      degraded: true, // 👈 ADD THIS
+      degraded: true,
+      error: 'Database access denied or unavailable.',
     }
   }
 }
