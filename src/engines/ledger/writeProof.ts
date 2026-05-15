@@ -11,7 +11,6 @@ export function writeProof(entry: {
 proofLedger.append({
   id: crypto.randomUUID(),
   type: entry.type,
-  version: entry.version ?? "1.0.0",
   timestamp: Date.now(),
   eventHash: hash(entry.payload),
   sourceNodeId: entry.sourceNodeId ?? null,

@@ -9,9 +9,11 @@ export class AXPTOperatorInterfaceLayer {
    * 🧭 OBSERVATION API
    */
   observe(entityId: string) {
+    const compressed =
+      executionRealityCompressionEngine.getArchetype(entityId)
 
-    const compressed = executionRealityCompressionEngine.getArchetype(entityId)
-    const delta = executionRealityCompressionEngine.getDelta(entityId)
+    const delta =
+      executionRealityCompressionEngine.getDelta(entityId)
 
     return {
       entityId,
@@ -29,7 +31,6 @@ export class AXPTOperatorInterfaceLayer {
    */
   submitIntent(intent: any) {
 
-    // Convert operator intent → ETK signal input
     const signalized: ExecutionSignal = {
       source: "INTENT",
       type: intent.type,
@@ -37,9 +38,13 @@ export class AXPTOperatorInterfaceLayer {
       confidence: 1,
       timestamp: Date.now(),
       payload: intent,
+      entityId: intent.entityId,
     }
 
-    const decision = etk.decide([signalized], intent.entityId)
+    const decision = etk.decide(
+      [signalized],
+      intent.entityId
+    )
 
     return {
       intent,
@@ -51,10 +56,17 @@ export class AXPTOperatorInterfaceLayer {
    * ⚖️ SYSTEM HEALTH VIEW
    */
   systemView() {
-
     const meta = executionMetaGovernance.evaluate({
-      collectiveMemory: {},
-      evolutionWeights: {},
+      collectiveMemory: {
+        globalRiskBias: 0,
+        globalDriftBias: 0,
+        globalGovernanceStrictness: 0,
+      },
+      evolutionWeights: {
+        riskWeight: 0,
+        driftWeight: 0,
+        finalityWeight: 0,
+      },
       transferActivity: [],
       stabilitySeries: [],
       decisionHistory: [],
@@ -70,8 +82,7 @@ export class AXPTOperatorInterfaceLayer {
   /**
    * 🧠 INTENT NORMALIZATION
    */
-  private mapIntentSeverity(type: string) {
-
+  private mapIntentSeverity(type: string): number {
     switch (type) {
       case "REQUEST_FINALIZE":
         return 0.8

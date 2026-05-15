@@ -13,18 +13,52 @@ export class EscrowEngine {
     caseId: string
     fromUserId: string
     toUserId: string
+    fromWalletId?: string
+    toWalletId?: string
     assetCode: string
     amountBaseUnits: bigint
   }) {
+    const [fromWallet, toWallet] = await Promise.all([
+      input.fromWalletId
+        ? Promise.resolve({ id: input.fromWalletId })
+        : prisma.wallet.findUnique({
+            where: { userId: input.fromUserId },
+            select: { id: true },
+          }),
+      input.toWalletId
+        ? Promise.resolve({ id: input.toWalletId })
+        : prisma.wallet.findUnique({
+            where: { userId: input.toUserId },
+            select: { id: true },
+          }),
+    ])
+
+    if (!fromWallet || !toWallet) {
+      throw new Error('ESCROW_WALLET_NOT_FOUND')
+    }
+
+    const caseId = input.caseId
+    const amountBaseUnits = input.amountBaseUnits.toString()
+    const assetCode = input.assetCode
+    const fromWalletId = fromWallet.id
+    const toWalletId = toWallet.id
+
     const escrow = await prisma.escrow.create({
       data: {
-        caseId: input.caseId,
+        escrowId: crypto.randomUUID(),
+        caseId,
+        amountBaseUnits,
+        assetCode,
+        fromWalletId,
+        toWalletId,
         status: 'INITIATED',
+        chainState: 'PENDING',
+        reconciliationState: 'UNRECONCILED',
       },
     })
 
     emitEscrowEvent({
-      escrowId: escrow.id,
+      escrowId: escrow.escrowId,
       from: null,
       to: 'INITIATED',
       metadata: input,

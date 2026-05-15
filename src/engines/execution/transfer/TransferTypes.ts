@@ -67,7 +67,7 @@ export type TransferExecutionContext = {
  */
 export type TransferResult = {
   transferId: string
-  escrowId?: string
+  escrowId?: string | null
 
   debitTransactionId: string
   creditTransactionId: string

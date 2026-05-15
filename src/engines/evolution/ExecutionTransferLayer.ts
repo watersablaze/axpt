@@ -12,8 +12,12 @@ type TransferRecord = {
   fromEntity: string
   toEntity: string
   similarity: number
-  weightDelta: any
   timestamp: number
+  weightDelta: {
+    riskWeight: number
+    driftWeight: number
+    finalityWeight: number
+  }
 }
 
 export class ExecutionTransferLayer {
@@ -43,8 +47,8 @@ export class ExecutionTransferLayer {
 
     const weightDelta = this.computeTransferDelta(fromSig, toSig)
 
-    // apply evolution injection
-    executionEvolutionLoop.inject(toEntity, weightDelta)
+   // ETK-OBSERVABLE ONLY (PHASE 2 MIGRATION)
+   // executionEvolutionLoop.inject(toEntity, weightDelta)
 
     const record: TransferRecord = {
       fromEntity,

@@ -3,8 +3,9 @@ import type { CFState } from '../core/state/CFState'
 import type { MemoryNode } from './MemoryGraphTypes'
 
 export class MemoryGraphEngine {
+
   /**
-   * INGEST ANY FINANCIAL EVENT INTO MEMORY GRAPH
+   * INGEST EVENT INTO MEMORY GRAPH
    */
   async ingest(node: MemoryNode) {
     return prisma.memoryNode.create({
@@ -26,7 +27,7 @@ export class MemoryGraphEngine {
   }
 
   /**
-   * FULL ENTITY HISTORY (LEDGER CONSCIOUSNESS STREAM)
+   * ENTITY HISTORY
    */
   async trace(entityId: string) {
     return prisma.memoryNode.findMany({
@@ -36,7 +37,7 @@ export class MemoryGraphEngine {
   }
 
   /**
-   * CAUSAL CHAIN RECONSTRUCTION
+   * CAUSAL CHAIN
    */
   async causal(nodeId: string) {
     const root = await prisma.memoryNode.findUnique({
@@ -47,7 +48,9 @@ export class MemoryGraphEngine {
 
     const parents = await prisma.memoryNode.findMany({
       where: {
-        id: { in: (root.causalParents as string[]) ?? [] },
+        id: {
+          in: (root.causalParents as string[]) ?? [],
+        },
       },
     })
 
@@ -55,7 +58,7 @@ export class MemoryGraphEngine {
   }
 
   /**
-   * TEMPORAL REPLAY (SYSTEM MEMORY RECONSTRUCTION)
+   * TEMPORAL REPLAY
    */
   async replay(entityId: string, at: number): Promise<CFState> {
     const events = await prisma.memoryNode.findMany({
@@ -69,6 +72,9 @@ export class MemoryGraphEngine {
     return this.reduce(events)
   }
 
+  /**
+   * FULL EXPORT
+   */
   async exportFinancialState(): Promise<CFState> {
     const events = await prisma.memoryNode.findMany({
       orderBy: { timestamp: 'asc' },
@@ -79,7 +85,7 @@ export class MemoryGraphEngine {
   }
 
   /**
-   * INTERNAL STATE RECONSTRUCTION ENGINE
+   * STATE REDUCER
    */
   private reduce(events: MemoryNode[]): CFState {
     return events.reduce<CFState>((state, event) => {
@@ -124,3 +130,5 @@ export class MemoryGraphEngine {
     })
   }
 }
+
+export const executionRealityFabric = new MemoryGraphEngine()

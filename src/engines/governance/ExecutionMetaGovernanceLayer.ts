@@ -1,11 +1,14 @@
 export type MetaGovernanceInput = {
   stabilitySeries: Array<{ stabilityScore: number }>
+
   collectiveMemory: {
     globalRiskBias: number
     globalDriftBias: number
     globalGovernanceStrictness: number
   }
+
   transferActivity: Array<{ similarity: number }>
+
   evolutionWeights: {
     riskWeight: number
     driftWeight: number
@@ -15,13 +18,7 @@ export type MetaGovernanceInput = {
 
 export type MetaGovernanceDecision = {
   state: "UNSAFE_ADAPTATION" | "OVERFITTING" | "DRIFTING" | "OVER_RESTRICTIVE" | "STABLE"
-  actions: {
-    activateCircuitBreaker?: boolean
-    resetCollectiveBias?: boolean
-    dampenEvolution?: boolean
-    tightenETKThresholds?: boolean
-    reduceTransferSensitivity?: boolean
-  }
+  actions: Record<string, boolean>
   confidence: number
 }
 

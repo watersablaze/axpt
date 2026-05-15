@@ -5,20 +5,19 @@ import { executionGraph } from "@/engines/graph/ExecutionGraphEngine"
 
 import { onchainEscrowFinalizationEngine } from "../escrow/OnchainEscrowFinalizationEngine"
 
-import { EXECUTION_VERSION } from "@/engines/contracts/ExecutionContracts"
+import { authoritySpineCompiler } from "@/engines/operator/AuthoritySpineCompiler"
 import { executionContractValidator } from "@/engines/validation/ExecutionContractValidator"
 
 import {
   ExecutionTruthKernel,
-  type ExecutionDecision,
+  type ETKDecision,
+  type ETKTrace,
 } from "@/engines/execution/kernel/ExecutionTruthKernel"
-import { SignalAssembler } from "@/engines/signals/ExecutionSignalAssembler"
+
+import { executionSignalAssembler } from "@/engines/signals/ExecutionSignalAssembler"
 
 const etk = new ExecutionTruthKernel()
 
-/**
- * CONTRACT
- */
 type ContractedEvent = {
   version: string
   type: string
@@ -43,15 +42,12 @@ export class ExecutionStreamCore {
     this.initialize()
   }
 
-  /**
-   * PIPELINE ENTRY
-   */
   private initialize() {
     runtimeBus.subscribe(async (event: any) => {
-      const eventNodeId = crypto.randomUUID()
+      const nodeId = crypto.randomUUID()
 
       executionGraph.addNode({
-        id: eventNodeId,
+        id: nodeId,
         type: "EVENT",
         timestamp: Date.now(),
         data: event,
@@ -63,32 +59,27 @@ export class ExecutionStreamCore {
         type: "EVENT_RECEIVED",
         eventType: event.type,
         payload: event,
-        metadata: { correlationId: eventNodeId },
+        metadata: { correlationId: nodeId },
       })
 
       try {
-        await this.ingest(event, eventNodeId)
+        await this.ingest(event, nodeId)
       } catch (err) {
         executionTraceLedger.append({
           id: crypto.randomUUID(),
           timestamp: Date.now(),
           type: "UNHANDLED_PIPELINE_ERROR",
           payload: String(err),
-          metadata: {
-            correlationId: eventNodeId,
-          },
+          metadata: { correlationId: nodeId },
         })
       }
     })
   }
 
-  /**
-   * INGESTION
-   */
-  private async ingest(event: any, eventNodeId: string) {
+  private async ingest(event: any, nodeId: string) {
     const contractedEvent: ContractedEvent = {
       ...event,
-      version: event.version ?? EXECUTION_VERSION,
+      version: event.version ?? "1.0",
       timestamp: event.timestamp ?? Date.now(),
     }
 
@@ -105,109 +96,101 @@ export class ExecutionStreamCore {
       return
     }
 
-    await this.process(contractedEvent, eventNodeId)
+    await this.process(contractedEvent, nodeId)
   }
 
-  private async commitApprovedDecision(
-    entityId: string,
-    event: ContractedEvent,
-    decision: Extract<ExecutionDecision, { status: "COMMIT" }>
-  ) {
-    const finalizer = onchainEscrowFinalizationEngine as any
+  private async process(event: ContractedEvent, nodeId: string) {
 
-    if (typeof finalizer.finalize === "function") {
-      await finalizer.finalize({
-        escrowId: entityId,
-        plan: decision.executionPlan,
+    const entityId = this.resolveEntityId(event)
+    if (!entityId) return
+
+    /* ─────────────────────────────
+       1. SIGNALS
+    ───────────────────────────── */
+    const signals = await executionSignalAssembler.build(entityId, event)
+
+    /* ─────────────────────────────
+       2. SPINE
+    ───────────────────────────── */
+    const spine = authoritySpineCompiler.build(
+      signals,
+      entityId,
+      {
+        source: "STREAM_CORE",
+        eventType: event.type,
+      }
+    )
+
+    /* ─────────────────────────────
+       3. ETK
+    ───────────────────────────── */
+    const etkResult = etk.decide(spine)
+
+    /* ─────────────────────────────
+       4. GATE
+    ───────────────────────────── */
+    if (
+      process.env.ETK_PHASE_2_SHADOW === "false" &&
+      etkResult.decision.status !== "ALLOW"
+    ) {
+      executionTraceLedger.append({
+        id: crypto.randomUUID(),
+        timestamp: Date.now(),
+        type: "EXECUTION_REJECTED_BY_ETK",
+        payload: etkResult.decision,
+        metadata: { correlationId: nodeId },
       })
       return
     }
 
+    /* ─────────────────────────────
+       5. FINALIZATION
+    ───────────────────────────── */
+    await this.commit(entityId, event, etkResult.decision, etkResult.trace)
+
+    executionTraceLedger.append({
+      id: crypto.randomUUID(),
+      timestamp: Date.now(),
+      type: "ETK_DECISION",
+      payload: etkResult,
+      metadata: { correlationId: nodeId },
+    })
+
+    this.broadcast({
+      entityId,
+      event,
+      decision: etkResult.decision,
+      trace: etkResult.trace,
+    })
+  }
+
+  private async commit(
+    entityId: string,
+    event: ContractedEvent,
+    decision: ETKDecision,
+    trace: ETKTrace
+  ) {
     if (event.type === "CHAIN_ESCROW_CONFIRMED") {
       onchainEscrowFinalizationEngine.handleChainConfirmation({
         escrowId: entityId,
         txHash: event.txHash ?? "",
         blockNumber: event.blockNumber ?? 0,
         status: "CONFIRMED",
-        from: event.from ?? event.wallet ?? "",
+        from: event.from ?? "",
         to: event.to ?? "",
         amount: Number(event.amount ?? 0),
       })
     }
   }
 
-  /**
-   * CORE LOOP
-   */
-  private async process(
-    contractedEvent: ContractedEvent,
-    contractedNodeId: string
-  ) {
-    const entityId = this.resolveEntityId(contractedEvent)
-
-    if (!entityId) {
-      executionTraceLedger.append({
-        id: crypto.randomUUID(),
-        timestamp: Date.now(),
-        type: "ENTITY_RESOLUTION_FAILED",
-        payload: contractedEvent,
-        metadata: { correlationId: contractedNodeId },
-      })
-      return
-    }
-
-    const signals = await SignalAssembler.build(entityId, contractedEvent)
-
-    const decision = etk.decide(signals, entityId)
-
-    if (decision.status !== "COMMIT") {
-      executionTraceLedger.append({
-        id: crypto.randomUUID(),
-        timestamp: Date.now(),
-        type: "EXECUTION_REJECTED_BY_ETK",
-        payload: decision,
-        metadata: { correlationId: contractedNodeId },
-      })
-      return
-    }
-
-    await this.commitApprovedDecision(entityId, contractedEvent, decision)
-
-    executionTraceLedger.append({
-      id: crypto.randomUUID(),
-      timestamp: Date.now(),
-      type: "ETK_DECISION",
-      payload: decision,
-      metadata: { correlationId: contractedNodeId },
-    })
-
-    this.broadcast({
-      entityId,
-      event: contractedEvent,
-      decision,
-    })
-  }
-  
-
-  /**
-   * BROADCAST
-   */
   private broadcast(snapshot: any) {
-    for (const listener of this.listeners) {
-      listener(snapshot)
-    }
+    for (const l of this.listeners) l(snapshot)
   }
 
-  /**
-   * ENTITY RESOLUTION
-   */
   private resolveEntityId(event: ContractedEvent) {
-    return event.escrowId ?? event.payload?.escrowId ?? event.entityId ?? null
+    return event.escrowId ?? event.entityId ?? event.payload?.escrowId ?? null
   }
 
-  /**
-   * PUBLIC API
-   */
   subscribe(listener: (snapshot: any) => void) {
     this.listeners.add(listener)
     return () => this.listeners.delete(listener)

@@ -32,10 +32,28 @@ export class AXPTExecutionProcessor {
     switch (intent.suggestedMode) {
 
       case 'ESCROW':
-        return lockEscrow(intent.metadata?.caseId)
+        if (
+          !intent.metadata?.caseId ||
+          !intent.metadata?.fromWalletId ||
+          !intent.metadata?.toWalletId
+        ) {
+          throw new Error('ESCROW_CREATION_REQUIRES_FULL_PAYLOAD')
+        }
+
+        return lockEscrow({
+          caseId: intent.metadata.caseId,
+          amountBaseUnits: intent.amountBaseUnits,
+          assetCode: intent.assetCode,
+          fromWalletId: intent.metadata.fromWalletId,
+          toWalletId: intent.metadata.toWalletId,
+        })
 
       case 'TRANSFER':
-        return releaseEscrow(intent.metadata?.caseId)
+        if (!intent.metadata?.escrowId) {
+          throw new Error('ESCROW_RELEASE_REQUIRES_ESCROW_ID')
+        }
+
+        return releaseEscrow(intent.metadata.escrowId)
 
       default:
         throw new Error('Unsupported execution mode')

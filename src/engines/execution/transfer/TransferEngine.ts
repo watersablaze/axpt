@@ -9,6 +9,7 @@ import { PredictiveRiskEngine } from '@/engines/risk/PredictiveRiskEngine'
 import { MemoryGraphEngine } from '@/engines/memory/MemoryGraphEngine'
 import { GovernanceCortex } from '@/engines/governance/GovernanceCortex'
 import { FinancialConsciousnessLoop } from '@/engines/memory/FinancialConsciousnessLoop'
+import { EscrowEngine } from '@/engines/execution/escrow/EscrowEngine'
 
 import type { TransferRequest, TransferResult } from './TransferTypes'
 
@@ -20,6 +21,7 @@ export class TransferEngine {
     private readonly ledger = new LedgerWriter(),
     private readonly escrowRouter = new EscrowRouter(),
     private readonly governor = new ExecutionGovernor(),
+    private readonly escrow = new EscrowEngine(),
     private readonly memory = new MemoryGraphEngine(),
     private readonly risk = new PredictiveRiskEngine(),
     private readonly twin = new AXPTDigitalTwinEngine(
@@ -66,6 +68,15 @@ export class TransferEngine {
       /**
        * 4. GOVERNANCE DECISION (NEW SINGLE AUTHORITY)
        */
+      const environment: 'PROD' | 'TEST' =
+        process.env.NODE_ENV === 'production' ? 'PROD' : 'TEST'
+      const source: 'API' | 'SYSTEM' | 'AGENT' =
+        executionReq.source === 'system'
+          ? 'SYSTEM'
+          : executionReq.source === 'agent'
+          ? 'AGENT'
+          : 'API'
+
       const contract = {
         req: {
           idempotencyKey: executionReq.idempotencyKey,
@@ -81,6 +92,8 @@ export class TransferEngine {
           assetCode: ctx.assetCode,
           amountBaseUnits: ctx.amountBaseUnits,
           escrowId: ctx.metadata?.escrowId,
+          environment,
+          source,
         },
       }
 
@@ -112,9 +125,25 @@ export class TransferEngine {
        * 5. ESCROW BRANCHING
        */
       let mode: 'TRANSFER' | 'ESCROW' = 'TRANSFER'
+      let escrowId: string | undefined
 
       if (decision.decision === 'ESCROW') {
+        if (!ctx.metadata?.caseId) {
+          throw new Error('ESCROW_REQUIRES_CASE_ID')
+        }
+
+        const createdEscrow = await this.escrow.initiate({
+          caseId: ctx.metadata.caseId,
+          fromUserId: ctx.fromUserId,
+          toUserId: ctx.toUserId,
+          fromWalletId: balances.sender.walletId,
+          toWalletId: balances.receiver.walletId,
+          assetCode: ctx.assetCode,
+          amountBaseUnits: ctx.amountBaseUnits,
+        })
+
         mode = 'ESCROW'
+        escrowId = createdEscrow.escrowId
       }
 
       /**
@@ -125,13 +154,18 @@ export class TransferEngine {
         mode,
         transferId: executionReq.idempotencyKey,
       })
+      const finalResult: TransferResult = {
+        ...result,
+        mode,
+        escrowId: mode === 'ESCROW' ? escrowId ?? null : escrowId,
+      }
 
       /**
        * 7. FINALIZE IDEMPOTENCY
        */
-      await this.idempotency.commit(executionReq.idempotencyKey, result)
+      await this.idempotency.commit(executionReq.idempotencyKey, finalResult)
 
-      return result
+      return finalResult
     } catch (err: any) {
       await this.idempotency.fail(executionReq.idempotencyKey, {
         error: err.message,
