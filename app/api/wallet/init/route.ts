@@ -4,8 +4,13 @@ import { requirePermission } from '@/domains/auth/requirePermission'
 import { PERMISSIONS } from '@/domains/auth/permissions'
 
 export async function POST() {
-  const principal = await requirePermission(PERMISSIONS.WALLET_INIT)
-  const userId = principal.userId
+const principal = await requirePermission(PERMISSIONS.WALLET_INIT)
+
+if (!principal || typeof principal !== "object") {
+  throw new Error("INVALID_PRINCIPAL")
+}
+
+const userId = (principal as any).userId
 
   try {
     const wallet = await createResidentWallet(userId)
