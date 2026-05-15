@@ -1,0 +1,707 @@
+app
+├── (auth)
+│   └── login
+│       └── page.tsx
+├── HomeStack.module.css
+├── account
+│   └── upgrade
+│       └── layout.tsx
+├── admin
+│   ├── AdminNav.tsx
+│   ├── access-codes
+│   ├── artifacts
+│   │   └── [artifactID]
+│   │       └── page.tsx
+│   ├── cada-waitlist
+│   │   └── page.tsx
+│   ├── cases
+│   │   ├── [caseId]
+│   │   │   ├── activate
+│   │   │   ├── artifacts
+│   │   │   ├── escrow
+│   │   │   ├── events
+│   │   │   ├── gates
+│   │   │   └── page.tsx
+│   │   └── new
+│   │       ├── [caseId]
+│   │       └── page.tsx
+│   ├── command-center
+│   │   ├── PriorityQueueClient.tsx
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── dev
+│   │   └── principals
+│   │       └── page.tsx
+│   ├── dev_DISABLED
+│   │   ├── case
+│   │   │   └── [caseId]
+│   │   ├── command-center
+│   │   ├── create-case
+│   │   ├── decision
+│   │   ├── escrow
+│   │   ├── signals
+│   │   └── system
+│   ├── docs
+│   │   └── page.tsx
+│   ├── email
+│   │   ├── EmailLogAdmin.tsx
+│   │   ├── EmailLogTable.tsx
+│   │   ├── page.tsx
+│   │   └── preview-axis
+│   │       └── page.tsx
+│   ├── initiatives
+│   │   ├── [slug]
+│   │   │   ├── page.tsx
+│   │   │   └── update-composer.tsx
+│   │   ├── new
+│   │   │   ├── Form.tsx
+│   │   │   └── page.tsx
+│   │   └── page.tsx
+│   ├── layout.tsx
+│   ├── page.tsx
+│   ├── projects
+│   │   ├── FundButton.tsx
+│   │   ├── page.tsx
+│   │   └── review-action.tsx
+│   ├── security
+│   │   └── page.tsx
+│   ├── settings
+│   │   ├── page.tsx
+│   │   └── settings-form.tsx
+│   ├── shadow-vault
+│   │   └── page.tsx
+│   ├── stations
+│   │   └── cada-submission
+│   │       └── page.tsx
+│   ├── treasury
+│   │   ├── actions
+│   │   │   ├── [id]
+│   │   │   └── page.tsx
+│   │   ├── artifacts
+│   │   │   └── page.tsx
+│   │   ├── cases
+│   │   │   ├── [caseId]
+│   │   │   └── page.tsx
+│   │   ├── command-center
+│   │   │   ├── control
+│   │   │   └── page.tsx
+│   │   ├── escrow
+│   │   │   └── page.tsx
+│   │   ├── intake
+│   │   │   └── page.tsx
+│   │   ├── ledger
+│   │   │   └── page.tsx
+│   │   ├── page.tsx
+│   │   └── reconciliation
+│   │       └── page.tsx
+│   └── upgrade-pinned
+│       └── page.tsx
+├── api
+│   ├── admin
+│   │   ├── access-codes
+│   │   │   ├── [id]
+│   │   │   └── route.ts
+│   │   ├── actions
+│   │   │   ├── route.ts
+│   │   │   └── undo
+│   │   ├── auth
+│   │   │   └── debug
+│   │   ├── automation
+│   │   │   └── run
+│   │   ├── autonomous
+│   │   │   └── summary
+│   │   ├── awareness
+│   │   │   └── stream
+│   │   ├── axg
+│   │   │   ├── mint
+│   │   │   ├── preview
+│   │   │   ├── preview-redeem
+│   │   │   ├── price
+│   │   │   ├── set-collateral
+│   │   │   ├── set-collateral-ratio
+│   │   │   └── set-collateral-ratio.ts
+│   │   ├── axis-journey
+│   │   │   └── route.ts
+│   │   ├── case-heatmap
+│   │   │   └── route.ts
+│   │   ├── cases
+│   │   │   ├── create
+│   │   │   ├── create-gold-spa
+│   │   │   └── toggle-automation
+│   │   ├── collateralize
+│   │   │   └── route.ts
+│   │   ├── command-center-feed
+│   │   │   └── route.ts
+│   │   ├── dispatch-events
+│   │   │   └── route.ts
+│   │   ├── emails
+│   │   │   └── route.ts
+│   │   ├── escrow-ledger
+│   │   │   └── route.ts
+│   │   ├── escrow-risk
+│   │   │   └── route.ts
+│   │   ├── events
+│   │   │   ├── route.ts
+│   │   │   └── stream
+│   │   ├── explainability
+│   │   │   └── replay-drift-summary
+│   │   ├── explanations
+│   │   │   ├── replay
+│   │   │   ├── replay-compare
+│   │   │   └── route.ts
+│   │   ├── gate-queue
+│   │   │   └── route.ts
+│   │   ├── global-awareness
+│   │   │   └── route.ts
+│   │   ├── initiatives
+│   │   │   ├── [slug]
+│   │   │   ├── new
+│   │   │   ├── route.ts
+│   │   │   ├── seed-protium
+│   │   │   └── slug-available
+│   │   ├── intent
+│   │   │   ├── adaptive
+│   │   │   ├── autonomous
+│   │   │   ├── autonomous-loop
+│   │   │   ├── route.ts
+│   │   │   ├── scenario
+│   │   │   └── simulate
+│   │   ├── intervention
+│   │   │   ├── respond
+│   │   │   └── route.ts
+│   │   ├── learning
+│   │   │   ├── correction-status
+│   │   │   ├── drift-summary
+│   │   │   ├── route.ts
+│   │   │   └── summary
+│   │   ├── logs
+│   │   │   └── route.ts
+│   │   ├── next-actions
+│   │   │   └── route.ts
+│   │   ├── notifications
+│   │   │   └── route.ts
+│   │   ├── notify-test
+│   │   │   └── route.ts
+│   │   ├── operators
+│   │   │   ├── decide
+│   │   │   └── route.ts
+│   │   ├── predictive
+│   │   │   └── summary
+│   │   ├── priority-queue
+│   │   │   └── route.ts
+│   │   ├── projects
+│   │   │   ├── [id]
+│   │   │   └── route.ts
+│   │   ├── protium
+│   │   │   └── mint
+│   │   ├── queue
+│   │   │   ├── history
+│   │   │   └── lock
+│   │   ├── reconciliation
+│   │   │   └── route.ts
+│   │   ├── security
+│   │   │   ├── appeals
+│   │   │   └── recompute
+│   │   ├── settings
+│   │   │   └── route.ts
+│   │   ├── shadow-vault
+│   │   │   ├── entries
+│   │   │   └── entry
+│   │   ├── skim
+│   │   │   └── route.ts
+│   │   ├── system
+│   │   │   ├── governor-policy
+│   │   │   └── status
+│   │   ├── system-awareness
+│   │   │   └── route.ts
+│   │   ├── system-snapshot
+│   │   │   └── route.ts
+│   │   ├── tokens
+│   │   │   ├── create
+│   │   │   ├── history
+│   │   │   ├── issue
+│   │   │   ├── revoke
+│   │   │   └── route.ts
+│   │   ├── treasury
+│   │   │   ├── circuit-log
+│   │   │   ├── intake
+│   │   │   ├── pause
+│   │   │   ├── predictive
+│   │   │   ├── reconcile-three-layer
+│   │   │   ├── reconciliation
+│   │   │   ├── sync-chain
+│   │   │   ├── sync-status
+│   │   │   ├── timeline
+│   │   │   └── verify-chain
+│   │   └── upload
+│   │       └── route.ts
+│   ├── auth
+│   │   ├── clear-session
+│   │   │   └── route.ts
+│   │   └── set-session
+│   ├── axg
+│   │   ├── balance
+│   │   │   └── route.ts
+│   │   ├── preview
+│   │   │   └── route.ts
+│   │   ├── preview-redeem
+│   │   │   └── route.ts
+│   │   ├── price
+│   │   │   └── route.ts
+│   │   ├── set-collateral
+│   │   │   └── route.ts
+│   │   └── status
+│   │       └── route.ts
+│   ├── axpt
+│   │   ├── artifacts
+│   │   │   ├── [artifactId]
+│   │   │   └── route.ts
+│   │   ├── cases
+│   │   │   ├── [caseId]
+│   │   │   ├── create
+│   │   │   └── route.ts
+│   │   ├── confirmations
+│   │   │   ├── escrow
+│   │   │   └── gate
+│   │   ├── escrow
+│   │   │   ├── dispute
+│   │   │   ├── lock
+│   │   │   ├── release
+│   │   │   └── settle
+│   │   ├── events
+│   │   │   └── stream
+│   │   ├── gates
+│   │   │   └── [gateId]
+│   │   ├── items
+│   │   │   └── [itemId]
+│   │   ├── parties
+│   │   │   └── route.ts
+│   │   ├── portal-token
+│   │   │   └── route.ts
+│   │   ├── public
+│   │   │   └── verify
+│   │   └── verification-items
+│   │       ├── [itemId]
+│   │       └── route.ts
+│   ├── cases
+│   │   ├── [caseId]
+│   │   │   └── events
+│   │   └── events
+│   │       └── route.ts
+│   ├── chain
+│   │   ├── balance
+│   │   │   └── route.ts
+│   │   ├── price
+│   │   │   └── route.ts
+│   │   ├── prt-price
+│   │   │   └── route.ts
+│   │   └── token
+│   │       └── route.ts
+│   ├── contracts
+│   │   ├── route.ts
+│   │   └── sync
+│   │       └── route
+│   ├── council
+│   │   ├── seal
+│   │   │   └── route.ts
+│   │   └── verify
+│   │       └── route.ts
+│   ├── cultural-proofs
+│   │   ├── [id]
+│   │   │   └── route.ts
+│   │   └── route.ts
+│   ├── db
+│   │   └── ping
+│   │       └── route.ts
+│   ├── db-monitor-log
+│   │   └── route.ts
+│   ├── debug
+│   │   ├── db
+│   │   │   └── route.ts
+│   │   ├── db-ping
+│   │   │   └── route.ts
+│   │   ├── fallback-session
+│   │   │   └── route.ts
+│   │   ├── initiatives
+│   │   │   └── route.ts
+│   │   ├── principal
+│   │   │   └── route.ts
+│   │   ├── session
+│   │   │   └── route.ts
+│   │   ├── tables
+│   │   │   └── route.ts
+│   │   ├── wallet
+│   │   │   └── route.ts
+│   │   └── whoami
+│   │       └── route.ts
+│   ├── dev
+│   │   ├── assign-roles
+│   │   │   └── route.ts
+│   │   ├── auth
+│   │   │   ├── bootstrap-resident
+│   │   │   └── bootstrap-user
+│   │   ├── emit
+│   │   │   └── route.ts
+│   │   ├── impersonate
+│   │   │   └── route.ts
+│   │   ├── init-residents
+│   │   │   └── route.ts
+│   │   ├── reseed-residents
+│   │   │   └── route.ts
+│   │   ├── seed-elders
+│   │   │   └── route.ts
+│   │   ├── seed-residents
+│   │   │   └── route.ts
+│   │   ├── seed-roles
+│   │   │   └── route.ts
+│   │   └── wallet
+│   │       └── fund
+│   ├── dev-login
+│   │   └── route.ts
+│   ├── docs
+│   │   └── [doc]
+│   │       └── route.ts
+│   ├── execution
+│   │   └── intent
+│   │       └── route.ts
+│   ├── governance
+│   │   ├── issuance
+│   │   │   ├── approve
+│   │   │   └── request
+│   │   ├── proposals
+│   │   │   └── route.ts
+│   │   └── vote
+│   │       └── route.ts
+│   ├── initiatives
+│   │   ├── [slug]
+│   │   │   ├── fund
+│   │   │   └── route.ts
+│   │   └── route.ts
+│   ├── intake
+│   │   ├── axis-journey
+│   │   │   └── route.ts
+│   │   └── route.ts
+│   ├── live
+│   │   ├── owncast
+│   │   │   └── route.ts
+│   │   ├── status
+│   │   │   └── route.ts
+│   │   └── webhook
+│   ├── logout
+│   ├── mirror
+│   │   └── balance
+│   │       └── route.ts
+│   ├── nommo
+│   │   └── status
+│   │       └── route.ts
+│   ├── organism
+│   │   └── state
+│   │       └── route.ts
+│   ├── owncast
+│   │   ├── chat
+│   │   │   └── route.ts
+│   │   ├── health
+│   │   │   └── route.ts
+│   │   ├── stats
+│   │   │   └── route.ts
+│   │   └── stream
+│   │       └── status
+│   ├── partner
+│   │   ├── log-view
+│   │   │   └── route.ts
+│   │   ├── qr-view
+│   │   │   └── route.ts
+│   │   ├── redeem-code
+│   │   │   └── route.ts
+│   │   ├── session
+│   │   ├── session-log
+│   │   └── verify-token
+│   │       └── route.ts
+│   ├── pdf
+│   │   └── [...slug]
+│   │       └── route.ts
+│   ├── ping
+│   │   └── route.ts
+│   ├── projects
+│   │   ├── [id]
+│   │   │   └── route.ts
+│   │   └── route.ts
+│   ├── protium
+│   │   ├── balance
+│   │   │   └── route.ts
+│   │   ├── mint
+│   │   │   └── route.ts
+│   │   ├── token
+│   │   │   └── route.ts
+│   │   └── value
+│   │       └── route.ts
+│   ├── shadow-vault
+│   │   └── submit
+│   │       └── route.ts
+│   ├── submit
+│   │   └── initiate
+│   │       └── route.ts
+│   ├── token
+│   │   ├── diagnose
+│   │   │   └── route.ts
+│   │   ├── issue
+│   │   │   └── route.ts
+│   │   └── validate
+│   │       └── route.ts
+│   ├── treasury
+│   │   ├── actions
+│   │   │   ├── [id]
+│   │   │   └── route.ts
+│   │   ├── pulse
+│   │   │   └── route.ts
+│   │   ├── queue
+│   │   │   └── process
+│   │   └── snapshot
+│   │       └── route.ts
+│   ├── wallet
+│   │   ├── balance
+│   │   │   └── route.ts
+│   │   ├── credit
+│   │   │   └── route.ts
+│   │   ├── init
+│   │   │   └── route.ts
+│   │   └── transfer
+│   │       └── route.ts
+│   ├── warroom
+│   │   └── stream
+│   │       └── route.ts
+│   └── webhooks
+│       └── resend
+│           └── route.ts
+├── axpt
+│   ├── cases
+│   │   └── [caseId]
+│   │       └── page.tsx
+│   ├── items
+│   │   └── [itemId]
+│   │       └── artifact
+│   └── public
+│       └── artifact
+│           └── [artifactId]
+├── ceremony-room
+│   └── page.tsx
+├── contracts
+│   ├── ContractAdminPanel.tsx
+│   ├── ContractExplorer.tsx
+│   ├── ContractSyncButton.tsx
+│   ├── ContractsPage.module.css
+│   ├── ContractsScroll.tsx
+│   ├── CulturalProofModal.tsx
+│   ├── PhotonRain.module.css
+│   ├── PhotonRain.tsx
+│   ├── blocks
+│   │   ├── CodexBlock.module.css
+│   │   ├── CodexBlock.tsx
+│   │   ├── ProofsBlock.module.css
+│   │   ├── ProofsBlock.tsx
+│   │   ├── TempleBlock.module.css
+│   │   ├── TempleBlock.tsx
+│   │   ├── VaultBlock.module.css
+│   │   ├── VaultBlock.tsx
+│   │   └── common
+│   │       ├── SubtleDepth.css
+│   │       └── SubtleGlow.css
+│   └── page.tsx
+├── council
+│   ├── CouncilChamber.tsx
+│   ├── CouncilPage.module.css
+│   ├── layout.tsx
+│   ├── login
+│   │   └── page.tsx
+│   └── page.tsx
+├── dashboard
+│   ├── db-monitor
+│   │   └── page.tsx
+│   ├── layout.tsx
+│   └── shadow-vault
+│       └── [id]
+│           └── page.tsx
+├── debug
+│   ├── page.tsx
+│   ├── sigil
+│   │   └── page.tsx
+│   └── temporal
+│       ├── layout.tsx
+│       └── page.tsx
+├── dev
+│   ├── guard
+│   │   └── page.tsx
+│   ├── initiation
+│   │   └── page.tsx
+│   └── portal
+│       ├── DevControls.tsx
+│       ├── DevImpersonateStrip.tsx
+│       ├── ResidentPicker.tsx
+│       ├── SendAxgForm.tsx
+│       ├── StatusChip.tsx
+│       ├── TransferForm.tsx
+│       └── page.tsx
+├── dev-tools
+│   ├── createTestUser.ts
+│   ├── deleteTestUser
+│   └── injectUser.ts
+├── docs
+│   ├── [doc]
+│   │   └── page.tsx
+│   └── layout.tsx
+├── email-preview
+│   └── cada
+│       └── route.tsx
+├── french-ward
+│   └── shadow-vault
+│       ├── ShadowVaultForm.module.css
+│       ├── ShadowVaultMobile.tsx
+│       ├── ShadowVaultPage.tsx
+│       ├── ShadowVaultWrapper.tsx
+│       └── page.tsx
+├── initiatives
+│   ├── [slug]
+│   │   ├── PledgeForm.tsx
+│   │   └── page.tsx
+│   └── page.tsx
+├── landing
+│   └── page.tsx
+├── layout.tsx
+├── live
+│   ├── jitsi
+│   │   └── page.tsx
+│   ├── live.module.css
+│   └── page.tsx
+├── live-admin
+│   ├── LiveAdminLayout.module.css
+│   ├── LiveAdminProvider.tsx
+│   ├── analytics
+│   │   └── page.tsx
+│   ├── analytics-advanced
+│   │   ├── ChatHeatmap.tsx
+│   │   ├── StreamHistory.tsx
+│   │   ├── ViewerDemographics.tsx
+│   │   ├── WatchTimeGraph.tsx
+│   │   ├── analytics-types.ts
+│   │   └── page.tsx
+│   ├── assets
+│   │   ├── AssetCard.tsx
+│   │   ├── AssetGrid.tsx
+│   │   ├── AssetUploader.tsx
+│   │   ├── asset-types.ts
+│   │   └── page.tsx
+│   ├── chat
+│   │   ├── ChatControls.tsx
+│   │   ├── ChatFeed.tsx
+│   │   ├── ChatMessage.tsx
+│   │   ├── chat-types.ts
+│   │   └── page.tsx
+│   ├── dashboard
+│   │   ├── dashboard.module.css
+│   │   └── page.tsx
+│   ├── layout.tsx
+│   ├── overlays
+│   │   ├── OverlayControls.tsx
+│   │   ├── OverlayPreview.tsx
+│   │   ├── overlay-types.ts
+│   │   ├── overlays
+│   │   │   ├── Chatbox.tsx
+│   │   │   ├── LogoBadge.tsx
+│   │   │   ├── LowerThird.tsx
+│   │   │   ├── SceneFrame.tsx
+│   │   │   └── Watermark.tsx
+│   │   └── page.tsx
+│   ├── page.tsx
+│   ├── settings
+│   │   ├── AccessControl.tsx
+│   │   ├── ApiKeysPanel.tsx
+│   │   ├── BrandingPanel.tsx
+│   │   ├── ModerationPanel.tsx
+│   │   ├── StreamingPanel.tsx
+│   │   └── page.tsx
+│   ├── stream
+│   │   ├── LiveThumbnail.tsx
+│   │   ├── StreamControls.tsx
+│   │   ├── StreamHealthPanel.tsx
+│   │   ├── StreamKeyPanel.tsx
+│   │   ├── StreamStatusCard.tsx
+│   │   ├── page.tsx
+│   │   └── stream-types.ts
+│   └── theme
+│       ├── ThemeEditor.tsx
+│       ├── ThemeGrid.tsx
+│       ├── ThemePreview.tsx
+│       ├── page.tsx
+│       └── theme-data.ts
+├── live-overlays
+│   ├── components
+│   │   ├── CeremonyBar.html
+│   │   ├── InvocationText.html
+│   │   ├── ParticleField.html
+│   │   └── SigilCore.html
+│   ├── index.html
+│   ├── overlay.css
+│   └── overlay.js
+├── logs
+│   └── token-verifications.jsonl
+├── mainstream
+│   ├── layout.tsx
+│   ├── page.tsx
+│   └── transmissions
+│       └── [id]
+│           ├── TransmissionPage.module.css
+│           └── page.tsx
+├── nommo-console
+│   ├── NommoConsole.tsx
+│   ├── buttons
+│   │   └── OverlayTriggerButton.tsx
+│   └── useConsoleBridge.ts
+├── nommo-media
+│   └── page.tsx
+├── page.tsx
+├── page.v1.tsx
+├── portal
+│   ├── SendAxgForm.tsx
+│   ├── [token]
+│   │   └── page.tsx
+│   ├── elder
+│   │   ├── issuance
+│   │   │   └── page.tsx
+│   │   ├── page.tsx
+│   │   └── proposals
+│   │       ├── [id]
+│   │       └── page.tsx
+│   ├── initiation
+│   │   └── page.tsx
+│   ├── page.tsx
+│   ├── portal.module.css
+│   └── projects
+│       ├── [id]
+│       │   ├── loading.tsx
+│       │   └── page.tsx
+│       ├── error.tsx
+│       ├── loading.tsx
+│       ├── page.tsx
+│       └── submit
+│           ├── page.tsx
+│           └── submit-form.tsx
+├── scripts
+│   ├── createProtiumInitiative.ts
+│   ├── export-abi.mjs
+│   ├── partner-tokens
+│   │   └── logs
+│   │       └── token-log.json
+│   ├── seedContracts.ts
+│   ├── seedCouncil.ts
+│   ├── seedInitiativeUpdate.ts
+│   └── seedResidents.ts
+├── tools
+│   ├── DbMonitorDashboard.module.css
+│   └── DbMonitorDashboard.tsx
+└── verify
+    └── escrow
+        └── [token]
+            ├── affidavid
+            └── page.tsx
+
+391 directories, 314 files

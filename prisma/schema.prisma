@@ -1099,21 +1099,25 @@ model NotificationReadModel {
 }
 
 model Escrow {
-  id              String    @id @default(cuid())
-  caseId          String
-  status          String
-  createdAt       DateTime  @default(now())
-  amountBaseUnits Decimal
-  assetCode       String
-  fromWalletId    String
-  lockedAt        DateTime?
-  releasedAt      DateTime?
-  toWalletId      String
-  transferId      String?
-  updatedAt       DateTime  @updatedAt
-  case            Case      @relation(fields: [caseId], references: [id])
+  id                  String    @id @default(cuid())
+  escrowId            String    @unique @default(cuid())
+  caseId              String
+  status              String
+  chainState          String    @default("PENDING")
+  reconciliationState String    @default("UNRECONCILED")
+  createdAt           DateTime  @default(now())
+  amountBaseUnits     Decimal
+  assetCode           String
+  fromWalletId        String
+  lockedAt            DateTime?
+  releasedAt          DateTime?
+  toWalletId          String
+  transferId          String?
+  updatedAt           DateTime  @updatedAt
+  case                Case      @relation(fields: [caseId], references: [id])
 
   @@index([caseId])
+  @@index([escrowId])
   @@index([status])
   @@index([transferId])
 }

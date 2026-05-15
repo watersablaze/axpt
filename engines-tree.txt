@@ -1,0 +1,307 @@
+src/engines
+├── adaptation
+│   ├── ExecutionAdaptiveInfluenceEngine.ts
+│   ├── ExecutionImmunityLayer.ts
+│   └── ExecutionInfluenceFeedbackLayer.ts
+├── analysis
+│   └── ExecutionOutcomeAnalyzer.ts
+├── audit
+│   └── ExecutionAuditor.ts
+├── auth
+│   └── CanonicalAuthorityKernel.ts
+├── autonomy
+│   ├── GovernanceAutopilot.ts
+│   └── InstitutionalAutonomyEngine.ts
+├── chain
+│   ├── AXPTChainListener.ts
+│   ├── AXPTEventImgestionEngine.ts
+│   ├── EscrowChainListener.ts
+│   ├── abi
+│   │   └── axgEscrowDecoder.ts
+│   └── mapping
+│       └── organismEventMapper.ts
+├── civilization
+│   └── FinancialCivilizationEngine.ts
+├── cognition
+│   ├── AXPTCognititveFeedbackEngine.ts
+│   └── ExecutionCognitionLayer.ts
+├── contracts
+│   ├── AuthoritySpineContract.ts
+│   ├── AuthoritySpinePipeline.ts
+│   ├── ExecuteStreamProtocol.ts
+│   ├── ExecutionContracts.ts
+│   ├── ExecutionSignalGuards.ts
+│   ├── ExecutionSignalNormalizer.ts
+│   ├── SignalOriginTraceMap.ts
+│   └── index.ts
+├── core
+│   ├── ExecutionContractCore.ts
+│   ├── state
+│   │   ├── CFState.ts
+│   │   └── StateAuthorityContract.ts
+│   └── types
+│       ├── ExecutionContract.ts
+│       └── ExecutionIntent.ts
+├── dispute
+│   ├── DisputeEngine.ts
+│   ├── disputeStateMachine.ts
+│   └── eveidenceStore.ts
+├── escrow
+│   ├── EscrowExecutionEngine.ts
+│   └── OnchainEscrowFinalizationEngine.ts
+├── events
+│   ├── AXPTEventBus.ts
+│   ├── AXPTEventIngestionEngine.ts
+│   └── AXPTEventSourcingKernel.ts
+├── evm
+│   ├── abis
+│   │   └── AXGEscrowABI.ts
+│   ├── client.ts
+│   ├── contracts
+│   │   └── axgEscrowContract.ts
+│   └── events
+│       └── listenEscrowEvents.ts
+├── evolution
+│   ├── ExecutionEvolutionLoop.ts
+│   └── ExecutionTransferLayer.ts
+├── execution
+│   ├── AXPTExecutionEngine.ts
+│   ├── AXPTExecutionIntentEngine.ts
+│   ├── ExecutionIntentQueue.ts
+│   ├── boundary
+│   │   └── ExecutionInputAdapter.ts
+│   ├── bus
+│   │   └── ExecutionIntentBus.ts
+│   ├── chain
+│   │   ├── AXPTViemExecutionAdapter.ts
+│   │   └── axgEscrowClient.ts
+│   ├── debug
+│   │   └── ExecutionSignalTraceMap.ts
+│   ├── escrow
+│   │   ├── EscrowEngine.ts
+│   │   ├── EscrowFinalizationProofPack.ts
+│   │   ├── EscrowReplayEngine.ts
+│   │   ├── EscrowTypes.ts
+│   │   ├── OnChainReplayDivergenceEngine.ts
+│   │   ├── OnchainEscrowCommitEngine.ts
+│   │   ├── escrowEvents.ts
+│   │   ├── escrowGuards.ts
+│   │   └── escrowStateMachine.ts
+│   ├── kernel
+│   │   ├── ETKSpineAdapter.ts
+│   │   └── ExecutionTruthKernel.ts
+│   ├── metrics
+│   │   └── ExecutionFinalityIndex.ts
+│   ├── pipeline
+│   │   └── ExecutionIntentPipelineBridge.ts
+│   ├── queue
+│   │   ├── AXPTExecutionIntentQueue.ts
+│   │   ├── AXPTExecutionProcessor.ts
+│   │   ├── AXPTTreasuryGuardrails.ts
+│   │   ├── ExecutionQueue.ts
+│   │   └── types.ts
+│   ├── settlement
+│   │   ├── SettlementEngine.ts
+│   │   ├── SettlementTypes.ts
+│   │   ├── settlementAttestation.ts
+│   │   └── settlementFinality.ts
+│   ├── transfer
+│   │   ├── BalanceResolver.ts
+│   │   ├── EscrowRouter.ts
+│   │   ├── IdempotencyGuard.ts
+│   │   ├── LedgerWriter.ts
+│   │   ├── TransferEngine.ts
+│   │   ├── TransferTypes.ts
+│   │   ├── TransferValidator.ts
+│   │   ├── errors
+│   │   │   └── TransferErrors.ts
+│   │   ├── events
+│   │   │   └── transferEvents.ts
+│   │   ├── index.ts
+│   │   └── invariants
+│   │       ├── balanceInvariants.ts
+│   │       ├── ledgerInvariants.ts
+│   │       └── transferInvariants.ts
+│   └── validation
+│       └── xecutionSignalValidator.ts
+├── fork
+│   └── AXPTDeterministicForkEngine.ts
+├── fraud
+│   └── AXPTFraudAutonomyEngine.ts
+├── governance
+│   ├── AXPTCircuitBreakerEngine.ts
+│   ├── AXPTGovernorEngine.ts
+│   ├── ExecutionGovernanceLayer.ts
+│   ├── ExecutionGovernorV2.ts
+│   ├── ExecutionIdentityBoundaryLayer.ts
+│   ├── ExecutionMetaGovernanceLayer.ts
+│   ├── GovernanceCortex.ts
+│   ├── GovernanceEvolutionEngine.ts
+│   ├── mutations
+│   │   ├── GovernanceMutationEngine.ts
+│   │   └── GovernanceMutationLedger.ts
+│   └── types.ts
+├── graph
+│   └── ExecutionGraphEngine.ts
+├── immune
+│   └── AXPTImmuneFinancialSystem.ts
+├── ledger
+│   ├── ProofLedger.ts
+│   └── writeProof.ts
+├── lock
+│   ├── DAGValidator.ts
+│   ├── SystemLockMode.ts
+│   ├── allowedDependencyGraph.ts
+│   └── layerResolver.ts
+├── memory
+│   ├── ExecutionCollectiveMemoryLayer.ts
+│   ├── ExecutionMemoryLedger.ts
+│   ├── FinancialConsciousnessLoop.ts
+│   ├── MemoryGraphDaemon.ts
+│   ├── MemoryGraphEngine.ts
+│   ├── MemoryGraphLinker.ts
+│   ├── MemoryGraphNodeBuilder.ts
+│   ├── MemoryGraphQuery.ts
+│   ├── MemoryGraphReplay.ts
+│   └── MemoryGraphTypes.ts
+├── metrics
+│   ├── ExecutionDriftIndex.ts
+│   └── ExecutionStabilityGraphEngine.ts
+├── nommo
+│   ├── index.ts
+│   ├── persist.ts
+│   ├── signals.ts
+│   ├── state.ts
+│   └── types.ts
+├── operator
+│   ├── AXPTOperatorInterfaceLayer.ts
+│   ├── AuthoritySpineCompiler.ts
+│   ├── ExecutionOperatorField.ts
+│   ├── OperatorInterfaceLayer.ts
+│   └── OperatorTraceLedger.ts
+├── organism
+│   └── AXPTOrganismFieldEngine.ts
+├── predictor
+│   └── ExecutionCollapsePredictor.ts
+├── reality
+│   ├── ExecutionRealityCompressionEngine.ts
+│   ├── ExecutionRealityFabric.ts
+│   ├── types
+│   │   └── RealityCoreTypes.ts
+│   └── types.ts
+├── reconciliation
+│   ├── AXPTReconcilationSyncEngine.ts
+│   ├── EscrowReconcilationEngine.ts
+│   ├── ReconciliationDaemon.ts
+│   ├── ReconciliationEngine.ts
+│   ├── healing
+│   │   ├── DriftDetector.ts
+│   │   └── LedgerHealer.ts
+│   └── types
+│       └── CFReconciliationReport.ts
+├── replay
+│   ├── EventSourcedReplayEngine.ts
+│   ├── ExecutionReplayEngine.ts
+│   ├── GovernanceReplayEngine.ts
+│   └── LedgerReplayEngine.ts
+├── risk
+│   ├── PredictiveRiskEngine.ts
+│   └── RiskFirewall.ts
+├── runtime
+│   ├── AXPTBreathEngine.ts
+│   ├── AXPTBreathVisualizer.ts
+│   ├── AXPTExecutionControlPlane.ts
+│   ├── AXPTExecutionSeal.ts
+│   ├── AXPTOrganismClockEngine.ts
+│   ├── AXPTOrganismStateModel.ts
+│   ├── AXPTOrganismStateMoel.ts
+│   ├── AXPTRuntime.ts
+│   ├── AXPTTreasuryRuntimeLoop.ts
+│   ├── AXPTUnifiedOrganismFieldEngine.ts
+│   ├── AXPTUnifiedPulseEngine.ts
+│   ├── ExecutionStreamCore.ts
+│   ├── RuntimeCoherenceGuard
+│   ├── RuntimeCoherenceGuard.ts
+│   ├── bootstrap.ts
+│   ├── clientSingletons.ts
+│   ├── organism
+│   │   └── OrganismSnapshot.ts
+│   ├── organismSnapshotAPI.ts
+│   ├── server
+│   │   └── organismSnapshotBuilder.ts
+│   ├── serverSingletons.ts
+│   ├── time
+│   │   └── AXPTSystemClock.ts
+│   ├── types
+│   │   └── OrganismState.ts
+│   └── ui
+│       └── AXPTBreathingVisualizer.tsx
+├── safety
+│   ├── AXPTCircuitBreakerEngine.ts
+│   ├── AXPTCompensationEngine.ts
+│   ├── AXPTExecutionFingerprint.ts
+│   ├── AXPTExecutionReceipt.ts
+│   ├── AXPTExecutionStateMachine.ts
+│   ├── AXPTOrganismSnapshotLock.ts
+│   └── CircuitBreaker.ts
+├── sandbox
+│   └── InstitutionalSimulationSandbox.ts
+├── selfhealing
+│   └── AXPTSelfHealingLoop.ts
+├── signals
+│   ├── ExecutionSignalAssembler.ts
+│   └── state
+│       └── ExecutionSignalStateBuffer.ts
+├── simulation
+│   ├── ExecutionAdversarialLayer.ts
+│   ├── ExecutionFaultSimulator.ts
+│   └── IntentSimulationHarness.ts
+├── singularity
+│   └── AXPTInstitutionalSignuarlityEngine.ts
+├── snapshots
+│   ├── AXPTOrganismSnapshotStore.ts
+│   └── types.ts
+├── spine
+│   └── AuthoritySpineGraphEngine.ts
+├── stability
+│   └── AutonomousStabilizationLayer.ts
+├── temporal
+│   ├── ExecutionTemporalFeedbackEngine.ts
+│   └── TemporalStateEngine.ts
+├── trace
+│   └── ExecutionTraceLedger.ts
+├── treasury
+│   ├── AXPTAdaptiveTreasuryEngine.ts
+│   ├── AXPTTreasuryCognitiveFeedbackEngine.ts
+│   ├── AXPTTreasuryIntelligenceEngine.ts
+│   ├── TreasuryAutonomyEngine.ts
+│   └── TreasuryGuardrailsEngine.ts
+├── truth
+│   └── TruthVerificationEngine.ts
+├── twin
+│   └── AXPTDigitalTwinEngine.ts
+├── validation
+│   └── ExecutionContractValidator.ts
+├── visualizer
+│   ├── AuthorityLeakageInspector.ts
+│   └── AuthorityLeakageVisualizer.ts
+└── wallet
+    ├── AXGBlockchainAdapter.ts
+    ├── AXGBlockchainClient.ts
+    ├── AXGEscrowAdapter.ts
+    ├── AXGWalletAdapter.ts
+    ├── abi
+    │   └── AXGEscrowABI.ts
+    ├── errors.ts
+    ├── execute.ts
+    ├── index.ts
+    ├── invariants.ts
+    ├── journal.ts
+    ├── ledger.ts
+    ├── policy.ts
+    ├── reconciliation
+    ├── service.ts
+    ├── types.service.ts
+    └── types.ts
+
+86 directories, 219 files

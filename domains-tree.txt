@@ -1,0 +1,265 @@
+src/domains
+├── adaptive
+│   ├── computePolicySignal.ts
+│   ├── intentSelector.ts
+│   ├── learnIntentWeights.ts
+│   └── patternMatcher.ts
+├── auth
+│   ├── AuthorityKernel.ts
+│   ├── admin
+│   │   ├── getLegacyAuthDiagnostics.ts
+│   │   ├── getPrincipalDiagnostics.ts
+│   │   ├── getRoleDiagnostics.ts
+│   │   └── getSecurityStatus.ts
+│   ├── debug
+│   │   └── getAuthDebugState.ts
+│   ├── getPrincipal.ts
+│   ├── permissions.ts
+│   ├── principal.ts
+│   ├── requireAuth.ts
+│   ├── requirePermission.ts
+│   └── requireResident.ts
+├── autonomous
+│   ├── autonomousLoop.ts
+│   ├── autonomousPolicy.ts
+│   ├── autonomousTypes.ts
+│   ├── autonomyPolicy.ts
+│   ├── strategyEngine.ts
+│   └── strategyExecutor.ts
+├── cases
+│   ├── analytics
+│   │   └── getCaseHeatmap.ts
+│   ├── events
+│   │   ├── bootstrapCaseEvents.ts
+│   │   ├── caseEventBus.ts
+│   │   ├── caseEventLogger.ts
+│   │   ├── caseEvents.ts
+│   │   └── handlers
+│   │       ├── eventLogHandler.ts
+│   │       └── sseBroadcastHandler.ts
+│   ├── index.ts
+│   ├── policies
+│   │   └── caseStateMachine.ts
+│   ├── repositories
+│   │   ├── artifaceRepository.ts
+│   │   ├── caseRepositories.ts
+│   │   ├── eventRepository.ts
+│   │   └── gateRepository.ts
+│   ├── services
+│   │   ├── artifactService.ts
+│   │   ├── caseCreationService.ts
+│   │   ├── caseService.ts
+│   │   ├── createCase.ts
+│   │   ├── eventLogService.ts
+│   │   ├── gateEngine.ts
+│   │   ├── gateScheduler.ts
+│   │   ├── gateServices.ts
+│   │   ├── getGateQueue.ts
+│   │   ├── getNextActions.ts
+│   │   └── transitionCaseStatus.ts
+│   ├── templates
+│   │   └── homestay
+│   │       └── ExpansionTemplate.ts
+│   ├── types
+│   │   ├── artifactTypes.ts
+│   │   ├── caseTypes.ts
+│   │   ├── gateTypes.ts
+│   │   └── workflowTypes.ts
+│   └── workflows
+│       ├── archiveWorkflow.ts
+│       ├── coordinationWorkflow.ts
+│       ├── escrowWorkflow.ts
+│       ├── fundingWorkflow.ts
+│       └── governanceWorkflow.ts
+├── escrow
+│   ├── escrowGuards.ts
+│   ├── escrowStatus.ts
+│   ├── policies
+│   │   └── escrowPolicy.ts
+│   └── services
+│       ├── EscrowExecutionAdapter.ts
+│       ├── escrowService.ts
+│       └── getEscrowRisk.ts
+├── explainability
+│   ├── calculateDivergence.ts
+│   ├── compareReplay.ts
+│   ├── persistWhy.ts
+│   ├── replayDecision.ts
+│   ├── replayDriftSummary.ts
+│   └── whyEngine.ts
+├── governance
+├── identity
+├── initiatives
+├── intent
+│   ├── intentExecutor.ts
+│   ├── intentPlanner.ts
+│   ├── intentTypes.ts
+│   ├── strategyExecutor.ts
+│   └── systemState.ts
+├── learning
+│   ├── correctionPolicy.ts
+│   ├── correctionStatus.ts
+│   ├── driftDetection.ts
+│   ├── impactScoring.ts
+│   ├── intentContextKey.ts
+│   ├── intentWeights.ts
+│   ├── learningSummary.ts
+│   ├── outcomeScoring.ts
+│   ├── selfCorrection.ts
+│   ├── strategy
+│   │   └── strategyLearning.ts
+│   ├── strategyLearning.ts
+│   ├── systemSnapshop.ts
+│   ├── systemSnapshot.ts
+│   ├── systemState.ts
+│   ├── timeDecay.ts
+│   └── updateIntentWeights.ts
+├── mirror
+│   ├── abi.ts
+│   ├── adapter.evm.ts
+│   ├── adapter.ts
+│   ├── bootstrap.ts
+│   ├── chainReader.ts
+│   ├── chainSync.ts
+│   ├── chainVerification.ts
+│   ├── createJob.ts
+│   ├── dbCursor.ts
+│   ├── dbEvents.ts
+│   ├── encoding.ts
+│   ├── ledgerAccounts.ts
+│   ├── ledgerWriter.ts
+│   ├── processor.ts
+│   ├── roWorker.ts
+│   ├── scanWindow.ts
+│   ├── types.ts
+│   ├── utils.ts
+│   ├── worker.claim.ts
+│   ├── worker.config.ts
+│   ├── worker.confirm.ts
+│   ├── worker.process.ts
+│   └── worker.ts
+├── notifications
+│   ├── notificationService.ts
+│   ├── notificationStore.ts
+│   └── notificationTypes.ts
+├── partners
+├── policy
+│   ├── casePolicies.ts
+│   ├── escrowPolicies.ts
+│   ├── gatePolicies.ts
+│   ├── index.ts
+│   ├── policyEngine.ts
+│   ├── policyRules.ts
+│   ├── policyTypes.ts
+│   ├── rolePolicies.ts
+│   └── types.ts
+├── predictive
+│   ├── governor.ts
+│   ├── governorConfig.ts
+│   ├── governorRefinement.ts
+│   ├── predictiveEngine.ts
+│   ├── predictivePolicy.ts
+│   ├── predictiveSignals.ts
+│   └── predictiveTypes.ts
+├── reconciliation
+│   ├── reconcileAssets.ts
+│   └── reconcileThreeLayer.ts
+├── risk
+│   ├── applyTrustDecay.ts
+│   ├── buildTransferGraph.ts
+│   ├── checkCooldown.ts
+│   ├── classifyRisk.ts
+│   ├── computeAnomalyScore.ts
+│   ├── computeClusterScore.ts
+│   ├── computeDynamicTransferCapacity.ts
+│   ├── computeRelationalRisk.ts
+│   ├── computeRiskScore.ts
+│   ├── detectCoordination.ts
+│   ├── detectMultiHopRisk.ts
+│   └── updateTrustEdge.ts
+├── roles
+│   ├── resolveRoleForGate.ts
+│   └── roles.ts
+├── scenario
+│   ├── scenarioBuilder.ts
+│   ├── scenarioEngine.ts
+│   ├── scenarioSelector.ts
+│   ├── scenarioSimulator.ts
+│   └── scenarioTypes.ts
+├── security
+│   ├── appealReviewFlow.ts
+│   ├── applyContainmentPolicy.ts
+│   ├── clusterContainmentEngine.ts
+│   ├── computeAdaptiveContainment.ts
+│   ├── computeContainmentZone.ts
+│   ├── computeGlobalThrottle.ts
+│   ├── computeProbabilisticThreatField.ts
+│   ├── computeSystemPressure.ts
+│   ├── computeThreatField.ts
+│   ├── computeZoneThrottle.ts
+│   ├── containmentZone.ts
+│   ├── evaluateCircuitBreaker.ts
+│   ├── evolveContainmentZones.ts
+│   ├── freezeUserIfCriticalRisk.ts
+│   ├── getEffectiveZoneThrottle.ts
+│   ├── mergeUserMetadata.ts
+│   ├── persistClusterAssignments.ts
+│   ├── persistContainmentZones.ts
+│   ├── persistProbabilisticThreatField.ts
+│   ├── persistRiskSnapshotBatch.ts
+│   ├── persistThreatField.ts
+│   ├── persistZoneThrottle.ts
+│   ├── propagateThreatGraph.ts
+│   ├── quarantineGate.ts
+│   ├── quarantineState.ts
+│   ├── recomputeSecurityState.ts
+│   ├── systemModeGuard.ts
+│   ├── systemSecurityState.ts
+│   ├── triggerAutoLockdown.ts
+│   └── unfreezeUser.ts
+├── simulation
+│   ├── simulateIntent.ts
+│   └── simulateTypes.ts
+├── system
+│   ├── detectSystemHealth.ts
+│   ├── requireSystemHealthy.ts
+│   └── systemHealth.ts
+├── treasury
+│   ├── assertTransition.ts
+│   ├── claimExecuteJob.ts
+│   ├── evaluateApprovalIntelligence.ts
+│   ├── evaluatePostExecution.ts
+│   ├── executeTreasuryAction.ts
+│   ├── logExecutionOutcome.ts
+│   ├── processExecutionJob.ts
+│   ├── recordDecisionOutcome.ts
+│   ├── resolveApproval.ts
+│   ├── stateMachine.ts
+│   ├── transitionTreasuryAction.ts
+│   ├── transitionTreasuryQueue.ts
+│   └── triggerExecution.ts
+├── trust
+│   ├── computeUserTrustState.ts
+│   ├── deriveTrustScore.ts
+│   ├── getUserTrustScore.ts
+│   ├── gradualTrustRecovery.ts
+│   └── trustTypes.ts
+└── wallet
+    ├── constants
+    │   └── transactionTypes.ts
+    ├── createResidentWallet.ts
+    ├── creditAxg.ts
+    ├── invariants
+    ├── ledger
+    │   ├── transactionSemantics.ts
+    │   └── transferLifecycle.ts
+    ├── policy
+    │   ├── evaluateTransferPolicy.ts
+    │   ├── evaluateTreasuryPolicy.ts
+    │   └── evaluateUserTransferPolicy.ts
+    ├── transferAxg.ts
+    └── types
+        ├── context.ts
+        └── transferContext.ts
+
+47 directories, 216 files
