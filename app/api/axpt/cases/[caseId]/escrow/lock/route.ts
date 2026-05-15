@@ -11,6 +11,16 @@ export async function POST(
   { params }: { params: Promise<{ caseId: string }> }
 ) {
   const { caseId } = await params;
+  const body = await req.json().catch(() => ({} as any))
+  const escrowId =
+    body?.escrowId ?? new URL(req.url).searchParams.get('escrowId')
+
+  if (!escrowId) {
+    return NextResponse.json(
+      { ok: false, error: 'ESCROW_ID_REQUIRED' },
+      { status: 400 }
+    )
+  }
 
   const c = await prisma.case.findUnique({
     where: { id: caseId },
@@ -35,23 +45,42 @@ export async function POST(
     );
   }
 
-  await prisma.$transaction([
-    prisma.case.update({
-      where: { id: caseId },
-      data: {
-        status: 'ESCROW_INITIATED',
-      },
-    }),
+  try {
+    await prisma.$transaction(async (tx: any) => {
+      const escrow = await tx.escrow.findUnique({
+        where: { id: escrowId },
+      })
 
-    prisma.eventLog.create({
-      data: {
-        caseId,
-        actor: 'AXPT_SYSTEM',
-        action: 'ESCROW_LOCKED',
-        detail: {},
-      },
-    }),
-  ]);
+      if (!escrow || escrow.caseId !== caseId) {
+        throw new Error('ESCROW_NOT_FOUND')
+      }
+
+      await tx.escrow.update({
+        where: { id: escrow.id },
+        data: {
+          status: 'FUNDS_LOCKED',
+        },
+      })
+
+      await tx.eventLog.create({
+        data: {
+          caseId,
+          actor: 'AXPT_SYSTEM',
+          action: 'ESCROW_LOCKED',
+          detail: {},
+        },
+      })
+    });
+  } catch (err: any) {
+    if (err?.message === 'ESCROW_NOT_FOUND') {
+      return NextResponse.json(
+        { ok: false, error: 'ESCROW_NOT_FOUND' },
+        { status: 404 }
+      )
+    }
+
+    throw err
+  }
 
   return NextResponse.redirect(
     new URL(`/admin/cases/${caseId}`, req.url)

@@ -7,22 +7,35 @@ export async function POST(
   { params }: { params: { caseId: string } }
 ) {
   const { caseId } = params
+  const body = await req.json().catch(() => ({} as any))
+  const escrowId =
+    body?.escrowId ?? new URL(req.url).searchParams.get("escrowId")
 
-  const c = await prisma.case.findUnique({
-    where: { id: caseId },
+  if (!escrowId) {
+    return NextResponse.json(
+      { ok: false, error: "ESCROW_ID_REQUIRED" },
+      { status: 400 }
+    )
+  }
+
+  const escrow = await prisma.escrow.findUnique({
+    where: { id: escrowId },
   })
 
-  if (!c) {
+  if (!escrow || escrow.caseId !== caseId) {
     return NextResponse.json(
-      { ok: false },
+      { ok: false, error: "ESCROW_NOT_FOUND" },
       { status: 404 }
     )
   }
 
   // allow dispute from BOTH states
   if (
-    c.status !== "ESCROW_INITIATED" &&
-    c.status !== "ESCROW_HOLD"
+    escrow.status !== "INITIATED" &&
+    escrow.status !== "ACTIVE" &&
+    escrow.status !== "FUNDS_LOCKED" &&
+    escrow.status !== "ESCROW_INITIATED" &&
+    escrow.status !== "ESCROW_HOLD"
   ) {
     return NextResponse.json(
       { ok: false, error: "INVALID_STATE" },
@@ -31,10 +44,10 @@ export async function POST(
   }
 
   await prisma.$transaction(async (tx: any) => {
-    await tx.case.update({
-      where: { id: caseId },
+    await tx.escrow.update({
+      where: { id: escrow.id },
       data: {
-        status: "ESCROW_DISPUTED",
+        status: "DISPUTED",
       },
     })
 

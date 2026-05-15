@@ -71,11 +71,16 @@ async function zipBuffers(
 /* ───────── route ───────── */
 
 export async function POST(
-  _req: Request,
+  req: Request,
   { params }: { params: { caseId: string } }
 ) {
   const caseId = params.caseId;
   if (!caseId) return fail('MISSING_CASE_ID', 400);
+  const body = await req.json().catch(() => ({} as any));
+  const escrowId =
+    body?.escrowId ?? new URL(req.url).searchParams.get('escrowId');
+
+  if (!escrowId) return fail('ESCROW_ID_REQUIRED', 400);
 
   try {
     const zipBuffer = await prisma.$transaction(async (tx: any) => {
@@ -141,9 +146,17 @@ export async function POST(
         },
       });
 
-      await tx.case.update({
-        where: { id: caseId },
-        data: { status: 'ESCROW_INITIATED' },
+      const escrow = await tx.escrow.findUnique({
+        where: { id: escrowId },
+      });
+
+      if (!escrow || escrow.caseId !== caseId) {
+        throw new Error('ESCROW_NOT_FOUND');
+      }
+
+      await tx.escrow.update({
+        where: { id: escrow.id },
+        data: { status: 'INITIATED' },
       });
 
       await tx.eventLog.create({

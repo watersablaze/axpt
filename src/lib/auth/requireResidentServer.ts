@@ -1,18 +1,18 @@
 import { prisma } from '@/infrastructure/db/prisma'
 import { getPrincipal } from '@/domains/auth/getPrincipal'
+import { redirect } from 'next/dist/client/components/redirect';
 
 export async function requireResidentServer() {
   const principal = await getPrincipal()
 
-  if (!principal?.userId) {
-    throw new Error('Unauthorized')
+  if (!principal) {
+    redirect("/login")
   }
 
   const user = await prisma.user.findUnique({
     where: {
       id: principal.userId,
     },
-
     include: {
       wallets: {
         include: {
@@ -20,7 +20,6 @@ export async function requireResidentServer() {
           blockchainWallet: true,
         },
       },
-
       userRoles: {
         include: {
           role: true,
@@ -30,7 +29,7 @@ export async function requireResidentServer() {
   })
 
   if (!user) {
-    throw new Error('User not found')
+    throw new Error("User not found")
   }
 
   return {
