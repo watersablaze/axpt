@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { recomputeSecurityState } from '@/domains/security/recomputeSecurityState'
 import { getPrincipal } from '@/domains/auth/getPrincipal'
+import { isAdmin as hasAdminAccess } from "@/domains/auth/isAdmin"
 
 export async function POST() {
   try {
@@ -13,10 +14,7 @@ export async function POST() {
       )
     }
 
-    if (
-      !principal.roles.includes('ADMIN_PLATFORM') &&
-      !principal.roles.includes('COUNCIL_ELDER')
-    ) {
+    if (!hasAdminAccess(principal)) {
       return NextResponse.json(
         { ok: false, error: 'Forbidden' },
         { status: 403 }

@@ -3,6 +3,7 @@ import { EntityProvider } from '@/lib/context/EntityContext'
 import { OperatorProvider } from '@/lib/operator/OperatorContext'
 
 import { getPrincipal } from '@/domains/auth/getPrincipal'
+import { isAdmin as hasAdminAccess } from '@/domains/auth/isAdmin'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,12 +24,9 @@ export default async function AdminAppLayout({
     )
   }
 
-  const isAdmin =
-    principal.roles.includes('ADMIN') ||
-    principal.roles.includes('ADMIN_PLATFORM') ||
-    principal.permissions.includes('admin.access')
+  const adminAllowed = hasAdminAccess(principal)
 
-  if (!isAdmin) {
+  if (!adminAllowed) {
     return (
       <main style={{ padding: '2rem' }}>
         <h1>Forbidden</h1>

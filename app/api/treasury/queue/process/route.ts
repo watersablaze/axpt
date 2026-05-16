@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { getPrincipal } from '@/domains/auth/getPrincipal'
 import { claimTreasuryExecutionJob } from '@/domains/treasury/claimExecuteJob'
 import { processTreasuryExecutionJob } from '@/domains/treasury/processExecutionJob'
+import { isAdmin as hasAdminAccess } from "@/domains/auth/isAdmin"
 
 export async function POST() {
   const principal = await getPrincipal()
@@ -10,7 +11,7 @@ export async function POST() {
     return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 })
   }
 
-  if (!principal.roles.includes('ADMIN_PLATFORM')) {
+  if (!hasAdminAccess(principal)) {
     return NextResponse.json(
       { ok: false, error: 'Not authorized to process treasury queue' },
       { status: 403 }

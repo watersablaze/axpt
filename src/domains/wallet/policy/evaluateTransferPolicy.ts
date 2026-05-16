@@ -11,6 +11,7 @@ import {
 import { computeRiskScore } from '@/domains/risk/computeRiskScore'
 import { evaluateUserTransferPolicy } from './evaluateUserTransferPolicy'
 import { getUserTrustScore } from '@/domains/trust/getUserTrustScore'
+import { isAdmin as hasAdminAccess } from "@/domains/auth/isAdmin"
 
 export type { TransferIntent }
 
@@ -106,16 +107,14 @@ export async function evaluateTransferPolicy(
     }
   }
 
-  if (
-    principal.userId !== senderUserId &&
-    !principal.roles.includes('ADMIN_PLATFORM')
-  ) {
+   if (!hasAdminAccess(principal)) {
     return {
       action: 'DENY',
       code: 'FORBIDDEN_ACTOR_SCOPE',
       reason: 'Cannot transfer on behalf of another user',
     }
   }
+
 
   if (amountBaseUnits <= 0n) {
     return {

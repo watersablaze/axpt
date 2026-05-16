@@ -1,6 +1,8 @@
 import { prisma } from '@/infrastructure/db/prisma'
 import type { TransferContext } from '@/domains/wallet/types/transferContext'
 import { TRANSACTION_TYPES } from '@/domains/wallet/constants/transactionTypes'
+import { isAdmin } from '@/domains/auth/isAdmin';
+import { isAdmin as hasAdminAccess } from "@/domains/auth/isAdmin"
 
 const MAX_RESIDENT_TRANSFER = 100_000000n // 100 AXG
 const MAX_DAILY_LIMIT = 500_000000n // 500 AXG
@@ -62,10 +64,7 @@ export async function evaluateUserTransferPolicy(
     }
   }
 
-  if (
-    principal.userId !== senderUserId &&
-    !principal.roles.includes('ADMIN_PLATFORM')
-  ) {
+  if (!hasAdminAccess(principal)) {
     return {
       action: 'DENY',
       code: 'FORBIDDEN_ACTOR_SCOPE',

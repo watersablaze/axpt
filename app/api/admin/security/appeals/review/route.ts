@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '@/domains/auth/getPrincipal'
 import { appealReviewFlow } from '@/domains/security/appealReviewFlow'
+import { isAdmin as hasAdminAccess } from "@/domains/auth/isAdmin"
 
 export async function POST(req: Request) {
   try {
@@ -11,10 +12,7 @@ export async function POST(req: Request) {
     }
 
     // 🔒 Only admins / elders can review appeals
-    if (
-      !principal.roles.includes('ADMIN_PLATFORM') &&
-      !principal.roles.includes('COUNCIL_ELDER')
-    ) {
+    if (!hasAdminAccess(principal)) {
       return NextResponse.json(
         { ok: false, error: 'Not authorized' },
         { status: 403 }
