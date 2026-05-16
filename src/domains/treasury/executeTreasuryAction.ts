@@ -10,6 +10,7 @@ import { TREASURY_ACTION_STATUS } from './stateMachine'
 
 import { executionSignalAssembler } from "@/engines/signals/ExecutionSignalAssembler"
 import { etk } from "@/engines/execution/kernel/ExecutionTruthKernel"
+import { authoritySpineCompiler } from "@/engines/operator/AuthoritySpineCompiler"
 
 const EXECUTABLE_ACTION_STATUSES = [
   TREASURY_ACTION_STATUS.QUEUED,

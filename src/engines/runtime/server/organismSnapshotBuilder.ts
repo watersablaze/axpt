@@ -1,13 +1,10 @@
 import { reconciliationEngine } from "@/engines/runtime/serverSingletons"
 
 export async function buildOrganismSnapshot(entityId = "global") {
-  const reconciliation = await reconciliationEngine.reconcileSignal(entityId)
-  const payload = reconciliation.payload as {
-    driftScore?: number
-    anomalies?: string[]
-  } | undefined
-  const driftScore = payload?.driftScore ?? reconciliation.severity
-  const anomalies = payload?.anomalies ?? []
+  const reconciliation =
+    await reconciliationEngine.reconcileSignal(entityId)
+
+  const driftScore = reconciliation.severity
 
   return {
     timestamp: Date.now(),
@@ -26,7 +23,7 @@ export async function buildOrganismSnapshot(entityId = "global") {
     reconciliation: {
       lastSync: Date.now(),
       driftScore,
-      anomalies: anomalies.length,
+      anomalies: driftScore > 0.1 ? 1 : 0,
     },
 
     governance: {

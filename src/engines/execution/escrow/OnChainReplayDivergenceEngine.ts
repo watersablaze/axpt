@@ -1,3 +1,5 @@
+import crypto from "crypto"
+
 import type { EscrowStatus } from "@/domains/escrow/escrowStatus"
 import type { ExecutionSignal } from "@/engines/contracts/ExecutionContracts"
 
@@ -24,12 +26,10 @@ export class OnchainReplayDivergenceEngine {
     replayState: EscrowStatus | null
     chainState: EscrowStatus | null
   }): DivergenceReport {
-
     const driftSignals: string[] = []
 
     const { escrowId, replayState, chainState } = params
 
-    // 1. Missing onchain data
     if (!chainState) {
       return {
         escrowId,
@@ -41,7 +41,6 @@ export class OnchainReplayDivergenceEngine {
       }
     }
 
-    // 2. Direct match
     if (replayState === chainState) {
       return {
         escrowId,
@@ -53,12 +52,10 @@ export class OnchainReplayDivergenceEngine {
       }
     }
 
-    // 3. Structural drift
     if (this.isInvalidProgression(replayState, chainState)) {
       driftSignals.push("INVALID_STATE_TRANSITION")
     }
 
-    // 4. Temporal mismatch heuristic (future extension hook)
     if (this.isLikelyDelayedFinalization(replayState, chainState)) {
       driftSignals.push("FINALIZATION_DELAY_DRIFT")
     }
@@ -77,29 +74,32 @@ export class OnchainReplayDivergenceEngine {
 
   compareSignal(params: {
     escrowId: string
-    replay: ExecutionSignal
+    replayState: EscrowStatus | null
     chainState?: EscrowStatus | null
   }): ExecutionSignal {
     const divergence = this.compare({
       escrowId: params.escrowId,
-      replayState: params.replay.state as EscrowStatus | null,
+      replayState: params.replayState,
       chainState: params.chainState ?? null,
     })
 
     return {
+      id: crypto.randomUUID(),
       source: "DIVERGENCE",
-      type: divergence.status,
+      entityId: params.escrowId,
       severity: this.mapSeverity(divergence.severity),
       confidence: 1,
       timestamp: Date.now(),
-      payload: divergence,
     }
   }
 
-  private isInvalidProgression(replay: EscrowStatus | null, chain: EscrowStatus | null) {
+  private isInvalidProgression(
+    replay: EscrowStatus | null,
+    chain: EscrowStatus | null
+  ): boolean {
     if (!replay || !chain) return false
 
-    const invalidPairs = new Set([
+    const invalidPairs = new Set<string>([
       "ACTIVE->INITIATED",
       "RELEASED->ACTIVE",
       "SETTLED->ACTIVE",
@@ -109,7 +109,10 @@ export class OnchainReplayDivergenceEngine {
     return invalidPairs.has(`${chain}->${replay}`)
   }
 
-  private isLikelyDelayedFinalization(replay: EscrowStatus | null, chain: EscrowStatus | null) {
+  private isLikelyDelayedFinalization(
+    replay: EscrowStatus | null,
+    chain: EscrowStatus | null
+  ): boolean {
     return replay === "RELEASED" && chain === "FUNDS_LOCKED"
   }
 
@@ -120,7 +123,7 @@ export class OnchainReplayDivergenceEngine {
     return "LOW"
   }
 
-  private mapSeverity(severity: DivergenceSeverity) {
+  private mapSeverity(severity: DivergenceSeverity): number {
     switch (severity) {
       case "CRITICAL":
         return 1

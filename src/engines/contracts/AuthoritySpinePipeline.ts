@@ -1,7 +1,7 @@
 import type { AuthoritySpineContract } from "./AuthoritySpineContract"
-import type { etk } from "@/engines/execution/kernel/ExecutionTruthKernel"
+import type { etk, ETKGateResult } from "@/engines/execution/kernel/ExecutionTruthKernel"
 
 export type AuthoritySpinePipelineResult = {
   spine: AuthoritySpineContract
-  decision: ETKResult
+  decision: ETKGateResult
 }

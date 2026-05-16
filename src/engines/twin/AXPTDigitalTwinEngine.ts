@@ -18,8 +18,8 @@ export type TwinResult = {
 export class AXPTDigitalTwinEngine {
   constructor(
     private memory: MemoryGraphEngine = new MemoryGraphEngine(),
-    private risk: PredictiveRiskEngine,
-    private cortex: GovernanceCortex
+    private risk: PredictiveRiskEngine = {} as PredictiveRiskEngine,
+    private cortex: GovernanceCortex = {} as GovernanceCortex
   ) {}
 
     analyze(input: any) {

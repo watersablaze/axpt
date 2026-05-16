@@ -34,3 +34,9 @@ export const PERMISSIONS = {
 
 export type PermissionKey =
   (typeof PERMISSIONS)[keyof typeof PERMISSIONS]
+
+  export const ActionPermissions: Record<string, string[]> = {
+  LOCK_ESCROW: ["ADMIN", "OPERATOR"],
+  RELEASE_ESCROW: ["ADMIN", "OPERATOR"],
+  FLAG_REVIEW: ["ADMIN", "OPERATOR"],
+}

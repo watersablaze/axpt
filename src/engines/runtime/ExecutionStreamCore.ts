@@ -4,6 +4,7 @@ import { executionTraceLedger } from "@/engines/trace/ExecutionTraceLedger"
 import { executionGraph } from "@/engines/graph/ExecutionGraphEngine"
 
 import { onchainEscrowFinalizationEngine } from "../escrow/OnchainEscrowFinalizationEngine"
+import type { EscrowStatus } from "@/domains/escrow/escrowStatus"
 
 import { authoritySpineCompiler } from "@/engines/operator/AuthoritySpineCompiler"
 import { executionContractValidator } from "@/engines/validation/ExecutionContractValidator"
@@ -30,9 +31,26 @@ type ContractedEvent = {
   from?: string
   txHash?: string
   blockNumber?: number
-  status?: string
+  status?: EscrowStatus
   entityId?: string
   [key: string]: any
+}
+
+function asEscrowStatus(value: unknown): EscrowStatus | undefined {
+  if (
+    value === "INITIATED" ||
+    value === "ACTIVE" ||
+    value === "FUNDS_LOCKED" ||
+    value === "DISPUTED" ||
+    value === "ARBITRATED" ||
+    value === "RELEASED" ||
+    value === "SETTLED" ||
+    value === "CANCELLED"
+  ) {
+    return value
+  }
+
+  return undefined
 }
 
 export class ExecutionStreamCore {
@@ -107,7 +125,16 @@ export class ExecutionStreamCore {
     /* ─────────────────────────────
        1. SIGNALS
     ───────────────────────────── */
-    const signals = await executionSignalAssembler.build(entityId, event)
+    const normalizedEvent: ContractedEvent = {
+      ...event,
+      status: asEscrowStatus(event.status),
+    }
+
+    const signals =
+      await executionSignalAssembler.build(
+        entityId,
+        normalizedEvent
+      )
 
     /* ─────────────────────────────
        2. SPINE

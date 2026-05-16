@@ -1,0 +1,45 @@
+import fs from "fs"
+import path from "path"
+
+const ROOT = "src"
+
+const REPLACEMENTS: [RegExp, string][] = [
+  [/signal\.type/g, "signal.source"],
+  [/type:/g, "source:"],
+  [/payload:/g, "// payload removed (moved to context)"],
+  [/state:/g, "// state removed (ETK-owned)"],
+  [/decision:/g, "// decision removed (ETK-owned)"],
+]
+
+function walk(dir: string): string[] {
+  const out: string[] = []
+  for (const f of fs.readdirSync(dir)) {
+    const full = path.join(dir, f)
+    if (fs.statSync(full).isDirectory()) {
+      out.push(...walk(full))
+    } else if (full.endsWith(".ts")) {
+      out.push(full)
+    }
+  }
+  return out
+}
+
+function fix(file: string) {
+  let src = fs.readFileSync(file, "utf-8")
+  let original = src
+
+  for (const [regex, replace] of REPLACEMENTS) {
+    src = src.replace(regex, replace)
+  }
+
+  if (src !== original) {
+    fs.writeFileSync(file, src)
+    console.log("fixed:", file)
+  }
+}
+
+for (const file of walk(ROOT)) {
+  fix(file)
+}
+
+console.log("contract convergence sweep complete")

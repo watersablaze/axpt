@@ -67,7 +67,7 @@ export class IntentSimulationHarness {
        */
       const decision = executionGovernance.evaluate({
   ...snapshot,
-  divergence,
+  divergence: null,
 })
 
       /**

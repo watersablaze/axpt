@@ -1,3 +1,5 @@
+import crypto from "crypto"
+
 import type { ExecutionSignal } from "@/engines/contracts/ExecutionContracts"
 
 type TreasuryAction =
@@ -8,21 +10,21 @@ type TreasuryAction =
   | "HOLD"
 
 type TreasuryExecutionInput = {
-  proofPack: any
-  snapshot: any
-  governance: any
-  divergence: any
+  proofPack: unknown
+  snapshot: unknown
+  governance: unknown
+  divergence: unknown
 }
 
 export class TreasuryAutonomyEngine {
   riskSignal(entityId: string): ExecutionSignal {
     return {
+      id: crypto.randomUUID(),
       source: "RISK",
-      type: "TREASURY_DEFAULT_RISK",
+      entityId,
       severity: 0,
       confidence: 1,
       timestamp: Date.now(),
-      payload: { entityId },
     }
   }
 
@@ -34,51 +36,72 @@ export class TreasuryAutonomyEngine {
   }
 
   propose(input: TreasuryExecutionInput) {
-    const { proofPack, snapshot, governance, divergence } = input
+    const proofPack = this.asRecord(input.proofPack)
+    const snapshot = this.asRecord(input.snapshot)
+    const governance = this.asRecord(input.governance)
+    const divergence = this.asRecord(input.divergence)
 
-    if (divergence?.severity === "CRITICAL") {
+    if (divergence.severity === "CRITICAL") {
       return { action: "HOLD" as TreasuryAction, reason: "DIVERGENCE_SIGNAL" }
     }
 
-    if (!governance?.allowed) {
+    if (governance.allowed === false) {
       return { action: "HOLD" as TreasuryAction, reason: "GOVERNANCE_SIGNAL" }
     }
 
-    if (!proofPack?.escrowId) {
+    const escrowId = this.readString(proofPack, "escrowId")
+
+    if (!escrowId) {
       return { action: "HOLD" as TreasuryAction, reason: "INVALID_PROOF_PACK" }
     }
 
     return {
       action: this.resolveAction(proofPack, snapshot),
-      escrowId: proofPack.escrowId,
+      escrowId,
     }
   }
 
-  /**
-   * 🧠 DECISION ENGINE (DETERMINISTIC RULES ONLY)
-   */
-  private resolveAction(proofPack: any, snapshot: any): TreasuryAction {
-    const replay = proofPack.replay?.finalState
-    const chain = proofPack.chainState
+  private resolveAction(
+    proofPack: Record<string, unknown>,
+    snapshot: Record<string, unknown>
+  ): TreasuryAction {
+    const replay = this.asRecord(proofPack.replay)
+    const finalState = replay.finalState
+    const chainState = proofPack.chainState
+    const execution = this.asRecord(snapshot.execution)
+    const pending = typeof execution.pending === "number" ? execution.pending : 0
 
-    // strongest finality condition
-    if (replay === "SETTLED" && chain === "FUNDS_LOCKED") {
+    if (finalState === "SETTLED" && chainState === "FUNDS_LOCKED") {
       return "ONCHAIN_FINALIZE"
     }
 
-    if (replay === "RELEASED") {
+    if (finalState === "RELEASED") {
       return "ESCROW_RELEASE"
     }
 
-    if (replay === "CANCELLED") {
+    if (finalState === "CANCELLED") {
       return "ESCROW_REFUND"
     }
 
-    if (snapshot?.execution?.pending > 10) {
+    if (pending > 10) {
       return "LIQUIDITY_REBALANCE"
     }
 
     return "HOLD"
+  }
+
+  private asRecord(value: unknown): Record<string, unknown> {
+    return value && typeof value === "object"
+      ? (value as Record<string, unknown>)
+      : {}
+  }
+
+  private readString(
+    record: Record<string, unknown>,
+    key: string
+  ): string | null {
+    const value = record[key]
+    return typeof value === "string" && value.length > 0 ? value : null
   }
 }
 

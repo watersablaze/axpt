@@ -69,11 +69,9 @@ export class GovernanceReplayEngine {
         },
       },
       ctx: {
-        fromUserId: entityId,
-        toUserId: 'REPLAY',
-        assetCode: 'AXG',
-        amountBaseUnits: BigInt(0),
         escrowId: undefined,
+        environment: "SIM",
+        source: "SYSTEM",
       },
       twin: twinSnapshot,
       risk: {

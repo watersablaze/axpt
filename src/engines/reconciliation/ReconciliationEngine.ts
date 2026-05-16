@@ -1,3 +1,5 @@
+import crypto from "crypto"
+
 import { MemoryGraphEngine } from "@/engines/memory/MemoryGraphEngine"
 import { LedgerReplayEngine } from "@/engines/replay/LedgerReplayEngine"
 import type { ExecutionSignal } from "@/engines/contracts/ExecutionContracts"
@@ -17,47 +19,41 @@ export type ReconciliationReport = {
   timestamp: number
 }
 
-export class ReconciliationEngine {
+export type ReconciliationObservation = {
+  isConsistent: boolean
+  driftScore: number
+  anomalies: string[]
+  enforcementSignal: "DRIFT_RISK" | "STABLE"
+}
 
+export class ReconciliationEngine {
   constructor(
     private memory = new MemoryGraphEngine(),
     private replayEngine = new LedgerReplayEngine()
   ) {}
 
-  async reconcile(caseId: string) {
+  async reconcile(caseId: string): Promise<ReconciliationObservation> {
     const core = await this.computeCore(caseId)
-    const { driftScore, anomalies, isConsistent } = core
-    const enforcementSignal = this.computeEnforcementSignal(driftScore)
-
-    // ─────────────────────────────
-    // OBSERVATION OUTPUT ONLY
-    // ─────────────────────────────
+    const enforcementSignal = this.computeEnforcementSignal(core.driftScore)
 
     return {
-      isConsistent,
-      driftScore,
-      anomalies,
+      isConsistent: core.isConsistent,
+      driftScore: core.driftScore,
+      anomalies: core.anomalies,
       enforcementSignal,
     }
   }
 
   async reconcileSignal(caseId: string): Promise<ExecutionSignal> {
     const core = await this.computeCore(caseId)
-    const { driftScore, anomalies, isConsistent } = core
-    const enforcementSignal = this.computeEnforcementSignal(driftScore)
 
     return {
+      id: crypto.randomUUID(),
       source: "RECONCILIATION",
-      type: isConsistent ? "CONSISTENT" : "DRIFT",
-      severity: Math.min(1, driftScore),
-      confidence: anomalies.length ? 0.75 : 1,
+      entityId: caseId,
+      severity: this.clamp01(core.driftScore),
+      confidence: core.anomalies.length ? 0.75 : 1,
       timestamp: Date.now(),
-      payload: {
-        isConsistent,
-        driftScore,
-        anomalies,
-        enforcementSignal,
-      },
     }
   }
 
@@ -68,6 +64,7 @@ export class ReconciliationEngine {
   async runFullReconciliation(caseId = "SYSTEM"): Promise<ReconciliationReport> {
     const core = await this.computeCore(caseId)
     const enforcementSignal = this.computeEnforcementSignal(core.driftScore)
+
     const status: ReconciliationStatus = {
       isHealthy: core.isConsistent,
       driftScore: core.driftScore,
@@ -120,28 +117,34 @@ export class ReconciliationEngine {
     }
   }
 
-  private computeDrift(a: any, b: any) {
-    const aEvents = Array.isArray(a?.events) ? a.events : []
-    const bEvents = Array.isArray(b?.events) ? b.events : []
-    const aTransfers = Array.isArray(a?.transfers) ? a.transfers : []
-    const bTransfers = Array.isArray(b?.transfers) ? b.transfers : []
+  private computeDrift(a: unknown, b: unknown): number {
+    const aRecord = this.asRecord(a)
+    const bRecord = this.asRecord(b)
+
+    const aEvents = this.readArray(aRecord, "events")
+    const bEvents = this.readArray(bRecord, "events")
+    const aTransfers = this.readArray(aRecord, "transfers")
+    const bTransfers = this.readArray(bRecord, "transfers")
 
     const eventMismatch = Math.abs(aEvents.length - bEvents.length)
     const transferMismatch = aTransfers.length !== bTransfers.length ? 1 : 0
 
-    return Math.min(
-      1,
-      (eventMismatch * 0.01) +
-        (transferMismatch * 0.4)
-    )
+    return this.clamp01(eventMismatch * 0.01 + transferMismatch * 0.4)
   }
 
-  private detectAnomalies(a: any, b: any) {
-    const anomalies = []
-    const aTransfers = Array.isArray(a?.transfers) ? a.transfers : []
-    const bTransfers = Array.isArray(b?.transfers) ? b.transfers : []
+  private detectAnomalies(a: unknown, b: unknown): string[] {
+    const aRecord = this.asRecord(a)
+    const bRecord = this.asRecord(b)
 
-    if (aTransfers.length !== bTransfers.length) anomalies.push("TRANSFER_MISMATCH")
+    const aTransfers = this.readArray(aRecord, "transfers")
+    const bTransfers = this.readArray(bRecord, "transfers")
+
+    const anomalies: string[] = []
+
+    if (aTransfers.length !== bTransfers.length) {
+      anomalies.push("TRANSFER_MISMATCH")
+    }
+
     return anomalies
   }
 
@@ -150,4 +153,25 @@ export class ReconciliationEngine {
   ): "DRIFT_RISK" | "STABLE" {
     return driftScore > 0.1 ? "DRIFT_RISK" : "STABLE"
   }
+
+  private asRecord(value: unknown): Record<string, unknown> {
+    return value && typeof value === "object"
+      ? (value as Record<string, unknown>)
+      : {}
+  }
+
+  private readArray(
+    record: Record<string, unknown>,
+    key: string
+  ): unknown[] {
+    const value = record[key]
+return Array.isArray(value) ? value : []
+  }
+
+  private clamp01(value: number): number {
+    if (!Number.isFinite(value)) return 0
+    return Math.max(0, Math.min(1, value))
+  }
 }
+
+export const reconciliationEngine = new ReconciliationEngine()

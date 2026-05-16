@@ -1,0 +1,25 @@
+/* control-center.module.css */
+
+.grid {
+  display: grid;
+  grid-template-columns: 320px 1fr 320px;
+  height: 100vh;
+  background: #05070a;
+  color: #e5e7eb;
+  overflow: hidden;
+}
+
+.left,
+.center,
+.right {
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.left {
+  border-right: 1px solid rgba(255,255,255,0.06);
+}
+
+.right {
+  border-left: 1px solid rgba(255,255,255,0.06);
+}

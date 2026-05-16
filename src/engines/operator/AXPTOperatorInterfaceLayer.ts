@@ -1,13 +1,18 @@
+import crypto from "crypto"
+
 import { executionRealityCompressionEngine } from "@/engines/reality/ExecutionRealityCompressionEngine"
 import { etk } from "@/engines/execution/kernel/ExecutionTruthKernel"
 import { executionMetaGovernance } from "@/engines/governance/ExecutionMetaGovernanceLayer"
+import { authoritySpineCompiler } from "@/engines/operator/AuthoritySpineCompiler"
 import type { ExecutionSignal } from "@/engines/contracts/ExecutionContracts"
 
-export class AXPTOperatorInterfaceLayer {
+type OperatorIntent = {
+  type?: string
+  entityId?: string
+  [key: string]: unknown
+}
 
-  /**
-   * 🧭 OBSERVATION API
-   */
+export class AXPTOperatorInterfaceLayer {
   observe(entityId: string) {
     const compressed =
       executionRealityCompressionEngine.getArchetype(entityId)
@@ -27,24 +32,31 @@ export class AXPTOperatorInterfaceLayer {
   }
 
   /**
-   * 🧠 INTENT SUBMISSION (NON-EXECUTING)
+   * INTENT SUBMISSION
+   *
+   * Operator layer may submit an observation.
+   * It does not execute.
+   * It compiles the signal into spine, then ETK decides.
    */
-  submitIntent(intent: any) {
+  submitIntent(intent: OperatorIntent) {
+    const entityId = intent.entityId ?? "UNKNOWN_ENTITY"
 
     const signalized: ExecutionSignal = {
+      id: crypto.randomUUID(),
       source: "INTENT",
-      type: intent.type,
+      entityId,
       severity: this.mapIntentSeverity(intent.type),
       confidence: 1,
       timestamp: Date.now(),
-      payload: intent,
-      entityId: intent.entityId,
     }
 
-    const decision = etk.decide(
+    const spine = authoritySpineCompiler.build(
       [signalized],
-      intent.entityId
+      entityId,
+      { intent }
     )
+
+    const decision = etk.decide(spine)
 
     return {
       intent,
@@ -52,9 +64,6 @@ export class AXPTOperatorInterfaceLayer {
     }
   }
 
-  /**
-   * ⚖️ SYSTEM HEALTH VIEW
-   */
   systemView() {
     const meta = executionMetaGovernance.evaluate({
       collectiveMemory: {
@@ -69,7 +78,6 @@ export class AXPTOperatorInterfaceLayer {
       },
       transferActivity: [],
       stabilitySeries: [],
-      decisionHistory: [],
     })
 
     return {
@@ -79,10 +87,7 @@ export class AXPTOperatorInterfaceLayer {
     }
   }
 
-  /**
-   * 🧠 INTENT NORMALIZATION
-   */
-  private mapIntentSeverity(type: string): number {
+  private mapIntentSeverity(type?: string): number {
     switch (type) {
       case "REQUEST_FINALIZE":
         return 0.8

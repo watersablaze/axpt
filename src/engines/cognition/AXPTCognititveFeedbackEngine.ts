@@ -105,7 +105,7 @@ export class AXPTCognitiveFeedbackEngine {
     /**
      * 3. ORGANISM FIELD TUNING SIGNAL
      */
-    unifiedOrganismFieldEngine["lastCognitiveDelta"] = delta
+    ;(unifiedOrganismFieldEngine as any).lastCognitiveDelta = delta
   }
 }
 

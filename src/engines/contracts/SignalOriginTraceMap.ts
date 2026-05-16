@@ -1,73 +1,80 @@
 import type { ExecutionSignalSource } from "./ExecutionContracts"
 
-type SignalTrustTarget = ExecutionSignalSource | "ETK"
+export type SignalTrustActor =
+  | "ETK"
+  | "RECONCILIATION_ENGINE"
+  | "TREASURY_ENGINE"
+  | "WALLET_ENGINE"
+  | "DRIFT_ENGINE"
+  | "COGNITION_ENGINE"
+  | "DIVERGENCE_ENGINE"
 
 export type SignalOriginNode = {
   source: ExecutionSignalSource
-  emits: string[]
-  trustedBy: SignalTrustTarget[]
-  blockedBy: SignalTrustTarget[]
+  emits: readonly string[]
+  trustedBy: readonly SignalTrustActor[]
+  blockedBy: readonly SignalTrustActor[]
 }
 
-export const SIGNAL_ORIGIN_TRACE_MAP: SignalOriginNode[] = [
+/**
+ * SIGNAL ORIGIN TRACE MAP
+ *
+ * LAW:
+ * Signals are observations only.
+ * Signals are NOT decisions.
+ * Signals are NOT state transitions.
+ * Signals are NOT execution outcomes.
+ *
+ * trustedBy / blockedBy may only contain system actors,
+ * never signal types.
+ */
+export const SIGNAL_ORIGIN_TRACE_MAP = [
   {
     source: "RECONCILIATION",
-    emits: ["DRIFT", "CONSISTENT"],
-    trustedBy: ["ETK"],
-    blockedBy: ["GOVERNANCE"],
-  },
-  {
-    source: "REPLAY",
-    emits: ["VALID", "INVALID"],
-    trustedBy: ["ETK", "DIVERGENCE"],
+    emits: ["DRIFT_OBSERVED", "CONSISTENCY_OBSERVED"],
+    trustedBy: ["ETK", "RECONCILIATION_ENGINE"],
     blockedBy: [],
   },
   {
     source: "DIVERGENCE",
-    emits: ["CRITICAL", "MISMATCH", "MATCH"],
-    trustedBy: ["ETK"],
+    emits: ["VARIANCE_OBSERVED", "MISMATCH_OBSERVED", "MATCH_OBSERVED"],
+    trustedBy: ["ETK", "DIVERGENCE_ENGINE", "RECONCILIATION_ENGINE"],
     blockedBy: [],
-  },
-  {
-    source: "GOVERNANCE",
-    emits: ["ALLOW", "REJECT", "POLICY"],
-    trustedBy: ["ETK"],
-    blockedBy: ["SIMULATION"],
   },
   {
     source: "RISK",
-    emits: ["RISK", "TREASURY_RISK"],
-    trustedBy: ["ETK"],
+    emits: ["RISK_OBSERVED", "TREASURY_RISK_OBSERVED"],
+    trustedBy: ["ETK", "TREASURY_ENGINE"],
     blockedBy: [],
-  },
-  {
-    source: "SIMULATION",
-    emits: ["COLLAPSE_PREDICTION"],
-    trustedBy: ["ETK"],
-    blockedBy: ["GOVERNANCE"],
   },
   {
     source: "DRIFT",
-    emits: ["TEMPORAL_DRIFT"],
-    trustedBy: ["ETK"],
-    blockedBy: [],
-  },
-  {
-    source: "FINALITY",
-    emits: ["TEMPORAL_FINALITY"],
-    trustedBy: ["ETK"],
+    emits: ["TEMPORAL_DRIFT_OBSERVED", "STABILITY_VARIANCE_OBSERVED"],
+    trustedBy: ["ETK", "DRIFT_ENGINE"],
     blockedBy: [],
   },
   {
     source: "COGNITION",
-    emits: ["OPERATOR_FIELD"],
-    trustedBy: ["ETK"],
+    emits: ["OPERATOR_FIELD_OBSERVED", "OPERATOR_ALIGNMENT_OBSERVED"],
+    trustedBy: ["ETK", "COGNITION_ENGINE"],
     blockedBy: [],
   },
   {
-    source: "SYSTEM",
-    emits: ["OPERATOR_FIELD"],
+    source: "TREASURY",
+    emits: ["TREASURY_PRESSURE_OBSERVED", "LIQUIDITY_CONDITION_OBSERVED"],
+    trustedBy: ["ETK", "TREASURY_ENGINE"],
+    blockedBy: [],
+  },
+  {
+    source: "WALLET",
+    emits: ["BALANCE_CONDITION_OBSERVED", "TRANSFER_CONDITION_OBSERVED"],
+    trustedBy: ["ETK", "WALLET_ENGINE"],
+    blockedBy: [],
+  },
+  {
+    source: "ETK",
+    emits: ["DECISION_TRACE_OBSERVED", "CONFIDENCE_OBSERVED"],
     trustedBy: ["ETK"],
     blockedBy: [],
   },
-]
+] as const satisfies readonly SignalOriginNode[]

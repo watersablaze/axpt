@@ -1,6 +1,25 @@
 import { executionMemoryLedger } from "@/engines/memory/ExecutionMemoryLedger"
 import { executionStabilityGraphEngine } from "@/engines/metrics/ExecutionStabilityGraphEngine"
 
+type RealityPoint = {
+  entityId: string
+  timestamp: number
+
+  coherence: number
+
+  executionState?: unknown
+  memoryState?: unknown
+  chainState?: unknown
+}
+
+type RealityField = {
+  points: RealityPoint[]
+
+  globalCoherence: number
+  driftVector: number
+  compressionIndex: number
+}
+
 export class ExecutionRealityFabric {
 
   private field: RealityField = {
@@ -38,7 +57,7 @@ export class ExecutionRealityFabric {
 
     if (!recent.length) return 1
 
-    const avg = recent.reduce((acc, p) => {
+    const avg = recent.reduce((acc: number, p: RealityPoint) => {
       return acc + p.coherence
     }, 0) / recent.length
 
@@ -71,7 +90,7 @@ export class ExecutionRealityFabric {
   private computeCompression() {
 
     const uniqueStates = new Set(
-      this.field.points.map(p =>
+      this.field.points.map((p: RealityPoint) =>
         JSON.stringify({
           e: p.executionState,
           m: p.memoryState,
@@ -89,7 +108,7 @@ export class ExecutionRealityFabric {
   query(entityId: string) {
 
     return this.field.points.filter(
-      p => p.entityId === entityId
+      (p: RealityPoint) => p.entityId === entityId
     )
   }
 

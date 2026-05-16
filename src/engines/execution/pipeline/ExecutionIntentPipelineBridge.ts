@@ -12,7 +12,7 @@ export class ExecutionIntentPipelineBridge {
    */
   commit(entityId: string, decision: ExecutionDecision, payload?: any) {
 
-    if (decision.status !== "COMMIT") return null
+    if (decision.status !== "ALLOW") return null
 
     const intent = {
       type: this.mapDecisionToIntent(payload),

@@ -64,6 +64,12 @@ export class AXPTExecutionControlPlane {
      */
     const ctx = this.validator.validate(executionReq)
 
+    const executionCtx = {
+      ...ctx,
+      environment: "SIM" as const,
+      source: "SYSTEM" as const,
+    }
+
     /**
      * ──────────────────────────────
      * 2. TWIN SIMULATION
@@ -103,7 +109,7 @@ export class AXPTExecutionControlPlane {
         amountBaseUnits: ctx.amountBaseUnits,
         metadata: ctx.metadata,
       },
-      ctx,
+      ctx: executionCtx,
       twin,
       risk,
     })
@@ -117,9 +123,9 @@ export class AXPTExecutionControlPlane {
     /**
      * 🧬 COHERENCE GATE
      */
-    const coherence = this.guard.validateEnvelope({
+  const coherence = this.guard.validateEnvelope({
     req: executionReq,
-    ctx,
+    ctx: executionCtx,
     twin,
     risk,
     decision,
@@ -169,7 +175,10 @@ export class AXPTExecutionControlPlane {
 
     this.breath.pulse({ phase: 'HEAL' })
 
-    const evolution = await this.evolutionEngine.evolve(ctx.fromUserId)
+    const evolution =
+  await this.evolutionEngine.evolve(
+    executionCtx.fromUserId
+  )
 
     this.bus.emit({
       type: 'GOVERNANCE_EVALUATION_COMPLETED',
@@ -192,28 +201,42 @@ export class AXPTExecutionControlPlane {
   /**
    * 🧭 ROUTING LAYER
    */
-  private async route(decision: GovernorResult, req: TransferRequest) {
-    switch (decision.decision) {
-      case 'TRANSFER':
-        return this.transfer.execute(req)
+    private async route(
+      decision: GovernorResult,
+      req: TransferRequest
+    ) {
+      switch (decision.decision) {
 
-      case 'ESCROW':
-        return this.transfer.execute({
-          ...req,
-          metadata: {
-            ...req.metadata,
-            forcedMode: 'ESCROW',
-          },
-        })
+        case 'TRANSFER':
+          return this.transfer.execute(req)
 
-      case 'REJECT':
-        throw new Error(`EXECUTION_REJECTED: ${decision.reason}`)
+        case 'ESCROW':
+          return this.transfer.execute({
+            ...req,
+            metadata: {
+              ...req.metadata,
+              forcedMode: 'ESCROW',
+            },
+          })
 
-      case 'QUARANTINE':
-        await this.handleQuarantine(req)
-        throw new Error('SYSTEM_QUARANTINE_ACTIVE')
+        case 'REJECT':
+          throw new Error(
+            `EXECUTION_REJECTED: ${decision.reason}`
+          )
+
+        case 'QUARANTINE':
+          await this.handleQuarantine(req)
+
+          throw new Error(
+            'SYSTEM_QUARANTINE_ACTIVE'
+          )
+
+        default:
+          throw new Error(
+            'UNKNOWN_GOVERNOR_DECISION'
+          )
+      }
     }
-  }
 
   /**
    * 🧬 IMMUNE RESPONSE

@@ -13,7 +13,7 @@ import { AXPTDigitalTwinEngine } from '@/engines/twin/AXPTDigitalTwinEngine'
  */
 export class AXPTExecutionIntentEngine {
   private riskEngine = new PredictiveRiskEngine()
-  private twinEngine = new AXPTDigitalTwinEngine()
+  private twinEngine = new AXPTDigitalTwinEngine({} as any)
 
   /**
    * 🧠 CREATE EXECUTION INTENT (DETERMINISTIC CONTEXT SNAPSHOT)
@@ -36,12 +36,12 @@ export class AXPTExecutionIntentEngine {
      */
     const risk = await this.riskEngine.evaluate({
       userId: input.fromUserId,
-      amount: input.amountBaseUnits,
+      amountBaseUnits: input.amountBaseUnits,
     })
 
     const twin = await this.twinEngine.analyze({
       userId: input.fromUserId,
-      amount: input.amountBaseUnits,
+      amountBaseUnits: input.amountBaseUnits,
       assetCode: input.assetCode,
     })
 

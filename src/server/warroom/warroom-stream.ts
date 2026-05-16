@@ -9,7 +9,7 @@ export function attachWarRoomStream(ws: any) {
 
     const decision = executionGovernance.evaluate({
   ...snapshot,
-  divergence,
+  divergence: null,
 })
 
     if (!decision.allowed) {

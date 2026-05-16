@@ -1,33 +1,30 @@
 export const EXECUTION_VERSION = "1.0.0"
 
 export type ExecutionSignalSource =
+  | "COGNITION"
+  | "DRIFT"
+  | "RISK"
+  | "RECONCILIATION"
+  | "DIVERGENCE"
+  | "WALLET"
+  | "TREASURY"
+  | "ETK"
   | "INTENT"
   | "REPLAY"
-  | "GOVERNANCE"
   | "FINALITY"
   | "SIMULATION"
-  | "TREASURY"
   | "SYSTEM"
+  | "GOVERNANCE"
 
 export type ExecutionSignal = {
+  id: string
   source: ExecutionSignalSource
-  type: string
+  entityId: string
   severity: number
   confidence: number
   timestamp: number
-  payload?: unknown
-  entityId?: string
 }
 
 export type ExecutionDecision =
-  | {
-      status: "ALLOW"
-      confidence: number
-      traceId: string
-    }
-  | {
-      status: "BLOCK" | "REJECT"
-      reason: string
-      confidence: number
-      traceId: string
-    }
+  | { status: "ALLOW"; confidence?: number; traceId?: string }
+  | { status: "BLOCK" | "REJECT"; reason: string; confidence?: number; traceId?: string }

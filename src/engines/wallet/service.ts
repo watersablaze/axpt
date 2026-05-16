@@ -140,7 +140,7 @@ export async function transferToken(req: any): Promise<any> {
      5. EXECUTION
   ───────────────────────────── */
 
-  const result = await prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx: any) => {
 
     const [fromBalance, toBalance] = await Promise.all([
       tx.balance.findFirst({

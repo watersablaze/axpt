@@ -1,3 +1,5 @@
+import crypto from "crypto"
+
 import type { EscrowStatus } from "@/domains/escrow/escrowStatus"
 import type { ExecutionSignal } from "@/engines/contracts/ExecutionContracts"
 import { EscrowStateMachine } from "./escrowStateMachine"
@@ -49,9 +51,6 @@ export type EscrowReplayResult = {
 export class EscrowReplayEngine {
   constructor(private machine: EscrowStateMachine) {}
 
-  /**
-   * 🔁 REPLAY TRUTH FROM EVENTS
-   */
   replay(events: EscrowEventRecord[]): EscrowReplayResult {
     if (events.length === 0) {
       throw new Error("[ESCROW REPLAY] No events to replay")
@@ -63,9 +62,7 @@ export class EscrowReplayEngine {
     const history: EscrowStatus[] = [state]
     const invalidTransitions: string[] = []
 
-    const sorted = [...events].sort(
-      (a, b) => a.timestamp - b.timestamp
-    )
+    const sorted = [...events].sort((a, b) => a.timestamp - b.timestamp)
 
     for (const event of sorted) {
       const next = mapEventToStatus(event.type)
@@ -76,10 +73,8 @@ export class EscrowReplayEngine {
         this.machine.assertTransition(state, next)
         state = next
         history.push(state)
-      } catch (err: any) {
-        invalidTransitions.push(
-          `${state} → ${next} | event=${event.id}`
-        )
+      } catch {
+        invalidTransitions.push(`${state} → ${next} | event=${event.id}`)
       }
     }
 
@@ -94,25 +89,24 @@ export class EscrowReplayEngine {
   replaySignal(events: EscrowEventRecord[]): ExecutionSignal {
     if (events.length === 0) {
       return {
+        id: crypto.randomUUID(),
         source: "REPLAY",
-        type: "NO_REPLAY_EVENTS",
+        entityId: "UNKNOWN_ESCROW",
         severity: 0.6,
         confidence: 0.4,
         timestamp: Date.now(),
-        state: null,
       }
     }
 
     const replay = this.replay(events)
 
     return {
+      id: crypto.randomUUID(),
       source: "REPLAY",
-      type: replay.invalidTransitions.length ? "INVALID_TRANSITIONS" : "REPLAYED",
+      entityId: replay.escrowId,
       severity: replay.invalidTransitions.length ? 1 : 0,
       confidence: replay.invalidTransitions.length ? 0.5 : 1,
       timestamp: Date.now(),
-      state: replay.finalState,
-      payload: replay,
     }
   }
 }
