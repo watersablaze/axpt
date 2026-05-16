@@ -1,16 +1,31 @@
-import { requireAuth } from './requireAuth'
+import { requirePrincipal } from './requirePrincipal'
 import type { PermissionKey } from './permissions'
+import type { Principal } from './types'
 
-export async function requirePermission(permission: PermissionKey) {
-  const principal = await requireAuth()
+export async function requirePermission(
+  permission: PermissionKey
+): Promise<Principal> {
+  const principal = await requirePrincipal()
 
-if (!principal || !Array.isArray(principal.permissions)) {
-  return false
+  if (!principal.permissions.includes(permission)) {
+    throw new Error(`MISSING_PERMISSION:${permission}`)
+  }
+
+  return principal
 }
 
-if (!principal.permissions.includes(permission)) {
-  return false
-}
+export async function requireAnyPermission(
+  permissions: PermissionKey[]
+): Promise<Principal> {
+  const principal = await requirePrincipal()
+
+  const allowed = principal.permissions.some((permission) =>
+    permissions.includes(permission)
+  )
+
+  if (!allowed) {
+    throw new Error(`MISSING_REQUIRED_PERMISSION:${permissions.join(',')}`)
+  }
 
   return principal
 }

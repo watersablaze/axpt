@@ -9,6 +9,9 @@ import {
   type TreasuryActionStatus,
 } from '@/domains/treasury/stateMachine'
 import { transitionTreasuryAction } from '@/domains/treasury/transitionTreasuryAction'
+import { requirePrincipal } from '@/domains/auth/requirePrincipal'
+import { requirePermission } from '@/domains/auth/requirePermission'
+import { requireElder } from '@/domains/auth/requireElder'
 
 export async function POST(
   _req: Request,
@@ -17,37 +20,25 @@ export async function POST(
   }
 ){
   try {
-    const principal = await getPrincipal()
-
-    if (!principal) {
-      return NextResponse.json(
-        { ok: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
 
     const { id } = await context.params
 
-    /**
-     * 🔐 Governance Gate
-     *
-     * TEMP DEV MODE:
-     * allow either:
-     * - council elder
-     * - treasury approval permission
-     */
+    const principal = await requirePrincipal()
 
-    const isElder = await prisma.councilElder.findUnique({
-      where: {
-        userId: principal.userId,
-      },
-    })
 
-    const canApprove =
-      isElder ||
-      principal.permissions.includes(
-        'TREASURY_APPROVE'
-      )
+    let canApprove = false
+
+    try {
+      await requireElder()
+      canApprove = true
+    } catch {}
+
+    if (!canApprove) {
+      try {
+        await requirePermission('TREASURY_APPROVE')
+        canApprove = true
+      } catch {}
+    }
 
     if (!canApprove) {
       return NextResponse.json(

@@ -1,19 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/infrastructure/db/prisma';
-import { decodeSessionToken } from '@/lib/auth/session';
-import { cookies } from 'next/headers';
-
-async function requireElder() {
-  const cookie = (await cookies()).get('axpt_session')?.value;
-  if (!cookie) return null;
-  const payload = await decodeSessionToken(cookie);
-  if (!payload?.userId) return null;
-
-  const elder = await prisma.councilElder.findUnique({
-    where: { userId: payload.userId },
-  });
-  return elder ? { elder, userId: payload.userId as string } : null;
-}
+import { requireElder } from '@/domains/auth/requireElder'
 
 function now() {
   return new Date();

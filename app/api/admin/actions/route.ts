@@ -1,10 +1,15 @@
 import { NextResponse } from "next/server"
+
 import { prisma } from "@/lib/prisma"
 import { appendDomainEvent } from "@/core/events/appendDomainEvent"
 import { EventTypes } from "@/core/events/types"
-import { ActionPermissions } from "@/domains/auth/permissions"
 import { getPrincipal } from "@/domains/auth/getPrincipal"
 import { releaseLock } from "@/core/queue/lock"
+
+import {
+  ActionPermissions,
+  isAdminAction,
+} from "@/domains/auth/actionPermissions"
 
 export async function POST(req: Request) {
   const { caseId, action, operatorId } = await req.json()
@@ -16,12 +21,18 @@ export async function POST(req: Request) {
     )
   }
 
+  if (!isAdminAction(action)) {
+    return NextResponse.json(
+      { error: "Unknown action" },
+      { status: 400 }
+    )
+  }
+
   const principal = await getPrincipal()
   const allowedRoles = ActionPermissions[action]
 
   if (
     !principal ||
-    !allowedRoles ||
     !principal.roles.some((role) => allowedRoles.includes(role))
   ) {
     await releaseLock(caseId, operatorId)
@@ -70,9 +81,6 @@ export async function POST(req: Request) {
             },
           })
           break
-
-        default:
-          throw new Error("Unknown action")
       }
 
       await tx.queueHistory.create({

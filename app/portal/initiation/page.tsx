@@ -1,28 +1,32 @@
 // app/portal/initiation/page.tsx
-import { cookies } from 'next/headers';
-import { redirect } from 'next/navigation';
-import Image from 'next/image';
-import Link from 'next/link';
-import { prisma } from '@/infrastructure/db/prisma';
-import { decodeSessionToken } from '@/lib/auth/session';
+import { redirect } from 'next/navigation'
+import Image from 'next/image'
+import Link from 'next/link'
+
+import { prisma } from '@/infrastructure/db/prisma'
+import { getPrincipal } from '@/domains/auth/getPrincipal'
 
 export default async function InitiationPage() {
-  const jar = await cookies();
-  const raw = jar.get('axpt_session')?.value;
-  if (!raw) redirect('/'); // or back to onboarding
+  const principal = await getPrincipal()
 
-  const payload = await decodeSessionToken(raw);
-  if (!payload?.userId) redirect('/');
+  if (!principal) {
+    redirect('/')
+  }
 
-  // light fetch (optional; just to display the name / email)
   const user = await prisma.user.findUnique({
-    where: { id: String(payload.userId) },
-    select: { name: true, email: true, tier: true, createdAt: true },
-  });
+    where: {
+      id: principal.userId,
+    },
+    select: {
+      name: true,
+      email: true,
+      tier: true,
+      createdAt: true,
+    },
+  })
 
   return (
     <main className="min-h-screen relative overflow-hidden bg-black text-white">
-      {/* subtle background field */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(136,96,208,0.25),transparent_55%)]" />
 
       <section className="relative z-10 max-w-3xl mx-auto px-6 py-24 text-center">
@@ -40,16 +44,47 @@ export default async function InitiationPage() {
         <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">
           Your Presence Has Been Woven
         </h1>
+
         <p className="mt-4 text-zinc-300 leading-relaxed">
           The gate has opened. You are now a native of the AXPT constellation.
-          {user?.name ? <> Welcome, <span className="text-purple-300">{user.name}</span>.</> : null}
+          {user?.name ? (
+            <>
+              {' '}
+              Welcome,{' '}
+              <span className="text-purple-300">
+                {user.name}
+              </span>
+              .
+            </>
+          ) : null}
         </p>
 
         <div className="mt-6 space-y-1 text-sm text-zinc-400">
-          {user?.email && <p>Identity: <span className="text-zinc-200">{user.email}</span></p>}
-          {user?.tier && <p>Tier: <span className="text-zinc-200">{user.tier}</span></p>}
+          {user?.email && (
+            <p>
+              Identity:{' '}
+              <span className="text-zinc-200">
+                {user.email}
+              </span>
+            </p>
+          )}
+
+          {user?.tier && (
+            <p>
+              Tier:{' '}
+              <span className="text-zinc-200">
+                {user.tier}
+              </span>
+            </p>
+          )}
+
           {user?.createdAt && (
-            <p>Residency established: <span className="text-zinc-200">{new Date(user.createdAt).toLocaleString()}</span></p>
+            <p>
+              Residency established:{' '}
+              <span className="text-zinc-200">
+                {new Date(user.createdAt).toLocaleString()}
+              </span>
+            </p>
           )}
         </div>
 
@@ -67,5 +102,5 @@ export default async function InitiationPage() {
         </p>
       </section>
     </main>
-  );
+  )
 }

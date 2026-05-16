@@ -7,26 +7,31 @@ import {
   type TreasuryActionStatus,
 } from '@/domains/treasury/stateMachine'
 import { transitionTreasuryAction } from '@/domains/treasury/transitionTreasuryAction'
+import { requireElder } from '@/domains/auth/requireElder';
+import { requirePrincipal } from '@/domains/auth/requirePrincipal';
 
 export async function POST(
   req: Request,
   { params }: { params: { id: string } }
 ) {
   try {
-    const principal = await getPrincipal()
+    const principal = await requirePrincipal()
 
     if (!principal) {
       return NextResponse.json({ ok: false }, { status: 401 })
     }
 
-    const isElder = await prisma.councilElder.findUnique({
-      where: { userId: principal.userId },
-    })
-
-    if (!isElder) {
+    try {
+      await requireElder()
+    } catch {
       return NextResponse.json(
-        { ok: false, error: 'Not authorized to reject' },
-        { status: 403 }
+        {
+          ok: false,
+          error: 'Not authorized to reject',
+        },
+        {
+          status: 403,
+        }
       )
     }
 
