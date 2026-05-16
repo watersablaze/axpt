@@ -3,9 +3,8 @@ import { prisma } from "@/lib/prisma"
 import { appendDomainEvent } from "@/core/events/appendDomainEvent"
 import { EventTypes } from "@/core/events/types"
 import { ActionPermissions } from "@/domains/auth/permissions"
-import { getDevUser } from "@/lib/auth/devBypass"
+import { getPrincipal } from "@/domains/auth/getPrincipal"
 import { releaseLock } from "@/core/queue/lock"
-import { Prisma } from "@prisma/client"
 
 export async function POST(req: Request) {
   const { caseId, action, operatorId } = await req.json()
@@ -17,10 +16,14 @@ export async function POST(req: Request) {
     )
   }
 
-  const user = getDevUser()
+  const principal = await getPrincipal()
   const allowedRoles = ActionPermissions[action]
 
-  if (!allowedRoles || !allowedRoles.includes(user.role)) {
+  if (
+    !principal ||
+    !allowedRoles ||
+    !principal.roles.some((role) => allowedRoles.includes(role))
+  ) {
     await releaseLock(caseId, operatorId)
 
     return NextResponse.json(
@@ -38,7 +41,7 @@ export async function POST(req: Request) {
             streamId: caseId,
             eventType: EventTypes.ESCROW_LOCKED,
             payload: {
-              actor: user.email,
+              actor: principal.email,
               operatorId,
             },
           })
@@ -50,7 +53,7 @@ export async function POST(req: Request) {
             streamId: caseId,
             eventType: EventTypes.ESCROW_RELEASED,
             payload: {
-              actor: user.email,
+              actor: principal.email,
               operatorId,
             },
           })
@@ -62,7 +65,7 @@ export async function POST(req: Request) {
             streamId: caseId,
             eventType: EventTypes.CASE_FLAGGED,
             payload: {
-              actor: user.email,
+              actor: principal.email,
               operatorId,
             },
           })
@@ -78,7 +81,7 @@ export async function POST(req: Request) {
           action,
           operatorId,
           metadata: {
-            actor: user.email,
+            actor: principal.email,
             source: "action-execution",
           },
         },

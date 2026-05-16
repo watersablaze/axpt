@@ -1,29 +1,27 @@
-import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
-import { getDevUser } from "@/lib/auth/devBypass"
 
-const TREASURY_ALLOWED_EMAILS = [
-  "connect@axpt.io",
-  "chief.financial@axpt.io",
-  "chief.strategy@axpt.io",
+import { getPrincipal } from "@/domains/auth/getPrincipal"
+
+const TREASURY_ALLOWED_ROLES = [
+  "ADMIN",
+  "TREASURY",
+  "OPERATOR",
 ]
 
 export async function requireTreasuryActor() {
-  if (process.env.NODE_ENV !== "production") {
-    const devUser = getDevUser()
-    return devUser.email
-  }
+  const principal = await getPrincipal()
 
-  const jar = await cookies()
-  const email = jar.get("dev_actor_email")?.value || null
-
-  if (!email) {
+  if (!principal) {
     redirect("/login")
   }
 
-  if (!TREASURY_ALLOWED_EMAILS.includes(email)) {
+  const allowed = principal.roles.some((role) =>
+    TREASURY_ALLOWED_ROLES.includes(role)
+  )
+
+  if (!allowed) {
     redirect("/admin")
   }
 
-  return email
+  return principal.email
 }

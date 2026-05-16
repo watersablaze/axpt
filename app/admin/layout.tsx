@@ -1,9 +1,8 @@
-import { cookies } from 'next/headers'
-import { SESSION_COOKIE_NAME } from "@/shared/constants/cookies"
 import AdminShell from '@/components/admin/layout/AdminLayout'
 import { EntityProvider } from '@/lib/context/EntityContext'
 import { OperatorProvider } from '@/lib/operator/OperatorContext'
-import { prisma } from '@/infrastructure/db/prisma'
+
+import { getPrincipal } from '@/domains/auth/getPrincipal'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,10 +11,10 @@ export default async function AdminAppLayout({
 }: {
   children: React.ReactNode
 }) {
-  const cookieStore = await cookies()
-  const session = cookieStore.get(SESSION_COOKIE_NAME)?.value
 
-  if (!session) {
+  const principal = await getPrincipal()
+
+  if (!principal) {
     return (
       <main style={{ padding: '2rem' }}>
         <h1>Unauthorized</h1>
@@ -24,17 +23,12 @@ export default async function AdminAppLayout({
     )
   }
 
-  const user = await prisma.user.findFirst({
-    where: {
-      accessToken: session,
-    },
-    select: {
-      id: true,
-      isAdmin: true,
-    },
-  })
+  const isAdmin =
+    principal.roles.includes('ADMIN') ||
+    principal.roles.includes('ADMIN_PLATFORM') ||
+    principal.permissions.includes('admin.access')
 
-  if (!user?.isAdmin) {
+  if (!isAdmin) {
     return (
       <main style={{ padding: '2rem' }}>
         <h1>Forbidden</h1>
