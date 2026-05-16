@@ -1,5 +1,5 @@
 import { cookies } from 'next/headers'
-
+import { SESSION_COOKIE_NAME } from "@/shared/constants/cookies"
 import AdminShell from '@/components/admin/layout/AdminLayout'
 import { EntityProvider } from '@/lib/context/EntityContext'
 import { OperatorProvider } from '@/lib/operator/OperatorContext'
@@ -13,7 +13,7 @@ export default async function AdminAppLayout({
   children: React.ReactNode
 }) {
   const cookieStore = await cookies()
-  const session = cookieStore.get('session')?.value
+  const session = cookieStore.get(SESSION_COOKIE_NAME)?.value
 
   if (!session) {
     return (

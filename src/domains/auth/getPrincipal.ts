@@ -1,9 +1,10 @@
 import { prisma } from '@/infrastructure/db/prisma'
-import type { AXPTPrincipal } from './principal'
 import { getSessionFromCookie } from '@/lib/auth/session'
+
+import type { Principal } from './types'
 import type { PermissionKey } from './permissions'
 
-export async function getPrincipal(): Promise<AXPTPrincipal | null> {
+export async function getPrincipal(): Promise<Principal | null> {
   const session = await getSessionFromCookie()
 
   console.log('[auth/getPrincipal] resolving principal', {
@@ -61,8 +62,8 @@ export async function getPrincipal(): Promise<AXPTPrincipal | null> {
           }
         }) =>
           userRole.role.rolePermissions.map(
-          (rolePermission: { permission: { key: PermissionKey } }) =>
-            rolePermission.permission.key
+            (rolePermission: { permission: { key: PermissionKey } }) =>
+              rolePermission.permission.key
           )
       )
     )

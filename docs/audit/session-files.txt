@@ -1,0 +1,16 @@
+src/shared/utils/session
+src/hooks/useSessionTracker.ts
+src/hooks/useSessionStatus.ts
+src/hooks/usePartnerSession.ts
+src/lib/auth/verifySessionToken.ts
+src/lib/auth/getSessionFromHeader.ts
+src/lib/auth/sessionFallback.ts
+src/lib/auth/switchToResidentSession.ts
+src/lib/auth/session.ts
+src/lib/auth/sessionSecrets.ts
+app/api/auth/clear-session
+app/api/auth/set-session
+app/api/partner/session-log
+app/api/partner/session
+app/api/debug/fallback-session
+app/api/debug/session

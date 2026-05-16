@@ -1,7 +1,8 @@
-// app/admin/control-center/page.tsx
-
-import { ControlCenterShell } from "./ControlCenterShell"
-
-export default function ControlCenterPage() {
-  return <ControlCenterShell />
+export default function ControlCenterHome() {
+  return (
+    <div>
+      <h1>Control Center</h1>
+      <p>Operator surface online.</p>
+    </div>
+  )
 }

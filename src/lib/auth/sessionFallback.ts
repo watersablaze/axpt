@@ -4,6 +4,16 @@ import { SESSION_COOKIE_NAME } from '@/shared/constants/cookies';
 import { SIGNING_SECRET } from '@/infrastructure/env/secrets';
 import type { SessionPayload } from '@/shared/types/auth';
 
+/**
+ * @deprecated
+ * LEGACY DEV BYPASS
+ *
+ * DO NOT USE FOR CONTROL CENTER,
+ * TREASURY, OR GOVERNANCE FLOWS.
+ *
+ * Replace with getPrincipal().
+ */
+
 const allowedDocs = ['whitepaper', 'hemp', 'chinje'] as const;
 type DocType = typeof allowedDocs[number];
 

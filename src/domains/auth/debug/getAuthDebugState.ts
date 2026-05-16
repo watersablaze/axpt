@@ -104,7 +104,7 @@ export async function getAuthDebugState(): Promise<AuthDebugState> {
       ? {
           userId: principal.userId,
           email: principal.email,
-          displayName: principal.displayName,
+          displayName: principal.displayName ?? null,
           roles: principal.roles,
           permissions: principal.permissions,
           sessionId: principal.sessionId ?? null,

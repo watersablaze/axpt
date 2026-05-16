@@ -1,0 +1,2 @@
+src/domains/auth/permissions.ts
+src/domains/auth/requirePermission.ts

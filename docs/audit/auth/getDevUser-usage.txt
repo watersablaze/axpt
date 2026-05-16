@@ -1,0 +1,5 @@
+src/lib/auth/requireTreasuryActor.ts:3:import { getDevUser } from "@/lib/auth/devBypass"
+src/lib/auth/requireTreasuryActor.ts:13:    const devUser = getDevUser()
+src/lib/auth/devBypass.ts:3:export function getDevUser(): { id: string; email: string; role: Role } {
+app/api/admin/actions/route.ts:6:import { getDevUser } from "@/lib/auth/devBypass"
+app/api/admin/actions/route.ts:20:  const user = getDevUser()

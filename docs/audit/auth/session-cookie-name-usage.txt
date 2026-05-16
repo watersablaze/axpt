@@ -1,0 +1,13 @@
+src/server/token/getTokenPayloadFromCookieOnly.ts:6:import { SESSION_COOKIE_NAME } from '@/shared/constants/cookies';
+src/server/token/getTokenPayloadFromCookieOnly.ts:11:  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
+src/shared/constants/cookies.ts:2:export const SESSION_COOKIE_NAME = 'axpt_session'
+src/lib/auth/sessionFallback.ts:3:import { SESSION_COOKIE_NAME } from '@/shared/constants/cookies';
+src/lib/auth/sessionFallback.ts:75:  const token = tokenFromQuery || cookieStore.get(SESSION_COOKIE_NAME)?.value;
+src/lib/auth/switchToResidentSession.ts:4:import { SESSION_COOKIE_NAME, SESSION_SECRET } from './sessionSecrets';
+src/lib/auth/switchToResidentSession.ts:22:  cookieStore.set(SESSION_COOKIE_NAME, token, {
+src/lib/auth/session.ts:6:import { COOKIE_NAME, SESSION_COOKIE_NAME } from '@/shared/constants/cookies'
+src/lib/auth/session.ts:105:  cookieStore.set(SESSION_COOKIE_NAME, '', {
+src/lib/auth/session.ts:117:  return cookieStore.get(SESSION_COOKIE_NAME)?.value ?? null
+src/lib/auth/sessionSecrets.ts:1:export const SESSION_COOKIE_NAME = 'axpt_session';
+app/admin/layout.tsx:2:import { SESSION_COOKIE_NAME } from "@/shared/constants/cookies"
+app/admin/layout.tsx:16:  const session = cookieStore.get(SESSION_COOKIE_NAME)?.value

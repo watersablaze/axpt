@@ -1,0 +1,12 @@
+src/components/admin/MintButton.tsx:28:  const [devBypass, setDevBypass] = useState(false);
+src/components/admin/MintButton.tsx:47:      if (devBypass && process.env.NODE_ENV !== 'production') headers['x-dev-bypass'] = '1';
+src/components/admin/MintButton.tsx:104:              checked={devBypass}
+src/components/chain/AXGCollateralSetter.tsx:11:  const [devBypass, setDevBypass] = useState(false);
+src/components/chain/AXGCollateralSetter.tsx:27:      if (devBypass && process.env.NODE_ENV !== 'production') headers['x-dev-bypass'] = '1';
+src/components/chain/AXGCollateralSetter.tsx:73:            checked={devBypass}
+src/lib/auth/requireTreasuryActor.ts:3:import { getDevUser } from "@/lib/auth/devBypass"
+app/api/admin/protium/mint/route.ts:33:    const devBypass =
+app/api/admin/protium/mint/route.ts:35:    if (!devBypass) {
+app/api/admin/axg/set-collateral/route.ts:29:    const devBypass = req.headers.get('x-dev-bypass') === '1';
+app/api/admin/axg/set-collateral/route.ts:30:    if (!devBypass) {
+app/api/admin/actions/route.ts:6:import { getDevUser } from "@/lib/auth/devBypass"

@@ -1,0 +1,16 @@
+src/core/types/operator.ts
+src/core/automation/clusterOperators.ts
+src/core/automation/operatorArchetype.ts
+src/components/admin/command-center/OperatorSelector.tsx
+src/components/admin/command-center/OperatorPanel.tsx
+src/components/admin/command-center/OperatorIntelligencePanel.tsx
+src/components/admin/OperatorControlPanale.tsx
+src/components/deal-room/OperatorTimeline.tsx
+src/engines/operator
+src/engines/operator/OperatorTraceLedger.ts
+src/engines/operator/AXPTOperatorInterfaceLayer.ts
+src/engines/operator/OperatorInterfaceLayer.ts
+src/engines/operator/ExecutionOperatorField.ts
+src/lib/operator
+src/lib/operator/OperatorContext.tsx
+app/api/admin/operators

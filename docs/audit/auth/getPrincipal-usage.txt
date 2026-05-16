@@ -1,0 +1,38 @@
+src/domains/auth/getPrincipal.ts:6:export async function getPrincipal(): Promise<AXPTPrincipal | null> {
+src/domains/auth/getPrincipal.ts:9:  console.log('[auth/getPrincipal] resolving principal', {
+src/domains/auth/getPrincipal.ts:15:    console.log('[auth/getPrincipal] no valid session')
+src/domains/auth/getPrincipal.ts:45:    console.log('[auth/getPrincipal] user not found for session')
+src/domains/auth/getPrincipal.ts:71:  console.log('[auth/getPrincipal] principal resolved', {
+src/domains/auth/admin/getPrincipalDiagnostics.ts:1:import { getPrincipal } from '@/domains/auth/getPrincipal'
+src/domains/auth/admin/getPrincipalDiagnostics.ts:3:export async function getPrincipalDiagnostics() {
+src/domains/auth/admin/getPrincipalDiagnostics.ts:4:  const principal = await getPrincipal()
+src/domains/auth/requireAuth.ts:1:import { getPrincipal } from './getPrincipal'
+src/domains/auth/requireAuth.ts:4:  const principal = await getPrincipal()
+src/domains/auth/debug/getAuthDebugState.ts:4:import { getPrincipal } from '@/domains/auth/getPrincipal'
+src/domains/auth/debug/getAuthDebugState.ts:63:  const principal = await getPrincipal()
+src/lib/auth/requireResidentServer.ts:2:import { getPrincipal } from '@/domains/auth/getPrincipal'
+src/lib/auth/requireResidentServer.ts:6:  const principal = await getPrincipal()
+app/portal/page.tsx:7:import { getPrincipal } from '@/domains/auth/getPrincipal'
+app/portal/page.tsx:63:  const principal = await getPrincipal().catch((err) => {
+app/admin/security/page.tsx:16:import { getPrincipalDiagnostics } from '@/domains/auth/admin/getPrincipalDiagnostics'
+app/admin/security/page.tsx:248:    getPrincipalDiagnostics(),
+app/api/admin/security/recompute/route.ts:3:import { getPrincipal } from '@/domains/auth/getPrincipal'
+app/api/admin/security/recompute/route.ts:7:    const principal = await getPrincipal()
+app/api/admin/security/appeals/review/route.ts:2:import { getPrincipal } from '@/domains/auth/getPrincipal'
+app/api/admin/security/appeals/review/route.ts:7:    const principal = await getPrincipal()
+app/api/wallet/transfer/route.ts:2:import { getPrincipal } from '@/domains/auth/getPrincipal'
+app/api/wallet/transfer/route.ts:22:    const principal = await getPrincipal()
+app/api/treasury/actions/route.ts:3:import { getPrincipal } from '@/domains/auth/getPrincipal'
+app/api/treasury/actions/route.ts:6:  const principal = await getPrincipal()
+app/api/treasury/actions/[id]/reject/route.ts:3:import { getPrincipal } from '@/domains/auth/getPrincipal'
+app/api/treasury/actions/[id]/reject/route.ts:16:    const principal = await getPrincipal()
+app/api/treasury/actions/[id]/approve/route.ts:4:import { getPrincipal } from '@/domains/auth/getPrincipal'
+app/api/treasury/actions/[id]/approve/route.ts:20:    const principal = await getPrincipal()
+app/api/treasury/actions/[id]/execute/route.ts:3:import { getPrincipal } from '@/domains/auth/getPrincipal'
+app/api/treasury/actions/[id]/execute/route.ts:11:  const principal = await getPrincipal()
+app/api/treasury/queue/process/route.ts:2:import { getPrincipal } from '@/domains/auth/getPrincipal'
+app/api/treasury/queue/process/route.ts:7:  const principal = await getPrincipal()
+app/api/debug/principal/route.ts:4:import { getPrincipal } from '@/domains/auth/getPrincipal'
+app/api/debug/principal/route.ts:7:  const principal = await getPrincipal()
+app/api/debug/wallet/route.ts:2:import { getPrincipal } from '@/domains/auth/getPrincipal'
+app/api/debug/wallet/route.ts:7:    const principal = await getPrincipal()

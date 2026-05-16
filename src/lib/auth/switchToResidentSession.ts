@@ -3,6 +3,16 @@ import { SignJWT } from 'jose';
 import { cookies } from 'next/headers';
 import { SESSION_COOKIE_NAME, SESSION_SECRET } from './sessionSecrets';
 
+/**
+ * @deprecated
+ * LEGACY DEV BYPASS
+ *
+ * DO NOT USE FOR CONTROL CENTER,
+ * TREASURY, OR GOVERNANCE FLOWS.
+ *
+ * Replace with getPrincipal().
+ */
+
 interface SessionPayload {
   userId: string;
   walletId?: string;

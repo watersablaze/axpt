@@ -1,0 +1,4 @@
+src/lib/auth/switchToResidentSession.ts:1:// src/lib/auth/switchToResidentSession.ts
+src/lib/auth/switchToResidentSession.ts:13:export async function switchToResidentSession(payload: SessionPayload) {
+app/api/submit/initiate/route.ts:5:import { switchToResidentSession } from '@/lib/auth/switchToResidentSession';
+app/api/submit/initiate/route.ts:30:    await switchToResidentSession({

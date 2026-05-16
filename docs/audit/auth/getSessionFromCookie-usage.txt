@@ -1,0 +1,4 @@
+src/domains/auth/getPrincipal.ts:3:import { getSessionFromCookie } from '@/lib/auth/session'
+src/domains/auth/getPrincipal.ts:7:  const session = await getSessionFromCookie()
+src/lib/auth/session.ts:144:export async function getSessionFromCookie(): Promise<SessionPayload | null> {
+src/lib/auth/session.ts:169:  return await getSessionFromCookie()
