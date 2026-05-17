@@ -13,6 +13,12 @@ import { evaluateUserTransferPolicy } from './evaluateUserTransferPolicy'
 import { getUserTrustScore } from '@/domains/trust/getUserTrustScore'
 import { isAdmin as hasAdminAccess } from "@/domains/auth/isAdmin"
 
+import {
+  hasPermission,
+} from '@/domains/auth/hasAuthority'
+
+import { PERMISSIONS } from '@/domains/auth/permissions'
+
 export type { TransferIntent }
 
 export type TransferPolicyResult =
@@ -40,7 +46,7 @@ function evaluateTreasuryTransferPolicy(
 ): TransferPolicyResult {
   const { principal, amountBaseUnits } = input
 
-  if (!principal.roles.includes('TREASURY_OPERATOR')) {
+  if (!hasPermission(principal, PERMISSIONS.TREASURY_EXECUTE)) {
     return {
       action: 'DENY',
       code: 'TREASURY_FORBIDDEN',
@@ -99,7 +105,7 @@ export async function evaluateTransferPolicy(
     intent,
   } = input
 
-  if (!principal.permissions.includes('WALLET_TRANSFER')) {
+  if (!hasPermission(principal, PERMISSIONS.WALLET_TRANSFER)) {
     return {
       action: 'DENY',
       code: 'FORBIDDEN',

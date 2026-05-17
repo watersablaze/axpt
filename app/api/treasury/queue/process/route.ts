@@ -1,22 +1,13 @@
 import { NextResponse } from 'next/server'
-import { getPrincipal } from '@/domains/auth/getPrincipal'
 import { claimTreasuryExecutionJob } from '@/domains/treasury/claimExecuteJob'
 import { processTreasuryExecutionJob } from '@/domains/treasury/processExecutionJob'
-import { isAdmin as hasAdminAccess } from "@/domains/auth/isAdmin"
+import { requirePermission } from '@/domains/auth/requirePermission'
+import { PERMISSIONS } from '@/domains/auth/permissions'
 
 export async function POST() {
-  const principal = await getPrincipal()
-
-  if (!principal) {
-    return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 })
-  }
-
-  if (!hasAdminAccess(principal)) {
-    return NextResponse.json(
-      { ok: false, error: 'Not authorized to process treasury queue' },
-      { status: 403 }
-    )
-  }
+const principal = await requirePermission(
+  PERMISSIONS.TREASURY_EXECUTE
+)
 
   const workerId = `api-${principal.userId}`
   const job = await claimTreasuryExecutionJob(workerId)

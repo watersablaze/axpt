@@ -14,9 +14,10 @@ export async function requirePermission(
   return principal
 }
 
-export async function requireAnyPermission(
-  permissions: PermissionKey[]
-): Promise<Principal> {
+  export async function requireAnyPermission(
+    permissions: readonly PermissionKey[]
+  ): Promise<Principal> {
+
   const principal = await requirePrincipal()
 
   const allowed = principal.permissions.some((permission) =>

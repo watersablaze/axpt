@@ -76,15 +76,11 @@ body {
 ────────────────────────────── */
 
 html {
-  background:
-    linear-gradient(
-      180deg,
-      #243f4d 0%,
-      #1b3443 20%,
-      #152d3b 42%,
-      #102634 70%,
-      #0b1f2c 100%
-    );
+  background: #000;
+}
+
+body {
+  background: #000;
 }
 
 body {

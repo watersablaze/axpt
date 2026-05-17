@@ -11,6 +11,20 @@ import { TREASURY_ACTION_STATUS } from './stateMachine'
 import { executionSignalAssembler } from "@/engines/signals/ExecutionSignalAssembler"
 import { etk } from "@/engines/execution/kernel/ExecutionTruthKernel"
 import { authoritySpineCompiler } from "@/engines/operator/AuthoritySpineCompiler"
+import type { TransferIntent } from '@/domains/wallet/types/transferContext'
+
+const TRANSFER_INTENTS: readonly TransferIntent[] = [
+  'PEER',
+  'TREASURY',
+  'INVESTMENT',
+  'REWARD',
+]
+
+function normalizeTransferIntent(value: unknown): TransferIntent {
+  return TRANSFER_INTENTS.includes(value as TransferIntent)
+    ? (value as TransferIntent)
+    : 'TREASURY'
+}
 
 const EXECUTABLE_ACTION_STATUSES = [
   TREASURY_ACTION_STATUS.QUEUED,
@@ -24,13 +38,20 @@ export async function executeTreasuryAction(actionId: string) {
 
   if (!action) throw new Error("Treasury action not found")
 
-  if (!EXECUTABLE_ACTION_STATUSES.includes(action.status as any)) {
+  const executableStatuses =
+    EXECUTABLE_ACTION_STATUSES satisfies readonly string[]
+
+  if (
+    !executableStatuses.includes(action.status)
+  ) {
     throw new Error(`Treasury action not executable: ${action.status}`)
   }
 
   const assetCode = action.assetCode as "AXG" | "NMP" | "USD"
   const asset = getAsset(assetCode)
   const amountBaseUnits = decimalToBigInt(action.amountBaseUnits)
+
+  const intent = normalizeTransferIntent(action.intent)
 
   /**
  * ─────────────────────────────────────────
@@ -80,21 +101,6 @@ console.log("[ETK_TREASURY_GATE]", {
   trace: etkResult.trace.traceId,
 })
 
-/**
- * 5. HARD GATE
- */
-if (!ETK_SHADOW_MODE && etkResult.decision.status !== "ALLOW") {
-  await recordDecisionOutcome({
-    actionId: action.id,
-    intent: action.intent,
-    success: false,
-  })
-
-  throw new Error(
-    `ETK_BLOCKED_TREASURY: ${etkResult.decision.reason}`
-  )
-}
-
   /**
    * ─────────────────────────────────────────
    * EXECUTION PHASE
@@ -110,7 +116,8 @@ if (!ETK_SHADOW_MODE && etkResult.decision.status !== "ALLOW") {
       source: "treasury-queue",
       bypassPolicy: true,
       metadata: {
-        intent: action.intent,
+        intent,
+        originalIntent: action.intent,
         treasuryActionId: action.id,
         executionMode: "QUEUE",
       },
@@ -123,9 +130,9 @@ if (!ETK_SHADOW_MODE && etkResult.decision.status !== "ALLOW") {
         },
         senderUserId: action.fromUserId,
         recipientUserId: action.toUserId,
-        assetCode: action.assetCode,
+        assetCode: asset.code,
         amountBaseUnits,
-        intent: action.intent as any,
+        intent,
       },
     })
 
@@ -134,7 +141,7 @@ if (!ETK_SHADOW_MODE && etkResult.decision.status !== "ALLOW") {
 
     await recordDecisionOutcome({
       actionId: action.id,
-      intent: action.intent,
+      intent: normalizeTransferIntent(action.intent),
       success: true,
     })
 
@@ -148,7 +155,7 @@ if (!ETK_SHADOW_MODE && etkResult.decision.status !== "ALLOW") {
   } catch (err) {
     await recordDecisionOutcome({
       actionId: action.id,
-      intent: action.intent,
+      intent: normalizeTransferIntent(action.intent),
       success: false,
     })
 

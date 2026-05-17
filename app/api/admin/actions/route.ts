@@ -3,8 +3,8 @@ import { NextResponse } from "next/server"
 import { prisma } from "@/lib/prisma"
 import { appendDomainEvent } from "@/core/events/appendDomainEvent"
 import { EventTypes } from "@/core/events/types"
-import { getPrincipal } from "@/domains/auth/getPrincipal"
 import { releaseLock } from "@/core/queue/lock"
+import { requireAnyPermission } from "@/domains/auth/requirePermission"
 
 import {
   ActionPermissions,
@@ -28,13 +28,11 @@ export async function POST(req: Request) {
     )
   }
 
-  const principal = await getPrincipal()
-  const allowedRoles = ActionPermissions[action]
+  let principal
 
-  if (
-    !principal ||
-    !principal.roles.some((role) => allowedRoles.includes(role))
-  ) {
+  try {
+    principal = await requireAnyPermission(ActionPermissions[action])
+  } catch {
     await releaseLock(caseId, operatorId)
 
     return NextResponse.json(

@@ -1,32 +1,55 @@
+import { normalizeObject } from '@/components/admin/treasury/contracts/panel'
+
+type DriftStatus = {
+  message: string
+  severity: string
+  createdAt: string
+  driftScore: number
+  recentRate: number
+  historicalRate: number
+  correctionMode: string
+}
+
+type CorrectionStatus = {
+  message: string
+  severity: string
+  createdAt: string
+  correctionMode: string
+  selectedScenarioId: string | null
+}
+
+type AutonomyStatus = {
+  message: string
+  severity: string
+  createdAt: string
+  reason: string
+  confidence: number
+  scenarioId: string | null
+  allowed: boolean
+}
+
+type CorrectionStatusData = {
+  governorState: string
+  lastDrift: DriftStatus | null
+  lastCorrection: CorrectionStatus | null
+  lastAutonomy: AutonomyStatus | null
+}
+
 type Props = {
-  data: {
-    governorState: string
-    lastDrift: {
-      message: string
-      severity: string
-      createdAt: string
-      driftScore: number
-      recentRate: number
-      historicalRate: number
-      correctionMode: string
-    } | null
-    lastCorrection: {
-      message: string
-      severity: string
-      createdAt: string
-      correctionMode: string
-      selectedScenarioId: string | null
-    } | null
-    lastAutonomy: {
-      message: string
-      severity: string
-      createdAt: string
-      reason: string
-      confidence: number
-      scenarioId: string | null
-      allowed: boolean
-    } | null
-  }
+  data?: Partial<CorrectionStatusData> | null
+}
+
+const DEFAULT_DATA: CorrectionStatusData = {
+  governorState: 'STABLE',
+  lastDrift: null,
+  lastCorrection: null,
+  lastAutonomy: null,
+}
+
+function normalizeData(
+  data?: Partial<CorrectionStatusData> | null
+): CorrectionStatusData {
+  return normalizeObject(data, DEFAULT_DATA)
 }
 
 function tone(severity?: string) {
@@ -36,53 +59,68 @@ function tone(severity?: string) {
 }
 
 export default function CorrectionStatusPanel({ data }: Props) {
+  const status = normalizeData(data)
+
   return (
     <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-4">
       <h2 className="mb-4 text-lg">Correction Status</h2>
 
       <div className="mb-4 text-sm">
         <span className="text-neutral-400">Governor:</span>{' '}
-        <span className="font-medium">{data.governorState}</span>
+        <span className="font-medium">{status.governorState}</span>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div>
           <div className="mb-2 text-sm text-neutral-400">Drift</div>
-          {data.lastDrift ? (
+
+          {status.lastDrift ? (
             <div className="space-y-1 text-sm">
-              <div className={tone(data.lastDrift.severity)}>
-                {data.lastDrift.message}
+              <div className={tone(status.lastDrift.severity)}>
+                {status.lastDrift.message}
               </div>
+
               <div className="text-xs text-neutral-500">
-                Score: {data.lastDrift.driftScore.toFixed(2)}
+                Score: {status.lastDrift.driftScore.toFixed(2)}
               </div>
+
               <div className="text-xs text-neutral-500">
-                Recent: {(data.lastDrift.recentRate * 100).toFixed(0)}%
+                Recent:{' '}
+                {(status.lastDrift.recentRate * 100).toFixed(0)}%
               </div>
+
               <div className="text-xs text-neutral-500">
-                Historical: {(data.lastDrift.historicalRate * 100).toFixed(0)}%
+                Historical:{' '}
+                {(status.lastDrift.historicalRate * 100).toFixed(0)}%
               </div>
+
               <div className="text-xs text-neutral-400">
-                Mode: {data.lastDrift.correctionMode}
+                Mode: {status.lastDrift.correctionMode}
               </div>
             </div>
           ) : (
-            <div className="text-sm text-neutral-500">No drift data yet.</div>
+            <div className="text-sm text-neutral-500">
+              No drift data yet.
+            </div>
           )}
         </div>
 
         <div>
           <div className="mb-2 text-sm text-neutral-400">Correction</div>
-          {data.lastCorrection ? (
+
+          {status.lastCorrection ? (
             <div className="space-y-1 text-sm">
-              <div className={tone(data.lastCorrection.severity)}>
-                {data.lastCorrection.message}
+              <div className={tone(status.lastCorrection.severity)}>
+                {status.lastCorrection.message}
               </div>
+
               <div className="text-xs text-neutral-400">
-                Mode: {data.lastCorrection.correctionMode}
+                Mode: {status.lastCorrection.correctionMode}
               </div>
+
               <div className="text-xs text-neutral-500">
-                Scenario: {data.lastCorrection.selectedScenarioId ?? '—'}
+                Scenario:{' '}
+                {status.lastCorrection.selectedScenarioId ?? '—'}
               </div>
             </div>
           ) : (
@@ -94,19 +132,24 @@ export default function CorrectionStatusPanel({ data }: Props) {
 
         <div>
           <div className="mb-2 text-sm text-neutral-400">Autonomy</div>
-          {data.lastAutonomy ? (
+
+          {status.lastAutonomy ? (
             <div className="space-y-1 text-sm">
-              <div className={tone(data.lastAutonomy.severity)}>
-                {data.lastAutonomy.message}
+              <div className={tone(status.lastAutonomy.severity)}>
+                {status.lastAutonomy.message}
               </div>
+
               <div className="text-xs text-neutral-500">
-                Allowed: {data.lastAutonomy.allowed ? 'Yes' : 'No'}
+                Allowed: {status.lastAutonomy.allowed ? 'Yes' : 'No'}
               </div>
+
               <div className="text-xs text-neutral-500">
-                Confidence: {(data.lastAutonomy.confidence * 100).toFixed(0)}%
+                Confidence:{' '}
+                {(status.lastAutonomy.confidence * 100).toFixed(0)}%
               </div>
+
               <div className="text-xs text-neutral-400">
-                Reason: {data.lastAutonomy.reason}
+                Reason: {status.lastAutonomy.reason}
               </div>
             </div>
           ) : (

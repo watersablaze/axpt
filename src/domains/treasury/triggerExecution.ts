@@ -33,17 +33,17 @@ export async function triggerTreasuryExecution(
     /**
      * already queued or active
      */
-    if (
-      existing &&
-      [
-        TREASURY_QUEUE_STATUS.PENDING,
-        TREASURY_QUEUE_STATUS.CLAIMED,
-        TREASURY_QUEUE_STATUS.EXECUTING,
-        TREASURY_QUEUE_STATUS.EXECUTED,
-      ].includes(existing.status as any)
-    ) {
-      return existing
-    }
+const activeQueueStatuses = [
+  TREASURY_QUEUE_STATUS.PENDING,
+  TREASURY_QUEUE_STATUS.CLAIMED,
+  TREASURY_QUEUE_STATUS.EXECUTING,
+  TREASURY_QUEUE_STATUS.EXECUTED,
+] satisfies readonly typeof existing.status[]
+
+if (
+  existing &&
+  activeQueueStatuses.includes(existing.status)
+)
 
     /**
      * retry retryable jobs

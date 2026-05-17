@@ -57,11 +57,12 @@ export async function transitionTreasuryQueue(params: {
         status: current.status,
       },
 
+      // Prisma update typing escape hatch
       data: {
         status: to,
 
         ...(data ?? {}),
-      } as any,
+      } as any, 
     })
 
   if (updated.count === 0) {

@@ -1,18 +1,18 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/infrastructure/db/prisma'
-import { getPrincipal } from '@/domains/auth/getPrincipal'
 import { triggerTreasuryExecution } from '@/domains/treasury/triggerExecution'
 import { TREASURY_ACTION_STATUS } from '@/domains/treasury/stateMachine'
+import { requirePermission } from '@/domains/auth/requirePermission'
+import { PERMISSIONS } from '@/domains/auth/permissions'
 
 export async function POST(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const principal = await getPrincipal()
 
-  if (!principal) {
-    return NextResponse.json({ ok: false }, { status: 401 })
-  }
+  await requirePermission(
+  PERMISSIONS.TREASURY_EXECUTE
+)
 
   const action = await prisma.treasuryAction.findUnique({
     where: { id: params.id },

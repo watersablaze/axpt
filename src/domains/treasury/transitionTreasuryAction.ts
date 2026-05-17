@@ -60,6 +60,7 @@ export async function transitionTreasuryAction(params: {
       status: current.status,
     },
 
+    // Prisma update typing escape hatch
     data: {
       ...(data ?? {}),
 

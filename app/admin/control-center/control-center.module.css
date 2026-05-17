@@ -3,7 +3,7 @@
 .grid {
   display: grid;
   grid-template-columns: 320px 1fr 320px;
-  height: 100vh;
+  min-height: calc(100vh - 96px);
   background: #05070a;
   color: #e5e7eb;
   overflow: hidden;

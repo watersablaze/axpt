@@ -14,7 +14,7 @@ export default function AdminNav({ current }: { current?: string }) {
 
   return (
     <nav className="flex items-center gap-2">
-      <Link href="/admin/command-center" className={cls("command")}>
+      <Link href="/admin/control-center" className={cls("command")}>
         Command
       </Link>
 

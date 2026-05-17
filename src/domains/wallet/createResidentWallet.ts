@@ -2,6 +2,17 @@
 import { prisma } from '@/infrastructure/db/prisma';
 import { ASSET_REGISTRY } from '@/lib/assets/registry';
 import { bigintToDecimal } from '@/lib/money/baseUnits';
+import { TokenType } from '@prisma/client'
+
+function toTokenType(code: string): TokenType {
+  if (code in TokenType) {
+    return TokenType[
+      code as keyof typeof TokenType
+    ]
+  }
+
+  return TokenType.OTHER
+}
 
 export async function createResidentWallet(userId: string) {
   // 1) Ensure wallet exists (1:1 with user)
@@ -37,7 +48,7 @@ export async function createResidentWallet(userId: string) {
         data: {
           userId,
           walletId: wallet.id,
-          tokenType: asset.code as any,
+          tokenType: toTokenType(asset.code),
           assetCode: asset.code,
           amount: 0,
           amountBaseUnits: bigintToDecimal(0n),

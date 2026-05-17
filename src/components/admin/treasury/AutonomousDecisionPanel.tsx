@@ -6,12 +6,32 @@ type CircuitRow = {
   createdAt: string
 }
 
+type AutonomousDecisionData = {
+  latestDecision: CircuitRow | null
+  latestExecution: CircuitRow | null
+  decisions: CircuitRow[]
+  executions: CircuitRow[]
+}
+
 type Props = {
-  data: {
-    latestDecision: CircuitRow | null
-    latestExecution: CircuitRow | null
-    decisions: CircuitRow[]
-    executions: CircuitRow[]
+  data?: Partial<AutonomousDecisionData> | null
+}
+
+const DEFAULT_DATA: AutonomousDecisionData = {
+  latestDecision: null,
+  latestExecution: null,
+  decisions: [],
+  executions: [],
+}
+
+function normalizeData(
+  data?: Partial<AutonomousDecisionData> | null
+): AutonomousDecisionData {
+  return {
+    ...DEFAULT_DATA,
+    ...data,
+    decisions: data?.decisions ?? [],
+    executions: data?.executions ?? [],
   }
 }
 
@@ -25,50 +45,94 @@ function readMeta(row: CircuitRow | null) {
   return (row?.metadata ?? {}) as Record<string, unknown>
 }
 
-export default function AutonomousDecisionPanel({ data }: Props) {
-  const decisionMeta = readMeta(data.latestDecision)
-  const executionMeta = readMeta(data.latestExecution)
+export default function AutonomousDecisionPanel({
+  data,
+}: Props) {
+  const normalized = normalizeData(data)
+
+  const decisionMeta = readMeta(
+    normalized.latestDecision
+  )
+
+  const executionMeta = readMeta(
+    normalized.latestExecution
+  )
 
   return (
     <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-4">
-      <h2 className="mb-4 text-lg">Autonomous Decisioning</h2>
+      <h2 className="mb-4 text-lg">
+        Autonomous Decisioning
+      </h2>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div>
-          <div className="mb-2 text-sm text-neutral-400">Latest Decision</div>
 
-          {data.latestDecision ? (
+        {/* LATEST DECISION */}
+        <div>
+          <div className="mb-2 text-sm text-neutral-400">
+            Latest Decision
+          </div>
+
+          {normalized.latestDecision ? (
             <div className="space-y-2 text-sm">
-              <div className={tone(data.latestDecision.severity)}>
-                {data.latestDecision.message}
+
+              <div
+                className={tone(
+                  normalized.latestDecision.severity
+                )}
+              >
+                {normalized.latestDecision.message}
               </div>
 
               <div className="text-xs text-neutral-500">
-                {new Date(data.latestDecision.createdAt).toLocaleString()}
+                {new Date(
+                  normalized.latestDecision.createdAt
+                ).toLocaleString()}
               </div>
 
               <div>
-                <span className="text-neutral-400">Governor:</span>{' '}
-                <span>{String(decisionMeta.governorState ?? '—')}</span>
+                <span className="text-neutral-400">
+                  Governor:
+                </span>{' '}
+                <span>
+                  {String(
+                    decisionMeta.governorState ?? '—'
+                  )}
+                </span>
               </div>
 
               <div>
-                <span className="text-neutral-400">Confidence:</span>{' '}
+                <span className="text-neutral-400">
+                  Confidence:
+                </span>{' '}
                 <span>
                   {typeof decisionMeta.confidence === 'number'
-                    ? `${(Number(decisionMeta.confidence) * 100).toFixed(0)}%`
+                    ? `${(
+                        Number(decisionMeta.confidence) * 100
+                      ).toFixed(0)}%`
                     : '—'}
                 </span>
               </div>
 
               <div>
-                <span className="text-neutral-400">Scenario:</span>{' '}
-                <span>{String(decisionMeta.scenarioId ?? '—')}</span>
+                <span className="text-neutral-400">
+                  Scenario:
+                </span>{' '}
+                <span>
+                  {String(
+                    decisionMeta.scenarioId ?? '—'
+                  )}
+                </span>
               </div>
 
               <div>
-                <span className="text-neutral-400">Reason:</span>{' '}
-                <span>{String(decisionMeta.reason ?? '—')}</span>
+                <span className="text-neutral-400">
+                  Reason:
+                </span>{' '}
+                <span>
+                  {String(
+                    decisionMeta.reason ?? '—'
+                  )}
+                </span>
               </div>
             </div>
           ) : (
@@ -78,38 +142,62 @@ export default function AutonomousDecisionPanel({ data }: Props) {
           )}
         </div>
 
+        {/* LATEST EXECUTION */}
         <div>
-          <div className="mb-2 text-sm text-neutral-400">Latest Execution</div>
+          <div className="mb-2 text-sm text-neutral-400">
+            Latest Execution
+          </div>
 
-          {data.latestExecution ? (
+          {normalized.latestExecution ? (
             <div className="space-y-2 text-sm">
-              <div className={tone(data.latestExecution.severity)}>
-                {data.latestExecution.message}
+
+              <div
+                className={tone(
+                  normalized.latestExecution.severity
+                )}
+              >
+                {normalized.latestExecution.message}
               </div>
 
               <div className="text-xs text-neutral-500">
-                {new Date(data.latestExecution.createdAt).toLocaleString()}
+                {new Date(
+                  normalized.latestExecution.createdAt
+                ).toLocaleString()}
               </div>
 
               <div>
-                <span className="text-neutral-400">Scenario:</span>{' '}
-                <span>{String(executionMeta.scenarioId ?? '—')}</span>
+                <span className="text-neutral-400">
+                  Scenario:
+                </span>{' '}
+                <span>
+                  {String(
+                    executionMeta.scenarioId ?? '—'
+                  )}
+                </span>
               </div>
 
               <div>
-                <span className="text-neutral-400">Confidence:</span>{' '}
+                <span className="text-neutral-400">
+                  Confidence:
+                </span>{' '}
                 <span>
                   {typeof executionMeta.confidence === 'number'
-                    ? `${(Number(executionMeta.confidence) * 100).toFixed(0)}%`
+                    ? `${(
+                        Number(executionMeta.confidence) * 100
+                      ).toFixed(0)}%`
                     : '—'}
                 </span>
               </div>
 
               <div>
-                <span className="text-neutral-400">Impact:</span>{' '}
+                <span className="text-neutral-400">
+                  Impact:
+                </span>{' '}
                 <span>
                   {typeof executionMeta.impactScore === 'number'
-                    ? Number(executionMeta.impactScore).toFixed(2)
+                    ? Number(
+                        executionMeta.impactScore
+                      ).toFixed(2)
                     : '—'}
                 </span>
               </div>
@@ -122,24 +210,35 @@ export default function AutonomousDecisionPanel({ data }: Props) {
         </div>
       </div>
 
+      {/* ACTIVITY */}
       <div className="mt-6">
-        <div className="mb-2 text-sm text-neutral-400">Recent Autonomous Activity</div>
+        <div className="mb-2 text-sm text-neutral-400">
+          Recent Autonomous Activity
+        </div>
 
-        {data.decisions.length || data.executions.length ? (
-          <div className="space-y-2 max-h-[260px] overflow-auto">
-            {[...data.decisions, ...data.executions]
+        {normalized.decisions.length ||
+        normalized.executions.length ? (
+          <div className="max-h-[260px] space-y-2 overflow-auto">
+
+            {[...normalized.decisions, ...normalized.executions]
               .sort(
                 (a, b) =>
-                  new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime()
               )
               .map((row) => (
                 <div
                   key={row.id}
                   className="border-b border-neutral-800 pb-2 text-sm"
                 >
-                  <div className={tone(row.severity)}>{row.message}</div>
+                  <div className={tone(row.severity)}>
+                    {row.message}
+                  </div>
+
                   <div className="text-xs text-neutral-500">
-                    {new Date(row.createdAt).toLocaleString()}
+                    {new Date(
+                      row.createdAt
+                    ).toLocaleString()}
                   </div>
                 </div>
               ))}

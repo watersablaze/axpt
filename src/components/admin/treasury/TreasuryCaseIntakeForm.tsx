@@ -10,7 +10,22 @@ export default function TreasuryCaseIntakeForm() {
 
   const [type, setType] = useState<IntakeType>('TRANSFER_REVIEW')
   const [description, setDescription] = useState('')
-  const [priority, setPriority] = useState<'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL'>('MEDIUM')
+ 
+  type PriorityLevel =
+  | 'LOW'
+  | 'MEDIUM'
+  | 'HIGH'
+  | 'CRITICAL'
+
+const PRIORITY_LEVELS: readonly PriorityLevel[] = [
+  'LOW',
+  'MEDIUM',
+  'HIGH',
+  'CRITICAL',
+]
+
+const [priority, setPriority] =
+  useState<PriorityLevel>('MEDIUM')
   const [affectedAssets, setAffectedAssets] = useState<string>('')
 
   const [submitting, setSubmitting] = useState(false)
@@ -69,7 +84,17 @@ export default function TreasuryCaseIntakeForm() {
             <label className="block text-sm font-medium mb-2">Priority</label>
             <select
               value={priority}
-              onChange={(e) => setPriority(e.target.value as any)}
+              onChange={(e) => {
+              const value = e.target.value
+
+              if (
+                PRIORITY_LEVELS.includes(
+                  value as PriorityLevel
+                )
+              ) {
+                setPriority(value as PriorityLevel)
+              }
+            }}
               className="w-full px-3 py-2 bg-neutral-900 border border-neutral-700 rounded-md"
             >
               <option value="LOW">Low</option>

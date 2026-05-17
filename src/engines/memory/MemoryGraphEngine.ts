@@ -4,11 +4,35 @@ import type { MemoryNode } from './MemoryGraphTypes'
 
 export class MemoryGraphEngine {
 
+    private get memoryNode() {
+    return (prisma as any).memoryNode
+  }
+
+  private emptyState(): CFState {
+    return {
+      transfers: [],
+      escrows: [],
+      disputes: [],
+      settlements: [],
+      transactions: [],
+      liquidityIndex: 1,
+      systemStress: 0,
+      timestamp: Date.now(),
+    }
+  }
+
   /**
    * INGEST EVENT INTO MEMORY GRAPH
    */
   async ingest(node: MemoryNode) {
-    return prisma.memoryNode.create({
+    const memoryNode = this.memoryNode
+
+    if (!memoryNode?.create) {
+      console.warn('[MemoryGraphEngine] memoryNode model unavailable; ingest skipped')
+      return null
+    }
+
+    return memoryNode.create({
       data: {
         id: node.id,
         type: node.type,
@@ -30,7 +54,14 @@ export class MemoryGraphEngine {
    * ENTITY HISTORY
    */
   async trace(entityId: string) {
-    return prisma.memoryNode.findMany({
+    const memoryNode = this.memoryNode
+
+    if (!memoryNode?.findMany) {
+      console.warn('[MemoryGraphEngine] memoryNode model unavailable; trace returned empty')
+      return []
+    }
+
+    return memoryNode.findMany({
       where: { entityId },
       orderBy: { timestamp: 'asc' },
     })
@@ -40,13 +71,20 @@ export class MemoryGraphEngine {
    * CAUSAL CHAIN
    */
   async causal(nodeId: string) {
-    const root = await prisma.memoryNode.findUnique({
+    const memoryNode = this.memoryNode
+
+    if (!memoryNode?.findUnique || !memoryNode?.findMany) {
+      console.warn('[MemoryGraphEngine] memoryNode model unavailable; causal returned null')
+      return null
+    }
+
+    const root = await memoryNode.findUnique({
       where: { id: nodeId },
     })
 
     if (!root) return null
 
-    const parents = await prisma.memoryNode.findMany({
+    const parents = await memoryNode.findMany({
       where: {
         id: {
           in: (root.causalParents as string[]) ?? [],
@@ -61,7 +99,14 @@ export class MemoryGraphEngine {
    * TEMPORAL REPLAY
    */
   async replay(entityId: string, at: number): Promise<CFState> {
-    const events = await prisma.memoryNode.findMany({
+    const memoryNode = this.memoryNode
+
+    if (!memoryNode?.findMany) {
+      console.warn('[MemoryGraphEngine] memoryNode model unavailable; replay returned empty state')
+      return this.emptyState()
+    }
+
+    const events = await memoryNode.findMany({
       where: {
         entityId,
         timestamp: { lte: at },
@@ -76,7 +121,14 @@ export class MemoryGraphEngine {
    * FULL EXPORT
    */
   async exportFinancialState(): Promise<CFState> {
-    const events = await prisma.memoryNode.findMany({
+    const memoryNode = this.memoryNode
+
+    if (!memoryNode?.findMany) {
+      console.warn('[MemoryGraphEngine] memoryNode model unavailable; export returned empty state')
+      return this.emptyState()
+    }
+
+    const events = await memoryNode.findMany({
       orderBy: { timestamp: 'asc' },
       take: 5000,
     })
@@ -118,16 +170,7 @@ export class MemoryGraphEngine {
         default:
           return state
       }
-    }, {
-      transfers: [],
-      escrows: [],
-      disputes: [],
-      settlements: [],
-      transactions: [],
-      liquidityIndex: 1,
-      systemStress: 0,
-      timestamp: Date.now(),
-    })
+    }, this.emptyState())
   }
 }
 

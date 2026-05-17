@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from 'react'
 import { useReplaySelection } from '@/lib/context/ReplaySelectionContext'
+import {
+  normalizeObject,
+  normalizeRows,
+} from '@/components/admin/treasury/contracts/panel'
 
 type ReplayData = {
   original: {
@@ -25,13 +29,79 @@ type ReplayData = {
   divergenceScore: number
 }
 
+const DEFAULT_REPLAY_DATA: ReplayData = {
+  original: {
+    id: '',
+    intent: '',
+    scenarioId: null,
+    summary: '',
+    factors: [],
+    createdAt: new Date(0).toISOString(),
+  },
+
+  replay: {
+    intent: '',
+    summary: '',
+    factors: [],
+  },
+
+  diff: {
+    intentChanged: false,
+    addedFactors: [],
+    removedFactors: [],
+  },
+
+  divergenceScore: 0,
+}
+
+function normalizeReplayData(
+  data?: Partial<ReplayData> | null
+): ReplayData {
+  const normalized = normalizeObject(
+    data,
+    DEFAULT_REPLAY_DATA
+  )
+
+  return {
+    ...normalized,
+
+    original: {
+      ...DEFAULT_REPLAY_DATA.original,
+      ...normalized.original,
+      factors: normalizeRows(
+        normalized.original?.factors
+      ),
+    },
+
+    replay: {
+      ...DEFAULT_REPLAY_DATA.replay,
+      ...normalized.replay,
+      factors: normalizeRows(
+        normalized.replay?.factors
+      ),
+    },
+
+    diff: {
+      ...DEFAULT_REPLAY_DATA.diff,
+      ...normalized.diff,
+      addedFactors: normalizeRows(
+        normalized.diff?.addedFactors
+      ),
+      removedFactors: normalizeRows(
+        normalized.diff?.removedFactors
+      ),
+    },
+  }
+}
+
 export default function ReplayComparisonPanel() {
   const {
     selectedDecisionId,
     setSelectedDecisionId,
   } = useReplaySelection()
 
-  const [data, setData] = useState<ReplayData | null>(null)
+  const [data, setData] =
+  useState<ReplayData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -74,7 +144,9 @@ export default function ReplayComparisonPanel() {
         }
 
         if (active) {
-          setData(json.data)
+          setData(
+            normalizeReplayData(json.data)
+          )
         }
       } catch (err: any) {
         if (active && err.name !== 'AbortError') {

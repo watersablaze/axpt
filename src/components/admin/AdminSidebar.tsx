@@ -36,10 +36,10 @@ export default function AdminSidebar() {
           <div className="text-xs text-neutral-500 mb-2">COMMAND</div>
 
           <Link
-            href="/admin/command-center"
-            className={`block ${linkClass("/admin/command-center")}`}
+            href="/admin/control-center"
+            className={`block ${linkClass("/admin/control-center")}`}
           >
-            {collapsed ? "C" : "Command Center"}
+            {collapsed ? "C" : "Control Center"}
           </Link>
         </div>
 

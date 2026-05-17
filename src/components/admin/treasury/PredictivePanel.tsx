@@ -2,16 +2,21 @@
 
 import { useState, useEffect } from 'react'
 
-interface CircuitEvent {
+import {
+  normalizeObject,
+  normalizeRows,
+} from '@/components/admin/treasury/contracts/panel'
+
+type CircuitEvent = {
   id: string
   type: string
   severity: string
   message: string
-  metadata?: any
+  metadata?: Record<string, unknown> | null
   createdAt: string
 }
 
-interface AutonomousDecision {
+type AutonomousDecision = {
   id: string
   selected: string
   confidence: number
@@ -19,20 +24,65 @@ interface AutonomousDecision {
   createdAt: string
 }
 
-interface PredictiveData {
+type PredictiveData = {
   signals: CircuitEvent[]
   recommendations: CircuitEvent[]
   autonomousDecisions: AutonomousDecision[]
   executions: CircuitEvent[]
 }
 
+const DEFAULT_DATA: PredictiveData = {
+  signals: [],
+  recommendations: [],
+  autonomousDecisions: [],
+  executions: [],
+}
+
+function readStringMeta(
+  metadata: Record<string, unknown> | null | undefined,
+  key: string
+): string | null {
+  const value = metadata?.[key]
+
+  return typeof value === 'string'
+    ? value
+    : null
+}
+
+function readBooleanMeta(
+  metadata: Record<string, unknown> | null | undefined,
+  key: string
+): boolean {
+  return metadata?.[key] === true
+}
+
+function normalizePredictiveData(
+  data?: Partial<PredictiveData> | null
+): PredictiveData {
+  const normalized = normalizeObject(
+    data,
+    DEFAULT_DATA
+  )
+
+  return {
+    ...normalized,
+    signals: normalizeRows(normalized.signals),
+    recommendations: normalizeRows(
+      normalized.recommendations
+    ),
+    autonomousDecisions: normalizeRows(
+      normalized.autonomousDecisions
+    ),
+    executions: normalizeRows(
+      normalized.executions
+    ),
+  }
+}
+
 export default function PredictivePanel() {
-  const [data, setData] = useState<PredictiveData>({
-    signals: [],
-    recommendations: [],
-    autonomousDecisions: [],
-    executions: [],
-  })
+  const [data, setData] = useState<PredictiveData>(
+    DEFAULT_DATA
+  )
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -47,7 +97,7 @@ export default function PredictivePanel() {
       const response = await fetch('/api/admin/treasury/predictive')
       if (!response.ok) throw new Error('Failed to fetch')
       const result = await response.json()
-      setData(result)
+      setData(normalizePredictiveData(result))
     } catch (error) {
       console.error('Failed to fetch predictive data:', error)
     } finally {
@@ -107,9 +157,11 @@ export default function PredictivePanel() {
                 </span>
                 <div className="text-sm text-neutral-300 flex-1">
                   {signal.message}
-                  {signal.metadata?.assetCode && (
-                    <span className="text-neutral-500 ml-2">({signal.metadata.assetCode})</span>
-                  )}
+                    {readStringMeta(signal.metadata, 'assetCode') && (
+                      <span className="text-neutral-500 ml-2">
+                        ({readStringMeta(signal.metadata, 'assetCode')})
+                      </span>
+                    )}
                 </div>
                 <div className="text-xs text-neutral-500">
                   {new Date(signal.createdAt).toLocaleTimeString()}
@@ -131,7 +183,10 @@ export default function PredictivePanel() {
         ) : (
           <div className="space-y-2">
             {data.recommendations.slice(0, 5).map((rec) => {
-              const isAutoRunnable = rec.metadata?.autoExecutable
+              const isAutoRunnable = readBooleanMeta(
+                  rec.metadata,
+                  'autoExecutable'
+                )
               return (
                 <div key={rec.id} className="flex items-start gap-3">
                   <span className="text-purple-400">→</span>
@@ -147,8 +202,8 @@ export default function PredictivePanel() {
                         ({rec.message.split(' → ')[1]})
                       </span>
                     )}
-                    {rec.metadata?.assetCode && (
-                      <span className="text-neutral-500 ml-2">({rec.metadata.assetCode})</span>
+                    {readStringMeta(rec.metadata, 'assetCode') && (
+                      <span className="text-neutral-500 ml-2">({readStringMeta(rec.metadata, 'assetCode')})</span>
                     )}
                     {isAutoRunnable && (
                       <span className="ml-2 px-2 py-1 text-xs bg-green-500/20 text-green-400 rounded">
@@ -215,8 +270,8 @@ export default function PredictivePanel() {
         ) : (
           <div className="space-y-2">
             {data.executions.slice(0, 5).map((exec) => {
-              const isSkipped = exec.metadata?.skipped
-              const isSuccess = exec.metadata?.success !== false && !isSkipped
+              const isSkipped = readBooleanMeta(exec.metadata, 'skipped')
+              const isSuccess = readBooleanMeta(exec.metadata, 'success') !== false && !isSkipped
               return (
                 <div key={exec.id} className="flex items-start gap-3">
                   <span className={isSuccess ? 'text-green-400' : 'text-red-400'}>
@@ -229,12 +284,12 @@ export default function PredictivePanel() {
                       ? `Skipped: ${exec.message.split('Skipped predictive intent: ')[1]}`
                       : exec.message
                     }
-                    {exec.metadata?.assetCode && (
-                      <span className="text-neutral-500 ml-2">({exec.metadata.assetCode})</span>
+                    {readStringMeta(exec.metadata, 'assetCode') && (
+                      <span className="text-neutral-500 ml-2">({readStringMeta(exec.metadata, 'assetCode')})</span>
                     )}
-                    {exec.metadata?.reason && (
+                    {readStringMeta(exec.metadata, 'reason') && (
                       <span className="ml-2 px-2 py-1 text-xs bg-neutral-500/20 text-neutral-400 rounded">
-                        {exec.metadata.reason}
+                        {readStringMeta(exec.metadata, 'reason')}
                       </span>
                     )}
                   </div>

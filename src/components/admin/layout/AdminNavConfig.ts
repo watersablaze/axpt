@@ -5,8 +5,8 @@ export const ADMIN_NAV = [
     entity: { assets: [] as string[] },
   },
   {
-    label: 'Command Center',
-    href: '/admin/command-center',
+    label: 'Control Center',
+    href: '/admin/control-center',
     entity: { assets: [] as string[] },
   },
   {
@@ -29,14 +29,14 @@ export const ADMIN_NAV = [
 export function getAdminPageMeta(pathname: string) {
   if (pathname.startsWith('/admin/treasury')) {
     return {
-      title: 'Treasury Command Center',
+      title: 'Treasury Control Center',
       subtitle: 'Situation, decision, control, diagnostics, and system history.',
     }
   }
 
-  if (pathname.startsWith('/admin/command-center')) {
+  if (pathname.startsWith('/admin/control-center')) {
     return {
-      title: 'Command Center',
+      title: 'Control Center',
       subtitle: 'Live operations, queue priority, and execution awareness.',
     }
   }

@@ -1,31 +1,30 @@
 import { NextResponse } from 'next/server'
-import { getPrincipal } from '@/domains/auth/getPrincipal'
+
 import { appealReviewFlow } from '@/domains/security/appealReviewFlow'
-import { isAdmin as hasAdminAccess } from "@/domains/auth/isAdmin"
+
+import { requirePermission } from '@/domains/auth/requirePermission'
+import { PERMISSIONS } from '@/domains/auth/permissions'
 
 export async function POST(req: Request) {
   try {
-    const principal = await getPrincipal()
-
-    if (!principal) {
-      return NextResponse.json({ ok: false }, { status: 401 })
-    }
-
-    // 🔒 Only admins / elders can review appeals
-    if (!hasAdminAccess(principal)) {
-      return NextResponse.json(
-        { ok: false, error: 'Not authorized' },
-        { status: 403 }
-      )
-    }
+    const principal = await requirePermission(
+      PERMISSIONS.SYSTEM_MANAGE_AUTH
+    )
 
     const body = await req.json()
 
-    const { userId, decision, reason } = body
+    const {
+      userId,
+      decision,
+      reason,
+    } = body
 
     if (!userId || !decision) {
       return NextResponse.json(
-        { ok: false, error: 'Missing required fields' },
+        {
+          ok: false,
+          error: 'Missing required fields',
+        },
         { status: 400 }
       )
     }
@@ -45,7 +44,10 @@ export async function POST(req: Request) {
     console.error('[APPEAL_REVIEW_ERROR]', err)
 
     return NextResponse.json(
-      { ok: false, error: 'Failed to process appeal' },
+      {
+        ok: false,
+        error: 'Failed to process appeal',
+      },
       { status: 500 }
     )
   }

@@ -2,6 +2,7 @@ import type { Prisma } from '@prisma/client'
 import { prisma } from '@/infrastructure/db/prisma'
 import type { PrismaClient } from '@prisma/client'
 import { getAsset } from '@/lib/assets/registry'
+import { TokenType } from '@prisma/client'
 import {
   bigintToDecimal,
   decimalToBigInt,
@@ -14,6 +15,16 @@ type Tx = Omit<
   PrismaClient,
   "$connect" | "$disconnect" | "$on" | "$transaction" | "$use" | "$extends"
 >
+
+function toTokenType(code: string): TokenType {
+  if (code in TokenType) {
+    return TokenType[
+      code as keyof typeof TokenType
+    ]
+  }
+
+  return TokenType.OTHER
+}
 
 export async function creditAxg(
   userId: string,
@@ -53,7 +64,7 @@ export async function creditAxg(
         data: {
           userId,
           walletId: wallet.id,
-          tokenType: asset.code as any,
+          tokenType: toTokenType(asset.code),
           assetCode: asset.code,
           amount: 0,
           amountBaseUnits: bigintToDecimal(0n),
@@ -86,7 +97,7 @@ export async function creditAxg(
         amount: Number(
           formatBaseUnits(amountBaseUnits, asset.decimals)
         ),
-        tokenType: asset.code as any,
+        tokenType: toTokenType(asset.code),
         assetCode: asset.code,
         amountBaseUnits: bigintToDecimal(amountBaseUnits),
         feeBaseUnits: bigintToDecimal(0n),

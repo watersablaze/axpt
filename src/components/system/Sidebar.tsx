@@ -17,7 +17,7 @@ type NavSection = {
 const NAV: NavSection[] = [
   {
     label: 'COMMAND',
-    items: [{ name: 'Command Center', href: '/admin/command-center', match: '/admin/command-center' }],
+    items: [{ name: 'Control Center', href: '/admin/control-center', match: '/admin/control-center' }],
   },
   {
     label: 'TREASURY',

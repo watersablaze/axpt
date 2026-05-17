@@ -5,7 +5,7 @@ import { useEntity } from '@/lib/context/EntityContext'
 
 const LABELS: Array<{ match: string; label: string }> = [
   { match: '/admin/treasury', label: 'Treasury' },
-  { match: '/admin/command-center', label: 'Command Center' },
+  { match: '/admin/control-center', label: 'Control Center' },
   { match: '/admin/settings', label: 'Settings' },
 ]
 

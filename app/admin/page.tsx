@@ -3,25 +3,17 @@ import Link from "next/link"
 export default function AdminPage() {
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-semibold text-white">
-          AXPT Admin
-        </h1>
-        <p className="mt-2 text-sm text-neutral-400">
-          Entry points for command, treasury, initiatives, and system configuration.
-        </p>
-      </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <Link
-          href="/admin/command-center"
+          href="/admin/control-center"
           className="rounded-xl border border-neutral-800 bg-black/50 p-5 transition-colors hover:border-cyan-500/60"
         >
           <div className="text-xs uppercase tracking-wide text-neutral-500">
             Command
           </div>
           <div className="mt-2 text-lg font-medium text-white">
-            Command Center
+            Control Center
           </div>
           <div className="mt-1 text-sm text-neutral-400">
             Live field, decision core, event stream, and operational signals.

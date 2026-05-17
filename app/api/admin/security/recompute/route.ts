@@ -1,25 +1,15 @@
 import { NextResponse } from 'next/server'
+
 import { recomputeSecurityState } from '@/domains/security/recomputeSecurityState'
-import { getPrincipal } from '@/domains/auth/getPrincipal'
-import { isAdmin as hasAdminAccess } from "@/domains/auth/isAdmin"
+
+import { requirePermission } from '@/domains/auth/requirePermission'
+import { PERMISSIONS } from '@/domains/auth/permissions'
 
 export async function POST() {
   try {
-    const principal = await getPrincipal()
-
-    if (!principal) {
-      return NextResponse.json(
-        { ok: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
-
-    if (!hasAdminAccess(principal)) {
-      return NextResponse.json(
-        { ok: false, error: 'Forbidden' },
-        { status: 403 }
-      )
-    }
+    await requirePermission(
+      PERMISSIONS.SYSTEM_MANAGE_AUTH
+    )
 
     const result = await recomputeSecurityState()
 
@@ -33,7 +23,10 @@ export async function POST() {
     return NextResponse.json(
       {
         ok: false,
-        error: err instanceof Error ? err.message : 'Recompute failed',
+        error:
+          err instanceof Error
+            ? err.message
+            : 'Recompute failed',
       },
       { status: 500 }
     )

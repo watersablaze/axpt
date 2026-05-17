@@ -114,7 +114,7 @@ export async function getAuthDebugState(): Promise<AuthDebugState> {
       devImpersonateCookiePresent: Boolean(devImpersonate),
       treasuryActorCookiePresent: Boolean(treasuryActor),
       councilCookiePresent: Boolean(councilCookie),
-      sessionFallbackQueryEnabled: true,
+      sessionFallbackQueryEnabled: false, // This was a legacy mechanism and is now always false
     },
     dbUser,
   }

@@ -6,14 +6,23 @@ type Row = {
   trend: 'UP' | 'DOWN' | 'FLAT'
 }
 
+type Props = {
+  data?: Row[] | null
+}
+
+function normalizeRows(data?: Row[] | null): Row[] {
+  return Array.isArray(data) ? data : []
+}
+
 function trendColor(t: Row['trend']) {
   if (t === 'UP') return 'text-green-400'
   if (t === 'DOWN') return 'text-red-400'
   return 'text-neutral-400'
 }
 
-export default function LearningSummaryPanel({ data }: { data: Row[] }) {
-  const best = data[0]
+export default function LearningSummaryPanel({ data }: Props) {
+  const rows = normalizeRows(data)
+  const best = rows[0]
 
   return (
     <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-4">
@@ -25,9 +34,9 @@ export default function LearningSummaryPanel({ data }: { data: Row[] }) {
         </div>
       )}
 
-      {data.length ? (
+      {rows.length ? (
         <div className="space-y-3">
-          {data.map((r) => (
+          {rows.map((r) => (
             <div
               key={r.scenarioId}
               className="border-b border-neutral-800 pb-2 text-sm"

@@ -1,8 +1,13 @@
 import { prisma } from '@/infrastructure/db/prisma'
 import type { TransferContext } from '@/domains/wallet/types/transferContext'
 import { TRANSACTION_TYPES } from '@/domains/wallet/constants/transactionTypes'
-import { isAdmin } from '@/domains/auth/isAdmin';
-import { isAdmin as hasAdminAccess } from "@/domains/auth/isAdmin"
+import {
+  hasPermission,
+  hasRole,
+} from '@/domains/auth/hasAuthority'
+
+import { isAdmin as hasAdminAccess } from '@/domains/auth/isAdmin'
+import { PERMISSIONS } from '@/domains/auth/permissions'
 
 const MAX_RESIDENT_TRANSFER = 100_000000n // 100 AXG
 const MAX_DAILY_LIMIT = 500_000000n // 500 AXG
@@ -56,7 +61,7 @@ export async function evaluateUserTransferPolicy(
     amountBaseUnits,
   } = input
 
-  if (!principal.permissions.includes('WALLET_TRANSFER')) {
+  if (!hasPermission(principal, PERMISSIONS.WALLET_TRANSFER)) {
     return {
       action: 'DENY',
       code: 'FORBIDDEN',
@@ -105,7 +110,7 @@ export async function evaluateUserTransferPolicy(
     }
   }
 
-  if (principal.roles.includes('RESIDENT')) {
+  if (hasRole(principal, 'RESIDENT')) {
     if (assetCode !== 'AXG') {
       return {
         action: 'DENY',

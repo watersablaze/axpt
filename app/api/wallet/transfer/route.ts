@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server'
-import { getPrincipal } from '@/domains/auth/getPrincipal'
+import { requirePermission } from '@/domains/auth/requirePermission'
+import { PERMISSIONS } from '@/domains/auth/permissions'
 import { transferToken } from '@/engines/wallet'
 import { prisma } from '@/infrastructure/db/prisma'
 import { getAsset } from '@/lib/assets/registry'
@@ -19,14 +20,9 @@ function getIdempotencyKey(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const principal = await getPrincipal()
-
-    if (!principal) {
-      return NextResponse.json(
-        { ok: false, error: 'Unauthorized' },
-        { status: 401 }
-      )
-    }
+  const principal = await requirePermission(
+    PERMISSIONS.WALLET_TRANSFER
+  )
 
     const fromUserId = principal.userId
     const idempotencyKey = getIdempotencyKey(req)

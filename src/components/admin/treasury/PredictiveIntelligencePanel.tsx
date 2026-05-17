@@ -6,12 +6,33 @@ type Row = {
   createdAt: string
 }
 
+type PredictiveData = {
+  signals: Row[]
+  recommendations: Row[]
+  executions: Row[]
+  governorState: string
+}
+
 type Props = {
-  data: {
-    signals: Row[]
-    recommendations: Row[]
-    executions: Row[]
-    governorState: string
+  data?: Partial<PredictiveData> | null
+}
+
+const DEFAULT_DATA: PredictiveData = {
+  signals: [],
+  recommendations: [],
+  executions: [],
+  governorState: 'STABLE',
+}
+
+function normalizeData(
+  data?: Partial<PredictiveData> | null
+): PredictiveData {
+  return {
+    ...DEFAULT_DATA,
+    ...data,
+    signals: data?.signals ?? [],
+    recommendations: data?.recommendations ?? [],
+    executions: data?.executions ?? [],
   }
 }
 
@@ -27,27 +48,39 @@ function badge(auto: boolean) {
     : 'bg-neutral-800 text-neutral-400'
 }
 
-export default function PredictiveIntelligencePanel({ data }: Props) {
+export default function PredictiveIntelligencePanel({
+  data,
+}: Props) {
+  const normalized = normalizeData(data)
+
   return (
     <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-4">
-      <h2 className="mb-4 text-lg">Predictive Intelligence</h2>
+      <h2 className="mb-4 text-lg">
+        Predictive Intelligence
+      </h2>
 
       <div className="mb-4 text-sm text-neutral-400">
-        Governor State: <span className="font-medium">{data.governorState}</span>
+        Governor State:{' '}
+        <span className="font-medium">
+          {normalized.governorState}
+        </span>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
 
         {/* SIGNALS */}
         <div>
-          <div className="mb-2 text-sm text-neutral-400">Signals</div>
+          <div className="mb-2 text-sm text-neutral-400">
+            Signals
+          </div>
 
-          {data.signals.length ? (
-            data.signals.map((s) => (
+          {normalized.signals.length ? (
+            normalized.signals.map((s) => (
               <div key={s.id} className="mb-2 text-sm">
                 <div className={tone(s.severity)}>
                   [{s.severity}] {s.message}
                 </div>
+
                 <div className="text-xs text-neutral-500">
                   {new Date(s.createdAt).toLocaleTimeString()}
                 </div>
@@ -66,36 +99,45 @@ export default function PredictiveIntelligencePanel({ data }: Props) {
             Recommendations
           </div>
 
-          {data.recommendations.length ? (
-            data.recommendations.map((r) => {
+          {normalized.recommendations.length ? (
+            normalized.recommendations.map((r) => {
               const m = r.metadata ?? {}
               const confidence = m.confidence ?? 0
               const auto = m.autoExecutable ?? false
               const risks = m.risks ?? []
 
               return (
-                <div key={r.id} className="mb-3 text-sm border-b border-neutral-800 pb-2">
-
+                <div
+                  key={r.id}
+                  className="mb-3 border-b border-neutral-800 pb-2 text-sm"
+                >
                   <div className={tone(r.severity)}>
                     {r.message}
                   </div>
 
                   <div className="mt-1 text-xs text-neutral-400">
-                    Confidence: {(confidence * 100).toFixed(0)}%
+                    Confidence:{' '}
+                    {(confidence * 100).toFixed(0)}%
                   </div>
 
                   <div className="mt-1 text-xs">
-                    <span className={`px-2 py-0.5 rounded ${badge(auto)}`}>
-                      {auto ? 'AUTO-RUNNABLE' : 'ADVISORY'}
+                    <span
+                      className={`rounded px-2 py-0.5 ${badge(auto)}`}
+                    >
+                      {auto
+                        ? 'AUTO-RUNNABLE'
+                        : 'ADVISORY'}
                     </span>
                   </div>
 
                   {risks.length > 0 && (
                     <div className="mt-1 text-xs text-red-400">
-                      Risks: {risks.map((r: any) => r.level).join(', ')}
+                      Risks:{' '}
+                      {risks
+                        .map((r: any) => r.level)
+                        .join(', ')}
                     </div>
                   )}
-
                 </div>
               )
             })
@@ -108,14 +150,17 @@ export default function PredictiveIntelligencePanel({ data }: Props) {
 
         {/* EXECUTIONS */}
         <div>
-          <div className="mb-2 text-sm text-neutral-400">Executions</div>
+          <div className="mb-2 text-sm text-neutral-400">
+            Executions
+          </div>
 
-          {data.executions.length ? (
-            data.executions.map((e) => (
+          {normalized.executions.length ? (
+            normalized.executions.map((e) => (
               <div key={e.id} className="mb-2 text-sm">
                 <div className={tone(e.severity)}>
                   {e.message}
                 </div>
+
                 <div className="text-xs text-neutral-500">
                   {new Date(e.createdAt).toLocaleTimeString()}
                 </div>
@@ -127,7 +172,6 @@ export default function PredictiveIntelligencePanel({ data }: Props) {
             </div>
           )}
         </div>
-
       </div>
     </div>
   )
