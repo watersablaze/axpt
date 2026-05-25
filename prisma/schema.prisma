@@ -224,14 +224,13 @@ model Transaction {
   tokenType       TokenType?
   tokenId         String?
   txHash          String?
-  idempotencyKey  String?    @unique
   metadata        Json?
   createdAt       DateTime   @default(now())
   amountBaseUnits Decimal?   @db.Decimal(78, 0)
   assetCode       String?
   feeBaseUnits    Decimal?   @db.Decimal(78, 0)
   intent          String?
-  journalGroupId  String?
+  idempotencyKey  String?
   token           Token?     @relation(fields: [tokenId], references: [id])
   user            User       @relation(fields: [userId], references: [id])
   wallet          Wallet     @relation(fields: [walletId], references: [id])
@@ -241,7 +240,84 @@ model Transaction {
   @@index([tokenId])
   @@index([tokenType])
   @@index([assetCode])
-  @@index([journalGroupId])
+  @@index([idempotencyKey])
+}
+
+model TransactionDossier {
+  id          String           @id @default(cuid())
+  reference   String           @unique
+  title       String
+  state       TransactionState @default(INTAKE_PENDING)
+
+  commodity   String?
+  origin      String?
+  quantityKg  Decimal?         @db.Decimal(18, 6)
+  refinery    String?
+  settlement  String?
+
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+
+  parties     TransactionDossierParty[]
+  instruments TransactionDossierInstrument[]
+  events      TransactionDossierEvent[]
+}
+
+model TransactionDossierParty {
+  id             String    @id @default(cuid())
+  dossierId      String
+  role           PartyRole
+  legalName      String
+  representative String?
+  country        String?
+  notes          String?
+
+  dossier        TransactionDossier @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([dossierId])
+  @@index([role])
+}
+
+model TransactionDossierInstrument {
+  id             String           @id @default(cuid())
+  dossierId      String
+  type           InstrumentType
+  status         InstrumentStatus @default(DRAFT)
+  version        String           @default("v1.0")
+  title          String
+  fileUrl        String?
+  notes          String?
+
+  dossier        TransactionDossier @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([dossierId])
+  @@index([type])
+  @@index([status])
+}
+
+model TransactionDossierEvent {
+  id             String            @id @default(cuid())
+  dossierId      String
+  eventType      String
+  fromState      TransactionState?
+  toState        TransactionState?
+  message        String
+  actor          String?
+  metadata       Json?
+
+  dossier        TransactionDossier @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+
+  createdAt      DateTime @default(now())
+
+  @@index([dossierId])
+  @@index([eventType])
+  @@index([createdAt])
 }
 
 model SmartContract {
@@ -862,12 +938,12 @@ model VerificationItem {
 
 model EventLog {
   id        String    @id @default(cuid())
-  caseId    String?
+  caseId    String
   actor     String
   action    String
   detail    Json?
   createdAt DateTime? @default(now()) @db.Timestamp(6)
-  case      Case?     @relation(fields: [caseId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  case      Case      @relation(fields: [caseId], references: [id], onDelete: Cascade, onUpdate: NoAction)
 }
 
 model RiskEvent {
@@ -963,7 +1039,7 @@ model ChainMirrorJob {
 }
 
 model ChainMirrorEvent {
-  id              String          @id @default(cuid())
+  id              String    @id @default(cuid())
   network         String
   contract        String
   txHash          String
@@ -977,30 +1053,13 @@ model ChainMirrorEvent {
   fromAddress     String
   toAddress       String
   raw             Json?
-  createdAt       DateTime        @default(now())
-  chainId         Int             @default(11155111)
-  amountBaseUnits Decimal         @db.Decimal(78, 0)
-  eventName       String
-  processed       Boolean         @default(false)
-  intent          ExecutionIntent @relation(fields: [idempotencyKey], references: [idempotencyKey])
+  createdAt       DateTime  @default(now())
+  chainId         Int       @default(11155111)
+  amountBaseUnits Decimal   @db.Decimal(78, 0)
 
   @@unique([chainId, txHash, logIndex])
   @@index([chainId, blockNumber])
   @@index([chainId, contract])
-  @@index([idempotencyKey])
-}
-
-model ExecutionIntent {
-  id             String                @id @default(cuid())
-  type           ExecutionIntentType
-  status         ExecutionIntentStatus @default(QUEUED)
-  idempotencyKey String                @unique
-  payload        Json
-  txHash         String?
-  error          String?
-  createdAt      DateTime              @default(now())
-  updatedAt      DateTime              @updatedAt
-  mirrorEvents   ChainMirrorEvent[]
 }
 
 model ChainSyncState {
@@ -1044,27 +1103,23 @@ model LedgerAccount {
 }
 
 model LedgerEntry {
-  id              String          @id @default(cuid())
-  chainId         Int             @default(11155111)
-  tokenType       String
-  walletEventId   String
-  idempotencyKey  String
-  txHash          String
-  logIndex        Int
-  blockNumber     BigInt
-  chainTimestamp  DateTime?
-  accountId       String
-  direction       LedgerDirection
-  memo            String?
-  createdAt       DateTime        @default(now())
-  amountBaseUnits Decimal         @db.Decimal(78, 0)
-  fromAddress     String?
-  source          String
-  toAddress       String?
-  account         LedgerAccount   @relation(fields: [accountId], references: [id])
+  id             String          @id @default(cuid())
+  chainId        Int             @default(11155111)
+  tokenType      String
+  walletEventId  String
+  idempotencyKey String
+  txHash         String
+  logIndex       Int
+  blockNumber    BigInt
+  chainTimestamp DateTime?
+  accountId      String
+  direction      LedgerDirection
+  amount         String
+  memo           String?
+  createdAt      DateTime        @default(now())
+  account        LedgerAccount   @relation(fields: [accountId], references: [id])
 
   @@unique([chainId, txHash, logIndex, direction, accountId])
-  @@index([idempotencyKey])
   @@index([chainId, walletEventId])
   @@index([chainId, accountId, blockNumber])
   @@index([chainId, tokenType])
@@ -1099,27 +1154,13 @@ model NotificationReadModel {
 }
 
 model Escrow {
-  id                  String    @id @default(cuid())
-  escrowId            String    @unique @default(cuid())
-  caseId              String
-  status              String
-  chainState          String    @default("PENDING")
-  reconciliationState String    @default("UNRECONCILED")
-  createdAt           DateTime  @default(now())
-  amountBaseUnits     Decimal
-  assetCode           String
-  fromWalletId        String
-  lockedAt            DateTime?
-  releasedAt          DateTime?
-  toWalletId          String
-  transferId          String?
-  updatedAt           DateTime  @updatedAt
-  case                Case      @relation(fields: [caseId], references: [id])
+  id        String   @id @default(cuid())
+  caseId    String
+  status    String
+  createdAt DateTime @default(now())
+  case      Case     @relation(fields: [caseId], references: [id])
 
   @@index([caseId])
-  @@index([escrowId])
-  @@index([status])
-  @@index([transferId])
 }
 
 model Document {
@@ -1252,7 +1293,7 @@ model TreasuryExecutionQueue {
   lastError        String?
   createdAt        DateTime  @default(now())
   updatedAt        DateTime  @updatedAt
-  retryCount       Int       @default(0)
+  retryCount       Int
   transactionId    String?
 }
 
@@ -1445,16 +1486,50 @@ model ReplayAudit {
   @@index([intentChanged])
 }
 
-model IdempotencyRecord {
-  id        String   @id @default(cuid())
-  key       String   @unique
-  status    String
-  response  Json?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model ActiveIncident {
+  id               String   @id @default(cuid())
 
-  @@index([key])
-  @@index([status])
+  incidentKey      String   @unique
+
+  title            String
+  detail           String
+
+  severity         String
+  streamType       String
+
+  acknowledged     Boolean  @default(false)
+  acknowledgedAt   DateTime?
+  acknowledgedBy   String?
+
+  resolved         Boolean  @default(false)
+  resolvedAt       DateTime?
+  resolvedBy       String?
+
+  openedAt         DateTime
+  latestAt         DateTime
+
+  eventCount       Int      @default(1)
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model IncidentActionLog {
+  id          String   @id @default(cuid())
+
+  incidentKey String
+  action      String
+
+  operatorId  String?
+  operatorEmail String?
+
+  note        String?
+
+  createdAt   DateTime @default(now())
+
+  @@index([incidentKey])
+  @@index([action])
+  @@index([createdAt])
 }
 
 enum OperatorArchetype {
@@ -1647,17 +1722,46 @@ enum ChainMirrorJobStatus {
   SUBMITTING
 }
 
-enum ExecutionIntentStatus {
-  QUEUED
-  PROCESSING
-  SUBMITTED
-  CONFIRMED
-  FAILED
-  RECONCILED
+enum TransactionState {
+  INTAKE_PENDING
+  KYC_REVIEW
+  SPA_DRAFTING
+  SPA_EXECUTED
+  TREASURY_PENDING
+  EXPORT_ACTIVE
+  REFINERY_INTAKE
+  ASSAY_PENDING
+  SETTLEMENT_PENDING
+  SETTLED
+  CLOSED
+  BLOCKED
   CANCELLED
 }
 
-enum ExecutionIntentType {
-  LOCK_ESCROW
-  RELEASE_ESCROW
+enum InstrumentType {
+  SPA
+  ANNEX_A_DELIVERY
+  ANNEX_B_SETTLEMENT
+  ANNEX_C_REFINERY
+  ANNEX_D_COMPLIANCE
+  ANNEX_E_PROCEDURE
+}
+
+enum InstrumentStatus {
+  TEMPLATE
+  DRAFT
+  ACTIVE
+  EXECUTED
+  SUPERSEDED
+  ARCHIVED
+}
+
+enum PartyRole {
+  SELLER
+  BUYER
+  COORDINATOR
+  COOPERATIVE
+  REFINERY
+  TREASURY_CONTACT
+  LOGISTICS_CONTACT
 }

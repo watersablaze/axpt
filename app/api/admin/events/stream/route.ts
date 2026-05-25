@@ -38,27 +38,34 @@ export async function GET(request: Request) {
         try {
           const events = await prisma.domainEvent.findMany({
             where: {
-              createdAt: {
+              occurredAt: {
                 gt: lastTimestamp,
               },
             },
             orderBy: {
-              createdAt: "asc",
+              occurredAt: "asc",
             },
             take: 20,
           })
 
           if (events.length > 0) {
-            lastTimestamp = events[events.length - 1].createdAt
+            lastTimestamp = events[events.length - 1].occurredAt
 
             for (const event of events) {
               if (!active || abortSignal.aborted) break
 
-              const payload = {
-                type: event.eventType,
-                createdAt: event.createdAt,
-                streamId: event.streamId,
-              }
+            const payload = {
+              id: event.id,
+              type: event.eventType,
+
+              streamType: event.streamType,
+              streamId: event.streamId,
+
+              occurredAt: event.occurredAt.toISOString(),
+              createdAt: event.createdAt.toISOString(),
+
+              metadata: event.metadata,
+            }
 
               controller.enqueue(
                 encoder.encode(`data: ${JSON.stringify(payload)}\n\n`)
