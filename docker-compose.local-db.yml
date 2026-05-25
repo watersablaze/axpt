@@ -8,7 +8,7 @@ services:
       POSTGRES_PASSWORD: axpt
       POSTGRES_DB: axpt_local
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - axpt_pgdata:/var/lib/postgresql/data
 
