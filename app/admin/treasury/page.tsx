@@ -7,7 +7,7 @@ import ChainSyncPanel from '@/components/admin/treasury/ChainSyncPanel'
 import ManualSyncPanel from '@/components/admin/treasury/ManualSyncPanel'
 import MismatchExplorerPanel from '@/components/admin/treasury/MismatchExplorerPanel'
 import SystemControlPanel from '@/components/admin/treasury/SystemControlPanel'
-import TimelinePanel from '@/components/admin/treasury/TimelinePanel'
+import TreasuryEventFeed from '@/components/admin/treasury/TreasuryEventFeed'
 import PredictivePanel from '@/components/admin/treasury/PredictivePanel'
 import PredictiveIntelligencePanel from '@/components/admin/treasury/PredictiveIntelligencePanel'
 import AutonomousDecisionPanel from '@/components/admin/treasury/AutonomousDecisionPanel'
@@ -322,7 +322,7 @@ export default async function TreasuryPage() {
             </div>
 
             <div className="mt-6">
-              <TimelinePanel events={timeline} />
+              <TreasuryEventFeed events={timeline} />
             </div>
           </ReplaySelectionProvider>
         </PanelSection>

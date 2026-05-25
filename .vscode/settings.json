@@ -23,5 +23,6 @@
   "terminal.integrated.smoothScrolling": true,
   "terminal.integrated.mouseWheelZoom": true,
   "terminal.integrated.minimumContrastRatio": 7,
-  "terminal.integrated.fontSize": 11
+  "terminal.integrated.fontSize": 10,
+  "prisma.pinToPrisma6": true
 }
