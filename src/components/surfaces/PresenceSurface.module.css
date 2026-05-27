@@ -6,6 +6,7 @@
 .presenceSurface {
   width: 100%;
   position: relative;
+  overflow: hidden;
 }
 
 /* ──────────────────────────────
@@ -13,29 +14,25 @@
 ────────────────────────────── */
 
 .chamber {
-
   position: relative;
+
+  min-height: 68vh;
 
   display: flex;
   flex-direction: column;
-
-  justify-content: flex-end;
-
-  min-height: 58vh;
+  justify-content: space-between;
 
   padding:
-    clamp(80px, 10vh, 140px)
+    clamp(90px, 12vh, 160px)
     0
     40px;
-
 }
 
 /* ──────────────────────────────
-   SIGIL WATERMARK
+   PRESENCE MARK
 ────────────────────────────── */
 
-.sigilWrapper {
-
+.presenceMark {
   position: absolute;
 
   inset: 0;
@@ -46,25 +43,80 @@
 
   pointer-events: none;
 
-  opacity: .045;
-
+  opacity: .04;
 }
 
-/* Sigil watermark behavior */
-
 .sigil {
-
-  width: min(360px, 32vw);
+  width: min(420px, 34vw);
   height: auto;
 
-  opacity: .42;
+  opacity: .46;
 
   mix-blend-mode: luminosity;
 
   filter:
     grayscale(100%)
-    contrast(.9);
+    contrast(.88);
+}
 
+/* ──────────────────────────────
+   CLOSING STATEMENT
+────────────────────────────── */
+
+.closingStatement {
+  position: relative;
+  z-index: 2;
+
+  max-width: 760px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 22px;
+}
+
+.kicker {
+  width: fit-content;
+
+  font-family: var(--axpt-mono);
+
+  font-size: .58rem;
+
+  letter-spacing: .34em;
+
+  text-transform: uppercase;
+
+  color: rgba(210,220,228,.44);
+}
+
+.closingStatement h2 {
+  margin: 0;
+
+  max-width: 12ch;
+
+  font-size: clamp(2.4rem, 4vw, 4.8rem);
+
+  line-height: .94;
+
+  font-weight: 520;
+
+  letter-spacing: -.06em;
+
+  color: rgba(240,244,246,.9);
+
+  text-wrap: balance;
+}
+
+.closingStatement p {
+  margin: 0;
+
+  max-width: 56ch;
+
+  font-size: .98rem;
+
+  line-height: 1.8;
+
+  color: rgba(210,220,228,.58);
 }
 
 /* ──────────────────────────────
@@ -72,6 +124,8 @@
 ────────────────────────────── */
 
 .footerBar {
+  position: relative;
+  z-index: 2;
 
   width: 100%;
 
@@ -86,7 +140,6 @@
   padding-top: 28px;
 
   border-top: 1px solid rgba(255,255,255,.04);
-
 }
 
 /* ──────────────────────────────
@@ -94,7 +147,6 @@
 ────────────────────────────── */
 
 .footerTitle {
-
   font-family: var(--axpt-mono);
 
   font-size: .52rem;
@@ -104,11 +156,9 @@
   text-transform: uppercase;
 
   color: rgba(210,220,228,.42);
-
 }
 
 .footerValue {
-
   font-family: var(--axpt-mono);
 
   font-size: .52rem;
@@ -120,11 +170,9 @@
   color: rgba(200,208,216,.32);
 
   line-height: 1.4;
-
 }
 
 .footerLink {
-
   margin-top: 10px;
 
   font-family: var(--axpt-mono);
@@ -138,11 +186,10 @@
   text-decoration: none;
 
   transition: color 220ms ease;
-
 }
 
 .footerLink:hover {
-  color: rgba(140,210,175,0.82);
+  color: rgba(140,210,175,.82);
 }
 
 /* ──────────────────────────────
@@ -151,14 +198,12 @@
 
 .col,
 .colCenter {
-
   min-width: 0;
 
   display: flex;
   flex-direction: column;
 
   justify-content: flex-end;
-
 }
 
 .col:first-child {
@@ -176,10 +221,46 @@
 }
 
 /* ──────────────────────────────
+   SUBTLE CLOSING FIELD
+────────────────────────────── */
+
+.presenceSurface::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  height: 42%;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      to top,
+      rgba(0,0,0,.28),
+      rgba(0,0,0,.08),
+      transparent
+    );
+
+  opacity: .72;
+}
+
+/* ──────────────────────────────
    MOBILE
 ────────────────────────────── */
 
 @media (max-width: 860px) {
+  .chamber {
+    min-height: 72vh;
+  }
+
+  .closingStatement h2 {
+    max-width: 13ch;
+    font-size: clamp(2.3rem, 11vw, 4rem);
+  }
 
   .footerBar {
     grid-template-columns: 1fr;
@@ -193,4 +274,11 @@
     text-align: left;
   }
 
+  .presenceMark {
+    opacity: .03;
+  }
+
+  .sigil {
+    width: min(360px, 74vw);
+  }
 }

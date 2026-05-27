@@ -1,16 +1,12 @@
 import styles from './PresenceSurface.module.css'
 
 export default function PresenceSurface() {
-
   return (
     <div className={styles.presenceSurface}>
-
       <div className="surfaceFrame">
-
         <div className={styles.chamber}>
 
-          {/* Sigil watermark */}
-          <div className={styles.sigilWrapper} aria-hidden="true">
+          <div className={styles.presenceMark} aria-hidden="true">
             <img
               src="/sigil/v4/axis_sigil_full.png"
               alt=""
@@ -19,9 +15,20 @@ export default function PresenceSurface() {
             />
           </div>
 
-          {/* Footer */}
-          <footer className={styles.footerBar} aria-label="Footer">
+          <div className={styles.closingStatement}>
+            <span className={styles.kicker}>PRESENCE</span>
 
+            <h2>
+              Systems endure when continuity is held.
+            </h2>
+
+            <p>
+              AXPT develops coordination environments for verification,
+              custody, institutional memory, and accountable exchange.
+            </p>
+          </div>
+
+          <footer className={styles.footerBar} aria-label="Footer">
             <div className={styles.col}>
               <div className={styles.footerValue}>
                 ENGINEERED INFRASTRUCTURE LAYER
@@ -43,13 +50,10 @@ export default function PresenceSurface() {
                 © {new Date().getFullYear()} AXIS POINT
               </div>
             </div>
-
           </footer>
 
         </div>
-
       </div>
-
     </div>
   )
 }

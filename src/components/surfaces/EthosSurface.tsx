@@ -1,50 +1,39 @@
 import styles from './EthosSurface.module.css'
 import SurfaceHeader from '@/components/surfaces/SurfaceHeader'
 
-const PILLARS = [
+const CIRCULATION_CHANNELS = [
   {
-    index: '01',
     title: 'Cultural Exchange',
-    text: 'Flows structured across continents through consent and reciprocal presence.',
+    text: 'Cross-border participation structured through consent, context, and reciprocal value.',
   },
   {
-    index: '02',
-    title: 'Restorative Journalism',
-    text: 'Media held as living record — restoring authorship, lived context, and continuity.',
+    title: 'Restorative Media',
+    text: 'Narrative systems maintained as record, witness, and authorship infrastructure.',
   },
   {
-    index: '03',
-    title: 'Sustainability',
-    text: 'Participation shaped toward regeneration rather than extraction.',
+    title: 'Regenerative Systems',
+    text: 'Economic participation oriented toward preservation, repair, and long-term continuity.',
   },
   {
-    index: '04',
-    title: 'Custodianship',
-    text: 'Ledger, policy, and broadcast maintained as shared responsibility.',
+    title: 'Shared Custodianship',
+    text: 'Ledger, policy, treasury, and broadcast held as coordinated institutional responsibility.',
   },
 ]
 
-function EthosPillar({
-  index,
+function CirculationChannel({
   title,
   text,
 }: {
-  index: string
   title: string
   text: string
 }) {
-
   return (
-    <div className={styles.pillar}>
-
-      <span className={styles.index}>{index}</span>
-
-      <div className={styles.pillarBody}>
+    <article className={styles.circulationChannel}>
+      <div className={styles.channelBody}>
         <h3>{title}</h3>
         <p>{text}</p>
       </div>
-
-    </div>
+    </article>
   )
 }
 
@@ -58,26 +47,21 @@ export default function EthosSurface() {
 
         <div className={styles.ethosInner}>
 
-          <SurfaceHeader
-            kicker="CIRCULATION"
-            title="Custodial Systems in Motion"
-            subline="AXPT aligns capital, culture, and narrative so exchange remains accountable and regenerative."
+        <SurfaceHeader
+          kicker="CIRCULATION"
+          title="Infrastructure must remain accountable to what it moves."
+          subline="AXPT connects systems of value, record, narrative, and participation without separating coordination from responsibility."
+        />
+
+      <div className={styles.circulationRiver}>
+        {CIRCULATION_CHANNELS.map((channel) => (
+          <CirculationChannel
+            key={channel.title}
+            title={channel.title}
+            text={channel.text}
           />
-
-          <div className={styles.pillars}>
-
-            {PILLARS.map((pillar) => (
-
-              <EthosPillar
-                key={pillar.index}
-                index={pillar.index}
-                title={pillar.title}
-                text={pillar.text}
-              />
-
-            ))}
-
-          </div>
+        ))}
+      </div>
 
         </div>
 

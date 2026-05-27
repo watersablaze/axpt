@@ -1,104 +1,339 @@
 /* ─────────────────────────────────────
    AXPT — ETHOS SURFACE
-   Institutional Circulation Layer
+   Institutional Circulation River
 ───────────────────────────────────── */
 
 .ethosSurface {
-  width:100%;
-  position:relative;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 .ethosInner {
+  width: 100%;
+  max-width: 1120px;
+
+  margin: 0 auto;
 
   display: flex;
   flex-direction: column;
 
-  gap: 44px;
-
+  gap: 72px;
 }
 
 /* ─────────────────────────────────────
-   PILLARS
+   CIRCULATION RIVER
 ───────────────────────────────────── */
 
-.pillars {
-
+.circulationRiver {
   position: relative;
 
   width: 100%;
-  max-width: 760px;
 
-  margin-top: 36px;
+  min-height: 420px;
+
+  display: grid;
+
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+
+  column-gap: clamp(28px, 4vw, 56px);
+
+  align-items: center;
+
+  padding: 72px 0;
+}
+
+/* horizontal current */
+
+.circulationRiver::before {
+  content: "";
+
+  position: absolute;
+
+  left: -6%;
+  right: -6%;
+  top: 50%;
+
+  height: 1px;
+
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(210,225,235,.10),
+    rgba(210,225,235,.18),
+    rgba(210,225,235,.10),
+    transparent
+  );
+
+  opacity: .72;
+}
+
+/* slow current pressure */
+
+.circulationRiver::after {
+  content: "";
+
+  position: absolute;
+
+  left: -16%;
+  top: 50%;
+
+  width: 28%;
+  height: 1px;
+
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(220,240,250,.24),
+    transparent
+  );
+
+  opacity: .16;
+
+  filter: blur(.8px);
+
+  animation: riverCurrent 18s linear infinite;
+}
+
+@keyframes riverCurrent {
+  0% {
+    transform: translateX(0);
+    opacity: 0;
+  }
+
+  16% {
+    opacity: .12;
+  }
+
+  50% {
+    opacity: .18;
+  }
+
+  86% {
+    opacity: .08;
+  }
+
+  100% {
+    transform: translateX(520%);
+    opacity: 0;
+  }
+}
+
+/* ─────────────────────────────────────
+   CIRCULATION CHANNEL
+───────────────────────────────────── */
+
+.circulationChannel {
+  position: relative;
+
+  min-height: 220px;
+
+  display: flex;
+  align-items: center;
+}
+
+/* alternating river-bank rhythm */
+
+.circulationChannel:nth-child(odd) {
+  transform: translateY(-44px);
+}
+
+.circulationChannel:nth-child(even) {
+  transform: translateY(44px);
+}
+
+/* node registration */
+
+.circulationChannel::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 50%;
+
+  width: 6px;
+  height: 6px;
+
+  border-radius: 999px;
+
+  background: rgba(230,238,244,.58);
+
+  transform: translateY(-50%);
+
+  opacity: .72;
+}
+
+/* node tick */
+
+.circulationChannel::after {
+  content: "";
+
+  position: absolute;
+
+  left: 10px;
+  top: 50%;
+
+  width: 42px;
+  height: 1px;
+
+  background: linear-gradient(
+    to right,
+    rgba(230,238,244,.24),
+    transparent
+  );
+
+  transform: translateY(-50%);
+
+  opacity: .7;
+}
+
+/* ─────────────────────────────────────
+   CHANNEL BODY
+───────────────────────────────────── */
+
+.channelBody {
+  position: relative;
+
+  padding-left: 58px;
+
+  max-width: 260px;
 
   display: flex;
   flex-direction: column;
 
-  gap: 28px;
-
+  gap: 18px;
 }
 
-.pillar {
-
-  display: grid;
-
-  grid-template-columns: 56px 1fr;
-
-  gap: 24px;
-
-  align-items: start;
-
-  padding: 22px 0;
-
-  border-top: 1px solid rgba(255,255,255,.04);
-
-}
-
-.pillarBody{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-.pillar h3 {
-
+.channelBody h3 {
   margin: 0;
 
   font-family: var(--axpt-mono);
 
-  font-size: .72rem;
+  font-size: clamp(.9rem, 1.2vw, 1.12rem);
+
+  line-height: 1.25;
+
+  font-weight: 540;
 
   letter-spacing: .22em;
 
   text-transform: uppercase;
 
-  color: rgba(232,236,240,.72);
+  color: rgba(246,248,250,.88);
 
+  text-shadow:
+    0 0 .4px rgba(255,255,255,.14);
 }
 
-.pillar p {
-
+.channelBody p {
   margin: 0;
 
-  max-width: 58ch;
+  font-size: .92rem;
 
-  font-size: .95rem;
+  line-height: 1.85;
 
-  line-height: 1.8;
+  letter-spacing: .005em;
 
-  color: rgba(210,220,228,.58);
-
+  color: rgba(210,220,228,.56);
 }
 
-.index {
+/* wider final channel for custodianship */
 
-  padding-top: 2px;
+.circulationChannel:nth-child(4) .channelBody {
+  max-width: 300px;
+}
 
-  font-family: var(--axpt-mono);
+/* ─────────────────────────────────────
+   ATMOSPHERIC RESTRAINT
+───────────────────────────────────── */
 
-  font-size: .62rem;
+.ethosSurface::before {
+  content: "";
 
-  letter-spacing: .28em;
+  position: absolute;
 
-  color: rgba(180,190,198,.42);
+  left: 0;
+  right: 0;
+  top: 28%;
 
+  height: 260px;
+
+  pointer-events: none;
+
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(120,180,210,.026),
+    transparent 70%
+  );
+
+  filter: blur(64px);
+
+  opacity: .42;
+}
+
+/* ─────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────── */
+
+@media (max-width: 980px) {
+  .ethosInner {
+    gap: 56px;
+  }
+
+  .circulationRiver {
+    grid-template-columns: 1fr;
+
+    min-height: auto;
+
+    row-gap: 28px;
+
+    padding: 42px 0;
+  }
+
+  .circulationRiver::before {
+    left: 24px;
+    right: auto;
+    top: 0;
+    bottom: 0;
+
+    width: 1px;
+    height: auto;
+
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      rgba(210,225,235,.12),
+      transparent
+    );
+  }
+
+  .circulationRiver::after {
+    display: none;
+  }
+
+  .circulationChannel,
+  .circulationChannel:nth-child(odd),
+  .circulationChannel:nth-child(even) {
+    min-height: auto;
+    transform: none;
+  }
+
+  .circulationChannel::before {
+    left: 22px;
+  }
+
+  .circulationChannel::after {
+    left: 34px;
+    width: 36px;
+  }
+
+  .channelBody {
+    max-width: 100%;
+    padding-left: 82px;
+  }
+
+  .circulationChannel:nth-child(4) .channelBody {
+    max-width: 100%;
+  }
 }

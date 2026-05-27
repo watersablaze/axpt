@@ -76,11 +76,19 @@ body {
 ────────────────────────────── */
 
 html {
-  background: #000;
+  background:
+    linear-gradient(
+      180deg,
+      #17313d 0%,
+      #132b37 18%,
+      #0f2530 38%,
+      #0a1b25 68%,
+      #050d14 100%
+    );
 }
 
 body {
-  background: #000;
+  background: transparent;
 }
 
 body {
@@ -118,8 +126,8 @@ html::before {
     transparent 100%
   );
 
-  opacity: 0.10;
-  filter: blur(80px);
+  opacity: 0.08;
+  filter: blur(90px);
   transition:
     opacity 1400ms cubic-bezier(0.22, 1, 0.36, 1),
     filter 1400ms cubic-bezier(0.22, 1, 0.36, 1),

@@ -1,152 +1,89 @@
 import styles from './FrameworkSurface.module.css'
 import SurfaceHeader from '@/components/surfaces/SurfaceHeader'
 
+const LAYERS = [
+  {
+    index: '01',
+    title: 'Continuity',
+    meta: 'Principle Layer',
+    text: 'Defines the invariant orientation the system is designed to preserve under pressure.',
+  },
+  {
+    index: '02',
+    title: 'Governance',
+    meta: 'Authority Layer',
+    text: 'Translates continuity into mandate, permissions, oversight, and institutional responsibility.',
+  },
+  {
+    index: '03',
+    title: 'Systems',
+    meta: 'Execution Layer',
+    text: 'Converts mandate into recorded action across ledger, treasury, and communication infrastructure.',
+  },
+]
+
+const MODULES = [
+  ['Ledger Engine', 'Custodial accounting and institutional transaction record.'],
+  ['Treasury Coordination', 'Settlement orchestration, asset custody, and capital allocation.'],
+  ['Broadcast Layer', 'Institutional communication and public transmission surface.'],
+]
+
 export default function FrameworkSurface() {
   return (
     <div className={styles.frameworkSurface}>
       <div className="surfaceFrame">
+        <div className={styles.frameworkShell}>
 
-        <SurfaceHeader kicker="FRAMEWORK" />
+          <div className={styles.frameworkIntro}>
+            <SurfaceHeader kicker="FRAMEWORK" />
 
-        <h2 className={styles.headline}>
-          The system map beneath the portal surface.
-        </h2>
+            <h2 className={styles.headline}>
+              Institutional continuity topology.
+            </h2>
 
-        <p className={styles.subline}>
-          Three layers that stay legible under pressure — principle, authority,
-          execution.
-        </p>
-
-        <div className={styles.grid}>
-
-          {/* AXIS SPINE */}
-          <div className={styles.axisLine} aria-hidden="true" />
-
-          {/* AXIS + CONNECTORS */}
-          <div className={styles.frameworkAxis}>
-            <div className={styles.axisRow}>
-              <span className={styles.axisNode} />
-              <span className={styles.axisConnectorLeft} />
-            </div>
-
-            <div className={styles.axisRow}>
-              <span className={styles.axisNode} />
-              <span className={styles.axisConnectorRight} />
-            </div>
-
-            <div className={styles.axisRow}>
-              <span className={styles.axisNode} />
-              <span className={styles.axisConnectorLeft} />
-            </div>
-          </div>
-
-
-          {/* CONTINUITY */}
-          <article className={`${styles.slab} ${styles.continuity}`}>
-
-            <div className={styles.slabTop}>
-              <div className={styles.slabLeft}>
-                <span className={styles.slabIndex}>01</span>
-                <h3 className={styles.slabTitle}>CONTINUITY</h3>
-              </div>
-
-              <div className={styles.slabRight}>
-                <span className={styles.nodeDot} />
-                <span className={styles.nodeLabel}>CIVILIZATION</span>
-              </div>
-            </div>
-
-            <p className={styles.slabText}>
-              Foundational principle and civilizational horizon.
-              The orientation that cannot drift.
+            <p className={styles.subline}>
+              Three structural layers define how principle becomes authority,
+              and authority becomes recorded action.
             </p>
-
-          </article>
-
-
-          {/* GOVERNANCE */}
-          <article className={`${styles.slab} ${styles.governance}`}>
-
-            <div className={styles.slabTop}>
-              <div className={styles.slabLeft}>
-                <span className={styles.slabIndex}>02</span>
-                <h3 className={styles.slabTitle}>GOVERNANCE</h3>
-              </div>
-
-              <div className={styles.slabRight}>
-                <span className={styles.nodeDot} />
-                <span className={styles.nodeLabel}>COUNCIL MANDATE</span>
-              </div>
-            </div>
-
-            <p className={styles.slabText}>
-              Council authority translating principle into mandate.
-              Human oversight with structural discipline.
-            </p>
-
-          </article>
-
-
-{/* SYSTEMS */}
-<article className={`${styles.slab} ${styles.systems}`}>
-
-  <div className={styles.slabTop}>
-    <div className={styles.slabLeft}>
-      <span className={styles.slabIndex}>03</span>
-      <h3 className={styles.slabTitle}>SYSTEMS</h3>
-    </div>
-
-    <div className={styles.slabRight}>
-      <span className={styles.nodeDot} />
-      <span className={styles.nodeLabel}>INFRASTRUCTURE</span>
-    </div>
-  </div>
-
-  <p className={styles.slabText}>
-    Where mandate becomes action — and action becomes permanent record.
-  </p>
-
-        <div className={styles.systemStack}>
-
-          <div className={styles.systemRow}>
-            <span className={styles.systemDot} />
-            <div className={styles.systemContent}>
-              <span className={styles.systemTitle}>Ledger Engine</span>
-              <span className={styles.systemMeta}>
-                Custodial accounting layer and immutable transaction record.
-              </span>
-            </div>
           </div>
 
-          <div className={styles.systemRow}>
-            <span className={styles.systemDot} />
-            <div className={styles.systemContent}>
-              <span className={styles.systemTitle}>Treasury Coordination</span>
-              <span className={styles.systemMeta}>
-                Settlement orchestration, asset custody, and capital allocation.
-              </span>
-            </div>
-          </div>
+          <div className={styles.sectionCut}>
 
-          <div className={styles.systemRow}>
-            <span className={styles.systemDot} />
-            <div className={styles.systemContent}>
-              <span className={styles.systemTitle}>Broadcast Layer</span>
-              <span className={styles.systemMeta}>
-                MAINstream transmission network and institutional communication.
-              </span>
+            <div className={styles.layerStack}>
+              {LAYERS.map((layer) => (
+                <article key={layer.index} className={styles.layerRow}>
+                  <span className={styles.layerIndex}>{layer.index}</span>
+
+                  <div className={styles.layerBody}>
+                    <div className={styles.layerTop}>
+                      <h3>{layer.title}</h3>
+                      <span>{layer.meta}</span>
+                    </div>
+
+                    <p>{layer.text}</p>
+                  </div>
+                </article>
+              ))}
             </div>
+
+            <aside className={styles.executionPanel}>
+              <div className={styles.panelLabel}>
+                Execution Modules
+              </div>
+
+              <div className={styles.executionList}>
+                {MODULES.map(([title, text]) => (
+                  <div key={title} className={styles.executionItem}>
+                    <span className={styles.executionTitle}>{title}</span>
+                    <span className={styles.executionText}>{text}</span>
+                  </div>
+                ))}
+              </div>
+            </aside>
+
           </div>
 
         </div>
-
-      </article>
-
-        </div>
-
-        {/* DATA HORIZON */}
-        <div className={styles.bottomField} aria-hidden="true" />
-
       </div>
     </div>
   )
