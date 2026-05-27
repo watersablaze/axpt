@@ -2,6 +2,9 @@ import { prisma } from '@/lib/prisma'
 import { getActiveIncidents } from './getActiveIncidents'
 import { getOperationalSignals } from './getOperationalSignals'
 import { getTimelineFeed } from './getTimelineFeed'
+import {
+  getNextDossierStates,
+} from './dossierStateMachine'
 
 export async function getOperationalState() {
   const incidents = await getActiveIncidents()
@@ -57,6 +60,7 @@ export async function getOperationalState() {
       reference: dossier.reference,
       title: dossier.title,
       state: dossier.state,
+      nextStates: getNextDossierStates(dossier.state),
       commodity: dossier.commodity,
       origin: dossier.origin,
       quantityKg: dossier.quantityKg?.toString() ?? null,

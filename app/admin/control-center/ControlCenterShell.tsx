@@ -138,6 +138,9 @@ const operationalState =
 
       <DossierSnapshotPanel
         dossiers={operationalState.dossiers}
+        onRefresh={
+          operationalState.refreshOperationalState
+        }
       />
 
       <ActiveIncidentPanel

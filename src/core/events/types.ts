@@ -48,6 +48,16 @@ export const EventTypes = {
   INCIDENT_REOPENED: 
     'INCIDENT_REOPENED',
 
+
+  /*
+  ─────────────────────────────
+  DOSSIER
+  ─────────────────────────────
+  */
+
+  DOSSIER_STATE_TRANSITIONED:
+  'DOSSIER_STATE_TRANSITIONED',
+
   /*
   ─────────────────────────────
   SECURITY

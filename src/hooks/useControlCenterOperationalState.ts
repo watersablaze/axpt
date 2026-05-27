@@ -49,6 +49,7 @@ export type ControlCenterDossier = {
   reference: string
   title: string
   state: string
+  nextStates?: string[]
   commodity: string | null
   origin: string | null
   quantityKg: string | null
