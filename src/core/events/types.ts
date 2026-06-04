@@ -126,6 +126,17 @@ export const EventTypes = {
 
   DOCUMENT_REJECTED:
     'DOCUMENT_REJECTED',
+
+  /*
+  ─────────────────────────────
+  INSTRUMENT STATUS
+  ─────────────────────────────
+  */
+
+
+  INSTRUMENT_STATUS_CHANGED:
+  'INSTRUMENT_STATUS_CHANGED',
+  
 } as const
 
 export type EventType =

@@ -1,59 +1,11 @@
 'use client'
 
-type GateItem = {
-  id: string
-  label: string
-  passed: boolean
-  detail?: string
-}
+import type {
+  ControlCenterDossier,
+} from '@/hooks/useControlCenterOperationalState'
 
 type Props = {
-  state: string
-}
-
-function getGateItems(state: string): GateItem[] {
-  if (state === 'TREASURY_PENDING') {
-    return [
-      {
-        id: 'escrow-confirmation',
-        label: 'Escrow confirmation',
-        passed: true,
-        detail: 'Escrow has been marked funded.',
-      },
-      {
-        id: 'compliance-verification',
-        label: 'Compliance verification',
-        passed: false,
-        detail: 'Compliance package must be reviewed before export release.',
-      },
-      {
-        id: 'refinery-coordination',
-        label: 'Refinery coordination',
-        passed: false,
-        detail: 'Refinery coordination documents are required.',
-      },
-    ]
-  }
-
-  if (state === 'ESCROW_FUNDED') {
-    return [
-      {
-        id: 'treasury-readiness',
-        label: 'Treasury readiness',
-        passed: false,
-        detail: 'Treasury review must begin before export release.',
-      },
-    ]
-  }
-
-  return [
-    {
-      id: 'baseline',
-      label: 'No active artifact gate',
-      passed: true,
-      detail: 'Current dossier state has no blocking artifact requirements.',
-    },
-  ]
+  gate?: ControlCenterDossier['artifactGate']
 }
 
 function gateTone(passed: boolean) {
@@ -63,11 +15,15 @@ function gateTone(passed: boolean) {
 }
 
 export default function DossierArtifactGatePanel({
-  state,
+  gate,
 }: Props) {
-  const gates = getGateItems(state)
+  const checks =
+    gate?.checks ?? []
+
   const blockingCount =
-    gates.filter((gate) => !gate.passed).length
+    checks.filter(
+      (check) => !check.passed
+    ).length
 
   return (
     <div className="rounded-lg border border-neutral-800 bg-black/20 p-3 text-xs">
@@ -87,32 +43,41 @@ export default function DossierArtifactGatePanel({
         </div>
       </div>
 
-      <div className="mt-3 space-y-2">
-        {gates.map((gate) => (
-          <div
-            key={gate.id}
-            className={`rounded border p-2 ${gateTone(
-              gate.passed
-            )}`}
-          >
-            <div className="flex items-center justify-between gap-2">
-              <span className="font-medium">
-                {gate.passed ? '✓' : '✗'} {gate.label}
-              </span>
+      {checks.length === 0 ? (
+        <div className="mt-3 rounded border border-neutral-800 bg-black/30 p-2 text-neutral-500">
+          No active artifact checks.
+        </div>
+      ) : (
+        <div className="mt-3 space-y-2">
+          {checks.map((check) => (
+            <div
+              key={check.id}
+              className={`rounded border p-2 ${gateTone(
+                check.passed
+              )}`}
+            >
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-medium">
+                  {check.passed ? '✓' : '✗'}{' '}
+                  {check.label}
+                </span>
 
-              <span className="text-[10px] uppercase tracking-wide opacity-70">
-                {gate.passed ? 'Ready' : 'Required'}
-              </span>
-            </div>
-
-            {gate.detail ? (
-              <div className="mt-1 text-[11px] text-neutral-400">
-                {gate.detail}
+                <span className="text-[10px] uppercase tracking-wide opacity-70">
+                  {check.passed
+                    ? 'Ready'
+                    : 'Required'}
+                </span>
               </div>
-            ) : null}
-          </div>
-        ))}
-      </div>
+
+              {check.detail ? (
+                <div className="mt-1 text-[11px] text-neutral-400">
+                  {check.detail}
+                </div>
+              ) : null}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   )
 }

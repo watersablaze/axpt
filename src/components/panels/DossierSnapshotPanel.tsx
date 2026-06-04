@@ -216,7 +216,7 @@ export default function DossierSnapshotPanel({
           </div>
 
           <DossierArtifactGatePanel
-            state={primary.state}
+            gate={primary.artifactGate}
           />
 
           <div className="grid grid-cols-2 gap-2 text-xs">
@@ -246,22 +246,92 @@ export default function DossierSnapshotPanel({
               Instruments
             </div>
 
-            {primary.instruments.map((instrument) => (
-              <div
-                key={instrument.id}
-                className={`rounded border px-2 py-1.5 text-xs ${statusTone(
-                  instrument.status
-                )}`}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <span>{instrument.title}</span>
+            {primary.instruments.map((instrument) => {
+              const nextStatuses =
+                instrument.status === 'DRAFT'
+                  ? ['ACTIVE']
+                  : instrument.status === 'ACTIVE'
+                    ? ['EXECUTED', 'ARCHIVED']
+                    : instrument.status === 'EXECUTED'
+                      ? ['ARCHIVED', 'SUPERSEDED']
+                      : []
 
-                  <span className="text-[10px] uppercase tracking-wide opacity-70">
-                    {instrument.status}
-                  </span>
+              return (
+                <div
+                  key={instrument.id}
+                  className={`rounded border px-2 py-1.5 text-xs ${statusTone(
+                    instrument.status
+                  )}`}
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span>{instrument.title}</span>
+
+                    <span className="text-[10px] uppercase tracking-wide opacity-70">
+                      {instrument.status}
+                    </span>
+                  </div>
+
+                  {nextStatuses.length > 0 ? (
+                    <div className="mt-2 flex flex-wrap gap-1.5 border-t border-neutral-800 pt-2">
+                      {nextStatuses.map((status) => (
+                        <button
+                          key={status}
+                          type="button"
+                          onClick={async () => {
+                            try {
+                              const response = await fetch(
+                                `/api/admin/control-center/instruments/${instrument.id}/status`,
+                                {
+                                  method: 'PATCH',
+                                  credentials: 'include',
+                                  headers: {
+                                    'Content-Type': 'application/json',
+                                  },
+                                  body: JSON.stringify({
+                                    status,
+                                    note: `${instrument.title} marked ${status}.`,
+                                  }),
+                                }
+                              )
+
+                              const result = await response.json()
+
+                              if (!response.ok) {
+                                console.error(
+                                  '[INSTRUMENT_STATUS_BLOCKED]',
+                                  result
+                                )
+
+                                window.alert(
+                                  result.error ??
+                                    'Instrument status update blocked.'
+                                )
+
+                                return
+                              }
+
+                              await onRefresh?.()
+                            } catch (err) {
+                              console.error(
+                                '[INSTRUMENT_STATUS_FAILED]',
+                                err
+                              )
+
+                              window.alert(
+                                'Instrument status update failed.'
+                              )
+                            }
+                          }}
+                          className="rounded border border-neutral-700 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-cyan-700 hover:text-cyan-300"
+                        >
+                          Mark {status}
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
 
           {primary.recentEvents.length > 0 ? (
