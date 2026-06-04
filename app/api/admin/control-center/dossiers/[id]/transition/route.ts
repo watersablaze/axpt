@@ -44,6 +44,9 @@ export async function PATCH(
   const dossier =
     await prisma.transactionDossier.findUnique({
       where: { id },
+      include: {
+        instruments: true,
+      },
     })
 
   if (!dossier) {
@@ -71,6 +74,7 @@ export async function PATCH(
   const gate = checkDossierArtifactGate({
     fromState,
     toState,
+    instruments: dossier.instruments,
   })
 
   if (!gate.passed) {
@@ -81,6 +85,7 @@ export async function PATCH(
         reason: gate.blockingReason,
         fromState,
         toState,
+        checks: gate.checks,
       },
       { status: 409 }
     )
