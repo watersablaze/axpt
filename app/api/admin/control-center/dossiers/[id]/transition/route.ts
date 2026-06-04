@@ -12,6 +12,10 @@ import {
   checkDossierArtifactGate,
 } from '@/domains/control-center/dossierArtifactGates'
 
+import {
+  orchestrateDossierTransition,
+} from '@/domains/control-center/orchestrateDossierTransition'
+
 type DossierTransitionBody = {
   toState?: string
   message?: string
@@ -96,6 +100,13 @@ export async function PATCH(
     `Dossier transitioned from ${fromState} to ${toState}.`
 
   try {
+    const orchestration =
+      await orchestrateDossierTransition({
+        dossier,
+        fromState,
+        toState,
+        principal,
+      })
     const updated =
       await prisma.transactionDossier.update({
         where: { id },
@@ -146,6 +157,7 @@ export async function PATCH(
       ok: true,
       dossier: updated,
       event,
+      orchestration,
     })
   } catch (err) {
     console.error(
