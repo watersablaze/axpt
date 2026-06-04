@@ -16,6 +16,10 @@ import {
   orchestrateDossierTransition,
 } from '@/domains/control-center/orchestrateDossierTransition'
 
+import {
+  checkDossierApprovalGate,
+} from '@/domains/control-center/dossierApprovalGates'
+
 type DossierTransitionBody = {
   toState?: string
   message?: string
@@ -100,6 +104,26 @@ export async function PATCH(
     `Dossier transitioned from ${fromState} to ${toState}.`
 
   try {
+    const approvalGate = checkDossierApprovalGate({
+      fromState,
+      toState,
+      operatorRoles: principal.roles,
+    })
+
+    if (!approvalGate.passed) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: 'DOSSIER_APPROVAL_GATE_BLOCKED',
+          reason: approvalGate.blockingReason,
+          fromState,
+          toState,
+          checks: approvalGate.checks,
+        },
+        { status: 403 }
+      )
+    }
+
     const orchestration =
       await orchestrateDossierTransition({
         dossier,
