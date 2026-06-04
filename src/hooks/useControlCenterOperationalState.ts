@@ -50,6 +50,16 @@ export type ControlCenterDossier = {
   title: string
   state: string
   nextStates?: string[]
+  artifactGate?: {
+    passed: boolean
+    blockingReason?: string
+    checks: Array<{
+      id: string
+      label: string
+      passed: boolean
+      detail?: string
+    }>
+  }
   commodity: string | null
   origin: string | null
   quantityKg: string | null
