@@ -2,6 +2,16 @@ import { prisma } from '@/lib/prisma'
 import { appendDomainEvent } from '@/core/events/appendDomainEvent'
 import { EventTypes } from '@/core/events/types'
 
+type PrismaTransactionClient = Omit<
+  typeof prisma,
+  '$connect' |
+  '$disconnect' |
+  '$on' |
+  '$transaction' |
+  '$use' |
+  '$extends'
+>
+
 export type InstrumentStatus =
   | 'DRAFT'
   | 'ACTIVE'
@@ -47,39 +57,48 @@ export async function updateInstrumentStatus({
     }
   }
 
-  const updated =
-    await prisma.transactionDossierInstrument.update({
-      where: {
-        id: instrument.id,
-      },
-      data: {
-        status,
-      },
-    })
-
   const message =
     note ??
     `${instrument.title} status changed from ${previousStatus} to ${status}.`
 
-    await prisma.transactionDossierEvent.create({
-    data: {
-        dossierId: instrument.dossierId,
-        eventType: EventTypes.INSTRUMENT_STATUS_CHANGED,
-        fromState: null,
-        toState: null,
-        message,
-        actor: operatorEmail,
-        metadata: {
-        source: 'control-center.instrument-status',
-        operatorId,
-        operatorEmail,
-        instrumentId: instrument.id,
-        instrumentType: instrument.type,
-        previousStatus,
-        status,
+  const result = await prisma.$transaction(
+  async (tx: PrismaTransactionClient) => {
+    const updated =
+      await tx.transactionDossierInstrument.update({
+        where: {
+          id: instrument.id,
         },
-      },
-    })
+        data: {
+          status,
+        },
+      })
+
+    const event =
+      await tx.transactionDossierEvent.create({
+        data: {
+          dossierId: instrument.dossierId,
+          eventType: EventTypes.INSTRUMENT_STATUS_CHANGED,
+          fromState: null,
+          toState: null,
+          message,
+          actor: operatorEmail,
+          metadata: {
+            source: 'control-center.instrument-status',
+            operatorId,
+            operatorEmail,
+            instrumentId: instrument.id,
+            instrumentType: instrument.type,
+            previousStatus,
+            status,
+          },
+        },
+      })
+
+    return {
+      instrument: updated,
+      event,
+    }
+  })
 
   await appendDomainEvent({
     streamType: 'DOSSIER',
@@ -107,7 +126,8 @@ export async function updateInstrumentStatus({
   })
 
   return {
-    instrument: updated,
+    instrument: result.instrument,
+    event: result.event,
     changed: true,
   }
 }
