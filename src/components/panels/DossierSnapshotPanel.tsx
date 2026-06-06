@@ -1,7 +1,11 @@
 'use client'
 
+import { useState } from 'react'
 import DossierArtifactGatePanel from '@/components/panels/DossierArtifactGatePanel'
 import DossierApprovalPanel from './DossierApprovalPanel'
+import TransitionPreviewPanel, {
+  type TransitionPreview,
+} from './TransitionPreviewPanel'
 import type {
   ControlCenterDossier,
 } from '@/hooks/useControlCenterOperationalState'
@@ -15,7 +19,7 @@ function statusTone(status: string) {
   switch (status) {
     case 'EXECUTED':
     case 'ACTIVE':
-      return 'border-emerald-900 bg-emerald-950/2 0 text-emerald-300'
+      return 'border-emerald-900 bg-emerald-950/20 text-emerald-300'
 
     case 'DRAFT':
       return 'border-orange-900 bg-orange-950/20 text-orange-300'
@@ -63,6 +67,15 @@ export default function DossierSnapshotPanel({
   onRefresh,
 }: Props) {
   const primary = dossiers[0]
+
+  const [transitionPreview, setTransitionPreview] =
+    useState<TransitionPreview | null>(null)
+
+  const [previewLoadingState, setPreviewLoadingState] =
+    useState<string | null>(null)
+
+  const [executingTransition, setExecutingTransition] =
+    useState(false)
 
   return (
     <section className="rounded-xl border border-neutral-800 bg-neutral-950 p-3">
@@ -123,17 +136,19 @@ export default function DossierSnapshotPanel({
                       type="button"
                       onClick={async () => {
                         try {
+                          setPreviewLoadingState(state)
+                          setTransitionPreview(null)
+
                           const response = await fetch(
-                            `/api/admin/control-center/dossiers/${primary.id}/transition`,
+                            `/api/admin/control-center/dossiers/${primary.id}/transition/preview`,
                             {
-                              method: 'PATCH',
+                              method: 'POST',
                               credentials: 'include',
                               headers: {
                                 'Content-Type': 'application/json',
                               },
                               body: JSON.stringify({
                                 toState: state,
-                                message: `Dossier transitioned to ${state}.`,
                               }),
                             }
                           )
@@ -142,37 +157,105 @@ export default function DossierSnapshotPanel({
 
                           if (!response.ok) {
                             console.error(
-                              '[DOSSIER_TRANSITION_BLOCKED]',
+                              '[DOSSIER_TRANSITION_PREVIEW_FAILED]',
                               result
                             )
 
                             window.alert(
                               result.reason ??
                                 result.error ??
-                                'Transition blocked.'
+                                'Transition preview failed.'
                             )
 
                             return
                           }
 
-                          await onRefresh?.()
+                          setTransitionPreview(result.preview)
                         } catch (err) {
                           console.error(
-                            '[DOSSIER_TRANSITION_FAILED]',
+                            '[DOSSIER_TRANSITION_PREVIEW_REQUEST_FAILED]',
                             err
                           )
 
                           window.alert(
-                            'Transition execution failed.'
+                            'Transition preview request failed.'
                           )
+                        } finally {
+                          setPreviewLoadingState(null)
                         }
                       }}
                       className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-700"
                     >
-                      Move to {state}
+                      {previewLoadingState === state
+                        ? 'Previewing…'
+                        : `Preview ${state}`}
                     </button>
                   ))}
                 </div>
+              </div>
+            ) : null}
+
+            {transitionPreview ? (
+              <div className="mt-3">
+                <TransitionPreviewPanel
+                  preview={transitionPreview}
+                  executing={executingTransition}
+                  onCancel={() =>
+                    setTransitionPreview(null)
+                  }
+                  onExecute={async () => {
+                    try {
+                      setExecutingTransition(true)
+
+                      const response = await fetch(
+                        `/api/admin/control-center/dossiers/${primary.id}/transition`,
+                        {
+                          method: 'PATCH',
+                          credentials: 'include',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify({
+                            toState:
+                              transitionPreview.toState,
+                            message: `Dossier transitioned to ${transitionPreview.toState}.`,
+                          }),
+                        }
+                      )
+
+                      const result = await response.json()
+
+                      if (!response.ok) {
+                        console.error(
+                          '[DOSSIER_TRANSITION_BLOCKED]',
+                          result
+                        )
+
+                        window.alert(
+                          result.reason ??
+                            result.error ??
+                            'Transition blocked.'
+                        )
+
+                        return
+                      }
+
+                      setTransitionPreview(null)
+                      await onRefresh?.()
+                    } catch (err) {
+                      console.error(
+                        '[DOSSIER_TRANSITION_FAILED]',
+                        err
+                      )
+
+                      window.alert(
+                        'Transition execution failed.'
+                      )
+                    } finally {
+                      setExecutingTransition(false)
+                    }
+                  }}
+                />
               </div>
             ) : null}
 

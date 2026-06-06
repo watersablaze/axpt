@@ -84,7 +84,7 @@ async function approveRequirement({
         body: JSON.stringify({
           transitionKey: requirement.transitionKey,
           requiredRole: requirement.requiredRole,
-          note: `Approval granted for ${requirement.transitionKey}.`,
+          note: `Approved from Control Center: ${requirement.transitionKey}.`,
         }),
       }
     )

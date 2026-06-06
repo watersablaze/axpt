@@ -1,4 +1,13 @@
+
 import { prisma } from '@/lib/prisma'
+
+import {
+  ensureDossierApprovalRequirements,
+} from './ensureDossierApprovalRequirements'
+
+import {
+  getTransitionKey,
+} from './dossierApprovalGates'
 
 type DossierLike = {
   id: string
@@ -38,15 +47,15 @@ export async function orchestrateDossierTransition({
           incidentKey,
         },
         create: {
-        incidentKey,
-        title: 'Treasury review required',
-        detail:
+          incidentKey,
+          title: 'Treasury review required',
+          detail:
             'Escrow funding has been confirmed. Treasury settlement review is required before export release.',
-        severity: 'WARNING',
-        streamType: 'DOSSIER',
-        openedAt: new Date(),
-        latestAt: new Date(),
-        eventCount: 1,
+          severity: 'WARNING',
+          streamType: 'DOSSIER',
+          openedAt: new Date(),
+          latestAt: new Date(),
+          eventCount: 1,
         },
         update: {
           latestAt: new Date(),
@@ -67,6 +76,37 @@ export async function orchestrateDossierTransition({
         incidentId: incident.id,
         dossierId: dossier.id,
         reference: dossier.reference,
+        operatorEmail: principal.email,
+      },
+    }
+  }
+
+  if (
+    fromState === 'ESCROW_FUNDED' &&
+    toState === 'TREASURY_PENDING'
+  ) {
+    const approvalFromState = 'TREASURY_PENDING'
+    const approvalToState = 'EXPORT_RELEASED'
+    const transitionKey = getTransitionKey(
+      approvalFromState,
+      approvalToState
+    )
+
+    const requirements =
+      await ensureDossierApprovalRequirements({
+        dossierId: dossier.id,
+        fromState: approvalFromState,
+        toState: approvalToState,
+      })
+
+    return {
+      ok: true,
+      orchestration: {
+        type: 'APPROVAL_REQUIREMENTS_CREATED',
+        dossierId: dossier.id,
+        reference: dossier.reference,
+        transitionKey,
+        requirementCount: requirements.length,
         operatorEmail: principal.email,
       },
     }
