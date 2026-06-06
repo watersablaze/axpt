@@ -39,12 +39,25 @@ export async function getOperationalState() {
       },
       take: 10,
 
-      include: {
-        parties: true,
+        include: {
+          parties: true,
 
-        instruments: true,
+          instruments: true,
 
-        events: {
+          approvalRequirements: {
+            include: {
+              approvals: {
+                orderBy: {
+                  createdAt: 'desc',
+                },
+              },
+            },
+            orderBy: {
+              createdAt: 'desc',
+            },
+          },
+
+          events: {
           orderBy: {
             createdAt: 'desc',
           },
@@ -64,6 +77,12 @@ export async function getOperationalState() {
 
   type DossierEventRecord =
     DossierRecord['events'][number]
+
+  type DossierApprovalRequirementRecord =
+  DossierRecord['approvalRequirements'][number]
+
+  type DossierApprovalGrantRecord =
+  DossierApprovalRequirementRecord['approvals'][number]
 
   return {
     generatedAt:
@@ -127,6 +146,49 @@ export async function getOperationalState() {
           nextStates,
 
           artifactGate,
+
+          approvalRequirements:
+            dossier.approvalRequirements.map(
+              (
+                requirement:
+                  DossierApprovalRequirementRecord
+              ) => ({
+                id: requirement.id,
+                transitionKey:
+                  requirement.transitionKey,
+                requiredRole:
+                  requirement.requiredRole,
+                requiredCount:
+                  requirement.requiredCount,
+                status:
+                  requirement.status,
+                createdAt:
+                  requirement.createdAt.toISOString(),
+                updatedAt:
+                  requirement.updatedAt.toISOString(),
+                approvals:
+                  requirement.approvals.map(
+                    (
+                      approval:
+                        DossierApprovalGrantRecord
+                    ) => ({
+                      id: approval.id,
+                      operatorEmail:
+                        approval.operatorEmail,
+                      operatorId:
+                        approval.operatorId,
+                      roleKey:
+                        approval.roleKey,
+                      decision:
+                        approval.decision,
+                      note:
+                        approval.note,
+                      createdAt:
+                        approval.createdAt.toISOString(),
+                    })
+                  ),
+              })
+            ),
 
           commodity:
             dossier.commodity,

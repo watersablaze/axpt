@@ -1,6 +1,7 @@
 'use client'
 
 import DossierArtifactGatePanel from '@/components/panels/DossierArtifactGatePanel'
+import DossierApprovalPanel from './DossierApprovalPanel'
 import type {
   ControlCenterDossier,
 } from '@/hooks/useControlCenterOperationalState'
@@ -14,7 +15,7 @@ function statusTone(status: string) {
   switch (status) {
     case 'EXECUTED':
     case 'ACTIVE':
-      return 'border-emerald-900 bg-emerald-950/20 text-emerald-300'
+      return 'border-emerald-900 bg-emerald-950/2 0 text-emerald-300'
 
     case 'DRAFT':
       return 'border-orange-900 bg-orange-950/20 text-orange-300'
@@ -217,6 +218,14 @@ export default function DossierSnapshotPanel({
 
           <DossierArtifactGatePanel
             gate={primary.artifactGate}
+          />
+
+          <DossierApprovalPanel
+            dossierId={primary.id}
+            requirements={
+              primary.approvalRequirements ?? []
+            }
+            onRefresh={onRefresh}
           />
 
           <div className="grid grid-cols-2 gap-2 text-xs">

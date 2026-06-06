@@ -133,10 +133,18 @@ export const EventTypes = {
   ─────────────────────────────
   */
 
-
   INSTRUMENT_STATUS_CHANGED:
   'INSTRUMENT_STATUS_CHANGED',
-  
+
+    /*
+  ─────────────────────────────
+ APPROVAL GRANTED 
+  ─────────────────────────────
+  */
+
+  DOSSIER_APPROVAL_GRANTED:
+  'DOSSIER_APPROVAL_GRANTED',
+
 } as const
 
 export type EventType =

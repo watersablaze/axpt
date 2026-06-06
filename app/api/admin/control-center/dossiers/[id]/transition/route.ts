@@ -54,6 +54,7 @@ export async function PATCH(
       where: { id },
       include: {
         instruments: true,
+        approvalRequirements: true,
       },
     })
 
@@ -79,23 +80,44 @@ export async function PATCH(
     )
   }
 
-  const gate = checkDossierArtifactGate({
+  const artifactGate = checkDossierArtifactGate({
     fromState,
     toState,
     instruments: dossier.instruments,
   })
 
-  if (!gate.passed) {
+  if (!artifactGate.passed) {
     return NextResponse.json(
       {
         ok: false,
         error: 'DOSSIER_ARTIFACT_GATE_BLOCKED',
-        reason: gate.blockingReason,
+        reason: artifactGate.blockingReason,
         fromState,
         toState,
-        checks: gate.checks,
+        checks: artifactGate.checks,
       },
       { status: 409 }
+    )
+  }
+
+  const approvalGate = checkDossierApprovalGate({
+    fromState,
+    toState,
+    operatorRoles: principal.roles,
+    requirements: dossier.approvalRequirements,
+  })
+
+  if (!approvalGate.passed) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: 'DOSSIER_APPROVAL_GATE_BLOCKED',
+        reason: approvalGate.blockingReason,
+        fromState,
+        toState,
+        checks: approvalGate.checks,
+      },
+      { status: 403 }
     )
   }
 
@@ -104,26 +126,6 @@ export async function PATCH(
     `Dossier transitioned from ${fromState} to ${toState}.`
 
   try {
-    const approvalGate = checkDossierApprovalGate({
-      fromState,
-      toState,
-      operatorRoles: principal.roles,
-    })
-
-    if (!approvalGate.passed) {
-      return NextResponse.json(
-        {
-          ok: false,
-          error: 'DOSSIER_APPROVAL_GATE_BLOCKED',
-          reason: approvalGate.blockingReason,
-          fromState,
-          toState,
-          checks: approvalGate.checks,
-        },
-        { status: 403 }
-      )
-    }
-
     const orchestration =
       await orchestrateDossierTransition({
         dossier,

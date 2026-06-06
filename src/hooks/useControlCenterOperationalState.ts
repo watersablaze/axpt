@@ -50,7 +50,7 @@ export type ControlCenterDossier = {
   title: string
   state: string
   nextStates?: string[]
-  artifactGate?: {
+ artifactGate?: {
     passed: boolean
     blockingReason?: string
     checks: Array<{
@@ -60,6 +60,25 @@ export type ControlCenterDossier = {
       detail?: string
     }>
   }
+
+  approvalRequirements?: Array<{
+    id: string
+    transitionKey: string
+    requiredRole: string
+    requiredCount: number
+    status: string
+    createdAt: string
+    updatedAt: string
+    approvals: Array<{
+      id: string
+      operatorEmail: string
+      operatorId: string | null
+      roleKey: string
+      decision: string
+      note: string | null
+      createdAt: string
+    }>
+  }>
   commodity: string | null
   origin: string | null
   quantityKg: string | null
