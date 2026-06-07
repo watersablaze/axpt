@@ -145,6 +145,8 @@ export const EventTypes = {
   DOSSIER_APPROVAL_GRANTED:
   'DOSSIER_APPROVAL_GRANTED',
 
+  INSTRUMENT_GENERATED: 'INSTRUMENT_GENERATED',
+
 } as const
 
 export type EventType =

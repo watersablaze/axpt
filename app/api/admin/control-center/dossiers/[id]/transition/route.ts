@@ -20,6 +20,10 @@ import {
   checkDossierApprovalGate,
 } from '@/domains/control-center/dossierApprovalGates'
 
+import {
+  generateTransitionArtifacts,
+} from '@/domains/control-center/generateTransitionArtifacts'
+
 type DossierTransitionBody = {
   toState?: string
   message?: string
@@ -159,6 +163,15 @@ export async function PATCH(
         },
       })
 
+      const generatedArtifacts =
+        await generateTransitionArtifacts({
+          dossierId: dossier.id,
+          reference: dossier.reference,
+          fromState,
+          toState,
+          operatorEmail: principal.email,
+        })
+
     await appendDomainEvent({
       streamType: 'DOSSIER',
       streamId: dossier.reference,
@@ -184,6 +197,7 @@ export async function PATCH(
       dossier: updated,
       event,
       orchestration,
+      generatedArtifacts,
     })
   } catch (err) {
     console.error(

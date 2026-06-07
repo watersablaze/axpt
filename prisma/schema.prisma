@@ -1790,11 +1790,14 @@ enum TransactionState {
 
 enum InstrumentType {
   SPA
+
   ANNEX_A_DELIVERY
   ANNEX_B_SETTLEMENT
   ANNEX_C_REFINERY
   ANNEX_D_COMPLIANCE
   ANNEX_E_PROCEDURE
+
+  EXPORT_RELEASE_NOTICE
 }
 
 enum InstrumentStatus {
