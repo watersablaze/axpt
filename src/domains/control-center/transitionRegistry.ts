@@ -69,7 +69,47 @@ export const transitionRegistry: Record<
       },
     ],
   },
-}
+    EXPORT_RELEASED_TO_EXPORT_ACTIVE: {
+      transitionKey: 'EXPORT_RELEASED_TO_EXPORT_ACTIVE',
+      fromState: 'EXPORT_RELEASED',
+      toState: 'EXPORT_ACTIVE',
+
+      requiredApprovals: [],
+
+      generatedArtifacts: [
+        {
+          type: 'EXPORT_ACTIVATION_NOTICE',
+          title: 'Export Activation Notice',
+          status: 'DRAFT',
+          version: 'v1',
+        },
+      ],
+
+      consequences: [
+        {
+          type: 'EXPORT_ACTIVATION_RECORDED',
+          label: 'Export activity will be opened',
+          detail:
+            'The dossier will move from export released into export active status.',
+          severity: 'INFO',
+        },
+        {
+          type: 'INSTRUMENT_GENERATED',
+          label: 'Export Activation Notice will be generated',
+          detail:
+            'The system will create a draft Export Activation Notice attached to the dossier.',
+          severity: 'INFO',
+        },
+        {
+          type: 'DOMAIN_EVENT_APPENDED',
+          label: 'Operational timeline will be updated',
+          detail:
+            'A dossier domain event will be appended to the operational timeline.',
+          severity: 'INFO',
+        },
+      ],
+    },
+  }
 
 export function getTransitionRegistryEntry(
   transitionKey: string

@@ -1798,6 +1798,7 @@ enum InstrumentType {
   ANNEX_E_PROCEDURE
 
   EXPORT_RELEASE_NOTICE
+  EXPORT_ACTIVATION_NOTICE
 }
 
 enum InstrumentStatus {
