@@ -1,6 +1,14 @@
 import { prisma } from '@/lib/prisma'
 import { EventTypes } from '@/core/events/types'
 
+import {
+  getTransitionRegistryEntry,
+} from './transitionRegistry'
+
+import {
+  getTransitionKey,
+} from './dossierApprovalGates'
+
 type Input = {
   dossierId: string
   reference: string
@@ -16,16 +24,30 @@ export async function generateTransitionArtifacts({
   toState,
   operatorEmail,
 }: Input) {
-  if (
-    fromState === 'TREASURY_PENDING' &&
-    toState === 'EXPORT_RELEASED'
-  ) {
+  const transitionKey = getTransitionKey(
+    fromState,
+    toState
+  )
+
+  const registryEntry =
+    getTransitionRegistryEntry(transitionKey)
+
+  const artifactTemplates =
+    registryEntry?.generatedArtifacts ?? []
+
+  if (artifactTemplates.length === 0) {
+    return []
+  }
+
+  const generatedArtifacts = []
+
+  for (const artifact of artifactTemplates) {
     const existing =
       await prisma.transactionDossierInstrument.findFirst({
         where: {
           dossierId,
-          type: 'EXPORT_RELEASE_NOTICE',
-          version: 'v1',
+          type: artifact.type,
+          version: artifact.version,
         },
       })
 
@@ -34,10 +56,10 @@ export async function generateTransitionArtifacts({
       await prisma.transactionDossierInstrument.create({
         data: {
           dossierId,
-          type: 'EXPORT_RELEASE_NOTICE',
-          title: 'Export Release Notice',
-          status: 'DRAFT',
-          version: 'v1',
+          type: artifact.type,
+          title: artifact.title,
+          status: artifact.status,
+          version: artifact.version,
           notes:
             `Generated from ${fromState} → ${toState} for ${reference} by ${operatorEmail}.`,
         },
@@ -51,19 +73,26 @@ export async function generateTransitionArtifacts({
           fromState: null,
           toState: null,
           message:
-            'Export Release Notice generated from transition execution.',
+            `${artifact.title} generated from transition execution.`,
           actor: operatorEmail,
+          metadata: {
+            source: 'transition.artifact-generator',
+            reference,
+            transitionKey,
+            instrumentId: instrument.id,
+            instrumentType: instrument.type,
+            fromState,
+            toState,
+          },
         },
       })
 
-    return [
-      {
-        type: 'EXPORT_RELEASE_NOTICE',
-        instrument,
-        event,
-      },
-    ]
+    generatedArtifacts.push({
+      type: artifact.type,
+      instrument,
+      event,
+    })
   }
 
-  return []
+  return generatedArtifacts
 }

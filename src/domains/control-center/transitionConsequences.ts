@@ -1,3 +1,11 @@
+import {
+  getTransitionRegistryEntry,
+} from './transitionRegistry'
+
+import {
+  getTransitionKey,
+} from './dossierApprovalGates'
+
 export type TransitionConsequence = {
   type: string
   label: string
@@ -14,6 +22,18 @@ export function getTransitionConsequences({
   fromState,
   toState,
 }: Input): TransitionConsequence[] {
+  const transitionKey = getTransitionKey(
+    fromState,
+    toState
+  )
+
+  const registryEntry =
+    getTransitionRegistryEntry(transitionKey)
+
+  if (registryEntry?.consequences.length) {
+    return registryEntry.consequences
+  }
+
   if (
     fromState === 'ESCROW_PENDING' &&
     toState === 'ESCROW_FUNDED'
