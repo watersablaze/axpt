@@ -19,6 +19,19 @@ import ActiveIncidentPanel from '@/components/panels/ActiveIncidentPanel'
 import IncidentActionPanel from '@/components/panels/IncidentActionPanel'
 import { useControlCenterOperationalState } from '@/hooks/useControlCenterOperationalState'
 import DossierSnapshotPanel from '@/components/panels/DossierSnapshotPanel'
+import TransitionRegistryInspector from '@/components/panels/TransitionRegistryInspector'
+import TransitionExecutionLedgerPanel from '@/components/panels/TransitionExecutionLedgerPanel'
+import OperatorIdentityPanel from '@/components/panels/OperatorIdentityPanel'
+
+import OperatorActivityLedgerPanel
+  from '@/components/panels/OperatorActivityLedgerPanel'
+
+import OperatorAuthorityMatrixPanel
+  from '@/components/panels/OperatorAuthorityMatrixPanel'
+
+import ControlCenterModeSwitcher, {
+  type ControlCenterMode,
+} from '@/components/panels/ControlCenterModeSwitcher'
 
 const EMPTY_SNAPSHOT: ControlCenterSnapshot = {
   timestamp: 0,
@@ -67,6 +80,9 @@ const EMPTY_SNAPSHOT: ControlCenterSnapshot = {
 }
 
 export function ControlCenterShell() {
+  const [mode, setMode] =
+    useState<ControlCenterMode>('COMMAND')
+  
   const [snapshot, setSnapshot] =
     useState<ControlCenterSnapshot>(
       EMPTY_SNAPSHOT
@@ -99,20 +115,20 @@ export function ControlCenterShell() {
     }
   }
 
-useEffect(() => {
-  loadSnapshot()
+  useEffect(() => {
+    loadSnapshot()
 
-  const interval = window.setInterval(() => {
-    void loadSnapshot()
-  }, 5000)
+    const interval = window.setInterval(() => {
+      void loadSnapshot()
+    }, 5000)
 
-  return () => {
-    window.clearInterval(interval)
-  }
-}, [])
+    return () => {
+      window.clearInterval(interval)
+    }
+  }, [])
 
-const operationalState =
-  useControlCenterOperationalState()
+  const operationalState =
+    useControlCenterOperationalState()
 
   return (
     <div className={styles.grid}>
@@ -132,33 +148,78 @@ const operationalState =
       </div>
 
       <div className={styles.center}>
-      <ExecutionPanel
-        data={snapshot.execution}
-      />
-
-      <DossierSnapshotPanel
-        dossiers={operationalState.dossiers}
-        onRefresh={
-          operationalState.refreshOperationalState
-        }
-      />
-
-      <ActiveIncidentPanel
-        incidents={operationalState.incidents}
-        onRefresh={operationalState.refreshOperationalState}
-      />
-
-      <IncidentActionPanel
-        actions={operationalState.actions}
-      />
-
-      <IntelligenceSummaryPanel
-        signals={operationalState.intelligence}
-      />
-
-        <TimelinePanel
-          timestamp={snapshot.timestamp}
+        <ControlCenterModeSwitcher
+          mode={mode}
+          onChange={setMode}
         />
+
+        {mode === 'COMMAND' ? (
+          <>
+            <ExecutionPanel
+              data={snapshot.execution}
+            />
+
+            <DossierSnapshotPanel
+              dossiers={operationalState.dossiers}
+              onRefresh={
+                operationalState.refreshOperationalState
+              }
+            />
+
+            <ActiveIncidentPanel
+              incidents={operationalState.incidents}
+              onRefresh={
+                operationalState.refreshOperationalState
+              }
+            />
+
+            <IntelligenceSummaryPanel
+              signals={operationalState.intelligence}
+            />
+          </>
+        ) : null}
+
+        {mode === 'OPERATOR' ? (
+          <>
+            <OperatorIdentityPanel
+              operator={operationalState.operatorIdentity}
+            />
+
+            <OperatorAuthorityMatrixPanel
+              operator={operationalState.operatorIdentity}
+            />
+
+            <OperatorActivityLedgerPanel
+              activity={
+                operationalState.operatorActivity
+              }
+            />
+
+            <IncidentActionPanel
+              actions={operationalState.actions}
+            />
+          </>
+        ) : null}
+
+        {mode === 'EXECUTION' ? (
+          <>
+            <TransitionRegistryInspector
+              registry={
+                operationalState.transitionRegistry
+              }
+            />
+
+            <TransitionExecutionLedgerPanel
+              executions={
+                operationalState.transitionExecutionLedger
+              }
+            />
+
+            <TimelinePanel
+              timestamp={snapshot.timestamp}
+            />
+          </>
+        ) : null}
       </div>
 
       <div className={styles.right}>

@@ -24,6 +24,14 @@ import {
   generateTransitionArtifacts,
 } from '@/domains/control-center/generateTransitionArtifacts'
 
+import {
+  buildTransitionAuditRecord,
+} from '@/domains/control-center/buildTransitionAuditRecord'
+
+import {
+  getTransitionConsequences,
+} from '@/domains/control-center/transitionConsequences'
+
 type DossierTransitionBody = {
   toState?: string
   message?: string
@@ -137,12 +145,47 @@ export async function PATCH(
         toState,
         principal,
       })
+
     const updated =
       await prisma.transactionDossier.update({
         where: { id },
         data: {
           state: toState,
         },
+      })
+
+    const generatedArtifacts =
+      await generateTransitionArtifacts({
+        dossierId: dossier.id,
+        reference: dossier.reference,
+        fromState,
+        toState,
+        operatorEmail: principal.email,
+      })
+
+    const transitionConsequences =
+      getTransitionConsequences({
+        fromState,
+        toState,
+      })
+
+    const transitionAuditRecord =
+      buildTransitionAuditRecord({
+        dossierId: dossier.id,
+        reference: dossier.reference,
+        fromState,
+        toState,
+        operatorEmail: principal.email,
+        approvals: dossier.approvalRequirements,
+        generatedArtifacts: generatedArtifacts.map(
+          (artifact) => ({
+            type: artifact.instrument.type,
+            title: artifact.instrument.title,
+            status: artifact.instrument.status,
+            version: artifact.instrument.version,
+          })
+        ),
+        consequences: transitionConsequences,
       })
 
     const event =
@@ -156,21 +199,13 @@ export async function PATCH(
           actor: principal.email,
           metadata: {
             source: 'control-center.transition',
-            operatorId: null, 
+            operatorId: null,
             operatorEmail: principal.email,
+            transitionAuditRecord,
             ...(body.metadata ?? {}),
           },
         },
       })
-
-      const generatedArtifacts =
-        await generateTransitionArtifacts({
-          dossierId: dossier.id,
-          reference: dossier.reference,
-          fromState,
-          toState,
-          operatorEmail: principal.email,
-        })
 
     await appendDomainEvent({
       streamType: 'DOSSIER',
@@ -185,7 +220,7 @@ export async function PATCH(
       },
       metadata: {
         source: 'dossier.transition',
-        operatorId: null, 
+        operatorId: null,
         operatorEmail: principal.email,
         dossierId: dossier.id,
         reference: dossier.reference,

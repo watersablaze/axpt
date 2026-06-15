@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma'
 import { getActiveIncidents } from './getActiveIncidents'
 import { getOperationalSignals } from './getOperationalSignals'
 import { getTimelineFeed } from './getTimelineFeed'
+import { getOperatorActivityFeed } from './getOperatorActivityFeed'
+import { getTransitionExecutionLedger } from './getTransitionExecutionLedger'
 
 import {
   getNextDossierStates,
@@ -29,6 +31,12 @@ export async function getOperationalState() {
       take: 20,
     })
 
+  const operatorActivity =
+    await getOperatorActivityFeed()
+
+  const transitionExecutionLedger =
+    await getTransitionExecutionLedger()
+
   type IncidentActionRecord =
     (typeof actions)[number]
 
@@ -39,25 +47,25 @@ export async function getOperationalState() {
       },
       take: 10,
 
-        include: {
-          parties: true,
+      include: {
+        parties: true,
 
-          instruments: true,
+        instruments: true,
 
-          approvalRequirements: {
-            include: {
-              approvals: {
-                orderBy: {
-                  createdAt: 'desc',
-                },
+        approvalRequirements: {
+          include: {
+            approvals: {
+              orderBy: {
+                createdAt: 'desc',
               },
             },
-            orderBy: {
-              createdAt: 'desc',
-            },
           },
+          orderBy: {
+            createdAt: 'desc',
+          },
+        },
 
-          events: {
+        events: {
           orderBy: {
             createdAt: 'desc',
           },
@@ -79,10 +87,10 @@ export async function getOperationalState() {
     DossierRecord['events'][number]
 
   type DossierApprovalRequirementRecord =
-  DossierRecord['approvalRequirements'][number]
+    DossierRecord['approvalRequirements'][number]
 
   type DossierApprovalGrantRecord =
-  DossierApprovalRequirementRecord['approvals'][number]
+    DossierApprovalRequirementRecord['approvals'][number]
 
   return {
     generatedAt:
@@ -93,6 +101,10 @@ export async function getOperationalState() {
     intelligence,
 
     timeline,
+
+    operatorActivity,
+
+    transitionExecutionLedger,
 
     actions: actions.map(
       (action: IncidentActionRecord) => ({
@@ -234,6 +246,8 @@ export async function getOperationalState() {
                   instrument.version,
                 title:
                   instrument.title,
+                notes:
+                  instrument.notes,
               })
             ),
 
@@ -262,6 +276,12 @@ export async function getOperationalState() {
 
                 createdAt:
                   event.createdAt.toISOString(),
+
+                metadata:
+                  event.metadata as Record<
+                    string,
+                    unknown
+                  > | null,
               })
             ),
 

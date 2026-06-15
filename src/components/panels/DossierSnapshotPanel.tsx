@@ -6,6 +6,9 @@ import DossierApprovalPanel from './DossierApprovalPanel'
 import TransitionPreviewPanel, {
   type TransitionPreview,
 } from './TransitionPreviewPanel'
+import TransitionReplayCard, {
+  type TransitionAuditRecord,
+} from './TransitionReplayCard'
 import type {
   ControlCenterDossier,
 } from '@/hooks/useControlCenterOperationalState'
@@ -13,6 +16,29 @@ import type {
 type Props = {
   dossiers?: ControlCenterDossier[]
   onRefresh?: () => Promise<void>
+}
+
+function getTransitionAuditRecord(
+  metadata: unknown
+): TransitionAuditRecord | null {
+  if (
+    !metadata ||
+    typeof metadata !== 'object' ||
+    !('transitionAuditRecord' in metadata)
+  ) {
+    return null
+  }
+
+  const value =
+    (metadata as {
+      transitionAuditRecord?: unknown
+    }).transitionAuditRecord
+
+  if (!value || typeof value !== 'object') {
+    return null
+  }
+
+  return value as TransitionAuditRecord
 }
 
 function statusTone(status: string) {
@@ -356,9 +382,27 @@ export default function DossierSnapshotPanel({
                   )}`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <span>{instrument.title}</span>
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <span>{instrument.title}</span>
 
-                    <span className="text-[10px] uppercase tracking-wide opacity-70">
+                        {instrument.notes?.startsWith(
+                          'Generated from'
+                        ) ? (
+                          <span className="rounded border border-cyan-900 bg-cyan-950/20 px-1.5 py-0.5 text-[9px] uppercase tracking-wide text-cyan-300">
+                            Generated
+                          </span>
+                        ) : null}
+                      </div>
+
+                      {instrument.notes ? (
+                        <div className="mt-1 text-[10px] leading-snug text-neutral-500">
+                          {instrument.notes}
+                        </div>
+                      ) : null}
+                    </div>
+
+                    <span className="shrink-0 text-[10px] uppercase tracking-wide opacity-70">
                       {instrument.status}
                     </span>
                   </div>
@@ -433,24 +477,38 @@ export default function DossierSnapshotPanel({
               </div>
 
               <div className="mt-2 space-y-2">
-                {primary.recentEvents.map((event) => (
-                  <div
-                    key={event.id}
-                    className="rounded border border-neutral-800 bg-black/30 p-2"
-                  >
-                    <div className="text-neutral-300">
-                      {event.message}
-                    </div>
+                {primary.recentEvents.map((event) => {
+                  const auditRecord =
+                    getTransitionAuditRecord(
+                      (event as { metadata?: unknown })
+                        .metadata
+                    )
 
-                    <div className="mt-1 text-[10px] uppercase tracking-wide text-neutral-600">
-                      {event.eventType}
-                      {event.fromState && event.toState
-                        ? ` · ${event.fromState} → ${event.toState}`
-                        : ''}{' '}
-                      · {formatTime(event.createdAt)}
+                  return (
+                    <div
+                      key={event.id}
+                      className="rounded border border-neutral-800 bg-black/30 p-2"
+                    >
+                      <div className="text-neutral-300">
+                        {event.message}
+                      </div>
+
+                      <div className="mt-1 text-[10px] uppercase tracking-wide text-neutral-600">
+                        {event.eventType}
+                        {event.fromState && event.toState
+                          ? ` · ${event.fromState} → ${event.toState}`
+                          : ''}{' '}
+                        · {formatTime(event.createdAt)}
+                      </div>
+
+                      {auditRecord ? (
+                        <TransitionReplayCard
+                          auditRecord={auditRecord}
+                        />
+                      ) : null}
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
               </div>
             </div>
           ) : null}
