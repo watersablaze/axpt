@@ -33,6 +33,9 @@ import ControlCenterModeSwitcher, {
   type ControlCenterMode,
 } from '@/components/panels/ControlCenterModeSwitcher'
 
+import OpportunityIntakePanel
+  from '@/components/panels/OpportunityIntakePanel'
+
 const EMPTY_SNAPSHOT: ControlCenterSnapshot = {
   timestamp: 0,
 
@@ -158,6 +161,8 @@ export function ControlCenterShell() {
             <ExecutionPanel
               data={snapshot.execution}
             />
+
+            <OpportunityIntakePanel />
 
             <DossierSnapshotPanel
               dossiers={operationalState.dossiers}

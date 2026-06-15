@@ -244,24 +244,27 @@ model Transaction {
 }
 
 model TransactionDossier {
-  id          String           @id @default(cuid())
-  reference   String           @unique
-  title       String
-  state       TransactionState @default(INTAKE_PENDING)
+  id        String           @id @default(cuid())
+  reference String           @unique
+  title     String
+  state     TransactionState @default(INTAKE_PENDING)
 
-  commodity   String?
-  origin      String?
-  quantityKg  Decimal?         @db.Decimal(18, 6)
-  refinery    String?
-  settlement  String?
+  commodity            String?
+  origin               String?
+  quantityKg           Decimal?                     @db.Decimal(18, 6)
+  refinery             String?
+  settlement           String?
   approvalRequirements DossierApprovalRequirement[]
 
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  parties     TransactionDossierParty[]
-  instruments TransactionDossierInstrument[]
-  events      TransactionDossierEvent[]
+  parties       TransactionDossierParty[]
+  instruments   TransactionDossierInstrument[]
+  events        TransactionDossierEvent[]
+  opportunities Opportunity[]
+
+  promotedOpportunities Opportunity[] @relation("PromotedOpportunityDossier")
 }
 
 model TransactionDossierParty {
@@ -273,29 +276,29 @@ model TransactionDossierParty {
   country        String?
   notes          String?
 
-  dossier        TransactionDossier @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+  dossier TransactionDossier @relation(fields: [dossierId], references: [id], onDelete: Cascade)
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([dossierId])
   @@index([role])
 }
 
 model TransactionDossierInstrument {
-  id             String           @id @default(cuid())
-  dossierId      String
-  type           InstrumentType
-  status         InstrumentStatus @default(DRAFT)
-  version        String           @default("v1.0")
-  title          String
-  fileUrl        String?
-  notes          String?
+  id        String           @id @default(cuid())
+  dossierId String
+  type      InstrumentType
+  status    InstrumentStatus @default(DRAFT)
+  version   String           @default("v1.0")
+  title     String
+  fileUrl   String?
+  notes     String?
 
-  dossier        TransactionDossier @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+  dossier TransactionDossier @relation(fields: [dossierId], references: [id], onDelete: Cascade)
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([dossierId])
   @@index([type])
@@ -303,18 +306,18 @@ model TransactionDossierInstrument {
 }
 
 model TransactionDossierEvent {
-  id             String            @id @default(cuid())
-  dossierId      String
-  eventType      String
-  fromState      TransactionState?
-  toState        TransactionState?
-  message        String
-  actor          String?
-  metadata       Json?
+  id        String            @id @default(cuid())
+  dossierId String
+  eventType String
+  fromState TransactionState?
+  toState   TransactionState?
+  message   String
+  actor     String?
+  metadata  Json?
 
-  dossier        TransactionDossier @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+  dossier TransactionDossier @relation(fields: [dossierId], references: [id], onDelete: Cascade)
 
-  createdAt      DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([dossierId])
   @@index([eventType])
@@ -1488,45 +1491,45 @@ model ReplayAudit {
 }
 
 model ActiveIncident {
-  id               String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  incidentKey      String   @unique
+  incidentKey String @unique
 
-  title            String
-  detail           String
+  title  String
+  detail String
 
-  severity         String
-  streamType       String
+  severity   String
+  streamType String
 
-  acknowledged     Boolean  @default(false)
-  acknowledgedAt   DateTime?
-  acknowledgedBy   String?
+  acknowledged   Boolean   @default(false)
+  acknowledgedAt DateTime?
+  acknowledgedBy String?
 
-  resolved         Boolean  @default(false)
-  resolvedAt       DateTime?
-  resolvedBy       String?
+  resolved   Boolean   @default(false)
+  resolvedAt DateTime?
+  resolvedBy String?
 
-  openedAt         DateTime
-  latestAt         DateTime
+  openedAt DateTime
+  latestAt DateTime
 
-  eventCount       Int      @default(1)
+  eventCount Int @default(1)
 
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model IncidentActionLog {
-  id          String   @id @default(cuid())
+  id String @id @default(cuid())
 
   incidentKey String
   action      String
 
-  operatorId  String?
+  operatorId    String?
   operatorEmail String?
 
-  note        String?
+  note String?
 
-  createdAt   DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@index([incidentKey])
   @@index([action])
@@ -1534,38 +1537,111 @@ model IncidentActionLog {
 }
 
 model DossierApprovalRequirement {
-  id             String   @id @default(cuid())
-  dossierId      String
-  transitionKey  String
-  requiredRole   String
-  requiredCount  Int      @default(1)
-  status         String   @default("PENDING")
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  id            String   @id @default(cuid())
+  dossierId     String
+  transitionKey String
+  requiredRole  String
+  requiredCount Int      @default(1)
+  status        String   @default("PENDING")
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  dossier        TransactionDossier @relation(fields: [dossierId], references: [id], onDelete: Cascade)
-  approvals      DossierApprovalGrant[]
+  dossier   TransactionDossier     @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+  approvals DossierApprovalGrant[]
 
+  @@unique([dossierId, transitionKey, requiredRole])
   @@index([dossierId])
   @@index([transitionKey])
-  @@unique([dossierId, transitionKey, requiredRole])
 }
 
 model DossierApprovalGrant {
-  id             String   @id @default(cuid())
-  requirementId  String
-  operatorEmail  String
-  operatorId     String?
-  roleKey        String
-  decision       String   @default("APPROVED")
-  note           String?
-  createdAt      DateTime @default(now())
+  id            String   @id @default(cuid())
+  requirementId String
+  operatorEmail String
+  operatorId    String?
+  roleKey       String
+  decision      String   @default("APPROVED")
+  note          String?
+  createdAt     DateTime @default(now())
 
-  requirement    DossierApprovalRequirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
+  requirement DossierApprovalRequirement @relation(fields: [requirementId], references: [id], onDelete: Cascade)
 
+  @@unique([requirementId, operatorEmail])
   @@index([requirementId])
   @@index([operatorEmail])
-  @@unique([requirementId, operatorEmail])
+}
+
+model Opportunity {
+  id String @id @default(cuid())
+
+  title  String
+  source OpportunitySource @default(DIRECT)
+  status OpportunityStatus @default(INTAKE)
+
+  commodity   String?
+  buyerName   String?
+  sellerName  String?
+  origin      String?
+  destination String?
+  quantityKg  String?
+
+  notes String?
+
+  dossierId String?
+  dossier   TransactionDossier? @relation(fields: [dossierId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  promotedDossierId String?
+  promotedDossier   TransactionDossier? @relation("PromotedOpportunityDossier", fields: [promotedDossierId], references: [id], onDelete: SetNull)
+
+  events OpportunityEvent[]
+
+  @@index([status])
+  @@index([source])
+  @@index([dossierId])
+  @@index([createdAt])
+}
+
+model OpportunityEvent {
+  id String @id @default(cuid())
+
+  opportunityId String
+  opportunity   Opportunity @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+
+  type     String
+  actor    String?
+  message  String?
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  @@index([opportunityId])
+  @@index([type])
+  @@index([actor])
+  @@index([createdAt])
+}
+
+enum OpportunitySource {
+  EMAIL
+  WHATSAPP
+  PHONE
+  REFERRAL
+  LOI
+  WEBSITE
+  INTERNAL
+  DIRECT
+  OTHER
+}
+
+enum OpportunityStatus {
+  INTAKE
+  UNDER_REVIEW
+  APPROVED
+  REJECTED
+  PROMOTED
+  ARCHIVED
 }
 
 enum OperatorArchetype {
