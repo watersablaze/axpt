@@ -243,6 +243,95 @@ model Transaction {
   @@index([idempotencyKey])
 }
 
+model TransactionIntake {
+  id                      String   @id @default(cuid())
+  reference               String   @unique
+
+  status                  String   @default("SUBMITTED")
+
+  submitterName            String
+  submitterEmail           String
+  submitterPhone           String?
+  submitterCompany         String?
+  submitterCountry         String?
+
+  submitterRole            String
+  representedPartyType     String?
+  representedPartyName     String?
+  authorizationStatus      String?
+
+  program                  String?
+  transactionType          String?
+  commodity                String?
+  quantity                 String?
+  trialQuantity            String?
+  monthlyQuantity          String?
+  origin                   String?
+  destination              String?
+  deliveryTerms            String?
+  settlementMethod         String?
+  expectedTimeline         String?
+
+  buyerName                String?
+  sellerName               String?
+  refineryPreference       String?
+  financialReadiness       String?
+  documentsAvailable       String?
+  supportingNotes          String?
+
+  referralCode             String?
+  referredByName           String?
+  referredByCompany        String?
+  referredByEmail          String?
+  referredByPhone          String?
+  referredByRole           String?
+  referralConfirmed        Boolean  @default(false)
+  compensationExpectation  String?
+
+  declarationAccuracy      Boolean  @default(false)
+  declarationNoObligation  Boolean  @default(false)
+  declarationNoCommission  Boolean  @default(false)
+
+  internalNotes            String?
+
+  sourceUrl                String?
+  ipAddress                String?
+  userAgent                String?
+
+  events                   TransactionIntakeEvent[]
+
+  createdAt                DateTime @default(now())
+  updatedAt                DateTime @updatedAt
+
+  @@index([reference])
+  @@index([status])
+  @@index([submitterEmail])
+  @@index([referralCode])
+  @@index([commodity])
+  @@index([program])
+  @@index([createdAt])
+}
+
+model TransactionIntakeEvent {
+  id          String   @id @default(cuid())
+  intakeId    String
+
+  eventType   String
+  fromStatus  String?
+  toStatus    String?
+  actor       String?
+  note        String?
+
+  createdAt   DateTime @default(now())
+
+  intake      TransactionIntake @relation(fields: [intakeId], references: [id], onDelete: Cascade)
+
+  @@index([intakeId])
+  @@index([eventType])
+  @@index([createdAt])
+  @@index([toStatus])
+}
+
 model TransactionDossier {
   id        String           @id @default(cuid())
   reference String           @unique
