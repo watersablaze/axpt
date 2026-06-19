@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import styles from './control-center.module.css'
 
@@ -13,14 +13,11 @@ import SpinePanel from '@/components/panels/SpinePanel'
 import ETKPanel from '@/components/panels/ETKPanel'
 import SystemHealthPanel from '@/components/panels/SystemHealthPanel'
 import ActionPanel from '@/components/panels/ActionPanel'
-import TimelinePanel from '@/components/panels/TimelinePanel'
 import IntelligenceSummaryPanel from '@/components/panels/IntelligenceSummaryPanel'
 import ActiveIncidentPanel from '@/components/panels/ActiveIncidentPanel'
 import IncidentActionPanel from '@/components/panels/IncidentActionPanel'
 import { useControlCenterOperationalState } from '@/hooks/useControlCenterOperationalState'
 import DossierSnapshotPanel from '@/components/panels/DossierSnapshotPanel'
-import TransitionRegistryInspector from '@/components/panels/TransitionRegistryInspector'
-import TransitionExecutionLedgerPanel from '@/components/panels/TransitionExecutionLedgerPanel'
 import OperatorIdentityPanel from '@/components/panels/OperatorIdentityPanel'
 
 import OperatorActivityLedgerPanel
@@ -35,6 +32,12 @@ import ControlCenterModeSwitcher, {
 
 import OpportunityIntakePanel
   from '@/components/panels/OpportunityIntakePanel'
+
+import OpportunityQueuePanel
+  from '@/components/panels/OpportunityQueuePanel'
+
+import DossierWorkspacePanel 
+  from '@/components/panels/workspace/DossierWorkspacePanel'
 
 const EMPTY_SNAPSHOT: ControlCenterSnapshot = {
   timestamp: 0,
@@ -133,12 +136,41 @@ export function ControlCenterShell() {
   const operationalState =
     useControlCenterOperationalState()
 
+  const [focusedDossierId, setFocusedDossierId] =
+    useState<string | null>(null)
+
+  const workspaceRef =
+    useRef<HTMLDivElement | null>(null)
+
+  function openDossier(dossierId: string) {
+    setFocusedDossierId(dossierId)
+    setMode('EXECUTION')
+
+    window.setTimeout(() => {
+      workspaceRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
+    }, 0)
+  }
+
   return (
     <div className={styles.grid}>
       <div className={styles.left}>
         <SystemHealthPanel
           data={snapshot.system}
           loading={loading}
+        />
+
+        <ActiveIncidentPanel
+          incidents={operationalState.incidents}
+          onRefresh={
+            operationalState.refreshOperationalState
+          }
+        />
+
+        <IntelligenceSummaryPanel
+          signals={operationalState.intelligence}
         />
 
         <ETKPanel
@@ -164,22 +196,20 @@ export function ControlCenterShell() {
 
             <OpportunityIntakePanel />
 
+            <OpportunityQueuePanel
+              onPromoted={
+                operationalState.refreshOperationalState
+              }
+              selectedDossierId={focusedDossierId}
+              onOpenDossier={openDossier}
+            />
+
             <DossierSnapshotPanel
               dossiers={operationalState.dossiers}
               onRefresh={
                 operationalState.refreshOperationalState
               }
-            />
-
-            <ActiveIncidentPanel
-              incidents={operationalState.incidents}
-              onRefresh={
-                operationalState.refreshOperationalState
-              }
-            />
-
-            <IntelligenceSummaryPanel
-              signals={operationalState.intelligence}
+              onFocusDossier={openDossier}
             />
           </>
         ) : null}
@@ -208,21 +238,17 @@ export function ControlCenterShell() {
 
         {mode === 'EXECUTION' ? (
           <>
-            <TransitionRegistryInspector
-              registry={
-                operationalState.transitionRegistry
-              }
-            />
-
-            <TransitionExecutionLedgerPanel
-              executions={
-                operationalState.transitionExecutionLedger
-              }
-            />
-
-            <TimelinePanel
-              timestamp={snapshot.timestamp}
-            />
+            {focusedDossierId ? (
+              <div ref={workspaceRef}>
+                <DossierWorkspacePanel
+                  dossierId={focusedDossierId}
+                />
+              </div>
+            ) : (
+              <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-3 text-xs text-neutral-500">
+                Select a dossier from Command mode to open the Flight Deck.
+              </div>
+            )}
           </>
         ) : null}
       </div>

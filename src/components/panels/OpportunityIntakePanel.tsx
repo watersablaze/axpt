@@ -49,6 +49,9 @@ export default function OpportunityIntakePanel() {
   const [form, setForm] =
     useState(EMPTY_FORM)
 
+  const [expanded, setExpanded] =
+    useState(false)
+
   const [submitting, setSubmitting] =
     useState(false)
 
@@ -115,6 +118,7 @@ export default function OpportunityIntakePanel() {
       }
 
       setForm(EMPTY_FORM)
+      setExpanded(false)
       await loadOpportunities()
     } catch (err) {
       console.error('[OPPORTUNITY_CREATE_FAILED]', err)
@@ -126,7 +130,7 @@ export default function OpportunityIntakePanel() {
 
   return (
     <section className="rounded-xl border border-neutral-800 bg-neutral-950 p-3">
-      <div className="mb-3 flex items-center justify-between gap-3">
+      <div className="flex items-center justify-between gap-3">
         <div>
           <div className="text-xs uppercase tracking-[0.18em] text-neutral-500">
             Opportunity Intake
@@ -135,190 +139,168 @@ export default function OpportunityIntakePanel() {
           <h2 className="mt-1 text-lg font-medium text-white">
             Manual Deal Bridge
           </h2>
+
+          {!expanded ? (
+            <div className="mt-1 text-xs text-neutral-500">
+              Capture manual deal signals from LOI, WhatsApp, email, or call.
+            </div>
+          ) : null}
         </div>
 
-        <div className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
-          {opportunities.length} Open
+        <div className="flex shrink-0 items-center gap-2">
+          <div className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
+            {opportunities.length} Open
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setExpanded((value) => !value)
+              setError(null)
+            }}
+            className="rounded border border-neutral-700 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-cyan-700 hover:text-cyan-300"
+          >
+            {expanded ? 'Close' : 'New Opportunity'}
+          </button>
         </div>
       </div>
 
-      <div className="grid gap-2">
-        <input
-          value={form.title}
-          onChange={(event) =>
-            setForm({
-              ...form,
-              title: event.target.value,
-            })
-          }
-          placeholder="Opportunity title"
-          className="rounded border border-neutral-800 bg-black/30 px-2 py-2 text-xs text-white placeholder:text-neutral-600"
-        />
-
-        <div className="grid grid-cols-2 gap-2">
+      {expanded ? (
+        <div className="mt-3 grid gap-2 border-t border-neutral-800 pt-3">
           <input
-            value={form.commodity}
+            value={form.title}
             onChange={(event) =>
               setForm({
                 ...form,
-                commodity: event.target.value,
+                title: event.target.value,
               })
             }
-            placeholder="Commodity"
+            placeholder="Opportunity title"
             className="rounded border border-neutral-800 bg-black/30 px-2 py-2 text-xs text-white placeholder:text-neutral-600"
           />
 
-          <input
-            value={form.quantityKg}
-            onChange={(event) =>
-              setForm({
-                ...form,
-                quantityKg: event.target.value,
-              })
-            }
-            placeholder="Quantity KG"
-            className="rounded border border-neutral-800 bg-black/30 px-2 py-2 text-xs text-white placeholder:text-neutral-600"
-          />
-        </div>
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              value={form.commodity}
+              onChange={(event) =>
+                setForm({
+                  ...form,
+                  commodity: event.target.value,
+                })
+              }
+              placeholder="Commodity"
+              className="rounded border border-neutral-800 bg-black/30 px-2 py-2 text-xs text-white placeholder:text-neutral-600"
+            />
 
-        <div className="grid grid-cols-2 gap-2">
-          <input
-            value={form.buyerName}
-            onChange={(event) =>
-              setForm({
-                ...form,
-                buyerName: event.target.value,
-              })
-            }
-            placeholder="Buyer"
-            className="rounded border border-neutral-800 bg-black/30 px-2 py-2 text-xs text-white placeholder:text-neutral-600"
-          />
-
-          <input
-            value={form.sellerName}
-            onChange={(event) =>
-              setForm({
-                ...form,
-                sellerName: event.target.value,
-              })
-            }
-            placeholder="Seller"
-            className="rounded border border-neutral-800 bg-black/30 px-2 py-2 text-xs text-white placeholder:text-neutral-600"
-          />
-        </div>
-
-        <div className="grid grid-cols-2 gap-2">
-          <input
-            value={form.origin}
-            onChange={(event) =>
-              setForm({
-                ...form,
-                origin: event.target.value,
-              })
-            }
-            placeholder="Origin"
-            className="rounded border border-neutral-800 bg-black/30 px-2 py-2 text-xs text-white placeholder:text-neutral-600"
-          />
-
-          <input
-            value={form.destination}
-            onChange={(event) =>
-              setForm({
-                ...form,
-                destination: event.target.value,
-              })
-            }
-            placeholder="Destination"
-            className="rounded border border-neutral-800 bg-black/30 px-2 py-2 text-xs text-white placeholder:text-neutral-600"
-          />
-        </div>
-
-        <textarea
-          value={form.notes}
-          onChange={(event) =>
-            setForm({
-              ...form,
-              notes: event.target.value,
-            })
-          }
-          placeholder="Notes from manual deal, LOI, WhatsApp, email, or call"
-          className="min-h-20 rounded border border-neutral-800 bg-black/30 px-2 py-2 text-xs text-white placeholder:text-neutral-600"
-        />
-
-        {error ? (
-          <div className="rounded border border-red-900 bg-red-950/20 p-2 text-xs text-red-300">
-            {error}
+            <input
+              value={form.quantityKg}
+              onChange={(event) =>
+                setForm({
+                  ...form,
+                  quantityKg: event.target.value,
+                })
+              }
+              placeholder="Quantity KG"
+              className="rounded border border-neutral-800 bg-black/30 px-2 py-2 text-xs text-white placeholder:text-neutral-600"
+            />
           </div>
-        ) : null}
 
-        <button
-          type="button"
-          disabled={submitting || !form.title.trim()}
-          onClick={submitOpportunity}
-          className="rounded border border-cyan-900 bg-cyan-950/20 px-3 py-2 text-xs uppercase tracking-wide text-cyan-300 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:bg-black/20 disabled:text-neutral-600"
-        >
-          {submitting
-            ? 'Capturing...'
-            : 'Capture Opportunity'}
-        </button>
-      </div>
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              value={form.buyerName}
+              onChange={(event) =>
+                setForm({
+                  ...form,
+                  buyerName: event.target.value,
+                })
+              }
+              placeholder="Buyer"
+              className="rounded border border-neutral-800 bg-black/30 px-2 py-2 text-xs text-white placeholder:text-neutral-600"
+            />
 
-      <div className="mt-4 space-y-2">
-        {opportunities.length === 0 ? (
-          <div className="rounded border border-neutral-800 bg-black/30 p-2 text-xs text-neutral-500">
-            No opportunities captured yet.
+            <input
+              value={form.sellerName}
+              onChange={(event) =>
+                setForm({
+                  ...form,
+                  sellerName: event.target.value,
+                })
+              }
+              placeholder="Seller"
+              className="rounded border border-neutral-800 bg-black/30 px-2 py-2 text-xs text-white placeholder:text-neutral-600"
+            />
           </div>
-        ) : (
-          opportunities.map((opportunity) => (
-            <article
-              key={opportunity.id}
-              className="rounded border border-neutral-800 bg-black/20 p-2 text-xs"
+
+          <div className="grid grid-cols-2 gap-2">
+            <input
+              value={form.origin}
+              onChange={(event) =>
+                setForm({
+                  ...form,
+                  origin: event.target.value,
+                })
+              }
+              placeholder="Origin"
+              className="rounded border border-neutral-800 bg-black/30 px-2 py-2 text-xs text-white placeholder:text-neutral-600"
+            />
+
+            <input
+              value={form.destination}
+              onChange={(event) =>
+                setForm({
+                  ...form,
+                  destination: event.target.value,
+                })
+              }
+              placeholder="Destination"
+              className="rounded border border-neutral-800 bg-black/30 px-2 py-2 text-xs text-white placeholder:text-neutral-600"
+            />
+          </div>
+
+          <textarea
+            value={form.notes}
+            onChange={(event) =>
+              setForm({
+                ...form,
+                notes: event.target.value,
+              })
+            }
+            placeholder="Notes from manual deal, LOI, WhatsApp, email, or call"
+            className="min-h-20 rounded border border-neutral-800 bg-black/30 px-2 py-2 text-xs text-white placeholder:text-neutral-600"
+          />
+
+          {error ? (
+            <div className="rounded border border-red-900 bg-red-950/20 p-2 text-xs text-red-300">
+              {error}
+            </div>
+          ) : null}
+
+          <div className="flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                setForm(EMPTY_FORM)
+                setExpanded(false)
+                setError(null)
+              }}
+              className="rounded border border-neutral-800 bg-black/20 px-3 py-2 text-xs uppercase tracking-wide text-neutral-400 hover:text-neutral-200"
             >
-              <div className="flex items-start justify-between gap-3">
-                <div>
-                  <div className="font-medium text-white">
-                    {opportunity.title}
-                  </div>
+              Cancel
+            </button>
 
-                  <div className="mt-1 text-[11px] text-neutral-500">
-                    {opportunity.commodity ?? 'Commodity unknown'}
-                    {' · '}
-                    {opportunity.quantityKg ?? 'Qty unknown'} KG
-                  </div>
-                </div>
-
-                <div className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
-                  {opportunity.status}
-                </div>
-              </div>
-
-              <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-neutral-500">
-                <div>
-                  Buyer: {opportunity.buyerName ?? '—'}
-                </div>
-
-                <div>
-                  Seller: {opportunity.sellerName ?? '—'}
-                </div>
-
-                <div>
-                  Origin: {opportunity.origin ?? '—'}
-                </div>
-
-                <div>
-                  Destination: {opportunity.destination ?? '—'}
-                </div>
-              </div>
-
-              {opportunity.notes ? (
-                <div className="mt-2 rounded border border-neutral-800 bg-black/30 p-2 text-[11px] text-neutral-400">
-                  {opportunity.notes}
-                </div>
-              ) : null}
-            </article>
-          ))
-        )}
-      </div>
+            <button
+              type="button"
+              disabled={submitting || !form.title.trim()}
+              onClick={submitOpportunity}
+              className="rounded border border-cyan-900 bg-cyan-950/20 px-3 py-2 text-xs uppercase tracking-wide text-cyan-300 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:bg-black/20 disabled:text-neutral-600"
+            >
+              {submitting
+                ? 'Capturing...'
+                : 'Capture Opportunity'}
+            </button>
+          </div>
+        </div>
+      ) : null}
     </section>
   )
 }

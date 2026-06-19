@@ -1,25 +1,94 @@
-/* control-center.module.css */
-
 .grid {
   display: grid;
-  grid-template-columns: 320px 1fr 320px;
+  grid-template-columns: minmax(220px, 280px) minmax(640px, 1fr) minmax(220px, 280px);
+  gap: 12px;
   min-height: calc(100vh - 96px);
   background: #05070a;
   color: #e5e7eb;
   overflow: hidden;
+  padding: 12px;
 }
 
 .left,
 .center,
 .right {
-  padding: 16px;
+  min-height: 0;
   overflow-y: auto;
+}
+
+.left,
+.right {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 980px;
+  width: 100%;
+  margin: 0 auto;
 }
 
 .left {
   border-right: 1px solid rgba(255,255,255,0.06);
+  padding-right: 12px;
 }
 
 .right {
   border-left: 1px solid rgba(255,255,255,0.06);
+  padding-left: 12px;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.surface {
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.025);
+  border-radius: 18px;
+}
+
+.softSurface {
+  background: rgba(255,255,255,0.018);
+  border-radius: 14px;
+}
+
+.divider {
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.panelTitle {
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.42);
+}
+
+.panelHeading {
+  margin-top: 4px;
+  font-size: 18px;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+@media (max-width: 1180px) {
+  .grid {
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+
+  .left,
+  .right {
+    display: none;
+  }
+
+  .center {
+    max-width: 100%;
+  }
 }

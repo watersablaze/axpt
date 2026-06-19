@@ -29,6 +29,28 @@ function buildDossierReference() {
   return `FWI-AU-OPP-${year}-${Date.now()}`
 }
 
+function normalizeQuantityKg(
+  value: string | null
+): string | null {
+  if (!value) return null
+
+  const normalized = value
+    .trim()
+    .replace(/kg/gi, '')
+    .replace(/,/g, '')
+    .trim()
+
+  if (!normalized) return null
+
+  const numericValue = Number(normalized)
+
+  if (!Number.isFinite(numericValue)) {
+    throw new Error('OPPORTUNITY_QUANTITY_INVALID')
+  }
+
+  return normalized
+}
+
 export async function promoteOpportunityToDossier({
   opportunityId,
   operatorEmail,
@@ -115,6 +137,10 @@ export async function promoteOpportunityToDossier({
           }
         }
 
+        const quantityKg = normalizeQuantityKg(
+          latestOpportunity.quantityKg
+        )
+
         const dossier =
           await tx.transactionDossier.create({
             data: {
@@ -123,7 +149,7 @@ export async function promoteOpportunityToDossier({
               state: 'INTAKE_PENDING',
               commodity: latestOpportunity.commodity,
               origin: latestOpportunity.origin,
-              quantityKg: latestOpportunity.quantityKg,
+              quantityKg,
               settlement: null,
               refinery: null,
             },

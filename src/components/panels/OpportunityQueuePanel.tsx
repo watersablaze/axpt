@@ -2,6 +2,12 @@
 
 import { useEffect, useState } from 'react'
 
+type Props = {
+  selectedDossierId?: string | null
+  onPromoted?: () => Promise<void>
+  onOpenDossier?: (dossierId: string) => void
+}
+
 type OpportunityRecord = {
   id: string
   title: string
@@ -56,7 +62,11 @@ function statusTone(status: string) {
   }
 }
 
-export default function OpportunityQueuePanel() {
+export default function OpportunityQueuePanel({
+  selectedDossierId,
+  onPromoted,
+  onOpenDossier,
+}: Props) {
   const [opportunities, setOpportunities] =
     useState<OpportunityRecord[]>([])
 
@@ -114,6 +124,11 @@ export default function OpportunityQueuePanel() {
       }
 
       await loadOpportunities()
+      await onPromoted?.()
+
+      if (json.result?.dossierId) {
+        onOpenDossier?.(json.result.dossierId)
+      }
     } catch (err) {
       console.error('[OPPORTUNITY_PROMOTION_FAILED]', err)
       setError('PROMOTION_FAILED')
@@ -135,13 +150,19 @@ export default function OpportunityQueuePanel() {
           </h2>
         </div>
 
-        <button
-          type="button"
-          onClick={() => void loadOpportunities()}
-          className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400 hover:text-neutral-200"
-        >
-          Refresh
-        </button>
+        <div className="flex shrink-0 items-center gap-2">
+          <div className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
+            {opportunities.length} Items
+          </div>
+
+          <button
+            type="button"
+            onClick={() => void loadOpportunities()}
+            className="rounded border border-neutral-700 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-cyan-700 hover:text-cyan-300"
+          >
+            Refresh
+          </button>
+        </div>
       </div>
 
       {error ? (
@@ -155,93 +176,86 @@ export default function OpportunityQueuePanel() {
           No opportunities in queue.
         </div>
       ) : (
-        <div className="space-y-2">
+        <div className="divide-y divide-neutral-900 rounded-lg border border-neutral-800 bg-black/20">
           {opportunities.map((opportunity) => {
             const promoted =
               opportunity.status === 'PROMOTED' ||
               Boolean(opportunity.promotedDossierId)
 
+            const linkedDossierId =
+              opportunity.promotedDossierId ??
+              opportunity.dossierId
+
+            const selected =
+              Boolean(linkedDossierId) &&
+              linkedDossierId === selectedDossierId
+
             return (
-              <article
+              <div
                 key={opportunity.id}
-                className="rounded border border-neutral-800 bg-black/20 p-3 text-xs"
+                className={
+                  selected
+                    ? 'grid grid-cols-[1fr_auto_auto] items-center gap-3 bg-cyan-950/10 px-3 py-2 text-xs'
+                    : 'grid grid-cols-[1fr_auto_auto] items-center gap-3 px-3 py-2 text-xs'
+                }
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="min-w-0">
-                    <div className="font-medium text-white">
-                      {opportunity.title}
-                    </div>
-
-                    <div className="mt-1 text-[11px] text-neutral-500">
-                      {opportunity.commodity ?? 'Commodity unknown'}
-                      {' · '}
-                      {opportunity.quantityKg ?? 'Qty unknown'} KG
-                      {' · '}
-                      {opportunity.source}
-                    </div>
+                <div className="min-w-0">
+                  <div className="truncate font-medium text-white">
+                    {opportunity.title}
                   </div>
 
-                  <div
-                    className={`shrink-0 rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${statusTone(
-                      opportunity.status
-                    )}`}
-                  >
-                    {opportunity.status}
+                  <div className="mt-1 truncate text-[11px] text-neutral-500">
+                    {opportunity.commodity ?? 'Commodity unknown'}
+                    {' · '}
+                    {opportunity.quantityKg ?? 'Qty unknown'} KG
+                    {' · '}
+                    {opportunity.origin ?? 'Origin unknown'}
+                    {opportunity.destination
+                      ? ` → ${opportunity.destination}`
+                      : ''}
                   </div>
                 </div>
 
-                <div className="mt-2 grid grid-cols-2 gap-2 text-[11px] text-neutral-500">
-                  <div>
-                    Buyer: {opportunity.buyerName ?? '—'}
-                  </div>
-
-                  <div>
-                    Seller: {opportunity.sellerName ?? '—'}
-                  </div>
-
-                  <div>
-                    Origin: {opportunity.origin ?? '—'}
-                  </div>
-
-                  <div>
-                    Destination: {opportunity.destination ?? '—'}
-                  </div>
+                <div
+                  className={`rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${statusTone(
+                    opportunity.status
+                  )}`}
+                >
+                  {opportunity.status}
                 </div>
 
-                {opportunity.notes ? (
-                  <div className="mt-2 rounded border border-neutral-800 bg-black/30 p-2 text-[11px] text-neutral-400">
-                    {opportunity.notes}
-                  </div>
-                ) : null}
-
-                <div className="mt-3 flex items-center justify-between gap-3 border-t border-neutral-800 pt-2">
-                  <div className="text-[10px] uppercase tracking-wide text-neutral-600">
-                    {opportunity.promotedDossierId
-                      ? `Dossier: ${opportunity.promotedDossierId}`
-                      : 'No dossier linked'}
-                  </div>
-
-                  <button
-                    type="button"
-                    disabled={
-                      promoted ||
-                      promotingId === opportunity.id
-                    }
-                    onClick={() =>
-                      void promoteOpportunity(
-                        opportunity.id
-                      )
-                    }
-                    className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:bg-black/20 disabled:text-neutral-600"
-                  >
-                    {promoted
-                      ? 'Promoted'
-                      : promotingId === opportunity.id
+                <div className="flex items-center gap-2">
+                  {linkedDossierId ? (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        onOpenDossier?.(linkedDossierId)
+                      }
+                      className="rounded border border-neutral-700 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-cyan-700 hover:text-cyan-300"
+                    >
+                      {selected ? 'Active' : 'Open'}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={
+                        promoted ||
+                        promotingId === opportunity.id
+                      }
+                      onClick={() =>
+                        void promoteOpportunity(
+                          opportunity.id
+                        )
+                      }
+                      className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:bg-black/20 disabled:text-neutral-600"
+                    >
+                      {promotingId === opportunity.id
                         ? 'Promoting...'
                         : 'Promote'}
-                  </button>
+                    </button>
+                  )}
                 </div>
-              </article>
+              </div>
             )
           })}
         </div>
