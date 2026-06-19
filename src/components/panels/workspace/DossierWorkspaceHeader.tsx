@@ -14,7 +14,7 @@ export default function DossierWorkspaceHeader({
   return (
     <div className="rounded-xl border border-neutral-800 bg-black/30 p-3">
       <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
-        Dossier Workspace
+        Dossier Flight Deck
       </div>
 
       <div className="mt-2 flex items-start justify-between gap-3">

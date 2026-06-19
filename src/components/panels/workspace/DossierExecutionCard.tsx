@@ -16,7 +16,7 @@ export default function DossierExecutionCard({
   return (
     <div className="rounded-xl border border-neutral-800 bg-black/20 p-3">
       <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
-        Execution
+        Execution Status
       </div>
 
       <div className="mt-3 grid grid-cols-3 gap-2 text-xs">

@@ -142,11 +142,11 @@ export default function OpportunityQueuePanel({
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
           <div className="text-xs uppercase tracking-[0.18em] text-neutral-500">
-            Opportunity Queue
+            Opportunity Pipeline
           </div>
 
           <h2 className="mt-1 text-lg font-medium text-white">
-            Commercial Pipeline
+            Commercial Deal FLow 
           </h2>
         </div>
 
@@ -173,7 +173,7 @@ export default function OpportunityQueuePanel({
 
       {opportunities.length === 0 ? (
         <div className="rounded border border-neutral-800 bg-black/30 p-2 text-xs text-neutral-500">
-          No opportunities in queue.
+          No opportunities in the pipeline at this time.
         </div>
       ) : (
         <div className="divide-y divide-neutral-900 rounded-lg border border-neutral-800 bg-black/20">

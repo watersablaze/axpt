@@ -143,8 +143,8 @@ export default function DossierWorkspacePanel({
         }
 
         setDossier(result.dossier ?? null)
-        } catch (err) {
-            console.error('[DOSSIER_WORKSPACE_FAILED]', err)
+      } catch (err) {
+        console.error('[DOSSIER_WORKSPACE_FAILED]', err)
 
         if (!cancelled) {
           setDossier(null)
@@ -204,21 +204,21 @@ export default function DossierWorkspacePanel({
             settlement={dossier.settlement}
             currentState={dossier.state}
             nextStates={dossier.nextStates}
-            />
+          />
 
           <DossierCommandPanel
             currentState={dossier.state}
             nextStates={dossier.nextStates}
             pendingApprovalCount={
-                dossier.pendingApprovalCount
+              dossier.pendingApprovalCount
             }
             executedInstrumentCount={
-                dossier.executedInstrumentCount
+              dossier.executedInstrumentCount
             }
             onSelectExecution={() => setActiveTab('EXECUTION')}
             onSelectDocuments={() => setActiveTab('DOCUMENTS')}
             onSelectTimeline={() => setActiveTab('TIMELINE')}
-            />
+          />
 
           <DossierWorkspaceTabs
             activeTab={activeTab}
@@ -253,9 +253,9 @@ export default function DossierWorkspacePanel({
                 dossierId={dossier.id}
                 nextStates={dossier.nextStates}
                 onTransitioned={async () => {
-                    setRefreshNonce((value) => value + 1)
+                  setRefreshNonce((value) => value + 1)
                 }}
-             />
+              />
 
               <div className="rounded-xl border border-neutral-800 bg-black/20 p-3">
                 <div className="flex items-center justify-between gap-3">

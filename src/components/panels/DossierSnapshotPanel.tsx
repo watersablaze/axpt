@@ -40,17 +40,17 @@ export default function DossierSnapshotPanel({
       <div className="mb-3 flex items-center justify-between gap-3">
         <div>
           <div className="text-xs uppercase tracking-[0.18em] text-neutral-500">
-            Transaction Dossiers
+            Dossier Ledger
           </div>
 
           <h2 className="mt-1 text-lg font-medium text-white">
-            Dossier Index
+            Active Dossiers
           </h2>
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
           <div className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
-            {dossiers.length} Indexed
+            {dossiers.length} Dossiers
           </div>
 
           <button
@@ -65,7 +65,7 @@ export default function DossierSnapshotPanel({
 
       {dossiers.length === 0 ? (
         <div className="rounded-lg border border-neutral-800 bg-black/30 p-3 text-sm text-neutral-400">
-          No transaction dossiers indexed.
+          No transaction dossiers in the ledger.
         </div>
       ) : (
         <div className="space-y-2">
