@@ -23,6 +23,9 @@ import {
 import {
   renderAnnexFFinancialInstrumentTemplate,
 } from './templates/annexFFinancialInstrumentTemplate'
+import {
+  renderAnnexGCompensationScheduleTemplate,
+} from './templates/annexGCompensationScheduleTemplate'
 import type {
   DossierInstrumentRenderResult,
 } from './templates/types'
@@ -77,6 +80,9 @@ export async function renderDossierInstrument({
 
     case 'ANNEX_F_FINANCIAL_INSTRUMENT':
       return renderAnnexFFinancialInstrumentTemplate(context)
+
+    case 'ANNEX_G_COMPENSATION_SCHEDULE':
+      return renderAnnexGCompensationScheduleTemplate(context)
 
     default:
       return {
