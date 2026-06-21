@@ -8,6 +8,9 @@ import {
 import {
   renderAnnexADeliveryTemplate,
 } from './templates/annexADeliveryTemplate'
+import {
+  renderAnnexBSettlementTemplate,
+} from './templates/annexBSettlementTemplate'
 import type {
   DossierInstrumentRenderResult,
 } from './templates/types'
@@ -47,6 +50,9 @@ export async function renderDossierInstrument({
 
     case 'ANNEX_A_DELIVERY':
       return renderAnnexADeliveryTemplate(context)
+
+    case 'ANNEX_B_SETTLEMENT':
+      return renderAnnexBSettlementTemplate(context)
 
     default:
       return {
