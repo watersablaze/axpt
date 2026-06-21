@@ -40,6 +40,24 @@ function hasValue(value: string | null | undefined) {
   return Boolean(value && value.trim().length > 0)
 }
 
+function requireTerm(
+  issues: DossierTemplateIssue[],
+  value: string | null,
+  field: string,
+  label: string,
+  detail: string
+) {
+  if (!hasValue(value)) {
+    issues.push(
+      missing(
+        field,
+        label,
+        detail
+      )
+    )
+  }
+}
+
 export function renderAnnexFFinancialInstrumentTemplate(
   context: DossierTemplateContext
 ): DossierInstrumentRenderResult {
@@ -48,64 +66,63 @@ export function renderAnnexFFinancialInstrumentTemplate(
 
   const buyer = context.parties.buyer
   const seller = context.parties.seller
+  const terms = context.terms
 
-  missingFields.push(
-    missing(
-      'financialInstrument.type',
-      'Financial instrument type',
-      'Annex F requires a confirmed instrument type such as DLC, SBLC, MT103, escrow, wire, or another approved mechanism.'
-    )
+  requireTerm(
+    missingFields,
+    terms.financialInstrumentType,
+    'terms.financialInstrumentType',
+    'Financial instrument type',
+    'Annex F requires a confirmed instrument type such as DLC, SBLC, MT103, escrow, wire, or another approved mechanism.'
   )
 
-  missingFields.push(
-    missing(
-      'financialInstrument.issuingInstitution',
-      'Issuing financial institution',
-      'Annex F requires the issuing bank, escrow institution, or financial institution responsible for the instrument.'
-    )
+  requireTerm(
+    missingFields,
+    terms.issuingInstitution,
+    'terms.issuingInstitution',
+    'Issuing financial institution',
+    'Annex F requires the issuing bank, escrow institution, or financial institution responsible for the instrument.'
   )
 
-  missingFields.push(
-    missing(
-      'financialInstrument.amountOrCoverage',
-      'Instrument amount / coverage basis',
-      'Annex F requires the instrument amount, coverage basis, tranche amount, or settlement coverage rule.'
-    )
+  requireTerm(
+    missingFields,
+    terms.instrumentAmountOrCoverage,
+    'terms.instrumentAmountOrCoverage',
+    'Instrument amount / coverage basis',
+    'Annex F requires the instrument amount, coverage basis, tranche amount, or settlement coverage rule.'
   )
 
-  missingFields.push(
-    missing(
-      'financialInstrument.validityPeriod',
-      'Validity period / tenor',
-      'Annex F requires the instrument validity period, tenor, or expiry framework.'
-    )
+  requireTerm(
+    missingFields,
+    terms.validityPeriod,
+    'terms.validityPeriod',
+    'Validity period / tenor',
+    'Annex F requires the instrument validity period, tenor, or expiry framework.'
   )
 
-  missingFields.push(
-    missing(
-      'financialInstrument.paymentTrigger',
-      'Payment trigger / draw condition',
-      'Annex F requires the payment trigger, draw condition, release instruction, or settlement activation rule.'
-    )
+  requireTerm(
+    missingFields,
+    terms.paymentTrigger,
+    'terms.paymentTrigger',
+    'Payment trigger / draw condition',
+    'Annex F requires the payment trigger, draw condition, release instruction, or settlement activation rule.'
   )
 
-  missingFields.push(
-    missing(
-      'financialInstrument.beneficiary',
-      'Beneficiary / receiving party',
-      'Annex F requires the beneficiary, escrow recipient, seller receiver, or designated receiving party.'
-    )
+  requireTerm(
+    missingFields,
+    terms.beneficiary,
+    'terms.beneficiary',
+    'Beneficiary / receiving party',
+    'Annex F requires the beneficiary, escrow recipient, seller receiver, or designated receiving party.'
   )
 
-  if (!hasValue(context.dossier.settlement)) {
-    missingFields.push(
-      missing(
-        'dossier.settlement',
-        'Settlement method',
-        'Annex F requires settlement method context before the financial instrument framework can be externally issued.'
-      )
-    )
-  }
+  requireTerm(
+    missingFields,
+    terms.settlementMethod,
+    'terms.settlementMethod',
+    'Settlement method',
+    'Annex F requires settlement method context before the financial instrument framework can be externally issued.'
+  )
 
   if (!hasValue(buyer?.legalName)) {
     warnings.push(
@@ -165,15 +182,15 @@ export function renderAnnexFFinancialInstrumentTemplate(
     `Commodity: ${valueOrPlaceholder(context.dossier.commodity)}`,
     `Quantity: ${valueOrPlaceholder(context.dossier.quantityKg)} KG`,
     `Origin: ${valueOrPlaceholder(context.dossier.origin)}`,
-    `Settlement Method: ${valueOrPlaceholder(context.dossier.settlement)}`,
+    `Settlement Method: ${valueOrPlaceholder(terms.settlementMethod ?? context.dossier.settlement)}`,
     ``,
     `3. Instrument Framework`,
-    `Instrument Type: [PENDING]`,
-    `Issuing Institution: [PENDING]`,
-    `Amount / Coverage Basis: [PENDING]`,
-    `Validity Period / Tenor: [PENDING]`,
-    `Payment Trigger / Draw Condition: [PENDING]`,
-    `Beneficiary / Receiving Party: [PENDING]`,
+    `Instrument Type: ${valueOrPlaceholder(terms.financialInstrumentType)}`,
+    `Issuing Institution: ${valueOrPlaceholder(terms.issuingInstitution)}`,
+    `Amount / Coverage Basis: ${valueOrPlaceholder(terms.instrumentAmountOrCoverage)}`,
+    `Validity Period / Tenor: ${valueOrPlaceholder(terms.validityPeriod)}`,
+    `Payment Trigger / Draw Condition: ${valueOrPlaceholder(terms.paymentTrigger)}`,
+    `Beneficiary / Receiving Party: ${valueOrPlaceholder(terms.beneficiary)}`,
     ``,
     `4. Parties`,
     `Buyer: ${valueOrPlaceholder(buyer?.legalName)}`,
@@ -185,7 +202,7 @@ export function renderAnnexFFinancialInstrumentTemplate(
     `Seller Country: ${valueOrPlaceholder(seller?.country)}`,
     ``,
     `5. Control Notes`,
-    `Instrument issuance, bank compliance review, amendment rules, expiry rules, draw conditions, and release controls remain pending structured confirmation.`,
+    `Instrument issuance, bank compliance review, amendment rules, expiry rules, draw conditions, and release controls remain subject to operator confirmation and compliance review.`,
     ``,
     `6. Source Trace`,
     `Opportunity: ${valueOrPlaceholder(context.source.opportunityTitle)}`,

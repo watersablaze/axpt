@@ -40,6 +40,24 @@ function hasValue(value: string | null | undefined) {
   return Boolean(value && value.trim().length > 0)
 }
 
+function requireTerm(
+  issues: DossierTemplateIssue[],
+  value: string | null,
+  field: string,
+  label: string,
+  detail: string
+) {
+  if (!hasValue(value)) {
+    issues.push(
+      missing(
+        field,
+        label,
+        detail
+      )
+    )
+  }
+}
+
 export function renderAnnexGCompensationScheduleTemplate(
   context: DossierTemplateContext
 ): DossierInstrumentRenderResult {
@@ -48,67 +66,68 @@ export function renderAnnexGCompensationScheduleTemplate(
 
   const buyer = context.parties.buyer
   const seller = context.parties.seller
+  const terms = context.terms
 
-  missingFields.push(
-    missing(
-      'compensation.sellerSideAmount',
-      'Seller-side compensation amount',
-      'Annex G requires the seller-side compensation amount, percentage, or allocation basis.'
-    )
+  requireTerm(
+    missingFields,
+    terms.sellerSideCompensation,
+    'terms.sellerSideCompensation',
+    'Seller-side compensation amount',
+    'Annex G requires the seller-side compensation amount, percentage, or allocation basis.'
   )
 
-  missingFields.push(
-    missing(
-      'compensation.buyerSideAmount',
-      'Buyer-side compensation amount',
-      'Annex G requires the buyer-side compensation amount, percentage, or allocation basis.'
-    )
+  requireTerm(
+    missingFields,
+    terms.buyerSideCompensation,
+    'terms.buyerSideCompensation',
+    'Buyer-side compensation amount',
+    'Annex G requires the buyer-side compensation amount, percentage, or allocation basis.'
   )
 
-  missingFields.push(
-    missing(
-      'compensation.payees',
-      'Compensation payees / beneficiaries',
-      'Annex G requires the payees, representatives, beneficiaries, or authorized recipient entities.'
-    )
+  requireTerm(
+    missingFields,
+    terms.compensationPayees,
+    'terms.compensationPayees',
+    'Compensation payees / beneficiaries',
+    'Annex G requires the payees, representatives, beneficiaries, or authorized recipient entities.'
   )
 
-  missingFields.push(
-    missing(
-      'compensation.payer',
-      'Compensation payer',
-      'Annex G requires the party or account responsible for funding each compensation obligation.'
-    )
+  requireTerm(
+    missingFields,
+    terms.compensationPayer,
+    'terms.compensationPayer',
+    'Compensation payer',
+    'Annex G requires the party or account responsible for funding each compensation obligation.'
   )
 
-  missingFields.push(
-    missing(
-      'compensation.payoutTrigger',
-      'Payout trigger',
-      'Annex G requires the trigger for payout, such as successful settlement, refinery release, escrow release, MT103 confirmation, or other agreed event.'
-    )
+  requireTerm(
+    missingFields,
+    terms.compensationPayoutTrigger,
+    'terms.compensationPayoutTrigger',
+    'Payout trigger',
+    'Annex G requires the trigger for payout, such as successful settlement, refinery release, escrow release, MT103 confirmation, or another agreed event.'
   )
 
-  missingFields.push(
-    missing(
-      'compensation.paymentMethod',
-      'Payment method / coordinates',
-      'Annex G requires the method of payment and approved payment coordinates for each compensation recipient.'
-    )
+  requireTerm(
+    missingFields,
+    terms.compensationPaymentMethod,
+    'terms.compensationPaymentMethod',
+    'Payment method / coordinates',
+    'Annex G requires the method of payment and approved payment coordinates for each compensation recipient.'
   )
 
-  missingFields.push(
-    missing(
-      'compensation.authorization',
-      'Authorization / acknowledgement',
-      'Annex G requires written authorization or acknowledgement by the responsible parties before external issuance.'
-    )
+  requireTerm(
+    missingFields,
+    terms.compensationAuthorizationStatus,
+    'terms.compensationAuthorizationStatus',
+    'Authorization / acknowledgement',
+    'Annex G requires written authorization or acknowledgement by the responsible parties before external issuance.'
   )
 
-  if (!hasValue(context.dossier.settlement)) {
+  if (!hasValue(terms.settlementMethod ?? context.dossier.settlement)) {
     warnings.push(
       warning(
-        'dossier.settlement',
+        'terms.settlementMethod',
         'Settlement method',
         'Settlement context should be confirmed because compensation timing depends on payment mechanics.'
       )
@@ -143,13 +162,15 @@ export function renderAnnexGCompensationScheduleTemplate(
     )
   )
 
-  warnings.push(
-    warning(
-      'compensation.confidentiality',
-      'Confidentiality / NCND alignment',
-      'Compensation confidentiality, non-circumvention, and representative protection terms are not yet modeled as structured fields.'
+  if (!hasValue(terms.compensationConfidentialityNote)) {
+    warnings.push(
+      warning(
+        'terms.compensationConfidentialityNote',
+        'Confidentiality / NCND alignment',
+        'Compensation confidentiality, non-circumvention, and representative protection terms should be confirmed before external issuance.'
+      )
     )
-  )
+  }
 
   const renderedText = [
     `ANNEX G · COMPENSATION SCHEDULE DRAFT`,
@@ -165,15 +186,16 @@ export function renderAnnexGCompensationScheduleTemplate(
     `Commodity: ${valueOrPlaceholder(context.dossier.commodity)}`,
     `Quantity: ${valueOrPlaceholder(context.dossier.quantityKg)} KG`,
     `Origin: ${valueOrPlaceholder(context.dossier.origin)}`,
-    `Settlement Method: ${valueOrPlaceholder(context.dossier.settlement)}`,
+    `Settlement Method: ${valueOrPlaceholder(terms.settlementMethod ?? context.dossier.settlement)}`,
     ``,
     `3. Compensation Allocation`,
-    `Seller-Side Compensation: [PENDING]`,
-    `Buyer-Side Compensation: [PENDING]`,
-    `Payees / Beneficiaries: [PENDING]`,
-    `Payer / Funding Party: [PENDING]`,
-    `Payout Trigger: [PENDING]`,
-    `Payment Method / Coordinates: [PENDING]`,
+    `Seller-Side Compensation: ${valueOrPlaceholder(terms.sellerSideCompensation)}`,
+    `Buyer-Side Compensation: ${valueOrPlaceholder(terms.buyerSideCompensation)}`,
+    `Payees / Beneficiaries: ${valueOrPlaceholder(terms.compensationPayees)}`,
+    `Payer / Funding Party: ${valueOrPlaceholder(terms.compensationPayer)}`,
+    `Payout Trigger: ${valueOrPlaceholder(terms.compensationPayoutTrigger)}`,
+    `Payment Method / Coordinates: ${valueOrPlaceholder(terms.compensationPaymentMethod)}`,
+    `Authorization Status: ${valueOrPlaceholder(terms.compensationAuthorizationStatus)}`,
     ``,
     `4. Parties`,
     `Buyer: ${valueOrPlaceholder(buyer?.legalName)}`,
@@ -185,7 +207,8 @@ export function renderAnnexGCompensationScheduleTemplate(
     `Seller Country: ${valueOrPlaceholder(seller?.country)}`,
     ``,
     `5. Confidentiality and Representative Protection`,
-    `Confidentiality, non-circumvention, payee authorization, tax responsibility, bank charges, and payment timing remain pending structured confirmation.`,
+    `Confidentiality / NCND Note: ${valueOrPlaceholder(terms.compensationConfidentialityNote)}`,
+    `Tax responsibility, bank charges, and final payment timing remain subject to operator confirmation and applicable written authorization.`,
     ``,
     `6. Source Trace`,
     `Opportunity: ${valueOrPlaceholder(context.source.opportunityTitle)}`,
