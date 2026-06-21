@@ -17,6 +17,9 @@ import {
 import {
   renderAnnexDComplianceTemplate,
 } from './templates/annexDComplianceTemplate'
+import {
+  renderAnnexEProcedureTemplate,
+} from './templates/annexEProcedureTemplate'
 import type {
   DossierInstrumentRenderResult,
 } from './templates/types'
@@ -65,6 +68,9 @@ export async function renderDossierInstrument({
 
     case 'ANNEX_D_COMPLIANCE':
       return renderAnnexDComplianceTemplate(context)
+
+    case 'ANNEX_E_PROCEDURE':
+      return renderAnnexEProcedureTemplate(context)
 
     default:
       return {
