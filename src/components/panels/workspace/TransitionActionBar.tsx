@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 
 type GateCheck = {
   id: string
@@ -53,6 +53,11 @@ type Props = {
   nextStates: string[]
   onTransitioned?: () => Promise<void>
 }
+
+const EXCEPTION_STATES = new Set([
+  'BLOCKED',
+  'CANCELLED',
+])
 
 function gateTone(passed: boolean) {
   return passed
@@ -139,13 +144,59 @@ function GatePanel({
   )
 }
 
+function TransitionButton({
+  state,
+  selected,
+  variant,
+  onClick,
+}: {
+  state: string
+  selected: boolean
+  variant: 'primary' | 'exception'
+  onClick: () => void
+}) {
+  const selectedClass =
+    variant === 'primary'
+      ? 'border-cyan-700 bg-cyan-950/30 text-cyan-300'
+      : 'border-amber-700 bg-amber-950/20 text-amber-300'
+
+  const idleClass =
+    variant === 'primary'
+      ? 'border-neutral-800 bg-black/30 text-neutral-400 hover:border-cyan-800 hover:text-cyan-300'
+      : 'border-neutral-800 bg-black/30 text-neutral-500 hover:border-amber-800 hover:text-amber-300'
+
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded border px-2 py-1.5 text-[10px] uppercase tracking-wide ${
+        selected ? selectedClass : idleClass
+      }`}
+    >
+      {state}
+    </button>
+  )
+}
+
 export default function TransitionActionBar({
   dossierId,
   nextStates,
   onTransitioned,
 }: Props) {
+  const { primaryStates, exceptionStates } = useMemo(
+    () => ({
+      primaryStates: nextStates.filter(
+        (state) => !EXCEPTION_STATES.has(state)
+      ),
+      exceptionStates: nextStates.filter((state) =>
+        EXCEPTION_STATES.has(state)
+      ),
+    }),
+    [nextStates]
+  )
+
   const [selectedState, setSelectedState] = useState(
-    nextStates[0] ?? ''
+    primaryStates[0] ?? nextStates[0] ?? ''
   )
 
   const [preview, setPreview] =
@@ -161,8 +212,8 @@ export default function TransitionActionBar({
     useState<string | null>(null)
 
   useEffect(() => {
-    setSelectedState(nextStates[0] ?? '')
-  }, [nextStates])
+    setSelectedState(primaryStates[0] ?? nextStates[0] ?? '')
+  }, [nextStates, primaryStates])
 
   useEffect(() => {
     if (!selectedState) {
@@ -301,21 +352,54 @@ export default function TransitionActionBar({
         dossier only when the preview is executable.
       </p>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        {nextStates.map((state) => (
-          <button
-            key={state}
-            type="button"
-            onClick={() => setSelectedState(state)}
-            className={
-              selectedState === state
-                ? 'rounded border border-cyan-700 bg-cyan-950/30 px-2 py-1.5 text-[10px] uppercase tracking-wide text-cyan-300'
-                : 'rounded border border-neutral-800 bg-black/30 px-2 py-1.5 text-[10px] uppercase tracking-wide text-neutral-400 hover:border-cyan-800 hover:text-cyan-300'
-            }
-          >
-            {state}
-          </button>
-        ))}
+      <div className="mt-3 grid gap-3 md:grid-cols-[1.5fr_1fr]">
+        <div className="rounded border border-neutral-800 bg-black/30 p-3">
+          <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+            Primary Move
+          </div>
+
+          <div className="mt-2 flex flex-wrap gap-2">
+            {primaryStates.length === 0 ? (
+              <div className="text-xs text-neutral-600">
+                No primary move available.
+              </div>
+            ) : (
+              primaryStates.map((state) => (
+                <TransitionButton
+                  key={state}
+                  state={state}
+                  selected={selectedState === state}
+                  variant="primary"
+                  onClick={() => setSelectedState(state)}
+                />
+              ))
+            )}
+          </div>
+        </div>
+
+        <div className="rounded border border-neutral-800 bg-black/30 p-3">
+          <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+            Exception Moves
+          </div>
+
+          <div className="mt-2 flex flex-wrap gap-2">
+            {exceptionStates.length === 0 ? (
+              <div className="text-xs text-neutral-600">
+                No exception moves.
+              </div>
+            ) : (
+              exceptionStates.map((state) => (
+                <TransitionButton
+                  key={state}
+                  state={state}
+                  selected={selectedState === state}
+                  variant="exception"
+                  onClick={() => setSelectedState(state)}
+                />
+              ))
+            )}
+          </div>
+        </div>
       </div>
 
       {error ? (
@@ -353,7 +437,7 @@ export default function TransitionActionBar({
 
             <div className="rounded border border-neutral-800 bg-black/30 p-2">
               <div className="text-[10px] uppercase tracking-wide text-neutral-600">
-                Execution Status
+                Gate Result
               </div>
               <div
                 className={
