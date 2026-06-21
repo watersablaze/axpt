@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 
 import DossierWorkspaceHeader from './DossierWorkspaceHeader'
 import DossierOverviewCard from './DossierOverviewCard'
+import { DossierPartyCompletionPanel } from './DossierPartyCompletionPanel'
 import DossierExecutionCard from './DossierExecutionCard'
 import DossierTimelinePanel from './DossierTimelinePanel'
 import DossierDocumentsPanel from './DossierDocumentsPanel'
@@ -331,14 +332,23 @@ export default function DossierWorkspacePanel({
           />
 
           {activeTab === 'OVERVIEW' ? (
-            <DossierOverviewCard
-              commodity={dossier.commodity}
-              quantityKg={dossier.quantityKg}
-              origin={dossier.origin}
-              refinery={dossier.refinery}
-              settlement={dossier.settlement}
-              parties={dossier.parties}
-            />
+            <div className="space-y-3">
+              <DossierOverviewCard
+                commodity={dossier.commodity}
+                quantityKg={dossier.quantityKg}
+                origin={dossier.origin}
+                refinery={dossier.refinery}
+                settlement={dossier.settlement}
+                parties={dossier.parties}
+              />
+
+              <DossierPartyCompletionPanel
+                parties={dossier.parties}
+                onPartyChanged={() =>
+                  setRefreshNonce((value) => value + 1)
+                }
+              />
+            </div>
           ) : null}
 
           {activeTab === 'EXECUTION' ? (
