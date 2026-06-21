@@ -351,6 +351,8 @@ model TransactionDossier {
   settlement           String?
   approvalRequirements DossierApprovalRequirement[]
 
+  terms         TransactionDossierTerms?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -360,6 +362,36 @@ model TransactionDossier {
   opportunities Opportunity[]
 
   promotedOpportunities Opportunity[] @relation("PromotedOpportunityDossier")
+}
+
+model TransactionDossierTerms {
+  id        String @id @default(cuid())
+  dossierId String @unique
+
+  settlementMethod String?
+  financialInstrumentType String?
+  issuingInstitution String?
+  instrumentAmountOrCoverage String?
+  validityPeriod String?
+  paymentTrigger String?
+  beneficiary String?
+
+  sellerSideCompensation String?
+  buyerSideCompensation String?
+  compensationPayer String?
+  compensationPayees String?
+  compensationPayoutTrigger String?
+  compensationPaymentMethod String?
+  compensationAuthorizationStatus String?
+  compensationConfidentialityNote String?
+
+  dossier TransactionDossier @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([settlementMethod])
+  @@index([financialInstrumentType])
 }
 
 model TransactionDossierParty {
