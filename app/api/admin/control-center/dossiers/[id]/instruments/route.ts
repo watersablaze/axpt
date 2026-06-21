@@ -99,52 +99,73 @@ export async function POST(
 
   const title = body.title ?? requiredDocument.label
 
-  const result = await prisma.$transaction(
-    async (tx: PrismaTransactionClient) => {
-    const instrument =
-      await tx.transactionDossierInstrument.create({
-        data: {
-          dossierId: dossier.id,
-          type: requiredDocument.instrumentType,
-          status: 'DRAFT',
-          version: 'v1.0',
-          title,
-          notes:
-            `Drafted from dossier document readiness matrix by ${principal.email}.`,
-        },
-      })
+  try {
+    const result = await prisma.$transaction(
+      async (tx: PrismaTransactionClient) => {
+        const instrument =
+          await tx.transactionDossierInstrument.create({
+            data: {
+              dossierId: dossier.id,
+              type: requiredDocument.instrumentType,
+              status: 'DRAFT',
+              version: 'v1.0',
+              title,
+              notes:
+                `Drafted from dossier document readiness matrix by ${principal.email}.`,
+            },
+          })
 
-    const event =
-      await tx.transactionDossierEvent.create({
-        data: {
-          dossierId: dossier.id,
-          eventType: 'DOSSIER_INSTRUMENT_DRAFTED',
-          fromState: null,
-          toState: null,
-          message: `${title} draft instrument created.`,
-          actor: principal.email,
-          metadata: {
-            source: 'control-center.documents',
-            reference: dossier.reference,
-            instrumentId: instrument.id,
-            instrumentType: instrument.type,
-            requiredDocumentKey: requiredDocument.key,
-            requiredFor: requiredDocument.requiredFor,
-          },
-        },
-      })
+        const event =
+          await tx.transactionDossierEvent.create({
+            data: {
+              dossierId: dossier.id,
+              eventType: 'DOSSIER_INSTRUMENT_DRAFTED',
+              fromState: null,
+              toState: null,
+              message: `${title} draft instrument created.`,
+              actor: principal.email,
+              metadata: {
+                source: 'control-center.documents',
+                reference: dossier.reference,
+                instrumentId: instrument.id,
+                instrumentType: instrument.type,
+                requiredDocumentKey: requiredDocument.key,
+                requiredFor: requiredDocument.requiredFor,
+              },
+            },
+          })
 
-    return {
-      instrument,
-      event,
-    }
-    }
-  )
+        return {
+          instrument,
+          event,
+        }
+      }
+    )
 
-  return NextResponse.json({
-    ok: true,
-    alreadyExists: false,
-    instrument: result.instrument,
-    event: result.event,
-  })
+    return NextResponse.json({
+      ok: true,
+      alreadyExists: false,
+      instrument: result.instrument,
+      event: result.event,
+    })
+  } catch (err) {
+    console.error(
+      '[INSTRUMENT_DRAFT_CREATE_FAILED]',
+      err
+    )
+
+    const message =
+      err instanceof Error
+        ? err.message
+        : 'UNKNOWN_ERROR'
+
+    return NextResponse.json(
+      {
+        ok: false,
+        error: 'INSTRUMENT_DRAFT_CREATE_FAILED',
+        message,
+      },
+      { status: 500 }
+    )
+  }
 }

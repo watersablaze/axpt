@@ -20,6 +20,9 @@ import {
 import {
   renderAnnexEProcedureTemplate,
 } from './templates/annexEProcedureTemplate'
+import {
+  renderAnnexFFinancialInstrumentTemplate,
+} from './templates/annexFFinancialInstrumentTemplate'
 import type {
   DossierInstrumentRenderResult,
 } from './templates/types'
@@ -71,6 +74,9 @@ export async function renderDossierInstrument({
 
     case 'ANNEX_E_PROCEDURE':
       return renderAnnexEProcedureTemplate(context)
+
+    case 'ANNEX_F_FINANCIAL_INSTRUMENT':
+      return renderAnnexFFinancialInstrumentTemplate(context)
 
     default:
       return {
