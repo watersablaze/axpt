@@ -25,6 +25,30 @@ type Props = {
   sourceOpportunity?: SourceOpportunity | null
 }
 
+function SourceBadge({
+  label,
+  value,
+  tone = 'neutral',
+}: {
+  label: string
+  value: string
+  tone?: 'neutral' | 'emerald'
+}) {
+  const toneClass =
+    tone === 'emerald'
+      ? 'border-emerald-900 bg-emerald-950/20 text-emerald-300'
+      : 'border-neutral-800 bg-black/30 text-neutral-400'
+
+  return (
+    <span
+      className={`inline-flex items-center gap-1 rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${toneClass}`}
+    >
+      <span className="text-neutral-600">{label}</span>
+      <span>{value}</span>
+    </span>
+  )
+}
+
 export default function DossierWorkspaceHeader({
   reference,
   title,
@@ -51,49 +75,57 @@ export default function DossierWorkspaceHeader({
           </h2>
 
           {sourceOpportunity ? (
-            <div className="mt-3 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] uppercase tracking-wide text-neutral-500">
-              <span>
-                Source {sourceOpportunity.source}
-              </span>
+            <div className="mt-3 space-y-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <SourceBadge
+                  label="Source"
+                  value={sourceOpportunity.source}
+                />
 
-              {sourceIntake ? (
-                <>
-                  <span className="text-neutral-700">·</span>
-
+                {sourceIntake ? (
                   <a
                     href={`/admin/transaction-intakes/${sourceIntake.id}`}
-                    className="text-emerald-300 hover:text-emerald-200"
+                    className="inline-flex items-center gap-1 rounded border border-emerald-900 bg-emerald-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-emerald-300 hover:border-emerald-700 hover:text-emerald-200"
                   >
-                    Intake {sourceIntake.reference}
+                    <span className="text-neutral-600">
+                      Intake
+                    </span>
+                    <span>{sourceIntake.reference}</span>
                   </a>
+                ) : null}
 
-                  {sourceIntake.referralCode ? (
-                    <>
-                      <span className="text-neutral-700">·</span>
-                      <span>
-                        Ref {sourceIntake.referralCode}
-                      </span>
-                    </>
-                  ) : null}
+                {sourceIntake?.referralCode ? (
+                  <SourceBadge
+                    label="Ref"
+                    value={sourceIntake.referralCode}
+                  />
+                ) : null}
 
-                  {sourceIntake.referredByName ? (
-                    <>
-                      <span className="text-neutral-700">·</span>
-                      <span>
-                        By {sourceIntake.referredByName}
-                      </span>
-                    </>
-                  ) : null}
+                {sourceIntake?.referredByName ? (
+                  <SourceBadge
+                    label="By"
+                    value={sourceIntake.referredByName}
+                  />
+                ) : null}
+              </div>
 
-                  {sourceIntake.promotedBy ? (
-                    <>
-                      <span className="text-neutral-700">·</span>
-                      <span>
-                        Promoted by {sourceIntake.promotedBy}
-                      </span>
-                    </>
+              {sourceIntake?.promotedBy ? (
+                <div className="flex flex-wrap items-center gap-2">
+                  <SourceBadge
+                    label="Promoted By"
+                    value={sourceIntake.promotedBy}
+                    tone="emerald"
+                  />
+
+                  {sourceIntake.promotedAt ? (
+                    <SourceBadge
+                      label="At"
+                      value={new Date(
+                        sourceIntake.promotedAt
+                      ).toLocaleString()}
+                    />
                   ) : null}
-                </>
+                </div>
               ) : null}
             </div>
           ) : null}
