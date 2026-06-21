@@ -8,6 +8,18 @@ type Props = {
   onOpenDossier?: (dossierId: string) => void
 }
 
+type OpportunitySourceIntake = {
+  id: string
+  reference: string
+  referralCode: string | null
+  referredByName: string | null
+  referredByCompany: string | null
+  submitterName: string
+  submitterEmail: string
+  promotedAt: string | null
+  promotedBy: string | null
+}
+
 type OpportunityRecord = {
   id: string
   title: string
@@ -22,6 +34,7 @@ type OpportunityRecord = {
   notes: string | null
   dossierId: string | null
   promotedDossierId: string | null
+  sourceIntake: OpportunitySourceIntake | null
   createdAt: string
   updatedAt: string
 }
@@ -214,6 +227,29 @@ export default function OpportunityQueuePanel({
                       ? ` → ${opportunity.destination}`
                       : ''}
                   </div>
+
+                    {opportunity.sourceIntake ? (
+                    <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-wide">
+                      <a
+                        href={`/admin/transaction-intakes/${opportunity.sourceIntake.id}`}
+                        className="rounded border border-emerald-900 bg-emerald-950/20 px-2 py-1 text-emerald-300 hover:border-emerald-700 hover:text-emerald-200"
+                      >
+                        From Intake {opportunity.sourceIntake.reference}
+                      </a>
+
+                      {opportunity.sourceIntake.referralCode ? (
+                        <span className="rounded border border-neutral-800 bg-black/30 px-2 py-1 text-neutral-400">
+                          Ref {opportunity.sourceIntake.referralCode}
+                        </span>
+                      ) : null}
+
+                      {opportunity.sourceIntake.referredByName ? (
+                        <span className="rounded border border-neutral-800 bg-black/30 px-2 py-1 text-neutral-400">
+                          By {opportunity.sourceIntake.referredByName}
+                        </span>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </div>
 
                 <div

@@ -26,6 +26,18 @@ export type OpportunityEventType =
   | 'OPPORTUNITY_PROMOTED'
   | 'OPPORTUNITY_ARCHIVED'
 
+export type OpportunitySourceIntake = {
+  id: string
+  reference: string
+  referralCode: string | null
+  referredByName: string | null
+  referredByCompany: string | null
+  submitterName: string
+  submitterEmail: string
+  promotedAt: string | null
+  promotedBy: string | null
+}
+
 export type OpportunityRecord = {
   id: string
   title: string
@@ -42,6 +54,8 @@ export type OpportunityRecord = {
   notes: string | null
   dossierId: string | null
   promotedDossierId: string | null
+
+  sourceIntake: OpportunitySourceIntake | null
 
   createdAt: string
   updatedAt: string
