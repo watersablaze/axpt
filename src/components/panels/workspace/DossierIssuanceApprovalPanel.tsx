@@ -358,7 +358,7 @@ export function DossierIssuanceApprovalPanel({
                         </button>
                       ) : null}
 
-                      {status !== 'REVOKED' ? (
+                      {status === 'APPROVED' ? (
                         <button
                           type="button"
                           onClick={() =>
