@@ -53,6 +53,23 @@ export async function GET(
       include: {
         parties: true,
         instruments: true,
+        promotedOpportunities: {
+          include: {
+            sourceTransactionIntake: {
+              select: {
+                id: true,
+                reference: true,
+                referralCode: true,
+                referredByName: true,
+                referredByCompany: true,
+                submitterName: true,
+                submitterEmail: true,
+                promotedAt: true,
+                promotedBy: true,
+              },
+            },
+          },
+        },
         approvalRequirements: {
           include: {
             approvals: true,
@@ -111,6 +128,40 @@ export async function GET(
       transitionCount,
       executedInstrumentCount,
       pendingApprovalCount,
+
+      sourceOpportunities:
+        dossier.promotedOpportunities.map(
+          (
+            opportunity: (typeof dossier.promotedOpportunities)[number]
+          ) => ({
+            id: opportunity.id,
+            title: opportunity.title,
+            source: opportunity.source,
+            status: opportunity.status,
+            sourceIntake: opportunity.sourceTransactionIntake
+              ? {
+                  id: opportunity.sourceTransactionIntake.id,
+                  reference:
+                    opportunity.sourceTransactionIntake.reference,
+                  referralCode:
+                    opportunity.sourceTransactionIntake.referralCode,
+                  referredByName:
+                    opportunity.sourceTransactionIntake.referredByName,
+                  referredByCompany:
+                    opportunity.sourceTransactionIntake.referredByCompany,
+                  submitterName:
+                    opportunity.sourceTransactionIntake.submitterName,
+                  submitterEmail:
+                    opportunity.sourceTransactionIntake.submitterEmail,
+                  promotedAt:
+                    opportunity.sourceTransactionIntake.promotedAt?.toISOString() ??
+                    null,
+                  promotedBy:
+                    opportunity.sourceTransactionIntake.promotedBy,
+                }
+              : null,
+          })
+        ),
 
       parties: dossier.parties,
       instruments: dossier.instruments,

@@ -45,6 +45,26 @@ type DossierApprovalRequirement = {
   status: string
 }
 
+type DossierSourceIntake = {
+  id: string
+  reference: string
+  referralCode: string | null
+  referredByName: string | null
+  referredByCompany: string | null
+  submitterName: string
+  submitterEmail: string
+  promotedAt: string | null
+  promotedBy: string | null
+}
+
+type DossierSourceOpportunity = {
+  id: string
+  title: string
+  source: string
+  status: string
+  sourceIntake: DossierSourceIntake | null
+}
+
 type DossierWorkspace = {
   id: string
   reference: string
@@ -62,6 +82,8 @@ type DossierWorkspace = {
   transitionCount: number
   executedInstrumentCount: number
   pendingApprovalCount: number
+
+  sourceOpportunities: DossierSourceOpportunity[]
 
   parties: DossierParty[]
   instruments: DossierInstrument[]
@@ -194,6 +216,9 @@ export default function DossierWorkspacePanel({
             reference={dossier.reference}
             title={dossier.title}
             state={dossier.state}
+            sourceOpportunity={
+              dossier.sourceOpportunities[0] ?? null
+            }
           />
 
           <DossierMissionPanel
