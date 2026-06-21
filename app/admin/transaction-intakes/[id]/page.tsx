@@ -2,6 +2,10 @@ import Link from 'next/link'
 import { revalidatePath } from 'next/cache'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/infrastructure/db/prisma'
+import { getPrincipal } from '@/domains/auth/getPrincipal'
+import {
+  promoteTransactionIntakeToOpportunity,
+} from '@/domains/control-center/transaction-intakes/promoteTransactionIntakeToOpportunity'
 
 const INTAKE_STATUSES = [
   'SUBMITTED',
@@ -9,6 +13,7 @@ const INTAKE_STATUSES = [
   'NEEDS_CLARIFICATION',
   'QUALIFIED',
   'DECLINED',
+  'PROMOTED_TO_OPPORTUNITY',
   'DOSSIER_READY',
   'PROMOTED_TO_DOSSIER',
 ] as const
@@ -101,6 +106,29 @@ async function updateIntakeReview(formData: FormData) {
   revalidatePath(`/admin/transaction-intakes/${id}`)
 }
 
+async function promoteIntakeToOpportunity(
+  formData: FormData
+) {
+  'use server'
+
+  const id = formData.get('id')
+
+  if (typeof id !== 'string') {
+    return
+  }
+
+  const principal = await getPrincipal()
+
+  await promoteTransactionIntakeToOpportunity({
+    intakeId: id,
+    actorEmail: principal?.email ?? 'ADMIN',
+  })
+
+  revalidatePath('/admin/transaction-intakes')
+  revalidatePath(`/admin/transaction-intakes/${id}`)
+  revalidatePath('/admin/control-center')
+}
+
 function statusBadgeClass(status: string) {
   switch (status) {
     case 'UNDER_REVIEW':
@@ -108,6 +136,7 @@ function statusBadgeClass(status: string) {
     case 'NEEDS_CLARIFICATION':
       return 'border-yellow-400/40 bg-yellow-400/10 text-yellow-200'
     case 'QUALIFIED':
+    case 'PROMOTED_TO_OPPORTUNITY':
     case 'DOSSIER_READY':
     case 'PROMOTED_TO_DOSSIER':
       return 'border-emerald-400/40 bg-emerald-400/10 text-emerald-200'
@@ -175,6 +204,15 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
 const intake = await prisma.transactionIntake.findUnique({
   where: { id },
   include: {
+    promotedOpportunity: {
+      select: {
+        id: true,
+        title: true,
+        status: true,
+        source: true,
+        createdAt: true,
+      },
+    },
     events: {
       orderBy: {
         createdAt: 'desc',
@@ -186,6 +224,10 @@ const intake = await prisma.transactionIntake.findUnique({
   if (!intake) {
     notFound()
   }
+
+  const canPromoteToOpportunity =
+    intake.status === 'QUALIFIED' &&
+    !intake.promotedOpportunityId
 
   return (
     <main className="min-h-screen bg-black text-white p-8">
@@ -259,6 +301,68 @@ const intake = await prisma.transactionIntake.findUnique({
             Save Review Update
             </button>
         </form>
+
+        <div className="mt-6 rounded border border-gray-800 bg-black p-4">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <h3 className="font-semibold text-gray-100">
+                Opportunity Promotion
+              </h3>
+
+              <p className="mt-2 max-w-2xl text-sm text-gray-400">
+                Promote a qualified transaction intake into the Control Center
+                opportunity pipeline. This creates a tracked opportunity record
+                and preserves the intake as the source record.
+              </p>
+
+              {intake.promotedOpportunity ? (
+                <div className="mt-4 rounded border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">
+                  <p className="font-semibold">
+                    Promoted Opportunity
+                  </p>
+
+                  <p className="mt-1">
+                    {intake.promotedOpportunity.title}
+                  </p>
+
+                  <p className="mt-1 text-xs uppercase tracking-[0.18em] text-emerald-300/70">
+                    {intake.promotedOpportunity.status} ·{' '}
+                    {intake.promotedOpportunity.source}
+                  </p>
+
+                  <Link
+                    href="/admin/control-center"
+                    className="mt-3 inline-flex rounded border border-emerald-500/40 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-200 hover:bg-emerald-500/10"
+                  >
+                    Open Control Center
+                  </Link>
+                </div>
+              ) : (
+                <p className="mt-3 text-xs text-gray-500">
+                  Promotion is available once the intake status is QUALIFIED.
+                </p>
+              )}
+            </div>
+
+            {!intake.promotedOpportunity ? (
+              <form action={promoteIntakeToOpportunity}>
+                <input
+                  type="hidden"
+                  name="id"
+                  value={intake.id}
+                />
+
+                <button
+                  type="submit"
+                  disabled={!canPromoteToOpportunity}
+                  className="rounded border border-emerald-500/50 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-200 hover:bg-emerald-500/20 disabled:cursor-not-allowed disabled:border-gray-800 disabled:bg-gray-950 disabled:text-gray-600"
+                >
+                  Promote to Opportunity
+                </button>
+              </form>
+            ) : null}
+          </div>
+        </div>
         </section>
       </div>
 

@@ -294,6 +294,11 @@ model TransactionIntake {
 
   internalNotes            String?
 
+  promotedOpportunityId    String?      @unique
+  promotedOpportunity      Opportunity? @relation("TransactionIntakePromotion", fields: [promotedOpportunityId], references: [id], onDelete: SetNull)
+  promotedAt               DateTime?
+  promotedBy               String?
+
   sourceUrl                String?
   ipAddress                String?
   userAgent                String?
@@ -309,6 +314,7 @@ model TransactionIntake {
   @@index([referralCode])
   @@index([commodity])
   @@index([program])
+  @@index([promotedAt])
   @@index([createdAt])
 }
 
@@ -1684,6 +1690,8 @@ model Opportunity {
 
   promotedDossierId String?
   promotedDossier   TransactionDossier? @relation("PromotedOpportunityDossier", fields: [promotedDossierId], references: [id], onDelete: SetNull)
+
+  sourceTransactionIntake TransactionIntake? @relation("TransactionIntakePromotion")
 
   events OpportunityEvent[]
 
