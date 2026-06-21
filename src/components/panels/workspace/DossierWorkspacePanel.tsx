@@ -350,6 +350,12 @@ export default function DossierWorkspacePanel({
                 pendingApprovalCount={
                   dossier.pendingApprovalCount
                 }
+                partyReadiness={getPartyReadiness(
+                  dossier.parties
+                )}
+                documentReadiness={getDocumentReadiness(
+                  dossier.instruments
+                )}
               />
 
               <TransitionActionBar
