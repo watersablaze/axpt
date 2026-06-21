@@ -41,6 +41,7 @@ export async function buildDossierTemplateContext(
       },
       include: {
         parties: true,
+        terms: true,
         promotedOpportunities: {
           take: 1,
           include: {
@@ -84,6 +85,39 @@ export async function buildDossierTemplateContext(
       buyer: findPartyByRole(parties, 'BUYER'),
       seller: findPartyByRole(parties, 'SELLER'),
       all: parties,
+    },
+    terms: {
+      settlementMethod:
+        dossier.terms?.settlementMethod ?? null,
+      financialInstrumentType:
+        dossier.terms?.financialInstrumentType ?? null,
+      issuingInstitution:
+        dossier.terms?.issuingInstitution ?? null,
+      instrumentAmountOrCoverage:
+        dossier.terms?.instrumentAmountOrCoverage ?? null,
+      validityPeriod:
+        dossier.terms?.validityPeriod ?? null,
+      paymentTrigger:
+        dossier.terms?.paymentTrigger ?? null,
+      beneficiary:
+        dossier.terms?.beneficiary ?? null,
+
+      sellerSideCompensation:
+        dossier.terms?.sellerSideCompensation ?? null,
+      buyerSideCompensation:
+        dossier.terms?.buyerSideCompensation ?? null,
+      compensationPayer:
+        dossier.terms?.compensationPayer ?? null,
+      compensationPayees:
+        dossier.terms?.compensationPayees ?? null,
+      compensationPayoutTrigger:
+        dossier.terms?.compensationPayoutTrigger ?? null,
+      compensationPaymentMethod:
+        dossier.terms?.compensationPaymentMethod ?? null,
+      compensationAuthorizationStatus:
+        dossier.terms?.compensationAuthorizationStatus ?? null,
+      compensationConfidentialityNote:
+        dossier.terms?.compensationConfidentialityNote ?? null,
     },
     source: {
       opportunityTitle: sourceOpportunity?.title ?? null,

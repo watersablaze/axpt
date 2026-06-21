@@ -18,6 +18,25 @@ export type DossierTemplateParty = {
   notes: string | null
 }
 
+export type DossierTemplateTerms = {
+  settlementMethod: string | null
+  financialInstrumentType: string | null
+  issuingInstitution: string | null
+  instrumentAmountOrCoverage: string | null
+  validityPeriod: string | null
+  paymentTrigger: string | null
+  beneficiary: string | null
+
+  sellerSideCompensation: string | null
+  buyerSideCompensation: string | null
+  compensationPayer: string | null
+  compensationPayees: string | null
+  compensationPayoutTrigger: string | null
+  compensationPaymentMethod: string | null
+  compensationAuthorizationStatus: string | null
+  compensationConfidentialityNote: string | null
+}
+
 export type DossierTemplateContext = {
   dossier: {
     id: string
@@ -35,6 +54,7 @@ export type DossierTemplateContext = {
     seller: DossierTemplateParty | null
     all: DossierTemplateParty[]
   }
+  terms: DossierTemplateTerms
   source: {
     opportunityTitle: string | null
     intakeReference: string | null
