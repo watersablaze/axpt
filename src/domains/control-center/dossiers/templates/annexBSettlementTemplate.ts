@@ -40,6 +40,24 @@ function hasValue(value: string | null | undefined) {
   return Boolean(value && value.trim().length > 0)
 }
 
+function requireField(
+  issues: DossierTemplateIssue[],
+  value: string | null | undefined,
+  field: string,
+  label: string,
+  detail: string
+) {
+  if (!hasValue(value)) {
+    issues.push(
+      missing(
+        field,
+        label,
+        detail
+      )
+    )
+  }
+}
+
 export function renderAnnexBSettlementTemplate(
   context: DossierTemplateContext
 ): DossierInstrumentRenderResult {
@@ -48,22 +66,40 @@ export function renderAnnexBSettlementTemplate(
 
   const buyer = context.parties.buyer
   const seller = context.parties.seller
+  const terms = context.terms
 
-  if (!hasValue(context.dossier.settlement)) {
-    missingFields.push(
-      missing(
-        'dossier.settlement',
-        'Settlement method',
-        'Annex B requires a confirmed settlement method before external issuance.'
-      )
-    )
-  }
+  const settlementMethod =
+    terms.settlementMethod ?? context.dossier.settlement
+
+  requireField(
+    missingFields,
+    settlementMethod,
+    'terms.settlementMethod',
+    'Settlement method',
+    'Annex B requires a confirmed settlement method such as MT103, escrow, cash, DLC, SBLC, wire, or another approved mechanism.'
+  )
+
+  requireField(
+    missingFields,
+    buyer?.legalName,
+    'parties.buyer.legalName',
+    'Buyer legal name',
+    'Annex B requires the buyer legal name before settlement instructions can be externally issued.'
+  )
+
+  requireField(
+    missingFields,
+    seller?.legalName,
+    'parties.seller.legalName',
+    'Seller legal name',
+    'Annex B requires the seller legal name before settlement instructions can be externally issued.'
+  )
 
   missingFields.push(
     missing(
       'settlement.buyerBankingCoordinates',
       'Buyer banking coordinates',
-      'Annex B requires buyer-side banking or settlement pathway details before external issuance.'
+      'Annex B requires structured buyer banking, issuing bank, escrow, or remitting account coordinates before external issuance.'
     )
   )
 
@@ -71,26 +107,46 @@ export function renderAnnexBSettlementTemplate(
     missing(
       'settlement.sellerBankingCoordinates',
       'Seller banking coordinates',
-      'Annex B requires seller-side receiving banking coordinates before external issuance.'
+      'Annex B requires structured seller banking, beneficiary, escrow, trust, or receiving account coordinates before external issuance.'
     )
   )
 
-  if (!hasValue(buyer?.legalName)) {
-    missingFields.push(
-      missing(
-        'parties.buyer.legalName',
-        'Buyer legal name',
-        'Annex B requires buyer legal identity before settlement terms can be externally issued.'
+  if (!hasValue(terms.financialInstrumentType)) {
+    warnings.push(
+      warning(
+        'terms.financialInstrumentType',
+        'Financial instrument type',
+        'Financial instrument type should be confirmed for settlement coordination.'
       )
     )
   }
 
-  if (!hasValue(seller?.legalName)) {
-    missingFields.push(
-      missing(
-        'parties.seller.legalName',
-        'Seller legal name',
-        'Annex B requires seller legal identity before settlement terms can be externally issued.'
+  if (!hasValue(terms.issuingInstitution)) {
+    warnings.push(
+      warning(
+        'terms.issuingInstitution',
+        'Issuing / escrow institution',
+        'Issuing bank, escrow institution, or settlement administrator should be confirmed.'
+      )
+    )
+  }
+
+  if (!hasValue(terms.paymentTrigger)) {
+    warnings.push(
+      warning(
+        'terms.paymentTrigger',
+        'Payment trigger',
+        'Payment trigger or release condition should be confirmed before settlement instruction issuance.'
+      )
+    )
+  }
+
+  if (!hasValue(terms.beneficiary)) {
+    warnings.push(
+      warning(
+        'terms.beneficiary',
+        'Beneficiary / receiving party',
+        'Beneficiary or receiving party should be confirmed before settlement instruction issuance.'
       )
     )
   }
@@ -100,7 +156,7 @@ export function renderAnnexBSettlementTemplate(
       warning(
         'parties.buyer.representative',
         'Buyer representative',
-        'Buyer representative should be confirmed before settlement coordination.'
+        'Buyer representative is not fully structured.'
       )
     )
   }
@@ -110,7 +166,7 @@ export function renderAnnexBSettlementTemplate(
       warning(
         'parties.seller.representative',
         'Seller representative',
-        'Seller representative should be confirmed before settlement coordination.'
+        'Seller representative is not fully structured.'
       )
     )
   }
@@ -119,55 +175,57 @@ export function renderAnnexBSettlementTemplate(
     warning(
       'settlement.releaseConditions',
       'Release conditions',
-      'Settlement release conditions are not yet modeled as structured fields. Confirm release triggers before external issuance.'
-    )
-  )
-
-  warnings.push(
-    warning(
-      'settlement.commissionInstructions',
-      'Commission instructions',
-      'Commission or representative compensation instructions are not yet modeled in the settlement context.'
+      'Final release conditions, bank charges, compliance hold, and failed-payment handling are not yet modeled as structured fields.'
     )
   )
 
   const renderedText = [
-    `ANNEX B · SETTLEMENT TERMS DRAFT`,
+    `ANNEX B · SETTLEMENT INSTRUCTIONS DRAFT`,
     ``,
     `Reference: ${context.dossier.reference}`,
     `Dossier: ${context.dossier.title}`,
     `Current State: ${context.dossier.state}`,
     ``,
-    `1. Settlement Overview`,
-    `Settlement Method: ${valueOrPlaceholder(context.dossier.settlement)}`,
+    `1. Settlement Purpose`,
+    `This Annex B draft summarizes the settlement method, financial instrument context, beneficiary posture, and payment trigger currently available for the transaction dossier.`,
+    ``,
+    `2. Commercial Context`,
     `Commodity: ${valueOrPlaceholder(context.dossier.commodity)}`,
     `Quantity: ${valueOrPlaceholder(context.dossier.quantityKg)} KG`,
     `Origin: ${valueOrPlaceholder(context.dossier.origin)}`,
+    `Settlement Method: ${valueOrPlaceholder(settlementMethod)}`,
     ``,
-    `2. Buyer Settlement Party`,
+    `3. Settlement Framework`,
+    `Financial Instrument Type: ${valueOrPlaceholder(terms.financialInstrumentType)}`,
+    `Issuing / Escrow Institution: ${valueOrPlaceholder(terms.issuingInstitution)}`,
+    `Instrument Amount / Coverage Basis: ${valueOrPlaceholder(terms.instrumentAmountOrCoverage)}`,
+    `Payment Trigger / Release Condition: ${valueOrPlaceholder(terms.paymentTrigger)}`,
+    `Beneficiary / Receiving Party: ${valueOrPlaceholder(terms.beneficiary)}`,
+    ``,
+    `4. Banking Coordinates`,
+    `Buyer Banking / Remitting Coordinates: [PENDING STRUCTURED BANKING RECORD]`,
+    `Seller Banking / Beneficiary Coordinates: [PENDING STRUCTURED BANKING RECORD]`,
+    `Escrow / Trust Coordinates: [PENDING STRUCTURED BANKING RECORD]`,
+    ``,
+    `5. Parties`,
     `Buyer: ${valueOrPlaceholder(buyer?.legalName)}`,
     `Buyer Representative: ${valueOrPlaceholder(buyer?.representative)}`,
     `Buyer Country: ${valueOrPlaceholder(buyer?.country)}`,
-    `Buyer Banking Coordinates: [PENDING]`,
     ``,
-    `3. Seller Settlement Party`,
     `Seller: ${valueOrPlaceholder(seller?.legalName)}`,
     `Seller Representative: ${valueOrPlaceholder(seller?.representative)}`,
     `Seller Country: ${valueOrPlaceholder(seller?.country)}`,
-    `Seller Banking Coordinates: [PENDING]`,
     ``,
-    `4. Release Conditions`,
-    `Funds release, escrow movement, banking confirmation, tax/export payment handling, and final settlement triggers remain pending structured confirmation.`,
+    `6. Settlement Controls`,
+    `Settlement remains subject to verified banking coordinates, compliance acceptance, release conditions, and operator authorization before external issuance.`,
     ``,
-    `5. Commission / Representative Instructions`,
-    `Commission or representative compensation instructions are pending structured confirmation and should not be inferred from this draft.`,
-    ``,
-    `6. Source Trace`,
+    `7. Source Trace`,
     `Opportunity: ${valueOrPlaceholder(context.source.opportunityTitle)}`,
     `Intake Reference: ${valueOrPlaceholder(context.source.intakeReference)}`,
     `Submitted By: ${valueOrPlaceholder(context.source.submitterName)}`,
+    `Referral Code: ${valueOrPlaceholder(context.source.referralCode)}`,
     ``,
-    `DRAFT NOTICE: This is a system-rendered internal Annex B settlement preview. Settlement and banking fields must be completed before external issuance.`,
+    `DRAFT NOTICE: This is a system-rendered internal Annex B settlement preview. Settlement and banking instructions must be completed, verified, and reviewed before external issuance.`,
   ].join('\n')
 
   return {
