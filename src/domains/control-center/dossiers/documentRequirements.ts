@@ -5,6 +5,8 @@ export const DOSSIER_INSTRUMENT_TYPES = [
   'ANNEX_C_REFINERY',
   'ANNEX_D_COMPLIANCE',
   'ANNEX_E_PROCEDURE',
+  'ANNEX_F_FINANCIAL_INSTRUMENT',
+  'ANNEX_G_COMPENSATION_SCHEDULE',
   'EXPORT_RELEASE_NOTICE',
   'EXPORT_ACTIVATION_NOTICE',
 ] as const
@@ -159,6 +161,31 @@ export const DOSSIER_DOCUMENT_GROUPS: DossierDocumentGroup[] = [
           'Step-by-step transaction execution procedure and release framework.',
         instrumentType: 'ANNEX_E_PROCEDURE',
         requiredFor: 'Execution Readiness',
+      },
+    ],
+  },
+  {
+    title: 'Financial / Compensation',
+    description:
+      'Financial instrument and compensation schedules used to clarify payment mechanics and representative allocation.',
+    documents: [
+      {
+        key: 'ANNEX_F_FINANCIAL_INSTRUMENT',
+        canDraftInstrument: true,
+        label: 'Annex F · Financial Instrument Framework',
+        description:
+          'DLC, SBLC, MT103, escrow, wire, or other financial instrument requirements and controls.',
+        instrumentType: 'ANNEX_F_FINANCIAL_INSTRUMENT',
+        requiredFor: 'Financial Instrument Readiness',
+      },
+      {
+        key: 'ANNEX_G_COMPENSATION_SCHEDULE',
+        canDraftInstrument: true,
+        label: 'Annex G · Compensation Schedule',
+        description:
+          'Commission, representative compensation, payout timing, authorization, and confidentiality schedule.',
+        instrumentType: 'ANNEX_G_COMPENSATION_SCHEDULE',
+        requiredFor: 'Compensation Readiness',
       },
     ],
   },
