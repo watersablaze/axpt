@@ -1,5 +1,10 @@
 'use client'
 
+import {
+  DOSSIER_DOCUMENT_GROUPS,
+  type RequiredDossierDocument,
+} from '@/domains/control-center/dossiers/documentRequirements'
+
 type Instrument = {
   id: string
   type: string
@@ -11,174 +16,6 @@ type Instrument = {
 type Props = {
   instruments: Instrument[]
 }
-
-type RequiredDocument = {
-  key: string
-  label: string
-  description: string
-  instrumentType?: string
-  requiredFor: string
-}
-
-type DocumentGroup = {
-  title: string
-  description: string
-  documents: RequiredDocument[]
-}
-
-const DOCUMENT_GROUPS: DocumentGroup[] = [
-  {
-    title: 'Buyer / Representative',
-    description:
-      'Identity, authority, and funds evidence required before serious execution.',
-    documents: [
-      {
-        key: 'BUYER_CIS',
-        label: 'Buyer CIS',
-        description:
-          'Corporate information sheet or buyer profile identifying the purchasing entity.',
-        requiredFor: 'KYC Review',
-      },
-      {
-        key: 'BUYER_POF',
-        label: 'Proof of Funds',
-        description:
-          'Bank comfort, statement, attestation, or acceptable funds evidence.',
-        requiredFor: 'Commercial Qualification',
-      },
-      {
-        key: 'BUYER_AUTHORIZATION',
-        label: 'Authorization / Mandate',
-        description:
-          'Written authorization confirming the submitter or representative may act for the buyer.',
-        requiredFor: 'KYC Review',
-      },
-      {
-        key: 'BUYER_ID',
-        label: 'Passport / ID',
-        description:
-          'Identity document for authorized representative or beneficial control contact.',
-        requiredFor: 'KYC Review',
-      },
-      {
-        key: 'BUYER_BANKING',
-        label: 'Buyer Banking Coordinates',
-        description:
-          'Settlement bank details or confirmation of expected settlement path.',
-        instrumentType: 'ANNEX_B_SETTLEMENT',
-        requiredFor: 'Settlement Readiness',
-      },
-    ],
-  },
-  {
-    title: 'Seller / Source',
-    description:
-      'Seller-side documents needed to establish identity, authority, banking, and product context.',
-    documents: [
-      {
-        key: 'SELLER_KYC',
-        label: 'Seller KYC / Passport',
-        description:
-          'Seller identity package, passport, corporate profile, or cooperative authority evidence.',
-        instrumentType: 'ANNEX_D_COMPLIANCE',
-        requiredFor: 'Compliance Review',
-      },
-      {
-        key: 'SELLER_BANKING',
-        label: 'Seller Banking Coordinates',
-        description:
-          'Seller-side settlement or receiving bank details.',
-        instrumentType: 'ANNEX_B_SETTLEMENT',
-        requiredFor: 'Settlement Readiness',
-      },
-      {
-        key: 'PRODUCT_EVIDENCE',
-        label: 'Product / Origin Evidence',
-        description:
-          'Available origin notes, assay context, cooperative statement, or product evidence.',
-        requiredFor: 'Commercial Readiness',
-      },
-    ],
-  },
-  {
-    title: 'Transaction Package',
-    description:
-      'Core transaction instruments used to move from qualified opportunity to executable dossier.',
-    documents: [
-      {
-        key: 'SPA',
-        label: 'SPA',
-        description:
-          'Sale and purchase agreement package for the transaction.',
-        instrumentType: 'SPA',
-        requiredFor: 'SPA Drafting',
-      },
-      {
-        key: 'ANNEX_A_DELIVERY',
-        label: 'Annex A · Delivery',
-        description:
-          'Delivery terms, transaction route, and movement responsibilities.',
-        instrumentType: 'ANNEX_A_DELIVERY',
-        requiredFor: 'SPA Package',
-      },
-      {
-        key: 'ANNEX_B_SETTLEMENT',
-        label: 'Annex B · Settlement',
-        description:
-          'Banking, payment, escrow, or settlement pathway terms.',
-        instrumentType: 'ANNEX_B_SETTLEMENT',
-        requiredFor: 'Settlement Readiness',
-      },
-      {
-        key: 'ANNEX_C_REFINERY',
-        label: 'Annex C · Refinery',
-        description:
-          'Refinery coordination, assay, intake, and processing expectations.',
-        instrumentType: 'ANNEX_C_REFINERY',
-        requiredFor: 'Refinery Coordination',
-      },
-      {
-        key: 'ANNEX_D_COMPLIANCE',
-        label: 'Annex D · Compliance',
-        description:
-          'KYC, identity, authorization, and commercial compliance package.',
-        instrumentType: 'ANNEX_D_COMPLIANCE',
-        requiredFor: 'Compliance Review',
-      },
-      {
-        key: 'ANNEX_E_PROCEDURE',
-        label: 'Annex E · Execution Framework',
-        description:
-          'Step-by-step transaction execution procedure and release framework.',
-        instrumentType: 'ANNEX_E_PROCEDURE',
-        requiredFor: 'Execution Readiness',
-      },
-    ],
-  },
-  {
-    title: 'Export / Execution',
-    description:
-      'Notices and instruments used once the dossier moves from commercial readiness into movement.',
-    documents: [
-      {
-        key: 'EXPORT_RELEASE_NOTICE',
-        label: 'Export Release Notice',
-        description:
-          'Notice confirming export release conditions are satisfied.',
-        instrumentType: 'EXPORT_RELEASE_NOTICE',
-        requiredFor: 'Export Release',
-      },
-      {
-        key: 'EXPORT_ACTIVATION_NOTICE',
-        label: 'Export Activation Notice',
-        description:
-          'Notice confirming export activation and operational movement.',
-        instrumentType: 'EXPORT_ACTIVATION_NOTICE',
-        requiredFor: 'Export Active',
-      },
-    ],
-  },
-]
 
 function statusTone(status: string) {
   switch (status) {
@@ -198,20 +35,20 @@ function statusTone(status: string) {
     case 'ARCHIVED':
       return 'border-neutral-800 bg-black/30 text-neutral-500'
 
-    case 'MISSING':
+    case 'PENDING':
     default:
       return 'border-red-900 bg-red-950/20 text-red-300'
   }
 }
 
 function getDocumentStatus(
-  document: RequiredDocument,
+  document: RequiredDossierDocument,
   instruments: Instrument[]
 ) {
   if (!document.instrumentType) {
     return {
-      label: 'Pending',
-      tone: statusTone('MISSING'),
+      label: 'PENDING',
+      tone: statusTone('PENDING'),
       instrument: null,
     }
   }
@@ -222,8 +59,8 @@ function getDocumentStatus(
 
   if (!instrument) {
     return {
-      label: 'Missing',
-      tone: statusTone('MISSING'),
+      label: 'PENDING',
+      tone: statusTone('PENDING'),
       instrument: null,
     }
   }
@@ -236,9 +73,10 @@ function getDocumentStatus(
 }
 
 function getSummary(instruments: Instrument[]) {
-  const requiredDocuments = DOCUMENT_GROUPS.flatMap(
-    (group) => group.documents
-  )
+  const requiredDocuments =
+    DOSSIER_DOCUMENT_GROUPS.flatMap(
+      (group) => group.documents
+    )
 
   return requiredDocuments.reduce(
     (summary, document) => {
@@ -352,7 +190,7 @@ export default function DossierDocumentsPanel({
       </div>
 
       <div className="mt-3 space-y-3">
-        {DOCUMENT_GROUPS.map((group) => (
+        {DOSSIER_DOCUMENT_GROUPS.map((group) => (
           <section
             key={group.title}
             className="rounded border border-neutral-800 bg-black/30 p-3"
