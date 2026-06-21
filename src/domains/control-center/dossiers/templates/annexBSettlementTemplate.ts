@@ -124,6 +124,10 @@ function coordinateHasCoreFields(
   )
 }
 
+function isReleaseConditionClosed(status: string) {
+  return status === 'SATISFIED' || status === 'WAIVED'
+}
+
 function addCoordinateWarnings(
   warnings: DossierTemplateIssue[],
   coordinate: DossierTemplateBankCoordinate | null,
@@ -309,13 +313,31 @@ export function renderAnnexBSettlementTemplate(
     )
   }
 
-  warnings.push(
-    warning(
-      'settlement.releaseConditions',
-      'Release conditions',
-      'Final release conditions, bank charges, compliance hold, and failed-payment handling are not yet modeled as structured fields.'
+  if (context.releaseConditions.length === 0) {
+    warnings.push(
+      warning(
+        'releaseConditions',
+        'Release conditions',
+        'No structured release conditions have been defined for this dossier.'
+      )
     )
-  )
+  } else {
+    const openConditions =
+      context.releaseConditions.filter(
+        (condition) =>
+          !isReleaseConditionClosed(condition.status)
+      )
+
+    if (openConditions.length > 0) {
+      warnings.push(
+        warning(
+          'releaseConditions.open',
+          'Release conditions pending',
+          `${openConditions.length} release condition(s) remain pending or blocked before settlement release can be treated as complete.`
+        )
+      )
+    }
+  }
 
   const renderedText = [
     `ANNEX B · SETTLEMENT INSTRUCTIONS DRAFT`,
@@ -354,10 +376,32 @@ export function renderAnnexBSettlementTemplate(
     `Seller Representative: ${valueOrPlaceholder(seller?.representative)}`,
     `Seller Country: ${valueOrPlaceholder(seller?.country)}`,
     ``,
-    `6. Settlement Controls`,
+    `6. Release Conditions`,
+    ...(context.releaseConditions.length === 0
+      ? [
+          `Release Conditions: [PENDING STRUCTURED RELEASE CONDITIONS]`,
+        ]
+      : context.releaseConditions.map((condition) => {
+          return [
+            `${condition.title}: ${condition.status}`,
+            condition.trigger
+              ? `Trigger: ${condition.trigger}`
+              : null,
+            condition.responsibleParty
+              ? `Responsible Party: ${condition.responsibleParty}`
+              : null,
+            condition.evidenceRequired
+              ? `Evidence Required: ${condition.evidenceRequired}`
+              : null,
+          ]
+            .filter(Boolean)
+            .join(' | ')
+        })),
+    ``,
+    `7. Settlement Controls`,
     `Settlement remains subject to verified banking coordinates, compliance acceptance, release conditions, and operator authorization before external issuance.`,
     ``,
-    `7. Source Trace`,
+    `8. Source Trace`,
     `Opportunity: ${valueOrPlaceholder(context.source.opportunityTitle)}`,
     `Intake Reference: ${valueOrPlaceholder(context.source.intakeReference)}`,
     `Submitted By: ${valueOrPlaceholder(context.source.submitterName)}`,

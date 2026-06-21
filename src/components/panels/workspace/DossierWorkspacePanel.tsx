@@ -448,6 +448,7 @@ export default function DossierWorkspacePanel({
               />
 
               <DossierDocumentsPanel
+                key={`documents-${dossier.id}-${refreshNonce}`}
                 dossierId={dossier.id}
                 instruments={dossier.instruments}
                 onInstrumentChanged={() =>

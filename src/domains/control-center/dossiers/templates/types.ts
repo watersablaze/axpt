@@ -18,6 +18,19 @@ export type DossierTemplateParty = {
   notes: string | null
 }
 
+export type DossierTemplateReleaseCondition = {
+  id: string
+  title: string
+  description: string | null
+  trigger: string | null
+  responsibleParty: string | null
+  evidenceRequired: string | null
+  status: string
+  satisfiedBy: string | null
+  satisfiedAt: string | null
+  notes: string | null
+}
+
 export type DossierTemplateBankCoordinate = {
   id: string
   role: string
@@ -75,6 +88,7 @@ export type DossierTemplateContext = {
   }
   terms: DossierTemplateTerms
   bankCoordinates: DossierTemplateBankCoordinate[]
+  releaseConditions: DossierTemplateReleaseCondition[]
   source: {
     opportunityTitle: string | null
     intakeReference: string | null

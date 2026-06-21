@@ -3,6 +3,7 @@ import type {
   DossierTemplateBankCoordinate,
   DossierTemplateContext,
   DossierTemplateParty,
+  DossierTemplateReleaseCondition,
 } from './templates/types'
 
 function normalizeParty(
@@ -30,6 +31,34 @@ function findPartyByRole(
   return (
     parties.find((party) => party.role === role) ?? null
   )
+}
+
+function normalizeReleaseCondition(
+  condition: {
+    id: string
+    title: string
+    description: string | null
+    trigger: string | null
+    responsibleParty: string | null
+    evidenceRequired: string | null
+    status: string
+    satisfiedBy: string | null
+    satisfiedAt: Date | null
+    notes: string | null
+  }
+): DossierTemplateReleaseCondition {
+  return {
+    id: condition.id,
+    title: condition.title,
+    description: condition.description,
+    trigger: condition.trigger,
+    responsibleParty: condition.responsibleParty,
+    evidenceRequired: condition.evidenceRequired,
+    status: condition.status,
+    satisfiedBy: condition.satisfiedBy,
+    satisfiedAt: condition.satisfiedAt?.toISOString() ?? null,
+    notes: condition.notes,
+  }
 }
 
 function normalizeBankCoordinate(
@@ -84,6 +113,7 @@ export async function buildDossierTemplateContext(
         parties: true,
         terms: true,
         bankCoordinates: true,
+        releaseConditions: true,
         promotedOpportunities: {
           take: 1,
           include: {
@@ -108,6 +138,8 @@ export async function buildDossierTemplateContext(
   const parties = dossier.parties.map(normalizeParty)
   const bankCoordinates =
     dossier.bankCoordinates.map(normalizeBankCoordinate)
+  const releaseConditions =
+    dossier.releaseConditions.map(normalizeReleaseCondition)
   const sourceOpportunity =
     dossier.promotedOpportunities[0] ?? null
   const sourceIntake =
@@ -164,6 +196,7 @@ export async function buildDossierTemplateContext(
         dossier.terms?.compensationConfidentialityNote ?? null,
     },
     bankCoordinates,
+    releaseConditions,
     source: {
       opportunityTitle: sourceOpportunity?.title ?? null,
       intakeReference: sourceIntake?.reference ?? null,
