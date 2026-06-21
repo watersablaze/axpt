@@ -1,8 +1,4 @@
 import { NextResponse } from 'next/server'
-import type {
-  DossierIssuanceApprovalStatus,
-  InstrumentType,
-} from '@prisma/client'
 import { getPrincipal } from '@/domains/auth/getPrincipal'
 import { prisma } from '@/lib/prisma'
 
@@ -12,6 +8,9 @@ const ISSUANCE_APPROVAL_STATUSES = [
   'REJECTED',
   'REVOKED',
 ] as const
+
+type DossierIssuanceApprovalStatus =
+  typeof ISSUANCE_APPROVAL_STATUSES[number]
 
 const INSTRUMENT_TYPES = [
   'SPA',
@@ -24,6 +23,9 @@ const INSTRUMENT_TYPES = [
   'ANNEX_G_COMPENSATION_SCHEDULE',
   'EXPORT_RELEASE_NOTICE',
 ] as const
+
+type IssuanceInstrumentType =
+  typeof INSTRUMENT_TYPES[number]
 
 type RouteContext = {
   params: Promise<{
@@ -52,14 +54,14 @@ function normalizeOptionalText(
 
 function normalizeInstrumentType(
   value: string | null | undefined
-): InstrumentType | null {
+): IssuanceInstrumentType | null {
   if (
     value &&
     INSTRUMENT_TYPES.includes(
       value as typeof INSTRUMENT_TYPES[number]
     )
   ) {
-    return value as InstrumentType
+    return value as IssuanceInstrumentType
   }
 
   return null
@@ -243,12 +245,12 @@ export async function POST(
       where: {
         dossierId_instrumentType: {
           dossierId: dossier.id,
-          instrumentType,
+          instrumentType: instrumentType as any,
         },
       },
       create: {
         dossierId: dossier.id,
-        instrumentType,
+        instrumentType: instrumentType as any,
         instrumentId,
         status,
         requestedBy: principal.email,
@@ -276,7 +278,7 @@ export async function POST(
         source: 'control-center.issuance-approval',
         reference: dossier.reference,
         approvalId: approval.id,
-        instrumentType,
+        instrumentType: instrumentType as any,
         instrumentId,
         status,
       },
