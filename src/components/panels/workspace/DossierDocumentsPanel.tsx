@@ -263,7 +263,7 @@ function PreviewReadinessSummary({
         </div>
       </div>
 
-      <div className="mt-3 grid gap-2 text-[11px] md:grid-cols-3">
+      <div className="mt-3 grid min-w-0 gap-2 text-[11px] md:grid-cols-3">
         <div className="rounded border border-red-900/60 bg-red-950/10 p-2 text-red-300">
           {preview.missingFields.length} Missing
         </div>
@@ -288,7 +288,7 @@ function PreviewIssueGroup({
   issues: TemplateIssue[]
 }) {
   return (
-    <div className="rounded border border-neutral-800 bg-black/20 p-3">
+    <div className="min-w-0 overflow-hidden rounded border border-neutral-800 bg-black/20 p-3">
       <div className="flex items-center justify-between gap-2">
         <div className="text-[10px] uppercase tracking-wide text-neutral-500">
           {title}
@@ -308,17 +308,17 @@ function PreviewIssueGroup({
           {issues.map((issue) => (
             <div
               key={`${issue.field}-${issue.label}`}
-              className={`rounded border p-2 text-xs ${issueTone(
+              className={`min-w-0 overflow-hidden rounded border p-2 text-xs ${issueTone(
                 issue.status
               )}`}
             >
               <div className="font-medium">
                 {issue.label}
               </div>
-              <div className="mt-1 text-[11px] opacity-80">
+              <div className="mt-1 break-words text-[11px] opacity-80">
                 {issue.detail}
               </div>
-              <div className="mt-1 text-[10px] uppercase tracking-wide opacity-60">
+              <div className="mt-1 break-all text-[10px] uppercase tracking-wide opacity-60">
                 {issue.field}
               </div>
             </div>
@@ -335,7 +335,7 @@ function RenderPreviewPanel({
   preview: RenderPreview
 }) {
   return (
-    <div className="mt-3 rounded border border-cyan-900/50 bg-cyan-950/10 p-3">
+    <div className="mt-3 min-w-0 overflow-hidden rounded border border-cyan-900/50 bg-cyan-950/10 p-3">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-400">
@@ -354,7 +354,7 @@ function RenderPreviewPanel({
 
       <PreviewReadinessSummary preview={preview} />
 
-      <div className="mt-3 grid gap-3 lg:grid-cols-2">
+      <div className="mt-3 grid min-w-0 gap-3 xl:grid-cols-2">
         <PreviewIssueGroup
           title="Missing Fields"
           issues={preview.missingFields}
@@ -366,12 +366,12 @@ function RenderPreviewPanel({
         />
       </div>
 
-      <div className="mt-3 rounded border border-neutral-800 bg-black/40 p-3">
+      <div className="mt-3 min-w-0 overflow-hidden rounded border border-neutral-800 bg-black/40 p-3">
         <div className="mb-2 text-[10px] uppercase tracking-wide text-neutral-500">
           Rendered Text
         </div>
 
-        <pre className="max-h-[420px] overflow-auto whitespace-pre-wrap text-[11px] leading-relaxed text-neutral-300">
+        <pre className="max-h-[420px] max-w-full overflow-auto whitespace-pre-wrap break-words text-[11px] leading-relaxed text-neutral-300">
           {preview.renderedText}
         </pre>
       </div>
