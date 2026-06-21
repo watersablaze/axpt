@@ -362,8 +362,33 @@ model TransactionDossier {
   opportunities Opportunity[]
 
   bankCoordinates TransactionDossierBankCoordinate[]
+  releaseConditions TransactionDossierReleaseCondition[]
 
   promotedOpportunities Opportunity[] @relation("PromotedOpportunityDossier")
+}
+
+model TransactionDossierReleaseCondition {
+  id        String @id @default(cuid())
+  dossierId String
+
+  title       String
+  description String?
+  trigger     String?
+  responsibleParty String?
+  evidenceRequired String?
+  status      DossierReleaseConditionStatus @default(PENDING)
+
+  satisfiedBy String?
+  satisfiedAt DateTime?
+  notes       String?
+
+  dossier TransactionDossier @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([dossierId])
+  @@index([status])
 }
 
 model TransactionDossierBankCoordinate {
@@ -2066,4 +2091,11 @@ enum DossierBankCoordinateRole {
   ESCROW_TRUST
   INTERMEDIARY
   OTHER
+}
+
+enum DossierReleaseConditionStatus {
+  PENDING
+  SATISFIED
+  WAIVED
+  BLOCKED
 }
