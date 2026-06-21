@@ -8,6 +8,7 @@ import DossierExecutionCard from './DossierExecutionCard'
 import DossierTimelinePanel from './DossierTimelinePanel'
 import DossierDocumentsPanel from './DossierDocumentsPanel'
 import { DossierTermsPanel } from './DossierTermsPanel'
+import { DossierBankCoordinatesPanel } from './DossierBankCoordinatesPanel'
 import TransitionActionBar from './TransitionActionBar'
 import DossierCommandPanel from './DossierCommandPanel'
 import DossierMissionPanel from './DossierMissionPanel'
@@ -427,6 +428,13 @@ export default function DossierWorkspacePanel({
               <DossierTermsPanel
                 dossierId={dossier.id}
                 onTermsChanged={() =>
+                  setRefreshNonce((value) => value + 1)
+                }
+              />
+
+              <DossierBankCoordinatesPanel
+                dossierId={dossier.id}
+                onCoordinatesChanged={() =>
                   setRefreshNonce((value) => value + 1)
                 }
               />
