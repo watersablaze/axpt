@@ -5,6 +5,9 @@ import {
 import {
   renderSpaTemplate,
 } from './templates/spaTemplate'
+import {
+  renderAnnexADeliveryTemplate,
+} from './templates/annexADeliveryTemplate'
 import type {
   DossierInstrumentRenderResult,
 } from './templates/types'
@@ -41,6 +44,9 @@ export async function renderDossierInstrument({
   switch (instrument.type) {
     case 'SPA':
       return renderSpaTemplate(context)
+
+    case 'ANNEX_A_DELIVERY':
+      return renderAnnexADeliveryTemplate(context)
 
     default:
       return {
