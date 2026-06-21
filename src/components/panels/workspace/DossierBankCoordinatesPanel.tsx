@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 
 const BANK_COORDINATE_ROLES = [
   'BUYER_REMITTING',
@@ -224,6 +224,7 @@ export function DossierBankCoordinatesPanel({
     useState<string | null>(null)
   const [savedAt, setSavedAt] =
     useState<string | null>(null)
+  const formRef = useRef<HTMLDivElement | null>(null)
 
   const editingCoordinate = useMemo(
     () =>
@@ -297,6 +298,8 @@ export function DossierBankCoordinatesPanel({
 
   function beginEdit(coordinate: BankCoordinate) {
     setEditingId(coordinate.id)
+    setSavedAt(null)
+    setError(null)
     setDraft({
       role: coordinate.role,
       label: coordinate.label,
@@ -316,6 +319,13 @@ export function DossierBankCoordinatesPanel({
         )
           ? coordinate.verificationStatus as VerificationStatus
           : 'PENDING_REVIEW',
+    })
+
+    window.requestAnimationFrame(() => {
+      formRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+      })
     })
   }
 
@@ -473,7 +483,10 @@ export function DossierBankCoordinatesPanel({
       ) : (
         <>
           <div className="mt-4 grid gap-3 xl:grid-cols-[1fr_1.2fr]">
-            <div className="rounded-lg border border-neutral-800 bg-neutral-950/70 p-3">
+            <div
+              ref={formRef}
+              className="rounded-lg border border-neutral-800 bg-neutral-950/70 p-3"
+            >
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <h4 className="text-sm font-semibold text-white">
@@ -482,18 +495,26 @@ export function DossierBankCoordinatesPanel({
                       : 'New Coordinate'}
                   </h4>
                   <p className="mt-1 text-xs text-neutral-500">
-                    Store enough structure for operator review.
+                    {editingCoordinate
+                      ? `Editing ${editingCoordinate.label}. Changes will update this coordinate record.`
+                      : 'Store enough structure for operator review.'}
                   </p>
                 </div>
 
                 {editingCoordinate ? (
-                  <button
-                    type="button"
-                    onClick={resetDraft}
-                    className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400 hover:border-neutral-500 hover:text-white"
-                  >
-                    Cancel
-                  </button>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded border border-amber-800 bg-amber-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-amber-300">
+                      Editing
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={resetDraft}
+                      className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400 hover:border-neutral-500 hover:text-white"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 ) : null}
               </div>
 
