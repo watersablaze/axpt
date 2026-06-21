@@ -1,13 +1,57 @@
 'use client'
 
+type PartyReadinessSummary = {
+  complete: number
+  partial: number
+  seeded: number
+  needsReview: number
+}
+
 type Props = {
   currentState: string
   nextStates: string[]
   pendingApprovalCount: number
   executedInstrumentCount: number
+  partyReadiness: PartyReadinessSummary
+  documentCount: number
   onSelectExecution?: () => void
   onSelectDocuments?: () => void
   onSelectTimeline?: () => void
+}
+
+function readinessText(summary: PartyReadinessSummary) {
+  const parts = [
+    summary.complete > 0
+      ? `${summary.complete} complete`
+      : null,
+    summary.partial > 0
+      ? `${summary.partial} partial`
+      : null,
+    summary.seeded > 0
+      ? `${summary.seeded} seeded`
+      : null,
+    summary.needsReview > 0
+      ? `${summary.needsReview} needs review`
+      : null,
+  ].filter(Boolean)
+
+  return parts.length > 0 ? parts.join(' · ') : 'No parties attached'
+}
+
+function readinessTone(summary: PartyReadinessSummary) {
+  if (summary.needsReview > 0) {
+    return 'text-red-300'
+  }
+
+  if (summary.seeded > 0 || summary.partial > 0) {
+    return 'text-amber-300'
+  }
+
+  if (summary.complete > 0) {
+    return 'text-emerald-300'
+  }
+
+  return 'text-neutral-500'
 }
 
 export default function DossierCommandPanel({
@@ -15,6 +59,8 @@ export default function DossierCommandPanel({
   nextStates,
   pendingApprovalCount,
   executedInstrumentCount,
+  partyReadiness,
+  documentCount,
   onSelectExecution,
   onSelectDocuments,
   onSelectTimeline,
@@ -61,6 +107,51 @@ export default function DossierCommandPanel({
         </div>
       </div>
 
+      <div className="mt-3 rounded border border-neutral-800 bg-black/20 p-3">
+        <div className="text-[10px] uppercase tracking-wide text-neutral-600">
+          Readiness Signals
+        </div>
+
+        <div className="mt-2 grid gap-2 text-[11px] text-neutral-400 md:grid-cols-3">
+          <div>
+            Parties:{' '}
+            <span className={readinessTone(partyReadiness)}>
+              {readinessText(partyReadiness)}
+            </span>
+          </div>
+
+          <div>
+            Documents:{' '}
+            <span
+              className={
+                documentCount > 0
+                  ? 'text-emerald-300'
+                  : 'text-amber-300'
+              }
+            >
+              {documentCount > 0
+                ? `${documentCount} recorded`
+                : 'pending'}
+            </span>
+          </div>
+
+          <div>
+            Execution:{' '}
+            <span
+              className={
+                executedInstrumentCount > 0
+                  ? 'text-emerald-300'
+                  : 'text-neutral-500'
+              }
+            >
+              {executedInstrumentCount > 0
+                ? `${executedInstrumentCount} instruments executed`
+                : 'not started'}
+            </span>
+          </div>
+        </div>
+      </div>
+
       <div className="mt-3 grid grid-cols-3 gap-2">
         <button
           type="button"
@@ -85,10 +176,6 @@ export default function DossierCommandPanel({
         >
           Timeline
         </button>
-      </div>
-
-      <div className="mt-3 rounded border border-neutral-800 bg-black/20 p-2 text-[11px] text-neutral-500">
-        {executedInstrumentCount} executed instruments recorded.
       </div>
     </div>
   )

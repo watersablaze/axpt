@@ -18,7 +18,9 @@ type DossierParty = {
   id: string
   role: string
   legalName: string
+  representative: string | null
   country: string | null
+  notes: string | null
 }
 
 type DossierInstrument = {
@@ -108,6 +110,37 @@ function formatTime(value?: string) {
     hour: 'numeric',
     minute: '2-digit',
   })
+}
+
+function getPartyReadiness(parties: DossierParty[]) {
+  return parties.reduce(
+    (summary, party) => {
+      if (
+        party.legalName &&
+        party.country &&
+        party.representative
+      ) {
+        summary.complete += 1
+      } else if (
+        party.legalName &&
+        (party.country || party.representative)
+      ) {
+        summary.partial += 1
+      } else if (party.legalName) {
+        summary.seeded += 1
+      } else {
+        summary.needsReview += 1
+      }
+
+      return summary
+    },
+    {
+      complete: 0,
+      partial: 0,
+      seeded: 0,
+      needsReview: 0,
+    }
+  )
 }
 
 export default function DossierWorkspacePanel({
@@ -222,7 +255,6 @@ export default function DossierWorkspacePanel({
           />
 
           <DossierMissionPanel
-            title={dossier.title}
             commodity={dossier.commodity}
             quantityKg={dossier.quantityKg}
             origin={dossier.origin}
@@ -240,6 +272,10 @@ export default function DossierWorkspacePanel({
             executedInstrumentCount={
               dossier.executedInstrumentCount
             }
+            partyReadiness={getPartyReadiness(
+              dossier.parties
+            )}
+            documentCount={dossier.instruments.length}
             onSelectExecution={() => setActiveTab('EXECUTION')}
             onSelectDocuments={() => setActiveTab('DOCUMENTS')}
             onSelectTimeline={() => setActiveTab('TIMELINE')}
