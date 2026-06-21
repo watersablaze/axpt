@@ -15,6 +15,21 @@ type Instrument = {
   title: string
 }
 
+type TemplateIssue = {
+  field: string
+  label: string
+  status: 'PRESENT' | 'MISSING' | 'WARNING'
+  detail: string
+}
+
+type RenderPreview = {
+  instrumentType: string
+  title: string
+  renderedText: string
+  missingFields: TemplateIssue[]
+  warnings: TemplateIssue[]
+}
+
 type Props = {
   dossierId: string
   instruments: Instrument[]
@@ -42,6 +57,20 @@ function statusTone(status: string) {
     case 'PENDING':
     default:
       return 'border-red-900 bg-red-950/20 text-red-300'
+  }
+}
+
+function issueTone(status: TemplateIssue['status']) {
+  switch (status) {
+    case 'MISSING':
+      return 'border-red-900 bg-red-950/20 text-red-300'
+
+    case 'WARNING':
+      return 'border-amber-900 bg-amber-950/20 text-amber-300'
+
+    case 'PRESENT':
+    default:
+      return 'border-emerald-900 bg-emerald-950/20 text-emerald-300'
   }
 }
 
@@ -170,6 +199,103 @@ function getStatusActions(instrument: Instrument) {
   }
 }
 
+function PreviewIssueGroup({
+  title,
+  issues,
+}: {
+  title: string
+  issues: TemplateIssue[]
+}) {
+  return (
+    <div className="rounded border border-neutral-800 bg-black/20 p-3">
+      <div className="flex items-center justify-between gap-2">
+        <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+          {title}
+        </div>
+
+        <div className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-500">
+          {issues.length}
+        </div>
+      </div>
+
+      {issues.length === 0 ? (
+        <div className="mt-3 text-xs text-neutral-600">
+          None recorded.
+        </div>
+      ) : (
+        <div className="mt-3 grid gap-2">
+          {issues.map((issue) => (
+            <div
+              key={`${issue.field}-${issue.label}`}
+              className={`rounded border p-2 text-xs ${issueTone(
+                issue.status
+              )}`}
+            >
+              <div className="font-medium">
+                {issue.label}
+              </div>
+              <div className="mt-1 text-[11px] opacity-80">
+                {issue.detail}
+              </div>
+              <div className="mt-1 text-[10px] uppercase tracking-wide opacity-60">
+                {issue.field}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+function RenderPreviewPanel({
+  preview,
+}: {
+  preview: RenderPreview
+}) {
+  return (
+    <div className="mt-3 rounded border border-cyan-900/50 bg-cyan-950/10 p-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-400">
+            Draft Preview
+          </div>
+
+          <h4 className="mt-1 text-sm font-medium text-white">
+            {preview.title}
+          </h4>
+        </div>
+
+        <div className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300">
+          {preview.instrumentType}
+        </div>
+      </div>
+
+      <div className="mt-3 grid gap-3 lg:grid-cols-2">
+        <PreviewIssueGroup
+          title="Missing Fields"
+          issues={preview.missingFields}
+        />
+
+        <PreviewIssueGroup
+          title="Warnings"
+          issues={preview.warnings}
+        />
+      </div>
+
+      <div className="mt-3 rounded border border-neutral-800 bg-black/40 p-3">
+        <div className="mb-2 text-[10px] uppercase tracking-wide text-neutral-500">
+          Rendered Text
+        </div>
+
+        <pre className="max-h-[420px] overflow-auto whitespace-pre-wrap text-[11px] leading-relaxed text-neutral-300">
+          {preview.renderedText}
+        </pre>
+      </div>
+    </div>
+  )
+}
+
 export default function DossierDocumentsPanel({
   dossierId,
   instruments,
@@ -181,6 +307,16 @@ export default function DossierDocumentsPanel({
 
   const [updatingInstrumentId, setUpdatingInstrumentId] =
     useState<string | null>(null)
+
+  const [previewInstrumentId, setPreviewInstrumentId] =
+    useState<string | null>(null)
+
+  const [loadingPreviewId, setLoadingPreviewId] =
+    useState<string | null>(null)
+
+  const [previews, setPreviews] = useState<
+    Record<string, RenderPreview>
+  >({})
 
   const [error, setError] =
     useState<string | null>(null)
@@ -285,6 +421,59 @@ export default function DossierDocumentsPanel({
     }
   }
 
+  async function toggleRenderPreview(instrument: Instrument) {
+    if (previewInstrumentId === instrument.id) {
+      setPreviewInstrumentId(null)
+      return
+    }
+
+    setPreviewInstrumentId(instrument.id)
+
+    if (previews[instrument.id]) {
+      return
+    }
+
+    setLoadingPreviewId(instrument.id)
+    setError(null)
+
+    try {
+      const response = await fetch(
+        `/api/admin/control-center/instruments/${instrument.id}/render-preview`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+
+      const payload = (await response.json()) as {
+        ok: boolean
+        preview?: RenderPreview
+        error?: string
+      }
+
+      if (!response.ok || !payload.ok || !payload.preview) {
+        throw new Error(
+          payload.error ?? 'INSTRUMENT_RENDER_PREVIEW_FAILED'
+        )
+      }
+
+      setPreviews((current) => ({
+        ...current,
+        [instrument.id]: payload.preview as RenderPreview,
+      }))
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'INSTRUMENT_RENDER_PREVIEW_FAILED'
+      )
+    } finally {
+      setLoadingPreviewId(null)
+    }
+  }
+
   return (
     <div className="rounded-xl border border-neutral-800 bg-black/20 p-3">
       <div className="flex items-center justify-between gap-3">
@@ -385,6 +574,16 @@ export default function DossierDocumentsPanel({
                   ? getStatusActions(status.instrument)
                   : []
 
+                const activePreview =
+                  status.instrument &&
+                  previewInstrumentId === status.instrument.id
+                    ? previews[status.instrument.id]
+                    : null
+
+                const previewLoading =
+                  status.instrument &&
+                  loadingPreviewId === status.instrument.id
+
                 return (
                   <div
                     key={document.key}
@@ -437,6 +636,28 @@ export default function DossierDocumentsPanel({
                           </button>
                         ) : null}
 
+                        {status.instrument ? (
+                          <button
+                            type="button"
+                            disabled={Boolean(
+                              loadingPreviewId
+                            )}
+                            onClick={() =>
+                              toggleRenderPreview(
+                                status.instrument as Instrument
+                              )
+                            }
+                            className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-700 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
+                          >
+                            {previewLoading
+                              ? 'Loading...'
+                              : previewInstrumentId ===
+                                  status.instrument.id
+                                ? 'Hide Preview'
+                                : 'Preview Draft'}
+                          </button>
+                        ) : null}
+
                         {statusActions.map((action) => (
                           <button
                             key={action.status}
@@ -465,6 +686,18 @@ export default function DossierDocumentsPanel({
                         ))}
                       </div>
                     </div>
+
+                    {previewLoading ? (
+                      <div className="mt-3 rounded border border-neutral-800 bg-black/20 p-3 text-xs text-neutral-500">
+                        Loading render preview...
+                      </div>
+                    ) : null}
+
+                    {activePreview ? (
+                      <RenderPreviewPanel
+                        preview={activePreview}
+                      />
+                    ) : null}
                   </div>
                 )
               })}
