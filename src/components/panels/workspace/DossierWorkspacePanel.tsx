@@ -408,47 +408,10 @@ export default function DossierWorkspacePanel({
           ) : null}
 
           {activeTab === 'TIMELINE' ? (
-            <div className="space-y-3">
-              <DossierTimelinePanel
-                currentState={dossier.state}
-              />
-
-              <div className="rounded-xl border border-neutral-800 bg-black/20 p-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
-                    Dossier Event Feed
-                  </div>
-
-                  <div className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
-                    {dossier.events.length} Events
-                  </div>
-                </div>
-
-                {dossier.events.length === 0 ? (
-                  <div className="mt-3 text-xs text-neutral-500">
-                    No events recorded.
-                  </div>
-                ) : (
-                  <div className="mt-3 space-y-2">
-                    {dossier.events.map((event) => (
-                      <div
-                        key={event.id}
-                        className="rounded border border-neutral-800 bg-black/30 p-2 text-xs"
-                      >
-                        <div className="text-neutral-300">
-                          {event.message}
-                        </div>
-
-                        <div className="mt-1 text-[10px] uppercase tracking-wide text-neutral-600">
-                          {event.eventType} · {formatTime(event.createdAt)}
-                          {event.actor ? ` · ${event.actor}` : ''}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </div>
+            <DossierTimelinePanel
+              currentState={dossier.state}
+              events={dossier.events}
+            />
           ) : null}
 
           {activeTab === 'DOCUMENTS' ? (

@@ -412,7 +412,7 @@ export default function DossierDocumentsPanel({
                         </p>
                       </div>
 
-                      <div className="flex shrink-0 flex-col items-end gap-2">
+                      <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
                         <div
                           className={`rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${status.tone}`}
                         >
@@ -437,36 +437,32 @@ export default function DossierDocumentsPanel({
                           </button>
                         ) : null}
 
-                        {statusActions.length > 0 ? (
-                          <div className="flex flex-wrap justify-end gap-1">
-                            {statusActions.map((action) => (
-                              <button
-                                key={action.status}
-                                type="button"
-                                disabled={Boolean(
-                                  creatingType ||
-                                    updatingInstrumentId
-                                )}
-                                onClick={() =>
-                                  status.instrument
-                                    ? updateInstrumentStatus({
-                                        instrument:
-                                          status.instrument,
-                                        status:
-                                          action.status,
-                                      })
-                                    : undefined
-                                }
-                                className="rounded border border-neutral-700 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-cyan-700 hover:text-cyan-300 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
-                              >
-                                {updatingInstrumentId ===
-                                status.instrument?.id
-                                  ? 'Updating...'
-                                  : action.label}
-                              </button>
-                            ))}
-                          </div>
-                        ) : null}
+                        {statusActions.map((action) => (
+                          <button
+                            key={action.status}
+                            type="button"
+                            disabled={Boolean(
+                              creatingType ||
+                                updatingInstrumentId
+                            )}
+                            onClick={() =>
+                              status.instrument
+                                ? updateInstrumentStatus({
+                                    instrument:
+                                      status.instrument,
+                                    status:
+                                      action.status,
+                                  })
+                                : undefined
+                            }
+                            className="rounded border border-neutral-700 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-cyan-700 hover:text-cyan-300 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
+                          >
+                            {updatingInstrumentId ===
+                            status.instrument?.id
+                              ? 'Updating...'
+                              : action.label}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   </div>
