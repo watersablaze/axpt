@@ -36,6 +36,10 @@ function valueOrPlaceholder(value: string | null | undefined) {
     : '[PENDING]'
 }
 
+function hasValue(value: string | null | undefined) {
+  return Boolean(value && value.trim().length > 0)
+}
+
 export function renderSpaTemplate(
   context: DossierTemplateContext
 ): DossierInstrumentRenderResult {
@@ -45,7 +49,7 @@ export function renderSpaTemplate(
   const buyer = context.parties.buyer
   const seller = context.parties.seller
 
-  if (!buyer?.legalName) {
+  if (!hasValue(buyer?.legalName)) {
     missingFields.push(
       missing(
         'parties.buyer.legalName',
@@ -55,7 +59,7 @@ export function renderSpaTemplate(
     )
   }
 
-  if (!seller?.legalName) {
+  if (!hasValue(seller?.legalName)) {
     missingFields.push(
       missing(
         'parties.seller.legalName',
@@ -65,7 +69,27 @@ export function renderSpaTemplate(
     )
   }
 
-  if (!context.dossier.commodity) {
+  if (!hasValue(seller?.representative)) {
+    missingFields.push(
+      missing(
+        'parties.seller.representative',
+        'Seller representative',
+        'SPA requires a seller-side representative or authorized contact before external issuance.'
+      )
+    )
+  }
+
+  if (!hasValue(seller?.country)) {
+    missingFields.push(
+      missing(
+        'parties.seller.country',
+        'Seller country',
+        'SPA requires seller country context for party identification and compliance review.'
+      )
+    )
+  }
+
+  if (!hasValue(context.dossier.commodity)) {
     missingFields.push(
       missing(
         'dossier.commodity',
@@ -75,7 +99,7 @@ export function renderSpaTemplate(
     )
   }
 
-  if (!context.dossier.quantityKg) {
+  if (!hasValue(context.dossier.quantityKg)) {
     missingFields.push(
       missing(
         'dossier.quantityKg',
@@ -85,7 +109,7 @@ export function renderSpaTemplate(
     )
   }
 
-  if (!context.dossier.origin) {
+  if (!hasValue(context.dossier.origin)) {
     missingFields.push(
       missing(
         'dossier.origin',
@@ -95,22 +119,66 @@ export function renderSpaTemplate(
     )
   }
 
-  if (!context.dossier.settlement) {
-    warnings.push(
-      warning(
+  if (!hasValue(context.dossier.settlement)) {
+    missingFields.push(
+      missing(
         'dossier.settlement',
         'Settlement method',
-        'Settlement method is not yet confirmed. Draft should remain internal until settlement terms are completed.'
+        'SPA requires confirmed settlement terms before it can be externally issued.'
       )
     )
   }
 
-  if (!context.dossier.refinery) {
+  if (!hasValue(buyer?.representative)) {
+    warnings.push(
+      warning(
+        'parties.buyer.representative',
+        'Buyer representative',
+        'Buyer representative is not confirmed. Draft can remain internal, but KYC review should confirm authority.'
+      )
+    )
+  }
+
+  if (!hasValue(buyer?.country)) {
+    warnings.push(
+      warning(
+        'parties.buyer.country',
+        'Buyer country',
+        'Buyer country is not confirmed. Compliance review should confirm jurisdiction.'
+      )
+    )
+  }
+
+  if (!hasValue(context.dossier.refinery)) {
     warnings.push(
       warning(
         'dossier.refinery',
         'Refinery coordination',
         'Refinery is not yet attached. Annex C should remain pending until refinery details are confirmed.'
+      )
+    )
+  }
+
+  if (!hasValue(context.source.referralCode)) {
+    warnings.push(
+      warning(
+        'source.referralCode',
+        'Referral code',
+        'No referral code is attached. This may be acceptable, but representative attribution should be confirmed.'
+      )
+    )
+  }
+
+  if (
+    hasValue(seller?.legalName) &&
+    (!hasValue(seller?.representative) ||
+      !hasValue(seller?.country))
+  ) {
+    warnings.push(
+      warning(
+        'parties.seller',
+        'Seller identity context incomplete',
+        'Seller legal name is present, but representative or country context is incomplete. Treat seller side as seeded until enriched.'
       )
     )
   }
