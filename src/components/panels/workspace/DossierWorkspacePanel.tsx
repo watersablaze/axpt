@@ -7,6 +7,7 @@ import DossierOverviewCard from './DossierOverviewCard'
 import DossierExecutionCard from './DossierExecutionCard'
 import DossierTimelinePanel from './DossierTimelinePanel'
 import DossierDocumentsPanel from './DossierDocumentsPanel'
+import { DossierTermsPanel } from './DossierTermsPanel'
 import TransitionActionBar from './TransitionActionBar'
 import DossierCommandPanel from './DossierCommandPanel'
 import DossierMissionPanel from './DossierMissionPanel'
@@ -422,13 +423,22 @@ export default function DossierWorkspacePanel({
           ) : null}
 
           {activeTab === 'DOCUMENTS' ? (
-            <DossierDocumentsPanel
-              dossierId={dossier.id}
-              instruments={dossier.instruments}
-              onInstrumentChanged={() =>
-                setRefreshNonce((value) => value + 1)
-              }
-            />
+            <div className="space-y-3">
+              <DossierTermsPanel
+                dossierId={dossier.id}
+                onTermsChanged={() =>
+                  setRefreshNonce((value) => value + 1)
+                }
+              />
+
+              <DossierDocumentsPanel
+                dossierId={dossier.id}
+                instruments={dossier.instruments}
+                onInstrumentChanged={() =>
+                  setRefreshNonce((value) => value + 1)
+                }
+              />
+            </div>
           ) : null}
         </div>
       ) : null}
