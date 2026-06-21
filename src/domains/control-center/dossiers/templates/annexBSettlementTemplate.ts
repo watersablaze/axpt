@@ -1,5 +1,6 @@
 import type {
   DossierInstrumentRenderResult,
+  DossierTemplateBankCoordinate,
   DossierTemplateContext,
   DossierTemplateIssue,
 } from './types'
@@ -58,6 +59,100 @@ function requireField(
   }
 }
 
+function findCoordinateByRole(
+  coordinates: DossierTemplateBankCoordinate[],
+  role: string
+) {
+  return (
+    coordinates.find(
+      (coordinate) => coordinate.role === role
+    ) ?? null
+  )
+}
+
+function coordinateSummary(
+  coordinate: DossierTemplateBankCoordinate | null
+) {
+  if (!coordinate) {
+    return '[PENDING STRUCTURED BANKING RECORD]'
+  }
+
+  return [
+    coordinate.label,
+    coordinate.accountName
+      ? `Account: ${coordinate.accountName}`
+      : null,
+    coordinate.bankName
+      ? `Bank: ${coordinate.bankName}`
+      : null,
+    coordinate.accountNumber
+      ? `Account No: ${coordinate.accountNumber}`
+      : null,
+    coordinate.routingNumber
+      ? `Routing: ${coordinate.routingNumber}`
+      : null,
+    coordinate.swiftCode
+      ? `SWIFT: ${coordinate.swiftCode}`
+      : null,
+    coordinate.iban
+      ? `IBAN: ${coordinate.iban}`
+      : null,
+    coordinate.currency
+      ? `Currency: ${coordinate.currency}`
+      : null,
+    coordinate.country
+      ? `Country: ${coordinate.country}`
+      : null,
+    `Verification: ${coordinate.verificationStatus}`,
+  ]
+    .filter(Boolean)
+    .join(' | ')
+}
+
+function coordinateHasCoreFields(
+  coordinate: DossierTemplateBankCoordinate | null
+) {
+  if (!coordinate) return false
+
+  return Boolean(
+    hasValue(coordinate.accountName) &&
+    hasValue(coordinate.bankName) &&
+    (
+      hasValue(coordinate.accountNumber) ||
+      hasValue(coordinate.iban)
+    )
+  )
+}
+
+function addCoordinateWarnings(
+  warnings: DossierTemplateIssue[],
+  coordinate: DossierTemplateBankCoordinate | null,
+  fieldPrefix: string,
+  label: string
+) {
+  if (!coordinate) return
+
+  if (!coordinateHasCoreFields(coordinate)) {
+    warnings.push(
+      warning(
+        `${fieldPrefix}.coreFields`,
+        `${label} incomplete`,
+        `${label} exists but is missing account name, bank name, account number, or IBAN.`
+      )
+    )
+  }
+
+  if (coordinate.verificationStatus !== 'VERIFIED') {
+    warnings.push(
+      warning(
+        `${fieldPrefix}.verificationStatus`,
+        `${label} not verified`,
+        `${label} exists but verification status is ${coordinate.verificationStatus}.`
+      )
+    )
+  }
+}
+
 export function renderAnnexBSettlementTemplate(
   context: DossierTemplateContext
 ): DossierInstrumentRenderResult {
@@ -67,6 +162,22 @@ export function renderAnnexBSettlementTemplate(
   const buyer = context.parties.buyer
   const seller = context.parties.seller
   const terms = context.terms
+
+  const buyerCoordinate =
+    findCoordinateByRole(
+      context.bankCoordinates,
+      'BUYER_REMITTING'
+    )
+  const sellerCoordinate =
+    findCoordinateByRole(
+      context.bankCoordinates,
+      'SELLER_RECEIVING'
+    )
+  const escrowCoordinate =
+    findCoordinateByRole(
+      context.bankCoordinates,
+      'ESCROW_TRUST'
+    )
 
   const settlementMethod =
     terms.settlementMethod ?? context.dossier.settlement
@@ -95,21 +206,48 @@ export function renderAnnexBSettlementTemplate(
     'Annex B requires the seller legal name before settlement instructions can be externally issued.'
   )
 
-  missingFields.push(
-    missing(
-      'settlement.buyerBankingCoordinates',
-      'Buyer banking coordinates',
-      'Annex B requires structured buyer banking, issuing bank, escrow, or remitting account coordinates before external issuance.'
+  if (!buyerCoordinate) {
+    missingFields.push(
+      missing(
+        'bankCoordinates.buyerRemitting',
+        'Buyer banking coordinates',
+        'Annex B requires a buyer remitting, issuing bank, escrow, or payment-source coordinate record before external issuance.'
+      )
     )
+  }
+
+  if (!sellerCoordinate) {
+    missingFields.push(
+      missing(
+        'bankCoordinates.sellerReceiving',
+        'Seller banking coordinates',
+        'Annex B requires a seller receiving, beneficiary, escrow, trust, or receiving account coordinate record before external issuance.'
+      )
+    )
+  }
+
+  addCoordinateWarnings(
+    warnings,
+    buyerCoordinate,
+    'bankCoordinates.buyerRemitting',
+    'Buyer banking coordinates'
   )
 
-  missingFields.push(
-    missing(
-      'settlement.sellerBankingCoordinates',
-      'Seller banking coordinates',
-      'Annex B requires structured seller banking, beneficiary, escrow, trust, or receiving account coordinates before external issuance.'
-    )
+  addCoordinateWarnings(
+    warnings,
+    sellerCoordinate,
+    'bankCoordinates.sellerReceiving',
+    'Seller banking coordinates'
   )
+
+  if (escrowCoordinate) {
+    addCoordinateWarnings(
+      warnings,
+      escrowCoordinate,
+      'bankCoordinates.escrowTrust',
+      'Escrow / trust coordinates'
+    )
+  }
 
   if (!hasValue(terms.financialInstrumentType)) {
     warnings.push(
@@ -187,7 +325,7 @@ export function renderAnnexBSettlementTemplate(
     `Current State: ${context.dossier.state}`,
     ``,
     `1. Settlement Purpose`,
-    `This Annex B draft summarizes the settlement method, financial instrument context, beneficiary posture, and payment trigger currently available for the transaction dossier.`,
+    `This Annex B draft summarizes the settlement method, financial instrument context, beneficiary posture, banking coordinate status, and payment trigger currently available for the transaction dossier.`,
     ``,
     `2. Commercial Context`,
     `Commodity: ${valueOrPlaceholder(context.dossier.commodity)}`,
@@ -203,9 +341,9 @@ export function renderAnnexBSettlementTemplate(
     `Beneficiary / Receiving Party: ${valueOrPlaceholder(terms.beneficiary)}`,
     ``,
     `4. Banking Coordinates`,
-    `Buyer Banking / Remitting Coordinates: [PENDING STRUCTURED BANKING RECORD]`,
-    `Seller Banking / Beneficiary Coordinates: [PENDING STRUCTURED BANKING RECORD]`,
-    `Escrow / Trust Coordinates: [PENDING STRUCTURED BANKING RECORD]`,
+    `Buyer Banking / Remitting Coordinates: ${coordinateSummary(buyerCoordinate)}`,
+    `Seller Banking / Beneficiary Coordinates: ${coordinateSummary(sellerCoordinate)}`,
+    `Escrow / Trust Coordinates: ${coordinateSummary(escrowCoordinate)}`,
     ``,
     `5. Parties`,
     `Buyer: ${valueOrPlaceholder(buyer?.legalName)}`,

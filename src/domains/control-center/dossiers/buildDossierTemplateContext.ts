@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import type {
+  DossierTemplateBankCoordinate,
   DossierTemplateContext,
   DossierTemplateParty,
 } from './templates/types'
@@ -31,6 +32,46 @@ function findPartyByRole(
   )
 }
 
+function normalizeBankCoordinate(
+  coordinate: {
+    id: string
+    role: string
+    label: string
+    accountName: string | null
+    bankName: string | null
+    bankAddress: string | null
+    accountNumber: string | null
+    routingNumber: string | null
+    swiftCode: string | null
+    iban: string | null
+    currency: string | null
+    country: string | null
+    notes: string | null
+    verificationStatus: string
+    verifiedBy: string | null
+    verifiedAt: Date | null
+  }
+): DossierTemplateBankCoordinate {
+  return {
+    id: coordinate.id,
+    role: coordinate.role,
+    label: coordinate.label,
+    accountName: coordinate.accountName,
+    bankName: coordinate.bankName,
+    bankAddress: coordinate.bankAddress,
+    accountNumber: coordinate.accountNumber,
+    routingNumber: coordinate.routingNumber,
+    swiftCode: coordinate.swiftCode,
+    iban: coordinate.iban,
+    currency: coordinate.currency,
+    country: coordinate.country,
+    notes: coordinate.notes,
+    verificationStatus: coordinate.verificationStatus,
+    verifiedBy: coordinate.verifiedBy,
+    verifiedAt: coordinate.verifiedAt?.toISOString() ?? null,
+  }
+}
+
 export async function buildDossierTemplateContext(
   dossierId: string
 ): Promise<DossierTemplateContext> {
@@ -42,6 +83,7 @@ export async function buildDossierTemplateContext(
       include: {
         parties: true,
         terms: true,
+        bankCoordinates: true,
         promotedOpportunities: {
           take: 1,
           include: {
@@ -64,6 +106,8 @@ export async function buildDossierTemplateContext(
   }
 
   const parties = dossier.parties.map(normalizeParty)
+  const bankCoordinates =
+    dossier.bankCoordinates.map(normalizeBankCoordinate)
   const sourceOpportunity =
     dossier.promotedOpportunities[0] ?? null
   const sourceIntake =
@@ -119,6 +163,7 @@ export async function buildDossierTemplateContext(
       compensationConfidentialityNote:
         dossier.terms?.compensationConfidentialityNote ?? null,
     },
+    bankCoordinates,
     source: {
       opportunityTitle: sourceOpportunity?.title ?? null,
       intakeReference: sourceIntake?.reference ?? null,

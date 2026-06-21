@@ -18,6 +18,25 @@ export type DossierTemplateParty = {
   notes: string | null
 }
 
+export type DossierTemplateBankCoordinate = {
+  id: string
+  role: string
+  label: string
+  accountName: string | null
+  bankName: string | null
+  bankAddress: string | null
+  accountNumber: string | null
+  routingNumber: string | null
+  swiftCode: string | null
+  iban: string | null
+  currency: string | null
+  country: string | null
+  notes: string | null
+  verificationStatus: string
+  verifiedBy: string | null
+  verifiedAt: string | null
+}
+
 export type DossierTemplateTerms = {
   settlementMethod: string | null
   financialInstrumentType: string | null
@@ -55,6 +74,7 @@ export type DossierTemplateContext = {
     all: DossierTemplateParty[]
   }
   terms: DossierTemplateTerms
+  bankCoordinates: DossierTemplateBankCoordinate[]
   source: {
     opportunityTitle: string | null
     intakeReference: string | null
