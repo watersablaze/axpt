@@ -1,6 +1,7 @@
 'use client'
 
 type Props = {
+  currentState: string
   nextStates: string[]
   transitionCount: number
   executedInstrumentCount: number
@@ -8,33 +9,54 @@ type Props = {
 }
 
 export default function DossierExecutionCard({
+  currentState,
   nextStates,
   transitionCount,
   executedInstrumentCount,
   pendingApprovalCount,
 }: Props) {
+  const proposedMove = nextStates[0] ?? null
+
   return (
     <div className="rounded-xl border border-neutral-800 bg-black/20 p-3">
       <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
-        Execution Status
+        Execution Readiness
       </div>
 
-      <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+      <h3 className="mt-1 text-sm font-medium text-white">
+        State Advancement Cockpit
+      </h3>
+
+      <p className="mt-1 max-w-2xl text-xs text-neutral-500">
+        Review current position, available movement, approvals, and executed
+        instruments before advancing this dossier.
+      </p>
+
+      <div className="mt-3 grid gap-2 text-xs md:grid-cols-4">
         <div className="rounded border border-neutral-800 bg-black/30 p-2">
           <div className="text-[10px] uppercase tracking-wide text-neutral-600">
-            Transitions
+            Current State
           </div>
-          <div className="mt-1 text-lg font-medium text-white">
-            {transitionCount}
+          <div className="mt-1 text-cyan-300">
+            {currentState}
           </div>
         </div>
 
         <div className="rounded border border-neutral-800 bg-black/30 p-2">
           <div className="text-[10px] uppercase tracking-wide text-neutral-600">
-            Executed Instruments
+            Proposed Move
           </div>
-          <div className="mt-1 text-lg font-medium text-white">
-            {executedInstrumentCount}
+          <div className="mt-1 text-white">
+            {proposedMove ?? '—'}
+          </div>
+        </div>
+
+        <div className="rounded border border-neutral-800 bg-black/30 p-2">
+          <div className="text-[10px] uppercase tracking-wide text-neutral-600">
+            Transitions
+          </div>
+          <div className="mt-1 text-white">
+            {transitionCount}
           </div>
         </div>
 
@@ -42,9 +64,30 @@ export default function DossierExecutionCard({
           <div className="text-[10px] uppercase tracking-wide text-neutral-600">
             Pending Approvals
           </div>
-          <div className="mt-1 text-lg font-medium text-white">
+          <div
+            className={
+              pendingApprovalCount > 0
+                ? 'mt-1 text-amber-300'
+                : 'mt-1 text-emerald-300'
+            }
+          >
             {pendingApprovalCount}
           </div>
+        </div>
+      </div>
+
+      <div className="mt-3 rounded border border-neutral-800 bg-black/30 p-2 text-xs">
+        <div className="text-[10px] uppercase tracking-wide text-neutral-600">
+          Executed Instruments
+        </div>
+        <div
+          className={
+            executedInstrumentCount > 0
+              ? 'mt-1 text-emerald-300'
+              : 'mt-1 text-neutral-500'
+          }
+        >
+          {executedInstrumentCount}
         </div>
       </div>
 

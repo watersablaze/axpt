@@ -341,6 +341,7 @@ export default function DossierWorkspacePanel({
           {activeTab === 'EXECUTION' ? (
             <div className="space-y-3">
               <DossierExecutionCard
+                currentState={dossier.state}
                 nextStates={dossier.nextStates}
                 transitionCount={dossier.transitionCount}
                 executedInstrumentCount={
