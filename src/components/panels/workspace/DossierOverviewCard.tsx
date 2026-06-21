@@ -14,7 +14,7 @@ type Props = {
   quantityKg: string | null
   origin: string | null
   refinery: string | null
-  settlement: string | null
+  settlement: string | nullf
   parties: Party[]
 }
 
@@ -149,21 +149,21 @@ export default function DossierOverviewCard({
                       {party.legalName}
                     </div>
 
-                    <div className="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-neutral-500">
-                      {party.country ? (
-                        <span>Country: {party.country}</span>
-                      ) : (
-                        <span>Country: —</span>
-                      )}
-
-                      {party.representative ? (
-                        <span>
-                          Representative: {party.representative}
-                        </span>
-                      ) : (
-                        <span>Representative: —</span>
-                      )}
+                  <div className="mt-2 grid gap-1 text-[11px] text-neutral-500 sm:grid-cols-2">
+                    <div>
+                      Country:{' '}
+                      <span className="text-neutral-400">
+                        {party.country ?? '—'}
+                      </span>
                     </div>
+
+                    <div>
+                      Representative:{' '}
+                      <span className="text-neutral-400">
+                        {party.representative ?? '—'}
+                      </span>
+                    </div>
+                  </div>
 
                     {party.notes ? (
                       <div className="mt-3 rounded border border-neutral-800 bg-black/30 p-2 text-[11px] leading-relaxed text-neutral-400">
