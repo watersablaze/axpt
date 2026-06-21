@@ -159,7 +159,7 @@ export default function OpportunityQueuePanel({
           </div>
 
           <h2 className="mt-1 text-lg font-medium text-white">
-            Commercial Deal FLow 
+            Commercial Deal Flow
           </h2>
         </div>
 
@@ -208,8 +208,8 @@ export default function OpportunityQueuePanel({
                 key={opportunity.id}
                 className={
                   selected
-                    ? 'grid grid-cols-[1fr_auto_auto] items-center gap-3 bg-cyan-950/10 px-3 py-2 text-xs'
-                    : 'grid grid-cols-[1fr_auto_auto] items-center gap-3 px-3 py-2 text-xs'
+                    ? 'grid gap-3 bg-cyan-950/10 px-3 py-3 text-xs lg:grid-cols-[1fr_auto_auto] lg:items-center'
+                    : 'grid gap-3 px-3 py-3 text-xs lg:grid-cols-[1fr_auto_auto] lg:items-center'
                 }
               >
                 <div className="min-w-0">
@@ -228,45 +228,57 @@ export default function OpportunityQueuePanel({
                       : ''}
                   </div>
 
+                  <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] uppercase tracking-wide text-neutral-500">
+                    <span>
+                      Source {opportunity.source}
+                    </span>
+
                     {opportunity.sourceIntake ? (
-                    <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-wide">
-                      <a
-                        href={`/admin/transaction-intakes/${opportunity.sourceIntake.id}`}
-                        className="rounded border border-emerald-900 bg-emerald-950/20 px-2 py-1 text-emerald-300 hover:border-emerald-700 hover:text-emerald-200"
-                      >
-                        From Intake {opportunity.sourceIntake.reference}
-                      </a>
+                      <>
+                        <span className="text-neutral-700">·</span>
 
-                      {opportunity.sourceIntake.referralCode ? (
-                        <span className="rounded border border-neutral-800 bg-black/30 px-2 py-1 text-neutral-400">
-                          Ref {opportunity.sourceIntake.referralCode}
-                        </span>
-                      ) : null}
+                        <a
+                          href={`/admin/transaction-intakes/${opportunity.sourceIntake.id}`}
+                          className="text-emerald-300 hover:text-emerald-200"
+                        >
+                          Intake {opportunity.sourceIntake.reference}
+                        </a>
 
-                      {opportunity.sourceIntake.referredByName ? (
-                        <span className="rounded border border-neutral-800 bg-black/30 px-2 py-1 text-neutral-400">
-                          By {opportunity.sourceIntake.referredByName}
-                        </span>
-                      ) : null}
-                    </div>
-                  ) : null}
+                        {opportunity.sourceIntake.referralCode ? (
+                          <>
+                            <span className="text-neutral-700">·</span>
+                            <span>
+                              Ref {opportunity.sourceIntake.referralCode}
+                            </span>
+                          </>
+                        ) : null}
+
+                        {opportunity.sourceIntake.referredByName ? (
+                          <>
+                            <span className="text-neutral-700">·</span>
+                            <span>
+                              By {opportunity.sourceIntake.referredByName}
+                            </span>
+                          </>
+                        ) : null}
+                      </>
+                    ) : null}
+                  </div>
                 </div>
 
                 <div
-                  className={`rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${statusTone(
+                  className={`w-fit rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${statusTone(
                     opportunity.status
                   )}`}
                 >
                   {opportunity.status}
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 lg:justify-end">
                   {linkedDossierId ? (
                     <button
                       type="button"
-                      onClick={() =>
-                        onOpenDossier?.(linkedDossierId)
-                      }
+                      onClick={() => onOpenDossier?.(linkedDossierId)}
                       className="rounded border border-neutral-700 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-cyan-700 hover:text-cyan-300"
                     >
                       {selected ? 'Active' : 'Open'}
@@ -279,9 +291,7 @@ export default function OpportunityQueuePanel({
                         promotingId === opportunity.id
                       }
                       onClick={() =>
-                        void promoteOpportunity(
-                          opportunity.id
-                        )
+                        void promoteOpportunity(opportunity.id)
                       }
                       className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:bg-black/20 disabled:text-neutral-600"
                     >
