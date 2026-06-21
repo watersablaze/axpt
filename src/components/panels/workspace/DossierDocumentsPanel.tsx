@@ -18,7 +18,7 @@ type Instrument = {
 type Props = {
   dossierId: string
   instruments: Instrument[]
-  onInstrumentDrafted?: () => void
+  onInstrumentChanged?: () => void
 }
 
 function statusTone(status: string) {
@@ -136,13 +136,50 @@ function SummaryPill({
   )
 }
 
+function getStatusActions(instrument: Instrument) {
+  switch (instrument.status) {
+    case 'DRAFT':
+      return [
+        {
+          label: 'Activate',
+          status: 'ACTIVE',
+        },
+        {
+          label: 'Archive',
+          status: 'ARCHIVED',
+        },
+      ]
+
+    case 'ACTIVE':
+      return [
+        {
+          label: 'Mark Executed',
+          status: 'EXECUTED',
+        },
+        {
+          label: 'Archive',
+          status: 'ARCHIVED',
+        },
+      ]
+
+    case 'EXECUTED':
+    case 'ARCHIVED':
+    case 'SUPERSEDED':
+    default:
+      return []
+  }
+}
+
 export default function DossierDocumentsPanel({
   dossierId,
   instruments,
-  onInstrumentDrafted,
+  onInstrumentChanged,
 }: Props) {
   const summary = getSummary(instruments)
   const [creatingType, setCreatingType] =
+    useState<string | null>(null)
+
+  const [updatingInstrumentId, setUpdatingInstrumentId] =
     useState<string | null>(null)
 
   const [error, setError] =
@@ -184,7 +221,7 @@ export default function DossierDocumentsPanel({
         )
       }
 
-      onInstrumentDrafted?.()
+      onInstrumentChanged?.()
     } catch (err) {
       setError(
         err instanceof Error
@@ -193,6 +230,58 @@ export default function DossierDocumentsPanel({
       )
     } finally {
       setCreatingType(null)
+    }
+  }
+
+  async function updateInstrumentStatus({
+    instrument,
+    status,
+  }: {
+    instrument: Instrument
+    status: string
+  }) {
+    if (updatingInstrumentId) {
+      return
+    }
+
+    setUpdatingInstrumentId(instrument.id)
+    setError(null)
+
+    try {
+      const response = await fetch(
+        `/api/admin/control-center/instruments/${instrument.id}/status`,
+        {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            status,
+            note: `${instrument.title} moved from ${instrument.status} to ${status} from the document readiness matrix.`,
+          }),
+        }
+      )
+
+      const payload = (await response.json()) as {
+        ok: boolean
+        error?: string
+      }
+
+      if (!response.ok || !payload.ok) {
+        throw new Error(
+          payload.error ?? 'INSTRUMENT_STATUS_UPDATE_FAILED'
+        )
+      }
+
+      onInstrumentChanged?.()
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'INSTRUMENT_STATUS_UPDATE_FAILED'
+      )
+    } finally {
+      setUpdatingInstrumentId(null)
     }
   }
 
@@ -292,6 +381,10 @@ export default function DossierDocumentsPanel({
                 const isCreating =
                   creatingType === document.instrumentType
 
+                const statusActions = status.instrument
+                  ? getStatusActions(status.instrument)
+                  : []
+
                 return (
                   <div
                     key={document.key}
@@ -329,7 +422,10 @@ export default function DossierDocumentsPanel({
                         {canCreateDraft ? (
                           <button
                             type="button"
-                            disabled={Boolean(creatingType)}
+                            disabled={Boolean(
+                              creatingType ||
+                                updatingInstrumentId
+                            )}
                             onClick={() =>
                               createDraftInstrument(document)
                             }
@@ -339,6 +435,37 @@ export default function DossierDocumentsPanel({
                               ? 'Creating...'
                               : 'Create Draft'}
                           </button>
+                        ) : null}
+
+                        {statusActions.length > 0 ? (
+                          <div className="flex flex-wrap justify-end gap-1">
+                            {statusActions.map((action) => (
+                              <button
+                                key={action.status}
+                                type="button"
+                                disabled={Boolean(
+                                  creatingType ||
+                                    updatingInstrumentId
+                                )}
+                                onClick={() =>
+                                  status.instrument
+                                    ? updateInstrumentStatus({
+                                        instrument:
+                                          status.instrument,
+                                        status:
+                                          action.status,
+                                      })
+                                    : undefined
+                                }
+                                className="rounded border border-neutral-700 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-cyan-700 hover:text-cyan-300 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
+                              >
+                                {updatingInstrumentId ===
+                                status.instrument?.id
+                                  ? 'Updating...'
+                                  : action.label}
+                              </button>
+                            ))}
+                          </div>
                         ) : null}
                       </div>
                     </div>

@@ -455,7 +455,7 @@ export default function DossierWorkspacePanel({
             <DossierDocumentsPanel
               dossierId={dossier.id}
               instruments={dossier.instruments}
-              onInstrumentDrafted={() =>
+              onInstrumentChanged={() =>
                 setRefreshNonce((value) => value + 1)
               }
             />
