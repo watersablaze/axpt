@@ -11,6 +11,7 @@ import DossierDocumentsPanel from './DossierDocumentsPanel'
 import { DossierTermsPanel } from './DossierTermsPanel'
 import { DossierBankCoordinatesPanel } from './DossierBankCoordinatesPanel'
 import { DossierReleaseConditionsPanel } from './DossierReleaseConditionsPanel'
+import { DossierIssuanceApprovalPanel } from './DossierIssuanceApprovalPanel'
 import TransitionActionBar from './TransitionActionBar'
 import DossierCommandPanel from './DossierCommandPanel'
 import DossierMissionPanel from './DossierMissionPanel'
@@ -453,6 +454,14 @@ export default function DossierWorkspacePanel({
               <DossierReleaseConditionsPanel
                 dossierId={dossier.id}
                 onReleaseConditionsChanged={() =>
+                  setRefreshNonce((value) => value + 1)
+                }
+              />
+
+              <DossierIssuanceApprovalPanel
+                dossierId={dossier.id}
+                instruments={dossier.instruments}
+                onApprovalChanged={() =>
                   setRefreshNonce((value) => value + 1)
                 }
               />
