@@ -14,6 +14,9 @@ import {
 import {
   renderAnnexCRefineryTemplate,
 } from './templates/annexCRefineryTemplate'
+import {
+  renderAnnexDComplianceTemplate,
+} from './templates/annexDComplianceTemplate'
 import type {
   DossierInstrumentRenderResult,
 } from './templates/types'
@@ -59,6 +62,9 @@ export async function renderDossierInstrument({
 
     case 'ANNEX_C_REFINERY':
       return renderAnnexCRefineryTemplate(context)
+
+    case 'ANNEX_D_COMPLIANCE':
+      return renderAnnexDComplianceTemplate(context)
 
     default:
       return {
