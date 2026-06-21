@@ -199,6 +199,87 @@ function getStatusActions(instrument: Instrument) {
   }
 }
 
+function getPreviewReadiness(preview: RenderPreview) {
+  if (preview.missingFields.length > 0) {
+    return {
+      label: 'Internal Only',
+      issuance: 'Not Ready',
+      tone:
+        'border-red-900 bg-red-950/20 text-red-300',
+      detail:
+        'Required fields are missing. This draft should not be issued externally.',
+    }
+  }
+
+  if (preview.warnings.length > 0) {
+    return {
+      label: 'Review Required',
+      issuance: 'Hold for Review',
+      tone:
+        'border-amber-900 bg-amber-950/20 text-amber-300',
+      detail:
+        'No required fields are missing, but warnings should be reviewed before external issuance.',
+    }
+  }
+
+  return {
+    label: 'Issuance Ready',
+    issuance: 'Ready for Review',
+    tone:
+      'border-emerald-900 bg-emerald-950/20 text-emerald-300',
+    detail:
+      'No missing fields or warnings are currently reported by the renderer.',
+  }
+}
+
+function PreviewReadinessSummary({
+  preview,
+}: {
+  preview: RenderPreview
+}) {
+  const readiness = getPreviewReadiness(preview)
+
+  return (
+    <div className="mt-3 rounded border border-neutral-800 bg-black/30 p-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+            Draft Readiness
+          </div>
+
+          <div className="mt-1 text-sm font-medium text-white">
+            {readiness.label}
+          </div>
+
+          <p className="mt-1 max-w-2xl text-[11px] leading-relaxed text-neutral-500">
+            {readiness.detail}
+          </p>
+        </div>
+
+        <div
+          className={`rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${readiness.tone}`}
+        >
+          External Issuance: {readiness.issuance}
+        </div>
+      </div>
+
+      <div className="mt-3 grid gap-2 text-[11px] md:grid-cols-3">
+        <div className="rounded border border-red-900/60 bg-red-950/10 p-2 text-red-300">
+          {preview.missingFields.length} Missing
+        </div>
+
+        <div className="rounded border border-amber-900/60 bg-amber-950/10 p-2 text-amber-300">
+          {preview.warnings.length} Warnings
+        </div>
+
+        <div className="rounded border border-neutral-800 bg-black/30 p-2 text-neutral-400">
+          {preview.instrumentType} Preview
+        </div>
+      </div>
+    </div>
+  )
+}
+
 function PreviewIssueGroup({
   title,
   issues,
@@ -270,6 +351,8 @@ function RenderPreviewPanel({
           {preview.instrumentType}
         </div>
       </div>
+
+      <PreviewReadinessSummary preview={preview} />
 
       <div className="mt-3 grid gap-3 lg:grid-cols-2">
         <PreviewIssueGroup
