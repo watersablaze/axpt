@@ -16,6 +16,14 @@ type PromotionTransaction = Pick<
   | 'transactionDossierEvent'
 >
 
+type DossierPartySeed = {
+  role: 'BUYER' | 'SELLER'
+  legalName: string
+  representative?: string | null
+  country?: string | null
+  notes?: string | null
+}
+
 export type OpportunityPromotionResult = {
   opportunityId: string
   dossierId: string
@@ -49,6 +57,88 @@ function normalizeQuantityKg(
   }
 
   return normalized
+}
+
+function clean(
+  value: string | null | undefined
+): string | null {
+  const trimmed = value?.trim()
+  return trimmed ? trimmed : null
+}
+
+function buildPartySeeds(input: {
+  buyerName: string | null
+  sellerName: string | null
+  sourceIntake?: {
+    submitterName: string
+    submitterEmail: string
+    representedPartyType: string | null
+    representedPartyName: string | null
+    submitterCountry: string | null
+    referredByName: string | null
+    referredByCompany: string | null
+    referralCode: string | null
+  } | null
+}): DossierPartySeed[] {
+  const parties: DossierPartySeed[] = []
+
+  const representedPartyType =
+    clean(
+      input.sourceIntake?.representedPartyType
+    )?.toUpperCase() ?? null
+
+  const representedPartyName =
+    clean(input.sourceIntake?.representedPartyName)
+
+  const buyerName =
+    representedPartyType === 'BUYER'
+      ? representedPartyName ?? clean(input.buyerName)
+      : clean(input.buyerName)
+
+  const sellerName =
+    representedPartyType === 'SELLER'
+      ? representedPartyName ?? clean(input.sellerName)
+      : clean(input.sellerName)
+
+  if (buyerName) {
+    parties.push({
+      role: 'BUYER',
+      legalName: buyerName,
+      representative:
+        representedPartyType === 'BUYER'
+          ? clean(input.sourceIntake?.submitterName)
+          : null,
+      country:
+        representedPartyType === 'BUYER'
+          ? clean(input.sourceIntake?.submitterCountry)
+          : null,
+      notes:
+        representedPartyType === 'BUYER'
+          ? `Seeded from source intake. Submitter: ${input.sourceIntake?.submitterName} <${input.sourceIntake?.submitterEmail}>.`
+          : 'Seeded from promoted opportunity buyer field.',
+    })
+  }
+
+  if (sellerName) {
+    parties.push({
+      role: 'SELLER',
+      legalName: sellerName,
+      representative:
+        representedPartyType === 'SELLER'
+          ? clean(input.sourceIntake?.submitterName)
+          : null,
+      country:
+        representedPartyType === 'SELLER'
+          ? clean(input.sourceIntake?.submitterCountry)
+          : null,
+      notes:
+        representedPartyType === 'SELLER'
+          ? `Seeded from source intake. Submitter: ${input.sourceIntake?.submitterName} <${input.sourceIntake?.submitterEmail}>.`
+          : 'Seeded from promoted opportunity seller field.',
+    })
+  }
+
+  return parties
 }
 
 export async function promoteOpportunityToDossier({
@@ -120,6 +210,20 @@ export async function promoteOpportunityToDossier({
             },
             include: {
               promotedDossier: true,
+              sourceTransactionIntake: {
+                select: {
+                  id: true,
+                  reference: true,
+                  submitterName: true,
+                  submitterEmail: true,
+                  submitterCountry: true,
+                  representedPartyType: true,
+                  representedPartyName: true,
+                  referralCode: true,
+                  referredByName: true,
+                  referredByCompany: true,
+                },
+              },
             },
           })
 
@@ -141,6 +245,13 @@ export async function promoteOpportunityToDossier({
           latestOpportunity.quantityKg
         )
 
+        const partySeeds = buildPartySeeds({
+          buyerName: latestOpportunity.buyerName,
+          sellerName: latestOpportunity.sellerName,
+          sourceIntake:
+            latestOpportunity.sourceTransactionIntake,
+        })
+
         const dossier =
           await tx.transactionDossier.create({
             data: {
@@ -152,6 +263,12 @@ export async function promoteOpportunityToDossier({
               quantityKg,
               settlement: null,
               refinery: null,
+              parties:
+                partySeeds.length > 0
+                  ? {
+                      create: partySeeds,
+                    }
+                  : undefined,
             },
           })
 
@@ -179,9 +296,44 @@ export async function promoteOpportunityToDossier({
               source: 'opportunity.promotion',
               opportunityId: latestOpportunity.id,
               opportunityTitle: latestOpportunity.title,
+              seededPartyCount: partySeeds.length,
+              sourceIntakeId:
+                latestOpportunity.sourceTransactionIntake?.id ??
+                null,
+              sourceIntakeReference:
+                latestOpportunity.sourceTransactionIntake
+                  ?.reference ?? null,
+              referralCode:
+                latestOpportunity.sourceTransactionIntake
+                  ?.referralCode ?? null,
+              referredByName:
+                latestOpportunity.sourceTransactionIntake
+                  ?.referredByName ?? null,
             },
           },
         })
+
+        if (partySeeds.length > 0) {
+          await tx.transactionDossierEvent.create({
+            data: {
+              dossierId: dossier.id,
+              eventType: 'DOSSIER_PARTIES_SEEDED',
+              fromState: null,
+              toState: 'INTAKE_PENDING',
+              message:
+                'Initial dossier parties seeded from promoted opportunity.',
+              actor: operatorEmail,
+              metadata: {
+                source: 'opportunity.promotion',
+                opportunityId: latestOpportunity.id,
+                seededParties: partySeeds.map((party) => ({
+                  role: party.role,
+                  legalName: party.legalName,
+                })),
+              },
+            },
+          })
+        }
 
         return {
           dossier,
