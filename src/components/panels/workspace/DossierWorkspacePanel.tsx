@@ -13,6 +13,9 @@ import DossierMissionPanel from './DossierMissionPanel'
 import DossierWorkspaceTabs, {
   type DossierWorkspaceTab,
 } from './DossierWorkspaceTabs'
+import {
+  getRequiredDossierDocuments,
+} from '@/domains/control-center/dossiers/documentRequirements'
 
 type DossierParty = {
   id: string
@@ -139,6 +142,42 @@ function getPartyReadiness(parties: DossierParty[]) {
       partial: 0,
       seeded: 0,
       needsReview: 0,
+    }
+  )
+}
+
+function getDocumentReadiness(
+  instruments: DossierInstrument[]
+) {
+  const requiredDocuments =
+    getRequiredDossierDocuments()
+
+  return requiredDocuments.reduce(
+    (summary, document) => {
+      const instrument = document.instrumentType
+        ? instruments.find(
+            (item) => item.type === document.instrumentType
+          )
+        : null
+
+      if (
+        instrument?.status === 'EXECUTED' ||
+        instrument?.status === 'ACTIVE'
+      ) {
+        summary.ready += 1
+      } else if (instrument?.status === 'DRAFT') {
+        summary.draft += 1
+      } else {
+        summary.pending += 1
+      }
+
+      return summary
+    },
+    {
+      ready: 0,
+      draft: 0,
+      pending: 0,
+      total: requiredDocuments.length,
     }
   )
 }
@@ -275,7 +314,9 @@ export default function DossierWorkspacePanel({
             partyReadiness={getPartyReadiness(
               dossier.parties
             )}
-            documentCount={dossier.instruments.length}
+            documentReadiness={getDocumentReadiness(
+              dossier.instruments
+            )}
             onSelectExecution={() => setActiveTab('EXECUTION')}
             onSelectDocuments={() => setActiveTab('DOCUMENTS')}
             onSelectTimeline={() => setActiveTab('TIMELINE')}

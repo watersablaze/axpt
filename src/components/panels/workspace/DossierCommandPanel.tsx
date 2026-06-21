@@ -7,13 +7,20 @@ type PartyReadinessSummary = {
   needsReview: number
 }
 
+type DocumentReadinessSummary = {
+  ready: number
+  draft: number
+  pending: number
+  total: number
+}
+
 type Props = {
   currentState: string
   nextStates: string[]
   pendingApprovalCount: number
   executedInstrumentCount: number
   partyReadiness: PartyReadinessSummary
-  documentCount: number
+  documentReadiness: DocumentReadinessSummary
   onSelectExecution?: () => void
   onSelectDocuments?: () => void
   onSelectTimeline?: () => void
@@ -54,13 +61,37 @@ function readinessTone(summary: PartyReadinessSummary) {
   return 'text-neutral-500'
 }
 
+function documentReadinessText(
+  summary: DocumentReadinessSummary
+) {
+  return `${summary.ready} ready · ${summary.draft} draft · ${summary.pending} pending`
+}
+
+function documentReadinessTone(
+  summary: DocumentReadinessSummary
+) {
+  if (summary.pending > 0) {
+    return 'text-amber-300'
+  }
+
+  if (summary.draft > 0) {
+    return 'text-cyan-300'
+  }
+
+  if (summary.ready === summary.total && summary.total > 0) {
+    return 'text-emerald-300'
+  }
+
+  return 'text-neutral-500'
+}
+
 export default function DossierCommandPanel({
   currentState,
   nextStates,
   pendingApprovalCount,
   executedInstrumentCount,
   partyReadiness,
-  documentCount,
+  documentReadiness,
   onSelectExecution,
   onSelectDocuments,
   onSelectTimeline,
@@ -123,15 +154,11 @@ export default function DossierCommandPanel({
           <div>
             Documents:{' '}
             <span
-              className={
-                documentCount > 0
-                  ? 'text-emerald-300'
-                  : 'text-amber-300'
-              }
+              className={documentReadinessTone(
+                documentReadiness
+              )}
             >
-              {documentCount > 0
-                ? `${documentCount} recorded`
-                : 'pending'}
+              {documentReadinessText(documentReadiness)}
             </span>
           </div>
 
