@@ -453,7 +453,11 @@ export default function DossierWorkspacePanel({
 
           {activeTab === 'DOCUMENTS' ? (
             <DossierDocumentsPanel
+              dossierId={dossier.id}
               instruments={dossier.instruments}
+              onInstrumentDrafted={() =>
+                setRefreshNonce((value) => value + 1)
+              }
             />
           ) : null}
         </div>

@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import {
   DOSSIER_DOCUMENT_GROUPS,
   type RequiredDossierDocument,
@@ -14,7 +16,9 @@ type Instrument = {
 }
 
 type Props = {
+  dossierId: string
   instruments: Instrument[]
+  onInstrumentDrafted?: () => void
 }
 
 function statusTone(status: string) {
@@ -133,9 +137,64 @@ function SummaryPill({
 }
 
 export default function DossierDocumentsPanel({
+  dossierId,
   instruments,
+  onInstrumentDrafted,
 }: Props) {
   const summary = getSummary(instruments)
+  const [creatingType, setCreatingType] =
+    useState<string | null>(null)
+
+  const [error, setError] =
+    useState<string | null>(null)
+
+  async function createDraftInstrument(
+    document: RequiredDossierDocument
+  ) {
+    if (!document.instrumentType || creatingType) {
+      return
+    }
+
+    setCreatingType(document.instrumentType)
+    setError(null)
+
+    try {
+      const response = await fetch(
+        `/api/admin/control-center/dossiers/${dossierId}/instruments`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            instrumentType: document.instrumentType,
+            title: document.label,
+          }),
+        }
+      )
+
+      const payload = (await response.json()) as {
+        ok: boolean
+        error?: string
+      }
+
+      if (!response.ok || !payload.ok) {
+        throw new Error(
+          payload.error ?? 'INSTRUMENT_DRAFT_FAILED'
+        )
+      }
+
+      onInstrumentDrafted?.()
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : 'INSTRUMENT_DRAFT_FAILED'
+      )
+    } finally {
+      setCreatingType(null)
+    }
+  }
 
   return (
     <div className="rounded-xl border border-neutral-800 bg-black/20 p-3">
@@ -159,6 +218,12 @@ export default function DossierDocumentsPanel({
           {instruments.length} Instruments
         </div>
       </div>
+
+      {error ? (
+        <div className="mt-3 rounded border border-red-900 bg-red-950/20 p-2 text-xs text-red-300">
+          {error}
+        </div>
+      ) : null}
 
       <div className="mt-3 rounded border border-neutral-800 bg-black/30 p-3">
         <div className="text-[10px] uppercase tracking-wide text-neutral-600">
@@ -218,6 +283,15 @@ export default function DossierDocumentsPanel({
                   instruments
                 )
 
+                const canCreateDraft =
+                  Boolean(
+                    document.instrumentType &&
+                      document.canDraftInstrument
+                  ) && !status.instrument
+
+                const isCreating =
+                  creatingType === document.instrumentType
+
                 return (
                   <div
                     key={document.key}
@@ -245,10 +319,27 @@ export default function DossierDocumentsPanel({
                         </p>
                       </div>
 
-                      <div
-                        className={`rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${status.tone}`}
-                      >
-                        {status.label}
+                      <div className="flex shrink-0 flex-col items-end gap-2">
+                        <div
+                          className={`rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${status.tone}`}
+                        >
+                          {status.label}
+                        </div>
+
+                        {canCreateDraft ? (
+                          <button
+                            type="button"
+                            disabled={Boolean(creatingType)}
+                            onClick={() =>
+                              createDraftInstrument(document)
+                            }
+                            className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-700 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
+                          >
+                            {isCreating
+                              ? 'Creating...'
+                              : 'Create Draft'}
+                          </button>
+                        ) : null}
                       </div>
                     </div>
                   </div>

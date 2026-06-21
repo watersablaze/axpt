@@ -1,8 +1,23 @@
+export const DOSSIER_INSTRUMENT_TYPES = [
+  'SPA',
+  'ANNEX_A_DELIVERY',
+  'ANNEX_B_SETTLEMENT',
+  'ANNEX_C_REFINERY',
+  'ANNEX_D_COMPLIANCE',
+  'ANNEX_E_PROCEDURE',
+  'EXPORT_RELEASE_NOTICE',
+  'EXPORT_ACTIVATION_NOTICE',
+] as const
+
+export type DossierInstrumentType =
+  (typeof DOSSIER_INSTRUMENT_TYPES)[number]
+
 export type RequiredDossierDocument = {
   key: string
   label: string
   description: string
-  instrumentType?: string
+  instrumentType?: DossierInstrumentType
+  canDraftInstrument?: boolean
   requiredFor: string
 }
 
@@ -93,6 +108,7 @@ export const DOSSIER_DOCUMENT_GROUPS: DossierDocumentGroup[] = [
     documents: [
       {
         key: 'SPA',
+        canDraftInstrument: true,
         label: 'SPA',
         description:
           'Sale and purchase agreement package for the transaction.',
@@ -101,6 +117,7 @@ export const DOSSIER_DOCUMENT_GROUPS: DossierDocumentGroup[] = [
       },
       {
         key: 'ANNEX_A_DELIVERY',
+        canDraftInstrument: true,
         label: 'Annex A · Delivery',
         description:
           'Delivery terms, transaction route, and movement responsibilities.',
@@ -109,6 +126,7 @@ export const DOSSIER_DOCUMENT_GROUPS: DossierDocumentGroup[] = [
       },
       {
         key: 'ANNEX_B_SETTLEMENT',
+        canDraftInstrument: true,
         label: 'Annex B · Settlement',
         description:
           'Banking, payment, escrow, or settlement pathway terms.',
@@ -117,6 +135,7 @@ export const DOSSIER_DOCUMENT_GROUPS: DossierDocumentGroup[] = [
       },
       {
         key: 'ANNEX_C_REFINERY',
+        canDraftInstrument: true,
         label: 'Annex C · Refinery',
         description:
           'Refinery coordination, assay, intake, and processing expectations.',
@@ -125,6 +144,7 @@ export const DOSSIER_DOCUMENT_GROUPS: DossierDocumentGroup[] = [
       },
       {
         key: 'ANNEX_D_COMPLIANCE',
+        canDraftInstrument: true,
         label: 'Annex D · Compliance',
         description:
           'KYC, identity, authorization, and commercial compliance package.',
@@ -133,6 +153,7 @@ export const DOSSIER_DOCUMENT_GROUPS: DossierDocumentGroup[] = [
       },
       {
         key: 'ANNEX_E_PROCEDURE',
+        canDraftInstrument: true,
         label: 'Annex E · Execution Framework',
         description:
           'Step-by-step transaction execution procedure and release framework.',
@@ -148,6 +169,7 @@ export const DOSSIER_DOCUMENT_GROUPS: DossierDocumentGroup[] = [
     documents: [
       {
         key: 'EXPORT_RELEASE_NOTICE',
+        canDraftInstrument: true,
         label: 'Export Release Notice',
         description:
           'Notice confirming export release conditions are satisfied.',
@@ -156,6 +178,7 @@ export const DOSSIER_DOCUMENT_GROUPS: DossierDocumentGroup[] = [
       },
       {
         key: 'EXPORT_ACTIVATION_NOTICE',
+        canDraftInstrument: true,
         label: 'Export Activation Notice',
         description:
           'Notice confirming export activation and operational movement.',
@@ -174,4 +197,17 @@ export function getRequiredDossierDocuments() {
 
 export function getRequiredDossierDocumentCount() {
   return getRequiredDossierDocuments().length
+}
+
+
+export function findRequiredDossierDocumentByInstrumentType(
+  instrumentType: string
+) {
+  return getRequiredDossierDocuments().find(
+    (
+      document
+    ): document is RequiredDossierDocument & {
+      instrumentType: DossierInstrumentType
+    } => document.instrumentType === instrumentType
+  )
 }
