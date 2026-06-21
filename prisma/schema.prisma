@@ -363,8 +363,43 @@ model TransactionDossier {
 
   bankCoordinates TransactionDossierBankCoordinate[]
   releaseConditions TransactionDossierReleaseCondition[]
+  issuanceApprovals DossierIssuanceApproval[]
 
   promotedOpportunities Opportunity[] @relation("PromotedOpportunityDossier")
+}
+
+model DossierIssuanceApproval {
+  id        String @id @default(cuid())
+  dossierId String
+
+  instrumentType InstrumentType
+  instrumentId   String?
+
+  status DossierIssuanceApprovalStatus @default(PENDING)
+
+  requestedBy String?
+  requestedAt DateTime @default(now())
+
+  approvedBy String?
+  approvedAt DateTime?
+
+  rejectedBy String?
+  rejectedAt DateTime?
+
+  revokedBy String?
+  revokedAt DateTime?
+
+  notes String?
+
+  dossier TransactionDossier @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([dossierId, instrumentType])
+  @@index([dossierId])
+  @@index([instrumentType])
+  @@index([status])
 }
 
 model TransactionDossierReleaseCondition {
@@ -2098,4 +2133,11 @@ enum DossierReleaseConditionStatus {
   SATISFIED
   WAIVED
   BLOCKED
+}
+
+enum DossierIssuanceApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  REVOKED
 }
