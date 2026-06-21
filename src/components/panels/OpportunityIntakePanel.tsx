@@ -133,16 +133,16 @@ export default function OpportunityIntakePanel() {
       <div className="flex items-center justify-between gap-3">
         <div>
           <div className="text-xs uppercase tracking-[0.18em] text-neutral-500">
-            Opportunity Intake
+            Manual Capture
           </div>
 
           <h2 className="mt-1 text-lg font-medium text-white">
-            Manual Deal Bridge
+            Outside-Gate Opportunity Intake
           </h2>
 
           {!expanded ? (
             <div className="mt-1 text-xs text-neutral-500">
-              Capture manual deal signals from LOI, WhatsApp, email, or call.
+            Capture opportunities received outside the public transaction intake gate.
             </div>
           ) : null}
         </div>

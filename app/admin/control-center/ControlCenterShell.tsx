@@ -194,8 +194,6 @@ export function ControlCenterShell() {
               data={snapshot.execution}
             />
 
-            <OpportunityIntakePanel />
-
             <OpportunityQueuePanel
               onPromoted={
                 operationalState.refreshOperationalState
@@ -211,6 +209,8 @@ export function ControlCenterShell() {
               }
               onFocusDossier={openDossier}
             />
+
+            <OpportunityIntakePanel />
           </>
         ) : null}
 
