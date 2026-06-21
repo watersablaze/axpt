@@ -361,7 +361,40 @@ model TransactionDossier {
   events        TransactionDossierEvent[]
   opportunities Opportunity[]
 
+  bankCoordinates TransactionDossierBankCoordinate[]
+
   promotedOpportunities Opportunity[] @relation("PromotedOpportunityDossier")
+}
+
+model TransactionDossierBankCoordinate {
+  id        String @id @default(cuid())
+  dossierId String
+
+  role        DossierBankCoordinateRole
+  label       String
+  accountName String?
+  bankName    String?
+  bankAddress String?
+  accountNumber String?
+  routingNumber String?
+  swiftCode   String?
+  iban        String?
+  currency    String?
+  country     String?
+  notes       String?
+
+  verificationStatus String @default("PENDING_REVIEW")
+  verifiedBy         String?
+  verifiedAt         DateTime?
+
+  dossier TransactionDossier @relation(fields: [dossierId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([dossierId])
+  @@index([role])
+  @@index([verificationStatus])
 }
 
 model TransactionDossierTerms {
@@ -2025,4 +2058,12 @@ enum PartyRole {
   REFINERY
   TREASURY_CONTACT
   LOGISTICS_CONTACT
+}
+
+enum DossierBankCoordinateRole {
+  BUYER_REMITTING
+  SELLER_RECEIVING
+  ESCROW_TRUST
+  INTERMEDIARY
+  OTHER
 }
