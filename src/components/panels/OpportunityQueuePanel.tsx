@@ -1,77 +1,78 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 type Props = {
-  selectedDossierId?: string | null
-  onPromoted?: () => Promise<void>
-  onOpenDossier?: (dossierId: string) => void
-}
+  selectedDossierId?: string | null;
+  onPromoted?: () => Promise<void>;
+  onOpenDossier?: (dossierId: string) => void;
+};
 
 type OpportunitySourceIntake = {
-  id: string
-  reference: string
-  referralCode: string | null
-  referredByName: string | null
-  referredByCompany: string | null
-  submitterName: string
-  submitterEmail: string
-  promotedAt: string | null
-  promotedBy: string | null
-}
+  id: string;
+  reference: string;
+  referralCode: string | null;
+  referredByName: string | null;
+  referredByCompany: string | null;
+  submitterName: string;
+  submitterEmail: string;
+  promotedAt: string | null;
+  promotedBy: string | null;
+};
 
 type OpportunityRecord = {
-  id: string
-  title: string
-  source: string
-  status: string
-  commodity: string | null
-  buyerName: string | null
-  sellerName: string | null
-  origin: string | null
-  destination: string | null
-  quantityKg: string | null
-  notes: string | null
-  dossierId: string | null
-  promotedDossierId: string | null
-  sourceIntake: OpportunitySourceIntake | null
-  createdAt: string
-  updatedAt: string
-}
+  id: string;
+  title: string;
+  source: string;
+  status: string;
+  commodity: string | null;
+  buyerName: string | null;
+  sellerName: string | null;
+  origin: string | null;
+  destination: string | null;
+  quantityKg: string | null;
+  notes: string | null;
+  dossierId: string | null;
+  promotedDossierId: string | null;
+  sourceIntake: OpportunitySourceIntake | null;
+  createdAt: string;
+  updatedAt: string;
+};
 
 type OpportunitiesResponse = {
-  ok: boolean
-  opportunities?: OpportunityRecord[]
-}
+  ok: boolean;
+  opportunities?: OpportunityRecord[];
+};
 
 type PromoteResponse = {
-  ok: boolean
+  ok: boolean;
   result?: {
-    opportunityId: string
-    dossierId: string
-    reference: string
-    alreadyPromoted: boolean
-  }
-  error?: string
-}
+    opportunityId: string;
+    dossierId: string;
+    reference: string;
+    alreadyPromoted: boolean;
+  };
+  error?: string;
+};
 
 function statusTone(status: string) {
   switch (status) {
-    case 'PROMOTED':
-      return 'border-emerald-900 bg-emerald-950/20 text-emerald-300'
+    case "PROMOTED":
+      return "border-emerald-900 bg-emerald-950/20 text-emerald-300";
 
-    case 'APPROVED':
-      return 'border-cyan-900 bg-cyan-950/20 text-cyan-300'
+    case "APPROVED":
+      return "border-cyan-900 bg-cyan-950/20 text-cyan-300";
 
-    case 'UNDER_REVIEW':
-      return 'border-orange-900 bg-orange-950/20 text-orange-300'
+    case "UNDER_REVIEW":
+      return "border-orange-900 bg-orange-950/20 text-orange-300";
 
-    case 'REJECTED':
-    case 'ARCHIVED':
-      return 'border-neutral-800 bg-black/30 text-neutral-500'
+    case "REJECTED":
+    case "ARCHIVED":
+      return "border-neutral-800 bg-black/30 text-neutral-500";
 
     default:
-      return 'border-neutral-800 bg-black/20 text-neutral-400'
+      return "border-neutral-800 bg-black/20 text-neutral-400";
   }
 }
 
@@ -80,73 +81,63 @@ export default function OpportunityQueuePanel({
   onPromoted,
   onOpenDossier,
 }: Props) {
-  const [opportunities, setOpportunities] =
-    useState<OpportunityRecord[]>([])
+  const searchParams = useSearchParams();
+  const selectedOpportunityId = searchParams.get("opportunityId");
+  const [opportunities, setOpportunities] = useState<OpportunityRecord[]>([]);
 
-  const [promotingId, setPromotingId] =
-    useState<string | null>(null)
+  const [promotingId, setPromotingId] = useState<string | null>(null);
 
-  const [error, setError] =
-    useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null);
 
   async function loadOpportunities() {
-    const res = await fetch(
-      '/api/admin/control-center/opportunities',
-      {
-        cache: 'no-store',
-        credentials: 'include',
-      }
-    )
+    const res = await fetch("/api/admin/control-center/opportunities", {
+      cache: "no-store",
+      credentials: "include",
+    });
 
-    const json =
-      (await res.json()) as OpportunitiesResponse
+    const json = (await res.json()) as OpportunitiesResponse;
 
     setOpportunities(
-      Array.isArray(json.opportunities)
-        ? json.opportunities
-        : []
-    )
+      Array.isArray(json.opportunities) ? json.opportunities : [],
+    );
   }
 
   useEffect(() => {
-    void loadOpportunities()
-  }, [])
+    void loadOpportunities();
+  }, []);
 
-  async function promoteOpportunity(
-    opportunityId: string
-  ) {
-    setPromotingId(opportunityId)
-    setError(null)
+  async function promoteOpportunity(opportunityId: string) {
+    setPromotingId(opportunityId);
+    setError(null);
 
     try {
       const res = await fetch(
         `/api/admin/control-center/opportunities/${opportunityId}/promote`,
         {
-          method: 'POST',
-          cache: 'no-store',
-          credentials: 'include',
-        }
-      )
+          method: "POST",
+          cache: "no-store",
+          credentials: "include",
+        },
+      );
 
-      const json =
-        (await res.json()) as PromoteResponse
+      const json = (await res.json()) as PromoteResponse;
 
       if (!res.ok || !json.ok) {
-        setError(json.error ?? 'PROMOTION_FAILED')
-        return
+        setError(json.error ?? "PROMOTION_FAILED");
+        return;
       }
 
-      await loadOpportunities()
-      await onPromoted?.()
+      await loadOpportunities();
+      await onPromoted?.();
 
       if (json.result?.dossierId) {
-        onOpenDossier?.(json.result.dossierId)
+        onOpenDossier?.(json.result.dossierId);
       }
     } catch (err) {
-      console.error('[OPPORTUNITY_PROMOTION_FAILED]', err)
-      setError('PROMOTION_FAILED')
+      console.error("[OPPORTUNITY_PROMOTION_FAILED]", err);
+      setError("PROMOTION_FAILED");
     } finally {
-      setPromotingId(null)
+      setPromotingId(null);
     }
   }
 
@@ -192,24 +183,24 @@ export default function OpportunityQueuePanel({
         <div className="divide-y divide-neutral-900 rounded-lg border border-neutral-800 bg-black/20">
           {opportunities.map((opportunity) => {
             const promoted =
-              opportunity.status === 'PROMOTED' ||
-              Boolean(opportunity.promotedDossierId)
+              opportunity.status === "PROMOTED" ||
+              Boolean(opportunity.promotedDossierId);
 
             const linkedDossierId =
-              opportunity.promotedDossierId ??
-              opportunity.dossierId
+              opportunity.promotedDossierId ?? opportunity.dossierId;
 
             const selected =
-              Boolean(linkedDossierId) &&
-              linkedDossierId === selectedDossierId
+              opportunity.id === selectedOpportunityId ||
+              (Boolean(linkedDossierId) &&
+                linkedDossierId === selectedDossierId);
 
             return (
               <div
                 key={opportunity.id}
                 className={
                   selected
-                    ? 'grid gap-3 bg-cyan-950/10 px-3 py-3 text-xs lg:grid-cols-[1fr_auto_auto] lg:items-center'
-                    : 'grid gap-3 px-3 py-3 text-xs lg:grid-cols-[1fr_auto_auto] lg:items-center'
+                    ? "grid gap-3 border-l-2 border-emerald-400 bg-emerald-950/10 px-3 py-3 text-xs ring-1 ring-emerald-500/30 lg:grid-cols-[1fr_auto_auto] lg:items-center"
+                    : "grid gap-3 px-3 py-3 text-xs lg:grid-cols-[1fr_auto_auto] lg:items-center"
                 }
               >
                 <div className="min-w-0">
@@ -218,20 +209,18 @@ export default function OpportunityQueuePanel({
                   </div>
 
                   <div className="mt-1 truncate text-[11px] text-neutral-500">
-                    {opportunity.commodity ?? 'Commodity unknown'}
-                    {' · '}
-                    {opportunity.quantityKg ?? 'Qty unknown'} KG
-                    {' · '}
-                    {opportunity.origin ?? 'Origin unknown'}
+                    {opportunity.commodity ?? "Commodity unknown"}
+                    {" · "}
+                    {opportunity.quantityKg ?? "Qty unknown"} KG
+                    {" · "}
+                    {opportunity.origin ?? "Origin unknown"}
                     {opportunity.destination
                       ? ` → ${opportunity.destination}`
-                      : ''}
+                      : ""}
                   </div>
 
                   <div className="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] uppercase tracking-wide text-neutral-500">
-                    <span>
-                      Source {opportunity.source}
-                    </span>
+                    <span>Source {opportunity.source}</span>
 
                     {opportunity.sourceIntake ? (
                       <>
@@ -268,7 +257,7 @@ export default function OpportunityQueuePanel({
 
                 <div
                   className={`w-fit rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${statusTone(
-                    opportunity.status
+                    opportunity.status,
                   )}`}
                 >
                   {opportunity.status}
@@ -281,31 +270,26 @@ export default function OpportunityQueuePanel({
                       onClick={() => onOpenDossier?.(linkedDossierId)}
                       className="rounded border border-neutral-700 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-cyan-700 hover:text-cyan-300"
                     >
-                      {selected ? 'Active' : 'Open'}
+                      {selected ? "Active" : "Open"}
                     </button>
                   ) : (
                     <button
                       type="button"
-                      disabled={
-                        promoted ||
-                        promotingId === opportunity.id
-                      }
-                      onClick={() =>
-                        void promoteOpportunity(opportunity.id)
-                      }
+                      disabled={promoted || promotingId === opportunity.id}
+                      onClick={() => void promoteOpportunity(opportunity.id)}
                       className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:bg-black/20 disabled:text-neutral-600"
                     >
                       {promotingId === opportunity.id
-                        ? 'Promoting...'
-                        : 'Promote'}
+                        ? "Promoting..."
+                        : "Promote"}
                     </button>
                   )}
                 </div>
               </div>
-            )
+            );
           })}
         </div>
       )}
     </section>
-  )
+  );
 }

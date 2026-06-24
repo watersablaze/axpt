@@ -299,10 +299,10 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
                     </p>
 
                     <Link
-                      href="/admin/control-center"
+                      href={`/admin/control-center?opportunityId=${intake.promotedOpportunity.id}`}
                       className="mt-3 inline-flex rounded border border-emerald-500/40 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-200 hover:bg-emerald-500/10"
                     >
-                      Open Control Center
+                      Open Promoted Opportunity
                     </Link>
                   </div>
                 ) : (
