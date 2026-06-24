@@ -40,15 +40,24 @@ const programOptions = [
   'Other',
 ]
 
-const transactionTypeOptions = [
-  'FOB',
-  'CIF',
+const transactionStructureOptions = [
+  'Trial Purchase',
+  'Recurring Supply',
   'Cash & Carry',
   'Refinery Settlement',
   'Escrow Settlement',
-  'Hand-carry Export',
+  'Hand-Carry Export',
   'Other',
   'Not sure',
+]
+
+const deliveryTermOptions = [
+  'FOB',
+  'CIF',
+  'Hand-carry',
+  'Ex-warehouse',
+  'To be confirmed',
+  'Other',
 ]
 
 const settlementMethodOptions = [
@@ -68,10 +77,19 @@ const readinessOptions = [
   'KYC available',
   'Mandate / authorization available',
   'Banking readiness',
+  'DLC / SBLC readiness',
+  'MT103 readiness',
   'Refinery readiness',
   'Logistics / import readiness',
   'LOI / ICPO / prior SPA available',
   'Other supporting documents',
+]
+
+const financialReadinessMarkers = [
+  'Proof of Funds / POF',
+  'Banking readiness',
+  'DLC / SBLC readiness',
+  'MT103 readiness',
 ]
 
 function inputValue(formData: FormData, key: string) {
@@ -85,6 +103,12 @@ function multiValue(formData: FormData, key: string) {
     .getAll(key)
     .map((value) => (typeof value === 'string' ? value.trim() : ''))
     .filter(Boolean)
+}
+
+function buildFinancialReadiness(readinessItems: string[]) {
+  return readinessItems
+    .filter((item) => financialReadinessMarkers.includes(item))
+    .join(', ')
 }
 
 export default function TransactionIntakeForm({
@@ -123,21 +147,21 @@ export default function TransactionIntakeForm({
       authorizationStatus: inputValue(formData, 'authorizationStatus'),
 
       program: inputValue(formData, 'program'),
-      transactionType: inputValue(formData, 'transactionType'),
+      transactionType: inputValue(formData, 'transactionStructure'),
       commodity: inputValue(formData, 'commodity'),
       quantity: inputValue(formData, 'quantity'),
       trialQuantity: inputValue(formData, 'trialQuantity'),
       monthlyQuantity: inputValue(formData, 'monthlyQuantity'),
       origin: inputValue(formData, 'origin'),
       destination: inputValue(formData, 'destination'),
-      deliveryTerms: inputValue(formData, 'transactionType'),
+      deliveryTerms: inputValue(formData, 'deliveryTerms'),
       settlementMethod: inputValue(formData, 'settlementMethod'),
       expectedTimeline: inputValue(formData, 'expectedTimeline'),
 
       buyerName,
       sellerName: '',
       refineryPreference: '',
-      financialReadiness: inputValue(formData, 'financialReadiness'),
+      financialReadiness: buildFinancialReadiness(readinessItems),
       documentsAvailable: readinessItems.join(', '),
       supportingNotes: inputValue(formData, 'supportingNotes'),
 
@@ -198,31 +222,46 @@ export default function TransactionIntakeForm({
       const response = await fetch('/api/transaction-intake', {
         method: 'POST',
         headers: {
+          Accept: 'application/json',
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(payload),
       })
 
-      const data = await response.json()
+      const data = await response.json().catch(() => null)
 
-      if (!response.ok || !data.ok) {
+      if (!response.ok || !data?.ok) {
         setSubmitState({
           status: 'error',
-          message: data.error || 'Unable to submit transaction intake.',
+          message:
+            data?.error ||
+            `Unable to submit transaction intake. Server returned ${response.status}.`,
+        })
+        return
+      }
+
+      const reference = data?.intake?.reference
+
+      if (!reference) {
+        setSubmitState({
+          status: 'error',
+          message:
+            'The intake was submitted but no reference was returned. Please check the admin intake queue.',
         })
         return
       }
 
       setSubmitState({
         status: 'success',
-        reference: data.intake.reference,
+        reference,
       })
+    } catch (error) {
+      console.error('[transaction-intake:submit]', error)
 
-      form.reset()
-    } catch {
       setSubmitState({
         status: 'error',
-        message: 'Unable to submit transaction intake.',
+        message:
+          'Unable to submit transaction intake. Please check the browser console or server logs.',
       })
     }
   }
@@ -366,17 +405,31 @@ export default function TransactionIntakeForm({
       <section className={styles.section}>
         <h2>Transaction Structure</h2>
         <p className={styles.helper}>
-          Select the proposed transaction structure and settlement method.
+          Structure describes the commercial shape of the proposed deal.
+          Delivery terms describe how the commodity is handed over. Settlement
+          method describes how payment is expected to clear.
         </p>
 
         <div className={styles.grid}>
           <label>
             Transaction structure
-            <select name="transactionType" defaultValue="">
+            <select name="transactionStructure" defaultValue="">
               <option value="">Select structure</option>
-              {transactionTypeOptions.map((type) => (
-                <option key={type} value={type}>
-                  {type}
+              {transactionStructureOptions.map((structure) => (
+                <option key={structure} value={structure}>
+                  {structure}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          <label>
+            Delivery terms
+            <select name="deliveryTerms" defaultValue="">
+              <option value="">Select delivery terms</option>
+              {deliveryTermOptions.map((term) => (
+                <option key={term} value={term}>
+                  {term}
                 </option>
               ))}
             </select>
@@ -407,8 +460,10 @@ export default function TransactionIntakeForm({
       <section className={styles.section}>
         <h2>Commodity Request</h2>
         <p className={styles.helper}>
-          Provide the essential commercial details needed for preliminary
-          review.
+          Total quantity is the full requested amount for the proposed
+          transaction or contract. Trial quantity is the first test shipment or
+          initial tranche. Monthly quantity is the recurring amount requested
+          after the trial or first transaction.
         </p>
 
         <div className={styles.grid}>
@@ -419,17 +474,17 @@ export default function TransactionIntakeForm({
 
           <label>
             Total quantity
-            <input name="quantity" placeholder="Example: 5 KG" />
+            <input name="quantity" placeholder="Example: 500 KG total" />
           </label>
 
           <label>
             Trial quantity
-            <input name="trialQuantity" placeholder="Example: 5 KG" />
+            <input name="trialQuantity" placeholder="Example: 5 KG trial" />
           </label>
 
           <label>
             Monthly quantity
-            <input name="monthlyQuantity" placeholder="Example: 500 KG monthly" />
+            <input name="monthlyQuantity" placeholder="Example: 100 KG monthly" />
           </label>
 
           <label>
@@ -462,19 +517,11 @@ export default function TransactionIntakeForm({
 
         <div className={styles.grid}>
           <label className={styles.wide}>
-            Financial readiness
-            <input
-              name="financialReadiness"
-              placeholder="Example: POF available, DLC pending, MT103 ready..."
-            />
-          </label>
-
-          <label className={styles.wide}>
             Additional notes
             <textarea
               name="supportingNotes"
               rows={4}
-              placeholder="Include any essential context, constraints, or next-step details."
+              placeholder="Include any essential context, constraints, readiness details, or next-step information."
             />
           </label>
         </div>
