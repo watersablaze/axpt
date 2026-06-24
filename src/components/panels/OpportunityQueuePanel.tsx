@@ -123,7 +123,7 @@ export default function OpportunityQueuePanel({
       const json = (await res.json()) as PromoteResponse;
 
       if (!res.ok || !json.ok) {
-        setError(json.error ?? "PROMOTION_FAILED");
+        setError(json.error ?? "DOSSIER_DOSSIER_PROMOTION_FAILED");
         return;
       }
 
@@ -134,8 +134,8 @@ export default function OpportunityQueuePanel({
         onOpenDossier?.(json.result.dossierId);
       }
     } catch (err) {
-      console.error("[OPPORTUNITY_PROMOTION_FAILED]", err);
-      setError("PROMOTION_FAILED");
+      console.error("[OPPORTUNITY_DOSSIER_DOSSIER_PROMOTION_FAILED]", err);
+      setError("DOSSIER_DOSSIER_PROMOTION_FAILED");
     } finally {
       setPromotingId(null);
     }
@@ -281,7 +281,7 @@ export default function OpportunityQueuePanel({
                     >
                       {promotingId === opportunity.id
                         ? "Promoting..."
-                        : "Promote"}
+                        : "Create Dossier"}
                     </button>
                   )}
                 </div>
