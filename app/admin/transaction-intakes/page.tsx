@@ -12,6 +12,8 @@ const INTAKE_STATUSES = [
   "PROMOTED_TO_OPPORTUNITY",
   "DOSSIER_READY",
   "PROMOTED_TO_DOSSIER",
+  "TEST",
+  "ARCHIVED",
 ] as const;
 
 const PROGRAM_OPTIONS = [
@@ -93,6 +95,10 @@ function statusBadgeClass(status: string) {
       return "border-emerald-400/40 bg-emerald-400/10 text-emerald-200";
     case "DECLINED":
       return "border-red-400/40 bg-red-400/10 text-red-200";
+    case "TEST":
+      return "border-purple-400/40 bg-purple-400/10 text-purple-200";
+    case "ARCHIVED":
+      return "border-gray-600/50 bg-gray-800/50 text-gray-300";
     case "SUBMITTED":
     default:
       return "border-amber-500/40 bg-amber-500/10 text-amber-200";
@@ -120,7 +126,9 @@ export default async function TransactionIntakesAdminPage({
 
   const where = {
     AND: [
-      selectedStatus ? { status: selectedStatus } : {},
+      selectedStatus
+        ? { status: selectedStatus }
+        : { status: { notIn: ["TEST", "ARCHIVED"] } },
       selectedProgram ? { program: selectedProgram } : {},
       referralCode ? { referralCode } : {},
       query
