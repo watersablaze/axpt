@@ -1,36 +1,37 @@
-import { NextResponse } from 'next/server'
-import { prisma } from '@/infrastructure/db/prisma'
-import { createTransactionIntakeReference } from '../../../lib/intakeReference'
+import { NextResponse } from "next/server";
+import { prisma } from "@/infrastructure/db/prisma";
+import { createTransactionIntakeReference } from "../../../lib/intakeReference";
+import { sendTransactionIntakeConfirmation } from "@/domains/control-center/transaction-intakes/sendTransactionIntakeConfirmation";
 
 function asOptionalString(value: unknown) {
-  return typeof value === 'string' && value.trim().length > 0
+  return typeof value === "string" && value.trim().length > 0
     ? value.trim()
-    : null
+    : null;
 }
 
 function asRequiredString(value: unknown) {
-  return typeof value === 'string' ? value.trim() : ''
+  return typeof value === "string" ? value.trim() : "";
 }
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json()
+    const body = await req.json();
 
-    const submitterName = asRequiredString(body.submitterName)
-    const submitterEmail = asRequiredString(body.submitterEmail)
-    const submitterRole = asRequiredString(body.submitterRole)
+    const submitterName = asRequiredString(body.submitterName);
+    const submitterEmail = asRequiredString(body.submitterEmail);
+    const submitterRole = asRequiredString(body.submitterRole);
 
     if (!submitterName || !submitterEmail || !submitterRole) {
       return NextResponse.json(
         {
           ok: false,
-          error: 'Submitter name, email, and role are required.',
+          error: "Submitter name, email, and role are required.",
         },
-        { status: 400 }
-      )
+        { status: 400 },
+      );
     }
 
-    const reference = createTransactionIntakeReference()
+    const reference = createTransactionIntakeReference();
 
     const intake = await prisma.transactionIntake.create({
       data: {
@@ -82,10 +83,28 @@ export async function POST(req: Request) {
 
         sourceUrl: asOptionalString(body.sourceUrl),
         ipAddress:
-          req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || null,
-        userAgent: req.headers.get('user-agent') || null,
+          req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null,
+        userAgent: req.headers.get("user-agent") || null,
       },
-    })
+    });
+
+    await sendTransactionIntakeConfirmation({
+      id: intake.id,
+      reference: intake.reference,
+      submitterName: intake.submitterName,
+      submitterEmail: intake.submitterEmail,
+      program: intake.program,
+      transactionType: intake.transactionType,
+      commodity: intake.commodity,
+      quantity: intake.quantity,
+      trialQuantity: intake.trialQuantity,
+      monthlyQuantity: intake.monthlyQuantity,
+      destination: intake.destination,
+      referralCode: intake.referralCode,
+      referredByName: intake.referredByName,
+    }).catch((error) => {
+      console.error("[transaction-intake:confirmation-email]", error);
+    });
 
     return NextResponse.json({
       ok: true,
@@ -94,16 +113,16 @@ export async function POST(req: Request) {
         reference: intake.reference,
         status: intake.status,
       },
-    })
+    });
   } catch (error) {
-    console.error('[transaction-intake:create]', error)
+    console.error("[transaction-intake:create]", error);
 
     return NextResponse.json(
       {
         ok: false,
-        error: 'Unable to submit transaction intake.',
+        error: "Unable to submit transaction intake.",
       },
-      { status: 500 }
-    )
+      { status: 500 },
+    );
   }
 }
