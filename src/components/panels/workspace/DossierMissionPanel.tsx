@@ -26,6 +26,7 @@ type Props = {
   currentState: string;
   nextStates: string[];
   sourceOpportunity?: SourceOpportunity | null;
+  seededFields?: string[];
 };
 
 function formatState(state: string) {
@@ -131,6 +132,7 @@ export default function DossierMissionPanel({
   currentState,
   nextStates,
   sourceOpportunity = null,
+  seededFields = [],
 }: Props) {
   const objective = getCurrentObjective(currentState, nextStates);
 
@@ -199,6 +201,29 @@ export default function DossierMissionPanel({
             Confirm parties, settlement terms, documents, and authority before
             issuance.
           </div>
+
+          {seededFields.length > 0 ? (
+            <div className="mt-3 rounded border border-neutral-800 bg-black/20 p-2">
+              <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+                Seeded Fields
+              </div>
+
+              <div className="mt-2 flex flex-wrap gap-2">
+                {seededFields.map((field: string) => (
+                  <span
+                    key={field}
+                    className="rounded border border-emerald-900 bg-emerald-950/10 px-2 py-1 text-[10px] uppercase tracking-wide text-emerald-300"
+                  >
+                    {field}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mt-2 text-[10px] uppercase tracking-wide text-amber-300/80">
+                Review Required Before Issuance
+              </div>
+            </div>
+          ) : null}
         </div>
       ) : null}
 
