@@ -645,6 +645,9 @@ type WorkQueueItem = {
   label: string;
   detail: string;
   tone: "red" | "amber" | "cyan" | "emerald" | "neutral";
+  actionLabel?: string;
+  targetTab?: DossierWorkspaceTab;
+  targetAnchor?: string;
 };
 
 function workQueueToneClass(tone: WorkQueueItem["tone"]) {
@@ -685,6 +688,8 @@ function buildActiveWorkQueue(dossier: DossierWorkspace): WorkQueueItem[] {
         ? `${recommended.label} · ${recommended.reason}`
         : `${dossier.availableTransitions.length} available transition(s) require operator selection.`,
       tone: recommended ? "cyan" : "neutral",
+      actionLabel: "Open execution",
+      targetTab: "EXECUTION",
     });
   }
 
@@ -693,6 +698,9 @@ function buildActiveWorkQueue(dossier: DossierWorkspace): WorkQueueItem[] {
       label: "Confirm party authority",
       detail: `${partyReadiness.seeded} seeded · ${partyReadiness.needsReview} needs review`,
       tone: partyReadiness.needsReview > 0 ? "red" : "amber",
+      actionLabel: "Review parties",
+      targetTab: "OVERVIEW",
+      targetAnchor: "party-identity-review",
     });
   }
 
@@ -713,6 +721,9 @@ function buildActiveWorkQueue(dossier: DossierWorkspace): WorkQueueItem[] {
         dossier.state !== "INTAKE_PENDING"
           ? "red"
           : "amber",
+      actionLabel: "Review terms",
+      targetTab: "DOCUMENTS",
+      targetAnchor: "commercial-terms-review",
     });
   }
 
@@ -725,6 +736,9 @@ function buildActiveWorkQueue(dossier: DossierWorkspace): WorkQueueItem[] {
       detail:
         "Settlement lane could not be confidently inferred from dossier terms.",
       tone: "amber",
+      actionLabel: "Review profile",
+      targetTab: "DOCUMENTS",
+      targetAnchor: "commercial-terms-review",
     });
   }
 
@@ -733,6 +747,9 @@ function buildActiveWorkQueue(dossier: DossierWorkspace): WorkQueueItem[] {
       label: "Improve document readiness",
       detail: `${dataReadiness.blocked} blocked · ${dataReadiness.draftable} draftable · ${dataReadiness.ready} ready`,
       tone: dossier.state === "INTAKE_PENDING" ? "neutral" : "amber",
+      actionLabel: "Open documents",
+      targetTab: "DOCUMENTS",
+      targetAnchor: "document-readiness",
     });
   }
 
@@ -741,6 +758,9 @@ function buildActiveWorkQueue(dossier: DossierWorkspace): WorkQueueItem[] {
       label: "Satisfy approval gate",
       detail: `${dossier.pendingApprovalCount} approval requirement(s) pending.`,
       tone: "amber",
+      actionLabel: "Review issuance",
+      targetTab: "DOCUMENTS",
+      targetAnchor: "issuance-gate",
     });
   }
 
@@ -756,8 +776,28 @@ function buildActiveWorkQueue(dossier: DossierWorkspace): WorkQueueItem[] {
   return queue.slice(0, 5);
 }
 
-function ActiveWorkQueue({ dossier }: { dossier: DossierWorkspace }) {
+function ActiveWorkQueue({
+  dossier,
+  onSelectTab,
+}: {
+  dossier: DossierWorkspace;
+  onSelectTab: (tab: DossierWorkspaceTab) => void;
+}) {
   const queue = buildActiveWorkQueue(dossier);
+
+  function handleAction(item: WorkQueueItem) {
+    if (item.targetTab) {
+      onSelectTab(item.targetTab);
+    }
+
+    if (item.targetAnchor) {
+      window.setTimeout(() => {
+        document
+          .getElementById(item.targetAnchor as string)
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 120);
+    }
+  }
 
   return (
     <section className="rounded-xl border border-neutral-800 bg-black/20 p-3">
@@ -793,6 +833,16 @@ function ActiveWorkQueue({ dossier }: { dossier: DossierWorkspace }) {
             <p className="mt-1 text-[11px] leading-relaxed opacity-80">
               {item.detail}
             </p>
+
+            {item.actionLabel ? (
+              <button
+                type="button"
+                onClick={() => handleAction(item)}
+                className="mt-2 rounded border border-neutral-700 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-white/80 hover:border-cyan-700 hover:text-cyan-300"
+              >
+                {item.actionLabel}
+              </button>
+            ) : null}
           </div>
         ))}
       </div>
@@ -1033,6 +1083,7 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
                 parties={dossier.parties}
               />
 
+              <div id="party-identity-review" className="scroll-mt-4" />
               <DossierPartyCompletionPanel
                 parties={dossier.parties}
                 onPartyChanged={() => setRefreshNonce((value) => value + 1)}
@@ -1207,13 +1258,15 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
                 </p>
               </section>
 
-              <ActiveWorkQueue dossier={dossier} />
+              <ActiveWorkQueue dossier={dossier} onSelectTab={setActiveTab} />
 
+              <div id="commercial-terms-review" className="scroll-mt-4" />
               <DossierTermsPanel
                 dossierId={dossier.id}
                 onTermsChanged={() => setRefreshNonce((value) => value + 1)}
               />
 
+              <div id="coordinate-vault" className="scroll-mt-4" />
               <DossierBankCoordinatesPanel
                 dossierId={dossier.id}
                 onCoordinatesChanged={() =>
@@ -1221,6 +1274,7 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
                 }
               />
 
+              <div id="release-gate" className="scroll-mt-4" />
               <DossierReleaseConditionsPanel
                 dossierId={dossier.id}
                 onReleaseConditionsChanged={() =>
@@ -1228,12 +1282,14 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
                 }
               />
 
+              <div id="issuance-gate" className="scroll-mt-4" />
               <DossierIssuanceApprovalPanel
                 dossierId={dossier.id}
                 instruments={dossier.instruments}
                 onApprovalChanged={() => setRefreshNonce((value) => value + 1)}
               />
 
+              <div id="document-readiness" className="scroll-mt-4" />
               <DossierDocumentsPanel
                 key={`documents-${dossier.id}-${refreshNonce}`}
                 dossierId={dossier.id}
