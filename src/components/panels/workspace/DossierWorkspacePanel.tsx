@@ -45,6 +45,24 @@ type DossierEvent = {
   createdAt: string;
 };
 
+type DossierTerms = {
+  settlementMethod: string | null;
+  financialInstrumentType: string | null;
+  issuingInstitution: string | null;
+  instrumentAmountOrCoverage: string | null;
+  validityPeriod: string | null;
+  paymentTrigger: string | null;
+  beneficiary: string | null;
+  sellerSideCompensation: string | null;
+  buyerSideCompensation: string | null;
+  compensationPayer: string | null;
+  compensationPayees: string | null;
+  compensationPayoutTrigger: string | null;
+  compensationPaymentMethod: string | null;
+  compensationAuthorizationStatus: string | null;
+  compensationConfidentialityNote: string | null;
+};
+
 type DossierApprovalRequirement = {
   id: string;
   transitionKey: string;
@@ -84,6 +102,7 @@ type DossierWorkspace = {
   quantityKg: string | null;
   refinery: string | null;
   settlement: string | null;
+  terms: DossierTerms | null;
 
   nextStates: string[];
 
@@ -417,6 +436,15 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
               <DossierDocumentsPanel
                 key={`documents-${dossier.id}-${refreshNonce}`}
                 dossierId={dossier.id}
+                dossier={{
+                  commodity: dossier.commodity,
+                  origin: dossier.origin,
+                  quantityKg: dossier.quantityKg,
+                  refinery: dossier.refinery,
+                  settlement: dossier.settlement,
+                }}
+                parties={dossier.parties}
+                terms={dossier.terms}
                 instruments={dossier.instruments}
                 onInstrumentChanged={() =>
                   setRefreshNonce((value) => value + 1)
