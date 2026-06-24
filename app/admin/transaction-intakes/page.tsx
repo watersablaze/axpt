@@ -2,6 +2,7 @@ import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/infrastructure/db/prisma";
 import RepresentativeLinkBuilder from "./RepresentativeLinkBuilder";
+import { RecentIntakeEmailLogPanel } from "./RecentIntakeEmailLogPanel";
 
 const INTAKE_STATUSES = [
   "SUBMITTED",
@@ -637,6 +638,7 @@ export default async function TransactionIntakesAdminPage({
           </table>
         </div>
       )}
+      <RecentIntakeEmailLogPanel />
     </main>
   );
 }
