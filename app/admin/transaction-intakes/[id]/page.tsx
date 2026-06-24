@@ -1,52 +1,51 @@
-import Link from 'next/link'
-import { revalidatePath } from 'next/cache'
-import { notFound } from 'next/navigation'
-import { prisma } from '@/infrastructure/db/prisma'
-import { getPrincipal } from '@/domains/auth/getPrincipal'
-import {
-  promoteTransactionIntakeToOpportunity,
-} from '@/domains/control-center/transaction-intakes/promoteTransactionIntakeToOpportunity'
+import Link from "next/link";
+import { revalidatePath } from "next/cache";
+import { notFound } from "next/navigation";
+import { prisma } from "@/infrastructure/db/prisma";
+import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { promoteTransactionIntakeToOpportunity } from "@/domains/control-center/transaction-intakes/promoteTransactionIntakeToOpportunity";
 
 const INTAKE_STATUSES = [
-  'SUBMITTED',
-  'UNDER_REVIEW',
-  'NEEDS_CLARIFICATION',
-  'QUALIFIED',
-  'DECLINED',
-  'PROMOTED_TO_OPPORTUNITY',
-  'DOSSIER_READY',
-  'PROMOTED_TO_DOSSIER',
-] as const
+  "SUBMITTED",
+  "UNDER_REVIEW",
+  "NEEDS_CLARIFICATION",
+  "QUALIFIED",
+  "DECLINED",
+  "PROMOTED_TO_OPPORTUNITY",
+  "DOSSIER_READY",
+  "PROMOTED_TO_DOSSIER",
+] as const;
 
 async function updateIntakeReview(formData: FormData) {
-  'use server'
+  "use server";
 
-  const id = formData.get('id')
-  const status = formData.get('status')
-  const internalNotes = formData.get('internalNotes')
+  const id = formData.get("id");
+  const status = formData.get("status");
+  const internalNotes = formData.get("internalNotes");
 
-  if (typeof id !== 'string') {
-    return
+  if (typeof id !== "string") {
+    return;
   }
 
   const data: {
-    status?: string
-    internalNotes?: string | null
-  } = {}
+    status?: string;
+    internalNotes?: string | null;
+  } = {};
 
   if (
-    typeof status === 'string' &&
+    typeof status === "string" &&
     INTAKE_STATUSES.includes(status as (typeof INTAKE_STATUSES)[number])
   ) {
-    data.status = status
+    data.status = status;
   }
 
-  if (typeof internalNotes === 'string') {
-    data.internalNotes = internalNotes.trim().length > 0 ? internalNotes.trim() : null
+  if (typeof internalNotes === "string") {
+    data.internalNotes =
+      internalNotes.trim().length > 0 ? internalNotes.trim() : null;
   }
 
   if (Object.keys(data).length === 0) {
-    return
+    return;
   }
 
   const existing = await prisma.transactionIntake.findUnique({
@@ -55,43 +54,46 @@ async function updateIntakeReview(formData: FormData) {
       status: true,
       internalNotes: true,
     },
-  })
+  });
 
   if (!existing) {
-    return
+    return;
   }
 
-  const events = []
+  const events = [];
 
   if (data.status && data.status !== existing.status) {
     events.push(
       prisma.transactionIntakeEvent.create({
         data: {
           intakeId: id,
-          eventType: 'STATUS_CHANGED',
+          eventType: "STATUS_CHANGED",
           fromStatus: existing.status,
           toStatus: data.status,
-          actor: 'ADMIN',
-          note: typeof internalNotes === 'string' ? internalNotes.trim() || null : null,
+          actor: "ADMIN",
+          note:
+            typeof internalNotes === "string"
+              ? internalNotes.trim() || null
+              : null,
         },
       }),
-    )
+    );
   }
 
   if (
-    typeof data.internalNotes !== 'undefined' &&
+    typeof data.internalNotes !== "undefined" &&
     data.internalNotes !== existing.internalNotes
   ) {
     events.push(
       prisma.transactionIntakeEvent.create({
         data: {
           intakeId: id,
-          eventType: 'INTERNAL_NOTE_UPDATED',
-          actor: 'ADMIN',
+          eventType: "INTERNAL_NOTE_UPDATED",
+          actor: "ADMIN",
           note: data.internalNotes,
         },
       }),
-    )
+    );
   }
 
   await prisma.$transaction([
@@ -100,75 +102,73 @@ async function updateIntakeReview(formData: FormData) {
       data,
     }),
     ...events,
-  ])
+  ]);
 
-  revalidatePath('/admin/transaction-intakes')
-  revalidatePath(`/admin/transaction-intakes/${id}`)
+  revalidatePath("/admin/transaction-intakes");
+  revalidatePath(`/admin/transaction-intakes/${id}`);
 }
 
-async function promoteIntakeToOpportunity(
-  formData: FormData
-) {
-  'use server'
+async function promoteIntakeToOpportunity(formData: FormData) {
+  "use server";
 
-  const id = formData.get('id')
+  const id = formData.get("id");
 
-  if (typeof id !== 'string') {
-    return
+  if (typeof id !== "string") {
+    return;
   }
 
-  const principal = await getPrincipal()
+  const principal = await getPrincipal();
 
   await promoteTransactionIntakeToOpportunity({
     intakeId: id,
-    actorEmail: principal?.email ?? 'ADMIN',
-  })
+    actorEmail: principal?.email ?? "ADMIN",
+  });
 
-  revalidatePath('/admin/transaction-intakes')
-  revalidatePath(`/admin/transaction-intakes/${id}`)
-  revalidatePath('/admin/control-center')
+  revalidatePath("/admin/transaction-intakes");
+  revalidatePath(`/admin/transaction-intakes/${id}`);
+  revalidatePath("/admin/control-center");
 }
 
 function statusBadgeClass(status: string) {
   switch (status) {
-    case 'UNDER_REVIEW':
-      return 'border-blue-400/40 bg-blue-400/10 text-blue-200'
-    case 'NEEDS_CLARIFICATION':
-      return 'border-yellow-400/40 bg-yellow-400/10 text-yellow-200'
-    case 'QUALIFIED':
-    case 'PROMOTED_TO_OPPORTUNITY':
-    case 'DOSSIER_READY':
-    case 'PROMOTED_TO_DOSSIER':
-      return 'border-emerald-400/40 bg-emerald-400/10 text-emerald-200'
-    case 'DECLINED':
-      return 'border-red-400/40 bg-red-400/10 text-red-200'
-    case 'SUBMITTED':
+    case "UNDER_REVIEW":
+      return "border-blue-400/40 bg-blue-400/10 text-blue-200";
+    case "NEEDS_CLARIFICATION":
+      return "border-yellow-400/40 bg-yellow-400/10 text-yellow-200";
+    case "QUALIFIED":
+    case "PROMOTED_TO_OPPORTUNITY":
+    case "DOSSIER_READY":
+    case "PROMOTED_TO_DOSSIER":
+      return "border-emerald-400/40 bg-emerald-400/10 text-emerald-200";
+    case "DECLINED":
+      return "border-red-400/40 bg-red-400/10 text-red-200";
+    case "SUBMITTED":
     default:
-      return 'border-amber-500/40 bg-amber-500/10 text-amber-200'
+      return "border-amber-500/40 bg-amber-500/10 text-amber-200";
   }
 }
 
 type Props = {
   params: Promise<{
-    id: string
-  }>
-}
+    id: string;
+  }>;
+};
 
 function Field({
   label,
   value,
 }: {
-  label: string
-  value: string | boolean | Date | null | undefined
+  label: string;
+  value: string | boolean | Date | null | undefined;
 }) {
-  let displayValue: string
+  let displayValue: string;
 
   if (value instanceof Date) {
-    displayValue = value.toLocaleString()
-  } else if (typeof value === 'boolean') {
-    displayValue = value ? 'Yes' : 'No'
+    displayValue = value.toLocaleString();
+  } else if (typeof value === "boolean") {
+    displayValue = value ? "Yes" : "No";
   } else {
-    displayValue = value || '—'
+    displayValue = value || "—";
   }
 
   return (
@@ -178,56 +178,53 @@ function Field({
       </p>
       <p className="mt-2 text-gray-100">{displayValue}</p>
     </div>
-  )
+  );
 }
 
 function Section({
   title,
   children,
 }: {
-  title: string
-  children: React.ReactNode
+  title: string;
+  children: React.ReactNode;
 }) {
   return (
     <section className="mt-8">
       <h2 className="mb-4 text-xl font-semibold">{title}</h2>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        {children}
-      </div>
+      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{children}</div>
     </section>
-  )
+  );
 }
 
 export default async function TransactionIntakeDetailPage({ params }: Props) {
-  const { id } = await params
+  const { id } = await params;
 
-const intake = await prisma.transactionIntake.findUnique({
-  where: { id },
-  include: {
-    promotedOpportunity: {
-      select: {
-        id: true,
-        title: true,
-        status: true,
-        source: true,
-        createdAt: true,
+  const intake = await prisma.transactionIntake.findUnique({
+    where: { id },
+    include: {
+      promotedOpportunity: {
+        select: {
+          id: true,
+          title: true,
+          status: true,
+          source: true,
+          createdAt: true,
+        },
+      },
+      events: {
+        orderBy: {
+          createdAt: "desc",
+        },
       },
     },
-    events: {
-      orderBy: {
-        createdAt: 'desc',
-      },
-    },
-  },
-})
+  });
 
   if (!intake) {
-    notFound()
+    notFound();
   }
 
   const canPromoteToOpportunity =
-    intake.status === 'QUALIFIED' &&
-    !intake.promotedOpportunityId
+    intake.status === "QUALIFIED" && !intake.promotedOpportunityId;
 
   return (
     <main className="min-h-screen bg-black text-white p-8">
@@ -245,124 +242,116 @@ const intake = await prisma.transactionIntake.findUnique({
         <h1 className="mt-2 text-3xl font-bold">{intake.reference}</h1>
         <p className="mt-2 text-gray-300">Status: {intake.status}</p>
         <div className="mt-4">
-        <span
+          <span
             className={`inline-flex rounded-full border px-3 py-1 text-sm ${statusBadgeClass(
-            intake.status,
+              intake.status,
             )}`}
-        >
+          >
             {intake.status}
-        </span>
+          </span>
         </div>
 
         <section className="mt-8 rounded border border-gray-800 bg-gray-950 p-6">
-        <h2 className="text-xl font-semibold">Review Management</h2>
-        <p className="mt-2 max-w-3xl text-sm text-gray-400">
-            Update the intake status and record internal review notes. These notes are
-            visible only on the admin surface.
-        </p>
+          <h2 className="text-xl font-semibold">Review Management</h2>
+          <p className="mt-2 max-w-3xl text-sm text-gray-400">
+            Update the intake status and record internal review notes. These
+            notes are visible only on the admin surface.
+          </p>
 
-        <form action={updateIntakeReview} className="mt-5 grid gap-4">
+          <form action={updateIntakeReview} className="mt-5 grid gap-4">
             <input type="hidden" name="id" value={intake.id} />
 
             <label className="grid gap-2">
-            <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
+              <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
                 Status
-            </span>
-            <select
+              </span>
+              <select
                 name="status"
                 defaultValue={intake.status}
                 className="max-w-md rounded border border-gray-700 bg-black px-3 py-2 text-white"
-            >
+              >
                 {INTAKE_STATUSES.map((status) => (
-                <option key={status} value={status}>
+                  <option key={status} value={status}>
                     {status}
-                </option>
+                  </option>
                 ))}
-            </select>
+              </select>
             </label>
 
             <label className="grid gap-2">
-            <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
+              <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
                 Internal Notes
-            </span>
-            <textarea
+              </span>
+              <textarea
                 name="internalNotes"
-                defaultValue={intake.internalNotes || ''}
+                defaultValue={intake.internalNotes || ""}
                 rows={6}
                 className="w-full rounded border border-gray-700 bg-black px-3 py-2 text-white"
                 placeholder="Add review notes, follow-up requirements, risk observations, document needs, or intermediary context..."
-            />
+              />
             </label>
 
             <button
-            type="submit"
-            className="w-fit rounded border border-amber-500/50 bg-amber-500/10 px-4 py-2 text-sm font-semibold text-amber-200 hover:bg-amber-500/20"
+              type="submit"
+              className="w-fit rounded border border-amber-500/50 bg-amber-500/10 px-4 py-2 text-sm font-semibold text-amber-200 hover:bg-amber-500/20"
             >
-            Save Review Update
+              Save Review Update
             </button>
-        </form>
+          </form>
 
-        <div className="mt-6 rounded border border-gray-800 bg-black p-4">
-          <div className="flex flex-wrap items-start justify-between gap-4">
-            <div>
-              <h3 className="font-semibold text-gray-100">
-                Opportunity Promotion
-              </h3>
+          <div className="mt-6 rounded border border-gray-800 bg-black p-4">
+            <div className="flex flex-wrap items-start justify-between gap-4">
+              <div>
+                <h3 className="font-semibold text-gray-100">
+                  Opportunity Promotion
+                </h3>
 
-              <p className="mt-2 max-w-2xl text-sm text-gray-400">
-                Promote a qualified transaction intake into the Control Center
-                opportunity pipeline. This creates a tracked opportunity record
-                and preserves the intake as the source record.
-              </p>
-
-              {intake.promotedOpportunity ? (
-                <div className="mt-4 rounded border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">
-                  <p className="font-semibold">
-                    Promoted Opportunity
-                  </p>
-
-                  <p className="mt-1">
-                    {intake.promotedOpportunity.title}
-                  </p>
-
-                  <p className="mt-1 text-xs uppercase tracking-[0.18em] text-emerald-300/70">
-                    {intake.promotedOpportunity.status} ·{' '}
-                    {intake.promotedOpportunity.source}
-                  </p>
-
-                  <Link
-                    href="/admin/control-center"
-                    className="mt-3 inline-flex rounded border border-emerald-500/40 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-200 hover:bg-emerald-500/10"
-                  >
-                    Open Control Center
-                  </Link>
-                </div>
-              ) : (
-                <p className="mt-3 text-xs text-gray-500">
-                  Promotion is available once the intake status is QUALIFIED.
+                <p className="mt-2 max-w-2xl text-sm text-gray-400">
+                  Promote a qualified transaction intake into the Control Center
+                  opportunity pipeline. This creates a tracked opportunity
+                  record and preserves the intake as the source record.
                 </p>
-              )}
+
+                {intake.promotedOpportunity ? (
+                  <div className="mt-4 rounded border border-emerald-500/30 bg-emerald-500/10 p-3 text-sm text-emerald-200">
+                    <p className="font-semibold">Promoted Opportunity</p>
+
+                    <p className="mt-1">{intake.promotedOpportunity.title}</p>
+
+                    <p className="mt-1 text-xs uppercase tracking-[0.18em] text-emerald-300/70">
+                      {intake.promotedOpportunity.status} ·{" "}
+                      {intake.promotedOpportunity.source}
+                    </p>
+
+                    <Link
+                      href="/admin/control-center"
+                      className="mt-3 inline-flex rounded border border-emerald-500/40 px-3 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-emerald-200 hover:bg-emerald-500/10"
+                    >
+                      Open Control Center
+                    </Link>
+                  </div>
+                ) : (
+                  <p className="mt-3 text-xs text-gray-500">
+                    Promotion is available once the intake status is QUALIFIED.
+                  </p>
+                )}
+              </div>
+
+              {!intake.promotedOpportunity ? (
+                <form action={promoteIntakeToOpportunity}>
+                  <input type="hidden" name="id" value={intake.id} />
+
+                  <button
+                    type="submit"
+                    disabled={!canPromoteToOpportunity}
+                    className="rounded border border-emerald-500/50 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-200 hover:bg-emerald-500/20 disabled:cursor-not-allowed disabled:border-gray-800 disabled:bg-gray-950 disabled:text-gray-600"
+                  >
+                    Promote to Opportunity
+                  </button>
+                </form>
+              ) : null}
             </div>
-
-            {!intake.promotedOpportunity ? (
-              <form action={promoteIntakeToOpportunity}>
-                <input
-                  type="hidden"
-                  name="id"
-                  value={intake.id}
-                />
-
-                <button
-                  type="submit"
-                  disabled={!canPromoteToOpportunity}
-                  className="rounded border border-emerald-500/50 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-200 hover:bg-emerald-500/20 disabled:cursor-not-allowed disabled:border-gray-800 disabled:bg-gray-950 disabled:text-gray-600"
-                >
-                  Promote to Opportunity
-                </button>
-              </form>
-            ) : null}
           </div>
-        </div>
         </section>
       </div>
 
@@ -379,7 +368,9 @@ const intake = await prisma.transactionIntake.findUnique({
                 className="rounded border border-gray-800 bg-black p-4"
               >
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                  <p className="font-semibold text-gray-100">{event.eventType}</p>
+                  <p className="font-semibold text-gray-100">
+                    {event.eventType}
+                  </p>
                   <p className="text-sm text-gray-500">
                     {event.createdAt.toLocaleString()}
                   </p>
@@ -387,7 +378,7 @@ const intake = await prisma.transactionIntake.findUnique({
 
                 {(event.fromStatus || event.toStatus) && (
                   <p className="mt-2 text-sm text-gray-300">
-                    {event.fromStatus || '—'} → {event.toStatus || '—'}
+                    {event.fromStatus || "—"} → {event.toStatus || "—"}
                   </p>
                 )}
 
@@ -416,12 +407,21 @@ const intake = await prisma.transactionIntake.findUnique({
         <Field label="Country / Jurisdiction" value={intake.submitterCountry} />
         <Field label="Submitter Role" value={intake.submitterRole} />
         <Field label="Buyer Company / Party" value={intake.buyerName} />
-        <Field label="Authorization Status" value={intake.authorizationStatus} />
+        <Field
+          label="Authorization Status"
+          value={intake.authorizationStatus}
+        />
       </Section>
 
       <Section title="Representation">
-        <Field label="Represented Party Type" value={intake.representedPartyType} />
-        <Field label="Represented Party Name" value={intake.representedPartyName} />
+        <Field
+          label="Represented Party Type"
+          value={intake.representedPartyType}
+        />
+        <Field
+          label="Represented Party Name"
+          value={intake.representedPartyName}
+        />
       </Section>
 
       <Section title="Transaction Structure">
@@ -450,15 +450,24 @@ const intake = await prisma.transactionIntake.findUnique({
       <Section title="Representative / Referral">
         <Field label="Referral Code" value={intake.referralCode} />
         <Field label="Issuing Representative" value={intake.referredByName} />
-        <Field label="Representative Company" value={intake.referredByCompany} />
+        <Field
+          label="Representative Company"
+          value={intake.referredByCompany}
+        />
         <Field label="Representative Email" value={intake.referredByEmail} />
         <Field label="Representative Role" value={intake.referredByRole} />
       </Section>
 
       <Section title="Submission Notices">
         <Field label="Accuracy Confirmed" value={intake.declarationAccuracy} />
-        <Field label="No Obligation Confirmed" value={intake.declarationNoObligation} />
-        <Field label="No Commission / Mandate Right Confirmed" value={intake.declarationNoCommission} />
+        <Field
+          label="No Obligation Confirmed"
+          value={intake.declarationNoObligation}
+        />
+        <Field
+          label="No Commission / Mandate Right Confirmed"
+          value={intake.declarationNoCommission}
+        />
       </Section>
 
       <Section title="System Metadata">
@@ -469,5 +478,5 @@ const intake = await prisma.transactionIntake.findUnique({
         <Field label="Updated At" value={intake.updatedAt} />
       </Section>
     </main>
-  )
+  );
 }
