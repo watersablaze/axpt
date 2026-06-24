@@ -424,29 +424,42 @@ function getDocumentStatus(
   };
 }
 
-function getSummary(instruments: Instrument[]) {
+function getSummary({
+  dossier,
+  parties,
+  terms,
+}: {
+  dossier: DossierDependencyContext;
+  parties: DossierParty[];
+  terms: DossierTerms | null;
+}) {
   const requiredDocuments = DOSSIER_DOCUMENT_GROUPS.flatMap(
     (group) => group.documents,
   );
 
   return requiredDocuments.reduce(
     (summary, document) => {
-      const status = getDocumentStatus(document, instruments);
+      const readiness = buildDependencyReadiness({
+        document,
+        dossier,
+        parties,
+        terms,
+      });
 
-      if (status.label === "EXECUTED" || status.label === "ACTIVE") {
+      if (readiness.label === "Ready") {
         summary.ready += 1;
-      } else if (status.label === "DRAFT") {
-        summary.draft += 1;
+      } else if (readiness.label === "Draftable") {
+        summary.draftable += 1;
       } else {
-        summary.pending += 1;
+        summary.blocked += 1;
       }
 
       return summary;
     },
     {
       ready: 0,
-      draft: 0,
-      pending: 0,
+      draftable: 0,
+      blocked: 0,
       total: requiredDocuments.length,
     },
   );
@@ -681,7 +694,11 @@ export default function DossierDocumentsPanel({
   instruments,
   onInstrumentChanged,
 }: Props) {
-  const summary = getSummary(instruments);
+  const summary = getSummary({
+    dossier,
+    parties,
+    terms,
+  });
   const [creatingType, setCreatingType] = useState<string | null>(null);
 
   const [updatingInstrumentId, setUpdatingInstrumentId] = useState<
@@ -871,8 +888,12 @@ export default function DossierDocumentsPanel({
 
         <div className="mt-2 flex flex-wrap gap-2">
           <SummaryPill label="Ready" value={summary.ready} tone="emerald" />
-          <SummaryPill label="Draft" value={summary.draft} tone="amber" />
-          <SummaryPill label="Pending" value={summary.pending} tone="red" />
+          <SummaryPill
+            label="Draftable"
+            value={summary.draftable}
+            tone="amber"
+          />
+          <SummaryPill label="Blocked" value={summary.blocked} tone="red" />
           <SummaryPill label="Required" value={summary.total} tone="neutral" />
         </div>
       </div>
