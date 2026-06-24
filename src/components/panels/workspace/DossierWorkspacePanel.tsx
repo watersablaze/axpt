@@ -92,6 +92,17 @@ type DossierSourceOpportunity = {
   sourceIntake: DossierSourceIntake | null;
 };
 
+type DossierAvailableTransition = {
+  transitionKey: string;
+  fromState: string;
+  toState: string;
+  label: string;
+  profile: string;
+  profileLabel: string;
+  recommended: boolean;
+  reason: string;
+};
+
 type DossierWorkspace = {
   id: string;
   reference: string;
@@ -106,6 +117,9 @@ type DossierWorkspace = {
   terms: DossierTerms | null;
 
   nextStates: string[];
+  executionProfile: string;
+  executionProfileLabel: string;
+  availableTransitions: DossierAvailableTransition[];
 
   transitionCount: number;
   executedInstrumentCount: number;
@@ -138,14 +152,71 @@ function formatTime(value?: string) {
   });
 }
 
+type ReviewState = "COMPLETE" | "PARTIAL" | "SEEDED" | "NEEDS_REVIEW";
+
+function hasText(value: string | null | undefined) {
+  return Boolean(value?.trim());
+}
+
+function isSeededPartyRecord(party: DossierParty) {
+  const notes = party.notes?.trim().toLowerCase() ?? "";
+
+  return (
+    notes.startsWith("seeded from") ||
+    notes.includes("seeded from source intake") ||
+    notes.includes("seeded from promoted opportunity")
+  );
+}
+
+function hasOperatorConfirmationNote(value: string | null | undefined) {
+  const note = value?.trim().toLowerCase() ?? "";
+
+  return (
+    note.includes("operator confirmed") ||
+    note.includes("authority confirmed") ||
+    note.includes("kyc confirmed") ||
+    note.includes("terms confirmed") ||
+    note.includes("settlement confirmed") ||
+    note.includes("review complete") ||
+    note.includes("party confirmed")
+  );
+}
+
+function getPartyReviewState(party: DossierParty): ReviewState {
+  const hasLegalName = hasText(party.legalName);
+  const hasRepresentative = hasText(party.representative);
+  const hasCountry = hasText(party.country);
+  const hasNotes = hasText(party.notes);
+
+  if (!hasLegalName) {
+    return "NEEDS_REVIEW";
+  }
+
+  if (isSeededPartyRecord(party) && !hasOperatorConfirmationNote(party.notes)) {
+    return "SEEDED";
+  }
+
+  if (hasLegalName && hasRepresentative && hasCountry) {
+    return "COMPLETE";
+  }
+
+  if (hasLegalName && (hasRepresentative || hasCountry || hasNotes)) {
+    return "PARTIAL";
+  }
+
+  return "SEEDED";
+}
+
 function getPartyReadiness(parties: DossierParty[]) {
   return parties.reduce(
     (summary, party) => {
-      if (party.legalName && party.country && party.representative) {
+      const state = getPartyReviewState(party);
+
+      if (state === "COMPLETE") {
         summary.complete += 1;
-      } else if (party.legalName && (party.country || party.representative)) {
+      } else if (state === "PARTIAL") {
         summary.partial += 1;
-      } else if (party.legalName) {
+      } else if (state === "SEEDED") {
         summary.seeded += 1;
       } else {
         summary.needsReview += 1;
@@ -193,17 +264,349 @@ function getDocumentReadiness(instruments: DossierInstrument[]) {
   );
 }
 
-function getTermsSnapshot(terms: DossierTerms | null) {
+function hasSeededTermsNote(terms: DossierTerms | null) {
+  const note =
+    terms?.compensationConfidentialityNote?.trim().toLowerCase() ?? "";
+
+  return (
+    note.startsWith("seeded from") ||
+    note.includes("seeded from source intake") ||
+    note.includes("seeded from promoted opportunity") ||
+    note.includes("seeded from source intake for operator review")
+  );
+}
+
+function hasOperatorTermsConfirmation(terms: DossierTerms | null) {
+  return hasOperatorConfirmationNote(terms?.compensationConfidentialityNote);
+}
+
+function getSettlementTermsReviewState(
+  terms: DossierTerms | null,
+): ReviewState {
+  const hasSettlementMethod = hasText(terms?.settlementMethod);
+  const hasBeneficiary = hasText(terms?.beneficiary);
+  const hasPaymentTrigger = hasText(terms?.paymentTrigger);
+
+  if (!hasSettlementMethod) {
+    return "NEEDS_REVIEW";
+  }
+
+  if (hasSeededTermsNote(terms) && !hasOperatorTermsConfirmation(terms)) {
+    return "SEEDED";
+  }
+
+  if (hasSettlementMethod && hasBeneficiary && hasPaymentTrigger) {
+    return "COMPLETE";
+  }
+
+  return "PARTIAL";
+}
+
+function getFinancialInstrumentTermsReviewState(
+  terms: DossierTerms | null,
+): ReviewState {
+  const hasType = hasText(terms?.financialInstrumentType);
+  const hasInstitution = hasText(terms?.issuingInstitution);
+  const hasCoverage = hasText(terms?.instrumentAmountOrCoverage);
+  const hasValidity = hasText(terms?.validityPeriod);
+
+  if (!hasType) {
+    return "NEEDS_REVIEW";
+  }
+
+  if (hasSeededTermsNote(terms) && !hasOperatorTermsConfirmation(terms)) {
+    return "SEEDED";
+  }
+
+  if (hasType && hasInstitution && hasCoverage && hasValidity) {
+    return "COMPLETE";
+  }
+
+  return "PARTIAL";
+}
+
+function getCompensationTermsReviewState(
+  terms: DossierTerms | null,
+): ReviewState {
+  const hasPayer = hasText(terms?.compensationPayer);
+  const hasPayees = hasText(terms?.compensationPayees);
+  const hasTrigger = hasText(terms?.compensationPayoutTrigger);
+  const hasAuthorization = hasText(terms?.compensationAuthorizationStatus);
+  const hasAnyCompensation =
+    hasText(terms?.sellerSideCompensation) ||
+    hasText(terms?.buyerSideCompensation) ||
+    hasText(terms?.compensationPaymentMethod) ||
+    hasText(terms?.compensationConfidentialityNote) ||
+    hasPayer ||
+    hasPayees ||
+    hasTrigger ||
+    hasAuthorization;
+
+  if (!hasAnyCompensation) {
+    return "NEEDS_REVIEW";
+  }
+
+  if (
+    hasSeededTermsNote(terms) &&
+    !hasOperatorTermsConfirmation(terms) &&
+    !hasPayer &&
+    !hasPayees &&
+    !hasTrigger
+  ) {
+    return "SEEDED";
+  }
+
+  if (hasPayer && hasPayees && hasTrigger && hasAuthorization) {
+    return "COMPLETE";
+  }
+
+  return "PARTIAL";
+}
+
+function formatReviewState(state: ReviewState) {
+  return state.replace("_", " ");
+}
+
+function getTermsReviewSnapshot(terms: DossierTerms | null) {
   return {
-    settlement: terms?.settlementMethod ? "Present" : "Needs Review",
-    instrument: terms?.financialInstrumentType ? "Present" : "Needs Review",
-    compensation:
-      terms?.compensationPayer ||
-      terms?.compensationPayees ||
-      terms?.compensationConfidentialityNote
-        ? "Present"
-        : "Needs Review",
+    settlement: getSettlementTermsReviewState(terms),
+    instrument: getFinancialInstrumentTermsReviewState(terms),
+    compensation: getCompensationTermsReviewState(terms),
   };
+}
+
+function findPartyByRole(parties: DossierParty[], role: string) {
+  return parties.find((party) => party.role === role) ?? null;
+}
+
+function getDossierDataReadiness(dossier: DossierWorkspace) {
+  const requiredDocuments = getRequiredDossierDocuments();
+  const buyer = findPartyByRole(dossier.parties, "BUYER");
+  const seller = findPartyByRole(dossier.parties, "SELLER");
+  const terms = dossier.terms;
+
+  function fieldPresent(label: string, present: boolean) {
+    return {
+      label,
+      present,
+    };
+  }
+
+  return requiredDocuments.reduce(
+    (summary, document) => {
+      const requirements = [];
+
+      switch (document.instrumentType ?? document.key) {
+        case "SPA":
+          requirements.push(
+            fieldPresent("Buyer Party", hasText(buyer?.legalName)),
+            fieldPresent("Seller Party", hasText(seller?.legalName)),
+            fieldPresent("Commodity", hasText(dossier.commodity)),
+            fieldPresent("Quantity", hasText(dossier.quantityKg)),
+            fieldPresent(
+              "Settlement Method",
+              hasText(terms?.settlementMethod) || hasText(dossier.settlement),
+            ),
+          );
+          break;
+
+        case "ANNEX_B_SETTLEMENT":
+        case "BUYER_BANKING":
+        case "SELLER_BANKING": {
+          const settlementReview = getSettlementTermsReviewState(terms);
+
+          requirements.push(
+            fieldPresent(
+              "Settlement Method",
+              hasText(terms?.settlementMethod) || hasText(dossier.settlement),
+            ),
+            fieldPresent(
+              "Beneficiary / Receiving Party",
+              hasText(terms?.beneficiary),
+            ),
+            fieldPresent("Payment Trigger", hasText(terms?.paymentTrigger)),
+            fieldPresent("Settlement Review", settlementReview === "COMPLETE"),
+          );
+          break;
+        }
+
+        case "ANNEX_F_FINANCIAL_INSTRUMENT": {
+          const instrumentReview =
+            getFinancialInstrumentTermsReviewState(terms);
+
+          requirements.push(
+            fieldPresent(
+              "Financial Instrument Type",
+              hasText(terms?.financialInstrumentType),
+            ),
+            fieldPresent(
+              "Issuing / Escrow Institution",
+              hasText(terms?.issuingInstitution),
+            ),
+            fieldPresent(
+              "Instrument Coverage",
+              hasText(terms?.instrumentAmountOrCoverage),
+            ),
+            fieldPresent("Validity / Tenor", hasText(terms?.validityPeriod)),
+            fieldPresent(
+              "Financial Instrument Review",
+              instrumentReview === "COMPLETE",
+            ),
+          );
+          break;
+        }
+
+        case "ANNEX_G_COMPENSATION_SCHEDULE": {
+          const compensationReview = getCompensationTermsReviewState(terms);
+
+          requirements.push(
+            fieldPresent(
+              "Compensation Payer",
+              hasText(terms?.compensationPayer),
+            ),
+            fieldPresent(
+              "Compensation Payees",
+              hasText(terms?.compensationPayees),
+            ),
+            fieldPresent(
+              "Payout Trigger",
+              hasText(terms?.compensationPayoutTrigger),
+            ),
+            fieldPresent(
+              "Authorization Status",
+              hasText(terms?.compensationAuthorizationStatus),
+            ),
+            fieldPresent(
+              "Compensation Review",
+              compensationReview === "COMPLETE",
+            ),
+          );
+          break;
+        }
+
+        case "ANNEX_C_REFINERY":
+          requirements.push(
+            fieldPresent("Refinery", hasText(dossier.refinery)),
+            fieldPresent("Commodity", hasText(dossier.commodity)),
+            fieldPresent("Quantity", hasText(dossier.quantityKg)),
+          );
+          break;
+
+        case "ANNEX_D_COMPLIANCE":
+        case "SELLER_KYC":
+          requirements.push(
+            fieldPresent("Buyer Identity", hasText(buyer?.legalName)),
+            fieldPresent(
+              "Buyer Review Context",
+              getPartyReviewState(
+                buyer ?? {
+                  id: "",
+                  role: "BUYER",
+                  legalName: "",
+                  representative: null,
+                  country: null,
+                  notes: null,
+                },
+              ) !== "NEEDS_REVIEW",
+            ),
+            fieldPresent("Seller Identity", hasText(seller?.legalName)),
+            fieldPresent(
+              "Seller Review Context",
+              getPartyReviewState(
+                seller ?? {
+                  id: "",
+                  role: "SELLER",
+                  legalName: "",
+                  representative: null,
+                  country: null,
+                  notes: null,
+                },
+              ) !== "NEEDS_REVIEW",
+            ),
+          );
+          break;
+
+        case "BUYER_CIS":
+        case "BUYER_AUTHORIZATION":
+        case "BUYER_ID":
+          requirements.push(
+            fieldPresent("Buyer Identity", hasText(buyer?.legalName)),
+            fieldPresent(
+              "Buyer Review Context",
+              getPartyReviewState(
+                buyer ?? {
+                  id: "",
+                  role: "BUYER",
+                  legalName: "",
+                  representative: null,
+                  country: null,
+                  notes: null,
+                },
+              ) !== "NEEDS_REVIEW",
+            ),
+          );
+          break;
+
+        case "BUYER_POF":
+          requirements.push(
+            fieldPresent("Buyer Identity", hasText(buyer?.legalName)),
+            fieldPresent("Settlement Method", hasText(terms?.settlementMethod)),
+          );
+          break;
+
+        case "ANNEX_A_DELIVERY":
+        case "ANNEX_E_PROCEDURE":
+          requirements.push(
+            fieldPresent("Buyer Party", hasText(buyer?.legalName)),
+            fieldPresent("Seller Party", hasText(seller?.legalName)),
+            fieldPresent("Commodity", hasText(dossier.commodity)),
+            fieldPresent(
+              "Settlement Method",
+              hasText(terms?.settlementMethod) || hasText(dossier.settlement),
+            ),
+          );
+          break;
+
+        case "PRODUCT_EVIDENCE":
+          requirements.push(
+            fieldPresent("Commodity", hasText(dossier.commodity)),
+            fieldPresent("Origin", hasText(dossier.origin)),
+          );
+          break;
+
+        case "EXPORT_RELEASE_NOTICE":
+        case "EXPORT_ACTIVATION_NOTICE":
+          requirements.push(
+            fieldPresent("Release Conditions", false),
+            fieldPresent("Settlement Method", hasText(terms?.settlementMethod)),
+          );
+          break;
+
+        default:
+          requirements.push(fieldPresent("Operator Review", false));
+          break;
+      }
+
+      const present = requirements.filter((item) => item.present).length;
+      const missing = requirements.length - present;
+
+      if (missing === 0) {
+        summary.ready += 1;
+      } else if (present > 0) {
+        summary.draftable += 1;
+      } else {
+        summary.blocked += 1;
+      }
+
+      return summary;
+    },
+    {
+      ready: 0,
+      draftable: 0,
+      blocked: 0,
+      total: requiredDocuments.length,
+    },
+  );
 }
 
 function SummaryCard({
@@ -243,12 +646,12 @@ function DossierBriefSummary({ dossier }: { dossier: DossierWorkspace }) {
     dossier.sourceOpportunities[0]?.sourceIntake?.reference ??
     "Direct / Manual";
   const partyReadiness = getPartyReadiness(dossier.parties);
-  const documentReadiness = getDocumentReadiness(dossier.instruments);
-  const termsSnapshot = getTermsSnapshot(dossier.terms);
+  const dataReadiness = getDossierDataReadiness(dossier);
+  const termsSnapshot = getTermsReviewSnapshot(dossier.terms);
 
   const partyValue = `${partyReadiness.complete} complete · ${partyReadiness.seeded} seeded`;
-  const termsValue = `${termsSnapshot.settlement} settlement`;
-  const draftsValue = `${documentReadiness.ready} ready · ${documentReadiness.pending} pending`;
+  const termsValue = `${formatReviewState(termsSnapshot.settlement)} settlement`;
+  const draftsValue = `${dataReadiness.ready} ready · ${dataReadiness.draftable} draftable`;
 
   return (
     <section className="rounded-xl border border-cyan-900/50 bg-cyan-950/10 p-4">
@@ -274,12 +677,19 @@ function DossierBriefSummary({ dossier }: { dossier: DossierWorkspace }) {
         </div>
       </div>
 
-      <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-5">
+      <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-6">
         <SummaryCard
           label="Origin"
           value={sourceIntake}
           detail="Source trace for the dossier record."
           tone={sourceIntake === "Direct / Manual" ? "neutral" : "cyan"}
+        />
+
+        <SummaryCard
+          label="Profile"
+          value={dossier.executionProfileLabel}
+          detail="Execution lane inferred from settlement, transaction, and terms."
+          tone={dossier.executionProfile === "MANUAL_REVIEW" ? "amber" : "cyan"}
         />
 
         <SummaryCard
@@ -298,15 +708,31 @@ function DossierBriefSummary({ dossier }: { dossier: DossierWorkspace }) {
         <SummaryCard
           label="Terms"
           value={termsValue}
-          detail={`Instrument: ${termsSnapshot.instrument} · Compensation: ${termsSnapshot.compensation}`}
-          tone={termsSnapshot.settlement === "Needs Review" ? "red" : "amber"}
+          detail={`Instrument: ${formatReviewState(
+            termsSnapshot.instrument,
+          )} · Compensation: ${formatReviewState(termsSnapshot.compensation)}`}
+          tone={
+            termsSnapshot.settlement === "NEEDS_REVIEW"
+              ? "red"
+              : termsSnapshot.settlement === "SEEDED"
+                ? "cyan"
+                : termsSnapshot.settlement === "COMPLETE"
+                  ? "emerald"
+                  : "amber"
+          }
         />
 
         <SummaryCard
           label="Drafts"
           value={draftsValue}
-          detail={`${documentReadiness.draft} draft · ${documentReadiness.total} required`}
-          tone={documentReadiness.pending > 0 ? "amber" : "emerald"}
+          detail={`${dataReadiness.blocked} blocked · ${dataReadiness.total} required`}
+          tone={
+            dataReadiness.blocked > 0
+              ? "red"
+              : dataReadiness.draftable > 0
+                ? "amber"
+                : "emerald"
+          }
         />
 
         <SummaryCard
@@ -468,6 +894,69 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
                 onSelectDocuments={() => setActiveTab("DOCUMENTS")}
                 onSelectTimeline={() => setActiveTab("TIMELINE")}
               />
+
+              <div className="rounded-xl border border-neutral-800 bg-black/20 p-3">
+                <div className="flex flex-wrap items-start justify-between gap-3">
+                  <div>
+                    <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
+                      Profile-Aware Next Moves
+                    </div>
+
+                    <p className="mt-1 text-[11px] leading-relaxed text-neutral-500">
+                      Available transitions are filtered by the dossier
+                      execution profile, so non-escrow deals are not pushed into
+                      the escrow lane.
+                    </p>
+                  </div>
+
+                  <div className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300">
+                    {dossier.executionProfileLabel}
+                  </div>
+                </div>
+
+                {dossier.availableTransitions.length === 0 ? (
+                  <div className="mt-3 rounded border border-amber-900 bg-amber-950/20 p-2 text-xs text-amber-300">
+                    No profile-aware next moves are currently available.
+                  </div>
+                ) : (
+                  <div className="mt-3 grid gap-2">
+                    {dossier.availableTransitions.map((transition) => (
+                      <div
+                        key={transition.transitionKey}
+                        className="rounded border border-neutral-800 bg-black/30 p-2 text-xs"
+                      >
+                        <div className="flex flex-wrap items-start justify-between gap-3">
+                          <div>
+                            <div className="font-medium text-white">
+                              {transition.label}
+                            </div>
+
+                            <div className="mt-1 text-[10px] uppercase tracking-wide text-neutral-600">
+                              {transition.fromState} → {transition.toState}
+                            </div>
+                          </div>
+
+                          <div
+                            className={`rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${
+                              transition.recommended
+                                ? "border-emerald-900 bg-emerald-950/20 text-emerald-300"
+                                : "border-neutral-800 bg-black/30 text-neutral-400"
+                            }`}
+                          >
+                            {transition.recommended
+                              ? "Recommended"
+                              : "Available"}
+                          </div>
+                        </div>
+
+                        <p className="mt-2 text-[11px] leading-relaxed text-neutral-500">
+                          {transition.reason}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
 
               <DossierExecutionCard
                 currentState={dossier.state}

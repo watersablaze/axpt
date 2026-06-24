@@ -1,6 +1,11 @@
 import { NextResponse } from "next/server";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { prisma } from "@/lib/prisma";
+import { getAvailableDossierTransitions } from "@/domains/control-center/getAvailableDossierTransitions";
+import {
+  getExecutionProfileLabel,
+  inferDossierExecutionProfile,
+} from "@/domains/control-center/inferDossierExecutionProfile";
 
 type RouteContext = {
   params: Promise<{
@@ -84,7 +89,26 @@ export async function GET(_request: Request, context: RouteContext) {
     );
   }
 
-  const nextStates = getNextDossierStates(dossier.state);
+  const sourceTransactionType =
+    dossier.promotedOpportunities[0]?.sourceTransactionIntake
+      ?.transactionType ?? null;
+
+  const executionProfile = inferDossierExecutionProfile({
+    settlement: dossier.settlement,
+    transactionType: sourceTransactionType,
+    terms: dossier.terms,
+  });
+
+  const availableTransitions = getAvailableDossierTransitions({
+    state: dossier.state,
+    settlement: dossier.settlement,
+    transactionType: sourceTransactionType,
+    terms: dossier.terms,
+  });
+
+  const nextStates = availableTransitions.map(
+    (transition) => transition.toState,
+  );
 
   const transitionCount = dossier.events.filter(
     (event: (typeof dossier.events)[number]) =>
@@ -137,6 +161,9 @@ export async function GET(_request: Request, context: RouteContext) {
         : null,
 
       nextStates,
+      executionProfile,
+      executionProfileLabel: getExecutionProfileLabel(executionProfile),
+      availableTransitions,
       transitionCount,
       executedInstrumentCount,
       pendingApprovalCount,
