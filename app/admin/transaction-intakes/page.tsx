@@ -8,6 +8,7 @@ const INTAKE_STATUSES = [
   'NEEDS_CLARIFICATION',
   'QUALIFIED',
   'DECLINED',
+  'PROMOTED_TO_OPPORTUNITY',
   'DOSSIER_READY',
   'PROMOTED_TO_DOSSIER',
 ] as const
@@ -85,6 +86,7 @@ function statusBadgeClass(status: string) {
     case 'NEEDS_CLARIFICATION':
       return 'border-yellow-400/40 bg-yellow-400/10 text-yellow-200'
     case 'QUALIFIED':
+    case 'PROMOTED_TO_OPPORTUNITY':
     case 'DOSSIER_READY':
     case 'PROMOTED_TO_DOSSIER':
       return 'border-emerald-400/40 bg-emerald-400/10 text-emerald-200'
