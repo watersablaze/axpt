@@ -5,8 +5,7 @@ import { prisma } from "@/infrastructure/db/prisma";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { promoteTransactionIntakeToOpportunity } from "@/domains/control-center/transaction-intakes/promoteTransactionIntakeToOpportunity";
 import {
-  DEFAULT_TRANSACTION_INTAKE_HIDDEN_STATUSES,
-  TRANSACTION_TRANSACTION_INTAKE_STATUSES,
+  TRANSACTION_INTAKE_STATUSES,
   getTransactionIntakeStatusLabel,
   getTransactionIntakeStatusTone,
   isTransactionIntakeStatus,

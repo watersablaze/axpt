@@ -5,7 +5,7 @@ import RepresentativeLinkBuilder from "./RepresentativeLinkBuilder";
 import { RecentIntakeEmailLogPanel } from "./RecentIntakeEmailLogPanel";
 import {
   DEFAULT_TRANSACTION_INTAKE_HIDDEN_STATUSES,
-  TRANSACTION_TRANSACTION_INTAKE_STATUSES,
+  TRANSACTION_INTAKE_STATUSES,
   getTransactionIntakeStatusLabel,
   getTransactionIntakeStatusTone,
 } from "@/domains/control-center/transaction-intakes/intakeStatuses";
