@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/infrastructure/db/prisma";
+import RepresentativeLinkBuilder from "./RepresentativeLinkBuilder";
 
 const INTAKE_STATUSES = [
   "SUBMITTED",
@@ -354,24 +355,8 @@ export default async function TransactionIntakesAdminPage({
           </Link>
         </div>
 
-        <div className="mt-5 grid gap-4 lg:grid-cols-2">
-          <div className="rounded border border-gray-800 bg-black p-4">
-            <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
-              Link Format
-            </p>
-            <p className="mt-2 break-all font-mono text-xs text-gray-300">
-              /transaction-intake?ref=FW-REP-001&amp;rep=Representative%20Name&amp;program=French-Ward%20Gold
-            </p>
-          </div>
-
-          <div className="rounded border border-gray-800 bg-black p-4">
-            <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
-              Referral Filter
-            </p>
-            <p className="mt-2 break-all font-mono text-xs text-gray-300">
-              /admin/transaction-intakes?ref=FW-REP-001
-            </p>
-          </div>
+        <div className="mt-5">
+          <RepresentativeLinkBuilder />
         </div>
 
         <div className="mt-5">
