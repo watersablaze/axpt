@@ -162,7 +162,7 @@ export default async function TransactionIntakesAdminPage({
     ],
   };
 
-  const [intakes, statusCounts] = await Promise.all([
+  const [intakes, statusCounts, referralCounts] = await Promise.all([
     prisma.transactionIntake.findMany({
       where,
       orderBy: { createdAt: "desc" },
@@ -174,11 +174,35 @@ export default async function TransactionIntakesAdminPage({
         status: true,
       },
     }),
+    prisma.transactionIntake.groupBy({
+      by: ["referralCode"],
+      _count: {
+        referralCode: true,
+      },
+      where: {
+        referralCode: {
+          not: null,
+        },
+      },
+      orderBy: {
+        _count: {
+          referralCode: "desc",
+        },
+      },
+      take: 12,
+    }),
   ]);
 
   const countByStatus = new Map(
     statusCounts.map((item) => [item.status, item._count.status]),
   );
+
+  const referralLanes = referralCounts
+    .filter((item) => item.referralCode)
+    .map((item) => ({
+      code: item.referralCode as string,
+      count: item._count.referralCode,
+    }));
 
   const activeFilterCount = [
     selectedStatus,
@@ -309,6 +333,76 @@ export default async function TransactionIntakesAdminPage({
             </button>
           </div>
         </form>
+      </section>
+
+      <section className="mb-6 rounded border border-gray-800 bg-gray-950 p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 className="text-lg font-semibold">Representative Link Guide</h2>
+            <p className="mt-1 max-w-3xl text-sm text-gray-400">
+              Issue buyer-safe intake links with a referral code, representative
+              name, and program. Submitted records can be filtered by referral
+              lane.
+            </p>
+          </div>
+
+          <Link
+            href="/transaction-intake"
+            className="rounded border border-blue-500/40 bg-blue-500/10 px-3 py-2 text-sm font-semibold text-blue-200 hover:bg-blue-500/20"
+          >
+            Open Public Intake
+          </Link>
+        </div>
+
+        <div className="mt-5 grid gap-4 lg:grid-cols-2">
+          <div className="rounded border border-gray-800 bg-black p-4">
+            <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
+              Link Format
+            </p>
+            <p className="mt-2 break-all font-mono text-xs text-gray-300">
+              /transaction-intake?ref=FW-REP-001&amp;rep=Representative%20Name&amp;program=French-Ward%20Gold
+            </p>
+          </div>
+
+          <div className="rounded border border-gray-800 bg-black p-4">
+            <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
+              Referral Filter
+            </p>
+            <p className="mt-2 break-all font-mono text-xs text-gray-300">
+              /admin/transaction-intakes?ref=FW-REP-001
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5">
+          <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
+            Active Referral Lanes
+          </p>
+
+          {referralLanes.length === 0 ? (
+            <p className="mt-2 text-sm text-gray-500">
+              No referral-coded submissions have been received yet.
+            </p>
+          ) : (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {referralLanes.map((lane) => (
+                <Link
+                  key={lane.code}
+                  href={`/admin/transaction-intakes?ref=${encodeURIComponent(
+                    lane.code,
+                  )}`}
+                  className={`rounded-full border px-3 py-1 text-xs ${
+                    referralCode === lane.code
+                      ? "border-amber-500/50 bg-amber-500/10 text-amber-200"
+                      : "border-gray-700 bg-black text-gray-300 hover:bg-gray-900"
+                  }`}
+                >
+                  {lane.code} ({lane.count})
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       </section>
 
       {activeFilterCount > 0 && (
