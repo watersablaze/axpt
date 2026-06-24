@@ -91,6 +91,170 @@ function getCompletionCount(terms: DossierTerms) {
   }).length;
 }
 
+type TermsReviewState = "COMPLETE" | "PARTIAL" | "SEEDED" | "NEEDS_REVIEW";
+
+function hasValue(value: string | null | undefined) {
+  return Boolean(value?.trim());
+}
+
+function hasSeededTermsNote(terms: DossierTerms) {
+  const note =
+    terms.compensationConfidentialityNote?.trim().toLowerCase() ?? "";
+
+  return (
+    note.startsWith("seeded from") ||
+    note.includes("seeded from source intake") ||
+    note.includes("seeded from promoted opportunity") ||
+    note.includes("seeded from source intake for operator review")
+  );
+}
+
+function hasOperatorTermsConfirmation(terms: DossierTerms) {
+  const note =
+    terms.compensationConfidentialityNote?.trim().toLowerCase() ?? "";
+
+  return (
+    note.includes("operator confirmed") ||
+    note.includes("terms confirmed") ||
+    note.includes("settlement confirmed") ||
+    note.includes("authority confirmed") ||
+    note.includes("review complete")
+  );
+}
+
+function getSettlementReviewState(terms: DossierTerms): TermsReviewState {
+  const hasSettlementMethod = hasValue(terms.settlementMethod);
+  const hasBeneficiary = hasValue(terms.beneficiary);
+  const hasPaymentTrigger = hasValue(terms.paymentTrigger);
+  const seeded = hasSeededTermsNote(terms);
+  const confirmed = hasOperatorTermsConfirmation(terms);
+
+  if (!hasSettlementMethod) {
+    return "NEEDS_REVIEW";
+  }
+
+  if (seeded && !confirmed) {
+    return "SEEDED";
+  }
+
+  if (hasSettlementMethod && hasBeneficiary && hasPaymentTrigger) {
+    return "COMPLETE";
+  }
+
+  return "PARTIAL";
+}
+
+function getFinancialInstrumentReviewState(
+  terms: DossierTerms,
+): TermsReviewState {
+  const hasType = hasValue(terms.financialInstrumentType);
+  const hasInstitution = hasValue(terms.issuingInstitution);
+  const hasCoverage = hasValue(terms.instrumentAmountOrCoverage);
+  const hasValidity = hasValue(terms.validityPeriod);
+  const seeded = hasSeededTermsNote(terms);
+  const confirmed = hasOperatorTermsConfirmation(terms);
+
+  if (!hasType) {
+    return "NEEDS_REVIEW";
+  }
+
+  if (seeded && !confirmed) {
+    return "SEEDED";
+  }
+
+  if (hasType && hasInstitution && hasCoverage && hasValidity) {
+    return "COMPLETE";
+  }
+
+  return "PARTIAL";
+}
+
+function getCompensationReviewState(terms: DossierTerms): TermsReviewState {
+  const hasPayer = hasValue(terms.compensationPayer);
+  const hasPayees = hasValue(terms.compensationPayees);
+  const hasTrigger = hasValue(terms.compensationPayoutTrigger);
+  const hasAuthorization = hasValue(terms.compensationAuthorizationStatus);
+  const hasAnyCompensation =
+    hasValue(terms.sellerSideCompensation) ||
+    hasValue(terms.buyerSideCompensation) ||
+    hasValue(terms.compensationPaymentMethod) ||
+    hasValue(terms.compensationConfidentialityNote) ||
+    hasPayer ||
+    hasPayees ||
+    hasTrigger ||
+    hasAuthorization;
+  const seeded = hasSeededTermsNote(terms);
+  const confirmed = hasOperatorTermsConfirmation(terms);
+
+  if (!hasAnyCompensation) {
+    return "NEEDS_REVIEW";
+  }
+
+  if (seeded && !confirmed && !hasPayer && !hasPayees && !hasTrigger) {
+    return "SEEDED";
+  }
+
+  if (hasPayer && hasPayees && hasTrigger && hasAuthorization) {
+    return "COMPLETE";
+  }
+
+  return "PARTIAL";
+}
+
+function reviewTone(state: TermsReviewState) {
+  switch (state) {
+    case "COMPLETE":
+      return "border-emerald-900 bg-emerald-950/20 text-emerald-300";
+
+    case "PARTIAL":
+      return "border-amber-900 bg-amber-950/20 text-amber-300";
+
+    case "SEEDED":
+      return "border-cyan-900 bg-cyan-950/20 text-cyan-300";
+
+    case "NEEDS_REVIEW":
+      return "border-red-900 bg-red-950/20 text-red-300";
+  }
+}
+
+function reviewLabel(state: TermsReviewState) {
+  return state.replace("_", " ");
+}
+
+function TermsReviewCard({
+  title,
+  state,
+  detail,
+}: {
+  title: string;
+  state: TermsReviewState;
+  detail: string;
+}) {
+  return (
+    <div className="rounded border border-neutral-800 bg-black/30 p-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+            {title}
+          </div>
+
+          <p className="mt-1 max-w-sm text-[11px] leading-relaxed text-neutral-500">
+            {detail}
+          </p>
+        </div>
+
+        <div
+          className={`rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${reviewTone(
+            state,
+          )}`}
+        >
+          {reviewLabel(state)}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 async function readJsonResponse(response: Response): Promise<TermsResponse> {
   const text = await response.text();
 
@@ -159,6 +323,21 @@ export function DossierTermsPanel({ dossierId, onTermsChanged }: Props) {
   const [savedAt, setSavedAt] = useState<string | null>(null);
 
   const completionCount = useMemo(() => getCompletionCount(terms), [terms]);
+
+  const settlementReviewState = useMemo(
+    () => getSettlementReviewState(terms),
+    [terms],
+  );
+
+  const financialInstrumentReviewState = useMemo(
+    () => getFinancialInstrumentReviewState(terms),
+    [terms],
+  );
+
+  const compensationReviewState = useMemo(
+    () => getCompensationReviewState(terms),
+    [terms],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -307,6 +486,26 @@ export function DossierTermsPanel({ dossierId, onTermsChanged }: Props) {
         </div>
       ) : (
         <>
+          <div className="mt-4 grid gap-3 lg:grid-cols-3">
+            <TermsReviewCard
+              title="Settlement Terms"
+              state={settlementReviewState}
+              detail="Settlement method, beneficiary, and payment trigger maturity."
+            />
+
+            <TermsReviewCard
+              title="Financial Instrument"
+              state={financialInstrumentReviewState}
+              detail="Instrument type, issuing institution, coverage, and validity maturity."
+            />
+
+            <TermsReviewCard
+              title="Compensation"
+              state={compensationReviewState}
+              detail="Payer, payees, payout trigger, and authorization maturity."
+            />
+          </div>
+
           <div className="mt-4 grid gap-3 xl:grid-cols-2">
             <div className="rounded-lg border border-neutral-800 bg-neutral-950/70 p-3">
               <h4 className="mb-3 text-sm font-semibold text-white">
