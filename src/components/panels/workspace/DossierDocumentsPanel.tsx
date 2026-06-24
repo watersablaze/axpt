@@ -292,7 +292,7 @@ function DependencyReadinessPanel({
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
           <div className="text-[10px] uppercase tracking-wide text-neutral-500">
-            Dependency Readiness
+            Data Readiness
           </div>
 
           <div className="mt-1 text-[11px] text-neutral-500">
@@ -883,8 +883,13 @@ export default function DossierDocumentsPanel({
 
       <div className="mt-3 rounded border border-neutral-800 bg-black/30 p-3">
         <div className="text-[10px] uppercase tracking-wide text-neutral-600">
-          Package Readiness
+          Package Data Readiness
         </div>
+
+        <p className="mt-1 max-w-2xl text-[11px] leading-relaxed text-neutral-500">
+          Counts reflect dossier data readiness, not whether a draft artifact
+          has already been created.
+        </p>
 
         <div className="mt-2 flex flex-wrap gap-2">
           <SummaryPill label="Ready" value={summary.ready} tone="emerald" />
@@ -978,10 +983,16 @@ export default function DossierDocumentsPanel({
                       </div>
 
                       <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-                        <div
-                          className={`rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${status.tone}`}
-                        >
-                          {status.label}
+                        <div className="rounded border border-neutral-800 bg-black/30 p-2 text-right">
+                          <div className="text-[9px] uppercase tracking-wide text-neutral-600">
+                            Artifact Status
+                          </div>
+
+                          <div
+                            className={`mt-1 rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${status.tone}`}
+                          >
+                            {status.label}
+                          </div>
                         </div>
 
                         {canCreateDraft ? (
