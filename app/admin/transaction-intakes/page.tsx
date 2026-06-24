@@ -355,12 +355,21 @@ export default async function TransactionIntakesAdminPage({
             </p>
           </div>
 
-          <Link
-            href="/transaction-intake"
-            className="rounded border border-blue-500/40 bg-blue-500/10 px-3 py-2 text-sm font-semibold text-blue-200 hover:bg-blue-500/20"
-          >
-            Open Public Intake
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link
+              href="/admin/transaction-intakes/representatives"
+              className="rounded border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm font-semibold text-amber-200 hover:bg-amber-500/20"
+            >
+              Manage Representatives
+            </Link>
+
+            <Link
+              href="/transaction-intake"
+              className="rounded border border-blue-500/40 bg-blue-500/10 px-3 py-2 text-sm font-semibold text-blue-200 hover:bg-blue-500/20"
+            >
+              Open Public Intake
+            </Link>
+          </div>
         </div>
 
         <div className="mt-5">
