@@ -1,270 +1,246 @@
-'use client'
+"use client";
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from "react";
 
-import DossierWorkspaceHeader from './DossierWorkspaceHeader'
-import DossierOverviewCard from './DossierOverviewCard'
-import { DossierPartyCompletionPanel } from './DossierPartyCompletionPanel'
-import DossierExecutionCard from './DossierExecutionCard'
-import DossierTimelinePanel from './DossierTimelinePanel'
-import DossierDocumentsPanel from './DossierDocumentsPanel'
-import { DossierTermsPanel } from './DossierTermsPanel'
-import { DossierBankCoordinatesPanel } from './DossierBankCoordinatesPanel'
-import { DossierReleaseConditionsPanel } from './DossierReleaseConditionsPanel'
-import { DossierIssuanceApprovalPanel } from './DossierIssuanceApprovalPanel'
-import TransitionActionBar from './TransitionActionBar'
-import DossierCommandPanel from './DossierCommandPanel'
-import DossierMissionPanel from './DossierMissionPanel'
+import DossierWorkspaceHeader from "./DossierWorkspaceHeader";
+import DossierOverviewCard from "./DossierOverviewCard";
+import { DossierPartyCompletionPanel } from "./DossierPartyCompletionPanel";
+import DossierExecutionCard from "./DossierExecutionCard";
+import DossierTimelinePanel from "./DossierTimelinePanel";
+import DossierDocumentsPanel from "./DossierDocumentsPanel";
+import { DossierTermsPanel } from "./DossierTermsPanel";
+import { DossierBankCoordinatesPanel } from "./DossierBankCoordinatesPanel";
+import { DossierReleaseConditionsPanel } from "./DossierReleaseConditionsPanel";
+import { DossierIssuanceApprovalPanel } from "./DossierIssuanceApprovalPanel";
+import TransitionActionBar from "./TransitionActionBar";
+import DossierCommandPanel from "./DossierCommandPanel";
+import DossierMissionPanel from "./DossierMissionPanel";
 import DossierWorkspaceTabs, {
   type DossierWorkspaceTab,
-} from './DossierWorkspaceTabs'
-import {
-  getRequiredDossierDocuments,
-} from '@/domains/control-center/dossiers/documentRequirements'
+} from "./DossierWorkspaceTabs";
+import { getRequiredDossierDocuments } from "@/domains/control-center/dossiers/documentRequirements";
 
 type DossierParty = {
-  id: string
-  role: string
-  legalName: string
-  representative: string | null
-  country: string | null
-  notes: string | null
-}
+  id: string;
+  role: string;
+  legalName: string;
+  representative: string | null;
+  country: string | null;
+  notes: string | null;
+};
 
 type DossierInstrument = {
-  id: string
-  type: string
-  status: string
-  version: string
-  title: string
-}
+  id: string;
+  type: string;
+  status: string;
+  version: string;
+  title: string;
+};
 
 type DossierEvent = {
-  id: string
-  eventType: string
-  message: string
-  actor: string | null
-  createdAt: string
-}
+  id: string;
+  eventType: string;
+  message: string;
+  actor: string | null;
+  createdAt: string;
+};
 
 type DossierApprovalRequirement = {
-  id: string
-  transitionKey: string
-  requiredRole: string
-  requiredCount: number
-  status: string
-}
+  id: string;
+  transitionKey: string;
+  requiredRole: string;
+  requiredCount: number;
+  status: string;
+};
 
 type DossierSourceIntake = {
-  id: string
-  reference: string
-  referralCode: string | null
-  referredByName: string | null
-  referredByCompany: string | null
-  submitterName: string
-  submitterEmail: string
-  promotedAt: string | null
-  promotedBy: string | null
-}
+  id: string;
+  reference: string;
+  referralCode: string | null;
+  referredByName: string | null;
+  referredByCompany: string | null;
+  submitterName: string;
+  submitterEmail: string;
+  promotedAt: string | null;
+  promotedBy: string | null;
+};
 
 type DossierSourceOpportunity = {
-  id: string
-  title: string
-  source: string
-  status: string
-  sourceIntake: DossierSourceIntake | null
-}
+  id: string;
+  title: string;
+  source: string;
+  status: string;
+  sourceIntake: DossierSourceIntake | null;
+};
 
 type DossierWorkspace = {
-  id: string
-  reference: string
-  title: string
-  state: string
+  id: string;
+  reference: string;
+  title: string;
+  state: string;
 
-  commodity: string | null
-  origin: string | null
-  quantityKg: string | null
-  refinery: string | null
-  settlement: string | null
+  commodity: string | null;
+  origin: string | null;
+  quantityKg: string | null;
+  refinery: string | null;
+  settlement: string | null;
 
-  nextStates: string[]
+  nextStates: string[];
 
-  transitionCount: number
-  executedInstrumentCount: number
-  pendingApprovalCount: number
+  transitionCount: number;
+  executedInstrumentCount: number;
+  pendingApprovalCount: number;
 
-  sourceOpportunities: DossierSourceOpportunity[]
+  sourceOpportunities: DossierSourceOpportunity[];
 
-  parties: DossierParty[]
-  instruments: DossierInstrument[]
-  approvalRequirements: DossierApprovalRequirement[]
-  events: DossierEvent[]
-}
+  parties: DossierParty[];
+  instruments: DossierInstrument[];
+  approvalRequirements: DossierApprovalRequirement[];
+  events: DossierEvent[];
+};
 
 type DossierWorkspaceResponse = {
-  ok: boolean
-  dossier?: DossierWorkspace
-  error?: string
-}
+  ok: boolean;
+  dossier?: DossierWorkspace;
+  error?: string;
+};
 
 type Props = {
-  dossierId: string | null
-}
+  dossierId: string | null;
+};
 
 function formatTime(value?: string) {
-  if (!value) return '—'
+  if (!value) return "—";
 
   return new Date(value).toLocaleTimeString([], {
-    hour: 'numeric',
-    minute: '2-digit',
-  })
+    hour: "numeric",
+    minute: "2-digit",
+  });
 }
 
 function getPartyReadiness(parties: DossierParty[]) {
   return parties.reduce(
     (summary, party) => {
-      if (
-        party.legalName &&
-        party.country &&
-        party.representative
-      ) {
-        summary.complete += 1
-      } else if (
-        party.legalName &&
-        (party.country || party.representative)
-      ) {
-        summary.partial += 1
+      if (party.legalName && party.country && party.representative) {
+        summary.complete += 1;
+      } else if (party.legalName && (party.country || party.representative)) {
+        summary.partial += 1;
       } else if (party.legalName) {
-        summary.seeded += 1
+        summary.seeded += 1;
       } else {
-        summary.needsReview += 1
+        summary.needsReview += 1;
       }
 
-      return summary
+      return summary;
     },
     {
       complete: 0,
       partial: 0,
       seeded: 0,
       needsReview: 0,
-    }
-  )
+    },
+  );
 }
 
-function getDocumentReadiness(
-  instruments: DossierInstrument[]
-) {
-  const requiredDocuments =
-    getRequiredDossierDocuments()
+function getDocumentReadiness(instruments: DossierInstrument[]) {
+  const requiredDocuments = getRequiredDossierDocuments();
 
   return requiredDocuments.reduce(
     (summary, document) => {
       const instrument = document.instrumentType
-        ? instruments.find(
-            (item) => item.type === document.instrumentType
-          )
-        : null
+        ? instruments.find((item) => item.type === document.instrumentType)
+        : null;
 
       if (
-        instrument?.status === 'EXECUTED' ||
-        instrument?.status === 'ACTIVE'
+        instrument?.status === "EXECUTED" ||
+        instrument?.status === "ACTIVE"
       ) {
-        summary.ready += 1
-      } else if (instrument?.status === 'DRAFT') {
-        summary.draft += 1
+        summary.ready += 1;
+      } else if (instrument?.status === "DRAFT") {
+        summary.draft += 1;
       } else {
-        summary.pending += 1
+        summary.pending += 1;
       }
 
-      return summary
+      return summary;
     },
     {
       ready: 0,
       draft: 0,
       pending: 0,
       total: requiredDocuments.length,
-    }
-  )
+    },
+  );
 }
 
-export default function DossierWorkspacePanel({
-  dossierId,
-}: Props) {
-  const [dossier, setDossier] =
-    useState<DossierWorkspace | null>(null)
+export default function DossierWorkspacePanel({ dossierId }: Props) {
+  const [dossier, setDossier] = useState<DossierWorkspace | null>(null);
 
-  const [loading, setLoading] =
-    useState(false)
+  const [loading, setLoading] = useState(false);
 
-  const [error, setError] =
-    useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null);
 
-  const [activeTab, setActiveTab] =
-    useState<DossierWorkspaceTab>('OVERVIEW')
+  const [activeTab, setActiveTab] = useState<DossierWorkspaceTab>("OVERVIEW");
 
-  const [refreshNonce, setRefreshNonce] =
-    useState(0)
+  const [refreshNonce, setRefreshNonce] = useState(0);
 
   useEffect(() => {
     if (!dossierId) {
-      setDossier(null)
-      setError(null)
-      setLoading(false)
-      return
+      setDossier(null);
+      setError(null);
+      setLoading(false);
+      return;
     }
 
-    let cancelled = false
+    let cancelled = false;
 
     async function loadDossierWorkspace() {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
       try {
         const response = await fetch(
           `/api/admin/control-center/dossiers/${dossierId}`,
           {
-            cache: 'no-store',
-            credentials: 'include',
-          }
-        )
+            cache: "no-store",
+            credentials: "include",
+          },
+        );
 
-        const result =
-          (await response.json()) as DossierWorkspaceResponse
+        const result = (await response.json()) as DossierWorkspaceResponse;
 
-        if (cancelled) return
+        if (cancelled) return;
 
         if (!response.ok || !result.ok) {
-          setDossier(null)
-          setError(
-            result.error ?? 'DOSSIER_WORKSPACE_LOAD_FAILED'
-          )
-          return
+          setDossier(null);
+          setError(result.error ?? "DOSSIER_WORKSPACE_LOAD_FAILED");
+          return;
         }
 
-        setDossier(result.dossier ?? null)
+        setDossier(result.dossier ?? null);
       } catch (err) {
-        console.error('[DOSSIER_WORKSPACE_FAILED]', err)
+        console.error("[DOSSIER_WORKSPACE_FAILED]", err);
 
         if (!cancelled) {
-          setDossier(null)
-          setError('DOSSIER_WORKSPACE_LOAD_FAILED')
+          setDossier(null);
+          setError("DOSSIER_WORKSPACE_LOAD_FAILED");
         }
       } finally {
         if (!cancelled) {
-          setLoading(false)
+          setLoading(false);
         }
       }
     }
 
-    void loadDossierWorkspace()
+    void loadDossierWorkspace();
 
     return () => {
-      cancelled = true
-    }
-  }, [dossierId, refreshNonce])
+      cancelled = true;
+    };
+  }, [dossierId, refreshNonce]);
 
   if (!dossierId) {
-    return null
+    return null;
   }
 
   return (
@@ -293,9 +269,7 @@ export default function DossierWorkspacePanel({
             reference={dossier.reference}
             title={dossier.title}
             state={dossier.state}
-            sourceOpportunity={
-              dossier.sourceOpportunities[0] ?? null
-            }
+            sourceOpportunity={dossier.sourceOpportunities[0] ?? null}
           />
 
           <DossierMissionPanel
@@ -305,34 +279,24 @@ export default function DossierWorkspacePanel({
             settlement={dossier.settlement}
             currentState={dossier.state}
             nextStates={dossier.nextStates}
+            sourceOpportunity={dossier.sourceOpportunities[0] ?? null}
           />
 
           <DossierCommandPanel
             currentState={dossier.state}
             nextStates={dossier.nextStates}
-            pendingApprovalCount={
-              dossier.pendingApprovalCount
-            }
-            executedInstrumentCount={
-              dossier.executedInstrumentCount
-            }
-            partyReadiness={getPartyReadiness(
-              dossier.parties
-            )}
-            documentReadiness={getDocumentReadiness(
-              dossier.instruments
-            )}
-            onSelectExecution={() => setActiveTab('EXECUTION')}
-            onSelectDocuments={() => setActiveTab('DOCUMENTS')}
-            onSelectTimeline={() => setActiveTab('TIMELINE')}
+            pendingApprovalCount={dossier.pendingApprovalCount}
+            executedInstrumentCount={dossier.executedInstrumentCount}
+            partyReadiness={getPartyReadiness(dossier.parties)}
+            documentReadiness={getDocumentReadiness(dossier.instruments)}
+            onSelectExecution={() => setActiveTab("EXECUTION")}
+            onSelectDocuments={() => setActiveTab("DOCUMENTS")}
+            onSelectTimeline={() => setActiveTab("TIMELINE")}
           />
 
-          <DossierWorkspaceTabs
-            activeTab={activeTab}
-            onChange={setActiveTab}
-          />
+          <DossierWorkspaceTabs activeTab={activeTab} onChange={setActiveTab} />
 
-          {activeTab === 'OVERVIEW' ? (
+          {activeTab === "OVERVIEW" ? (
             <div className="space-y-3">
               <DossierOverviewCard
                 commodity={dossier.commodity}
@@ -345,38 +309,28 @@ export default function DossierWorkspacePanel({
 
               <DossierPartyCompletionPanel
                 parties={dossier.parties}
-                onPartyChanged={() =>
-                  setRefreshNonce((value) => value + 1)
-                }
+                onPartyChanged={() => setRefreshNonce((value) => value + 1)}
               />
             </div>
           ) : null}
 
-          {activeTab === 'EXECUTION' ? (
+          {activeTab === "EXECUTION" ? (
             <div className="space-y-3">
               <DossierExecutionCard
                 currentState={dossier.state}
                 nextStates={dossier.nextStates}
                 transitionCount={dossier.transitionCount}
-                executedInstrumentCount={
-                  dossier.executedInstrumentCount
-                }
-                pendingApprovalCount={
-                  dossier.pendingApprovalCount
-                }
-                partyReadiness={getPartyReadiness(
-                  dossier.parties
-                )}
-                documentReadiness={getDocumentReadiness(
-                  dossier.instruments
-                )}
+                executedInstrumentCount={dossier.executedInstrumentCount}
+                pendingApprovalCount={dossier.pendingApprovalCount}
+                partyReadiness={getPartyReadiness(dossier.parties)}
+                documentReadiness={getDocumentReadiness(dossier.instruments)}
               />
 
               <TransitionActionBar
                 dossierId={dossier.id}
                 nextStates={dossier.nextStates}
                 onTransitioned={async () => {
-                  setRefreshNonce((value) => value + 1)
+                  setRefreshNonce((value) => value + 1);
                 }}
               />
 
@@ -397,51 +351,47 @@ export default function DossierWorkspacePanel({
                   </div>
                 ) : (
                   <div className="mt-3 space-y-2">
-                    {dossier.approvalRequirements.map(
-                      (requirement) => (
-                        <div
-                          key={requirement.id}
-                          className="rounded border border-neutral-800 bg-black/30 p-2 text-xs"
-                        >
-                          <div className="flex items-start justify-between gap-3">
-                            <div>
-                              <div className="font-medium text-white">
-                                {requirement.transitionKey}
-                              </div>
-
-                              <div className="mt-1 text-[10px] uppercase tracking-wide text-neutral-600">
-                                {requirement.requiredRole} · Required:{' '}
-                                {requirement.requiredCount}
-                              </div>
+                    {dossier.approvalRequirements.map((requirement) => (
+                      <div
+                        key={requirement.id}
+                        className="rounded border border-neutral-800 bg-black/30 p-2 text-xs"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <div className="font-medium text-white">
+                              {requirement.transitionKey}
                             </div>
 
-                            <div className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
-                              {requirement.status}
+                            <div className="mt-1 text-[10px] uppercase tracking-wide text-neutral-600">
+                              {requirement.requiredRole} · Required:{" "}
+                              {requirement.requiredCount}
                             </div>
                           </div>
+
+                          <div className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
+                            {requirement.status}
+                          </div>
                         </div>
-                      )
-                    )}
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>
             </div>
           ) : null}
 
-          {activeTab === 'TIMELINE' ? (
+          {activeTab === "TIMELINE" ? (
             <DossierTimelinePanel
               currentState={dossier.state}
               events={dossier.events}
             />
           ) : null}
 
-          {activeTab === 'DOCUMENTS' ? (
+          {activeTab === "DOCUMENTS" ? (
             <div className="space-y-3">
               <DossierTermsPanel
                 dossierId={dossier.id}
-                onTermsChanged={() =>
-                  setRefreshNonce((value) => value + 1)
-                }
+                onTermsChanged={() => setRefreshNonce((value) => value + 1)}
               />
 
               <DossierBankCoordinatesPanel
@@ -461,9 +411,7 @@ export default function DossierWorkspacePanel({
               <DossierIssuanceApprovalPanel
                 dossierId={dossier.id}
                 instruments={dossier.instruments}
-                onApprovalChanged={() =>
-                  setRefreshNonce((value) => value + 1)
-                }
+                onApprovalChanged={() => setRefreshNonce((value) => value + 1)}
               />
 
               <DossierDocumentsPanel
@@ -479,5 +427,5 @@ export default function DossierWorkspacePanel({
         </div>
       ) : null}
     </section>
-  )
+  );
 }
