@@ -408,59 +408,57 @@ const intake = await prisma.transactionIntake.findUnique({
         )}
       </section>
 
-      <Section title="Submitter">
-        <Field label="Name" value={intake.submitterName} />
-        <Field label="Email" value={intake.submitterEmail} />
-        <Field label="Phone" value={intake.submitterPhone} />
-        <Field label="Company" value={intake.submitterCompany} />
-        <Field label="Country" value={intake.submitterCountry} />
-        <Field label="Role" value={intake.submitterRole} />
+      <Section title="Buyer / Submitter">
+        <Field label="Submitter Name" value={intake.submitterName} />
+        <Field label="Submitter Email" value={intake.submitterEmail} />
+        <Field label="Phone / WhatsApp" value={intake.submitterPhone} />
+        <Field label="Submitter Company" value={intake.submitterCompany} />
+        <Field label="Country / Jurisdiction" value={intake.submitterCountry} />
+        <Field label="Submitter Role" value={intake.submitterRole} />
+        <Field label="Buyer Company / Party" value={intake.buyerName} />
+        <Field label="Authorization Status" value={intake.authorizationStatus} />
       </Section>
 
       <Section title="Representation">
         <Field label="Represented Party Type" value={intake.representedPartyType} />
         <Field label="Represented Party Name" value={intake.representedPartyName} />
-        <Field label="Authorization Status" value={intake.authorizationStatus} />
       </Section>
 
-      <Section title="Transaction">
+      <Section title="Transaction Structure">
         <Field label="Program" value={intake.program} />
-        <Field label="Transaction Type" value={intake.transactionType} />
-        <Field label="Commodity" value={intake.commodity} />
-        <Field label="Quantity" value={intake.quantity} />
-        <Field label="Trial Quantity" value={intake.trialQuantity} />
-        <Field label="Monthly Quantity" value={intake.monthlyQuantity} />
-        <Field label="Origin" value={intake.origin} />
-        <Field label="Destination" value={intake.destination} />
+        <Field label="Transaction Structure" value={intake.transactionType} />
         <Field label="Delivery Terms" value={intake.deliveryTerms} />
         <Field label="Settlement Method" value={intake.settlementMethod} />
         <Field label="Expected Timeline" value={intake.expectedTimeline} />
       </Section>
 
-      <Section title="Commercial Readiness">
-        <Field label="Buyer Name" value={intake.buyerName} />
-        <Field label="Seller Name" value={intake.sellerName} />
-        <Field label="Refinery Preference" value={intake.refineryPreference} />
+      <Section title="Commodity Request">
+        <Field label="Commodity" value={intake.commodity} />
+        <Field label="Total Quantity" value={intake.quantity} />
+        <Field label="Trial Quantity" value={intake.trialQuantity} />
+        <Field label="Monthly Quantity" value={intake.monthlyQuantity} />
+        <Field label="Origin" value={intake.origin} />
+        <Field label="Destination" value={intake.destination} />
+      </Section>
+
+      <Section title="Readiness Status">
         <Field label="Financial Readiness" value={intake.financialReadiness} />
-        <Field label="Documents Available" value={intake.documentsAvailable} />
-        <Field label="Supporting Notes" value={intake.supportingNotes} />
+        <Field label="Readiness Materials" value={intake.documentsAvailable} />
+        <Field label="Additional Notes" value={intake.supportingNotes} />
       </Section>
 
-      <Section title="Referral / Intermediary">
+      <Section title="Representative / Referral">
         <Field label="Referral Code" value={intake.referralCode} />
-        <Field label="Referred By Name" value={intake.referredByName} />
-        <Field label="Referred By Company" value={intake.referredByCompany} />
-        <Field label="Referred By Email" value={intake.referredByEmail} />
-        <Field label="Referred By Phone" value={intake.referredByPhone} />
-        <Field label="Referred By Role" value={intake.referredByRole} />
-        <Field label="Referral Confirmed" value={intake.referralConfirmed} />
-        <Field label="Compensation Expectation" value={intake.compensationExpectation} />
+        <Field label="Issuing Representative" value={intake.referredByName} />
+        <Field label="Representative Company" value={intake.referredByCompany} />
+        <Field label="Representative Email" value={intake.referredByEmail} />
+        <Field label="Representative Role" value={intake.referredByRole} />
       </Section>
 
-      <Section title="Declarations">
+      <Section title="Submission Notices">
         <Field label="Accuracy Confirmed" value={intake.declarationAccuracy} />
         <Field label="No Obligation Confirmed" value={intake.declarationNoObligation} />
-        <Field label="No Commission Confirmed" value={intake.declarationNoCommission} />
+        <Field label="No Commission / Mandate Right Confirmed" value={intake.declarationNoCommission} />
       </Section>
 
       <Section title="System Metadata">
