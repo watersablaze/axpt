@@ -1,91 +1,71 @@
 export const dossierTransitions = {
-  INTAKE_PENDING: [
-    'KYC_REVIEW',
-  ],
+  INTAKE_PENDING: ["KYC_REVIEW"],
 
-  KYC_REVIEW: [
-    'SPA_DRAFTING',
-    'BLOCKED',
-  ],
+  KYC_REVIEW: ["SPA_DRAFTING", "BLOCKED"],
 
-  SPA_DRAFTING: [
-    'SPA_EXECUTED',
-    'CANCELLED',
-  ],
+  SPA_DRAFTING: ["SPA_EXECUTED", "CANCELLED"],
 
   SPA_EXECUTED: [
-    'ESCROW_PENDING',
+    "ESCROW_PENDING",
+    "PAYMENT_INSTRUCTION_PENDING",
+    "CRYPTO_WALLET_CONFIRMATION",
+    "FINANCIAL_INSTRUMENT_PENDING",
+    "REFINERY_COORDINATION",
+    "BLOCKED",
   ],
 
-  ESCROW_PENDING: [
-    'ESCROW_FUNDED',
-    'BLOCKED',
-  ],
+  ESCROW_PENDING: ["ESCROW_FUNDED", "BLOCKED"],
 
-  ESCROW_FUNDED: [
-    'TREASURY_PENDING',
-  ],
+  ESCROW_FUNDED: ["TREASURY_PENDING"],
 
-  TREASURY_PENDING: [
-    'EXPORT_RELEASED',
-  ],
+  PAYMENT_INSTRUCTION_PENDING: ["PAYMENT_CONFIRMED", "BLOCKED"],
 
-  EXPORT_RELEASED: [
-    'EXPORT_ACTIVE',
-  ],
+  PAYMENT_CONFIRMED: ["TREASURY_PENDING"],
 
-  EXPORT_ACTIVE: [
-    'IN_TRANSIT',
-  ],
+  CRYPTO_WALLET_CONFIRMATION: ["CRYPTO_RECEIVED", "BLOCKED"],
 
-  IN_TRANSIT: [
-    'REFINERY_INTAKE',
-  ],
+  CRYPTO_RECEIVED: ["TREASURY_PENDING"],
 
-  REFINERY_INTAKE: [
-    'REFINERY_ASSAY',
-  ],
+  FINANCIAL_INSTRUMENT_PENDING: ["FINANCIAL_INSTRUMENT_CONFIRMED", "BLOCKED"],
 
-  REFINERY_ASSAY: [
-    'ASSAY_PENDING',
-  ],
+  FINANCIAL_INSTRUMENT_CONFIRMED: ["TREASURY_PENDING"],
 
-  ASSAY_PENDING: [
-    'SETTLEMENT_PENDING',
-  ],
+  REFINERY_COORDINATION: ["EXPORT_RELEASED", "BLOCKED"],
 
-  SETTLEMENT_PENDING: [
-    'SETTLED',
-  ],
+  TREASURY_PENDING: ["EXPORT_RELEASED"],
 
-  SETTLED: [
-    'CLOSED',
-  ],
+  EXPORT_RELEASED: ["EXPORT_ACTIVE"],
+
+  EXPORT_ACTIVE: ["IN_TRANSIT"],
+
+  IN_TRANSIT: ["REFINERY_INTAKE"],
+
+  REFINERY_INTAKE: ["REFINERY_ASSAY"],
+
+  REFINERY_ASSAY: ["ASSAY_PENDING"],
+
+  ASSAY_PENDING: ["SETTLEMENT_PENDING"],
+
+  SETTLEMENT_PENDING: ["SETTLED"],
+
+  SETTLED: ["CLOSED"],
 
   BLOCKED: [],
   CANCELLED: [],
   CLOSED: [],
-} as const
+} as const;
 
-export type DossierState =
-  keyof typeof dossierTransitions
+export type DossierState = keyof typeof dossierTransitions;
 
-export function getNextDossierStates(
-  state: string
-): string[] {
-  return [
-    ...(dossierTransitions[
-      state as DossierState
-    ] ?? []),
-  ]
+export function getNextDossierStates(state: string): string[] {
+  return [...(dossierTransitions[state as DossierState] ?? [])];
 }
 
 export function canTransitionDossier(
   fromState: string,
-  toState: string
+  toState: string,
 ): boolean {
-  const allowed =
-    getNextDossierStates(fromState)
+  const allowed = getNextDossierStates(fromState);
 
-  return allowed.includes(toState)
+  return allowed.includes(toState);
 }

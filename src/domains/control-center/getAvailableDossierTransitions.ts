@@ -39,6 +39,31 @@ function labelForTransition(toState: string) {
     .join(" ");
 }
 
+function expectedPostSpaState(profile: DossierExecutionProfile) {
+  switch (profile) {
+    case "ESCROW_SETTLEMENT":
+      return "ESCROW_PENDING";
+
+    case "DIRECT_WIRE":
+    case "CASH_AND_CARRY":
+    case "HAND_CARRY_EXPORT":
+      return "PAYMENT_INSTRUCTION_PENDING";
+
+    case "CRYPTO_SETTLEMENT":
+      return "CRYPTO_WALLET_CONFIRMATION";
+
+    case "DLC_OR_SBLC":
+      return "FINANCIAL_INSTRUMENT_PENDING";
+
+    case "REFINERY_SETTLEMENT":
+      return "REFINERY_COORDINATION";
+
+    case "MANUAL_REVIEW":
+    default:
+      return "BLOCKED";
+  }
+}
+
 function profileAllowsTransition({
   profile,
   fromState,
@@ -53,24 +78,42 @@ function profileAllowsTransition({
   }
 
   if (fromState === "SPA_EXECUTED") {
-    switch (profile) {
-      case "ESCROW_SETTLEMENT":
-        return toState === "ESCROW_PENDING";
-
-      case "DIRECT_WIRE":
-      case "CRYPTO_SETTLEMENT":
-      case "CASH_AND_CARRY":
-      case "HAND_CARRY_EXPORT":
-      case "DLC_OR_SBLC":
-      case "REFINERY_SETTLEMENT":
-      case "MANUAL_REVIEW":
-        return toState === "BLOCKED";
-    }
+    return toState === expectedPostSpaState(profile);
   }
 
   if (
     profile !== "ESCROW_SETTLEMENT" &&
     ["ESCROW_PENDING", "ESCROW_FUNDED"].includes(fromState)
+  ) {
+    return false;
+  }
+
+  if (
+    profile !== "CRYPTO_SETTLEMENT" &&
+    ["CRYPTO_WALLET_CONFIRMATION", "CRYPTO_RECEIVED"].includes(fromState)
+  ) {
+    return false;
+  }
+
+  if (
+    !["DIRECT_WIRE", "CASH_AND_CARRY", "HAND_CARRY_EXPORT"].includes(profile) &&
+    ["PAYMENT_INSTRUCTION_PENDING", "PAYMENT_CONFIRMED"].includes(fromState)
+  ) {
+    return false;
+  }
+
+  if (
+    profile !== "DLC_OR_SBLC" &&
+    ["FINANCIAL_INSTRUMENT_PENDING", "FINANCIAL_INSTRUMENT_CONFIRMED"].includes(
+      fromState,
+    )
+  ) {
+    return false;
+  }
+
+  if (
+    profile !== "REFINERY_SETTLEMENT" &&
+    fromState === "REFINERY_COORDINATION"
   ) {
     return false;
   }
@@ -87,17 +130,57 @@ function reasonForTransition({
   fromState: string;
   toState: string;
 }) {
-  if (fromState === "SPA_EXECUTED" && toState === "ESCROW_PENDING") {
-    return "Escrow path is available because the dossier profile indicates escrow settlement.";
+  if (fromState === "SPA_EXECUTED") {
+    switch (toState) {
+      case "ESCROW_PENDING":
+        return "Escrow path is available because the dossier profile indicates escrow settlement.";
+
+      case "PAYMENT_INSTRUCTION_PENDING":
+        return `${getExecutionProfileLabel(
+          profile,
+        )} path is available because the dossier requires payment instruction and confirmation before treasury movement.`;
+
+      case "CRYPTO_WALLET_CONFIRMATION":
+        return "Crypto settlement path is available because the dossier references wallet, stablecoin, or blockchain settlement terms.";
+
+      case "FINANCIAL_INSTRUMENT_PENDING":
+        return "Financial instrument path is available because the dossier profile indicates DLC, SBLC, or letter-of-credit settlement.";
+
+      case "REFINERY_COORDINATION":
+        return "Refinery coordination path is available because settlement depends on refinery coordination, intake, or assay posture.";
+
+      case "BLOCKED":
+        return `${getExecutionProfileLabel(
+          profile,
+        )} requires operator review before execution can continue.`;
+
+      default:
+        break;
+    }
   }
 
-  if (fromState === "SPA_EXECUTED" && toState === "BLOCKED") {
-    return `${getExecutionProfileLabel(
-      profile,
-    )} requires route-specific transition coverage before execution can continue.`;
+  if (
+    fromState === "CRYPTO_WALLET_CONFIRMATION" &&
+    toState === "CRYPTO_RECEIVED"
+  ) {
+    return "Crypto receipt requires wallet, network, asset, sender, and treasury confirmation before funds are treated as received.";
   }
 
-  return "Transition is available under the current dossier lifecycle.";
+  if (
+    fromState === "PAYMENT_INSTRUCTION_PENDING" &&
+    toState === "PAYMENT_CONFIRMED"
+  ) {
+    return "Payment confirmation requires bank/wire evidence and receiving-party acknowledgment.";
+  }
+
+  if (
+    fromState === "FINANCIAL_INSTRUMENT_PENDING" &&
+    toState === "FINANCIAL_INSTRUMENT_CONFIRMED"
+  ) {
+    return "Financial instrument confirmation requires instrument evidence, issuing institution details, coverage, and validity review.";
+  }
+
+  return "Transition is available under the current dossier lifecycle and execution profile.";
 }
 
 export function getAvailableDossierTransitions(
@@ -124,9 +207,7 @@ export function getAvailableDossierTransitions(
       profileLabel,
       recommended:
         input.state === "SPA_EXECUTED"
-          ? profile === "ESCROW_SETTLEMENT"
-            ? toState === "ESCROW_PENDING"
-            : toState === "BLOCKED"
+          ? toState === expectedPostSpaState(profile)
           : true,
       reason: reasonForTransition({
         profile,
