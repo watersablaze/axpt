@@ -253,6 +253,12 @@ export default function OpportunityQueuePanel({
                       </>
                     ) : null}
                   </div>
+
+                  {opportunity.sourceIntake ? (
+                    <div className="mt-2 text-[10px] uppercase tracking-wide text-emerald-300/70">
+                      Seeded from Intake {opportunity.sourceIntake.reference}
+                    </div>
+                  ) : null}
                 </div>
 
                 <div
@@ -260,7 +266,7 @@ export default function OpportunityQueuePanel({
                     opportunity.status,
                   )}`}
                 >
-                  {opportunity.status}
+                  {linkedDossierId ? "DOSSIER CREATED" : opportunity.status}
                 </div>
 
                 <div className="flex items-center gap-2 lg:justify-end">
@@ -270,7 +276,7 @@ export default function OpportunityQueuePanel({
                       onClick={() => onOpenDossier?.(linkedDossierId)}
                       className="rounded border border-neutral-700 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-cyan-700 hover:text-cyan-300"
                     >
-                      {selected ? "Active" : "Open"}
+                      {selected ? "Dossier Active" : "Open Dossier"}
                     </button>
                   ) : (
                     <button
