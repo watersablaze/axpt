@@ -193,6 +193,137 @@ function getDocumentReadiness(instruments: DossierInstrument[]) {
   );
 }
 
+function getTermsSnapshot(terms: DossierTerms | null) {
+  return {
+    settlement: terms?.settlementMethod ? "Present" : "Needs Review",
+    instrument: terms?.financialInstrumentType ? "Present" : "Needs Review",
+    compensation:
+      terms?.compensationPayer ||
+      terms?.compensationPayees ||
+      terms?.compensationConfidentialityNote
+        ? "Present"
+        : "Needs Review",
+  };
+}
+
+function SummaryCard({
+  label,
+  value,
+  detail,
+  tone = "neutral",
+}: {
+  label: string;
+  value: string;
+  detail: string;
+  tone?: "neutral" | "cyan" | "amber" | "emerald" | "red";
+}) {
+  const toneClass = {
+    neutral: "border-neutral-800 bg-black/30 text-neutral-300",
+    cyan: "border-cyan-900 bg-cyan-950/20 text-cyan-300",
+    amber: "border-amber-900 bg-amber-950/20 text-amber-300",
+    emerald: "border-emerald-900 bg-emerald-950/20 text-emerald-300",
+    red: "border-red-900 bg-red-950/20 text-red-300",
+  }[tone];
+
+  return (
+    <div className={`rounded border p-3 ${toneClass}`}>
+      <div className="text-[10px] uppercase tracking-wide opacity-70">
+        {label}
+      </div>
+
+      <div className="mt-1 text-sm font-semibold text-white">{value}</div>
+
+      <p className="mt-1 text-[11px] leading-relaxed opacity-75">{detail}</p>
+    </div>
+  );
+}
+
+function DossierBriefSummary({ dossier }: { dossier: DossierWorkspace }) {
+  const sourceIntake =
+    dossier.sourceOpportunities[0]?.sourceIntake?.reference ??
+    "Direct / Manual";
+  const partyReadiness = getPartyReadiness(dossier.parties);
+  const documentReadiness = getDocumentReadiness(dossier.instruments);
+  const termsSnapshot = getTermsSnapshot(dossier.terms);
+
+  const partyValue = `${partyReadiness.complete} complete · ${partyReadiness.seeded} seeded`;
+  const termsValue = `${termsSnapshot.settlement} settlement`;
+  const draftsValue = `${documentReadiness.ready} ready · ${documentReadiness.pending} pending`;
+
+  return (
+    <section className="rounded-xl border border-cyan-900/50 bg-cyan-950/10 p-4">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.2em] text-neutral-500">
+            Dossier Front Page
+          </div>
+
+          <h3 className="mt-1 text-sm font-semibold text-white">
+            Read this before acting
+          </h3>
+
+          <p className="mt-1 max-w-3xl text-[11px] leading-relaxed text-neutral-500">
+            This is the compressed operator view: origin, party maturity,
+            commercial terms, drafting posture, and issuance caution before any
+            execution or external release.
+          </p>
+        </div>
+
+        <div className="rounded border border-neutral-800 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-500">
+          {dossier.state}
+        </div>
+      </div>
+
+      <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-5">
+        <SummaryCard
+          label="Origin"
+          value={sourceIntake}
+          detail="Source trace for the dossier record."
+          tone={sourceIntake === "Direct / Manual" ? "neutral" : "cyan"}
+        />
+
+        <SummaryCard
+          label="Parties"
+          value={partyValue}
+          detail={`${partyReadiness.partial} partial · ${partyReadiness.needsReview} needs review`}
+          tone={
+            partyReadiness.needsReview > 0
+              ? "red"
+              : partyReadiness.seeded > 0
+                ? "cyan"
+                : "emerald"
+          }
+        />
+
+        <SummaryCard
+          label="Terms"
+          value={termsValue}
+          detail={`Instrument: ${termsSnapshot.instrument} · Compensation: ${termsSnapshot.compensation}`}
+          tone={termsSnapshot.settlement === "Needs Review" ? "red" : "amber"}
+        />
+
+        <SummaryCard
+          label="Drafts"
+          value={draftsValue}
+          detail={`${documentReadiness.draft} draft · ${documentReadiness.total} required`}
+          tone={documentReadiness.pending > 0 ? "amber" : "emerald"}
+        />
+
+        <SummaryCard
+          label="Issuance"
+          value={
+            dossier.pendingApprovalCount > 0
+              ? "Approval Pending"
+              : "Internal Review"
+          }
+          detail="External release must pass operator approval."
+          tone={dossier.pendingApprovalCount > 0 ? "amber" : "neutral"}
+        />
+      </div>
+    </section>
+  );
+}
+
 export default function DossierWorkspacePanel({ dossierId }: Props) {
   const [dossier, setDossier] = useState<DossierWorkspace | null>(null);
 
@@ -304,20 +435,10 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
 
           <OperatorPathStrip activeTab={activeTab} onSelectTab={setActiveTab} />
 
-          <DossierCommandPanel
-            currentState={dossier.state}
-            nextStates={dossier.nextStates}
-            pendingApprovalCount={dossier.pendingApprovalCount}
-            executedInstrumentCount={dossier.executedInstrumentCount}
-            partyReadiness={getPartyReadiness(dossier.parties)}
-            documentReadiness={getDocumentReadiness(dossier.instruments)}
-            onSelectExecution={() => setActiveTab("EXECUTION")}
-            onSelectDocuments={() => setActiveTab("DOCUMENTS")}
-            onSelectTimeline={() => setActiveTab("TIMELINE")}
-          />
-
           {activeTab === "OVERVIEW" ? (
             <div className="space-y-3">
+              <DossierBriefSummary dossier={dossier} />
+
               <DossierOverviewCard
                 commodity={dossier.commodity}
                 quantityKg={dossier.quantityKg}
@@ -336,6 +457,18 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
 
           {activeTab === "EXECUTION" ? (
             <div className="space-y-3">
+              <DossierCommandPanel
+                currentState={dossier.state}
+                nextStates={dossier.nextStates}
+                pendingApprovalCount={dossier.pendingApprovalCount}
+                executedInstrumentCount={dossier.executedInstrumentCount}
+                partyReadiness={getPartyReadiness(dossier.parties)}
+                documentReadiness={getDocumentReadiness(dossier.instruments)}
+                onSelectExecution={() => setActiveTab("EXECUTION")}
+                onSelectDocuments={() => setActiveTab("DOCUMENTS")}
+                onSelectTimeline={() => setActiveTab("TIMELINE")}
+              />
+
               <DossierExecutionCard
                 currentState={dossier.state}
                 nextStates={dossier.nextStates}
