@@ -40,6 +40,8 @@ type DossierDependencyContext = {
   quantityKg: string | null;
   refinery: string | null;
   settlement: string | null;
+  executionProfile?: string | null;
+  executionProfileLabel?: string | null;
 };
 
 type DependencyIssue = {
@@ -85,6 +87,8 @@ type Props = {
   instruments: Instrument[];
   onInstrumentChanged?: () => void;
 };
+
+type DocumentFilter = "ROUTE" | "CORE" | "ALL";
 
 function hasValue(value: string | null | undefined) {
   return Boolean(value?.trim());
@@ -393,6 +397,193 @@ function issueTone(status: TemplateIssue["status"]) {
   }
 }
 
+const ROUTE_KITS: Record<
+  string,
+  {
+    label: string;
+    description: string;
+    instrumentTypes: string[];
+  }
+> = {
+  ESCROW_SETTLEMENT: {
+    label: "Escrow Settlement",
+    description: "Escrow setup, coordinates, and funding pathway confirmation.",
+    instrumentTypes: ["ESCROW_SETUP_INSTRUCTION"],
+  },
+  DIRECT_WIRE: {
+    label: "Direct Wire / MT103",
+    description: "Payment instructions and bank/wire confirmation evidence.",
+    instrumentTypes: ["PAYMENT_INSTRUCTION_SHEET", "PAYMENT_CONFIRMATION"],
+  },
+  CASH_AND_CARRY: {
+    label: "Cash & Carry",
+    description:
+      "Payment instructions and receiving-party confirmation evidence.",
+    instrumentTypes: ["PAYMENT_INSTRUCTION_SHEET", "PAYMENT_CONFIRMATION"],
+  },
+  HAND_CARRY_EXPORT: {
+    label: "Hand-Carry Export",
+    description:
+      "Payment instructions, receiving-party confirmation, and hand-carry execution posture.",
+    instrumentTypes: ["PAYMENT_INSTRUCTION_SHEET", "PAYMENT_CONFIRMATION"],
+  },
+  CRYPTO_SETTLEMENT: {
+    label: "Crypto Settlement",
+    description:
+      "Wallet, network, stablecoin/token, and on-chain receipt confirmation.",
+    instrumentTypes: [
+      "CRYPTO_SETTLEMENT_INSTRUCTION",
+      "WALLET_CONFIRMATION_SHEET",
+      "CRYPTO_RECEIPT_EVIDENCE",
+    ],
+  },
+  DLC_OR_SBLC: {
+    label: "DLC / SBLC",
+    description:
+      "Financial instrument review and instrument evidence confirmation.",
+    instrumentTypes: [
+      "FINANCIAL_INSTRUMENT_REVIEW_SHEET",
+      "FINANCIAL_INSTRUMENT_EVIDENCE",
+    ],
+  },
+  REFINERY_SETTLEMENT: {
+    label: "Refinery Settlement",
+    description: "Refinery coordination, procedure, intake, and assay posture.",
+    instrumentTypes: ["REFINERY_COORDINATION_SHEET"],
+  },
+  MANUAL_REVIEW: {
+    label: "Manual Review",
+    description:
+      "Execution lane has not been confidently inferred. Operator review is required.",
+    instrumentTypes: [],
+  },
+};
+
+function getRouteKit(profile: string | null | undefined) {
+  return ROUTE_KITS[profile ?? ""] ?? ROUTE_KITS.MANUAL_REVIEW;
+}
+
+function getRouteDocumentTypes(profile: string | null | undefined) {
+  return getRouteKit(profile).instrumentTypes;
+}
+
+function isRouteDocument(
+  document: RequiredDossierDocument,
+  profile: string | null | undefined,
+) {
+  return Boolean(
+    document.instrumentType &&
+      getRouteDocumentTypes(profile).includes(document.instrumentType),
+  );
+}
+
+function isCoreDocumentGroup(title: string) {
+  return [
+    "Buyer / Representative",
+    "Seller / Source",
+    "Transaction Package",
+    "Financial / Compensation",
+  ].includes(title);
+}
+
+function getFilteredDocumentGroups({
+  filter,
+  profile,
+}: {
+  filter: DocumentFilter;
+  profile: string | null | undefined;
+}) {
+  if (filter === "ALL") {
+    return DOSSIER_DOCUMENT_GROUPS;
+  }
+
+  if (filter === "CORE") {
+    return DOSSIER_DOCUMENT_GROUPS.filter((group) =>
+      isCoreDocumentGroup(group.title),
+    );
+  }
+
+  return DOSSIER_DOCUMENT_GROUPS.map((group) => ({
+    ...group,
+    documents: group.documents.filter((document) =>
+      isRouteDocument(document, profile),
+    ),
+  })).filter((group) => group.documents.length > 0);
+}
+
+function RouteKitPanel({
+  dossier,
+  documents,
+  instruments,
+}: {
+  dossier: DossierDependencyContext;
+  documents: RequiredDossierDocument[];
+  instruments: Instrument[];
+}) {
+  const kit = getRouteKit(dossier.executionProfile);
+  const routeDocuments = documents.filter(
+    (document) =>
+      document.instrumentType &&
+      kit.instrumentTypes.includes(document.instrumentType),
+  );
+
+  return (
+    <section className="rounded-xl border border-cyan-900/50 bg-cyan-950/10 p-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-500">
+            Current Route Kit
+          </div>
+
+          <h3 className="mt-1 text-sm font-semibold text-white">
+            {dossier.executionProfileLabel ?? kit.label}
+          </h3>
+
+          <p className="mt-1 max-w-2xl text-[11px] leading-relaxed text-neutral-500">
+            {kit.description}
+          </p>
+        </div>
+
+        <div className="rounded border border-cyan-900 bg-cyan-950/30 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300">
+          {routeDocuments.length} route records
+        </div>
+      </div>
+
+      {routeDocuments.length === 0 ? (
+        <div className="mt-3 rounded border border-amber-900 bg-amber-950/20 p-2 text-xs text-amber-300">
+          No dedicated route records are available yet. Keep this dossier in
+          manual review until the execution lane is confirmed.
+        </div>
+      ) : (
+        <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
+          {routeDocuments.map((document) => {
+            const status = getDocumentStatus(document, instruments);
+
+            return (
+              <div
+                key={document.key}
+                className="rounded border border-neutral-800 bg-black/30 p-2"
+              >
+                <div className="text-xs font-medium text-white">
+                  {document.label}
+                </div>
+
+                <div className="mt-1 text-[10px] uppercase tracking-wide text-neutral-600">
+                  {document.requiredFor}
+                </div>
+
+                <div className="mt-2 inline-flex rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
+                  {status.label}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </section>
+  );
+}
+
 function getDocumentStatus(
   document: RequiredDossierDocument,
   instruments: Instrument[],
@@ -487,6 +678,34 @@ function SummaryPill({
     >
       {value} {label}
     </div>
+  );
+}
+
+function DocumentFilterButton({
+  active,
+  label,
+  detail,
+  onClick,
+}: {
+  active: boolean;
+  label: string;
+  detail: string;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded border px-3 py-2 text-left transition ${
+        active
+          ? "border-cyan-800 bg-cyan-950/20 text-cyan-200"
+          : "border-neutral-800 bg-black/20 text-neutral-400 hover:border-neutral-600 hover:text-neutral-200"
+      }`}
+    >
+      <div className="text-[10px] uppercase tracking-wide">{label}</div>
+
+      <p className="mt-1 text-[10px] leading-relaxed opacity-70">{detail}</p>
+    </button>
   );
 }
 
@@ -699,6 +918,12 @@ export default function DossierDocumentsPanel({
     parties,
     terms,
   });
+  const [documentFilter, setDocumentFilter] = useState<DocumentFilter>("ROUTE");
+
+  const filteredDocumentGroups = getFilteredDocumentGroups({
+    filter: documentFilter,
+    profile: dossier.executionProfile,
+  });
   const [creatingType, setCreatingType] = useState<string | null>(null);
 
   const [updatingInstrumentId, setUpdatingInstrumentId] = useState<
@@ -857,11 +1082,11 @@ export default function DossierDocumentsPanel({
       <div className="flex items-center justify-between gap-3">
         <div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
-            Readiness & Drafts
+            Document Readiness
           </div>
 
           <h3 className="mt-1 text-sm font-medium text-white">
-            Data Readiness & Drafting Matrix
+            Route Kit & Document Matrix
           </h3>
 
           <p className="mt-1 max-w-2xl text-xs text-neutral-500">
@@ -881,6 +1106,12 @@ export default function DossierDocumentsPanel({
           {error}
         </div>
       ) : null}
+
+      <RouteKitPanel
+        dossier={dossier}
+        documents={DOSSIER_DOCUMENT_GROUPS.flatMap((group) => group.documents)}
+        instruments={instruments}
+      />
 
       <div className="mt-3 rounded border border-neutral-800 bg-black/30 p-3">
         <div className="text-[10px] uppercase tracking-wide text-neutral-600">
@@ -904,173 +1135,251 @@ export default function DossierDocumentsPanel({
         </div>
       </div>
 
-      <div className="mt-3 space-y-3">
-        {DOSSIER_DOCUMENT_GROUPS.map((group) => (
-          <section
-            key={group.title}
-            className="rounded border border-neutral-800 bg-black/30 p-3"
-          >
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h4 className="text-xs font-semibold uppercase tracking-wide text-neutral-300">
-                  {group.title}
-                </h4>
-
-                <p className="mt-1 max-w-2xl text-[11px] leading-relaxed text-neutral-500">
-                  {group.description}
-                </p>
-              </div>
-
-              <div className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-500">
-                {group.documents.length} Items
-              </div>
+      <div className="mt-3 rounded-xl border border-neutral-800 bg-black/20 p-3">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
+              Matrix Filter
             </div>
 
-            <div className="mt-3 grid gap-2">
-              {group.documents.map((document) => {
-                const status = getDocumentStatus(document, instruments);
+            <h4 className="mt-1 text-sm font-medium text-white">
+              Choose how much of the dossier library to inspect
+            </h4>
 
-                const dependencyReadiness = buildDependencyReadiness({
-                  document,
-                  dossier,
-                  parties,
-                  terms,
-                });
+            <p className="mt-1 max-w-2xl text-[11px] leading-relaxed text-neutral-500">
+              Start with the current route. Expand to core package or all
+              documents only when deeper review is needed.
+            </p>
+          </div>
 
-                const canCreateDraft =
-                  Boolean(
-                    document.instrumentType && document.canDraftInstrument,
-                  ) && !status.instrument;
+          <div className="rounded border border-neutral-800 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
+            {filteredDocumentGroups.reduce(
+              (count, group) => count + group.documents.length,
+              0,
+            )}{" "}
+            visible
+          </div>
+        </div>
 
-                const isCreating = creatingType === document.instrumentType;
+        <div className="mt-3 grid gap-2 md:grid-cols-3">
+          <DocumentFilterButton
+            active={documentFilter === "ROUTE"}
+            label="Current Route"
+            detail="Only documents for this execution lane."
+            onClick={() => setDocumentFilter("ROUTE")}
+          />
 
-                const statusActions = status.instrument
-                  ? getStatusActions(status.instrument)
-                  : [];
+          <DocumentFilterButton
+            active={documentFilter === "CORE"}
+            label="Core Package"
+            detail="Buyer, seller, SPA, annexes, and compensation."
+            onClick={() => setDocumentFilter("CORE")}
+          />
 
-                const activePreview =
-                  status.instrument &&
-                  previewInstrumentId === status.instrument.id
-                    ? previews[status.instrument.id]
-                    : null;
-
-                const previewLoading =
-                  status.instrument &&
-                  loadingPreviewId === status.instrument.id;
-
-                return (
-                  <div
-                    key={document.key}
-                    className="rounded border border-neutral-800 bg-black/30 p-3 text-xs"
-                  >
-                    <div className="flex flex-wrap items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="font-medium text-white">
-                          {status.instrument?.title ?? document.label}
-                        </div>
-
-                        <div className="mt-1 text-[10px] uppercase tracking-wide text-neutral-600">
-                          {document.instrumentType ?? "OPERATIONAL_REQUIREMENT"}
-                          {status.instrument
-                            ? ` · ${status.instrument.version}`
-                            : ""}
-                          {" · "}
-                          {document.requiredFor}
-                        </div>
-
-                        <p className="mt-2 max-w-3xl text-[11px] leading-relaxed text-neutral-500">
-                          {document.description}
-                        </p>
-                      </div>
-
-                      <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
-                        <div className="rounded border border-neutral-800 bg-black/30 p-2 text-right">
-                          <div className="text-[9px] uppercase tracking-wide text-neutral-600">
-                            Artifact Status
-                          </div>
-
-                          <div
-                            className={`mt-1 rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${status.tone}`}
-                          >
-                            {status.label}
-                          </div>
-                        </div>
-
-                        {canCreateDraft ? (
-                          <button
-                            type="button"
-                            disabled={Boolean(
-                              creatingType || updatingInstrumentId,
-                            )}
-                            onClick={() => createDraftInstrument(document)}
-                            className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-700 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
-                          >
-                            {isCreating ? "Creating..." : "Create Draft"}
-                          </button>
-                        ) : null}
-
-                        {status.instrument ? (
-                          <button
-                            type="button"
-                            disabled={Boolean(loadingPreviewId)}
-                            onClick={() =>
-                              toggleRenderPreview(
-                                status.instrument as Instrument,
-                              )
-                            }
-                            className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-700 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
-                          >
-                            {previewLoading
-                              ? "Loading..."
-                              : previewInstrumentId === status.instrument.id
-                                ? "Hide Preview"
-                                : "Preview Draft"}
-                          </button>
-                        ) : null}
-
-                        {statusActions.map((action) => (
-                          <button
-                            key={action.status}
-                            type="button"
-                            disabled={Boolean(
-                              creatingType || updatingInstrumentId,
-                            )}
-                            onClick={() =>
-                              status.instrument
-                                ? updateInstrumentStatus({
-                                    instrument: status.instrument,
-                                    status: action.status,
-                                  })
-                                : undefined
-                            }
-                            className="rounded border border-neutral-700 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-cyan-700 hover:text-cyan-300 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
-                          >
-                            {updatingInstrumentId === status.instrument?.id
-                              ? "Updating..."
-                              : action.label}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-
-                    <DependencyReadinessPanel readiness={dependencyReadiness} />
-
-                    {previewLoading ? (
-                      <div className="mt-3 rounded border border-neutral-800 bg-black/20 p-3 text-xs text-neutral-500">
-                        Loading render preview...
-                      </div>
-                    ) : null}
-
-                    {activePreview ? (
-                      <RenderPreviewPanel preview={activePreview} />
-                    ) : null}
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        ))}
+          <DocumentFilterButton
+            active={documentFilter === "ALL"}
+            label="All Documents"
+            detail="Every document and route record in the dossier library."
+            onClick={() => setDocumentFilter("ALL")}
+          />
+        </div>
       </div>
+
+      <details className="mt-3 rounded-xl border border-neutral-800 bg-black/20 p-3">
+        <summary className="cursor-pointer list-none">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
+                Filtered Document Matrix
+              </div>
+
+              <h4 className="mt-1 text-sm font-medium text-white">
+                Expand when you need the selected document view
+              </h4>
+
+              <p className="mt-1 max-w-2xl text-[11px] leading-relaxed text-neutral-500">
+                The matrix follows the selected filter above, so operators can
+                review the current route, core package, or full dossier library.
+              </p>
+            </div>
+
+            <div className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
+              {documentFilter} view
+            </div>
+          </div>
+        </summary>
+
+        <div className="mt-3 space-y-3">
+          {filteredDocumentGroups.map((group) => (
+            <section
+              key={group.title}
+              className="rounded border border-neutral-800 bg-black/30 p-3"
+            >
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h4 className="text-xs font-semibold uppercase tracking-wide text-neutral-300">
+                    {group.title}
+                  </h4>
+
+                  <p className="mt-1 max-w-2xl text-[11px] leading-relaxed text-neutral-500">
+                    {group.description}
+                  </p>
+                </div>
+
+                <div className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-500">
+                  {group.documents.length} Items
+                </div>
+              </div>
+
+              <div className="mt-3 grid gap-2">
+                {group.documents.map((document) => {
+                  const status = getDocumentStatus(document, instruments);
+
+                  const dependencyReadiness = buildDependencyReadiness({
+                    document,
+                    dossier,
+                    parties,
+                    terms,
+                  });
+
+                  const canCreateDraft =
+                    Boolean(
+                      document.instrumentType && document.canDraftInstrument,
+                    ) && !status.instrument;
+
+                  const isCreating = creatingType === document.instrumentType;
+
+                  const statusActions = status.instrument
+                    ? getStatusActions(status.instrument)
+                    : [];
+
+                  const activePreview =
+                    status.instrument &&
+                    previewInstrumentId === status.instrument.id
+                      ? previews[status.instrument.id]
+                      : null;
+
+                  const previewLoading =
+                    status.instrument &&
+                    loadingPreviewId === status.instrument.id;
+
+                  return (
+                    <div
+                      key={document.key}
+                      className="rounded border border-neutral-800 bg-black/30 p-3 text-xs"
+                    >
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="font-medium text-white">
+                            {status.instrument?.title ?? document.label}
+                          </div>
+
+                          <div className="mt-1 text-[10px] uppercase tracking-wide text-neutral-600">
+                            {document.instrumentType ??
+                              "OPERATIONAL_REQUIREMENT"}
+                            {status.instrument
+                              ? ` · ${status.instrument.version}`
+                              : ""}
+                            {" · "}
+                            {document.requiredFor}
+                          </div>
+
+                          <p className="mt-2 max-w-3xl text-[11px] leading-relaxed text-neutral-500">
+                            {document.description}
+                          </p>
+                        </div>
+
+                        <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
+                          <div className="rounded border border-neutral-800 bg-black/30 p-2 text-right">
+                            <div className="text-[9px] uppercase tracking-wide text-neutral-600">
+                              Artifact Status
+                            </div>
+
+                            <div
+                              className={`mt-1 rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${status.tone}`}
+                            >
+                              {status.label}
+                            </div>
+                          </div>
+
+                          {canCreateDraft ? (
+                            <button
+                              type="button"
+                              disabled={Boolean(
+                                creatingType || updatingInstrumentId,
+                              )}
+                              onClick={() => createDraftInstrument(document)}
+                              className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-700 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
+                            >
+                              {isCreating ? "Creating..." : "Create Draft"}
+                            </button>
+                          ) : null}
+
+                          {status.instrument ? (
+                            <button
+                              type="button"
+                              disabled={Boolean(loadingPreviewId)}
+                              onClick={() =>
+                                toggleRenderPreview(
+                                  status.instrument as Instrument,
+                                )
+                              }
+                              className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-700 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
+                            >
+                              {previewLoading
+                                ? "Loading..."
+                                : previewInstrumentId === status.instrument.id
+                                  ? "Hide Preview"
+                                  : "Preview Draft"}
+                            </button>
+                          ) : null}
+
+                          {statusActions.map((action) => (
+                            <button
+                              key={action.status}
+                              type="button"
+                              disabled={Boolean(
+                                creatingType || updatingInstrumentId,
+                              )}
+                              onClick={() =>
+                                status.instrument
+                                  ? updateInstrumentStatus({
+                                      instrument: status.instrument,
+                                      status: action.status,
+                                    })
+                                  : undefined
+                              }
+                              className="rounded border border-neutral-700 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-cyan-700 hover:text-cyan-300 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
+                            >
+                              {updatingInstrumentId === status.instrument?.id
+                                ? "Updating..."
+                                : action.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <DependencyReadinessPanel
+                        readiness={dependencyReadiness}
+                      />
+
+                      {previewLoading ? (
+                        <div className="mt-3 rounded border border-neutral-800 bg-black/20 p-3 text-xs text-neutral-500">
+                          Loading render preview...
+                        </div>
+                      ) : null}
+
+                      {activePreview ? (
+                        <RenderPreviewPanel preview={activePreview} />
+                      ) : null}
+                    </div>
+                  );
+                })}
+              </div>
+            </section>
+          ))}
+        </div>
+      </details>
     </div>
   );
 }
