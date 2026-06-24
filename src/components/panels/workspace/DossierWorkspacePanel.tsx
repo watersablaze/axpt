@@ -641,6 +641,165 @@ function SummaryCard({
   );
 }
 
+type WorkQueueItem = {
+  label: string;
+  detail: string;
+  tone: "red" | "amber" | "cyan" | "emerald" | "neutral";
+};
+
+function workQueueToneClass(tone: WorkQueueItem["tone"]) {
+  return {
+    red: "border-red-900 bg-red-950/20 text-red-300",
+    amber: "border-amber-900 bg-amber-950/20 text-amber-300",
+    cyan: "border-cyan-900 bg-cyan-950/20 text-cyan-300",
+    emerald: "border-emerald-900 bg-emerald-950/20 text-emerald-300",
+    neutral: "border-neutral-800 bg-black/30 text-neutral-400",
+  }[tone];
+}
+
+function isExecutionProfileRelevant(state: string) {
+  return !["INTAKE_PENDING", "KYC_REVIEW"].includes(state);
+}
+
+function buildActiveWorkQueue(dossier: DossierWorkspace): WorkQueueItem[] {
+  const queue: WorkQueueItem[] = [];
+  const partyReadiness = getPartyReadiness(dossier.parties);
+  const dataReadiness = getDossierDataReadiness(dossier);
+  const termsSnapshot = getTermsReviewSnapshot(dossier.terms);
+
+  if (dossier.availableTransitions.length === 0) {
+    queue.push({
+      label: "No next transition available",
+      detail:
+        "The dossier has no profile-aware next move. Review current state and execution profile.",
+      tone: "red",
+    });
+  } else {
+    const recommended = dossier.availableTransitions.find(
+      (transition) => transition.recommended,
+    );
+
+    queue.push({
+      label: "Next transition",
+      detail: recommended
+        ? `${recommended.label} · ${recommended.reason}`
+        : `${dossier.availableTransitions.length} available transition(s) require operator selection.`,
+      tone: recommended ? "cyan" : "neutral",
+    });
+  }
+
+  if (partyReadiness.needsReview > 0 || partyReadiness.seeded > 0) {
+    queue.push({
+      label: "Confirm party authority",
+      detail: `${partyReadiness.seeded} seeded · ${partyReadiness.needsReview} needs review`,
+      tone: partyReadiness.needsReview > 0 ? "red" : "amber",
+    });
+  }
+
+  if (
+    termsSnapshot.settlement !== "COMPLETE" ||
+    termsSnapshot.instrument !== "COMPLETE" ||
+    termsSnapshot.compensation !== "COMPLETE"
+  ) {
+    queue.push({
+      label: "Complete commercial terms review",
+      detail: `Settlement: ${formatReviewState(
+        termsSnapshot.settlement,
+      )} · Instrument: ${formatReviewState(
+        termsSnapshot.instrument,
+      )} · Compensation: ${formatReviewState(termsSnapshot.compensation)}`,
+      tone:
+        termsSnapshot.settlement === "NEEDS_REVIEW" &&
+        dossier.state !== "INTAKE_PENDING"
+          ? "red"
+          : "amber",
+    });
+  }
+
+  if (
+    dossier.executionProfile === "MANUAL_REVIEW" &&
+    isExecutionProfileRelevant(dossier.state)
+  ) {
+    queue.push({
+      label: "Confirm execution profile",
+      detail:
+        "Settlement lane could not be confidently inferred from dossier terms.",
+      tone: "amber",
+    });
+  }
+
+  if (dataReadiness.blocked > 0) {
+    queue.push({
+      label: "Improve document readiness",
+      detail: `${dataReadiness.blocked} blocked · ${dataReadiness.draftable} draftable · ${dataReadiness.ready} ready`,
+      tone: dossier.state === "INTAKE_PENDING" ? "neutral" : "amber",
+    });
+  }
+
+  if (dossier.pendingApprovalCount > 0) {
+    queue.push({
+      label: "Satisfy approval gate",
+      detail: `${dossier.pendingApprovalCount} approval requirement(s) pending.`,
+      tone: "amber",
+    });
+  }
+
+  if (queue.length === 0) {
+    queue.push({
+      label: "No active blockers",
+      detail:
+        "The dossier has no current front-page readiness blockers. Continue normal operator review.",
+      tone: "emerald",
+    });
+  }
+
+  return queue.slice(0, 5);
+}
+
+function ActiveWorkQueue({ dossier }: { dossier: DossierWorkspace }) {
+  const queue = buildActiveWorkQueue(dossier);
+
+  return (
+    <section className="rounded-xl border border-neutral-800 bg-black/20 p-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
+            Active Work Queue
+          </div>
+
+          <h3 className="mt-1 text-sm font-semibold text-white">
+            Operator next actions
+          </h3>
+
+          <p className="mt-1 max-w-3xl text-xs leading-relaxed text-neutral-500">
+            This queue compresses parties, terms, route profile, transition
+            posture, approvals, and document readiness into the next work items.
+          </p>
+        </div>
+
+        <div className="rounded border border-neutral-800 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
+          {queue.length} active
+        </div>
+      </div>
+
+      <div className="mt-3 grid gap-2 xl:grid-cols-2">
+        {queue.map((item) => (
+          <div
+            key={`${item.label}-${item.detail}`}
+            className={`rounded border p-2 ${workQueueToneClass(item.tone)}`}
+          >
+            <div className="text-xs font-semibold text-white">{item.label}</div>
+
+            <p className="mt-1 text-[11px] leading-relaxed opacity-80">
+              {item.detail}
+            </p>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function DossierBriefSummary({ dossier }: { dossier: DossierWorkspace }) {
   const sourceIntake =
     dossier.sourceOpportunities[0]?.sourceIntake?.reference ??
@@ -651,7 +810,7 @@ function DossierBriefSummary({ dossier }: { dossier: DossierWorkspace }) {
 
   const partyValue = `${partyReadiness.complete} complete · ${partyReadiness.seeded} seeded`;
   const termsValue = `${formatReviewState(termsSnapshot.settlement)} settlement`;
-  const draftsValue = `${dataReadiness.ready} ready · ${dataReadiness.draftable} draftable`;
+  const documentsValue = `${dataReadiness.ready} ready · ${dataReadiness.draftable} draftable`;
 
   return (
     <section className="rounded-xl border border-cyan-900/50 bg-cyan-950/10 p-4">
@@ -723,8 +882,8 @@ function DossierBriefSummary({ dossier }: { dossier: DossierWorkspace }) {
         />
 
         <SummaryCard
-          label="Drafts"
-          value={draftsValue}
+          label="Documents"
+          value={documentsValue}
           detail={`${dataReadiness.blocked} blocked · ${dataReadiness.total} required`}
           tone={
             dataReadiness.blocked > 0
@@ -1031,6 +1190,25 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
 
           {activeTab === "DOCUMENTS" ? (
             <div className="space-y-3">
+              <section className="rounded-xl border border-neutral-800 bg-black/20 p-3">
+                <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
+                  Readiness Workbench
+                </div>
+
+                <h3 className="mt-1 text-sm font-semibold text-white">
+                  Prepare the dossier before external issuance or execution
+                </h3>
+
+                <p className="mt-1 max-w-3xl text-xs leading-relaxed text-neutral-500">
+                  This area gathers the operator inputs that determine whether
+                  the dossier is ready: commercial terms, internal coordinates,
+                  release conditions, issuance approval, and document data
+                  readiness.
+                </p>
+              </section>
+
+              <ActiveWorkQueue dossier={dossier} />
+
               <DossierTermsPanel
                 dossierId={dossier.id}
                 onTermsChanged={() => setRefreshNonce((value) => value + 1)}
