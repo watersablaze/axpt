@@ -1,18 +1,25 @@
 import { prisma } from "@/infrastructure/db/prisma";
 import { resend } from "@/infrastructure/email/client";
 
-type IntakeConfirmationInput = {
+type IntakeInternalNotificationInput = {
   id: string;
   reference: string;
   submitterName: string;
   submitterEmail: string;
+  submitterPhone: string | null;
+  submitterCompany: string | null;
+  submitterRole: string;
+  buyerName: string | null;
   program: string | null;
   transactionType: string | null;
   commodity: string | null;
   quantity: string | null;
   trialQuantity: string | null;
   monthlyQuantity: string | null;
+  origin: string | null;
   destination: string | null;
+  deliveryTerms: string | null;
+  settlementMethod: string | null;
   referralCode: string | null;
   referredByName: string | null;
 };
@@ -30,54 +37,94 @@ function display(value: string | null | undefined) {
   return value && value.trim().length > 0 ? value.trim() : "Not provided";
 }
 
-function buildPlainText(input: IntakeConfirmationInput) {
+function getRecipients() {
+  return (
+    process.env.TRANSACTION_INTAKE_ADMIN_EMAILS ||
+    process.env.COUNCIL_EMAILS ||
+    ""
+  )
+    .split(",")
+    .map((email) => email.trim())
+    .filter(Boolean);
+}
+
+function getBaseUrl() {
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    process.env.NEXT_PUBLIC_BASE_URL ||
+    "https://axpt.io"
+  ).replace(/\/$/, "");
+}
+
+function buildPlainText(
+  input: IntakeInternalNotificationInput,
+  reviewUrl: string,
+) {
   return [
-    `Transaction Intake Received: ${input.reference}`,
-    "",
-    `Hello ${input.submitterName},`,
-    "",
-    "Your transaction intake has been received and logged for review.",
+    `New Transaction Intake: ${input.reference}`,
     "",
     `Reference: ${input.reference}`,
+    `Review Link: ${reviewUrl}`,
+    "",
+    `Submitter: ${input.submitterName}`,
+    `Email: ${input.submitterEmail}`,
+    `Phone: ${display(input.submitterPhone)}`,
+    `Company: ${display(input.submitterCompany)}`,
+    `Role: ${input.submitterRole}`,
+    `Buyer: ${display(input.buyerName)}`,
+    "",
     `Program: ${display(input.program)}`,
-    `Transaction Structure: ${display(input.transactionType)}`,
+    `Structure: ${display(input.transactionType)}`,
     `Commodity: ${display(input.commodity)}`,
     `Total Quantity: ${display(input.quantity)}`,
     `Trial Quantity: ${display(input.trialQuantity)}`,
     `Monthly Quantity: ${display(input.monthlyQuantity)}`,
+    `Origin: ${display(input.origin)}`,
     `Destination: ${display(input.destination)}`,
+    `Delivery Terms: ${display(input.deliveryTerms)}`,
+    `Settlement Method: ${display(input.settlementMethod)}`,
+    "",
     `Referral Code: ${display(input.referralCode)}`,
     `Representative: ${display(input.referredByName)}`,
-    "",
-    "This confirmation only acknowledges receipt of your intake submission. It does not constitute acceptance, approval, a commercial commitment, or an obligation by AXPT, French-Ward, any seller, buyer, representative, or affiliated party.",
-    "",
-    "Please keep this reference number for future correspondence.",
-    "",
-    "AXPT Intake Desk",
   ].join("\n");
 }
 
-function buildHtml(input: IntakeConfirmationInput) {
+function buildHtml(input: IntakeInternalNotificationInput, reviewUrl: string) {
   const rows = [
     ["Reference", input.reference],
+    ["Review Link", reviewUrl],
+    ["Submitter", input.submitterName],
+    ["Email", input.submitterEmail],
+    ["Phone", display(input.submitterPhone)],
+    ["Company", display(input.submitterCompany)],
+    ["Role", input.submitterRole],
+    ["Buyer", display(input.buyerName)],
     ["Program", display(input.program)],
-    ["Transaction Structure", display(input.transactionType)],
+    ["Structure", display(input.transactionType)],
     ["Commodity", display(input.commodity)],
     ["Total Quantity", display(input.quantity)],
     ["Trial Quantity", display(input.trialQuantity)],
     ["Monthly Quantity", display(input.monthlyQuantity)],
+    ["Origin", display(input.origin)],
     ["Destination", display(input.destination)],
+    ["Delivery Terms", display(input.deliveryTerms)],
+    ["Settlement Method", display(input.settlementMethod)],
     ["Referral Code", display(input.referralCode)],
     ["Representative", display(input.referredByName)],
   ];
 
   return `
     <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.5;">
-      <p>Hello ${escapeHtml(input.submitterName)},</p>
+      <h2>New Transaction Intake</h2>
+      <p>A new buyer-side transaction intake has been submitted.</p>
 
-      <p>Your transaction intake has been received and logged for review.</p>
+      <p>
+        <a href="${escapeHtml(reviewUrl)}" style="color: #1d4ed8; font-weight: 700;">
+          Open Admin Review
+        </a>
+      </p>
 
-      <table style="border-collapse: collapse; width: 100%; max-width: 640px;">
+      <table style="border-collapse: collapse; width: 100%; max-width: 760px;">
         ${rows
           .map(
             ([label, value]) => `
@@ -93,37 +140,47 @@ function buildHtml(input: IntakeConfirmationInput) {
           )
           .join("")}
       </table>
-
-      <p style="margin-top: 18px;">
-        This confirmation only acknowledges receipt of your intake submission.
-        It does not constitute acceptance, approval, a commercial commitment, or
-        an obligation by AXPT, French-Ward, any seller, buyer, representative,
-        or affiliated party.
-      </p>
-
-      <p>Please keep this reference number for future correspondence.</p>
-
-      <p>AXPT Intake Desk</p>
     </div>
   `;
 }
 
-export async function sendTransactionIntakeConfirmation(
-  input: IntakeConfirmationInput,
+export async function sendTransactionIntakeInternalNotification(
+  input: IntakeInternalNotificationInput,
 ) {
+  const recipients = getRecipients();
+
+  if (recipients.length === 0) {
+    await prisma.emailLog.create({
+      data: {
+        type: "TRANSACTION_INTAKE_INTERNAL_NOTIFICATION",
+        from: null,
+        to: null,
+        subject: `New Transaction Intake: ${input.reference}`,
+        status: "SKIPPED_NO_RECIPIENTS",
+        rawPayload: {
+          intakeId: input.id,
+          reference: input.reference,
+        },
+      },
+    });
+
+    return { ok: false, reason: "No internal recipients configured" };
+  }
+
   const from =
     process.env.TRANSACTION_INTAKE_FROM_EMAIL ||
     process.env.NOTIFY_FROM_EMAIL ||
     process.env.RESEND_FROM_EMAIL ||
     "no-reply@axpt.io";
 
-  const subject = `Transaction Intake Received: ${input.reference}`;
-  const text = buildPlainText(input);
-  const html = buildHtml(input);
+  const reviewUrl = `${getBaseUrl()}/admin/transaction-intakes/${input.id}`;
+  const subject = `New Transaction Intake: ${input.reference}`;
+  const text = buildPlainText(input, reviewUrl);
+  const html = buildHtml(input, reviewUrl);
 
   const response = await resend.emails.send({
     from,
-    to: input.submitterEmail,
+    to: recipients,
     subject,
     html,
     text,
@@ -149,9 +206,9 @@ export async function sendTransactionIntakeConfirmation(
 
   await prisma.emailLog.create({
     data: {
-      type: "TRANSACTION_INTAKE_CONFIRMATION",
+      type: "TRANSACTION_INTAKE_INTERNAL_NOTIFICATION",
       from,
-      to: input.submitterEmail,
+      to: recipients.join(","),
       subject,
       messageId,
       status: responseError ? "FAILED" : "SENT",
