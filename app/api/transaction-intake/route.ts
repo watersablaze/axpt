@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/infrastructure/db/prisma";
 import { createTransactionIntakeReference } from "../../../lib/intakeReference";
 import { sendTransactionIntakeConfirmation } from "@/domains/control-center/transaction-intakes/sendTransactionIntakeConfirmation";
+import { sendTransactionIntakeInternalNotification } from "@/domains/control-center/transaction-intakes/sendTransactionIntakeInternalNotification";
 
 function asOptionalString(value: unknown) {
   return typeof value === "string" && value.trim().length > 0
@@ -104,6 +105,31 @@ export async function POST(req: Request) {
       referredByName: intake.referredByName,
     }).catch((error) => {
       console.error("[transaction-intake:confirmation-email]", error);
+    });
+
+    await sendTransactionIntakeInternalNotification({
+      id: intake.id,
+      reference: intake.reference,
+      submitterName: intake.submitterName,
+      submitterEmail: intake.submitterEmail,
+      submitterPhone: intake.submitterPhone,
+      submitterCompany: intake.submitterCompany,
+      submitterRole: intake.submitterRole,
+      buyerName: intake.buyerName,
+      program: intake.program,
+      transactionType: intake.transactionType,
+      commodity: intake.commodity,
+      quantity: intake.quantity,
+      trialQuantity: intake.trialQuantity,
+      monthlyQuantity: intake.monthlyQuantity,
+      origin: intake.origin,
+      destination: intake.destination,
+      deliveryTerms: intake.deliveryTerms,
+      settlementMethod: intake.settlementMethod,
+      referralCode: intake.referralCode,
+      referredByName: intake.referredByName,
+    }).catch((error) => {
+      console.error("[transaction-intake:internal-notification]", error);
     });
 
     return NextResponse.json({
