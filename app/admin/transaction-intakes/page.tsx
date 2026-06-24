@@ -171,36 +171,52 @@ export default async function TransactionIntakesAdminPage({
     ],
   };
 
-  const [intakes, statusCounts, referralCounts] = await Promise.all([
-    prisma.transactionIntake.findMany({
-      where,
-      orderBy: { createdAt: "desc" },
-      take: 100,
-    }),
-    prisma.transactionIntake.groupBy({
-      by: ["status"],
-      _count: {
-        status: true,
-      },
-    }),
-    prisma.transactionIntake.groupBy({
-      by: ["referralCode"],
-      _count: {
-        referralCode: true,
-      },
-      where: {
-        referralCode: {
-          not: null,
-        },
-      },
-      orderBy: {
+  const [intakes, statusCounts, referralCounts, representativesForBuilder] =
+    await Promise.all([
+      prisma.transactionIntake.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        take: 100,
+      }),
+      prisma.transactionIntake.groupBy({
+        by: ["status"],
         _count: {
-          referralCode: "desc",
+          status: true,
         },
-      },
-      take: 12,
-    }),
-  ]);
+      }),
+      prisma.transactionIntake.groupBy({
+        by: ["referralCode"],
+        _count: {
+          referralCode: true,
+        },
+        where: {
+          referralCode: {
+            not: null,
+          },
+        },
+        orderBy: {
+          _count: {
+            referralCode: "desc",
+          },
+        },
+        take: 12,
+      }),
+      prisma.intakeRepresentative.findMany({
+        where: {
+          status: {
+            in: ["ACTIVE", "PAUSED"],
+          },
+        },
+        select: {
+          id: true,
+          code: true,
+          name: true,
+          program: true,
+          status: true,
+        },
+        orderBy: [{ status: "asc" }, { code: "asc" }],
+      }),
+    ]);
 
   const countByStatus = new Map(
     statusCounts.map((item) => [item.status, item._count.status]),
@@ -373,7 +389,9 @@ export default async function TransactionIntakesAdminPage({
         </div>
 
         <div className="mt-5">
-          <RepresentativeLinkBuilder />
+          <RepresentativeLinkBuilder
+            representatives={representativesForBuilder}
+          />
         </div>
 
         <div className="mt-5">

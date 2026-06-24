@@ -1,6 +1,18 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
+type RepresentativeOption = {
+  id: string;
+  code: string;
+  name: string;
+  program: string | null;
+  status: string;
+};
+
+type Props = {
+  representatives: RepresentativeOption[];
+};
 
 const programOptions = [
   "French-Ward Gold",
@@ -24,18 +36,35 @@ function buildQuery(params: Record<string, string>) {
   return searchParams.toString();
 }
 
-export default function RepresentativeLinkBuilder() {
+export default function RepresentativeLinkBuilder({ representatives }: Props) {
   const [origin, setOrigin] = useState("");
+  const [selectedRepresentativeId, setSelectedRepresentativeId] = useState("");
   const [referralCode, setReferralCode] = useState("FW-REP-001");
   const [representativeName, setRepresentativeName] = useState("");
   const [program, setProgram] = useState("French-Ward Gold");
   const [copied, setCopied] = useState<string | null>(null);
 
-  useMemo(() => {
-    if (typeof window !== "undefined") {
-      setOrigin(window.location.origin);
-    }
+  useEffect(() => {
+    setOrigin(window.location.origin);
   }, []);
+
+  const selectedRepresentative = useMemo(
+    () =>
+      representatives.find(
+        (representative) => representative.id === selectedRepresentativeId,
+      ),
+    [representatives, selectedRepresentativeId],
+  );
+
+  useEffect(() => {
+    if (!selectedRepresentative) {
+      return;
+    }
+
+    setReferralCode(selectedRepresentative.code);
+    setRepresentativeName(selectedRepresentative.name);
+    setProgram(selectedRepresentative.program || "French-Ward Gold");
+  }, [selectedRepresentative]);
 
   const publicQuery = buildQuery({
     ref: referralCode,
@@ -70,6 +99,29 @@ export default function RepresentativeLinkBuilder() {
 
   return (
     <div className="rounded border border-gray-800 bg-black p-4">
+      <div className="mb-4 grid gap-2">
+        <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
+          Registry Representative
+        </span>
+        <select
+          value={selectedRepresentativeId}
+          onChange={(event) => setSelectedRepresentativeId(event.target.value)}
+          className="rounded border border-gray-700 bg-black px-3 py-2 text-sm text-white"
+        >
+          <option value="">Manual entry / no registry selection</option>
+          {representatives.map((representative) => (
+            <option key={representative.id} value={representative.id}>
+              {representative.code} · {representative.name}
+              {representative.status === "PAUSED" ? " · PAUSED" : ""}
+            </option>
+          ))}
+        </select>
+        <p className="text-xs text-gray-500">
+          Selecting a registry record fills the code, name, and program below.
+          Fields remain editable for one-off links.
+        </p>
+      </div>
+
       <div className="grid gap-3 md:grid-cols-3">
         <label className="grid gap-2">
           <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
