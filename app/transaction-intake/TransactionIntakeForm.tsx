@@ -5,6 +5,7 @@ import styles from './transaction-intake.module.css'
 
 type Props = {
   initialReferralCode?: string
+  initialRepresentativeName?: string
   initialProgram?: string
 }
 
@@ -16,14 +17,10 @@ type SubmitState =
 
 const roleOptions = [
   'Buyer',
-  'Seller',
+  'Buyer Representative',
   'Buyer Mandate',
-  'Seller Mandate',
   'Intermediary',
-  'Representative',
   'Consultant',
-  'Refinery Contact',
-  'Logistics Contact',
   'Other',
 ]
 
@@ -32,7 +29,7 @@ const authorizationOptions = [
   'Written authorization available',
   'Authorization pending',
   'Introduction only',
-  'Unknown',
+  'Not sure',
 ]
 
 const programOptions = [
@@ -51,21 +48,57 @@ const transactionTypeOptions = [
   'Escrow Settlement',
   'Hand-carry Export',
   'Other',
+  'Not sure',
+]
+
+const settlementMethodOptions = [
+  'MT103 Wire',
+  'DLC',
+  'SBLC',
+  'Cash',
+  'Escrow Settlement',
+  'Refinery Settlement',
+  'Other',
+  'Not sure',
+]
+
+const readinessOptions = [
+  'Corporate Information Sheet / CIS',
+  'Proof of Funds / POF',
+  'KYC available',
+  'Mandate / authorization available',
+  'Banking readiness',
+  'Refinery readiness',
+  'Logistics / import readiness',
+  'LOI / ICPO / prior SPA available',
+  'Other supporting documents',
 ]
 
 function inputValue(formData: FormData, key: string) {
   const value = formData.get(key)
+
   return typeof value === 'string' ? value.trim() : ''
+}
+
+function multiValue(formData: FormData, key: string) {
+  return formData
+    .getAll(key)
+    .map((value) => (typeof value === 'string' ? value.trim() : ''))
+    .filter(Boolean)
 }
 
 export default function TransactionIntakeForm({
   initialReferralCode = '',
+  initialRepresentativeName = '',
   initialProgram = '',
 }: Props) {
-  const [submitState, setSubmitState] = useState<SubmitState>({ status: 'idle' })
+  const [submitState, setSubmitState] = useState<SubmitState>({
+    status: 'idle',
+  })
 
   const sourceUrl = useMemo(() => {
     if (typeof window === 'undefined') return ''
+
     return window.location.href
   }, [])
 
@@ -74,6 +107,8 @@ export default function TransactionIntakeForm({
 
     const form = event.currentTarget
     const formData = new FormData(form)
+    const readinessItems = multiValue(formData, 'readinessItems')
+    const buyerName = inputValue(formData, 'buyerName')
 
     const payload = {
       submitterName: inputValue(formData, 'submitterName'),
@@ -83,8 +118,8 @@ export default function TransactionIntakeForm({
       submitterCountry: inputValue(formData, 'submitterCountry'),
 
       submitterRole: inputValue(formData, 'submitterRole'),
-      representedPartyType: inputValue(formData, 'representedPartyType'),
-      representedPartyName: inputValue(formData, 'representedPartyName'),
+      representedPartyType: 'Buyer',
+      representedPartyName: buyerName,
       authorizationStatus: inputValue(formData, 'authorizationStatus'),
 
       program: inputValue(formData, 'program'),
@@ -95,37 +130,51 @@ export default function TransactionIntakeForm({
       monthlyQuantity: inputValue(formData, 'monthlyQuantity'),
       origin: inputValue(formData, 'origin'),
       destination: inputValue(formData, 'destination'),
-      deliveryTerms: inputValue(formData, 'deliveryTerms'),
+      deliveryTerms: inputValue(formData, 'transactionType'),
       settlementMethod: inputValue(formData, 'settlementMethod'),
       expectedTimeline: inputValue(formData, 'expectedTimeline'),
 
-      buyerName: inputValue(formData, 'buyerName'),
-      sellerName: inputValue(formData, 'sellerName'),
-      refineryPreference: inputValue(formData, 'refineryPreference'),
+      buyerName,
+      sellerName: '',
+      refineryPreference: '',
       financialReadiness: inputValue(formData, 'financialReadiness'),
-      documentsAvailable: inputValue(formData, 'documentsAvailable'),
+      documentsAvailable: readinessItems.join(', '),
       supportingNotes: inputValue(formData, 'supportingNotes'),
 
       referralCode: inputValue(formData, 'referralCode'),
       referredByName: inputValue(formData, 'referredByName'),
       referredByCompany: inputValue(formData, 'referredByCompany'),
       referredByEmail: inputValue(formData, 'referredByEmail'),
-      referredByPhone: inputValue(formData, 'referredByPhone'),
+      referredByPhone: '',
       referredByRole: inputValue(formData, 'referredByRole'),
-      referralConfirmed: formData.get('referralConfirmed') === 'on',
-      compensationExpectation: inputValue(formData, 'compensationExpectation'),
+      referralConfirmed: false,
+      compensationExpectation: '',
 
       declarationAccuracy: formData.get('declarationAccuracy') === 'on',
-      declarationNoObligation: formData.get('declarationNoObligation') === 'on',
-      declarationNoCommission: formData.get('declarationNoCommission') === 'on',
+      declarationNoObligation:
+        formData.get('declarationNoObligation') === 'on',
+      declarationNoCommission:
+        formData.get('declarationNoCommission') === 'on',
 
       sourceUrl,
     }
 
-    if (!payload.submitterName || !payload.submitterEmail || !payload.submitterRole) {
+    if (
+      !payload.submitterName ||
+      !payload.submitterEmail ||
+      !payload.submitterRole
+    ) {
       setSubmitState({
         status: 'error',
         message: 'Please provide your name, email, and role.',
+      })
+      return
+    }
+
+    if (!payload.buyerName && payload.submitterRole !== 'Buyer') {
+      setSubmitState({
+        status: 'error',
+        message: 'Please identify the buyer company or buyer-side party.',
       })
       return
     }
@@ -137,7 +186,8 @@ export default function TransactionIntakeForm({
     ) {
       setSubmitState({
         status: 'error',
-        message: 'Please confirm all required declarations before submitting.',
+        message:
+          'Please confirm all required submission notices before submitting.',
       })
       return
     }
@@ -186,7 +236,8 @@ export default function TransactionIntakeForm({
         <div className={styles.reference}>{submitState.reference}</div>
         <p className={styles.muted}>
           Status: Submitted for Review. This does not constitute acceptance,
-          approval, allocation, or contract formation.
+          approval, allocation, contract formation, mandate recognition,
+          commission recognition, or issuance permission.
         </p>
       </section>
     )
@@ -195,52 +246,107 @@ export default function TransactionIntakeForm({
   return (
     <form className={styles.form} onSubmit={onSubmit}>
       <section className={styles.section}>
-        <h2>Submitting Party</h2>
+        <h2>Representative / Referral</h2>
+        <p className={styles.helper}>
+          Provide the issuing representative or referral details associated with
+          this submission, if applicable.
+        </p>
+
         <div className={styles.grid}>
           <label>
-            Full legal name *
-            <input name="submitterName" required />
+            Referral code
+            <input name="referralCode" defaultValue={initialReferralCode} />
           </label>
+
           <label>
-            Email *
-            <input name="submitterEmail" type="email" required />
+            Issuing representative
+            <input
+              name="referredByName"
+              defaultValue={initialRepresentativeName}
+            />
           </label>
+
           <label>
-            Phone / WhatsApp
-            <input name="submitterPhone" />
+            Representative email
+            <input name="referredByEmail" type="email" />
           </label>
+
           <label>
-            Company / Organization
-            <input name="submitterCompany" />
+            Representative company
+            <input name="referredByCompany" />
           </label>
+
           <label>
-            Country
-            <input name="submitterCountry" />
+            Representative role
+            <input
+              name="referredByRole"
+              placeholder="Introducer, mandate, consultant..."
+            />
+          </label>
+
+          <label>
+            Program
+            <select name="program" defaultValue={initialProgram}>
+              <option value="">Select program</option>
+              {programOptions.map((program) => (
+                <option key={program} value={program}>
+                  {program}
+                </option>
+              ))}
+            </select>
           </label>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>Role & Representation</h2>
+        <h2>Buyer / Submitter</h2>
+        <p className={styles.helper}>
+          Identify the buyer-side party responsible for this inquiry.
+        </p>
+
         <div className={styles.grid}>
           <label>
-            Submitter role *
+            Your full name *
+            <input name="submitterName" required />
+          </label>
+
+          <label>
+            Email *
+            <input name="submitterEmail" type="email" required />
+          </label>
+
+          <label>
+            Phone / WhatsApp
+            <input name="submitterPhone" />
+          </label>
+
+          <label>
+            Your role *
             <select name="submitterRole" required defaultValue="">
-              <option value="" disabled>Select role</option>
+              <option value="" disabled>
+                Select role
+              </option>
               {roleOptions.map((role) => (
-                <option key={role} value={role}>{role}</option>
+                <option key={role} value={role}>
+                  {role}
+                </option>
               ))}
             </select>
           </label>
 
           <label>
-            Represented party type
-            <input name="representedPartyType" placeholder="Buyer, seller, mandate, entity..." />
+            Buyer company / party
+            <input name="buyerName" />
           </label>
 
           <label>
-            Represented party name
-            <input name="representedPartyName" />
+            Submitter company
+            <input name="submitterCompany" />
+          </label>
+
+          <label>
+            Country / jurisdiction
+            <input name="submitterCountry" />
           </label>
 
           <label>
@@ -248,7 +354,9 @@ export default function TransactionIntakeForm({
             <select name="authorizationStatus" defaultValue="">
               <option value="">Select status</option>
               {authorizationOptions.map((status) => (
-                <option key={status} value={status}>{status}</option>
+                <option key={status} value={status}>
+                  {status}
+                </option>
               ))}
             </select>
           </label>
@@ -256,46 +364,72 @@ export default function TransactionIntakeForm({
       </section>
 
       <section className={styles.section}>
-        <h2>Transaction Details</h2>
+        <h2>Transaction Structure</h2>
+        <p className={styles.helper}>
+          Select the proposed transaction structure and settlement method.
+        </p>
+
         <div className={styles.grid}>
           <label>
-            Program
-            <select name="program" defaultValue={initialProgram}>
-              <option value="">Select program</option>
-              {programOptions.map((program) => (
-                <option key={program} value={program}>{program}</option>
+            Transaction structure
+            <select name="transactionType" defaultValue="">
+              <option value="">Select structure</option>
+              {transactionTypeOptions.map((type) => (
+                <option key={type} value={type}>
+                  {type}
+                </option>
               ))}
             </select>
           </label>
 
           <label>
-            Transaction type
-            <select name="transactionType" defaultValue="">
-              <option value="">Select type</option>
-              {transactionTypeOptions.map((type) => (
-                <option key={type} value={type}>{type}</option>
+            Settlement method
+            <select name="settlementMethod" defaultValue="">
+              <option value="">Select method</option>
+              {settlementMethodOptions.map((method) => (
+                <option key={method} value={method}>
+                  {method}
+                </option>
               ))}
             </select>
           </label>
 
+          <label>
+            Expected timeline
+            <input
+              name="expectedTimeline"
+              placeholder="Example: immediate, 7 days, 30 days..."
+            />
+          </label>
+        </div>
+      </section>
+
+      <section className={styles.section}>
+        <h2>Commodity Request</h2>
+        <p className={styles.helper}>
+          Provide the essential commercial details needed for preliminary
+          review.
+        </p>
+
+        <div className={styles.grid}>
           <label>
             Commodity
             <input name="commodity" placeholder="Gold, agriculture, energy..." />
           </label>
 
           <label>
-            Quantity
+            Total quantity
             <input name="quantity" placeholder="Example: 5 KG" />
           </label>
 
           <label>
             Trial quantity
-            <input name="trialQuantity" />
+            <input name="trialQuantity" placeholder="Example: 5 KG" />
           </label>
 
           <label>
             Monthly quantity
-            <input name="monthlyQuantity" />
+            <input name="monthlyQuantity" placeholder="Example: 500 KG monthly" />
           </label>
 
           <label>
@@ -307,109 +441,68 @@ export default function TransactionIntakeForm({
             Destination
             <input name="destination" />
           </label>
-
-          <label>
-            Delivery terms
-            <input name="deliveryTerms" placeholder="FOB, CIF, hand-carry..." />
-          </label>
-
-          <label>
-            Settlement method
-            <input name="settlementMethod" placeholder="Cash, MT103, DLC, escrow..." />
-          </label>
-
-          <label>
-            Expected timeline
-            <input name="expectedTimeline" />
-          </label>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>Commercial Readiness</h2>
+        <h2>Readiness Status</h2>
+        <p className={styles.helper}>
+          Indicate which supporting materials are currently available.
+          Additional documentation may be requested after preliminary review.
+        </p>
+
+        <div className={styles.checkboxGrid}>
+          {readinessOptions.map((item) => (
+            <label key={item} className={styles.checkbox}>
+              <input name="readinessItems" type="checkbox" value={item} />
+              {item}
+            </label>
+          ))}
+        </div>
+
         <div className={styles.grid}>
-          <label>
-            Buyer name
-            <input name="buyerName" />
-          </label>
-          <label>
-            Seller name
-            <input name="sellerName" />
-          </label>
-          <label>
-            Refinery preference
-            <input name="refineryPreference" />
-          </label>
-          <label>
+          <label className={styles.wide}>
             Financial readiness
-            <input name="financialReadiness" placeholder="POF, MT103, DLC, SBLC..." />
+            <input
+              name="financialReadiness"
+              placeholder="Example: POF available, DLC pending, MT103 ready..."
+            />
           </label>
+
           <label className={styles.wide}>
-            Documents available
-            <textarea name="documentsAvailable" rows={4} placeholder="LOI, CIS, POF, passport/ID, mandate letter, bank readiness letter..." />
-          </label>
-          <label className={styles.wide}>
-            Supporting notes
-            <textarea name="supportingNotes" rows={4} />
+            Additional notes
+            <textarea
+              name="supportingNotes"
+              rows={4}
+              placeholder="Include any essential context, constraints, or next-step details."
+            />
           </label>
         </div>
       </section>
 
       <section className={styles.section}>
-        <h2>Referral / Intermediary Attribution</h2>
-        <div className={styles.grid}>
-          <label>
-            Referral code
-            <input name="referralCode" defaultValue={initialReferralCode} />
-          </label>
-          <label>
-            Referred by name
-            <input name="referredByName" />
-          </label>
-          <label>
-            Referred by company
-            <input name="referredByCompany" />
-          </label>
-          <label>
-            Referred by email
-            <input name="referredByEmail" type="email" />
-          </label>
-          <label>
-            Referred by phone
-            <input name="referredByPhone" />
-          </label>
-          <label>
-            Referred by role
-            <input name="referredByRole" placeholder="Introducer, mandate, consultant..." />
-          </label>
-          <label className={styles.wide}>
-            Known compensation expectation
-            <textarea name="compensationExpectation" rows={3} />
-          </label>
-        </div>
-
-        <label className={styles.checkbox}>
-          <input name="referralConfirmed" type="checkbox" />
-          I confirm this referral association is accurate to the best of my knowledge.
-        </label>
-      </section>
-
-      <section className={styles.section}>
-        <h2>Declarations</h2>
+        <h2>Submission Notice</h2>
 
         <label className={styles.checkbox}>
           <input name="declarationAccuracy" type="checkbox" required />
-          I confirm the information provided is accurate to the best of my knowledge and that I am authorized to submit it or have clearly identified myself as an introducer only.
+          I confirm the information provided is accurate to the best of my
+          knowledge and that I am authorized to submit it or have clearly
+          identified myself as an introducer only.
         </label>
 
         <label className={styles.checkbox}>
           <input name="declarationNoObligation" type="checkbox" required />
-          I understand this submission does not create a contract, offer, allocation, agency relationship, or obligation by AXPT, French-Ward International, or any associated party.
+          I understand this submission does not create acceptance, approval,
+          allocation, contract formation, mandate recognition, agency
+          authorization, or obligation by AXPT, French-Ward International, or
+          any associated party.
         </label>
 
         <label className={styles.checkbox}>
           <input name="declarationNoCommission" type="checkbox" required />
-          I understand that identifying an intermediary or referral source does not create, confirm, or guarantee commission, mandate status, or compensation rights.
+          I understand that referral or representative information may be
+          reviewed, but this intake does not create, confirm, or guarantee
+          commission rights, compensation rights, or mandate status.
         </label>
       </section>
 
@@ -424,7 +517,7 @@ export default function TransactionIntakeForm({
       >
         {submitState.status === 'submitting'
           ? 'Submitting...'
-          : 'Submit Transaction Intake'}
+          : 'Submit for Review'}
       </button>
     </form>
   )
