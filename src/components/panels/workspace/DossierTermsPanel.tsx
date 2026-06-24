@@ -1,40 +1,40 @@
-'use client'
+"use client";
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from "react";
 
 type DossierTerms = {
-  id?: string
-  dossierId?: string
+  id?: string;
+  dossierId?: string;
 
-  settlementMethod: string | null
-  financialInstrumentType: string | null
-  issuingInstitution: string | null
-  instrumentAmountOrCoverage: string | null
-  validityPeriod: string | null
-  paymentTrigger: string | null
-  beneficiary: string | null
+  settlementMethod: string | null;
+  financialInstrumentType: string | null;
+  issuingInstitution: string | null;
+  instrumentAmountOrCoverage: string | null;
+  validityPeriod: string | null;
+  paymentTrigger: string | null;
+  beneficiary: string | null;
 
-  sellerSideCompensation: string | null
-  buyerSideCompensation: string | null
-  compensationPayer: string | null
-  compensationPayees: string | null
-  compensationPayoutTrigger: string | null
-  compensationPaymentMethod: string | null
-  compensationAuthorizationStatus: string | null
-  compensationConfidentialityNote: string | null
-}
+  sellerSideCompensation: string | null;
+  buyerSideCompensation: string | null;
+  compensationPayer: string | null;
+  compensationPayees: string | null;
+  compensationPayoutTrigger: string | null;
+  compensationPaymentMethod: string | null;
+  compensationAuthorizationStatus: string | null;
+  compensationConfidentialityNote: string | null;
+};
 
 type TermsResponse = {
-  ok?: boolean
-  terms?: DossierTerms
-  error?: string
-  message?: string
-}
+  ok?: boolean;
+  terms?: DossierTerms;
+  error?: string;
+  message?: string;
+};
 
 type Props = {
-  dossierId: string
-  onTermsChanged?: () => void
-}
+  dossierId: string;
+  onTermsChanged?: () => void;
+};
 
 const EMPTY_TERMS: DossierTerms = {
   settlementMethod: null,
@@ -53,66 +53,62 @@ const EMPTY_TERMS: DossierTerms = {
   compensationPaymentMethod: null,
   compensationAuthorizationStatus: null,
   compensationConfidentialityNote: null,
-}
+};
 
 const FIELD_KEYS: Array<keyof DossierTerms> = [
-  'settlementMethod',
-  'financialInstrumentType',
-  'issuingInstitution',
-  'instrumentAmountOrCoverage',
-  'validityPeriod',
-  'paymentTrigger',
-  'beneficiary',
-  'sellerSideCompensation',
-  'buyerSideCompensation',
-  'compensationPayer',
-  'compensationPayees',
-  'compensationPayoutTrigger',
-  'compensationPaymentMethod',
-  'compensationAuthorizationStatus',
-  'compensationConfidentialityNote',
-]
+  "settlementMethod",
+  "financialInstrumentType",
+  "issuingInstitution",
+  "instrumentAmountOrCoverage",
+  "validityPeriod",
+  "paymentTrigger",
+  "beneficiary",
+  "sellerSideCompensation",
+  "buyerSideCompensation",
+  "compensationPayer",
+  "compensationPayees",
+  "compensationPayoutTrigger",
+  "compensationPaymentMethod",
+  "compensationAuthorizationStatus",
+  "compensationConfidentialityNote",
+];
 
 function toInputValue(value: string | null | undefined) {
-  return value ?? ''
+  return value ?? "";
 }
 
 function fromInputValue(value: string) {
-  const trimmed = value.trim()
+  const trimmed = value.trim();
 
-  return trimmed.length > 0
-    ? trimmed
-    : null
+  return trimmed.length > 0 ? trimmed : null;
 }
 
 function getCompletionCount(terms: DossierTerms) {
   return FIELD_KEYS.filter((key) => {
-    const value = terms[key]
+    const value = terms[key];
 
-    return typeof value === 'string' && value.trim().length > 0
-  }).length
+    return typeof value === "string" && value.trim().length > 0;
+  }).length;
 }
 
-async function readJsonResponse(
-  response: Response
-): Promise<TermsResponse> {
-  const text = await response.text()
+async function readJsonResponse(response: Response): Promise<TermsResponse> {
+  const text = await response.text();
 
   if (!text.trim()) {
     return {
       ok: false,
       error: `EMPTY_RESPONSE_${response.status}`,
-    }
+    };
   }
 
   try {
-    return JSON.parse(text) as TermsResponse
+    return JSON.parse(text) as TermsResponse;
   } catch {
     return {
       ok: false,
       error: `INVALID_JSON_RESPONSE_${response.status}`,
       message: text.slice(0, 180),
-    }
+    };
   }
 }
 
@@ -123,11 +119,11 @@ function Field({
   placeholder,
   multiline = false,
 }: {
-  label: string
-  value: string
-  onChange: (value: string) => void
-  placeholder?: string
-  multiline?: boolean
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder?: string;
+  multiline?: boolean;
 }) {
   return (
     <label className="space-y-1">
@@ -152,133 +148,117 @@ function Field({
         />
       )}
     </label>
-  )
+  );
 }
 
-export function DossierTermsPanel({
-  dossierId,
-  onTermsChanged,
-}: Props) {
-  const [terms, setTerms] =
-    useState<DossierTerms>(EMPTY_TERMS)
-  const [loading, setLoading] = useState(true)
-  const [saving, setSaving] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [savedAt, setSavedAt] = useState<string | null>(null)
+export function DossierTermsPanel({ dossierId, onTermsChanged }: Props) {
+  const [terms, setTerms] = useState<DossierTerms>(EMPTY_TERMS);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [savedAt, setSavedAt] = useState<string | null>(null);
 
-  const completionCount = useMemo(
-    () => getCompletionCount(terms),
-    [terms]
-  )
+  const completionCount = useMemo(() => getCompletionCount(terms), [terms]);
 
   useEffect(() => {
-    let cancelled = false
+    let cancelled = false;
 
     async function loadTerms() {
-      setLoading(true)
-      setError(null)
+      setLoading(true);
+      setError(null);
 
       try {
         const response = await fetch(
           `/api/admin/control-center/dossiers/${dossierId}/terms`,
           {
-            method: 'GET',
-            cache: 'no-store',
-            credentials: 'include',
-          }
-        )
+            method: "GET",
+            cache: "no-store",
+            credentials: "include",
+          },
+        );
 
-        const data = await readJsonResponse(response)
+        const data = await readJsonResponse(response);
 
         if (!response.ok || !data.ok || !data.terms) {
           throw new Error(
-            data.message ??
-            data.error ??
-            'Unable to load dossier terms.'
-          )
+            data.message ?? data.error ?? "Unable to load dossier terms.",
+          );
         }
 
         if (!cancelled) {
           setTerms({
             ...EMPTY_TERMS,
             ...data.terms,
-          })
+          });
         }
       } catch (err) {
         if (!cancelled) {
           setError(
             err instanceof Error
               ? err.message
-              : 'Unable to load dossier terms.'
-          )
+              : "Unable to load dossier terms.",
+          );
         }
       } finally {
         if (!cancelled) {
-          setLoading(false)
+          setLoading(false);
         }
       }
     }
 
-    void loadTerms()
+    void loadTerms();
 
     return () => {
-      cancelled = true
-    }
-  }, [dossierId])
+      cancelled = true;
+    };
+  }, [dossierId]);
 
-  function updateTerm(
-    key: keyof DossierTerms,
-    value: string
-  ) {
+  function updateTerm(key: keyof DossierTerms, value: string) {
     setTerms((current) => ({
       ...current,
       [key]: fromInputValue(value),
-    }))
+    }));
   }
 
   async function saveTerms() {
-    setSaving(true)
-    setError(null)
-    setSavedAt(null)
+    setSaving(true);
+    setError(null);
+    setSavedAt(null);
 
     try {
       const response = await fetch(
         `/api/admin/control-center/dossiers/${dossierId}/terms`,
         {
-          method: 'PATCH',
-          cache: 'no-store',
-          credentials: 'include',
+          method: "PATCH",
+          cache: "no-store",
+          credentials: "include",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify(terms),
-        }
-      )
+        },
+      );
 
-      const data = await readJsonResponse(response)
+      const data = await readJsonResponse(response);
 
       if (!response.ok || !data.ok || !data.terms) {
         throw new Error(
-          data.message ??
-          data.error ??
-          'Unable to save dossier terms.'
-        )
+          data.message ?? data.error ?? "Unable to save dossier terms.",
+        );
       }
 
       setTerms({
         ...EMPTY_TERMS,
         ...data.terms,
-      })
-      setSavedAt(new Date().toLocaleTimeString())
-      onTermsChanged?.()
+      });
+      setSavedAt(new Date().toLocaleTimeString());
+      onTermsChanged?.();
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : 'Unable to save dossier terms.'
-      )
+        err instanceof Error ? err.message : "Unable to save dossier terms.",
+      );
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
   }
 
@@ -295,8 +275,8 @@ export function DossierTermsPanel({
           </h3>
 
           <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500">
-            Internal-only commercial truth used to mature settlement,
-            financial instrument, and compensation drafts.
+            Internal-only commercial truth used to mature settlement, financial
+            instrument, and compensation drafts.
           </p>
         </div>
 
@@ -307,10 +287,10 @@ export function DossierTermsPanel({
 
           <div className="mt-1 text-xs font-semibold uppercase tracking-wide text-neutral-200">
             {completionCount === 15
-              ? 'Complete'
+              ? "Complete"
               : completionCount > 0
-                ? 'In Progress'
-                : 'Unstructured'}
+                ? "In Progress"
+                : "Unstructured"}
           </div>
         </div>
       </div>
@@ -337,9 +317,7 @@ export function DossierTermsPanel({
                 <Field
                   label="Settlement method"
                   value={toInputValue(terms.settlementMethod)}
-                  onChange={(value) =>
-                    updateTerm('settlementMethod', value)
-                  }
+                  onChange={(value) => updateTerm("settlementMethod", value)}
                   placeholder="MT103, escrow, cash, DLC, SBLC..."
                 />
 
@@ -347,7 +325,7 @@ export function DossierTermsPanel({
                   label="Financial instrument type"
                   value={toInputValue(terms.financialInstrumentType)}
                   onChange={(value) =>
-                    updateTerm('financialInstrumentType', value)
+                    updateTerm("financialInstrumentType", value)
                   }
                   placeholder="DLC, SBLC, MT103, escrow..."
                 />
@@ -355,9 +333,7 @@ export function DossierTermsPanel({
                 <Field
                   label="Issuing / escrow institution"
                   value={toInputValue(terms.issuingInstitution)}
-                  onChange={(value) =>
-                    updateTerm('issuingInstitution', value)
-                  }
+                  onChange={(value) => updateTerm("issuingInstitution", value)}
                   placeholder="Issuing bank, escrow bank, trust account..."
                 />
 
@@ -365,7 +341,7 @@ export function DossierTermsPanel({
                   label="Instrument amount / coverage basis"
                   value={toInputValue(terms.instrumentAmountOrCoverage)}
                   onChange={(value) =>
-                    updateTerm('instrumentAmountOrCoverage', value)
+                    updateTerm("instrumentAmountOrCoverage", value)
                   }
                   placeholder="Trial value, monthly coverage..."
                 />
@@ -373,18 +349,14 @@ export function DossierTermsPanel({
                 <Field
                   label="Validity / tenor"
                   value={toInputValue(terms.validityPeriod)}
-                  onChange={(value) =>
-                    updateTerm('validityPeriod', value)
-                  }
+                  onChange={(value) => updateTerm("validityPeriod", value)}
                   placeholder="365+1, 30 days..."
                 />
 
                 <Field
                   label="Beneficiary / receiving party"
                   value={toInputValue(terms.beneficiary)}
-                  onChange={(value) =>
-                    updateTerm('beneficiary', value)
-                  }
+                  onChange={(value) => updateTerm("beneficiary", value)}
                   placeholder="Seller, escrow account, trust account..."
                 />
 
@@ -392,9 +364,7 @@ export function DossierTermsPanel({
                   <Field
                     label="Payment trigger"
                     value={toInputValue(terms.paymentTrigger)}
-                    onChange={(value) =>
-                      updateTerm('paymentTrigger', value)
-                    }
+                    onChange={(value) => updateTerm("paymentTrigger", value)}
                     placeholder="Assay confirmation, escrow release, MT103 confirmation..."
                     multiline
                   />
@@ -412,7 +382,7 @@ export function DossierTermsPanel({
                   label="Seller-side compensation"
                   value={toInputValue(terms.sellerSideCompensation)}
                   onChange={(value) =>
-                    updateTerm('sellerSideCompensation', value)
+                    updateTerm("sellerSideCompensation", value)
                   }
                   placeholder="$5,000 seller side..."
                 />
@@ -421,7 +391,7 @@ export function DossierTermsPanel({
                   label="Buyer-side compensation"
                   value={toInputValue(terms.buyerSideCompensation)}
                   onChange={(value) =>
-                    updateTerm('buyerSideCompensation', value)
+                    updateTerm("buyerSideCompensation", value)
                   }
                   placeholder="$5,000 buyer side..."
                 />
@@ -429,9 +399,7 @@ export function DossierTermsPanel({
                 <Field
                   label="Compensation payer"
                   value={toInputValue(terms.compensationPayer)}
-                  onChange={(value) =>
-                    updateTerm('compensationPayer', value)
-                  }
+                  onChange={(value) => updateTerm("compensationPayer", value)}
                   placeholder="Buyer, seller, escrow manager..."
                 />
 
@@ -439,7 +407,7 @@ export function DossierTermsPanel({
                   label="Compensation payment method"
                   value={toInputValue(terms.compensationPaymentMethod)}
                   onChange={(value) =>
-                    updateTerm('compensationPaymentMethod', value)
+                    updateTerm("compensationPaymentMethod", value)
                   }
                   placeholder="Wire, escrow disbursement..."
                 />
@@ -448,7 +416,7 @@ export function DossierTermsPanel({
                   label="Authorization status"
                   value={toInputValue(terms.compensationAuthorizationStatus)}
                   onChange={(value) =>
-                    updateTerm('compensationAuthorizationStatus', value)
+                    updateTerm("compensationAuthorizationStatus", value)
                   }
                   placeholder="Pending written confirmation..."
                 />
@@ -458,7 +426,7 @@ export function DossierTermsPanel({
                     label="Compensation payees"
                     value={toInputValue(terms.compensationPayees)}
                     onChange={(value) =>
-                      updateTerm('compensationPayees', value)
+                      updateTerm("compensationPayees", value)
                     }
                     placeholder="Representative names, entities, beneficiaries..."
                     multiline
@@ -470,7 +438,7 @@ export function DossierTermsPanel({
                     label="Compensation payout trigger"
                     value={toInputValue(terms.compensationPayoutTrigger)}
                     onChange={(value) =>
-                      updateTerm('compensationPayoutTrigger', value)
+                      updateTerm("compensationPayoutTrigger", value)
                     }
                     placeholder="Upon settlement, escrow release, successful assay..."
                     multiline
@@ -482,7 +450,7 @@ export function DossierTermsPanel({
                     label="Confidentiality / NCND note"
                     value={toInputValue(terms.compensationConfidentialityNote)}
                     onChange={(value) =>
-                      updateTerm('compensationConfidentialityNote', value)
+                      updateTerm("compensationConfidentialityNote", value)
                     }
                     placeholder="Representative protection, non-circumvention, confidentiality notes..."
                     multiline
@@ -499,9 +467,7 @@ export function DossierTermsPanel({
               disabled={saving}
               className="rounded border border-neutral-500 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:border-white disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {saving
-                ? 'Saving Terms...'
-                : 'Save Structured Terms'}
+              {saving ? "Saving Terms..." : "Save Structured Terms"}
             </button>
 
             {savedAt ? (
@@ -513,5 +479,5 @@ export function DossierTermsPanel({
         </>
       )}
     </section>
-  )
+  );
 }
