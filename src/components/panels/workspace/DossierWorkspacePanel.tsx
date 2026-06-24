@@ -19,6 +19,7 @@ import DossierWorkspaceTabs, {
   type DossierWorkspaceTab,
 } from "./DossierWorkspaceTabs";
 import { getRequiredDossierDocuments } from "@/domains/control-center/dossiers/documentRequirements";
+import { OperatorPathStrip } from "./OperatorPathStrip";
 
 type DossierParty = {
   id: string;
@@ -301,6 +302,8 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
             sourceOpportunity={dossier.sourceOpportunities[0] ?? null}
           />
 
+          <OperatorPathStrip activeTab={activeTab} onSelectTab={setActiveTab} />
+
           <DossierCommandPanel
             currentState={dossier.state}
             nextStates={dossier.nextStates}
@@ -312,8 +315,6 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
             onSelectDocuments={() => setActiveTab("DOCUMENTS")}
             onSelectTimeline={() => setActiveTab("TIMELINE")}
           />
-
-          <DossierWorkspaceTabs activeTab={activeTab} onChange={setActiveTab} />
 
           {activeTab === "OVERVIEW" ? (
             <div className="space-y-3">
