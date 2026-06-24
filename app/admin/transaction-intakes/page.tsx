@@ -1,47 +1,47 @@
-import Link from 'next/link'
-import { revalidatePath } from 'next/cache'
-import { prisma } from '@/infrastructure/db/prisma'
+import Link from "next/link";
+import { revalidatePath } from "next/cache";
+import { prisma } from "@/infrastructure/db/prisma";
 
 const INTAKE_STATUSES = [
-  'SUBMITTED',
-  'UNDER_REVIEW',
-  'NEEDS_CLARIFICATION',
-  'QUALIFIED',
-  'DECLINED',
-  'PROMOTED_TO_OPPORTUNITY',
-  'DOSSIER_READY',
-  'PROMOTED_TO_DOSSIER',
-] as const
+  "SUBMITTED",
+  "UNDER_REVIEW",
+  "NEEDS_CLARIFICATION",
+  "QUALIFIED",
+  "DECLINED",
+  "PROMOTED_TO_OPPORTUNITY",
+  "DOSSIER_READY",
+  "PROMOTED_TO_DOSSIER",
+] as const;
 
 const PROGRAM_OPTIONS = [
-  'French-Ward Gold',
-  'Bafoula Cooperative',
-  'AXPT Strategic Intake',
-  'General',
-  'Other',
-] as const
+  "French-Ward Gold",
+  "Bafoula Cooperative",
+  "AXPT Strategic Intake",
+  "General",
+  "Other",
+] as const;
 
 type Props = {
   searchParams?: Promise<{
-    status?: string
-    program?: string
-    ref?: string
-    q?: string
-  }>
-}
+    status?: string;
+    program?: string;
+    ref?: string;
+    q?: string;
+  }>;
+};
 
 async function updateIntakeStatus(formData: FormData) {
-  'use server'
+  "use server";
 
-  const id = formData.get('id')
-  const status = formData.get('status')
+  const id = formData.get("id");
+  const status = formData.get("status");
 
-  if (typeof id !== 'string' || typeof status !== 'string') {
-    return
+  if (typeof id !== "string" || typeof status !== "string") {
+    return;
   }
 
   if (!INTAKE_STATUSES.includes(status as (typeof INTAKE_STATUSES)[number])) {
-    return
+    return;
   }
 
   const existing = await prisma.transactionIntake.findUnique({
@@ -49,14 +49,14 @@ async function updateIntakeStatus(formData: FormData) {
     select: {
       status: true,
     },
-  })
+  });
 
   if (!existing) {
-    return
+    return;
   }
 
   if (existing.status === status) {
-    return
+    return;
   }
 
   await prisma.$transaction([
@@ -67,55 +67,55 @@ async function updateIntakeStatus(formData: FormData) {
     prisma.transactionIntakeEvent.create({
       data: {
         intakeId: id,
-        eventType: 'STATUS_CHANGED',
+        eventType: "STATUS_CHANGED",
         fromStatus: existing.status,
         toStatus: status,
-        actor: 'ADMIN',
+        actor: "ADMIN",
       },
     }),
-  ])
+  ]);
 
-  revalidatePath('/admin/transaction-intakes')
-  revalidatePath(`/admin/transaction-intakes/${id}`)
+  revalidatePath("/admin/transaction-intakes");
+  revalidatePath(`/admin/transaction-intakes/${id}`);
 }
 
 function statusBadgeClass(status: string) {
   switch (status) {
-    case 'UNDER_REVIEW':
-      return 'border-blue-400/40 bg-blue-400/10 text-blue-200'
-    case 'NEEDS_CLARIFICATION':
-      return 'border-yellow-400/40 bg-yellow-400/10 text-yellow-200'
-    case 'QUALIFIED':
-    case 'PROMOTED_TO_OPPORTUNITY':
-    case 'DOSSIER_READY':
-    case 'PROMOTED_TO_DOSSIER':
-      return 'border-emerald-400/40 bg-emerald-400/10 text-emerald-200'
-    case 'DECLINED':
-      return 'border-red-400/40 bg-red-400/10 text-red-200'
-    case 'SUBMITTED':
+    case "UNDER_REVIEW":
+      return "border-blue-400/40 bg-blue-400/10 text-blue-200";
+    case "NEEDS_CLARIFICATION":
+      return "border-yellow-400/40 bg-yellow-400/10 text-yellow-200";
+    case "QUALIFIED":
+    case "PROMOTED_TO_OPPORTUNITY":
+    case "DOSSIER_READY":
+    case "PROMOTED_TO_DOSSIER":
+      return "border-emerald-400/40 bg-emerald-400/10 text-emerald-200";
+    case "DECLINED":
+      return "border-red-400/40 bg-red-400/10 text-red-200";
+    case "SUBMITTED":
     default:
-      return 'border-amber-500/40 bg-amber-500/10 text-amber-200'
+      return "border-amber-500/40 bg-amber-500/10 text-amber-200";
   }
 }
 
 function buildStatusHref(status: string) {
-  return `/admin/transaction-intakes?status=${encodeURIComponent(status)}`
+  return `/admin/transaction-intakes?status=${encodeURIComponent(status)}`;
 }
 
 export default async function TransactionIntakesAdminPage({
   searchParams,
 }: Props) {
-  const params = await searchParams
+  const params = await searchParams;
 
   const selectedStatus =
     params?.status &&
     INTAKE_STATUSES.includes(params.status as (typeof INTAKE_STATUSES)[number])
       ? params.status
-      : ''
+      : "";
 
-  const selectedProgram = params?.program?.trim() || ''
-  const referralCode = params?.ref?.trim() || ''
-  const query = params?.q?.trim() || ''
+  const selectedProgram = params?.program?.trim() || "";
+  const referralCode = params?.ref?.trim() || "";
+  const query = params?.q?.trim() || "";
 
   const where = {
     AND: [
@@ -125,67 +125,67 @@ export default async function TransactionIntakesAdminPage({
       query
         ? {
             OR: [
-              { reference: { contains: query, mode: 'insensitive' as const } },
+              { reference: { contains: query, mode: "insensitive" as const } },
               {
                 submitterName: {
                   contains: query,
-                  mode: 'insensitive' as const,
+                  mode: "insensitive" as const,
                 },
               },
               {
                 submitterEmail: {
                   contains: query,
-                  mode: 'insensitive' as const,
+                  mode: "insensitive" as const,
                 },
               },
               {
                 submitterCompany: {
                   contains: query,
-                  mode: 'insensitive' as const,
+                  mode: "insensitive" as const,
                 },
               },
               {
                 representedPartyName: {
                   contains: query,
-                  mode: 'insensitive' as const,
+                  mode: "insensitive" as const,
                 },
               },
               {
                 commodity: {
                   contains: query,
-                  mode: 'insensitive' as const,
+                  mode: "insensitive" as const,
                 },
               },
             ],
           }
         : {},
     ],
-  }
+  };
 
   const [intakes, statusCounts] = await Promise.all([
     prisma.transactionIntake.findMany({
       where,
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: "desc" },
       take: 100,
     }),
     prisma.transactionIntake.groupBy({
-      by: ['status'],
+      by: ["status"],
       _count: {
         status: true,
       },
     }),
-  ])
+  ]);
 
   const countByStatus = new Map(
     statusCounts.map((item) => [item.status, item._count.status]),
-  )
+  );
 
   const activeFilterCount = [
     selectedStatus,
     selectedProgram,
     referralCode,
     query,
-  ].filter(Boolean).length
+  ].filter(Boolean).length;
 
   return (
     <main className="min-h-screen bg-black text-white p-8">
@@ -195,9 +195,9 @@ export default async function TransactionIntakesAdminPage({
         </p>
         <h1 className="mt-2 text-3xl font-bold">Transaction Intakes</h1>
         <p className="mt-3 max-w-3xl text-gray-300">
-          Review submitted transaction interest records, referral attribution,
-          represented parties, and intake readiness before promotion to
-          opportunity or dossier.
+          Review buyer-side transaction intake submissions, referral
+          attribution, commercial structure, and readiness status before
+          qualification or promotion.
         </p>
       </div>
 
@@ -230,8 +230,8 @@ export default async function TransactionIntakesAdminPage({
                 status,
               )} ${
                 selectedStatus === status
-                  ? 'ring-2 ring-white/30'
-                  : 'opacity-80 hover:opacity-100'
+                  ? "ring-2 ring-white/30"
+                  : "opacity-80 hover:opacity-100"
               }`}
             >
               {status} ({countByStatus.get(status) || 0})
@@ -311,10 +311,65 @@ export default async function TransactionIntakesAdminPage({
         </form>
       </section>
 
-      <div className="mb-4 text-sm text-gray-400">
-        Showing {intakes.length} intake{intakes.length === 1 ? '' : 's'}
-        {activeFilterCount > 0 ? ` with ${activeFilterCount} active filter${activeFilterCount === 1 ? '' : 's'}` : ''}
-        .
+      {activeFilterCount > 0 && (
+        <section className="mb-4 rounded border border-amber-500/30 bg-amber-500/5 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="text-xs uppercase tracking-[0.18em] text-amber-300/80">
+                Active Filters
+              </p>
+
+              <div className="mt-2 flex flex-wrap gap-2">
+                {selectedStatus ? (
+                  <span className="rounded-full border border-gray-700 bg-black px-3 py-1 text-xs text-gray-200">
+                    Status: {selectedStatus}
+                  </span>
+                ) : null}
+
+                {selectedProgram ? (
+                  <span className="rounded-full border border-gray-700 bg-black px-3 py-1 text-xs text-gray-200">
+                    Program: {selectedProgram}
+                  </span>
+                ) : null}
+
+                {referralCode ? (
+                  <span className="rounded-full border border-amber-500/40 bg-amber-500/10 px-3 py-1 text-xs text-amber-200">
+                    Referral: {referralCode}
+                  </span>
+                ) : null}
+
+                {query ? (
+                  <span className="rounded-full border border-gray-700 bg-black px-3 py-1 text-xs text-gray-200">
+                    Search: {query}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+
+            <Link
+              href="/admin/transaction-intakes"
+              className="rounded border border-gray-700 px-3 py-2 text-sm text-gray-200 hover:bg-gray-900"
+            >
+              Clear all filters
+            </Link>
+          </div>
+        </section>
+      )}
+
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-sm text-gray-400">
+        <p>
+          Showing {intakes.length} intake{intakes.length === 1 ? "" : "s"}
+          {activeFilterCount > 0
+            ? ` with ${activeFilterCount} active filter${
+                activeFilterCount === 1 ? "" : "s"
+              }`
+            : " in the current queue"}
+          .
+        </p>
+
+        {referralCode ? (
+          <p className="text-amber-200">Referral lane: {referralCode}</p>
+        ) : null}
       </div>
 
       {intakes.length === 0 ? (
@@ -323,20 +378,19 @@ export default async function TransactionIntakesAdminPage({
         </div>
       ) : (
         <div className="overflow-x-auto rounded border border-gray-800">
-          <table className="min-w-[1200px] border-collapse bg-gray-950 text-sm">
+          <table className="w-full min-w-[1320px] border-collapse bg-gray-950 text-sm">
             <thead>
               <tr className="border-b border-gray-800 text-left text-gray-300">
                 <th className="px-4 py-3">Reference</th>
                 <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3">Submitter</th>
-                <th className="px-4 py-3">Role</th>
-                <th className="px-4 py-3">Program</th>
+                <th className="px-4 py-3">Submitter / Buyer</th>
+                <th className="px-4 py-3">Structure</th>
                 <th className="px-4 py-3">Commodity</th>
                 <th className="px-4 py-3">Quantity</th>
                 <th className="px-4 py-3">Destination</th>
                 <th className="px-4 py-3">Referral</th>
                 <th className="px-4 py-3">Created</th>
-                <th className="px-4 py-3">Manage</th>
+                <th className="px-4 py-3">Review</th>
               </tr>
             </thead>
 
@@ -344,7 +398,7 @@ export default async function TransactionIntakesAdminPage({
               {intakes.map((intake) => (
                 <tr
                   key={intake.id}
-                  className="border-b border-gray-900 text-gray-200"
+                  className="border-b border-gray-900 text-gray-200 hover:bg-gray-900/40"
                 >
                   <td className="whitespace-nowrap px-4 py-3 font-mono text-xs">
                     <Link
@@ -354,6 +408,7 @@ export default async function TransactionIntakesAdminPage({
                       {intake.reference}
                     </Link>
                   </td>
+
                   <td className="whitespace-nowrap px-4 py-3">
                     <span
                       className={`rounded-full border px-2 py-1 text-xs ${statusBadgeClass(
@@ -363,53 +418,104 @@ export default async function TransactionIntakesAdminPage({
                       {intake.status}
                     </span>
                   </td>
-                  <td className="px-4 py-3">{intake.submitterName}</td>
-                  <td className="whitespace-nowrap px-4 py-3">
-                    {intake.submitterRole}
+
+                  <td className="min-w-[190px] px-4 py-3">
+                    <p className="font-medium text-gray-100">
+                      {intake.submitterName}
+                    </p>
+                    <p className="mt-1 text-xs text-gray-500">
+                      {intake.submitterRole}
+                    </p>
+                    {intake.buyerName ? (
+                      <p className="mt-1 text-xs text-gray-400">
+                        Buyer: {intake.buyerName}
+                      </p>
+                    ) : null}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3">
-                    {intake.program || '—'}
+
+                  <td className="min-w-[170px] px-4 py-3">
+                    <p className="text-gray-100">
+                      {intake.transactionType || "—"}
+                    </p>
+                    <p className="mt-1 text-xs text-gray-500">
+                      {intake.deliveryTerms || "No delivery term"} ·{" "}
+                      {intake.settlementMethod || "No settlement method"}
+                    </p>
                   </td>
+
                   <td className="whitespace-nowrap px-4 py-3">
-                    {intake.commodity || '—'}
+                    {intake.commodity || "—"}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3">
-                    {intake.quantity || '—'}
+
+                  <td className="min-w-[150px] px-4 py-3">
+                    <p>{intake.quantity || "—"}</p>
+                    {intake.trialQuantity || intake.monthlyQuantity ? (
+                      <p className="mt-1 text-xs text-gray-500">
+                        {intake.trialQuantity
+                          ? `Trial: ${intake.trialQuantity}`
+                          : ""}
+                        {intake.trialQuantity && intake.monthlyQuantity
+                          ? " · "
+                          : ""}
+                        {intake.monthlyQuantity
+                          ? `Monthly: ${intake.monthlyQuantity}`
+                          : ""}
+                      </p>
+                    ) : null}
                   </td>
+
                   <td className="whitespace-nowrap px-4 py-3">
-                    {intake.destination || '—'}
+                    {intake.destination || "—"}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3">
-                    {intake.referralCode || '—'}
+
+                  <td className="min-w-[150px] px-4 py-3">
+                    <p>{intake.referralCode || "—"}</p>
+                    {intake.referredByName ? (
+                      <p className="mt-1 text-xs text-gray-500">
+                        {intake.referredByName}
+                      </p>
+                    ) : null}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3">
+
+                  <td className="whitespace-nowrap px-4 py-3 text-xs text-gray-400">
                     {intake.createdAt.toLocaleString()}
                   </td>
-                  <td className="whitespace-nowrap px-4 py-3">
-                    <form
-                      action={updateIntakeStatus}
-                      className="flex items-center gap-2"
-                    >
-                      <input type="hidden" name="id" value={intake.id} />
-                      <select
-                        key={intake.status}
-                        name="status"
-                        defaultValue={intake.status}
-                        className="rounded border border-gray-700 bg-black px-2 py-1 text-xs text-white"
+
+                  <td className="min-w-[230px] px-4 py-3">
+                    <div className="flex flex-col gap-2">
+                      <Link
+                        href={`/admin/transaction-intakes/${intake.id}`}
+                        className="w-fit rounded border border-blue-500/40 bg-blue-500/10 px-2 py-1 text-xs font-semibold text-blue-200 hover:bg-blue-500/20"
                       >
-                        {INTAKE_STATUSES.map((status) => (
-                          <option key={status} value={status}>
-                            {status}
-                          </option>
-                        ))}
-                      </select>
-                      <button
-                        type="submit"
-                        className="rounded border border-amber-500/50 bg-amber-500/10 px-2 py-1 text-xs font-semibold text-amber-200 hover:bg-amber-500/20"
+                        Open Review
+                      </Link>
+
+                      <form
+                        action={updateIntakeStatus}
+                        className="flex items-center gap-2"
                       >
-                        Update
-                      </button>
-                    </form>
+                        <input type="hidden" name="id" value={intake.id} />
+                        <select
+                          key={intake.status}
+                          name="status"
+                          defaultValue={intake.status}
+                          className="max-w-[150px] rounded border border-gray-700 bg-black px-2 py-1 text-xs text-white"
+                        >
+                          {INTAKE_STATUSES.map((status) => (
+                            <option key={status} value={status}>
+                              {status}
+                            </option>
+                          ))}
+                        </select>
+
+                        <button
+                          type="submit"
+                          className="rounded border border-amber-500/50 bg-amber-500/10 px-2 py-1 text-xs font-semibold text-amber-200 hover:bg-amber-500/20"
+                        >
+                          Update
+                        </button>
+                      </form>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -418,5 +524,5 @@ export default async function TransactionIntakesAdminPage({
         </div>
       )}
     </main>
-  )
+  );
 }
