@@ -1,5 +1,6 @@
 import { prisma } from "@/infrastructure/db/prisma";
 import { resend } from "@/infrastructure/email/client";
+import { getTransactionIntakeEmailMode } from "./emailMode";
 
 type IntakeInternalNotificationInput = {
   id: string;
@@ -35,6 +36,38 @@ function escapeHtml(value: string) {
 
 function display(value: string | null | undefined) {
   return value && value.trim().length > 0 ? value.trim() : "Not provided";
+}
+
+function extractResendError(response: unknown) {
+  if (
+    typeof response === "object" &&
+    response !== null &&
+    "error" in response &&
+    response.error
+  ) {
+    return response.error;
+  }
+
+  return null;
+}
+
+function extractResendMessageId(response: unknown) {
+  if (
+    typeof response === "object" &&
+    response !== null &&
+    "data" in response &&
+    response.data &&
+    typeof response.data === "object" &&
+    "id" in response.data
+  ) {
+    return String(response.data.id);
+  }
+
+  return null;
+}
+
+function getEmailStatus(response: unknown) {
+  return extractResendError(response) ? "FAILED" : "SENT";
 }
 
 function getRecipients() {
@@ -178,6 +211,28 @@ export async function sendTransactionIntakeInternalNotification(
   const text = buildPlainText(input, reviewUrl);
   const html = buildHtml(input, reviewUrl);
 
+  if (getTransactionIntakeEmailMode() === "log") {
+    await prisma.emailLog.create({
+      data: {
+        type: "TRANSACTION_INTAKE_INTERNAL_NOTIFICATION",
+        from,
+        to: recipients.join(","),
+        subject,
+        messageId: null,
+        status: "LOGGED_ONLY",
+        rawPayload: {
+          mode: "log",
+          intakeId: input.id,
+          reference: input.reference,
+          reviewUrl,
+          note: "Email send skipped by TRANSACTION_INTAKE_EMAIL_MODE=log.",
+        },
+      },
+    });
+
+    return { ok: true, mode: "log" };
+  }
+
   const response = await resend.emails.send({
     from,
     to: recipients,
@@ -186,23 +241,9 @@ export async function sendTransactionIntakeInternalNotification(
     text,
   });
 
-  const responseError =
-    typeof response === "object" &&
-    response !== null &&
-    "error" in response &&
-    response.error
-      ? response.error
-      : null;
-
-  const messageId =
-    typeof response === "object" &&
-    response !== null &&
-    "data" in response &&
-    response.data &&
-    typeof response.data === "object" &&
-    "id" in response.data
-      ? String(response.data.id)
-      : null;
+  const responseError = extractResendError(response);
+  const messageId = extractResendMessageId(response);
+  const status = getEmailStatus(response);
 
   await prisma.emailLog.create({
     data: {
@@ -211,8 +252,11 @@ export async function sendTransactionIntakeInternalNotification(
       to: recipients.join(","),
       subject,
       messageId,
-      status: responseError ? "FAILED" : "SENT",
-      rawPayload: response as object,
+      status,
+      rawPayload: {
+        response,
+        error: responseError,
+      },
     },
   });
 
