@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/infrastructure/db/prisma";
+import RepresentativeIssueKit from "./RepresentativeIssueKit";
 
 const REPRESENTATIVE_STATUSES = ["ACTIVE", "PAUSED", "ARCHIVED"] as const;
 
@@ -166,19 +167,37 @@ export default async function IntakeRepresentativesPage({
     ],
   };
 
-  const [representatives, statusCounts] = await Promise.all([
-    prisma.intakeRepresentative.findMany({
-      where,
-      orderBy: [{ status: "asc" }, { createdAt: "desc" }],
-      take: 100,
-    }),
-    prisma.intakeRepresentative.groupBy({
-      by: ["status"],
-      _count: {
-        status: true,
-      },
-    }),
-  ]);
+  const [representatives, issueKitRepresentatives, statusCounts] =
+    await Promise.all([
+      prisma.intakeRepresentative.findMany({
+        where,
+        orderBy: [{ status: "asc" }, { createdAt: "desc" }],
+        take: 100,
+      }),
+      prisma.intakeRepresentative.findMany({
+        where: {
+          status: {
+            in: ["ACTIVE", "PAUSED"],
+          },
+        },
+        orderBy: [{ status: "asc" }, { code: "asc" }],
+        select: {
+          id: true,
+          code: true,
+          name: true,
+          email: true,
+          company: true,
+          program: true,
+          status: true,
+        },
+      }),
+      prisma.intakeRepresentative.groupBy({
+        by: ["status"],
+        _count: {
+          status: true,
+        },
+      }),
+    ]);
 
   const countByStatus = new Map(
     statusCounts.map((item) => [item.status, item._count.status]),
@@ -208,6 +227,8 @@ export default async function IntakeRepresentativesPage({
           Back to Intake Queue
         </Link>
       </div>
+
+      <RepresentativeIssueKit representatives={issueKitRepresentatives} />
 
       <section className="mb-6 rounded border border-gray-800 bg-gray-950 p-5">
         <h2 className="text-lg font-semibold">
