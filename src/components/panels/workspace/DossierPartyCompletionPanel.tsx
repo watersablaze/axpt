@@ -328,11 +328,11 @@ export function DossierPartyCompletionPanel({
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <div className="text-[10px] uppercase tracking-[0.22em] text-neutral-500">
-            Party Completion
+            Party Identity Review
           </div>
 
           <h3 className="mt-1 text-lg font-semibold text-white">
-            Dossier Party Records
+            Party Records & Authority Context
           </h3>
 
           <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500">

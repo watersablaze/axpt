@@ -857,16 +857,17 @@ export default function DossierDocumentsPanel({
       <div className="flex items-center justify-between gap-3">
         <div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
-            Documents
+            Readiness & Drafts
           </div>
 
           <h3 className="mt-1 text-sm font-medium text-white">
-            Document Readiness Matrix
+            Data Readiness & Drafting Matrix
           </h3>
 
           <p className="mt-1 max-w-2xl text-xs text-neutral-500">
-            Track required buyer, seller, transaction, and execution documents
-            before advancing the dossier.
+            Use this panel to see which documents have enough dossier data to
+            draft, then create and preview internal instruments before external
+            issuance.
           </p>
         </div>
 

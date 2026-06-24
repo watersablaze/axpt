@@ -446,16 +446,17 @@ export function DossierTermsPanel({ dossierId, onTermsChanged }: Props) {
       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
         <div>
           <div className="text-[10px] uppercase tracking-[0.22em] text-neutral-500">
-            Structured Terms
+            Commercial Terms Review
           </div>
 
           <h3 className="mt-1 text-lg font-semibold text-white">
-            Operator Terms Panel
+            Settlement, Instrument & Compensation Terms
           </h3>
 
           <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500">
-            Internal-only commercial truth used to mature settlement, financial
-            instrument, and compensation drafts.
+            Use this panel to mature settlement, financial instrument, and
+            compensation terms. Seeded terms are internal placeholders until
+            confirmed by an operator.
           </p>
         </div>
 
@@ -666,7 +667,7 @@ export function DossierTermsPanel({ dossierId, onTermsChanged }: Props) {
               disabled={saving}
               className="rounded border border-neutral-500 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white hover:border-white disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {saving ? "Saving Terms..." : "Save Structured Terms"}
+              {saving ? "Saving Terms..." : "Save Commercial Terms Review"}
             </button>
 
             {savedAt ? (

@@ -1,88 +1,76 @@
-'use client'
+"use client";
 
 type PartyReadinessSummary = {
-  complete: number
-  partial: number
-  seeded: number
-  needsReview: number
-}
+  complete: number;
+  partial: number;
+  seeded: number;
+  needsReview: number;
+};
 
 type DocumentReadinessSummary = {
-  ready: number
-  draft: number
-  pending: number
-  total: number
-}
+  ready: number;
+  draft: number;
+  pending: number;
+  total: number;
+};
 
 type Props = {
-  currentState: string
-  nextStates: string[]
-  pendingApprovalCount: number
-  executedInstrumentCount: number
-  partyReadiness: PartyReadinessSummary
-  documentReadiness: DocumentReadinessSummary
-  onSelectExecution?: () => void
-  onSelectDocuments?: () => void
-  onSelectTimeline?: () => void
-}
+  currentState: string;
+  nextStates: string[];
+  pendingApprovalCount: number;
+  executedInstrumentCount: number;
+  partyReadiness: PartyReadinessSummary;
+  documentReadiness: DocumentReadinessSummary;
+  onSelectExecution?: () => void;
+  onSelectDocuments?: () => void;
+  onSelectTimeline?: () => void;
+};
 
 function readinessText(summary: PartyReadinessSummary) {
   const parts = [
-    summary.complete > 0
-      ? `${summary.complete} complete`
-      : null,
-    summary.partial > 0
-      ? `${summary.partial} partial`
-      : null,
-    summary.seeded > 0
-      ? `${summary.seeded} seeded`
-      : null,
-    summary.needsReview > 0
-      ? `${summary.needsReview} needs review`
-      : null,
-  ].filter(Boolean)
+    summary.complete > 0 ? `${summary.complete} complete` : null,
+    summary.partial > 0 ? `${summary.partial} partial` : null,
+    summary.seeded > 0 ? `${summary.seeded} seeded` : null,
+    summary.needsReview > 0 ? `${summary.needsReview} needs review` : null,
+  ].filter(Boolean);
 
-  return parts.length > 0 ? parts.join(' · ') : 'No parties attached'
+  return parts.length > 0 ? parts.join(" · ") : "No parties attached";
 }
 
 function readinessTone(summary: PartyReadinessSummary) {
   if (summary.needsReview > 0) {
-    return 'text-red-300'
+    return "text-red-300";
   }
 
   if (summary.seeded > 0 || summary.partial > 0) {
-    return 'text-amber-300'
+    return "text-amber-300";
   }
 
   if (summary.complete > 0) {
-    return 'text-emerald-300'
+    return "text-emerald-300";
   }
 
-  return 'text-neutral-500'
+  return "text-neutral-500";
 }
 
-function documentReadinessText(
-  summary: DocumentReadinessSummary
-) {
-  return `${summary.ready} ready · ${summary.draft} draft · ${summary.pending} pending`
+function documentReadinessText(summary: DocumentReadinessSummary) {
+  return `${summary.ready} ready · ${summary.draft} draft · ${summary.pending} pending`;
 }
 
-function documentReadinessTone(
-  summary: DocumentReadinessSummary
-) {
+function documentReadinessTone(summary: DocumentReadinessSummary) {
   if (summary.pending > 0) {
-    return 'text-amber-300'
+    return "text-amber-300";
   }
 
   if (summary.draft > 0) {
-    return 'text-cyan-300'
+    return "text-cyan-300";
   }
 
   if (summary.ready === summary.total && summary.total > 0) {
-    return 'text-emerald-300'
+    return "text-emerald-300";
   }
 
-  return 'text-neutral-500'
+  return "text-neutral-500";
 }
 
 export default function DossierCommandPanel({
@@ -102,9 +90,7 @@ export default function DossierCommandPanel({
         Command Surface
       </div>
 
-      <h3 className="mt-1 text-sm font-medium text-white">
-        Operator Actions
-      </h3>
+      <h3 className="mt-1 text-sm font-medium text-white">Operator Actions</h3>
 
       <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
         <div className="rounded border border-neutral-800 bg-black/30 p-2">
@@ -112,9 +98,7 @@ export default function DossierCommandPanel({
             Current State
           </div>
 
-          <div className="mt-1 text-cyan-300">
-            {currentState}
-          </div>
+          <div className="mt-1 text-cyan-300">{currentState}</div>
         </div>
 
         <div className="rounded border border-neutral-800 bg-black/30 p-2">
@@ -122,9 +106,7 @@ export default function DossierCommandPanel({
             Next Moves
           </div>
 
-          <div className="mt-1 text-white">
-            {nextStates.length}
-          </div>
+          <div className="mt-1 text-white">{nextStates.length}</div>
         </div>
 
         <div className="rounded border border-neutral-800 bg-black/30 p-2">
@@ -132,9 +114,7 @@ export default function DossierCommandPanel({
             Pending Gates
           </div>
 
-          <div className="mt-1 text-white">
-            {pendingApprovalCount}
-          </div>
+          <div className="mt-1 text-white">{pendingApprovalCount}</div>
         </div>
       </div>
 
@@ -145,35 +125,31 @@ export default function DossierCommandPanel({
 
         <div className="mt-2 grid gap-2 text-[11px] text-neutral-400 md:grid-cols-3">
           <div>
-            Parties:{' '}
+            Parties:{" "}
             <span className={readinessTone(partyReadiness)}>
               {readinessText(partyReadiness)}
             </span>
           </div>
 
           <div>
-            Documents:{' '}
-            <span
-              className={documentReadinessTone(
-                documentReadiness
-              )}
-            >
+            Readiness:{" "}
+            <span className={documentReadinessTone(documentReadiness)}>
               {documentReadinessText(documentReadiness)}
             </span>
           </div>
 
           <div>
-            Execution:{' '}
+            Execution:{" "}
             <span
               className={
                 executedInstrumentCount > 0
-                  ? 'text-emerald-300'
-                  : 'text-neutral-500'
+                  ? "text-emerald-300"
+                  : "text-neutral-500"
               }
             >
               {executedInstrumentCount > 0
                 ? `${executedInstrumentCount} instruments executed`
-                : 'not started'}
+                : "not started"}
             </span>
           </div>
         </div>
@@ -205,5 +181,5 @@ export default function DossierCommandPanel({
         </button>
       </div>
     </div>
-  )
+  );
 }
