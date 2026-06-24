@@ -4,19 +4,13 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/infrastructure/db/prisma";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { promoteTransactionIntakeToOpportunity } from "@/domains/control-center/transaction-intakes/promoteTransactionIntakeToOpportunity";
-
-const INTAKE_STATUSES = [
-  "SUBMITTED",
-  "UNDER_REVIEW",
-  "NEEDS_CLARIFICATION",
-  "QUALIFIED",
-  "DECLINED",
-  "PROMOTED_TO_OPPORTUNITY",
-  "DOSSIER_READY",
-  "PROMOTED_TO_DOSSIER",
-  "TEST",
-  "ARCHIVED",
-] as const;
+import {
+  DEFAULT_TRANSACTION_INTAKE_HIDDEN_STATUSES,
+  TRANSACTION_TRANSACTION_INTAKE_STATUSES,
+  getTransactionIntakeStatusLabel,
+  getTransactionIntakeStatusTone,
+  isTransactionIntakeStatus,
+} from "@/domains/control-center/transaction-intakes/intakeStatuses";
 
 async function updateIntakeReview(formData: FormData) {
   "use server";
@@ -34,10 +28,7 @@ async function updateIntakeReview(formData: FormData) {
     internalNotes?: string | null;
   } = {};
 
-  if (
-    typeof status === "string" &&
-    INTAKE_STATUSES.includes(status as (typeof INTAKE_STATUSES)[number])
-  ) {
+  if (typeof status === "string" && isTransactionIntakeStatus(status)) {
     data.status = status;
   }
 
@@ -129,29 +120,6 @@ async function promoteIntakeToOpportunity(formData: FormData) {
   revalidatePath("/admin/transaction-intakes");
   revalidatePath(`/admin/transaction-intakes/${id}`);
   revalidatePath("/admin/control-center");
-}
-
-function statusBadgeClass(status: string) {
-  switch (status) {
-    case "UNDER_REVIEW":
-      return "border-blue-400/40 bg-blue-400/10 text-blue-200";
-    case "NEEDS_CLARIFICATION":
-      return "border-yellow-400/40 bg-yellow-400/10 text-yellow-200";
-    case "QUALIFIED":
-    case "PROMOTED_TO_OPPORTUNITY":
-    case "DOSSIER_READY":
-    case "PROMOTED_TO_DOSSIER":
-      return "border-emerald-400/40 bg-emerald-400/10 text-emerald-200";
-    case "DECLINED":
-      return "border-red-400/40 bg-red-400/10 text-red-200";
-    case "TEST":
-      return "border-purple-400/40 bg-purple-400/10 text-purple-200";
-    case "ARCHIVED":
-      return "border-gray-600/50 bg-gray-800/50 text-gray-300";
-    case "SUBMITTED":
-    default:
-      return "border-amber-500/40 bg-amber-500/10 text-amber-200";
-  }
 }
 
 type Props = {
@@ -246,14 +214,16 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
           Transaction Intake
         </p>
         <h1 className="mt-2 text-3xl font-bold">{intake.reference}</h1>
-        <p className="mt-2 text-gray-300">Status: {intake.status}</p>
+        <p className="mt-2 text-gray-300">
+          Status: {getTransactionIntakeStatusLabel(intake.status)}
+        </p>
         <div className="mt-4">
           <span
-            className={`inline-flex rounded-full border px-3 py-1 text-sm ${statusBadgeClass(
+            className={`inline-flex rounded-full border px-3 py-1 text-sm ${getTransactionIntakeStatusTone(
               intake.status,
             )}`}
           >
-            {intake.status}
+            {getTransactionIntakeStatusLabel(intake.status)}
           </span>
         </div>
 
@@ -276,9 +246,9 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
                 defaultValue={intake.status}
                 className="max-w-md rounded border border-gray-700 bg-black px-3 py-2 text-white"
               >
-                {INTAKE_STATUSES.map((status) => (
+                {TRANSACTION_INTAKE_STATUSES.map((status) => (
                   <option key={status} value={status}>
-                    {status}
+                    {getTransactionIntakeStatusLabel(status)}
                   </option>
                 ))}
               </select>
@@ -338,7 +308,7 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
                   </div>
                 ) : (
                   <p className="mt-3 text-xs text-gray-500">
-                    Promotion is available once the intake status is QUALIFIED.
+                    Promotion is available once the intake status is Qualified.
                   </p>
                 )}
               </div>
@@ -384,7 +354,13 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
 
                 {(event.fromStatus || event.toStatus) && (
                   <p className="mt-2 text-sm text-gray-300">
-                    {event.fromStatus || "—"} → {event.toStatus || "—"}
+                    {event.fromStatus
+                      ? getTransactionIntakeStatusLabel(event.fromStatus)
+                      : "—"}{" "}
+                    →{" "}
+                    {event.toStatus
+                      ? getTransactionIntakeStatusLabel(event.toStatus)
+                      : "—"}
                   </p>
                 )}
 

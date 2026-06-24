@@ -3,19 +3,12 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/infrastructure/db/prisma";
 import RepresentativeLinkBuilder from "./RepresentativeLinkBuilder";
 import { RecentIntakeEmailLogPanel } from "./RecentIntakeEmailLogPanel";
-
-const INTAKE_STATUSES = [
-  "SUBMITTED",
-  "UNDER_REVIEW",
-  "NEEDS_CLARIFICATION",
-  "QUALIFIED",
-  "DECLINED",
-  "PROMOTED_TO_OPPORTUNITY",
-  "DOSSIER_READY",
-  "PROMOTED_TO_DOSSIER",
-  "TEST",
-  "ARCHIVED",
-] as const;
+import {
+  DEFAULT_TRANSACTION_INTAKE_HIDDEN_STATUSES,
+  TRANSACTION_TRANSACTION_INTAKE_STATUSES,
+  getTransactionIntakeStatusLabel,
+  getTransactionIntakeStatusTone,
+} from "@/domains/control-center/transaction-intakes/intakeStatuses";
 
 const PROGRAM_OPTIONS = [
   "French-Ward Gold",
@@ -44,7 +37,7 @@ async function updateIntakeStatus(formData: FormData) {
     return;
   }
 
-  if (!INTAKE_STATUSES.includes(status as (typeof INTAKE_STATUSES)[number])) {
+  if (!isTransactionIntakeStatus(status)) {
     return;
   }
 
@@ -83,29 +76,6 @@ async function updateIntakeStatus(formData: FormData) {
   revalidatePath(`/admin/transaction-intakes/${id}`);
 }
 
-function statusBadgeClass(status: string) {
-  switch (status) {
-    case "UNDER_REVIEW":
-      return "border-blue-400/40 bg-blue-400/10 text-blue-200";
-    case "NEEDS_CLARIFICATION":
-      return "border-yellow-400/40 bg-yellow-400/10 text-yellow-200";
-    case "QUALIFIED":
-    case "PROMOTED_TO_OPPORTUNITY":
-    case "DOSSIER_READY":
-    case "PROMOTED_TO_DOSSIER":
-      return "border-emerald-400/40 bg-emerald-400/10 text-emerald-200";
-    case "DECLINED":
-      return "border-red-400/40 bg-red-400/10 text-red-200";
-    case "TEST":
-      return "border-purple-400/40 bg-purple-400/10 text-purple-200";
-    case "ARCHIVED":
-      return "border-gray-600/50 bg-gray-800/50 text-gray-300";
-    case "SUBMITTED":
-    default:
-      return "border-amber-500/40 bg-amber-500/10 text-amber-200";
-  }
-}
-
 function buildStatusHref(status: string) {
   return `/admin/transaction-intakes?status=${encodeURIComponent(status)}`;
 }
@@ -117,7 +87,9 @@ export default async function TransactionIntakesAdminPage({
 
   const selectedStatus =
     params?.status &&
-    INTAKE_STATUSES.includes(params.status as (typeof INTAKE_STATUSES)[number])
+    TRANSACTION_INTAKE_STATUSES.includes(
+      params.status as (typeof TRANSACTION_INTAKE_STATUSES)[number],
+    )
       ? params.status
       : "";
 
@@ -129,7 +101,9 @@ export default async function TransactionIntakesAdminPage({
     AND: [
       selectedStatus
         ? { status: selectedStatus }
-        : { status: { notIn: ["TEST", "ARCHIVED"] } },
+        : {
+            status: { notIn: [...DEFAULT_TRANSACTION_INTAKE_HIDDEN_STATUSES] },
+          },
       selectedProgram ? { program: selectedProgram } : {},
       referralCode ? { referralCode } : {},
       query
@@ -272,11 +246,11 @@ export default async function TransactionIntakesAdminPage({
         </div>
 
         <div className="mt-5 flex flex-wrap gap-2">
-          {INTAKE_STATUSES.map((status) => (
+          {TRANSACTION_INTAKE_STATUSES.map((status) => (
             <Link
               key={status}
               href={buildStatusHref(status)}
-              className={`rounded-full border px-3 py-1 text-xs ${statusBadgeClass(
+              className={`rounded-full border px-3 py-1 text-xs ${getTransactionIntakeStatusTone(
                 status,
               )} ${
                 selectedStatus === status
@@ -284,7 +258,8 @@ export default async function TransactionIntakesAdminPage({
                   : "opacity-80 hover:opacity-100"
               }`}
             >
-              {status} ({countByStatus.get(status) || 0})
+              {getTransactionIntakeStatusLabel(status)} (
+              {countByStatus.get(status) || 0})
             </Link>
           ))}
         </div>
@@ -300,9 +275,9 @@ export default async function TransactionIntakesAdminPage({
               className="rounded border border-gray-700 bg-black px-3 py-2 text-white"
             >
               <option value="">All statuses</option>
-              {INTAKE_STATUSES.map((status) => (
+              {TRANSACTION_INTAKE_STATUSES.map((status) => (
                 <option key={status} value={status}>
-                  {status}
+                  {getTransactionIntakeStatusLabel(status)}
                 </option>
               ))}
             </select>
@@ -437,7 +412,7 @@ export default async function TransactionIntakesAdminPage({
               <div className="mt-2 flex flex-wrap gap-2">
                 {selectedStatus ? (
                   <span className="rounded-full border border-gray-700 bg-black px-3 py-1 text-xs text-gray-200">
-                    Status: {selectedStatus}
+                    Status: {getTransactionIntakeStatusLabel(selectedStatus)}
                   </span>
                 ) : null}
 
@@ -526,11 +501,11 @@ export default async function TransactionIntakesAdminPage({
 
                   <td className="whitespace-nowrap px-4 py-3">
                     <span
-                      className={`rounded-full border px-2 py-1 text-xs ${statusBadgeClass(
+                      className={`rounded-full border px-2 py-1 text-xs ${getTransactionIntakeStatusTone(
                         intake.status,
                       )}`}
                     >
-                      {intake.status}
+                      {getTransactionIntakeStatusLabel(intake.status)}
                     </span>
                   </td>
 
@@ -616,9 +591,9 @@ export default async function TransactionIntakesAdminPage({
                           defaultValue={intake.status}
                           className="max-w-[150px] rounded border border-gray-700 bg-black px-2 py-1 text-xs text-white"
                         >
-                          {INTAKE_STATUSES.map((status) => (
+                          {TRANSACTION_INTAKE_STATUSES.map((status) => (
                             <option key={status} value={status}>
-                              {status}
+                              {getTransactionIntakeStatusLabel(status)}
                             </option>
                           ))}
                         </select>
