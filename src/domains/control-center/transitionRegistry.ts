@@ -21,6 +21,120 @@ export type TransitionRegistryEntry = {
 };
 
 export const transitionRegistry: Record<string, TransitionRegistryEntry> = {
+  INTAKE_PENDING_TO_KYC_REVIEW: {
+    transitionKey: "INTAKE_PENDING_TO_KYC_REVIEW",
+    fromState: "INTAKE_PENDING",
+    toState: "KYC_REVIEW",
+
+    requiredApprovals: [],
+
+    generatedArtifacts: [],
+
+    consequences: [
+      {
+        type: "KYC_REVIEW_OPENED",
+        label: "KYC review will open",
+        detail:
+          "The dossier will move from intake pending into KYC review so party identity, authority, and source context can be reviewed.",
+        severity: "INFO",
+      },
+      {
+        type: "OPERATOR_REVIEW_REQUIRED",
+        label: "Operator review becomes active",
+        detail:
+          "Party authority, commercial source trace, and intake completeness should be reviewed before SPA drafting.",
+        severity: "WARNING",
+      },
+      {
+        type: "DOMAIN_EVENT_APPENDED",
+        label: "Operational timeline will be updated",
+        detail:
+          "A dossier domain event will be appended to the operational timeline.",
+        severity: "INFO",
+      },
+    ],
+  },
+
+  KYC_REVIEW_TO_SPA_DRAFTING: {
+    transitionKey: "KYC_REVIEW_TO_SPA_DRAFTING",
+    fromState: "KYC_REVIEW",
+    toState: "SPA_DRAFTING",
+
+    requiredApprovals: [],
+
+    generatedArtifacts: [
+      {
+        type: "SPA",
+        title: "Sale and Purchase Agreement",
+        status: "DRAFT",
+        version: "v1",
+      },
+    ],
+
+    consequences: [
+      {
+        type: "SPA_DRAFTING_OPENED",
+        label: "SPA drafting will open",
+        detail:
+          "The dossier will move into SPA drafting and the operator may prepare the SPA package and annexes.",
+        severity: "INFO",
+      },
+      {
+        type: "SPA_DRAFT_CREATED",
+        label: "SPA draft may be generated",
+        detail:
+          "The system may create a draft SPA instrument for operator review.",
+        severity: "INFO",
+      },
+      {
+        type: "COMMERCIAL_REVIEW_REQUIRED",
+        label: "Commercial review remains required",
+        detail:
+          "Settlement, financial instrument, compensation, and release conditions should be reviewed before execution.",
+        severity: "WARNING",
+      },
+    ],
+  },
+
+  SPA_DRAFTING_TO_SPA_EXECUTED: {
+    transitionKey: "SPA_DRAFTING_TO_SPA_EXECUTED",
+    fromState: "SPA_DRAFTING",
+    toState: "SPA_EXECUTED",
+
+    requiredApprovals: [
+      {
+        requiredRole: "ADMIN_PLATFORM",
+        requiredCount: 1,
+      },
+    ],
+
+    generatedArtifacts: [],
+
+    consequences: [
+      {
+        type: "SPA_EXECUTION_RECORDED",
+        label: "SPA execution will be recorded",
+        detail:
+          "The dossier will move into SPA executed status after the executed SPA has been confirmed.",
+        severity: "INFO",
+      },
+      {
+        type: "POST_SPA_ROUTE_AVAILABLE",
+        label: "Route-specific execution lane becomes available",
+        detail:
+          "After SPA execution, the dossier will branch into escrow, crypto, direct payment, financial instrument, or refinery coordination based on its execution profile.",
+        severity: "INFO",
+      },
+      {
+        type: "APPROVAL_AND_ARTIFACT_GATES_REQUIRED",
+        label: "Approval and artifact gates must pass",
+        detail:
+          "SPA execution requires an active or executed SPA instrument and stored platform approval before the state can advance.",
+        severity: "WARNING",
+      },
+    ],
+  },
+
   SPA_EXECUTED_TO_ESCROW_PENDING: {
     transitionKey: "SPA_EXECUTED_TO_ESCROW_PENDING",
     fromState: "SPA_EXECUTED",
