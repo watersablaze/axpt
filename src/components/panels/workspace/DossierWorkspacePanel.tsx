@@ -1299,6 +1299,8 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
                   quantityKg: dossier.quantityKg,
                   refinery: dossier.refinery,
                   settlement: dossier.settlement,
+                  executionProfile: dossier.executionProfile,
+                  executionProfileLabel: dossier.executionProfileLabel,
                 }}
                 parties={dossier.parties}
                 terms={dossier.terms}
