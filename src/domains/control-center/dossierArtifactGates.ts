@@ -38,6 +38,36 @@ export function checkDossierArtifactGate({
   toState,
   instruments = [],
 }: ArtifactGateInput): ArtifactGateResult {
+  if (fromState === "SPA_EXECUTED" && toState === "ESCROW_PENDING") {
+    const checks: ArtifactGateCheck[] = [
+      {
+        id: "escrow-setup-instruction",
+        label: "Escrow setup instruction active",
+        passed: hasActiveInstrument(instruments, "ESCROW_SETUP_INSTRUCTION"),
+        detail:
+          "Escrow Setup Instruction must be active or executed before the dossier can enter escrow pending.",
+      },
+      {
+        id: "settlement-annex",
+        label: "Settlement annex active",
+        passed: hasActiveInstrument(instruments, "ANNEX_B_SETTLEMENT"),
+        detail:
+          "Annex B Settlement must be active or executed before escrow setup is treated as operational.",
+      },
+    ];
+
+    const failed = checks.filter((check) => !check.passed);
+
+    return {
+      passed: failed.length === 0,
+      blockingReason:
+        failed.length > 0
+          ? "Escrow pending requires active escrow setup instruction and settlement annex."
+          : undefined,
+      checks,
+    };
+  }
+
   if (
     fromState === "PAYMENT_INSTRUCTION_PENDING" &&
     toState === "PAYMENT_CONFIRMED"
