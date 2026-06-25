@@ -515,10 +515,30 @@ function RouteKitPanel({
   dossier,
   documents,
   instruments,
+  creatingType,
+  updatingInstrumentId,
+  loadingPreviewId,
+  previewInstrumentId,
+  onCreateDraft,
+  onPreviewInstrument,
+  onUpdateInstrumentStatus,
 }: {
   dossier: DossierDependencyContext;
   documents: RequiredDossierDocument[];
   instruments: Instrument[];
+  creatingType: string | null;
+  updatingInstrumentId: string | null;
+  loadingPreviewId: string | null;
+  previewInstrumentId: string | null;
+  onCreateDraft: (document: RequiredDossierDocument) => void;
+  onPreviewInstrument: (instrument: Instrument) => void;
+  onUpdateInstrumentStatus: ({
+    instrument,
+    status,
+  }: {
+    instrument: Instrument;
+    status: string;
+  }) => void;
 }) {
   const kit = getRouteKit(dossier.executionProfile);
   const routeDocuments = documents.filter(
@@ -558,22 +578,92 @@ function RouteKitPanel({
         <div className="mt-3 grid gap-2 md:grid-cols-2 xl:grid-cols-3">
           {routeDocuments.map((document) => {
             const status = getDocumentStatus(document, instruments);
+            const canCreateDraft =
+              Boolean(document.instrumentType && document.canDraftInstrument) &&
+              !status.instrument;
+            const isCreating = creatingType === document.instrumentType;
+            const previewLoading =
+              status.instrument && loadingPreviewId === status.instrument.id;
+            const statusActions = status.instrument
+              ? getStatusActions(status.instrument)
+              : [];
 
             return (
               <div
                 key={document.key}
                 className="rounded border border-neutral-800 bg-black/30 p-2"
               >
-                <div className="text-xs font-medium text-white">
-                  {document.label}
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div>
+                    <div className="text-xs font-medium text-white">
+                      {document.label}
+                    </div>
+
+                    <div className="mt-1 text-[10px] uppercase tracking-wide text-neutral-600">
+                      {document.requiredFor}
+                    </div>
+                  </div>
+
+                  <div
+                    className={`rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${status.tone}`}
+                  >
+                    {status.label}
+                  </div>
                 </div>
 
-                <div className="mt-1 text-[10px] uppercase tracking-wide text-neutral-600">
-                  {document.requiredFor}
-                </div>
+                <p className="mt-2 text-[11px] leading-relaxed text-neutral-500">
+                  {document.description}
+                </p>
 
-                <div className="mt-2 inline-flex rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
-                  {status.label}
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {canCreateDraft ? (
+                    <button
+                      type="button"
+                      disabled={Boolean(creatingType || updatingInstrumentId)}
+                      onClick={() => onCreateDraft(document)}
+                      className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-700 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
+                    >
+                      {isCreating ? "Creating..." : "Create Draft"}
+                    </button>
+                  ) : null}
+
+                  {status.instrument ? (
+                    <button
+                      type="button"
+                      disabled={Boolean(loadingPreviewId)}
+                      onClick={() =>
+                        onPreviewInstrument(status.instrument as Instrument)
+                      }
+                      className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-700 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
+                    >
+                      {previewLoading
+                        ? "Loading..."
+                        : previewInstrumentId === status.instrument.id
+                          ? "Hide Preview"
+                          : "Preview Draft"}
+                    </button>
+                  ) : null}
+
+                  {statusActions.map((action) => (
+                    <button
+                      key={action.status}
+                      type="button"
+                      disabled={Boolean(creatingType || updatingInstrumentId)}
+                      onClick={() =>
+                        status.instrument
+                          ? onUpdateInstrumentStatus({
+                              instrument: status.instrument,
+                              status: action.status,
+                            })
+                          : undefined
+                      }
+                      className="rounded border border-neutral-700 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-cyan-700 hover:text-cyan-300 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
+                    >
+                      {updatingInstrumentId === status.instrument?.id
+                        ? "Updating..."
+                        : action.label}
+                    </button>
+                  ))}
                 </div>
               </div>
             );
@@ -1111,6 +1201,13 @@ export default function DossierDocumentsPanel({
         dossier={dossier}
         documents={DOSSIER_DOCUMENT_GROUPS.flatMap((group) => group.documents)}
         instruments={instruments}
+        creatingType={creatingType}
+        updatingInstrumentId={updatingInstrumentId}
+        loadingPreviewId={loadingPreviewId}
+        previewInstrumentId={previewInstrumentId}
+        onCreateDraft={createDraftInstrument}
+        onPreviewInstrument={toggleRenderPreview}
+        onUpdateInstrumentStatus={updateInstrumentStatus}
       />
 
       <div className="mt-3 rounded border border-neutral-800 bg-black/30 p-3">
