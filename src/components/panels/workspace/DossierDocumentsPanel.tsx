@@ -409,8 +409,8 @@ const ROUTE_KITS: Record<
   ESCROW_SETTLEMENT: {
     label: "Escrow Settlement",
     description:
-      "Escrow setup, coordinates, and funding pathway confirmation after SPA execution.",
-    instrumentTypes: ["ESCROW_SETUP_INSTRUCTION"],
+      "Escrow setup, coordinates, settlement annex posture, and funding confirmation after SPA execution.",
+    instrumentTypes: ["ESCROW_SETUP_INSTRUCTION", "PAYMENT_CONFIRMATION"],
   },
   DIRECT_WIRE: {
     label: "Direct Wire / MT103",
@@ -1208,6 +1208,12 @@ export default function DossierDocumentsPanel({
 
     setPreviewInstrumentId(instrument.id);
 
+    window.setTimeout(() => {
+      document
+        .getElementById(`preview-${instrument.id}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
+
     if (previews[instrument.id]) {
       return;
     }
@@ -1551,8 +1557,13 @@ export default function DossierDocumentsPanel({
                         </div>
                       ) : null}
 
-                      {activePreview ? (
-                        <RenderPreviewPanel preview={activePreview} />
+                      {activePreview && status.instrument ? (
+                        <div
+                          id={`preview-${status.instrument.id}`}
+                          className="scroll-mt-6"
+                        >
+                          <RenderPreviewPanel preview={activePreview} />
+                        </div>
                       ) : null}
                     </div>
                   );

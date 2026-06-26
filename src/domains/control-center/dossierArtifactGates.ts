@@ -195,6 +195,43 @@ export function checkDossierArtifactGate({
     };
   }
 
+  if (fromState === "ESCROW_PENDING" && toState === "ESCROW_FUNDED") {
+    const checks: ArtifactGateCheck[] = [
+      {
+        id: "escrow-setup-instruction",
+        label: "Escrow setup instruction active",
+        passed: hasActiveInstrument(instruments, "ESCROW_SETUP_INSTRUCTION"),
+        detail:
+          "Escrow Setup Instruction must remain active or executed before escrow funding can be recorded.",
+      },
+      {
+        id: "settlement-annex",
+        label: "Settlement annex active",
+        passed: hasActiveInstrument(instruments, "ANNEX_B_SETTLEMENT"),
+        detail:
+          "Annex B Settlement must be active or executed so the funding route has approved settlement context.",
+      },
+      {
+        id: "payment-confirmation",
+        label: "Escrow funding confirmation active",
+        passed: hasActiveInstrument(instruments, "PAYMENT_CONFIRMATION"),
+        detail:
+          "Payment Confirmation must be active or executed before the dossier can enter escrow funded.",
+      },
+    ];
+
+    const failed = checks.filter((check) => !check.passed);
+
+    return {
+      passed: failed.length === 0,
+      blockingReason:
+        failed.length > 0
+          ? "Escrow funded requires escrow setup, settlement annex, and payment confirmation."
+          : undefined,
+      checks,
+    };
+  }
+
   if (
     fromState === "PAYMENT_INSTRUCTION_PENDING" &&
     toState === "PAYMENT_CONFIRMED"

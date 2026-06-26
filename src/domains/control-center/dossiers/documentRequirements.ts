@@ -219,6 +219,7 @@ export const DOSSIER_DOCUMENT_GROUPS: DossierDocumentGroup[] = [
       },
       {
         key: "PAYMENT_CONFIRMATION",
+        canDraftInstrument: true,
         label: "Payment Confirmation Evidence",
         description:
           "Evidence record for bank wire, cash settlement, or receiving-party payment confirmation.",
