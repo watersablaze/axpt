@@ -378,6 +378,43 @@ export function checkDossierArtifactGate({
     };
   }
 
+  if (fromState === "ESCROW_FUNDED" && toState === "TREASURY_PENDING") {
+    const checks: ArtifactGateCheck[] = [
+      {
+        id: "payment-confirmation",
+        label: "Escrow funding confirmation active",
+        passed: hasActiveInstrument(instruments, "PAYMENT_CONFIRMATION"),
+        detail:
+          "Payment Confirmation must remain active or executed before treasury review can begin.",
+      },
+      {
+        id: "settlement-annex",
+        label: "Settlement annex active",
+        passed: hasActiveInstrument(instruments, "ANNEX_B_SETTLEMENT"),
+        detail:
+          "Annex B Settlement must remain active or executed so treasury review has settlement context.",
+      },
+      {
+        id: "escrow-setup-instruction",
+        label: "Escrow setup instruction active",
+        passed: hasActiveInstrument(instruments, "ESCROW_SETUP_INSTRUCTION"),
+        detail:
+          "Escrow Setup Instruction must remain active or executed so treasury review has escrow context.",
+      },
+    ];
+
+    const failed = checks.filter((check) => !check.passed);
+
+    return {
+      passed: failed.length === 0,
+      blockingReason:
+        failed.length > 0
+          ? "Treasury pending requires escrow funding confirmation, settlement annex, and escrow setup instruction."
+          : undefined,
+      checks,
+    };
+  }
+
   if (fromState === "TREASURY_PENDING" && toState === "EXPORT_RELEASED") {
     const checks: ArtifactGateCheck[] = [
       {
