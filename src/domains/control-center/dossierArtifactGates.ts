@@ -3,6 +3,20 @@ type DossierInstrumentForGate = {
   status: string;
 };
 
+type DossierPartyForGate = {
+  role: string;
+  legalName: string | null;
+  representative?: string | null;
+  country?: string | null;
+  notes?: string | null;
+};
+
+type DossierSourceOpportunityForGate = {
+  id: string;
+  source?: string | null;
+  title?: string | null;
+};
+
 export type ArtifactGateCheck = {
   id: string;
   label: string;
@@ -20,6 +34,8 @@ type ArtifactGateInput = {
   fromState: string;
   toState: string;
   instruments?: DossierInstrumentForGate[];
+  parties?: DossierPartyForGate[];
+  sourceOpportunities?: DossierSourceOpportunityForGate[];
 };
 
 function hasActiveInstrument(
@@ -37,7 +53,82 @@ export function checkDossierArtifactGate({
   fromState,
   toState,
   instruments = [],
+  parties = [],
+  sourceOpportunities = [],
 }: ArtifactGateInput): ArtifactGateResult {
+  if (fromState === "KYC_REVIEW" && toState === "SPA_DRAFTING") {
+    const buyer = parties.find((party) => party.role === "BUYER");
+    const seller = parties.find((party) => party.role === "SELLER");
+    const hasSellerParty = Boolean(seller?.legalName?.trim());
+    const hasSourceTrace = sourceOpportunities.length > 0;
+
+    const checks: ArtifactGateCheck[] = [
+      {
+        id: "buyer-party-present",
+        label: "Buyer party present",
+        passed: Boolean(buyer?.legalName?.trim()),
+        detail:
+          "Go to Brief → Party Identity Review. Add or complete the BUYER party legal name before SPA drafting.",
+      },
+      {
+        id: "source-trace-present",
+        label: hasSellerParty ? "Seller party present" : "Source trace present",
+        passed: hasSellerParty || hasSourceTrace,
+        detail: hasSellerParty
+          ? "A SELLER party record is attached to this dossier."
+          : hasSourceTrace
+            ? "Passed by promoted opportunity trace. Add a SELLER party record before final SPA execution if seller identity is not yet attached."
+            : "Go to Brief → Party Identity Review. Add a SELLER party record, or ensure this dossier is linked to a promoted opportunity/source trace.",
+      },
+      {
+        id: "party-review-context",
+        label: "Party review context present",
+        passed: parties.some(
+          (party) =>
+            Boolean(party.representative?.trim()) ||
+            Boolean(party.country?.trim()) ||
+            Boolean(party.notes?.trim()),
+        ),
+        detail:
+          "Go to Brief → Party Identity Review. Add representative, country, notes, or an operator confirmation note to at least one party record.",
+      },
+    ];
+
+    const failed = checks.filter((check) => !check.passed);
+
+    return {
+      passed: failed.length === 0,
+      blockingReason:
+        failed.length > 0
+          ? "SPA drafting requires buyer identity, source trace, and party review context. Resolve in Brief → Party Identity Review."
+          : undefined,
+      checks,
+    };
+  }
+
+  if (fromState === "SPA_DRAFTING" && toState === "SPA_EXECUTED") {
+    const checks: ArtifactGateCheck[] = [
+      {
+        id: "spa-executed",
+        label: "SPA executed",
+        passed: hasActiveInstrument(instruments, "SPA"),
+        detail:
+          "The SPA instrument must be active or executed before the dossier can be marked SPA executed.",
+      },
+    ];
+
+    const failed = checks.filter((check) => !check.passed);
+
+    return {
+      passed: failed.length === 0,
+      blockingReason:
+        failed.length > 0
+          ? "SPA execution requires an active or executed SPA instrument."
+          : undefined,
+      checks,
+    };
+  }
+
   if (fromState === "SPA_EXECUTED" && toState === "ESCROW_PENDING") {
     const checks: ArtifactGateCheck[] = [
       {
