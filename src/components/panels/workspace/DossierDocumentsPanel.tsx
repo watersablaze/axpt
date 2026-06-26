@@ -407,7 +407,8 @@ const ROUTE_KITS: Record<
 > = {
   ESCROW_SETTLEMENT: {
     label: "Escrow Settlement",
-    description: "Escrow setup, coordinates, and funding pathway confirmation.",
+    description:
+      "Escrow setup, coordinates, and funding pathway confirmation after SPA execution.",
     instrumentTypes: ["ESCROW_SETUP_INSTRUCTION"],
   },
   DIRECT_WIRE: {
@@ -511,6 +512,86 @@ function getFilteredDocumentGroups({
   })).filter((group) => group.documents.length > 0);
 }
 
+function ActiveDocumentTaskPanel({
+  instruments,
+}: {
+  instruments: Instrument[];
+}) {
+  const spa = instruments.find((instrument) => instrument.type === "SPA");
+  const status = spa?.status ?? "PENDING";
+  const complete = status === "EXECUTED";
+
+  return (
+    <section
+      className={`mt-3 rounded-xl border p-3 ${
+        complete
+          ? "border-emerald-900/60 bg-emerald-950/10"
+          : "border-amber-900/60 bg-amber-950/10"
+      }`}
+    >
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-amber-400">
+            Active Document Task
+          </div>
+
+          <h3 className="mt-1 text-sm font-semibold text-white">
+            SPA execution gate requires an executed SPA
+          </h3>
+
+          <p className="mt-1 max-w-3xl text-xs leading-relaxed text-neutral-500">
+            Use Core Package to work the SPA record. The SPA must be created,
+            activated for review, then marked executed before the dossier can
+            advance to SPA_EXECUTED.
+          </p>
+        </div>
+
+        <div
+          className={`rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${
+            complete
+              ? "border-emerald-800 text-emerald-300"
+              : "border-amber-800 text-amber-300"
+          }`}
+        >
+          SPA {status}
+        </div>
+      </div>
+
+      <div className="mt-3 grid gap-2 text-xs md:grid-cols-3">
+        <div
+          className={`rounded border p-2 ${
+            spa
+              ? "border-emerald-900/60 bg-black/20 text-emerald-300"
+              : "border-red-900/60 bg-black/20 text-red-300"
+          }`}
+        >
+          1. Create SPA draft
+        </div>
+
+        <div
+          className={`rounded border p-2 ${
+            status === "ACTIVE" || status === "EXECUTED"
+              ? "border-emerald-900/60 bg-black/20 text-emerald-300"
+              : "border-amber-900/60 bg-black/20 text-amber-300"
+          }`}
+        >
+          2. Activate for review
+        </div>
+
+        <div
+          className={`rounded border p-2 ${
+            complete
+              ? "border-emerald-900/60 bg-black/20 text-emerald-300"
+              : "border-amber-900/60 bg-black/20 text-amber-300"
+          }`}
+        >
+          3. Mark executed
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function RouteKitPanel({
   dossier,
   documents,
@@ -552,7 +633,7 @@ function RouteKitPanel({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-500">
-            Current Route Kit
+            Execution Route Kit
           </div>
 
           <h3 className="mt-1 text-sm font-semibold text-white">
@@ -1197,6 +1278,8 @@ export default function DossierDocumentsPanel({
         </div>
       ) : null}
 
+      <ActiveDocumentTaskPanel instruments={instruments} />
+
       <RouteKitPanel
         dossier={dossier}
         documents={DOSSIER_DOCUMENT_GROUPS.flatMap((group) => group.documents)}
@@ -1236,11 +1319,11 @@ export default function DossierDocumentsPanel({
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
-              Matrix Filter
+              Document View
             </div>
 
             <h4 className="mt-1 text-sm font-medium text-white">
-              Choose how much of the dossier library to inspect
+              Choose the document set for this operator task
             </h4>
 
             <p className="mt-1 max-w-2xl text-[11px] leading-relaxed text-neutral-500">
@@ -1275,8 +1358,8 @@ export default function DossierDocumentsPanel({
 
           <DocumentFilterButton
             active={documentFilter === "ALL"}
-            label="All Documents"
-            detail="Every document and route record in the dossier library."
+            label="Audit Library"
+            detail="Full document inventory for audit and deep review."
             onClick={() => setDocumentFilter("ALL")}
           />
         </div>
@@ -1287,11 +1370,12 @@ export default function DossierDocumentsPanel({
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
-                Filtered Document Matrix
+                Selected Document Workbench
               </div>
 
               <h4 className="mt-1 text-sm font-medium text-white">
-                Expand when you need the selected document view
+                Expand to create, activate, preview, or review selected
+                documents
               </h4>
 
               <p className="mt-1 max-w-2xl text-[11px] leading-relaxed text-neutral-500">

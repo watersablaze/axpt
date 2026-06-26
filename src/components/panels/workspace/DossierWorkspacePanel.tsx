@@ -664,11 +664,53 @@ function isExecutionProfileRelevant(state: string) {
   return !["INTAKE_PENDING", "KYC_REVIEW"].includes(state);
 }
 
+function findInstrumentStatus(instruments: DossierInstrument[], type: string) {
+  return (
+    instruments.find((instrument) => instrument.type === type)?.status ?? null
+  );
+}
+
+function hasPartyRole(parties: DossierParty[], role: string) {
+  return parties.some(
+    (party) => party.role === role && Boolean(party.legalName?.trim()),
+  );
+}
+
 function buildActiveWorkQueue(dossier: DossierWorkspace): WorkQueueItem[] {
   const queue: WorkQueueItem[] = [];
   const partyReadiness = getPartyReadiness(dossier.parties);
   const dataReadiness = getDossierDataReadiness(dossier);
   const termsSnapshot = getTermsReviewSnapshot(dossier.terms);
+
+  if (dossier.state === "SPA_DRAFTING") {
+    const spaStatus = findInstrumentStatus(dossier.instruments, "SPA");
+    const sellerPresent = hasPartyRole(dossier.parties, "SELLER");
+
+    if (spaStatus !== "EXECUTED") {
+      queue.push({
+        label: "Execute SPA instrument",
+        detail: spaStatus
+          ? spaStatus === "DRAFT"
+            ? "SPA is DRAFT. Activate it for review, then mark it executed before advancing to SPA_EXECUTED."
+            : `SPA is ${spaStatus}. Mark it executed before advancing to SPA_EXECUTED.`
+          : "Create the SPA in Core Package, activate it, then mark it executed.",
+        tone: "amber",
+        actionLabel: "Open document workbench",
+        targetTab: "DOCUMENTS",
+      });
+    }
+
+    if (!sellerPresent) {
+      queue.push({
+        label: "Attach seller party",
+        detail:
+          "SPA execution requires a SELLER party record. Source trace is enough for drafting, not execution.",
+        tone: "red",
+        actionLabel: "Review parties",
+        targetTab: "OVERVIEW",
+      });
+    }
+  }
 
   if (dossier.availableTransitions.length === 0) {
     queue.push({
@@ -742,12 +784,12 @@ function buildActiveWorkQueue(dossier: DossierWorkspace): WorkQueueItem[] {
     });
   }
 
-  if (dataReadiness.blocked > 0) {
+  if (dataReadiness.blocked > 0 && dossier.state !== "SPA_DRAFTING") {
     queue.push({
       label: "Improve document readiness",
       detail: `${dataReadiness.blocked} blocked · ${dataReadiness.draftable} draftable · ${dataReadiness.ready} ready`,
       tone: dossier.state === "INTAKE_PENDING" ? "neutral" : "amber",
-      actionLabel: "Open documents",
+      actionLabel: "Open document workbench",
       targetTab: "DOCUMENTS",
       targetAnchor: "document-readiness",
     });
@@ -1085,6 +1127,7 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
 
               <div id="party-identity-review" className="scroll-mt-4" />
               <DossierPartyCompletionPanel
+                dossierId={dossier.id}
                 parties={dossier.parties}
                 onPartyChanged={() => setRefreshNonce((value) => value + 1)}
               />
