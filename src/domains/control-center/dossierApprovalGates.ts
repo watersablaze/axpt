@@ -1,35 +1,34 @@
+import { getApprovalTemplateRequirements } from "./ApprovalTemplates";
+
 export type ApprovalGateCheck = {
-  id: string
-  label: string
-  passed: boolean
-  detail?: string
-}
+  id: string;
+  label: string;
+  passed: boolean;
+  detail?: string;
+};
 
 export type ApprovalGateResult = {
-  passed: boolean
-  blockingReason?: string
-  checks: ApprovalGateCheck[]
-}
+  passed: boolean;
+  blockingReason?: string;
+  checks: ApprovalGateCheck[];
+};
 
 type ApprovalRequirementForGate = {
-  transitionKey: string
-  requiredRole: string
-  requiredCount: number
-  status: string
-}
+  transitionKey: string;
+  requiredRole: string;
+  requiredCount: number;
+  status: string;
+};
 
 type ApprovalGateInput = {
-  fromState: string
-  toState: string
-  operatorRoles?: string[]
-  requirements?: ApprovalRequirementForGate[]
-}
+  fromState: string;
+  toState: string;
+  operatorRoles?: string[];
+  requirements?: ApprovalRequirementForGate[];
+};
 
-export function getTransitionKey(
-  fromState: string,
-  toState: string
-) {
-  return `${fromState}_TO_${toState}`
+export function getTransitionKey(fromState: string, toState: string) {
+  return `${fromState}_TO_${toState}`;
 }
 
 export function checkDossierApprovalGate({
@@ -38,51 +37,62 @@ export function checkDossierApprovalGate({
   operatorRoles = [],
   requirements = [],
 }: ApprovalGateInput): ApprovalGateResult {
-  if (
-    fromState === 'TREASURY_PENDING' &&
-    toState === 'EXPORT_RELEASED'
-  ) {
-    const transitionKey =
-      getTransitionKey(fromState, toState)
+  const transitionKey = getTransitionKey(fromState, toState);
 
-    const requirement =
-      requirements.find(
-        (item) =>
-          item.transitionKey === transitionKey &&
-          item.requiredRole === 'ADMIN_PLATFORM'
-      )
+  const storedRequirements = requirements.filter(
+    (item) => item.transitionKey === transitionKey,
+  );
 
-    const satisfied =
-      requirement?.status === 'SATISFIED'
+  const templateRequirements = getApprovalTemplateRequirements(transitionKey);
 
+  const activeRequirements =
+    storedRequirements.length > 0
+      ? storedRequirements
+      : templateRequirements.map((requirement) => ({
+          transitionKey,
+          requiredRole: requirement.requiredRole,
+          requiredCount: requirement.requiredCount,
+          status: "PENDING",
+        }));
+
+  if (activeRequirements.length === 0) {
     return {
-      passed: satisfied,
-      blockingReason: satisfied
-        ? undefined
-        : 'Export release requires a stored platform approval.',
+      passed: true,
       checks: [
         {
-          id: 'stored-platform-approval',
-          label: 'Stored platform approval',
-          passed: satisfied,
-          detail: satisfied
-            ? 'Approval requirement has been satisfied.'
-            : 'An ADMIN_PLATFORM approval must be granted before export release.',
+          id: "baseline",
+          label: "No approval gate required",
+          passed: true,
+          detail: "Current transition does not require additional approval.",
         },
       ],
-    }
+    };
   }
 
+  const checks = activeRequirements.map((requirement) => {
+    const operatorHasRole = operatorRoles.includes(requirement.requiredRole);
+    const satisfied = requirement.status === "SATISFIED";
+
+    return {
+      id: `approval-${requirement.requiredRole.toLowerCase()}`,
+      label: `${requirement.requiredRole} approval`,
+      passed: satisfied,
+      detail: satisfied
+        ? "Stored approval requirement has been satisfied."
+        : operatorHasRole
+          ? "This approval requirement is pending. Use the approval gate panel to grant approval before advancing."
+          : "This approval requirement is pending and requires an authorized operator role.",
+    };
+  });
+
+  const failed = checks.filter((check) => !check.passed);
+
   return {
-    passed: true,
-    checks: [
-      {
-        id: 'baseline',
-        label: 'No approval gate required',
-        passed: true,
-        detail:
-          'Current transition does not require additional approval.',
-      },
-    ],
-  }
+    passed: failed.length === 0,
+    blockingReason:
+      failed.length > 0
+        ? "Stored transition approval requirements must be satisfied before this transition can execute."
+        : undefined,
+    checks,
+  };
 }

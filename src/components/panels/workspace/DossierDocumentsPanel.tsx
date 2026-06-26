@@ -139,6 +139,7 @@ function buildDependencyReadiness({
       requireField("Seller Party", partyHasIdentity(seller));
       requireField("Commodity", hasValue(dossier.commodity));
       requireField("Quantity", hasValue(dossier.quantityKg));
+      requireField("Origin", hasValue(dossier.origin));
       requireField(
         "Settlement Method",
         hasValue(terms?.settlementMethod) || hasValue(dossier.settlement),

@@ -25,7 +25,12 @@ type PartyDraft = {
   notes: string;
 };
 
+type NewPartyDraft = PartyDraft & {
+  role: string;
+};
+
 type Props = {
+  dossierId: string;
   parties: DossierParty[];
   onPartyChanged?: () => void;
 };
@@ -214,6 +219,7 @@ function Field({
 }
 
 export function DossierPartyCompletionPanel({
+  dossierId,
   parties,
   onPartyChanged,
 }: Props) {
@@ -224,6 +230,14 @@ export function DossierPartyCompletionPanel({
     country: "",
     notes: "",
   });
+  const [newPartyDraft, setNewPartyDraft] = useState<NewPartyDraft>({
+    role: "BUYER",
+    legalName: "",
+    representative: "",
+    country: "",
+    notes: "",
+  });
+  const [creatingParty, setCreatingParty] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [savedAt, setSavedAt] = useState<string | null>(null);
@@ -267,6 +281,76 @@ export function DossierPartyCompletionPanel({
       ...current,
       [key]: value,
     }));
+  }
+
+  function updateNewPartyDraft(key: keyof NewPartyDraft, value: string) {
+    setNewPartyDraft((current) => ({
+      ...current,
+      [key]: value,
+    }));
+  }
+
+  function resetNewPartyDraft() {
+    setNewPartyDraft({
+      role: "BUYER",
+      legalName: "",
+      representative: "",
+      country: "",
+      notes: "",
+    });
+  }
+
+  async function createParty() {
+    setCreatingParty(true);
+    setError(null);
+    setSavedAt(null);
+
+    const payload = {
+      role: newPartyDraft.role,
+      legalName: normalizeInput(newPartyDraft.legalName),
+      representative: normalizeInput(newPartyDraft.representative),
+      country: normalizeInput(newPartyDraft.country),
+      notes: normalizeInput(newPartyDraft.notes),
+    };
+
+    if (!payload.legalName) {
+      setCreatingParty(false);
+      setError("Legal name is required to create a party record.");
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        `/api/admin/control-center/dossiers/${dossierId}/parties`,
+        {
+          method: "POST",
+          cache: "no-store",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      const data = await readJsonResponse(response);
+
+      if (!response.ok || !data.ok || !data.party) {
+        throw new Error(
+          data.message ?? data.error ?? "Unable to create party record.",
+        );
+      }
+
+      setSavedAt(new Date().toLocaleTimeString());
+      resetNewPartyDraft();
+      onPartyChanged?.();
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Unable to create party record.",
+      );
+    } finally {
+      setCreatingParty(false);
+    }
   }
 
   async function saveParty() {
@@ -401,6 +485,96 @@ export function DossierPartyCompletionPanel({
 
       <div className="mt-4 grid gap-3 xl:grid-cols-[1fr_1.15fr]">
         <div className="rounded-lg border border-neutral-800 bg-neutral-950/70 p-3">
+          <div className="mb-3 rounded-xl border border-cyan-900/50 bg-cyan-950/10 p-3">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-500">
+                  New Party Record
+                </div>
+
+                <h4 className="mt-1 text-sm font-semibold text-white">
+                  Create buyer, seller, or authority contact
+                </h4>
+
+                <p className="mt-1 max-w-3xl text-xs leading-relaxed text-neutral-500">
+                  Use this to resolve party gates before SPA drafting. A BUYER
+                  legal name plus representative, country, or notes will satisfy
+                  the KYC readiness gate.
+                </p>
+              </div>
+
+              <div className="rounded border border-cyan-900 bg-cyan-950/30 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300">
+                Gate Input
+              </div>
+            </div>
+
+            <div className="mt-3 grid gap-3 md:grid-cols-2">
+              <label className="space-y-1">
+                <span className="block text-[10px] uppercase tracking-[0.16em] text-neutral-500">
+                  Role
+                </span>
+
+                <select
+                  value={newPartyDraft.role}
+                  onChange={(event) =>
+                    updateNewPartyDraft("role", event.target.value)
+                  }
+                  className="w-full rounded border border-neutral-800 bg-black/40 px-3 py-2 text-xs text-neutral-100 outline-none focus:border-neutral-500"
+                >
+                  <option value="BUYER">Buyer</option>
+                  <option value="SELLER">Seller</option>
+                  <option value="COORDINATOR">Coordinator</option>
+                  <option value="COOPERATIVE">Cooperative</option>
+                  <option value="REFINERY">Refinery</option>
+                  <option value="TREASURY_CONTACT">Treasury Contact</option>
+                  <option value="LOGISTICS_CONTACT">Logistics Contact</option>
+                </select>
+              </label>
+
+              <Field
+                label="Legal Name"
+                value={newPartyDraft.legalName}
+                onChange={(value) => updateNewPartyDraft("legalName", value)}
+                placeholder="Buyer company / legal entity..."
+              />
+
+              <Field
+                label="Representative"
+                value={newPartyDraft.representative}
+                onChange={(value) =>
+                  updateNewPartyDraft("representative", value)
+                }
+                placeholder="Authorized contact / representative..."
+              />
+
+              <Field
+                label="Country"
+                value={newPartyDraft.country}
+                onChange={(value) => updateNewPartyDraft("country", value)}
+                placeholder="Country of incorporation / operation..."
+              />
+
+              <div className="md:col-span-2">
+                <Field
+                  label="Notes / Review Context"
+                  value={newPartyDraft.notes}
+                  onChange={(value) => updateNewPartyDraft("notes", value)}
+                  placeholder="Operator confirmed buyer party record for KYC review..."
+                  multiline
+                />
+              </div>
+            </div>
+
+            <button
+              type="button"
+              disabled={creatingParty}
+              onClick={() => void createParty()}
+              className="mt-3 rounded border border-cyan-900 bg-cyan-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-700 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
+            >
+              {creatingParty ? "Creating..." : "Create Party Record"}
+            </button>
+          </div>
+
           <h4 className="text-sm font-semibold text-white">Party Records</h4>
 
           {parties.length === 0 ? (

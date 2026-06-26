@@ -11,6 +11,7 @@ import DossierDocumentsPanel from "./DossierDocumentsPanel";
 import { DossierTermsPanel } from "./DossierTermsPanel";
 import { DossierBankCoordinatesPanel } from "./DossierBankCoordinatesPanel";
 import { DossierReleaseConditionsPanel } from "./DossierReleaseConditionsPanel";
+import { DossierSourceContextPanel } from "./DossierSourceContextPanel";
 import { DossierIssuanceApprovalPanel } from "./DossierIssuanceApprovalPanel";
 import TransitionActionBar from "./TransitionActionBar";
 import DossierCommandPanel from "./DossierCommandPanel";
@@ -1302,6 +1303,14 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
               </section>
 
               <ActiveWorkQueue dossier={dossier} onSelectTab={setActiveTab} />
+
+              <DossierSourceContextPanel
+                dossierId={dossier.id}
+                origin={dossier.origin}
+                refinery={dossier.refinery}
+                settlement={dossier.settlement}
+                onSourceChanged={() => setRefreshNonce((value) => value + 1)}
+              />
 
               <div id="commercial-terms-review" className="scroll-mt-4" />
               <DossierTermsPanel

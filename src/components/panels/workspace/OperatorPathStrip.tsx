@@ -24,9 +24,10 @@ export function OperatorPathStrip({ activeTab, onSelectTab }: Props) {
       description: "State movement, gates, and operator action.",
     },
     {
-      label: "Drafts",
+      label: "Readiness",
       tab: "DOCUMENTS",
-      description: "Data readiness, instruments, previews, and artifacts.",
+      description:
+        "Terms, coordinates, release gates, documents, and issuance posture.",
     },
     {
       label: "Timeline",
@@ -44,7 +45,8 @@ export function OperatorPathStrip({ activeTab, onSelectTab }: Props) {
           </div>
 
           <p className="mt-1 text-[11px] leading-relaxed text-neutral-500">
-            Follow the dossier from brief to execution, drafts, and audit trail.
+            Follow the dossier from brief to execution, readiness, and audit
+            trail.
           </p>
         </div>
 

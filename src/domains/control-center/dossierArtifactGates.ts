@@ -36,6 +36,7 @@ type ArtifactGateInput = {
   instruments?: DossierInstrumentForGate[];
   parties?: DossierPartyForGate[];
   sourceOpportunities?: DossierSourceOpportunityForGate[];
+  origin?: string | null;
 };
 
 function hasActiveInstrument(
@@ -49,12 +50,23 @@ function hasActiveInstrument(
   );
 }
 
+function hasExecutedInstrument(
+  instruments: DossierInstrumentForGate[],
+  type: string,
+) {
+  return instruments.some(
+    (instrument) =>
+      instrument.type === type && instrument.status === "EXECUTED",
+  );
+}
+
 export function checkDossierArtifactGate({
   fromState,
   toState,
   instruments = [],
   parties = [],
   sourceOpportunities = [],
+  origin = null,
 }: ArtifactGateInput): ArtifactGateResult {
   if (fromState === "KYC_REVIEW" && toState === "SPA_DRAFTING") {
     const buyer = parties.find((party) => party.role === "BUYER");
@@ -107,13 +119,37 @@ export function checkDossierArtifactGate({
   }
 
   if (fromState === "SPA_DRAFTING" && toState === "SPA_EXECUTED") {
+    const buyer = parties.find((party) => party.role === "BUYER");
+    const seller = parties.find((party) => party.role === "SELLER");
+
     const checks: ArtifactGateCheck[] = [
       {
         id: "spa-executed",
-        label: "SPA executed",
-        passed: hasActiveInstrument(instruments, "SPA"),
+        label: "SPA instrument executed",
+        passed: hasExecutedInstrument(instruments, "SPA"),
         detail:
-          "The SPA instrument must be active or executed before the dossier can be marked SPA executed.",
+          "Go to Readiness → Document Workbench. Create the SPA draft, activate it for review, then mark it executed before recording SPA_EXECUTED.",
+      },
+      {
+        id: "buyer-party-present",
+        label: "Buyer party present",
+        passed: Boolean(buyer?.legalName?.trim()),
+        detail:
+          "Go to Brief → Party Identity Review. A BUYER party legal name must be attached before SPA execution.",
+      },
+      {
+        id: "seller-party-present",
+        label: "Seller party present",
+        passed: Boolean(seller?.legalName?.trim()),
+        detail:
+          "Go to Brief → Party Identity Review. Add a SELLER party record before SPA execution. Source trace alone is enough for drafting, but not for execution.",
+      },
+      {
+        id: "origin-present",
+        label: "Origin present",
+        passed: Boolean(origin?.trim()),
+        detail:
+          "Go to Readiness → Commercial Terms Review or dossier summary source fields. Origin must be present before SPA execution because the SPA renderer requires origin context.",
       },
     ];
 
@@ -123,7 +159,7 @@ export function checkDossierArtifactGate({
       passed: failed.length === 0,
       blockingReason:
         failed.length > 0
-          ? "SPA execution requires an active or executed SPA instrument."
+          ? "SPA execution requires an executed SPA, buyer party, seller party, and origin."
           : undefined,
       checks,
     };

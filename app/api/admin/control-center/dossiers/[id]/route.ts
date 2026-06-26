@@ -206,3 +206,79 @@ export async function GET(_request: Request, context: RouteContext) {
     },
   });
 }
+
+type DossierPatchBody = {
+  origin?: string | null;
+  refinery?: string | null;
+  settlement?: string | null;
+};
+
+function normalizePatchValue(value: string | null | undefined) {
+  if (typeof value !== "string") {
+    return value ?? null;
+  }
+
+  const trimmed = value.trim();
+
+  return trimmed.length > 0 ? trimmed : null;
+}
+
+export async function PATCH(req: Request, context: RouteContext) {
+  const principal = await getPrincipal();
+
+  if (!principal) {
+    return NextResponse.json(
+      { ok: false, error: "UNAUTHORIZED" },
+      { status: 401 },
+    );
+  }
+
+  const { id } = await context.params;
+  const body = (await req.json()) as DossierPatchBody;
+
+  const data: DossierPatchBody = {};
+
+  if ("origin" in body) {
+    data.origin = normalizePatchValue(body.origin);
+  }
+
+  if ("refinery" in body) {
+    data.refinery = normalizePatchValue(body.refinery);
+  }
+
+  if ("settlement" in body) {
+    data.settlement = normalizePatchValue(body.settlement);
+  }
+
+  if (Object.keys(data).length === 0) {
+    return NextResponse.json(
+      { ok: false, error: "NO_DOSSIER_FIELDS_TO_UPDATE" },
+      { status: 400 },
+    );
+  }
+
+  const dossier = await prisma.transactionDossier.update({
+    where: { id },
+    data,
+  });
+
+  await prisma.transactionDossierEvent.create({
+    data: {
+      dossierId: dossier.id,
+      eventType: "DOSSIER_SOURCE_CONTEXT_UPDATED",
+      fromState: null,
+      toState: null,
+      message: `${principal.email} updated dossier source context.`,
+      actor: principal.email,
+      metadata: {
+        source: "control-center.dossier-source-context",
+        updatedFields: Object.keys(data),
+      },
+    },
+  });
+
+  return NextResponse.json({
+    ok: true,
+    dossier,
+  });
+}
