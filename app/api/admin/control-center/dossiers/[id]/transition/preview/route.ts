@@ -9,6 +9,7 @@ import { checkDossierArtifactGate } from "@/domains/control-center/dossierArtifa
 import { checkDossierApprovalGate } from "@/domains/control-center/dossierApprovalGates";
 
 import { getTransitionConsequences } from "@/domains/control-center/transitionConsequences";
+import { inferDossierExecutionProfile } from "@/domains/control-center/inferDossierExecutionProfile";
 
 type PreviewBody = {
   toState?: string;
@@ -42,6 +43,7 @@ export async function POST(
     include: {
       instruments: true,
       approvalRequirements: true,
+      terms: true,
       parties: true,
       promotedOpportunities: {
         select: {
@@ -60,6 +62,12 @@ export async function POST(
     );
   }
 
+  const executionProfile = inferDossierExecutionProfile({
+    settlement: dossier.settlement,
+    transactionType: null,
+    terms: dossier.terms,
+  });
+
   const fromState = dossier.state;
   const toState = body.toState;
 
@@ -73,6 +81,8 @@ export async function POST(
         parties: dossier.parties,
         sourceOpportunities: dossier.promotedOpportunities,
         origin: dossier.origin,
+        settlement: dossier.settlement,
+        executionProfile,
       })
     : {
         passed: false,

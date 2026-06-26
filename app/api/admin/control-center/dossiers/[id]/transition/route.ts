@@ -17,6 +17,7 @@ import { generateTransitionArtifacts } from "@/domains/control-center/generateTr
 import { buildTransitionAuditRecord } from "@/domains/control-center/buildTransitionAuditRecord";
 
 import { getTransitionConsequences } from "@/domains/control-center/transitionConsequences";
+import { inferDossierExecutionProfile } from "@/domains/control-center/inferDossierExecutionProfile";
 
 type DossierTransitionBody = {
   toState?: string;
@@ -52,6 +53,7 @@ export async function PATCH(
     include: {
       instruments: true,
       approvalRequirements: true,
+      terms: true,
       parties: true,
       promotedOpportunities: {
         select: {
@@ -69,6 +71,12 @@ export async function PATCH(
       { status: 404 },
     );
   }
+
+  const executionProfile = inferDossierExecutionProfile({
+    settlement: dossier.settlement,
+    transactionType: null,
+    terms: dossier.terms,
+  });
 
   const fromState = dossier.state;
   const toState = body.toState as typeof dossier.state;
@@ -92,6 +100,8 @@ export async function PATCH(
     parties: dossier.parties,
     sourceOpportunities: dossier.promotedOpportunities,
     origin: dossier.origin,
+    settlement: dossier.settlement,
+    executionProfile,
   });
 
   if (!artifactGate.passed) {

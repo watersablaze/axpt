@@ -37,6 +37,8 @@ type ArtifactGateInput = {
   parties?: DossierPartyForGate[];
   sourceOpportunities?: DossierSourceOpportunityForGate[];
   origin?: string | null;
+  settlement?: string | null;
+  executionProfile?: string | null;
 };
 
 function hasActiveInstrument(
@@ -67,6 +69,8 @@ export function checkDossierArtifactGate({
   parties = [],
   sourceOpportunities = [],
   origin = null,
+  settlement = null,
+  executionProfile = null,
 }: ArtifactGateInput): ArtifactGateResult {
   if (fromState === "KYC_REVIEW" && toState === "SPA_DRAFTING") {
     const buyer = parties.find((party) => party.role === "BUYER");
@@ -416,26 +420,64 @@ export function checkDossierArtifactGate({
   }
 
   if (fromState === "TREASURY_PENDING" && toState === "EXPORT_RELEASED") {
-    const checks: ArtifactGateCheck[] = [
-      {
-        id: "compliance-package",
-        label: "Compliance package active",
-        passed: hasActiveInstrument(instruments, "ANNEX_D_COMPLIANCE"),
-        detail: "Annex D must be active or executed.",
-      },
-      {
-        id: "refinery-coordination",
-        label: "Refinery coordination active",
-        passed: hasActiveInstrument(instruments, "ANNEX_C_REFINERY"),
-        detail: "Annex C must be active or executed.",
-      },
-      {
-        id: "procedure-sheet",
-        label: "Procedure sheet active",
-        passed: hasActiveInstrument(instruments, "ANNEX_E_PROCEDURE"),
-        detail: "Annex E must be active or executed.",
-      },
-    ];
+    const isEscrowSettlement =
+      executionProfile === "ESCROW_SETTLEMENT" ||
+      Boolean(settlement?.toLowerCase().includes("escrow"));
+
+    const checks: ArtifactGateCheck[] = isEscrowSettlement
+      ? [
+          {
+            id: "payment-confirmation",
+            label: "Escrow funding confirmation active",
+            passed: hasActiveInstrument(instruments, "PAYMENT_CONFIRMATION"),
+            detail:
+              "Payment Confirmation must be active or executed before export release can be authorized from an escrow settlement route.",
+          },
+          {
+            id: "settlement-annex",
+            label: "Settlement annex active",
+            passed: hasActiveInstrument(instruments, "ANNEX_B_SETTLEMENT"),
+            detail:
+              "Annex B Settlement must be active or executed before export release can be authorized.",
+          },
+          {
+            id: "escrow-setup-instruction",
+            label: "Escrow setup instruction active",
+            passed: hasActiveInstrument(
+              instruments,
+              "ESCROW_SETUP_INSTRUCTION",
+            ),
+            detail:
+              "Escrow Setup Instruction must be active or executed before export release can be authorized.",
+          },
+          {
+            id: "compliance-package",
+            label: "Compliance package active",
+            passed: hasActiveInstrument(instruments, "ANNEX_D_COMPLIANCE"),
+            detail:
+              "Annex D Compliance must be active or executed before export release.",
+          },
+        ]
+      : [
+          {
+            id: "compliance-package",
+            label: "Compliance package active",
+            passed: hasActiveInstrument(instruments, "ANNEX_D_COMPLIANCE"),
+            detail: "Annex D must be active or executed.",
+          },
+          {
+            id: "refinery-coordination",
+            label: "Refinery coordination active",
+            passed: hasActiveInstrument(instruments, "ANNEX_C_REFINERY"),
+            detail: "Annex C must be active or executed.",
+          },
+          {
+            id: "procedure-sheet",
+            label: "Procedure sheet active",
+            passed: hasActiveInstrument(instruments, "ANNEX_E_PROCEDURE"),
+            detail: "Annex E must be active or executed.",
+          },
+        ];
 
     const failed = checks.filter((check) => !check.passed);
 
@@ -443,7 +485,9 @@ export function checkDossierArtifactGate({
       passed: failed.length === 0,
       blockingReason:
         failed.length > 0
-          ? "Export release requires active compliance, refinery coordination, and procedure instruments."
+          ? isEscrowSettlement
+            ? "Escrow export release requires payment confirmation, settlement annex, escrow setup, and compliance package."
+            : "Export release requires active compliance, refinery coordination, and procedure instruments."
           : undefined,
       checks,
     };
