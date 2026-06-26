@@ -493,6 +493,29 @@ export function checkDossierArtifactGate({
     };
   }
 
+  if (fromState === "EXPORT_RELEASED" && toState === "EXPORT_ACTIVE") {
+    const checks: ArtifactGateCheck[] = [
+      {
+        id: "export-release-notice",
+        label: "Export release notice active",
+        passed: hasActiveInstrument(instruments, "EXPORT_RELEASE_NOTICE"),
+        detail:
+          "Export Release Notice must be active or executed before export activity can be opened.",
+      },
+    ];
+
+    const failed = checks.filter((check) => !check.passed);
+
+    return {
+      passed: failed.length === 0,
+      blockingReason:
+        failed.length > 0
+          ? "Export activation requires an active or executed Export Release Notice."
+          : undefined,
+      checks,
+    };
+  }
+
   if (fromState === "REFINERY_ASSAY" && toState === "SETTLEMENT_PENDING") {
     const checks: ArtifactGateCheck[] = [
       {

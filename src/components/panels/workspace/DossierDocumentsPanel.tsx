@@ -514,11 +514,97 @@ function getFilteredDocumentGroups({
 }
 
 function ActiveDocumentTaskPanel({
+  dossier,
   instruments,
+  updatingInstrumentId,
+  onUpdateInstrumentStatus,
 }: {
+  dossier: DossierDependencyContext;
   instruments: Instrument[];
+  updatingInstrumentId: string | null;
+  onUpdateInstrumentStatus: ({
+    instrument,
+    status,
+  }: {
+    instrument: Instrument;
+    status: string;
+  }) => void;
 }) {
   const spa = instruments.find((instrument) => instrument.type === "SPA");
+  const exportReleaseNotice = instruments.find(
+    (instrument) => instrument.type === "EXPORT_RELEASE_NOTICE",
+  );
+
+  if (
+    exportReleaseNotice &&
+    !["ACTIVE", "EXECUTED"].includes(exportReleaseNotice.status)
+  ) {
+    const complete = ["ACTIVE", "EXECUTED"].includes(
+      exportReleaseNotice.status,
+    );
+
+    return (
+      <section
+        className={`mt-3 rounded-xl border p-3 ${
+          complete
+            ? "border-emerald-900/60 bg-emerald-950/10"
+            : "border-amber-900/60 bg-amber-950/10"
+        }`}
+      >
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <div className="text-[10px] uppercase tracking-[0.18em] text-amber-400">
+              Active Document Task
+            </div>
+
+            <h3 className="mt-1 text-sm font-semibold text-white">
+              Export activation requires an active Export Release Notice
+            </h3>
+
+            <p className="mt-1 max-w-3xl text-xs leading-relaxed text-neutral-500">
+              The release has been authorized. Activate the Export Release
+              Notice before opening EXPORT_ACTIVE.
+            </p>
+          </div>
+
+          <div
+            className={`rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${
+              complete
+                ? "border-emerald-800 text-emerald-300"
+                : "border-amber-800 text-amber-300"
+            }`}
+          >
+            EXPORT RELEASE NOTICE {exportReleaseNotice.status}
+          </div>
+        </div>
+
+        <div className="mt-3 flex flex-wrap gap-2">
+          {!complete ? (
+            <button
+              type="button"
+              disabled={Boolean(updatingInstrumentId)}
+              onClick={() =>
+                onUpdateInstrumentStatus({
+                  instrument: exportReleaseNotice,
+                  status: "ACTIVE",
+                })
+              }
+              className="rounded border border-cyan-900 bg-cyan-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-700 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
+            >
+              {updatingInstrumentId === exportReleaseNotice.id
+                ? "Activating..."
+                : "Activate Export Release Notice"}
+            </button>
+          ) : (
+            <div className="rounded border border-emerald-800 bg-black/20 px-3 py-2 text-xs text-emerald-300">
+              Export Release Notice is active.
+            </div>
+          )}
+        </div>
+      </section>
+    );
+  }
+
   const status = spa?.status ?? "PENDING";
   const complete = status === "EXECUTED";
 
@@ -1285,7 +1371,12 @@ export default function DossierDocumentsPanel({
         </div>
       ) : null}
 
-      <ActiveDocumentTaskPanel instruments={instruments} />
+      <ActiveDocumentTaskPanel
+        dossier={dossier}
+        instruments={instruments}
+        updatingInstrumentId={updatingInstrumentId}
+        onUpdateInstrumentStatus={updateInstrumentStatus}
+      />
 
       <RouteKitPanel
         dossier={dossier}
