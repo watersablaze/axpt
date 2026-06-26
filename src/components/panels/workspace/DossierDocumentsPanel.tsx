@@ -534,13 +534,22 @@ function ActiveDocumentTaskPanel({
   const exportReleaseNotice = instruments.find(
     (instrument) => instrument.type === "EXPORT_RELEASE_NOTICE",
   );
+  const exportActivationNotice = instruments.find(
+    (instrument) => instrument.type === "EXPORT_ACTIVATION_NOTICE",
+  );
 
-  if (
-    exportReleaseNotice &&
-    !["ACTIVE", "EXECUTED"].includes(exportReleaseNotice.status)
-  ) {
+  const pendingExportNotice: Instrument | null =
+    exportActivationNotice &&
+    !["ACTIVE", "EXECUTED"].includes(exportActivationNotice.status)
+      ? exportActivationNotice
+      : exportReleaseNotice &&
+          !["ACTIVE", "EXECUTED"].includes(exportReleaseNotice.status)
+        ? exportReleaseNotice
+        : null;
+
+  if (pendingExportNotice) {
     const complete = ["ACTIVE", "EXECUTED"].includes(
-      exportReleaseNotice.status,
+      pendingExportNotice.status,
     );
 
     return (
@@ -562,8 +571,8 @@ function ActiveDocumentTaskPanel({
             </h3>
 
             <p className="mt-1 max-w-3xl text-xs leading-relaxed text-neutral-500">
-              The release has been authorized. Activate the Export Release
-              Notice before opening EXPORT_ACTIVE.
+              Activate the pending export notice before moving the dossier into
+              the next execution posture.
             </p>
           </div>
 
@@ -574,7 +583,8 @@ function ActiveDocumentTaskPanel({
                 : "border-amber-800 text-amber-300"
             }`}
           >
-            EXPORT RELEASE NOTICE {exportReleaseNotice.status}
+            {pendingExportNotice.type.replaceAll("_", " ")}{" "}
+            {pendingExportNotice.status}
           </div>
         </div>
 
@@ -585,15 +595,17 @@ function ActiveDocumentTaskPanel({
               disabled={Boolean(updatingInstrumentId)}
               onClick={() =>
                 onUpdateInstrumentStatus({
-                  instrument: exportReleaseNotice,
+                  instrument: pendingExportNotice,
                   status: "ACTIVE",
                 })
               }
               className="rounded border border-cyan-900 bg-cyan-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-700 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:text-neutral-600"
             >
-              {updatingInstrumentId === exportReleaseNotice.id
+              {updatingInstrumentId === pendingExportNotice.id
                 ? "Activating..."
-                : "Activate Export Release Notice"}
+                : pendingExportNotice.type === "EXPORT_ACTIVATION_NOTICE"
+                  ? "Activate Export Activation Notice"
+                  : "Activate Export Release Notice"}
             </button>
           ) : (
             <div className="rounded border border-emerald-800 bg-black/20 px-3 py-2 text-xs text-emerald-300">

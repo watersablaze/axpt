@@ -516,6 +516,29 @@ export function checkDossierArtifactGate({
     };
   }
 
+  if (fromState === "EXPORT_ACTIVE" && toState === "IN_TRANSIT") {
+    const checks: ArtifactGateCheck[] = [
+      {
+        id: "export-activation-notice",
+        label: "Export activation notice active",
+        passed: hasActiveInstrument(instruments, "EXPORT_ACTIVATION_NOTICE"),
+        detail:
+          "Export Activation Notice must be active or executed before movement can be opened as IN_TRANSIT.",
+      },
+    ];
+
+    const failed = checks.filter((check) => !check.passed);
+
+    return {
+      passed: failed.length === 0,
+      blockingReason:
+        failed.length > 0
+          ? "Transit requires an active or executed Export Activation Notice."
+          : undefined,
+      checks,
+    };
+  }
+
   if (fromState === "REFINERY_ASSAY" && toState === "SETTLEMENT_PENDING") {
     const checks: ArtifactGateCheck[] = [
       {

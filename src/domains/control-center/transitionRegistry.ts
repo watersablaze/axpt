@@ -456,6 +456,40 @@ export const transitionRegistry: Record<string, TransitionRegistryEntry> = {
       },
     ],
   },
+
+  EXPORT_ACTIVE_TO_IN_TRANSIT: {
+    transitionKey: "EXPORT_ACTIVE_TO_IN_TRANSIT",
+    fromState: "EXPORT_ACTIVE",
+    toState: "IN_TRANSIT",
+
+    requiredApprovals: [],
+
+    generatedArtifacts: [],
+
+    consequences: [
+      {
+        type: "TRANSIT_OPENED",
+        label: "Transit will be opened",
+        detail:
+          "The dossier will move from export active into in transit status after export activation has been confirmed.",
+        severity: "INFO",
+      },
+      {
+        type: "MOVEMENT_TRACKING_REQUIRED",
+        label: "Movement tracking becomes active",
+        detail:
+          "Once the dossier enters transit, operators should track movement, delivery handoff, and refinery intake readiness.",
+        severity: "WARNING",
+      },
+      {
+        type: "DOMAIN_EVENT_APPENDED",
+        label: "Operational timeline will be updated",
+        detail:
+          "A dossier domain event will be appended to the operational timeline.",
+        severity: "INFO",
+      },
+    ],
+  },
 };
 
 export function getTransitionRegistryEntry(transitionKey: string) {
