@@ -50,3 +50,13 @@ export type AuthorizeTreasuryExecution = TreasuryCommand<{
 
   approvalIds: readonly TreasuryApprovalId[];
 }>;
+
+export type AcknowledgeTreasuryExecutionQueued = TreasuryCommand<
+  Readonly<{
+    executionId: TreasuryExecutionId;
+
+    treasuryActionId: string;
+
+    treasuryQueueJobId: string;
+  }>
+>;

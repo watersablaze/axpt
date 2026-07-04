@@ -54,3 +54,13 @@ export type TreasuryExecutionAuthorizedPayload = Readonly<{
 
   authorizedAt: Date;
 }>;
+
+export type TreasuryExecutionQueuedPayload = Readonly<{
+  executionId: TreasuryExecutionId;
+
+  treasuryActionId: string;
+
+  treasuryQueueJobId: string;
+
+  queuedAt: Date;
+}>;
