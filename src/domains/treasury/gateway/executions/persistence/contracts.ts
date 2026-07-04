@@ -9,3 +9,9 @@ export type PersistedNewTreasuryExecution = Readonly<{
 
   event: TreasuryEventEnvelope<TreasuryExecutionCreatedPayload>;
 }>;
+
+export type PersistedTreasuryExecutionTransition<TPayload> = Readonly<{
+  aggregate: TreasuryExecution;
+
+  event: TreasuryEventEnvelope<TPayload>;
+}>;
