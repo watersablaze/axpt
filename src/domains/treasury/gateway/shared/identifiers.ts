@@ -49,3 +49,5 @@ export type ArtifactId = string;
 export type UserId = string;
 
 export type OrganizationId = string;
+
+export type TreasuryExecutionHandoffId = string;
