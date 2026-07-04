@@ -20,6 +20,8 @@ export type InternalWalletCapability = Readonly<{
 
   settlementEndpointId: SettlementEndpointId;
 
+  operationalInitiatorUserId: string;
+
   fromUserId: string;
 
   toUserId: string;

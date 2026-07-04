@@ -71,6 +71,8 @@ const unresolvedMismatch = resolveTreasuryExecutionRoute({
 
     settlementEndpointId: "endpoint-other",
 
+    operationalInitiatorUserId: "operator-user-1",
+
     fromUserId: "user-1",
 
     toUserId: "user-2",
@@ -93,6 +95,8 @@ const internalWallet = resolveTreasuryExecutionRoute({
     kind: TREASURY_EXECUTION_ADAPTER_KIND.INTERNAL_WALLET,
 
     settlementEndpointId: "endpoint-1",
+
+    operationalInitiatorUserId: "operator-user-1",
 
     fromUserId: "user-1",
 
