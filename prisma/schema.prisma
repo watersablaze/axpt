@@ -230,7 +230,7 @@ model Transaction {
   assetCode       String?
   feeBaseUnits    Decimal?   @db.Decimal(78, 0)
   intent          String?
-  idempotencyKey  String?
+  idempotencyKey  String?    @unique
   token           Token?     @relation(fields: [tokenId], references: [id])
   user            User       @relation(fields: [userId], references: [id])
   wallet          Wallet     @relation(fields: [walletId], references: [id])
@@ -240,7 +240,6 @@ model Transaction {
   @@index([tokenId])
   @@index([tokenType])
   @@index([assetCode])
-  @@index([idempotencyKey])
 }
 
 model TransactionIntake {
