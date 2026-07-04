@@ -1,25 +1,25 @@
 import type { TransactionClient } from "@prisma/client";
 
-import { beginTreasuryExecutionValidation } from "../beginTreasuryExecutionValidation";
+import { authorizeTreasuryExecution } from "../authorizeTreasuryExecution";
 
 import { executeDurableTreasuryExecutionTransitionWithClient } from "./executeDurableTreasuryExecutionTransitionWithClient";
 
-import type { BeginTreasuryExecutionValidation } from "../commands";
+import type { AuthorizeTreasuryExecution } from "../commands";
 
 import type { TreasuryEventId } from "../../shared/identifiers";
 
 import type { PersistedTreasuryExecutionTransition } from "../persistence/contracts";
 
-import type { TreasuryExecutionValidationStartedPayload } from "../events";
+import type { TreasuryExecutionAuthorizedPayload } from "../events";
 
-export async function beginTreasuryExecutionValidationDurablyWithClient(params: {
-  command: BeginTreasuryExecutionValidation;
+export async function authorizeTreasuryExecutionDurablyWithClient(params: {
+  command: AuthorizeTreasuryExecution;
 
   eventId: TreasuryEventId;
 
   client: TransactionClient;
 }): Promise<
-  PersistedTreasuryExecutionTransition<TreasuryExecutionValidationStartedPayload>
+  PersistedTreasuryExecutionTransition<TreasuryExecutionAuthorizedPayload>
 > {
   const { command, eventId, client } = params;
 
@@ -30,7 +30,7 @@ export async function beginTreasuryExecutionValidationDurablyWithClient(params: 
 
     context: command.context,
 
-    apply: (aggregate) => beginTreasuryExecutionValidation(aggregate, command),
+    apply: (aggregate) => authorizeTreasuryExecution(aggregate, command),
 
     client,
   });
