@@ -15,3 +15,9 @@ export type PersistedTreasuryExecutionTransition<TPayload> = Readonly<{
 
   event: TreasuryEventEnvelope<TPayload>;
 }>;
+
+export type LoadedTreasuryExecution = Readonly<{
+  aggregate: TreasuryExecution;
+
+  loadedAt: Date;
+}>;
