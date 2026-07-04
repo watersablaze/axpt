@@ -1,0 +1,56 @@
+import {
+  TREASURY_ALLOCATION_STATUS,
+  type TreasuryAllocationStatus,
+} from "./status";
+
+const ALLOCATION_TRANSITIONS: Record<
+  TreasuryAllocationStatus,
+  TreasuryAllocationStatus[]
+> = {
+  PROPOSED: [
+    TREASURY_ALLOCATION_STATUS.UNDER_REVIEW,
+    TREASURY_ALLOCATION_STATUS.CANCELLED,
+  ],
+
+  UNDER_REVIEW: [
+    TREASURY_ALLOCATION_STATUS.APPROVED,
+    TREASURY_ALLOCATION_STATUS.CANCELLED,
+  ],
+
+  APPROVED: [
+    TREASURY_ALLOCATION_STATUS.ACTIVE,
+    TREASURY_ALLOCATION_STATUS.CANCELLED,
+  ],
+
+  ACTIVE: [
+    TREASURY_ALLOCATION_STATUS.PARTIALLY_CONSUMED,
+    TREASURY_ALLOCATION_STATUS.CONSUMED,
+    TREASURY_ALLOCATION_STATUS.RELEASED,
+    TREASURY_ALLOCATION_STATUS.CANCELLED,
+  ],
+
+  PARTIALLY_CONSUMED: [
+    TREASURY_ALLOCATION_STATUS.PARTIALLY_CONSUMED,
+    TREASURY_ALLOCATION_STATUS.CONSUMED,
+    TREASURY_ALLOCATION_STATUS.RELEASED,
+  ],
+
+  CONSUMED: [],
+
+  RELEASED: [],
+
+  CANCELLED: [],
+};
+
+export function assertTreasuryAllocationTransition(
+  from: TreasuryAllocationStatus,
+  to: TreasuryAllocationStatus,
+) {
+  const allowed = ALLOCATION_TRANSITIONS[from] ?? [];
+
+  if (!allowed.includes(to)) {
+    throw new Error(
+      `[TREASURY_ALLOCATION_TRANSITION_INVALID] ${from} -> ${to}`,
+    );
+  }
+}
