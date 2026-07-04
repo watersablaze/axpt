@@ -1,96 +1,26 @@
-import type {
-  PrismaClient,
-  TransactionClient,
-} from '@prisma/client'
-import { prisma } from '@/infrastructure/db/prisma'
+import type { PrismaClient, TransactionClient } from "@prisma/client";
 
-import {
-  assertTreasuryActionTransition,
-} from './assertTransition'
+import { prisma } from "@/infrastructure/db/prisma";
 
-import {
-  type TreasuryActionStatus,
-} from './stateMachine'
+import { transitionTreasuryActionWithClient } from "./transitionTreasuryActionWithClient";
+
+import type { TreasuryActionStatus } from "./stateMachine";
 
 export async function transitionTreasuryAction(params: {
-  id: string
+  id: string;
 
-  to: TreasuryActionStatus
+  to: TreasuryActionStatus;
 
-  client?: PrismaClient | TransactionClient
+  client?: PrismaClient | TransactionClient;
 
-  data?: Record<string, unknown>
+  data?: Record<string, unknown>;
 
-  metadata?: Record<string, unknown>
+  metadata?: Record<string, unknown>;
 }) {
-  const {
-    id,
-    to,
-    client = prisma,
-    data,
-    metadata,
-  } = params
+  const { client = prisma, ...transition } = params;
 
-  const current =
-    await client.treasuryAction.findUnique({
-      where: {
-        id,
-      },
-
-      select: {
-        status: true,
-        metadata: true,
-      },
-    })
-
-  if (!current) {
-    throw new Error(
-      'Treasury action not found'
-    )
-  }
-
-  assertTreasuryActionTransition(
-    current.status as TreasuryActionStatus,
-    to
-  )
-
-  const updated = await client.treasuryAction.updateMany({
-    where: {
-      id,
-      status: current.status,
-    },
-
-    // Prisma update typing escape hatch
-    data: {
-      ...(data ?? {}),
-
-      status: to,
-
-      metadata: {
-        ...(current.metadata as Record<
-          string,
-          unknown
-        > | null),
-
-        ...(metadata ?? {}),
-
-        lastTransitionAt:
-          new Date().toISOString(),
-
-        lastTransitionTo: to,
-      },
-    } as any,
-  })
-
-  if (updated.count === 0) {
-    throw new Error(
-      'Treasury action transition race detected'
-    )
-  }
-
-  return client.treasuryAction.findUnique({
-    where: {
-      id,
-    },
-  })
+  return transitionTreasuryActionWithClient({
+    ...transition,
+    client,
+  });
 }

@@ -1,79 +1,24 @@
-import type {
-  PrismaClient,
-  TransactionClient,
-} from '@prisma/client'
-import { prisma } from '@/infrastructure/db/prisma'
+import type { PrismaClient, TransactionClient } from "@prisma/client";
 
-import {
-  assertTreasuryQueueTransition,
-} from './assertTransition'
+import { prisma } from "@/infrastructure/db/prisma";
 
-import {
-  type TreasuryQueueStatus,
-} from './stateMachine'
+import { transitionTreasuryQueueWithClient } from "./transitionTreasuryQueueWithClient";
+
+import type { TreasuryQueueStatus } from "./stateMachine";
 
 export async function transitionTreasuryQueue(params: {
-  id: string
+  id: string;
 
-  to: TreasuryQueueStatus
+  to: TreasuryQueueStatus;
 
-  client?: PrismaClient | TransactionClient
+  client?: PrismaClient | TransactionClient;
 
-  data?: Record<string, unknown>
+  data?: Record<string, unknown>;
 }) {
-  const {
-    id,
-    to,
-    client = prisma,
-    data,
-  } = params
+  const { client = prisma, ...transition } = params;
 
-  const current =
-    await client.treasuryExecutionQueue.findUnique({
-      where: {
-        id,
-      },
-
-      select: {
-        status: true,
-      },
-    })
-
-  if (!current) {
-    throw new Error(
-      'Treasury queue job not found'
-    )
-  }
-
-  assertTreasuryQueueTransition(
-    current.status as TreasuryQueueStatus,
-    to
-  )
-
-  const updated =
-    await client.treasuryExecutionQueue.updateMany({
-      where: {
-        id,
-        status: current.status,
-      },
-
-      // Prisma update typing escape hatch
-      data: {
-        status: to,
-
-        ...(data ?? {}),
-      } as any, 
-    })
-
-  if (updated.count === 0) {
-    throw new Error(
-      'Treasury queue transition race detected'
-    )
-  }
-
-  return client.treasuryExecutionQueue.findUnique({
-    where: {
-      id,
-    },
-  })
+  return transitionTreasuryQueueWithClient({
+    ...transition,
+    client,
+  });
 }
