@@ -21,3 +21,13 @@ export type LoadedTreasuryExecution = Readonly<{
 
   loadedAt: Date;
 }>;
+
+export type LoadedTreasuryExecutionAuthorizationEvidence = Readonly<{
+  approvalIds: readonly string[];
+
+  authorizedAt: Date;
+
+  eventId: string;
+
+  aggregateVersion: number;
+}>;
