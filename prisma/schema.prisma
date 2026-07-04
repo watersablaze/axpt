@@ -2180,3 +2180,51 @@ enum DossierIssuanceApprovalStatus {
   REJECTED
   REVOKED
 }
+
+model TreasuryGatewayAggregate {
+  aggregateType String
+  aggregateId   String
+
+  version Int
+  status  String
+
+  snapshot Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([aggregateType, aggregateId])
+  @@index([aggregateType, status])
+  @@index([updatedAt])
+}
+
+model TreasuryGatewayEvent {
+  sequence BigInt @id @default(autoincrement())
+
+  eventId String @unique
+
+  aggregateType    String
+  aggregateId      String
+  aggregateVersion Int
+
+  eventType String
+
+  actorId          String?
+  authorityGrantId String?
+
+  correlationId String
+  causationId   String?
+
+  payload Json
+
+  occurredAt DateTime
+  recordedAt DateTime @default(now())
+
+  previousEventHash String?
+  eventHash         String?
+
+  @@unique([aggregateType, aggregateId, aggregateVersion])
+  @@index([aggregateType, aggregateId, sequence])
+  @@index([correlationId])
+  @@index([eventType, recordedAt])
+}
