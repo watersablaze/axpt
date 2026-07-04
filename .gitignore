@@ -95,6 +95,7 @@ public/output.css
 # =========================================================
 
 *.sql
+!prisma/migrations/**/migration.sql
 *.sqlite
 *.sqlite3
 
