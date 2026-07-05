@@ -13,6 +13,8 @@ import type { TreasuryMoney } from "../shared/money";
 
 import type { TreasuryExecutionKind } from "./contracts";
 
+import type { TreasuryExecutionAdapterKind } from "./routing/contracts";
+
 export type TreasuryExecutionCreatedPayload = Readonly<{
   executionId: TreasuryExecutionId;
 
@@ -57,6 +59,12 @@ export type TreasuryExecutionAuthorizedPayload = Readonly<{
 
 export type TreasuryExecutionQueuedPayload = Readonly<{
   executionId: TreasuryExecutionId;
+
+  handoffId: string;
+
+  adapterKind: TreasuryExecutionAdapterKind;
+
+  settlementEndpointId: SettlementEndpointId;
 
   treasuryActionId: string;
 

@@ -45,6 +45,12 @@ export async function dispatchAndAcknowledgeInternalWalletExecutionWithClient(pa
     payload: {
       executionId: execution.id,
 
+      handoffId: route.handoffId,
+
+      adapterKind: route.adapterKind,
+
+      settlementEndpointId: route.capability.settlementEndpointId,
+
       treasuryActionId: dispatch.treasuryActionId,
 
       treasuryQueueJobId: dispatch.treasuryQueueJobId,

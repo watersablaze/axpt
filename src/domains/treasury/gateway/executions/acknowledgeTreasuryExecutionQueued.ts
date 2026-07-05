@@ -12,6 +12,10 @@ import type { TreasuryExecutionQueuedPayload } from "./events";
 
 import type { TreasuryDomainResult } from "../shared/domainResult";
 
+import { TREASURY_EXECUTION_ADAPTER_KIND } from "./routing/contracts";
+
+import type { TreasuryExecutionAdapterKind } from "./routing/contracts";
+
 export function acknowledgeTreasuryExecutionQueued(
   aggregate: TreasuryExecution,
 
@@ -29,6 +33,24 @@ export function acknowledgeTreasuryExecutionQueued(
 
   if (command.payload.treasuryQueueJobId.trim().length === 0) {
     throw new Error("[TREASURY_EXECUTION_OPERATIONAL_QUEUE_ID_REQUIRED]");
+  }
+
+  if (command.payload.handoffId.trim().length === 0) {
+    throw new Error("[TREASURY_EXECUTION_HANDOFF_ID_REQUIRED]");
+  }
+
+  if (
+    !Object.values(TREASURY_EXECUTION_ADAPTER_KIND).includes(
+      command.payload.adapterKind as TreasuryExecutionAdapterKind,
+    )
+  ) {
+    throw new Error(
+      `[TREASURY_EXECUTION_ADAPTER_KIND_INVALID] ${command.payload.adapterKind}`,
+    );
+  }
+
+  if (command.payload.settlementEndpointId.trim().length === 0) {
+    throw new Error("[TREASURY_EXECUTION_SETTLEMENT_ENDPOINT_ID_REQUIRED]");
   }
 
   const to = TREASURY_EXECUTION_STATUS.QUEUED;
@@ -59,6 +81,12 @@ export function acknowledgeTreasuryExecutionQueued(
 
       payload: {
         executionId: aggregate.id,
+
+        handoffId: command.payload.handoffId,
+
+        adapterKind: command.payload.adapterKind,
+
+        settlementEndpointId: command.payload.settlementEndpointId,
 
         treasuryActionId: command.payload.treasuryActionId,
 

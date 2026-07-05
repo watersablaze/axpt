@@ -193,6 +193,15 @@ async function main(): Promise<void> {
       result.dispatch.treasuryQueueJobId,
     );
 
+    assert.equal(result.gateway.event.payload.handoffId, handoffId);
+
+    assert.equal(
+      result.gateway.event.payload.adapterKind,
+      TREASURY_EXECUTION_ADAPTER_KIND.INTERNAL_WALLET,
+    );
+
+    assert.equal(result.gateway.event.payload.settlementEndpointId, endpointId);
+
     console.log(
       "✓ Treasury Gateway dispatch and acknowledgement smoke test passed",
     );
@@ -201,6 +210,12 @@ async function main(): Promise<void> {
       gatewayExecutionId: result.gateway.aggregate.id,
 
       gatewayStatus: result.gateway.aggregate.status,
+
+      handoffId: result.gateway.event.payload.handoffId,
+
+      adapterKind: result.gateway.event.payload.adapterKind,
+
+      settlementEndpointId: result.gateway.event.payload.settlementEndpointId,
 
       treasuryActionId: result.dispatch.treasuryActionId,
 

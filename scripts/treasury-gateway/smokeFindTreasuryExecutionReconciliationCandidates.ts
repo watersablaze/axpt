@@ -27,6 +27,8 @@ import { loadTreasuryExecutionWithClient } from "../../src/domains/treasury/gate
 
 import { TREASURY_EXECUTION_STATUS } from "../../src/domains/treasury/gateway/executions/status";
 
+import { TREASURY_EXECUTION_ADAPTER_KIND } from "../../src/domains/treasury/gateway/executions/routing/contracts";
+
 const prisma = new PrismaClient();
 
 type FixtureStatus =
@@ -221,6 +223,12 @@ async function createFixture(params: {
 
         payload: {
           executionId,
+
+          handoffId: `handoff-${fixtureId}`,
+
+          adapterKind: TREASURY_EXECUTION_ADAPTER_KIND.INTERNAL_WALLET,
+
+          settlementEndpointId: `endpoint-${fixtureId}`,
 
           treasuryActionId: `action-${fixtureId}`,
 

@@ -15,6 +15,8 @@ import type { TreasuryMoney } from "../shared/money";
 
 import type { TreasuryExecutionKind } from "./contracts";
 
+import type { TreasuryExecutionAdapterKind } from "./routing/contracts";
+
 export type CreateTreasuryExecution = TreasuryCommand<{
   programId: CommercialProgramId;
 
@@ -54,6 +56,12 @@ export type AuthorizeTreasuryExecution = TreasuryCommand<{
 export type AcknowledgeTreasuryExecutionQueued = TreasuryCommand<
   Readonly<{
     executionId: TreasuryExecutionId;
+
+    handoffId: string;
+
+    adapterKind: TreasuryExecutionAdapterKind;
+
+    settlementEndpointId: SettlementEndpointId;
 
     treasuryActionId: string;
 

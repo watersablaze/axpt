@@ -10,6 +10,8 @@ import type { TreasuryExecution } from "../../src/domains/treasury/gateway/execu
 
 import type { AcknowledgeTreasuryExecutionQueued } from "../../src/domains/treasury/gateway/executions/commands";
 
+import { TREASURY_EXECUTION_ADAPTER_KIND } from "../../src/domains/treasury/gateway/executions/routing/contracts";
+
 function assertThrowsWithCode(fn: () => unknown, code: string): void {
   assert.throws(
     fn,
@@ -77,6 +79,12 @@ const command: AcknowledgeTreasuryExecutionQueued = {
   payload: {
     executionId: "execution-1",
 
+    handoffId: "handoff-1",
+
+    adapterKind: TREASURY_EXECUTION_ADAPTER_KIND.INTERNAL_WALLET,
+
+    settlementEndpointId: "endpoint-1",
+
     treasuryActionId: "action-1",
 
     treasuryQueueJobId: "queue-1",
@@ -103,6 +111,53 @@ assert.equal(result.event.payload.treasuryQueueJobId, "queue-1");
 assert.equal(
   result.event.payload.queuedAt.toISOString(),
   "2026-07-04T04:15:00.000Z",
+);
+
+assert.equal(result.event.payload.handoffId, "handoff-1");
+
+assert.equal(
+  result.event.payload.adapterKind,
+  TREASURY_EXECUTION_ADAPTER_KIND.INTERNAL_WALLET,
+);
+
+assert.equal(result.event.payload.settlementEndpointId, "endpoint-1");
+
+assertThrowsWithCode(
+  () =>
+    acknowledgeTreasuryExecutionQueued(
+      execution,
+
+      {
+        ...command,
+
+        payload: {
+          ...command.payload,
+
+          handoffId: "   ",
+        },
+      },
+    ),
+
+  "TREASURY_EXECUTION_HANDOFF_ID_REQUIRED",
+);
+
+assertThrowsWithCode(
+  () =>
+    acknowledgeTreasuryExecutionQueued(
+      execution,
+
+      {
+        ...command,
+
+        payload: {
+          ...command.payload,
+
+          settlementEndpointId: "   ",
+        },
+      },
+    ),
+
+  "TREASURY_EXECUTION_SETTLEMENT_ENDPOINT_ID_REQUIRED",
 );
 
 assertThrowsWithCode(
@@ -141,6 +196,25 @@ assertThrowsWithCode(
     ),
 
   "TREASURY_EXECUTION_OPERATIONAL_ACTION_ID_REQUIRED",
+);
+
+assertThrowsWithCode(
+  () =>
+    acknowledgeTreasuryExecutionQueued(
+      execution,
+
+      {
+        ...command,
+
+        payload: {
+          ...command.payload,
+
+          adapterKind: "UNKNOWN_ADAPTER" as typeof command.payload.adapterKind,
+        },
+      },
+    ),
+
+  "TREASURY_EXECUTION_ADAPTER_KIND_INVALID",
 );
 
 assertThrowsWithCode(
