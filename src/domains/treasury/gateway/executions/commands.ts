@@ -60,3 +60,37 @@ export type AcknowledgeTreasuryExecutionQueued = TreasuryCommand<
     treasuryQueueJobId: string;
   }>
 >;
+
+export type MarkTreasuryExecutionInitiated = TreasuryCommand<
+  Readonly<{
+    executionId: TreasuryExecutionId;
+
+    treasuryActionId: string;
+
+    treasuryActionStatus: string;
+
+    idempotencyKey: string;
+
+    initiatedAt: Date;
+  }>
+>;
+
+export type ConfirmTreasuryExecution = TreasuryCommand<
+  Readonly<{
+    executionId: TreasuryExecutionId;
+
+    treasuryActionId: string;
+
+    idempotencyKey: string;
+
+    debitTransactionId: string;
+
+    creditTransactionId: string;
+
+    assetCode: string;
+
+    amountBaseUnits: string;
+
+    confirmedAt: Date;
+  }>
+>;

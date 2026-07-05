@@ -64,3 +64,33 @@ export type TreasuryExecutionQueuedPayload = Readonly<{
 
   queuedAt: Date;
 }>;
+
+export type TreasuryExecutionInitiatedPayload = Readonly<{
+  executionId: TreasuryExecutionId;
+
+  treasuryActionId: string;
+
+  treasuryActionStatus: string;
+
+  idempotencyKey: string;
+
+  initiatedAt: Date;
+}>;
+
+export type TreasuryExecutionConfirmedPayload = Readonly<{
+  executionId: TreasuryExecutionId;
+
+  treasuryActionId: string;
+
+  idempotencyKey: string;
+
+  debitTransactionId: string;
+
+  creditTransactionId: string;
+
+  assetCode: string;
+
+  amountBaseUnits: string;
+
+  confirmedAt: Date;
+}>;
