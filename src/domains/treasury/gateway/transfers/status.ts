@@ -12,6 +12,8 @@ export const TREASURY_TRANSFER_STATUS = {
   CAPACITY_ASSESSED: "CAPACITY_ASSESSED",
 
   CAPACITY_UNDETERMINED: "CAPACITY_UNDETERMINED",
+
+  PLANNED: "PLANNED",
 } as const;
 
 export type TreasuryTransferStatus =

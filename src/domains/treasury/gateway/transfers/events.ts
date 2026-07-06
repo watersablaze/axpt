@@ -4,6 +4,7 @@ import type {
   TreasuryTransferId,
   TransferAuthorityAssessmentId,
   TransferCapacityAssessmentId,
+  TreasuryExecutionPlanId,
 } from "../shared/identifiers";
 
 import type { CurrencyCode, TreasuryMoney } from "../shared/money";
@@ -60,4 +61,10 @@ export type TreasuryTransferCapacityUndeterminedPayload = Readonly<{
   transferId: TreasuryTransferId;
 
   assessmentId: TransferCapacityAssessmentId;
+}>;
+
+export type TreasuryTransferPlannedPayload = Readonly<{
+  transferId: TreasuryTransferId;
+
+  planId: TreasuryExecutionPlanId;
 }>;
