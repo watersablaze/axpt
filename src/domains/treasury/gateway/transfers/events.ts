@@ -2,6 +2,7 @@ import type {
   CommercialProgramId,
   TreasuryInstructionId,
   TreasuryTransferId,
+  TransferAuthorityAssessmentId,
 } from "../shared/identifiers";
 
 import type { CurrencyCode, TreasuryMoney } from "../shared/money";
@@ -28,4 +29,22 @@ export type TreasuryTransferCreatedPayload = Readonly<{
 
 export type TreasuryTransferAuthorityReviewStartedPayload = Readonly<{
   transferId: TreasuryTransferId;
+}>;
+
+export type TreasuryTransferAuthorizedPayload = Readonly<{
+  transferId: TreasuryTransferId;
+
+  assessmentId: TransferAuthorityAssessmentId;
+}>;
+
+export type TreasuryTransferAuthorityClarificationRequiredPayload = Readonly<{
+  transferId: TreasuryTransferId;
+
+  assessmentId: TransferAuthorityAssessmentId;
+}>;
+
+export type TreasuryTransferRejectedPayload = Readonly<{
+  transferId: TreasuryTransferId;
+
+  assessmentId: TransferAuthorityAssessmentId;
 }>;
