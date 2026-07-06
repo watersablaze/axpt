@@ -3,6 +3,7 @@ import type {
   TreasuryInstructionId,
   TreasuryTransferId,
   TransferAuthorityAssessmentId,
+  TransferCapacityAssessmentId,
 } from "../shared/identifiers";
 
 import type { TreasuryCommand } from "../shared/commandContext";
@@ -35,4 +36,10 @@ export type ApplyTreasuryTransferAuthorityAssessment = TreasuryCommand<{
   transferId: TreasuryTransferId;
 
   assessmentId: TransferAuthorityAssessmentId;
+}>;
+
+export type ApplyTreasuryTransferCapacityAssessment = TreasuryCommand<{
+  transferId: TreasuryTransferId;
+
+  assessmentId: TransferCapacityAssessmentId;
 }>;
