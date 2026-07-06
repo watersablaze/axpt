@@ -16,6 +16,8 @@ export type ProgramCapitalReceiptId = string;
 
 export type TreasuryInstructionId = string;
 
+export type TreasuryTransferId = string;
+
 export type TreasuryAllocationId = string;
 
 export type TreasuryReserveId = string;
