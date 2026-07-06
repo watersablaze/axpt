@@ -1,8 +1,8 @@
 import { randomUUID } from "node:crypto";
 
-import { runTreasuryExecutionReconciliationBatch } from "./runTreasuryExecutionReconciliationBatch";
+import { runDurableTreasuryReconciliationPass } from "../../reconciliation-passes/application/runDurableTreasuryReconciliationPass";
 
-import type { TreasuryExecutionReconciliationBatchResult } from "./runTreasuryExecutionReconciliationBatchContracts";
+import type { DurableTreasuryReconciliationPassResult } from "../../reconciliation-passes/application/runDurableTreasuryReconciliationPassContracts";
 
 export async function runTreasuryExecutionReconciliationPass(params: {
   limit: number;
@@ -10,14 +10,16 @@ export async function runTreasuryExecutionReconciliationPass(params: {
   actorId: string;
 
   authorityGrantId?: string;
-}): Promise<TreasuryExecutionReconciliationBatchResult> {
+}): Promise<DurableTreasuryReconciliationPassResult> {
   const { limit, actorId, authorityGrantId } = params;
 
   const passId = randomUUID();
 
   const requestedAt = new Date();
 
-  return runTreasuryExecutionReconciliationBatch({
+  return runDurableTreasuryReconciliationPass({
+    passId,
+
     limit,
 
     context: {

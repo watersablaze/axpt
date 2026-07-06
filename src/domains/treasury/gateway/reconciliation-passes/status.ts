@@ -1,0 +1,12 @@
+export const TREASURY_RECONCILIATION_PASS_STATUS = {
+  REQUESTED: "REQUESTED",
+
+  RUNNING: "RUNNING",
+
+  COMPLETED: "COMPLETED",
+
+  FAILED: "FAILED",
+} as const;
+
+export type TreasuryReconciliationPassStatus =
+  (typeof TREASURY_RECONCILIATION_PASS_STATUS)[keyof typeof TREASURY_RECONCILIATION_PASS_STATUS];
