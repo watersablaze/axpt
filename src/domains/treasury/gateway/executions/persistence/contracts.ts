@@ -1,5 +1,7 @@
 import type { TreasuryExecution } from "../contracts";
 
+import type { TreasuryExecutionAdapterKind } from "../routing/contracts";
+
 import type { TreasuryExecutionCreatedPayload } from "../events";
 
 import type { TreasuryEventEnvelope } from "../../events/eventEnvelope";
@@ -26,6 +28,24 @@ export type LoadedTreasuryExecutionAuthorizationEvidence = Readonly<{
   approvalIds: readonly string[];
 
   authorizedAt: Date;
+
+  eventId: string;
+
+  aggregateVersion: number;
+}>;
+
+export type LoadedTreasuryExecutionDispatchOwnershipEvidence = Readonly<{
+  handoffId: string;
+
+  adapterKind: TreasuryExecutionAdapterKind;
+
+  settlementEndpointId: string;
+
+  treasuryActionId: string;
+
+  treasuryQueueJobId: string;
+
+  queuedAt: Date;
 
   eventId: string;
 
