@@ -22,6 +22,10 @@ export type TransferAuthorityAssessmentId = string;
 
 export type TransferCapacityAssessmentId = string;
 
+export type TreasuryExecutionPlanId = string;
+
+export type ExecutableTrancheId = string;
+
 export type TreasuryAllocationId = string;
 
 export type TreasuryReserveId = string;
