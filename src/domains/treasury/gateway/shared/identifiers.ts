@@ -18,6 +18,8 @@ export type TreasuryInstructionId = string;
 
 export type TreasuryTransferId = string;
 
+export type TransferAuthorityAssessmentId = string;
+
 export type TreasuryAllocationId = string;
 
 export type TreasuryReserveId = string;
