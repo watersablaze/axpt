@@ -25,3 +25,7 @@ export type TreasuryTransferCreatedPayload = Readonly<{
 
   purpose: string;
 }>;
+
+export type TreasuryTransferAuthorityReviewStartedPayload = Readonly<{
+  transferId: TreasuryTransferId;
+}>;

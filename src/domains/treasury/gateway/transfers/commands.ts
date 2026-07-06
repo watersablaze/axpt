@@ -1,6 +1,7 @@
 import type {
   CommercialProgramId,
   TreasuryInstructionId,
+  TreasuryTransferId,
 } from "../shared/identifiers";
 
 import type { TreasuryCommand } from "../shared/commandContext";
@@ -23,4 +24,8 @@ export type CreateTreasuryTransfer = TreasuryCommand<{
   destinationCurrency: CurrencyCode;
 
   purpose: string;
+}>;
+
+export type BeginTreasuryTransferAuthorityReview = TreasuryCommand<{
+  transferId: TreasuryTransferId;
 }>;
