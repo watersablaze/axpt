@@ -157,7 +157,7 @@ const plan = recordTreasuryExecutionPlan({
 assert.equal(
   plan.aggregate.status,
 
-  TREASURY_EXECUTION_PLAN_STATUS.DRAFT,
+  TREASURY_EXECUTION_PLAN_STATUS.RECORDED,
 );
 
 assert.equal(

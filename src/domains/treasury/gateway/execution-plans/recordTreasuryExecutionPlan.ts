@@ -92,7 +92,7 @@ export function recordTreasuryExecutionPlan(params: {
 
     tranches,
 
-    status: TREASURY_EXECUTION_PLAN_STATUS.DRAFT,
+    status: TREASURY_EXECUTION_PLAN_STATUS.RECORDED,
 
     plannedByActorId: context.actorId,
 

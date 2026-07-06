@@ -1,5 +1,5 @@
 export const TREASURY_EXECUTION_PLAN_STATUS = {
-  DRAFT: "DRAFT",
+  RECORDED: "RECORDED",
 } as const;
 
 export type TreasuryExecutionPlanStatus =
