@@ -4,8 +4,10 @@ import type {
   SettlementEndpointId,
   TransferCapacityAssessmentId,
   TreasuryAllocationId,
+  TreasuryExecutionPlanId,
   TreasuryInstructionId,
   TreasuryTransferId,
+  ExecutableTrancheEligibilityAssessmentId,
 } from "../shared/identifiers";
 
 import type { TreasuryCommand } from "../shared/commandContext";
@@ -48,4 +50,10 @@ export type RecordTreasuryExecutionPlan = TreasuryCommand<{
   plannedAt: Date;
 
   notes?: string;
+}>;
+
+export type ApplyExecutableTrancheEligibilityAssessment = TreasuryCommand<{
+  planId: TreasuryExecutionPlanId;
+
+  assessmentId: ExecutableTrancheEligibilityAssessmentId;
 }>;

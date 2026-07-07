@@ -7,6 +7,12 @@ export type TreasuryExecutionPlanStatus =
 
 export const EXECUTABLE_TRANCHE_STATUS = {
   PLANNED: "PLANNED",
+
+  ELIGIBLE: "ELIGIBLE",
+
+  INELIGIBLE: "INELIGIBLE",
+
+  REQUIRES_CLARIFICATION: "REQUIRES_CLARIFICATION",
 } as const;
 
 export type ExecutableTrancheStatus =
