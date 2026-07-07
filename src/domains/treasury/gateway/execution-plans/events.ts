@@ -5,6 +5,7 @@ import type {
   TreasuryTransferId,
   ExecutableTrancheEligibilityAssessmentId,
   ExecutableTrancheId,
+  TreasuryExecutionId,
 } from "../shared/identifiers";
 
 import type { CurrencyCode, TreasuryMoney } from "../shared/money";
@@ -37,4 +38,12 @@ export type ExecutableTrancheEligibilityAppliedPayload = Readonly<{
   trancheId: ExecutableTrancheId;
 
   assessmentId: ExecutableTrancheEligibilityAssessmentId;
+}>;
+
+export type ExecutableTrancheBoundToExecutionPayload = Readonly<{
+  planId: TreasuryExecutionPlanId;
+
+  trancheId: ExecutableTrancheId;
+
+  executionId: TreasuryExecutionId;
 }>;

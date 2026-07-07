@@ -8,6 +8,7 @@ import type {
   TreasuryInstructionId,
   TreasuryTransferId,
   ExecutableTrancheEligibilityAssessmentId,
+  TreasuryExecutionId,
 } from "../shared/identifiers";
 
 import type { TreasuryCommand } from "../shared/commandContext";
@@ -56,4 +57,12 @@ export type ApplyExecutableTrancheEligibilityAssessment = TreasuryCommand<{
   planId: TreasuryExecutionPlanId;
 
   assessmentId: ExecutableTrancheEligibilityAssessmentId;
+}>;
+
+export type BindExecutableTrancheToTreasuryExecution = TreasuryCommand<{
+  planId: TreasuryExecutionPlanId;
+
+  trancheId: ExecutableTrancheId;
+
+  executionId: TreasuryExecutionId;
 }>;

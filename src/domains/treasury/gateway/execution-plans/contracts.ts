@@ -5,6 +5,7 @@ import type {
   TransferCapacityAssessmentId,
   TreasuryActorId,
   TreasuryAllocationId,
+  TreasuryExecutionId,
   TreasuryExecutionPlanId,
   TreasuryInstructionId,
   TreasuryTransferId,
@@ -41,6 +42,8 @@ export type ExecutableTranche = Readonly<{
   purpose: string;
 
   status: ExecutableTrancheStatus;
+
+  executionId?: TreasuryExecutionId;
 }>;
 
 export type TreasuryExecutionPlan = Readonly<{
