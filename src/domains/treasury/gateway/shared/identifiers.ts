@@ -26,6 +26,8 @@ export type TreasuryExecutionPlanId = string;
 
 export type ExecutableTrancheId = string;
 
+export type ExecutableTrancheEligibilityAssessmentId = string;
+
 export type TreasuryAllocationId = string;
 
 export type TreasuryReserveId = string;
