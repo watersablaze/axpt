@@ -1862,6 +1862,28 @@ model OpportunityEvent {
   @@index([createdAt])
 }
 
+model TreasuryGatewayCommandReceipt {
+  idempotencyKey String @id
+
+  commandId String @unique
+
+  commandKind String
+
+  aggregateType String
+  aggregateId   String
+
+  actorId       String
+  correlationId String
+
+  requestFingerprint String
+
+  createdAt DateTime @default(now())
+
+  @@index([aggregateType, aggregateId])
+  @@index([correlationId])
+  @@index([createdAt])
+}
+
 enum OpportunitySource {
   EMAIL
   WHATSAPP

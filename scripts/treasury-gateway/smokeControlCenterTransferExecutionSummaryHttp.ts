@@ -6,9 +6,15 @@ import { loadTransferExecutionSummaryHttp } from "../../src/domains/control-cent
 
 import type { TransferExecutionSummary } from "../../src/domains/treasury/gateway/transfer-execution-summary/contracts";
 
+import type { TransferExecutionPerception } from "../../src/domains/treasury/gateway/transfer-execution-summary/perceptionContracts";
+
+import type { TreasuryTransfer } from "../../src/domains/treasury/gateway/transfers/contracts";
+
 const prisma = new PrismaClient();
 
-const summary: TransferExecutionSummary = {
+const lastUpdatedAt = new Date("2026-08-08T10:30:00.000Z");
+
+const plannedSummary: TransferExecutionSummary = {
   transferId: "control-center-http-transfer-001",
 
   transferStatus: "PLANNED",
@@ -93,7 +99,51 @@ const summary: TransferExecutionSummary = {
     },
   },
 
-  lastUpdatedAt: new Date("2026-08-08T10:30:00.000Z"),
+  lastUpdatedAt,
+};
+
+const newbornTransfer: TreasuryTransfer = {
+  id: "control-center-http-newborn-transfer-001",
+
+  reference: "AXPT-NEWBORN-TRANSFER-001",
+
+  programId: "control-center-http-program-001",
+
+  source: {
+    kind: "PROGRAM_ACCOUNT",
+
+    programAccountId: "control-center-http-program-account-001",
+  },
+
+  destination: {
+    kind: "SETTLEMENT_ENDPOINT",
+
+    settlementEndpointId: "control-center-http-settlement-endpoint-001",
+  },
+
+  requestedAmount: {
+    amount: "250000.00",
+
+    currency: "USD",
+  },
+
+  destinationCurrency: "USD",
+
+  purpose: "Pre-execution Treasury perception smoke",
+
+  status: "CREATED",
+
+  metadata: {
+    createdAt: new Date("2026-08-19T09:59:18.000Z"),
+
+    updatedAt: new Date("2026-08-19T09:59:18.000Z"),
+
+    createdByActorId: "control-center-http-operator-001",
+
+    lastModifiedByActorId: "control-center-http-operator-001",
+
+    version: 1,
+  },
 };
 
 async function main(): Promise<void> {
@@ -104,10 +154,14 @@ async function main(): Promise<void> {
 
     prisma,
 
-    loadSummary: async () => {
+    loadPerception: async () => {
       blankLoaderCalled = true;
 
-      return summary;
+      return {
+        kind: "PRE_EXECUTION",
+
+        transfer: newbornTransfer,
+      };
     },
   });
 
@@ -128,7 +182,7 @@ async function main(): Promise<void> {
 
     prisma,
 
-    loadSummary: async ({
+    loadPerception: async ({
       transferId,
     }: {
       transferId: string;
@@ -151,54 +205,132 @@ async function main(): Promise<void> {
 
   assert.equal(missingReceivedTransferId, "control-center-http-missing");
 
-  let successReceivedTransferId: string | null = null;
+  let preExecutionReceivedTransferId: string | null = null;
 
-  const successResult = await loadTransferExecutionSummaryHttp({
-    rawTransferId: "  control-center-http-transfer-001  ",
+  const preExecutionResult = await loadTransferExecutionSummaryHttp({
+    rawTransferId: "  control-center-http-newborn-transfer-001  ",
 
     prisma,
 
-    loadSummary: async ({
+    loadPerception: async ({
       transferId,
     }: {
       transferId: string;
 
       client: TransactionClient;
-    }) => {
-      successReceivedTransferId = transferId;
+    }): Promise<TransferExecutionPerception> => {
+      preExecutionReceivedTransferId = transferId;
 
-      return summary;
+      return {
+        kind: "PRE_EXECUTION",
+
+        transfer: newbornTransfer,
+      };
     },
   });
 
-  assert.equal(successResult.status, 200);
+  assert.equal(preExecutionResult.status, 200);
 
-  assert.equal(successResult.body.ok, true);
+  assert.equal(preExecutionResult.body.ok, true);
 
-  if (!successResult.body.ok) {
-    throw new Error("[CONTROL_CENTER_HTTP_SUCCESS_BODY_EXPECTED]");
+  if (!preExecutionResult.body.ok) {
+    throw new Error("[CONTROL_CENTER_PRE_EXECUTION_BODY_EXPECTED]");
   }
 
-  assert.equal(successReceivedTransferId, summary.transferId);
+  assert.equal(preExecutionReceivedTransferId, newbornTransfer.id);
 
-  assert.equal(successResult.body.summary.transferId, summary.transferId);
+  assert.equal(preExecutionResult.body.perception.kind, "PRE_EXECUTION");
+
+  if (preExecutionResult.body.perception.kind !== "PRE_EXECUTION") {
+    throw new Error("[CONTROL_CENTER_PRE_EXECUTION_PERCEPTION_EXPECTED]");
+  }
 
   assert.equal(
-    successResult.body.summary.transferStatus,
-    summary.transferStatus,
+    preExecutionResult.body.perception.transfer.id,
+    newbornTransfer.id,
   );
 
-  assert.equal(successResult.body.summary.planId, summary.planId);
+  assert.equal(preExecutionResult.body.perception.transfer.status, "CREATED");
 
-  assert.deepEqual(successResult.body.summary.amounts, summary.amounts);
+  assert.equal(preExecutionResult.body.perception.transfer.version, 1);
 
   assert.equal(
-    successResult.body.summary.lastUpdatedAt,
-    summary.lastUpdatedAt.toISOString(),
+    preExecutionResult.body.perception.transfer.programId,
+    newbornTransfer.programId,
+  );
+
+  assert.deepEqual(
+    preExecutionResult.body.perception.transfer.requestedAmount,
+    newbornTransfer.requestedAmount,
+  );
+
+  let summaryReceivedTransferId: string | null = null;
+
+  const summaryResult = await loadTransferExecutionSummaryHttp({
+    rawTransferId: "  control-center-http-transfer-001  ",
+
+    prisma,
+
+    loadPerception: async ({
+      transferId,
+    }: {
+      transferId: string;
+
+      client: TransactionClient;
+    }): Promise<TransferExecutionPerception> => {
+      summaryReceivedTransferId = transferId;
+
+      return {
+        kind: "EXECUTION_SUMMARY",
+
+        summary: plannedSummary,
+      };
+    },
+  });
+
+  assert.equal(summaryResult.status, 200);
+
+  assert.equal(summaryResult.body.ok, true);
+
+  if (!summaryResult.body.ok) {
+    throw new Error("[CONTROL_CENTER_EXECUTION_SUMMARY_BODY_EXPECTED]");
+  }
+
+  assert.equal(summaryReceivedTransferId, plannedSummary.transferId);
+
+  assert.equal(summaryResult.body.perception.kind, "EXECUTION_SUMMARY");
+
+  if (summaryResult.body.perception.kind !== "EXECUTION_SUMMARY") {
+    throw new Error("[CONTROL_CENTER_EXECUTION_SUMMARY_PERCEPTION_EXPECTED]");
+  }
+
+  assert.equal(
+    summaryResult.body.perception.summary.transferId,
+    plannedSummary.transferId,
+  );
+
+  assert.equal(
+    summaryResult.body.perception.summary.transferStatus,
+    plannedSummary.transferStatus,
+  );
+
+  assert.equal(
+    summaryResult.body.perception.summary.planId,
+    plannedSummary.planId,
+  );
+
+  assert.deepEqual(
+    summaryResult.body.perception.summary.amounts,
+    plannedSummary.amounts,
+  );
+
+  assert.equal(
+    summaryResult.body.perception.summary.lastUpdatedAt,
+    plannedSummary.lastUpdatedAt.toISOString(),
   );
 
   console.log(
-    "✓ Control Center Transfer Execution Summary HTTP boundary smoke test passed",
+    "✓ Control Center Treasury Transfer execution perception HTTP smoke test passed",
   );
 
   console.log({
@@ -211,14 +343,28 @@ async function main(): Promise<void> {
         status: missingResult.status,
       },
 
-      validTransfer: {
-        status: successResult.status,
+      preExecutionTransfer: {
+        status: preExecutionResult.status,
 
-        transferId: successResult.body.summary.transferId,
+        kind: preExecutionResult.body.ok
+          ? preExecutionResult.body.perception.kind
+          : null,
 
-        transferStatus: successResult.body.summary.transferStatus,
+        transferId: newbornTransfer.id,
 
-        planId: successResult.body.summary.planId,
+        transferStatus: newbornTransfer.status,
+      },
+
+      executionSummary: {
+        status: summaryResult.status,
+
+        kind: summaryResult.body.ok ? summaryResult.body.perception.kind : null,
+
+        transferId: plannedSummary.transferId,
+
+        transferStatus: plannedSummary.transferStatus,
+
+        planId: plannedSummary.planId,
       },
     },
 
@@ -229,11 +375,15 @@ async function main(): Promise<void> {
 
       missingTransferReturns404: true,
 
-      validTransferReturns200: true,
+      newbornTransferReturnsPreExecution: true,
 
-      gatewayProjectionSerialized: true,
+      preExecutionIsNotRepresentedAsFailure: true,
 
-      transportDateSerialized: true,
+      plannedTransferReturnsExecutionSummary: true,
+
+      gatewayPerceptionSerialized: true,
+
+      transportDatesSerialized: true,
 
       treasuryReadBoundaryRemainsReadOnly: true,
     },

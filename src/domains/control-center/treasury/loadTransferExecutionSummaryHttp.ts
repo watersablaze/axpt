@@ -1,27 +1,29 @@
 import type { PrismaClient, TransactionClient } from "@prisma/client";
 
-import type { TransferExecutionSummary } from "../../treasury/gateway/transfer-execution-summary/contracts";
-
 import type { TreasuryTransferId } from "../../treasury/gateway/shared/identifiers";
 
-import { loadTransferExecutionSummaryWithClient } from "../../treasury/gateway/transfer-execution-summary/application/loadTransferExecutionSummaryWithClient";
+import { loadTransferExecutionPerceptionWithClient } from "../../treasury/gateway/transfer-execution-summary/application/loadTransferExecutionPerceptionWithClient";
 
-import { toControlCenterTransferExecutionSummary } from "./transferExecutionSummary";
+import type { TransferExecutionPerception } from "../../treasury/gateway/transfer-execution-summary/perceptionContracts";
 
-type LoadTransferExecutionSummary = (params: {
+import { toControlCenterTransferExecutionPerception } from "./transferExecutionPerception";
+
+type LoadTransferExecutionPerception = (params: {
   transferId: TreasuryTransferId;
 
   client: TransactionClient;
-}) => Promise<TransferExecutionSummary | null>;
+}) => Promise<TransferExecutionPerception | null>;
 
-export type ControlCenterTransferExecutionSummaryHttpResult =
+export type ControlCenterTransferExecutionHttpResult =
   | Readonly<{
       status: 200;
 
       body: Readonly<{
         ok: true;
 
-        summary: ReturnType<typeof toControlCenterTransferExecutionSummary>;
+        perception: ReturnType<
+          typeof toControlCenterTransferExecutionPerception
+        >;
       }>;
     }>
   | Readonly<{
@@ -48,12 +50,12 @@ export async function loadTransferExecutionSummaryHttp(params: {
 
   prisma: PrismaClient;
 
-  loadSummary?: LoadTransferExecutionSummary;
-}): Promise<ControlCenterTransferExecutionSummaryHttpResult> {
+  loadPerception?: LoadTransferExecutionPerception;
+}): Promise<ControlCenterTransferExecutionHttpResult> {
   const {
     rawTransferId,
     prisma,
-    loadSummary = loadTransferExecutionSummaryWithClient,
+    loadPerception = loadTransferExecutionPerceptionWithClient,
   } = params;
 
   const transferId = rawTransferId.trim();
@@ -70,15 +72,15 @@ export async function loadTransferExecutionSummaryHttp(params: {
     };
   }
 
-  const summary = await prisma.$transaction((tx: TransactionClient) =>
-    loadSummary({
+  const perception = await prisma.$transaction((tx: TransactionClient) =>
+    loadPerception({
       transferId,
 
       client: tx,
     }),
   );
 
-  if (!summary) {
+  if (!perception) {
     return {
       status: 404,
 
@@ -96,7 +98,7 @@ export async function loadTransferExecutionSummaryHttp(params: {
     body: {
       ok: true,
 
-      summary: toControlCenterTransferExecutionSummary(summary),
+      perception: toControlCenterTransferExecutionPerception(perception),
     },
   };
 }

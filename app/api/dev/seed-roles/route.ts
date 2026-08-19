@@ -95,6 +95,7 @@ export async function POST() {
 
         const treasuryPermissionKeys = [
           PERMISSIONS.TREASURY_READ,
+          PERMISSIONS.TREASURY_ORIGINATE,
           PERMISSIONS.TREASURY_APPROVE,
           PERMISSIONS.TREASURY_EXECUTE,
           PERMISSIONS.TREASURY_QUEUE_PROCESS,
