@@ -100,6 +100,32 @@ type PerceptionResponse =
       error: string;
     }>;
 
+type AuthorityReviewResponse =
+  | Readonly<{
+      ok: true;
+
+      disposition: "STARTED" | "REPLAYED";
+
+      transfer: Readonly<{
+        id: string;
+
+        reference: string;
+
+        status: string;
+
+        version: number;
+
+        programId: string;
+
+        updatedAt: string;
+      }>;
+    }>
+  | Readonly<{
+      ok: false;
+
+      error: string;
+    }>;
+
 function formatMoney(money: Money): string {
   const numericAmount = Number(money.amount);
 
@@ -129,6 +155,47 @@ export default function TransferExecutionSummaryPanel() {
 
   const [error, setError] = useState<string | null>(null);
 
+  const [reviewLoading, setReviewLoading] = useState(false);
+
+  const [reviewError, setReviewError] = useState<string | null>(null);
+
+  const [reviewIdempotencyKey, setReviewIdempotencyKey] = useState<
+    string | null
+  >(null);
+
+  async function loadPerception(
+    normalizedTransferId: string,
+  ): Promise<boolean> {
+    const response = await fetch(
+      `/api/admin/control-center/treasury/transfers/${encodeURIComponent(
+        normalizedTransferId,
+      )}/execution-summary`,
+      {
+        cache: "no-store",
+
+        credentials: "include",
+      },
+    );
+
+    const payload = (await response.json()) as PerceptionResponse;
+
+    if (!response.ok || !payload.ok) {
+      setPerception(null);
+
+      setError(
+        payload.ok ? "Treasury perception could not be loaded." : payload.error,
+      );
+
+      return false;
+    }
+
+    setPerception(payload.perception);
+
+    setError(null);
+
+    return true;
+  }
+
   async function observeTransfer(
     event: FormEvent<HTMLFormElement>,
   ): Promise<void> {
@@ -148,33 +215,12 @@ export default function TransferExecutionSummaryPanel() {
 
     setError(null);
 
+    setReviewError(null);
+
+    setReviewIdempotencyKey(null);
+
     try {
-      const response = await fetch(
-        `/api/admin/control-center/treasury/transfers/${encodeURIComponent(
-          normalizedTransferId,
-        )}/execution-summary`,
-        {
-          cache: "no-store",
-
-          credentials: "include",
-        },
-      );
-
-      const payload = (await response.json()) as PerceptionResponse;
-
-      if (!response.ok || !payload.ok) {
-        setPerception(null);
-
-        setError(
-          payload.ok
-            ? "Treasury perception could not be loaded."
-            : payload.error,
-        );
-
-        return;
-      }
-
-      setPerception(payload.perception);
+      await loadPerception(normalizedTransferId);
     } catch (cause: unknown) {
       console.error("[CONTROL_CENTER_TREASURY_PERCEPTION_LOAD_FAILED]", cause);
 
@@ -183,6 +229,75 @@ export default function TransferExecutionSummaryPanel() {
       setError("Treasury perception could not be loaded.");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function beginAuthorityReview(): Promise<void> {
+    if (!preExecution || preExecution.status !== "CREATED") {
+      return;
+    }
+
+    const requestKey = reviewIdempotencyKey ?? crypto.randomUUID();
+
+    if (!reviewIdempotencyKey) {
+      setReviewIdempotencyKey(requestKey);
+    }
+
+    setReviewLoading(true);
+
+    setReviewError(null);
+
+    try {
+      const response = await fetch(
+        `/api/admin/control-center/treasury/transfers/${encodeURIComponent(
+          preExecution.id,
+        )}/authority-review`,
+        {
+          method: "POST",
+
+          cache: "no-store",
+
+          credentials: "include",
+
+          headers: {
+            "Idempotency-Key": requestKey,
+          },
+        },
+      );
+
+      const payload = (await response.json()) as AuthorityReviewResponse;
+
+      if (!response.ok || !payload.ok) {
+        setReviewError(
+          payload.ok
+            ? "Treasury authority review could not be started."
+            : payload.error,
+        );
+
+        return;
+      }
+
+      /*
+       * Re-enter Treasury through the read boundary after the write.
+       * The Control Center does not manufacture the resulting posture.
+       */
+      const refreshed = await loadPerception(preExecution.id);
+
+      if (refreshed) {
+        setReviewIdempotencyKey(null);
+      }
+    } catch (cause: unknown) {
+      console.error("[CONTROL_CENTER_TREASURY_AUTHORITY_REVIEW_FAILED]", cause);
+
+      /*
+       * Preserve the key. Treasury may already have accepted the
+       * transition even if the browser did not receive confirmation.
+       */
+      setReviewError(
+        "The authority-review response could not be confirmed. Retry the unchanged request to safely resolve its outcome.",
+      );
+    } finally {
+      setReviewLoading(false);
     }
   }
 
@@ -236,6 +351,12 @@ export default function TransferExecutionSummaryPanel() {
       {error ? (
         <div className="mt-4 rounded border border-orange-950 bg-orange-950/10 p-3 text-xs text-orange-300">
           {error}
+        </div>
+      ) : null}
+
+      {reviewError ? (
+        <div className="mt-4 rounded border border-orange-950 bg-orange-950/10 p-3 text-xs leading-5 text-orange-300">
+          {reviewError}
         </div>
       ) : null}
 
@@ -297,6 +418,30 @@ export default function TransferExecutionSummaryPanel() {
 
                 <span className="text-neutral-300">PRE_EXECUTION</span>
               </div>
+
+              {preExecution.status === "CREATED" ? (
+                <div className="mt-4 border-t border-neutral-800 pt-4">
+                  <div className="text-[10px] uppercase tracking-[0.16em] text-neutral-600">
+                    Lifecycle Action
+                  </div>
+
+                  <p className="mt-2 text-xs leading-5 text-neutral-500">
+                    Admit this Transfer into formal Treasury authority review.
+                    This does not authorize, plan, or execute the Transfer.
+                  </p>
+
+                  <button
+                    type="button"
+                    disabled={reviewLoading}
+                    onClick={beginAuthorityReview}
+                    className="mt-3 rounded border border-cyan-950 bg-cyan-950/20 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-cyan-300 hover:border-cyan-800 hover:bg-cyan-950/30 disabled:cursor-wait disabled:opacity-50"
+                  >
+                    {reviewLoading
+                      ? "Beginning Review"
+                      : "Begin Authority Review"}
+                  </button>
+                </div>
+              ) : null}
             </article>
           </div>
 
