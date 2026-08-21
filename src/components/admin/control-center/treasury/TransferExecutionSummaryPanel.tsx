@@ -126,6 +126,80 @@ type AuthorityReviewResponse =
       error: string;
     }>;
 
+type RecordedAuthorityAssessment = Readonly<{
+  id: string;
+
+  transferId: string;
+
+  result: string;
+
+  instructionId?: string;
+
+  authorityGrantId?: string;
+
+  evidenceArtifactIds: readonly string[];
+
+  assessedByActorId: string;
+
+  assessedAt: string;
+
+  notes?: string;
+
+  version: number;
+
+  createdAt: string;
+}>;
+
+type RecordAuthorityAssessmentResponse =
+  | Readonly<{
+      ok: true;
+
+      disposition: "RECORDED" | "REPLAYED";
+
+      assessment: RecordedAuthorityAssessment;
+    }>
+  | Readonly<{
+      ok: false;
+
+      error: string;
+    }>;
+
+type ApplyAuthorityAssessmentResponse =
+  | Readonly<{
+      ok: true;
+
+      disposition: "APPLIED" | "REPLAYED";
+
+      transfer: Readonly<{
+        id: string;
+
+        reference: string;
+
+        status: string;
+
+        version: number;
+
+        programId: string;
+
+        updatedAt: string;
+      }>;
+
+      assessmentId: string;
+    }>
+  | Readonly<{
+      ok: false;
+
+      error: string;
+    }>;
+
+const AUTHORITY_ASSESSMENT_RESULTS = [
+  "AUTHORIZED",
+  "REQUIRES_CLARIFICATION",
+  "NOT_AUTHORIZED",
+] as const;
+
+type AuthorityAssessmentResult = (typeof AUTHORITY_ASSESSMENT_RESULTS)[number];
+
 function formatMoney(money: Money): string {
   const numericAmount = Number(money.amount);
 
@@ -160,6 +234,37 @@ export default function TransferExecutionSummaryPanel() {
   const [reviewError, setReviewError] = useState<string | null>(null);
 
   const [reviewIdempotencyKey, setReviewIdempotencyKey] = useState<
+    string | null
+  >(null);
+
+  const [assessmentResult, setAssessmentResult] =
+    useState<AuthorityAssessmentResult>("AUTHORIZED");
+
+  const [assessmentInstructionId, setAssessmentInstructionId] = useState("");
+
+  const [assessmentAuthorityGrantId, setAssessmentAuthorityGrantId] =
+    useState("");
+
+  const [assessmentEvidenceIds, setAssessmentEvidenceIds] = useState("");
+
+  const [assessmentNotes, setAssessmentNotes] = useState("");
+
+  const [recordedAssessment, setRecordedAssessment] =
+    useState<RecordedAuthorityAssessment | null>(null);
+
+  const [assessmentLoading, setAssessmentLoading] = useState(false);
+
+  const [assessmentError, setAssessmentError] = useState<string | null>(null);
+
+  const [assessmentIdempotencyKey, setAssessmentIdempotencyKey] = useState<
+    string | null
+  >(null);
+
+  const [applicationLoading, setApplicationLoading] = useState(false);
+
+  const [applicationError, setApplicationError] = useState<string | null>(null);
+
+  const [applicationIdempotencyKey, setApplicationIdempotencyKey] = useState<
     string | null
   >(null);
 
@@ -218,6 +323,16 @@ export default function TransferExecutionSummaryPanel() {
     setReviewError(null);
 
     setReviewIdempotencyKey(null);
+
+    setRecordedAssessment(null);
+
+    setAssessmentError(null);
+
+    setAssessmentIdempotencyKey(null);
+
+    setApplicationError(null);
+
+    setApplicationIdempotencyKey(null);
 
     try {
       await loadPerception(normalizedTransferId);
@@ -298,6 +413,189 @@ export default function TransferExecutionSummaryPanel() {
       );
     } finally {
       setReviewLoading(false);
+    }
+  }
+
+  async function recordAuthorityAssessment(): Promise<void> {
+    if (!preExecution || preExecution.status !== "AUTHORITY_REVIEW") {
+      return;
+    }
+
+    const evidenceArtifactIds = assessmentEvidenceIds
+      .split(/\r?\n|,/)
+      .map((value) => value.trim())
+      .filter((value) => value.length > 0);
+
+    if (evidenceArtifactIds.length === 0) {
+      setAssessmentError("Enter at least one evidence artifact ID.");
+
+      return;
+    }
+
+    const requestKey = assessmentIdempotencyKey ?? crypto.randomUUID();
+
+    if (!assessmentIdempotencyKey) {
+      setAssessmentIdempotencyKey(requestKey);
+    }
+
+    const assessedAt = new Date().toISOString();
+
+    setAssessmentLoading(true);
+
+    setAssessmentError(null);
+
+    try {
+      const response = await fetch(
+        `/api/admin/control-center/treasury/transfers/${encodeURIComponent(
+          preExecution.id,
+        )}/authority-assessments`,
+        {
+          method: "POST",
+
+          cache: "no-store",
+
+          credentials: "include",
+
+          headers: {
+            "Content-Type": "application/json",
+
+            "Idempotency-Key": requestKey,
+          },
+
+          body: JSON.stringify({
+            result: assessmentResult,
+
+            instructionId: assessmentInstructionId.trim() || undefined,
+
+            authorityGrantId: assessmentAuthorityGrantId.trim() || undefined,
+
+            evidenceArtifactIds,
+
+            assessedAt,
+
+            notes: assessmentNotes.trim() || undefined,
+          }),
+        },
+      );
+
+      const payload =
+        (await response.json()) as RecordAuthorityAssessmentResponse;
+
+      if (!response.ok || !payload.ok) {
+        setAssessmentError(
+          payload.ok
+            ? "Treasury authority assessment could not be recorded."
+            : payload.error,
+        );
+
+        return;
+      }
+
+      setRecordedAssessment(payload.assessment);
+
+      setAssessmentIdempotencyKey(null);
+
+      setApplicationError(null);
+
+      setApplicationIdempotencyKey(null);
+    } catch (cause: unknown) {
+      console.error(
+        "[CONTROL_CENTER_TREASURY_AUTHORITY_ASSESSMENT_RECORD_FAILED]",
+        cause,
+      );
+
+      /*
+       * Preserve the idempotency key. Treasury may already have
+       * recorded the finding even if the browser lost confirmation.
+       */
+      setAssessmentError(
+        "The authority-assessment response could not be confirmed. Retry the unchanged finding to safely resolve its outcome.",
+      );
+    } finally {
+      setAssessmentLoading(false);
+    }
+  }
+
+  async function applyRecordedAuthorityAssessment(): Promise<void> {
+    if (!preExecution || !recordedAssessment) {
+      return;
+    }
+
+    if (recordedAssessment.transferId !== preExecution.id) {
+      setApplicationError(
+        "The recorded assessment does not belong to the observed Treasury Transfer.",
+      );
+
+      return;
+    }
+
+    const requestKey = applicationIdempotencyKey ?? crypto.randomUUID();
+
+    if (!applicationIdempotencyKey) {
+      setApplicationIdempotencyKey(requestKey);
+    }
+
+    setApplicationLoading(true);
+
+    setApplicationError(null);
+
+    try {
+      const response = await fetch(
+        `/api/admin/control-center/treasury/transfers/${encodeURIComponent(
+          preExecution.id,
+        )}/authority-assessments/${encodeURIComponent(
+          recordedAssessment.id,
+        )}/apply`,
+        {
+          method: "POST",
+
+          cache: "no-store",
+
+          credentials: "include",
+
+          headers: {
+            "Idempotency-Key": requestKey,
+          },
+        },
+      );
+
+      const payload =
+        (await response.json()) as ApplyAuthorityAssessmentResponse;
+
+      if (!response.ok || !payload.ok) {
+        setApplicationError(
+          payload.ok
+            ? "The recorded authority assessment could not be applied."
+            : payload.error,
+        );
+
+        return;
+      }
+
+      /*
+       * Re-enter Treasury through the read boundary after the write.
+       * The Control Center does not manufacture the resulting posture.
+       */
+      const refreshed = await loadPerception(preExecution.id);
+
+      if (refreshed) {
+        setApplicationIdempotencyKey(null);
+      }
+    } catch (cause: unknown) {
+      console.error(
+        "[CONTROL_CENTER_TREASURY_AUTHORITY_ASSESSMENT_APPLY_FAILED]",
+        cause,
+      );
+
+      /*
+       * Preserve the idempotency key. Treasury may already have
+       * applied the finding even if the browser lost confirmation.
+       */
+      setApplicationError(
+        "The authority-assessment application response could not be confirmed. Retry the unchanged application to safely resolve its outcome.",
+      );
+    } finally {
+      setApplicationLoading(false);
     }
   }
 
@@ -444,6 +742,278 @@ export default function TransferExecutionSummaryPanel() {
               ) : null}
             </article>
           </div>
+
+          {preExecution.status === "AUTHORITY_REVIEW" ? (
+            <section className="rounded-lg border border-neutral-800 bg-black/20 p-4">
+              <div className="flex flex-col gap-2 border-b border-neutral-800 pb-4 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-600">
+                    Decision Chamber
+                  </div>
+
+                  <h2 className="mt-1 text-base font-medium text-white">
+                    Authority Assessment
+                  </h2>
+
+                  <p className="mt-2 max-w-2xl text-xs leading-5 text-neutral-500">
+                    Record an authority finding against the canonical Treasury
+                    Transfer. Recording the finding does not itself authorize,
+                    reject, or otherwise alter the Transfer posture.
+                  </p>
+                </div>
+
+                <div className="rounded border border-cyan-950 bg-cyan-950/10 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-cyan-300">
+                  Authority Review
+                </div>
+              </div>
+
+              {!recordedAssessment ? (
+                <div className="mt-4 space-y-4">
+                  <div className="grid gap-4 lg:grid-cols-2">
+                    <label className="block">
+                      <span className="text-[10px] uppercase tracking-wide text-neutral-600">
+                        Finding
+                      </span>
+
+                      <select
+                        value={assessmentResult}
+                        onChange={(event) =>
+                          setAssessmentResult(
+                            event.target.value as AuthorityAssessmentResult,
+                          )
+                        }
+                        disabled={assessmentLoading}
+                        className="mt-2 w-full rounded border border-neutral-800 bg-black/40 px-3 py-2 text-xs text-neutral-200 outline-none focus:border-cyan-900 disabled:opacity-50"
+                      >
+                        <option value="AUTHORIZED">Authorized</option>
+
+                        <option value="REQUIRES_CLARIFICATION">
+                          Requires Clarification
+                        </option>
+
+                        <option value="NOT_AUTHORIZED">Not Authorized</option>
+                      </select>
+                    </label>
+
+                    <label className="block">
+                      <span className="text-[10px] uppercase tracking-wide text-neutral-600">
+                        Instruction ID
+                      </span>
+
+                      <input
+                        value={assessmentInstructionId}
+                        onChange={(event) =>
+                          setAssessmentInstructionId(event.target.value)
+                        }
+                        disabled={assessmentLoading}
+                        placeholder="Optional"
+                        className="mt-2 w-full rounded border border-neutral-800 bg-black/40 px-3 py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-700 focus:border-cyan-900 disabled:opacity-50"
+                      />
+                    </label>
+
+                    <label className="block">
+                      <span className="text-[10px] uppercase tracking-wide text-neutral-600">
+                        Authority Grant ID
+                      </span>
+
+                      <input
+                        value={assessmentAuthorityGrantId}
+                        onChange={(event) =>
+                          setAssessmentAuthorityGrantId(event.target.value)
+                        }
+                        disabled={assessmentLoading}
+                        placeholder="Optional"
+                        className="mt-2 w-full rounded border border-neutral-800 bg-black/40 px-3 py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-700 focus:border-cyan-900 disabled:opacity-50"
+                      />
+                    </label>
+
+                    <label className="block">
+                      <span className="text-[10px] uppercase tracking-wide text-neutral-600">
+                        Evidence Artifact IDs
+                      </span>
+
+                      <textarea
+                        value={assessmentEvidenceIds}
+                        onChange={(event) =>
+                          setAssessmentEvidenceIds(event.target.value)
+                        }
+                        disabled={assessmentLoading}
+                        rows={4}
+                        placeholder={
+                          "One artifact ID per line, or separate with commas."
+                        }
+                        className="mt-2 w-full resize-y rounded border border-neutral-800 bg-black/40 px-3 py-2 text-xs leading-5 text-neutral-200 outline-none placeholder:text-neutral-700 focus:border-cyan-900 disabled:opacity-50"
+                      />
+                    </label>
+                  </div>
+
+                  <label className="block">
+                    <span className="text-[10px] uppercase tracking-wide text-neutral-600">
+                      Assessment Notes
+                    </span>
+
+                    <textarea
+                      value={assessmentNotes}
+                      onChange={(event) =>
+                        setAssessmentNotes(event.target.value)
+                      }
+                      disabled={assessmentLoading}
+                      rows={4}
+                      placeholder="Optional assessment context or documentary observations."
+                      className="mt-2 w-full resize-y rounded border border-neutral-800 bg-black/40 px-3 py-2 text-xs leading-5 text-neutral-200 outline-none placeholder:text-neutral-700 focus:border-cyan-900 disabled:opacity-50"
+                    />
+                  </label>
+
+                  {assessmentError ? (
+                    <div className="rounded border border-orange-950 bg-orange-950/10 p-3 text-xs leading-5 text-orange-300">
+                      {assessmentError}
+                    </div>
+                  ) : null}
+
+                  <div className="flex flex-col gap-3 border-t border-neutral-800 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="max-w-xl text-[11px] leading-5 text-neutral-600">
+                      The authenticated operator becomes the recorded assessor.
+                      Evidence is required. Assessment time is established when
+                      this finding is submitted.
+                    </p>
+
+                    <button
+                      type="button"
+                      disabled={assessmentLoading}
+                      onClick={recordAuthorityAssessment}
+                      className="shrink-0 rounded border border-cyan-950 bg-cyan-950/20 px-4 py-2 text-[10px] uppercase tracking-[0.14em] text-cyan-300 hover:border-cyan-800 hover:bg-cyan-950/30 disabled:cursor-wait disabled:opacity-50"
+                    >
+                      {assessmentLoading
+                        ? "Recording Assessment"
+                        : "Record Assessment"}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-4 space-y-4">
+                  <div className="rounded-lg border border-neutral-800 bg-black/30 p-4">
+                    <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                      <div>
+                        <div className="text-[10px] uppercase tracking-[0.16em] text-neutral-600">
+                          Recorded Finding
+                        </div>
+
+                        <div className="mt-2 break-all text-sm text-white">
+                          {recordedAssessment.id}
+                        </div>
+                      </div>
+
+                      <div className="rounded border border-neutral-800 bg-black/40 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-cyan-300">
+                        {recordedAssessment.result.replaceAll("_", " ")}
+                      </div>
+                    </div>
+
+                    <dl className="mt-4 grid gap-3 text-xs md:grid-cols-2">
+                      <div>
+                        <dt className="text-neutral-600">Assessor</dt>
+
+                        <dd className="mt-1 break-all text-neutral-300">
+                          {recordedAssessment.assessedByActorId}
+                        </dd>
+                      </div>
+
+                      <div>
+                        <dt className="text-neutral-600">Assessed At</dt>
+
+                        <dd className="mt-1 text-neutral-300">
+                          {new Date(
+                            recordedAssessment.assessedAt,
+                          ).toLocaleString()}
+                        </dd>
+                      </div>
+
+                      {recordedAssessment.instructionId ? (
+                        <div>
+                          <dt className="text-neutral-600">Instruction</dt>
+
+                          <dd className="mt-1 break-all text-neutral-300">
+                            {recordedAssessment.instructionId}
+                          </dd>
+                        </div>
+                      ) : null}
+
+                      {recordedAssessment.authorityGrantId ? (
+                        <div>
+                          <dt className="text-neutral-600">Authority Grant</dt>
+
+                          <dd className="mt-1 break-all text-neutral-300">
+                            {recordedAssessment.authorityGrantId}
+                          </dd>
+                        </div>
+                      ) : null}
+                    </dl>
+
+                    <div className="mt-4">
+                      <div className="text-[10px] uppercase tracking-wide text-neutral-600">
+                        Evidence
+                      </div>
+
+                      <ul className="mt-2 space-y-1">
+                        {recordedAssessment.evidenceArtifactIds.map(
+                          (artifactId) => (
+                            <li
+                              key={artifactId}
+                              className="break-all text-xs text-neutral-300"
+                            >
+                              {artifactId}
+                            </li>
+                          ),
+                        )}
+                      </ul>
+                    </div>
+
+                    {recordedAssessment.notes ? (
+                      <div className="mt-4 border-t border-neutral-800 pt-4">
+                        <div className="text-[10px] uppercase tracking-wide text-neutral-600">
+                          Notes
+                        </div>
+
+                        <p className="mt-2 whitespace-pre-wrap text-xs leading-5 text-neutral-300">
+                          {recordedAssessment.notes}
+                        </p>
+                      </div>
+                    ) : null}
+                  </div>
+
+                  {applicationError ? (
+                    <div className="rounded border border-orange-950 bg-orange-950/10 p-3 text-xs leading-5 text-orange-300">
+                      {applicationError}
+                    </div>
+                  ) : null}
+
+                  <div className="flex flex-col gap-3 border-t border-neutral-800 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                      <div className="text-[10px] uppercase tracking-[0.16em] text-neutral-600">
+                        Operative Disposition
+                      </div>
+
+                      <p className="mt-2 max-w-xl text-xs leading-5 text-neutral-500">
+                        Apply this recorded assessment to the Treasury Transfer.
+                        Treasury will load the canonical finding and determine
+                        the resulting Transfer posture.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={applicationLoading}
+                      onClick={applyRecordedAuthorityAssessment}
+                      className="shrink-0 rounded border border-neutral-700 bg-black/30 px-4 py-2 text-[10px] uppercase tracking-[0.14em] text-neutral-200 hover:border-cyan-800 hover:text-cyan-300 disabled:cursor-wait disabled:opacity-50"
+                    >
+                      {applicationLoading
+                        ? "Applying Assessment"
+                        : "Apply Recorded Assessment"}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </section>
+          ) : null}
 
           <div className="grid gap-3 lg:grid-cols-3">
             <article className="rounded-lg border border-neutral-800 bg-black/20 p-3">
