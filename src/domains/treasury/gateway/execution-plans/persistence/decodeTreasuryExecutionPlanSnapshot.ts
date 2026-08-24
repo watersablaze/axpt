@@ -113,6 +113,24 @@ function decodeTranche(value: unknown): ExecutableTranche {
     );
   }
 
+  const instructionId = optionalString(
+    value,
+    "instructionId",
+    "TREASURY_GATEWAY_EXECUTION_PLAN_TRANCHE_INVALID",
+  );
+
+  const beneficiaryProfileId = optionalString(
+    value,
+    "beneficiaryProfileId",
+    "TREASURY_GATEWAY_EXECUTION_PLAN_TRANCHE_INVALID",
+  );
+
+  const executionId = optionalString(
+    value,
+    "executionId",
+    "TREASURY_GATEWAY_EXECUTION_PLAN_TRANCHE_INVALID",
+  );
+
   return {
     id: requireString(
       value,
@@ -139,17 +157,17 @@ function decodeTranche(value: unknown): ExecutableTranche {
       "TREASURY_GATEWAY_EXECUTION_PLAN_TRANCHE_INVALID",
     ),
 
-    instructionId: optionalString(
-      value,
-      "instructionId",
-      "TREASURY_GATEWAY_EXECUTION_PLAN_TRANCHE_INVALID",
-    ),
+    ...(instructionId
+      ? {
+          instructionId,
+        }
+      : {}),
 
-    beneficiaryProfileId: optionalString(
-      value,
-      "beneficiaryProfileId",
-      "TREASURY_GATEWAY_EXECUTION_PLAN_TRANCHE_INVALID",
-    ),
+    ...(beneficiaryProfileId
+      ? {
+          beneficiaryProfileId,
+        }
+      : {}),
 
     settlementEndpointId: requireString(
       value,
@@ -165,11 +183,11 @@ function decodeTranche(value: unknown): ExecutableTranche {
 
     status: status as ExecutableTranche["status"],
 
-    executionId: optionalString(
-      value,
-      "executionId",
-      "TREASURY_GATEWAY_EXECUTION_PLAN_TRANCHE_INVALID",
-    ),
+    ...(executionId
+      ? {
+          executionId,
+        }
+      : {}),
   };
 }
 

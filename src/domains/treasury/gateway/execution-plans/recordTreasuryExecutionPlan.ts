@@ -68,9 +68,17 @@ export function recordTreasuryExecutionPlan(params: {
 
     allocationId: tranche.allocationId,
 
-    instructionId: tranche.instructionId,
+    ...(tranche.instructionId
+      ? {
+          instructionId: tranche.instructionId,
+        }
+      : {}),
 
-    beneficiaryProfileId: tranche.beneficiaryProfileId,
+    ...(tranche.beneficiaryProfileId
+      ? {
+          beneficiaryProfileId: tranche.beneficiaryProfileId,
+        }
+      : {}),
 
     settlementEndpointId: tranche.settlementEndpointId,
 
