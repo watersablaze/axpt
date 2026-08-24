@@ -192,6 +192,95 @@ type ApplyAuthorityAssessmentResponse =
       error: string;
     }>;
 
+type CapacityConstraintType =
+  | "SOURCE_FUNDS"
+  | "AUTHORITY"
+  | "COMPLIANCE"
+  | "CONVERSION"
+  | "RAIL"
+  | "COUNTERPARTY"
+  | "SETTLEMENT"
+  | "ESCROW"
+  | "PROGRAM";
+
+type CapacityConstraintStatus = "APPLICABLE" | "NOT_REQUIRED" | "UNDETERMINED";
+
+type CapacityConstraint = Readonly<{
+  type: CapacityConstraintType;
+
+  status: CapacityConstraintStatus;
+
+  limit?: Money;
+
+  evidenceReferenceIds: readonly string[];
+
+  notes?: string;
+}>;
+
+type RecordedCapacityAssessment = Readonly<{
+  id: string;
+
+  transferId: string;
+
+  requestedAmount: Money;
+
+  constraints: readonly CapacityConstraint[];
+
+  executableNow?: Money;
+
+  assessedByActorId: string;
+
+  assessedAt: string;
+
+  notes?: string;
+
+  version: number;
+
+  createdAt: string;
+}>;
+
+type RecordCapacityAssessmentResponse =
+  | Readonly<{
+      ok: true;
+
+      disposition: "RECORDED" | "REPLAYED";
+
+      assessment: RecordedCapacityAssessment;
+    }>
+  | Readonly<{
+      ok: false;
+
+      error: string;
+    }>;
+
+type ApplyCapacityAssessmentResponse =
+  | Readonly<{
+      ok: true;
+
+      disposition: "APPLIED" | "REPLAYED";
+
+      transfer: Readonly<{
+        id: string;
+
+        reference: string;
+
+        status: string;
+
+        version: number;
+
+        programId: string;
+
+        updatedAt: string;
+      }>;
+
+      assessmentId: string;
+    }>
+  | Readonly<{
+      ok: false;
+
+      error: string;
+    }>;
+
 const AUTHORITY_ASSESSMENT_RESULTS = [
   "AUTHORIZED",
   "REQUIRES_CLARIFICATION",
@@ -268,6 +357,47 @@ export default function TransferExecutionSummaryPanel() {
     string | null
   >(null);
 
+  const [capacityConstraintType, setCapacityConstraintType] =
+    useState<CapacityConstraintType>("SOURCE_FUNDS");
+
+  const [capacityConstraintStatus, setCapacityConstraintStatus] =
+    useState<CapacityConstraintStatus>("APPLICABLE");
+
+  const [capacityLimitAmount, setCapacityLimitAmount] = useState("");
+
+  const [capacityEvidenceIds, setCapacityEvidenceIds] = useState("");
+
+  const [capacityConstraintNotes, setCapacityConstraintNotes] = useState("");
+
+  const [capacityAssessmentNotes, setCapacityAssessmentNotes] = useState("");
+
+  const [recordedCapacityAssessment, setRecordedCapacityAssessment] =
+    useState<RecordedCapacityAssessment | null>(null);
+
+  const [capacityAssessmentLoading, setCapacityAssessmentLoading] =
+    useState(false);
+
+  const [capacityAssessmentError, setCapacityAssessmentError] = useState<
+    string | null
+  >(null);
+
+  const [
+    capacityAssessmentIdempotencyKey,
+    setCapacityAssessmentIdempotencyKey,
+  ] = useState<string | null>(null);
+
+  const [capacityApplicationLoading, setCapacityApplicationLoading] =
+    useState(false);
+
+  const [capacityApplicationError, setCapacityApplicationError] = useState<
+    string | null
+  >(null);
+
+  const [
+    capacityApplicationIdempotencyKey,
+    setCapacityApplicationIdempotencyKey,
+  ] = useState<string | null>(null);
+
   async function loadPerception(
     normalizedTransferId: string,
   ): Promise<boolean> {
@@ -333,6 +463,16 @@ export default function TransferExecutionSummaryPanel() {
     setApplicationError(null);
 
     setApplicationIdempotencyKey(null);
+
+    setRecordedCapacityAssessment(null);
+
+    setCapacityAssessmentError(null);
+
+    setCapacityAssessmentIdempotencyKey(null);
+
+    setCapacityApplicationError(null);
+
+    setCapacityApplicationIdempotencyKey(null);
 
     try {
       await loadPerception(normalizedTransferId);
@@ -596,6 +736,209 @@ export default function TransferExecutionSummaryPanel() {
       );
     } finally {
       setApplicationLoading(false);
+    }
+  }
+
+  async function recordCapacityAssessment(): Promise<void> {
+    if (!preExecution || preExecution.status !== "AUTHORIZED") {
+      return;
+    }
+
+    const evidenceReferenceIds = capacityEvidenceIds
+      .split(/\r?\n|,/)
+      .map((value) => value.trim())
+      .filter((value) => value.length > 0);
+
+    if (evidenceReferenceIds.length === 0) {
+      setCapacityAssessmentError("Enter at least one evidence reference ID.");
+
+      return;
+    }
+
+    const limitAmount = capacityLimitAmount.trim();
+
+    if (capacityConstraintStatus === "APPLICABLE" && limitAmount.length === 0) {
+      setCapacityAssessmentError(
+        "Enter a constraint limit for an applicable constraint.",
+      );
+
+      return;
+    }
+
+    const requestKey = capacityAssessmentIdempotencyKey ?? crypto.randomUUID();
+
+    if (!capacityAssessmentIdempotencyKey) {
+      setCapacityAssessmentIdempotencyKey(requestKey);
+    }
+
+    setCapacityAssessmentLoading(true);
+
+    setCapacityAssessmentError(null);
+
+    try {
+      const response = await fetch(
+        `/api/admin/control-center/treasury/transfers/${encodeURIComponent(
+          preExecution.id,
+        )}/capacity-assessments`,
+        {
+          method: "POST",
+
+          cache: "no-store",
+
+          credentials: "include",
+
+          headers: {
+            "Content-Type": "application/json",
+
+            "Idempotency-Key": requestKey,
+          },
+
+          body: JSON.stringify({
+            requestedAmount: preExecution.requestedAmount,
+
+            constraints: [
+              {
+                type: capacityConstraintType,
+
+                status: capacityConstraintStatus,
+
+                ...(capacityConstraintStatus === "APPLICABLE"
+                  ? {
+                      limit: {
+                        amount: limitAmount,
+
+                        currency: preExecution.requestedAmount.currency,
+                      },
+                    }
+                  : {}),
+
+                evidenceReferenceIds,
+
+                notes: capacityConstraintNotes.trim() || undefined,
+              },
+            ],
+
+            assessedAt: new Date().toISOString(),
+
+            notes: capacityAssessmentNotes.trim() || undefined,
+          }),
+        },
+      );
+
+      const payload =
+        (await response.json()) as RecordCapacityAssessmentResponse;
+
+      if (!response.ok || !payload.ok) {
+        setCapacityAssessmentError(
+          payload.ok
+            ? "Treasury Capacity Assessment could not be recorded."
+            : payload.error,
+        );
+
+        return;
+      }
+
+      setRecordedCapacityAssessment(payload.assessment);
+
+      setCapacityAssessmentIdempotencyKey(null);
+
+      setCapacityApplicationError(null);
+
+      setCapacityApplicationIdempotencyKey(null);
+    } catch (cause: unknown) {
+      console.error(
+        "[CONTROL_CENTER_TREASURY_CAPACITY_ASSESSMENT_RECORD_FAILED]",
+        cause,
+      );
+
+      setCapacityAssessmentError(
+        "The Capacity Assessment response could not be confirmed. Retry the unchanged finding to safely resolve its outcome.",
+      );
+    } finally {
+      setCapacityAssessmentLoading(false);
+    }
+  }
+
+  async function applyRecordedCapacityAssessment(): Promise<void> {
+    if (!preExecution || !recordedCapacityAssessment) {
+      return;
+    }
+
+    if (recordedCapacityAssessment.transferId !== preExecution.id) {
+      setCapacityApplicationError(
+        "The recorded Capacity Assessment does not belong to the observed Treasury Transfer.",
+      );
+
+      return;
+    }
+
+    const requestKey = capacityApplicationIdempotencyKey ?? crypto.randomUUID();
+
+    if (!capacityApplicationIdempotencyKey) {
+      setCapacityApplicationIdempotencyKey(requestKey);
+    }
+
+    setCapacityApplicationLoading(true);
+
+    setCapacityApplicationError(null);
+
+    try {
+      const response = await fetch(
+        `/api/admin/control-center/treasury/transfers/${encodeURIComponent(
+          preExecution.id,
+        )}/capacity-assessments/${encodeURIComponent(
+          recordedCapacityAssessment.id,
+        )}/apply`,
+        {
+          method: "POST",
+
+          cache: "no-store",
+
+          credentials: "include",
+
+          headers: {
+            "Idempotency-Key": requestKey,
+          },
+        },
+      );
+
+      const payload =
+        (await response.json()) as ApplyCapacityAssessmentResponse;
+
+      if (!response.ok || !payload.ok) {
+        setCapacityApplicationError(
+          payload.ok
+            ? "The recorded Capacity Assessment could not be applied."
+            : payload.error,
+        );
+
+        return;
+      }
+
+      /*
+       * Re-enter Treasury through the read boundary after the write.
+       * The Control Center does not manufacture the resulting posture.
+       */
+      const refreshed = await loadPerception(preExecution.id);
+
+      if (refreshed) {
+        setCapacityApplicationIdempotencyKey(null);
+      }
+    } catch (cause: unknown) {
+      console.error(
+        "[CONTROL_CENTER_TREASURY_CAPACITY_ASSESSMENT_APPLY_FAILED]",
+        cause,
+      );
+
+      /*
+       * Preserve the idempotency key. Treasury may already have
+       * applied the finding even if the browser lost confirmation.
+       */
+      setCapacityApplicationError(
+        "The Capacity Assessment application response could not be confirmed. Retry the unchanged application to safely resolve its outcome.",
+      );
+    } finally {
+      setCapacityApplicationLoading(false);
     }
   }
 
@@ -1008,6 +1351,307 @@ export default function TransferExecutionSummaryPanel() {
                       {applicationLoading
                         ? "Applying Assessment"
                         : "Apply Recorded Assessment"}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </section>
+          ) : null}
+
+          {preExecution.status === "AUTHORIZED" ? (
+            <section className="rounded-lg border border-neutral-800 bg-black/20 p-4">
+              <div className="flex flex-col gap-2 border-b border-neutral-800 pb-4 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-600">
+                    Decision Chamber
+                  </div>
+
+                  <h2 className="mt-1 text-base font-medium text-white">
+                    Capacity Assessment
+                  </h2>
+
+                  <p className="mt-2 max-w-2xl text-xs leading-5 text-neutral-500">
+                    Record observed Treasury constraints against the authorized
+                    Transfer. Treasury computes executable capacity from the
+                    submitted constraint evidence. Recording the finding does
+                    not itself alter Transfer posture.
+                  </p>
+                </div>
+
+                <div className="rounded border border-cyan-950 bg-cyan-950/10 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-cyan-300">
+                  Authorized
+                </div>
+              </div>
+
+              {!recordedCapacityAssessment ? (
+                <div className="mt-4 space-y-4">
+                  <div className="grid gap-3 md:grid-cols-3">
+                    <label className="text-xs text-neutral-500">
+                      Constraint
+                      <select
+                        value={capacityConstraintType}
+                        onChange={(event) =>
+                          setCapacityConstraintType(
+                            event.target.value as CapacityConstraintType,
+                          )
+                        }
+                        disabled={capacityAssessmentLoading}
+                        className="mt-2 w-full rounded border border-neutral-800 bg-black/40 px-3 py-2 text-xs text-neutral-200 outline-none focus:border-cyan-900 disabled:opacity-50"
+                      >
+                        <option value="SOURCE_FUNDS">Source Funds</option>
+                        <option value="AUTHORITY">Authority</option>
+                        <option value="COMPLIANCE">Compliance</option>
+                        <option value="CONVERSION">Conversion</option>
+                        <option value="RAIL">Rail</option>
+                        <option value="COUNTERPARTY">Counterparty</option>
+                        <option value="SETTLEMENT">Settlement</option>
+                        <option value="ESCROW">Escrow</option>
+                        <option value="PROGRAM">Program</option>
+                      </select>
+                    </label>
+
+                    <label className="text-xs text-neutral-500">
+                      Status
+                      <select
+                        value={capacityConstraintStatus}
+                        onChange={(event) =>
+                          setCapacityConstraintStatus(
+                            event.target.value as CapacityConstraintStatus,
+                          )
+                        }
+                        disabled={capacityAssessmentLoading}
+                        className="mt-2 w-full rounded border border-neutral-800 bg-black/40 px-3 py-2 text-xs text-neutral-200 outline-none focus:border-cyan-900 disabled:opacity-50"
+                      >
+                        <option value="APPLICABLE">Applicable</option>
+                        <option value="NOT_REQUIRED">Not Required</option>
+                        <option value="UNDETERMINED">Undetermined</option>
+                      </select>
+                    </label>
+
+                    <label className="text-xs text-neutral-500">
+                      Limit
+                      <div className="mt-2 flex rounded border border-neutral-800 bg-black/40">
+                        <input
+                          value={capacityLimitAmount}
+                          onChange={(event) =>
+                            setCapacityLimitAmount(event.target.value)
+                          }
+                          disabled={
+                            capacityAssessmentLoading ||
+                            capacityConstraintStatus !== "APPLICABLE"
+                          }
+                          placeholder="Amount"
+                          className="min-w-0 flex-1 bg-transparent px-3 py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-700 disabled:opacity-40"
+                        />
+
+                        <span className="border-l border-neutral-800 px-3 py-2 text-xs text-neutral-500">
+                          {preExecution.requestedAmount.currency}
+                        </span>
+                      </div>
+                    </label>
+                  </div>
+
+                  <div className="grid gap-3 md:grid-cols-2">
+                    <label className="text-xs text-neutral-500">
+                      Evidence Reference IDs
+                      <textarea
+                        value={capacityEvidenceIds}
+                        onChange={(event) =>
+                          setCapacityEvidenceIds(event.target.value)
+                        }
+                        disabled={capacityAssessmentLoading}
+                        rows={3}
+                        placeholder="One evidence reference per line, or separate with commas."
+                        className="mt-2 w-full resize-y rounded border border-neutral-800 bg-black/40 px-3 py-2 text-xs leading-5 text-neutral-200 outline-none placeholder:text-neutral-700 focus:border-cyan-900 disabled:opacity-50"
+                      />
+                    </label>
+
+                    <label className="text-xs text-neutral-500">
+                      Constraint Notes
+                      <textarea
+                        value={capacityConstraintNotes}
+                        onChange={(event) =>
+                          setCapacityConstraintNotes(event.target.value)
+                        }
+                        disabled={capacityAssessmentLoading}
+                        rows={3}
+                        placeholder="Optional constraint context."
+                        className="mt-2 w-full resize-y rounded border border-neutral-800 bg-black/40 px-3 py-2 text-xs leading-5 text-neutral-200 outline-none placeholder:text-neutral-700 focus:border-cyan-900 disabled:opacity-50"
+                      />
+                    </label>
+                  </div>
+
+                  <label className="block text-xs text-neutral-500">
+                    Assessment Notes
+                    <textarea
+                      value={capacityAssessmentNotes}
+                      onChange={(event) =>
+                        setCapacityAssessmentNotes(event.target.value)
+                      }
+                      disabled={capacityAssessmentLoading}
+                      rows={3}
+                      placeholder="Optional Capacity Assessment context."
+                      className="mt-2 w-full resize-y rounded border border-neutral-800 bg-black/40 px-3 py-2 text-xs leading-5 text-neutral-200 outline-none placeholder:text-neutral-700 focus:border-cyan-900 disabled:opacity-50"
+                    />
+                  </label>
+
+                  {capacityAssessmentError ? (
+                    <div className="rounded border border-orange-950 bg-orange-950/10 p-3 text-xs leading-5 text-orange-300">
+                      {capacityAssessmentError}
+                    </div>
+                  ) : null}
+
+                  <div className="flex flex-col gap-3 border-t border-neutral-800 pt-4 md:flex-row md:items-center md:justify-between">
+                    <div className="text-xs leading-5 text-neutral-500">
+                      Requested capital is inherited from the canonical
+                      Transfer:{" "}
+                      <span className="text-neutral-300">
+                        {formatMoney(preExecution.requestedAmount)}
+                      </span>
+                      . Treasury computes executable capacity.
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={capacityAssessmentLoading}
+                      onClick={recordCapacityAssessment}
+                      className="shrink-0 rounded border border-cyan-950 bg-cyan-950/20 px-4 py-2 text-[10px] uppercase tracking-[0.14em] text-cyan-300 hover:border-cyan-800 hover:bg-cyan-950/30 disabled:cursor-wait disabled:opacity-50"
+                    >
+                      {capacityAssessmentLoading
+                        ? "Recording Capacity"
+                        : "Record Capacity Finding"}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-4 space-y-4">
+                  <div className="grid gap-3 md:grid-cols-3">
+                    <article className="rounded border border-neutral-800 bg-black/30 p-3">
+                      <div className="text-[10px] uppercase tracking-wide text-neutral-600">
+                        Requested
+                      </div>
+
+                      <div className="mt-2 text-sm text-neutral-200">
+                        {formatMoney(
+                          recordedCapacityAssessment.requestedAmount,
+                        )}
+                      </div>
+                    </article>
+
+                    <article className="rounded border border-neutral-800 bg-black/30 p-3">
+                      <div className="text-[10px] uppercase tracking-wide text-neutral-600">
+                        Executable Now
+                      </div>
+
+                      <div className="mt-2 text-sm text-cyan-300">
+                        {recordedCapacityAssessment.executableNow
+                          ? formatMoney(
+                              recordedCapacityAssessment.executableNow,
+                            )
+                          : "Undetermined"}
+                      </div>
+                    </article>
+
+                    <article className="rounded border border-neutral-800 bg-black/30 p-3">
+                      <div className="text-[10px] uppercase tracking-wide text-neutral-600">
+                        Assessor
+                      </div>
+
+                      <div className="mt-2 break-all text-xs text-neutral-300">
+                        {recordedCapacityAssessment.assessedByActorId}
+                      </div>
+                    </article>
+                  </div>
+
+                  <div className="rounded border border-neutral-800 bg-black/20">
+                    {recordedCapacityAssessment.constraints.map(
+                      (constraint, index) => (
+                        <div
+                          key={`${constraint.type}:${constraint.status}:${index}`}
+                          className="grid gap-2 border-b border-neutral-800 px-3 py-3 text-xs last:border-b-0 md:grid-cols-[1fr_1fr_1fr]"
+                        >
+                          <span className="text-neutral-300">
+                            {constraint.type.replaceAll("_", " ")}
+                          </span>
+
+                          <span className="text-neutral-500">
+                            {constraint.status.replaceAll("_", " ")}
+                          </span>
+
+                          <span className="text-right text-neutral-300">
+                            {constraint.limit
+                              ? formatMoney(constraint.limit)
+                              : "No limit recorded"}
+                          </span>
+                        </div>
+                      ),
+                    )}
+                  </div>
+
+                  <div className="grid gap-3 text-xs md:grid-cols-2">
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wide text-neutral-600">
+                        Assessed At
+                      </div>
+
+                      <div className="mt-2 text-neutral-300">
+                        {new Date(
+                          recordedCapacityAssessment.assessedAt,
+                        ).toLocaleString()}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wide text-neutral-600">
+                        Assessment
+                      </div>
+
+                      <div className="mt-2 break-all text-neutral-300">
+                        {recordedCapacityAssessment.id}
+                      </div>
+                    </div>
+                  </div>
+
+                  {recordedCapacityAssessment.notes ? (
+                    <div className="rounded border border-neutral-800 bg-black/20 p-3">
+                      <div className="text-[10px] uppercase tracking-wide text-neutral-600">
+                        Assessment Notes
+                      </div>
+
+                      <p className="mt-2 whitespace-pre-wrap text-xs leading-5 text-neutral-300">
+                        {recordedCapacityAssessment.notes}
+                      </p>
+                    </div>
+                  ) : null}
+
+                  {capacityApplicationError ? (
+                    <div className="rounded border border-orange-950 bg-orange-950/10 p-3 text-xs leading-5 text-orange-300">
+                      {capacityApplicationError}
+                    </div>
+                  ) : null}
+
+                  <div className="flex flex-col gap-3 border-t border-neutral-800 pt-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <div className="text-[10px] uppercase tracking-[0.16em] text-neutral-600">
+                        Operative Disposition
+                      </div>
+
+                      <p className="mt-2 max-w-xl text-xs leading-5 text-neutral-500">
+                        Apply the recorded finding. Treasury will reload the
+                        canonical Capacity Assessment and determine the
+                        resulting Transfer posture.
+                      </p>
+                    </div>
+
+                    <button
+                      type="button"
+                      disabled={capacityApplicationLoading}
+                      onClick={applyRecordedCapacityAssessment}
+                      className="shrink-0 rounded border border-neutral-700 bg-black/30 px-4 py-2 text-[10px] uppercase tracking-[0.14em] text-neutral-200 hover:border-cyan-800 hover:text-cyan-300 disabled:cursor-wait disabled:opacity-50"
+                    >
+                      {capacityApplicationLoading
+                        ? "Applying Capacity"
+                        : "Apply Capacity Finding"}
                     </button>
                   </div>
                 </div>
