@@ -2,11 +2,31 @@ import type {
   CommercialProgramId,
   ProgramAccountId,
   ProgramCapitalReceiptId,
+  ArtifactId,
+  TreasuryActorId,
 } from "../shared/identifiers";
 
 import type { TreasuryMoney } from "../shared/money";
 
 import type { CapitalReceiptMethod } from "./contracts";
+
+import type { CapitalReceiptEvidenceType } from "./contracts";
+
+export type CapitalReceiptEvidenceAdmittedPayload = Readonly<{
+  receiptId: ProgramCapitalReceiptId;
+
+  evidenceId: string;
+
+  evidenceType: CapitalReceiptEvidenceType;
+
+  artifactId: ArtifactId;
+
+  externalReference?: string;
+
+  submittedByActorId: TreasuryActorId;
+
+  recordedAt: Date;
+}>;
 
 export type CapitalReceiptReportedPayload = Readonly<{
   receiptId: ProgramCapitalReceiptId;

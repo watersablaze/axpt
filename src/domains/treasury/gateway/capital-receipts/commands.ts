@@ -3,13 +3,31 @@ import type {
   ProgramAccountId,
   ProgramCapitalReceiptId,
   TreasuryPartyId,
+  ArtifactId,
 } from "../shared/identifiers";
 
 import type { TreasuryCommand } from "../shared/commandContext";
 
 import type { TreasuryMoney } from "../shared/money";
 
-import type { CapitalReceiptMethod } from "./contracts";
+import type {
+  CapitalReceiptEvidenceType,
+  CapitalReceiptMethod,
+} from "./contracts";
+
+export type AdmitProgramCapitalReceiptEvidence = TreasuryCommand<{
+  receiptId: ProgramCapitalReceiptId;
+
+  evidenceId: string;
+
+  evidenceType: CapitalReceiptEvidenceType;
+
+  artifactId: ArtifactId;
+
+  externalReference?: string;
+
+  recordedAt: Date;
+}>;
 
 export type ReportProgramCapitalReceipt = TreasuryCommand<{
   programId: CommercialProgramId;
