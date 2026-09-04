@@ -6,13 +6,15 @@ import { persistNewProgramCapitalReceiptWithClient } from "../persistence/persis
 
 import type { PersistedNewProgramCapitalReceipt } from "../persistence/contracts";
 
+import type { CapitalReceiptReportedPayload } from "../events";
+
 import type { ReportProgramCapitalReceiptDurably } from "./reportProgramCapitalReceiptDurablyContracts";
 
 export async function reportProgramCapitalReceiptDurablyWithClient(params: {
   request: ReportProgramCapitalReceiptDurably;
 
   client: TransactionClient;
-}): Promise<PersistedNewProgramCapitalReceipt> {
+}): Promise<PersistedNewProgramCapitalReceipt<CapitalReceiptReportedPayload>> {
   const { request, client } = params;
 
   const result = reportProgramCapitalReceipt({

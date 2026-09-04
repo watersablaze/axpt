@@ -8,7 +8,7 @@ import type { TreasuryDomainResult } from "../../shared/domainResult";
 import type { TreasuryEventId } from "../../shared/identifiers";
 
 import type { ProgramCapitalReceipt } from "../contracts";
-import type { CapitalReceiptReportedPayload } from "../events";
+import type { CapitalReceiptExpectedPayload } from "../events";
 import { PROGRAM_CAPITAL_RECEIPT_STATUS } from "../status";
 
 import type { PersistedNewProgramCapitalReceipt } from "./contracts";
@@ -44,10 +44,10 @@ function getUniqueTarget(error: PrismaKnownRequestError): readonly string[] {
     : [];
 }
 
-export async function persistNewProgramCapitalReceiptWithClient(params: {
+export async function persistNewExpectedProgramCapitalReceiptWithClient(params: {
   result: TreasuryDomainResult<
     ProgramCapitalReceipt,
-    CapitalReceiptReportedPayload
+    CapitalReceiptExpectedPayload
   >;
 
   eventId: TreasuryEventId;
@@ -55,7 +55,7 @@ export async function persistNewProgramCapitalReceiptWithClient(params: {
   context: TreasuryCommandContext;
 
   client: TransactionClient;
-}): Promise<PersistedNewProgramCapitalReceipt<CapitalReceiptReportedPayload>> {
+}): Promise<PersistedNewProgramCapitalReceipt<CapitalReceiptExpectedPayload>> {
   const { result, eventId, context, client } = params;
 
   const { aggregate, event } = result;
@@ -66,15 +66,15 @@ export async function persistNewProgramCapitalReceiptWithClient(params: {
     );
   }
 
-  if (aggregate.status !== PROGRAM_CAPITAL_RECEIPT_STATUS.REPORTED) {
+  if (aggregate.status !== PROGRAM_CAPITAL_RECEIPT_STATUS.EXPECTED) {
     throw new Error(
-      `[TREASURY_GATEWAY_NEW_PROGRAM_CAPITAL_RECEIPT_STATUS_INVALID] ${aggregate.status}`,
+      `[TREASURY_GATEWAY_NEW_EXPECTED_PROGRAM_CAPITAL_RECEIPT_STATUS_INVALID] ${aggregate.status}`,
     );
   }
 
-  if (event.eventType !== TREASURY_EVENT_TYPE.CAPITAL_RECEIPT_REPORTED) {
+  if (event.eventType !== TREASURY_EVENT_TYPE.CAPITAL_RECEIPT_EXPECTED) {
     throw new Error(
-      `[TREASURY_GATEWAY_NEW_PROGRAM_CAPITAL_RECEIPT_EVENT_INVALID] ${event.eventType}`,
+      `[TREASURY_GATEWAY_NEW_EXPECTED_PROGRAM_CAPITAL_RECEIPT_EVENT_INVALID] ${event.eventType}`,
     );
   }
 

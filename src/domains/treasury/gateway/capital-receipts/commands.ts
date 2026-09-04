@@ -29,6 +29,28 @@ export type AdmitProgramCapitalReceiptEvidence = TreasuryCommand<{
   recordedAt: Date;
 }>;
 
+export type RegisterExpectedProgramCapitalReceipt = TreasuryCommand<{
+  programId: CommercialProgramId;
+
+  destinationProgramAccountId: ProgramAccountId;
+
+  receivedFromPartyId?: TreasuryPartyId;
+
+  declaredAmount: TreasuryMoney;
+
+  receiptMethod: CapitalReceiptMethod;
+
+  expectedAt?: Date;
+}>;
+
+export type ReportExpectedProgramCapitalReceipt = TreasuryCommand<{
+  receiptId: ProgramCapitalReceiptId;
+
+  externalReference?: string;
+
+  receivedAt: Date;
+}>;
+
 export type ReportProgramCapitalReceipt = TreasuryCommand<{
   programId: CommercialProgramId;
 

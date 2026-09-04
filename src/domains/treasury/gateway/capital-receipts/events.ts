@@ -28,6 +28,20 @@ export type CapitalReceiptEvidenceAdmittedPayload = Readonly<{
   recordedAt: Date;
 }>;
 
+export type CapitalReceiptExpectedPayload = Readonly<{
+  receiptId: ProgramCapitalReceiptId;
+
+  programId: CommercialProgramId;
+
+  destinationProgramAccountId: ProgramAccountId;
+
+  declaredAmount: TreasuryMoney;
+
+  receiptMethod: CapitalReceiptMethod;
+
+  expectedAt?: Date;
+}>;
+
 export type CapitalReceiptReportedPayload = Readonly<{
   receiptId: ProgramCapitalReceiptId;
 
