@@ -1,15 +1,9 @@
 import { PROGRAM_CAPITAL_RECEIPT_STATUS } from "./status";
-
 import { assertProgramCapitalReceiptTransition } from "./assertTransition";
-
 import { TREASURY_EVENT_TYPE } from "../events/eventType";
-
 import type { ProgramCapitalReceipt } from "./contracts";
-
 import type { VerifyProgramCapitalReceipt } from "./commands";
-
 import type { CapitalReceiptVerifiedPayload } from "./events";
-
 import type { TreasuryDomainResult } from "../shared/domainResult";
 
 export function verifyProgramCapitalReceipt(
@@ -19,6 +13,28 @@ export function verifyProgramCapitalReceipt(
   if (command.payload.receiptId !== aggregate.id) {
     throw new Error(
       `[PROGRAM_CAPITAL_RECEIPT_COMMAND_TARGET_MISMATCH] ${command.payload.receiptId} -> ${aggregate.id}`,
+    );
+  }
+
+  if (command.payload.evidenceIds.length === 0) {
+    throw new Error("[PROGRAM_CAPITAL_RECEIPT_VERIFICATION_EVIDENCE_REQUIRED]");
+  }
+
+  if (
+    new Set(command.payload.evidenceIds).size !==
+    command.payload.evidenceIds.length
+  ) {
+    throw new Error(
+      "[PROGRAM_CAPITAL_RECEIPT_VERIFICATION_EVIDENCE_DUPLICATE]",
+    );
+  }
+
+  if (
+    command.payload.verifiedAmount.currency !==
+    aggregate.declaredAmount.currency
+  ) {
+    throw new Error(
+      `[PROGRAM_CAPITAL_RECEIPT_VERIFIED_AMOUNT_CURRENCY_MISMATCH] ${command.payload.verifiedAmount.currency} -> ${aggregate.declaredAmount.currency}`,
     );
   }
 
