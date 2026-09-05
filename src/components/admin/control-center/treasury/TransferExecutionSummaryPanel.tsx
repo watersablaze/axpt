@@ -203,6 +203,16 @@ type CapacityConstraintType =
   | "ESCROW"
   | "PROGRAM";
 
+type OperatorCapacityConstraintType =
+  | "AUTHORITY"
+  | "COMPLIANCE"
+  | "CONVERSION"
+  | "RAIL"
+  | "COUNTERPARTY"
+  | "SETTLEMENT"
+  | "ESCROW"
+  | "PROGRAM";
+
 type CapacityConstraintStatus = "APPLICABLE" | "NOT_REQUIRED" | "UNDETERMINED";
 
 type CapacityConstraint = Readonly<{
@@ -358,7 +368,7 @@ export default function TransferExecutionSummaryPanel() {
   >(null);
 
   const [capacityConstraintType, setCapacityConstraintType] =
-    useState<CapacityConstraintType>("SOURCE_FUNDS");
+    useState<OperatorCapacityConstraintType>("RAIL");
 
   const [capacityConstraintStatus, setCapacityConstraintStatus] =
     useState<CapacityConstraintStatus>("APPLICABLE");
@@ -1371,10 +1381,11 @@ export default function TransferExecutionSummaryPanel() {
                   </h2>
 
                   <p className="mt-2 max-w-2xl text-xs leading-5 text-neutral-500">
-                    Record observed Treasury constraints against the authorized
-                    Transfer. Treasury computes executable capacity from the
-                    submitted constraint evidence. Recording the finding does
-                    not itself alter Transfer posture.
+                    Record observed operational constraints against the
+                    authorized Transfer. Treasury derives Source Funds from
+                    authoritative Available Capital and computes executable
+                    capacity across that position and the recorded constraints.
+                    Recording the finding does not itself alter Transfer posture.
                   </p>
                 </div>
 
@@ -1392,13 +1403,12 @@ export default function TransferExecutionSummaryPanel() {
                         value={capacityConstraintType}
                         onChange={(event) =>
                           setCapacityConstraintType(
-                            event.target.value as CapacityConstraintType,
+                            event.target.value as OperatorCapacityConstraintType,
                           )
                         }
                         disabled={capacityAssessmentLoading}
                         className="mt-2 w-full rounded border border-neutral-800 bg-black/40 px-3 py-2 text-xs text-neutral-200 outline-none focus:border-cyan-900 disabled:opacity-50"
                       >
-                        <option value="SOURCE_FUNDS">Source Funds</option>
                         <option value="AUTHORITY">Authority</option>
                         <option value="COMPLIANCE">Compliance</option>
                         <option value="CONVERSION">Conversion</option>
@@ -1508,7 +1518,8 @@ export default function TransferExecutionSummaryPanel() {
                       <span className="text-neutral-300">
                         {formatMoney(preExecution.requestedAmount)}
                       </span>
-                      . Treasury computes executable capacity.
+                      . Source Funds is derived from authoritative Available
+                      Capital. Treasury computes executable capacity.
                     </div>
 
                     <button

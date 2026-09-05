@@ -610,14 +610,17 @@ async function main(): Promise<void> {
     });
 
     /*
-     * SOURCE_FUNDS = 850k
-     * RAIL         = 600k
-     * CONVERSION   = NOT_REQUIRED
+     * SOURCE_FUNDS submitted = 850k (legacy caller claim)
+     * SOURCE_FUNDS canonical = 0    (authoritative Available Capital)
+     * RAIL                   = 600k
+     * CONVERSION             = NOT_REQUIRED
      *
-     * Treasury, not the caller, determines 600k executable now.
+     * Treasury derives Source Funds from authoritative financial
+     * position. The caller's legacy SOURCE_FUNDS claim cannot
+     * manufacture executable capital.
      */
     assert.deepEqual(firstAssessment.body.assessment.executableNow, {
-      amount: "600000.00",
+      amount: "0",
 
       currency: "USD",
     });
@@ -626,6 +629,51 @@ async function main(): Promise<void> {
       firstAssessment.body.assessment.executableNow,
       canonicalBody.executableNow,
     );
+
+    const recordedSourceFunds =
+      firstAssessment.body.assessment.constraints.filter(
+        (constraint) =>
+          constraint.type ===
+          TRANSFER_CAPACITY_CONSTRAINT_TYPE.SOURCE_FUNDS,
+      );
+
+    assert.equal(recordedSourceFunds.length, 1);
+
+    assert.deepEqual(recordedSourceFunds[0], {
+      type: TRANSFER_CAPACITY_CONSTRAINT_TYPE.SOURCE_FUNDS,
+
+      status: TRANSFER_CAPACITY_CONSTRAINT_STATUS.APPLICABLE,
+
+      limit: {
+        amount: "0",
+
+        currency: "USD",
+      },
+
+      evidenceReferenceIds: [],
+
+      notes:
+        "System-derived from authoritative Available Capital Position.",
+    });
+
+    assert.notDeepEqual(
+      recordedSourceFunds[0]?.limit,
+      canonicalBody.constraints[0].limit,
+    );
+
+    const recordedRail =
+      firstAssessment.body.assessment.constraints.find(
+        (constraint) =>
+          constraint.type === TRANSFER_CAPACITY_CONSTRAINT_TYPE.RAIL,
+      );
+
+    assert(recordedRail);
+
+    assert.deepEqual(recordedRail.limit, {
+      amount: "600000.00",
+
+      currency: "USD",
+    });
 
     assert.equal(firstAssessment.body.assessment.version, 1);
 
@@ -683,7 +731,7 @@ async function main(): Promise<void> {
     assert.equal(exactRetry.body.assessment.id, firstAssessmentId);
 
     assert.deepEqual(exactRetry.body.assessment.executableNow, {
-      amount: "600000.00",
+      amount: "0",
 
       currency: "USD",
     });
