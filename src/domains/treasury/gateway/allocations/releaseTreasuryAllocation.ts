@@ -24,6 +24,16 @@ export function releaseTreasuryAllocation(
     );
   }
 
+  const reason = command.payload.reason.trim();
+
+  if (!reason) {
+    throw new Error("[TREASURY_ALLOCATION_RELEASE_REASON_REQUIRED]");
+  }
+
+  const to = TREASURY_ALLOCATION_STATUS.RELEASED;
+
+  assertTreasuryAllocationTransition(aggregate.status, to);
+
   const remainingAmount = subtractDecimals(
     aggregate.amount.amount,
     aggregate.consumedAmount.amount,
@@ -32,10 +42,6 @@ export function releaseTreasuryAllocation(
   if (compareDecimals(remainingAmount, "0") === 0) {
     throw new Error("[TREASURY_ALLOCATION_NO_REMAINING_CAPITAL_TO_RELEASE]");
   }
-
-  const to = TREASURY_ALLOCATION_STATUS.RELEASED;
-
-  assertTreasuryAllocationTransition(aggregate.status, to);
 
   const now = command.context.requestedAt;
 
@@ -70,7 +76,7 @@ export function releaseTreasuryAllocation(
 
         totalConsumedAmount: aggregate.consumedAmount,
 
-        reason: command.payload.reason,
+        reason,
 
         releasedAt: now,
       },
