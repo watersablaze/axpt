@@ -213,8 +213,8 @@ async function main(): Promise<void> {
   const seedReceiptKey = `capacity-idempotent-seed-receipt-${fixtureId}`;
 
   const evidenceReferenceIds = [
-    `capacity-idempotent-source-evidence-${fixtureId}`,
     `capacity-idempotent-rail-evidence-${fixtureId}`,
+    `capacity-idempotent-conversion-evidence-${fixtureId}`,
   ] as const;
 
   const baseRequest = {
@@ -245,20 +245,6 @@ async function main(): Promise<void> {
 
       constraints: [
         {
-          type: TRANSFER_CAPACITY_CONSTRAINT_TYPE.SOURCE_FUNDS,
-
-          status: TRANSFER_CAPACITY_CONSTRAINT_STATUS.APPLICABLE,
-
-          limit: {
-            amount: "850000.00",
-
-            currency: "USD",
-          },
-
-          evidenceReferenceIds: [evidenceReferenceIds[0]],
-        },
-
-        {
           type: TRANSFER_CAPACITY_CONSTRAINT_TYPE.RAIL,
 
           status: TRANSFER_CAPACITY_CONSTRAINT_STATUS.APPLICABLE,
@@ -269,7 +255,7 @@ async function main(): Promise<void> {
             currency: "USD",
           },
 
-          evidenceReferenceIds: [evidenceReferenceIds[1]],
+          evidenceReferenceIds: [evidenceReferenceIds[0]],
         },
 
         {
@@ -277,7 +263,7 @@ async function main(): Promise<void> {
 
           status: TRANSFER_CAPACITY_CONSTRAINT_STATUS.NOT_REQUIRED,
 
-          evidenceReferenceIds: [],
+          evidenceReferenceIds: [evidenceReferenceIds[1]],
         },
       ],
 
@@ -370,7 +356,7 @@ async function main(): Promise<void> {
     assert.equal(first.aggregate.metadata.version, 1);
 
     assert.deepEqual(first.aggregate.executableNow, {
-      amount: "600000.00",
+      amount: "0",
 
       currency: "USD",
     });
@@ -419,7 +405,7 @@ async function main(): Promise<void> {
     assert.equal(retry.aggregate.metadata.version, 1);
 
     assert.deepEqual(retry.aggregate.executableNow, {
-      amount: "600000.00",
+      amount: "0",
 
       currency: "USD",
     });
@@ -474,8 +460,6 @@ async function main(): Promise<void> {
               },
 
               baseRequest.payload.constraints[1],
-
-              baseRequest.payload.constraints[2],
             ],
           },
         },
@@ -491,10 +475,8 @@ async function main(): Promise<void> {
             ...baseRequest.payload,
 
             constraints: [
-              baseRequest.payload.constraints[0],
-
               {
-                ...baseRequest.payload.constraints[1],
+                ...baseRequest.payload.constraints[0],
 
                 limit: {
                   amount: "500000.00",
@@ -503,7 +485,7 @@ async function main(): Promise<void> {
                 },
               },
 
-              baseRequest.payload.constraints[2],
+              baseRequest.payload.constraints[1],
             ],
           },
         },
@@ -530,8 +512,6 @@ async function main(): Promise<void> {
               },
 
               baseRequest.payload.constraints[1],
-
-              baseRequest.payload.constraints[2],
             ],
           },
         },

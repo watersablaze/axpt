@@ -10,11 +10,16 @@ import type { TreasuryGatewayCommandReceipt } from "../../commands/persistence/c
 
 import { TREASURY_AGGREGATE_TYPE } from "../../events/aggregateTypes";
 
-import type { TransferCapacityAssessment } from "../contracts";
+import {
+  TRANSFER_CAPACITY_CONSTRAINT_TYPE,
+  type TransferCapacityAssessment,
+} from "../contracts";
 
 import { loadTransferCapacityAssessmentWithClient } from "../persistence/loadTransferCapacityAssessmentWithClient";
 
 import type { RecordTransferCapacityAssessmentDurably } from "./recordTransferCapacityAssessmentDurablyContracts";
+
+import { prepareCanonicalTransferCapacityAssessmentRequestWithClient } from "./prepareCanonicalTransferCapacityAssessmentRequestWithClient";
 
 import { recordTransferCapacityAssessmentDurablyWithClient } from "./recordTransferCapacityAssessmentDurablyWithClient";
 
@@ -59,17 +64,34 @@ function fingerprintAssessmentRequest(
   /*
    * Generated transport identities are deliberately excluded.
    *
-   * An exact retry may arrive with a newly proposed assessmentId,
-   * eventId, commandId, correlationId, or requestedAt. The durable
-   * command receipt determines the original canonical assessment.
+   * SOURCE_FUNDS is also excluded from caller request identity.
+   * It is no longer a caller-authored Treasury assertion; the
+   * Gateway derives it from authoritative Available Capital when
+   * a new Capacity Assessment is recorded.
    *
-   * The material Treasury request is the authenticated actor plus
-   * the Capacity Assessment payload itself.
+   * This preserves historical idempotency:
+   *
+   * - changing an invented SOURCE_FUNDS value does not create a
+   *   materially different request;
+   * - a later change in Available Capital does not invalidate an
+   *   exact retry of an already-recorded assessment;
+   * - caller-owned constraints remain material.
    */
+  const materialConstraints =
+    request.payload.constraints.filter(
+      (constraint) =>
+        constraint.type !==
+        TRANSFER_CAPACITY_CONSTRAINT_TYPE.SOURCE_FUNDS,
+    );
+
   const materialRequest = {
     actorId: request.context.actorId,
 
-    payload: request.payload,
+    payload: {
+      ...request.payload,
+
+      constraints: materialConstraints,
+    },
   };
 
   return createHash("sha256")
@@ -84,7 +106,8 @@ export async function recordTransferCapacityAssessmentIdempotentlyWithClient(par
 }): Promise<IdempotentTransferCapacityAssessmentRecordingResult> {
   const { request, client } = params;
 
-  const requestFingerprint = fingerprintAssessmentRequest(request);
+  const requestFingerprint =
+    fingerprintAssessmentRequest(request);
 
   const existingReceipt = await loadTreasuryGatewayCommandReceiptWithClient({
     idempotencyKey: request.context.idempotencyKey,
@@ -138,8 +161,15 @@ export async function recordTransferCapacityAssessmentIdempotentlyWithClient(par
     };
   }
 
+  const canonicalRequest =
+    await prepareCanonicalTransferCapacityAssessmentRequestWithClient({
+      request,
+
+      client,
+    });
+
   const recorded = await recordTransferCapacityAssessmentDurablyWithClient({
-    request,
+    request: canonicalRequest,
 
     client,
   });
