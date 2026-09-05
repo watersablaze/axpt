@@ -5,12 +5,15 @@ import SurfaceObserver from '@/components/system/SurfaceObserver'
 import SurfaceSection from '@/components/system/SurfaceSection'
 import CommandCompass from '@/components/navigation/CommandCompass'
 import Header from '@/components/layout/Header'
+import GeologicalSubstrate from '@/components/background/GeologicalSubstrate'
 
 import { SURFACES } from '@/lib/surfaces/registry'
 
 export default function Home() {
   return (
     <main className="axptPortal">
+
+      <GeologicalSubstrate />
 
       <AxisRuntime />
       <SurfaceObserver />

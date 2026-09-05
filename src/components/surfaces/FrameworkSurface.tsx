@@ -1,90 +1,86 @@
 import styles from './FrameworkSurface.module.css'
-import SurfaceHeader from '@/components/surfaces/SurfaceHeader'
 
-const LAYERS = [
+const CONDITIONS = [
   {
-    index: '01',
-    title: 'Continuity',
-    meta: 'Principle Layer',
-    text: 'Defines the invariant orientation the system is designed to preserve under pressure.',
+    label: 'What moves',
+    text: 'Value, information, assets, agreements, and institutional state.',
   },
   {
-    index: '02',
-    title: 'Governance',
-    meta: 'Authority Layer',
-    text: 'Translates continuity into mandate, permissions, oversight, and institutional responsibility.',
+    label: 'Who can act',
+    text: 'Authority, permission, role, and consent.',
   },
   {
-    index: '03',
-    title: 'Systems',
-    meta: 'Execution Layer',
-    text: 'Converts mandate into recorded action across ledger, treasury, and communication infrastructure.',
+    label: 'What has been established',
+    text: 'Evidence, verification, terms, and current state.',
   },
-]
-
-const MODULES = [
-  ['Ledger Engine', 'Custodial accounting and institutional transaction record.'],
-  ['Treasury Coordination', 'Settlement orchestration, asset custody, and capital allocation.'],
-  ['Broadcast Layer', 'Institutional communication and public transmission surface.'],
-]
+  {
+    label: 'Who remains responsible',
+    text: 'Custody, obligation, accountability, and record.',
+  },
+] as const
 
 export default function FrameworkSurface() {
   return (
-    <div className={styles.frameworkSurface}>
-      <div className="surfaceFrame">
-        <div className={styles.frameworkShell}>
+    <section className={styles.frameworkSurface}>
+      <div className={styles.frameworkInner}>
 
-          <div className={styles.frameworkIntro}>
-            <SurfaceHeader kicker="FRAMEWORK" />
+        <p className={styles.registration}>
+          Axis Point / How AXPT Works
+        </p>
 
-            <h2 className={styles.headline}>
-              Institutional continuity topology.
-            </h2>
+        <header className={styles.declaration}>
+          <h2>
+            Movement depends on more
+            <span> than what is moving.</span>
+          </h2>
+        </header>
 
-            <p className={styles.subline}>
-              Three structural layers define how principle becomes authority,
-              and authority becomes recorded action.
-            </p>
-          </div>
+        <div className={styles.explanation}>
+          <p>
+            Every action proceeds from conditions: what is moving,
+            who can act, what has been established, and who remains
+            responsible.
+          </p>
 
-          <div className={styles.sectionCut}>
-
-            <div className={styles.layerStack}>
-              {LAYERS.map((layer) => (
-                <article key={layer.index} className={styles.layerRow}>
-                  <span className={styles.layerIndex}>{layer.index}</span>
-
-                  <div className={styles.layerBody}>
-                    <div className={styles.layerTop}>
-                      <h3>{layer.title}</h3>
-                      <span>{layer.meta}</span>
-                    </div>
-
-                    <p>{layer.text}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-
-            <aside className={styles.executionPanel}>
-              <div className={styles.panelLabel}>
-                Execution Modules
-              </div>
-
-              <div className={styles.executionList}>
-                {MODULES.map(([title, text]) => (
-                  <div key={title} className={styles.executionItem}>
-                    <span className={styles.executionTitle}>{title}</span>
-                    <span className={styles.executionText}>{text}</span>
-                  </div>
-                ))}
-              </div>
-            </aside>
-
-          </div>
-
+          <p className={styles.explanationFocus}>
+            AXPT coordinates what must remain connected as activity moves.
+          </p>
         </div>
+
+        <div
+          className={styles.conditionField}
+          aria-label="Conditions coordinated by AXPT"
+        >
+          {CONDITIONS.map((condition) => (
+            <article
+              className={styles.condition}
+              key={condition.label}
+            >
+              <h3>{condition.label}</h3>
+              <p>{condition.text}</p>
+            </article>
+          ))}
+
+          <div
+            className={styles.axisRegistration}
+            aria-hidden="true"
+          >
+            <span className={styles.axisTickHorizontal} />
+            <span className={styles.axisTickVertical} />
+            <span className={styles.axisPoint} />
+          </div>
+        </div>
+
+        <footer className={styles.axisDefinition}>
+          <span className={styles.axisLabel}>AXIS POINT</span>
+
+          <p>
+            An Axis Point establishes the conditions from which
+            the next action can responsibly proceed.
+          </p>
+        </footer>
+
       </div>
-    </div>
+    </section>
   )
 }

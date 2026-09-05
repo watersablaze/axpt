@@ -1,256 +1,408 @@
+/* ─────────────────────────────────────
+   AXPT — FOUNDATION
+   WHY AXPT EXISTS
+
+   Static structure establishes relationship.
+   Motion may later reveal behavior.
+───────────────────────────────────── */
+
 .foundationSurface {
-  width: 100%;
   position: relative;
+  width: 100%;
   overflow: clip;
   isolation: isolate;
 }
 
-.foundationSurface::before {
-  content: "";
-  position: absolute;
-  inset: 12% 0 10%;
-  pointer-events: none;
-
-  background:
-    linear-gradient(
-      94deg,
-      transparent 0%,
-      rgba(0,0,0,.055) 24%,
-      rgba(180,210,220,.032) 48%,
-      rgba(0,0,0,.045) 68%,
-      transparent 100%
-    );
-
-  opacity: .42;
-  filter: blur(48px);
-  transform: translateX(5%);
-  animation: foundationFieldDrift 72s ease-in-out infinite alternate;
-}
-
-/* ======================================================
-   STRUCTURE
-====================================================== */
-
 .foundationInner {
-  width: 100%;
-  max-width: 1040px;
+  position: relative;
+
+  width: min(
+    calc(100% - (var(--rail-inset) * 2)),
+    1040px
+  );
+
   margin: 0 auto;
 
   display: grid;
-  grid-template-columns:
-    minmax(0, 620px)
-    minmax(220px, 1fr);
-  column-gap: clamp(56px, 7vw, 120px);
-  align-items: start;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  align-content: start;
+
+  row-gap: clamp(34px, 4.8vh, 62px);
 }
 
-.foundationContent {
+
+/* ─────────────────────────────────────
+   REGISTRATION
+───────────────────────────────────── */
+
+.registration {
   grid-column: 1 / -1;
-  position: relative;
+
+  margin: 0;
+
+  font-family: var(--axpt-mono);
+  font-size: 0.54rem;
+  line-height: 1;
+
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+
+  color: rgba(198, 211, 220, 0.34);
+
+  white-space: nowrap;
+}
+
+
+/* ─────────────────────────────────────
+   DECLARATION
+───────────────────────────────────── */
+
+.declaration {
+  grid-column: 1 / 9;
+}
+
+.declaration h2 {
+  margin: 0;
+
+  max-width: 11ch;
+
+  font-family: var(--axpt-declaration);
+  font-size: clamp(3.15rem, 5.35vw, 5.8rem);
+  line-height: 0.98;
+
+  font-weight: 500;
+  letter-spacing: -0.055em;
+
+  color: rgba(229, 235, 238, 0.96);
+}
+
+.declaration h2 span {
+  display: block;
+}
+
+.declarationSecondary {
+  color: rgba(202, 211, 214, 0.72);
+}
+
+
+/* ─────────────────────────────────────
+   EXPLANATION
+───────────────────────────────────── */
+
+.explanation {
+  grid-column: 2 / 9;
+
+  display: grid;
+  gap: 10px;
+
+  max-width: 650px;
+}
+
+.explanation p {
+  margin: 0;
+
+  font-family: var(--axpt-body);
+  font-size: clamp(0.94rem, 1.15vw, 1.08rem);
+  line-height: 1.55;
+
+  color: rgba(196, 207, 213, 0.56);
+}
+
+.explanation .explanationFocus {
+  color: rgba(222, 229, 233, 0.84);
+}
+
+
+/* ─────────────────────────────────────
+   TRANSITION FIELD
+───────────────────────────────────── */
+
+.transitionField {
+  grid-column: 1 / -1;
 
   display: grid;
   grid-template-columns:
-    minmax(0, 560px)
-    minmax(260px, 360px);
-  column-gap: clamp(48px, 6vw, 92px);
-  row-gap: 34px;
+    minmax(180px, 1fr)
+    minmax(130px, 0.5fr)
+    minmax(180px, 1fr);
+
+  column-gap: clamp(34px, 5vw, 72px);
+
+  align-items: stretch;
+
+  padding:
+    clamp(18px, 2.4vh, 30px)
+    0;
+
+  border-top: 1px solid rgba(198, 216, 225, 0.075);
+  border-bottom: 1px solid rgba(198, 216, 225, 0.055);
 }
 
-.foundationContent::before {
-  content: "";
-  position: absolute;
-  top: 72px;
-  bottom: 6px;
-  left: clamp(584px, 61vw, 606px);
-  width: 1px;
 
-  background:
-    linear-gradient(
-      to bottom,
-      transparent,
-      rgba(190,215,225,.09),
-      transparent
-    );
+/* ─────────────────────────────────────
+   STATE BANKS
+───────────────────────────────────── */
 
-  opacity: .7;
+.stateBank {
+  display: grid;
+  grid-template-rows: repeat(4, minmax(54px, auto));
+
+  row-gap: clamp(20px, 3vh, 34px);
 }
 
-.foundationContent > :global(.header),
-.headlineBlock,
-.headline,
-.divider,
-.subline {
-  grid-column: 1;
-}
-
-/* ======================================================
-   TYPOGRAPHY
-====================================================== */
-
-.headlineBlock {
+.state {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  justify-content: center;
+
+  min-width: 0;
 }
 
-.doctrineCode {
+.stateName {
   font-family: var(--axpt-mono);
-  font-size: .58rem;
-  letter-spacing: .3em;
-  text-transform: uppercase;
+  font-size: 0.62rem;
+  line-height: 1;
 
-  color: rgba(205,215,225,.38);
-}
-
-.headline {
-  max-width: 24ch;
-  margin: 0;
-
-  font-family: var(--axpt-declaration);
-  font-size: clamp(1.65rem, 2.25vw, 2.35rem);
-  line-height: 1.18;
   font-weight: 500;
-  letter-spacing: -0.018em;
+  letter-spacing: 0.27em;
 
-  color: rgba(232,238,242,.84);
-  text-wrap: balance;
-  text-rendering: geometricPrecision;
+  text-transform: uppercase;
+
+  color: rgba(218, 228, 232, 0.78);
 }
 
-.subline {
-  max-width: 54ch;
-  margin: 0;
+.stateNote {
+  margin-top: 8px;
 
-  font-size: .98rem;
-  line-height: 1.78;
+  font-family: var(--axpt-body);
+  font-size: 0.72rem;
+  line-height: 1.3;
 
-  color: rgba(210,220,228,.62);
+  color: rgba(177, 191, 198, 0.34);
 }
 
-/* ======================================================
-   DIVIDER
-====================================================== */
-
-.divider {
-  width: 100%;
-  max-width: 160px;
-  height: 1px;
-
-  background:
-    linear-gradient(
-      to right,
-      rgba(180,210,220,.22),
-      rgba(180,210,220,.035)
-    );
+.stateBankRight {
+  text-align: left;
 }
 
-/* ======================================================
-   FOUNDATIONAL DOMAINS
-====================================================== */
 
-.domains {
-  grid-column: 2;
-  grid-row: 2 / span 4;
-  align-self: end;
+/* ─────────────────────────────────────
+   TRANSITION
+───────────────────────────────────── */
+
+.transition {
+  position: relative;
+
+  display: grid;
+  grid-template-rows: 1fr auto 1fr;
+
+  justify-items: center;
+  align-items: center;
+
+  min-height: 100%;
+}
+
+.transitionRule {
+  display: block;
+
+  width: 1px;
+  height: 100%;
+
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(198, 216, 225, 0.12),
+    transparent
+  );
+}
+
+.transitionLabel {
+  padding: 18px 0;
 
   display: flex;
   flex-direction: column;
-  gap: 0;
+  align-items: center;
 
-  padding: 8px 0;
+  text-align: center;
 
-  border-top: 1px solid rgba(210,225,235,.09);
-  border-bottom: 1px solid rgba(210,225,235,.055);
+  font-family: var(--axpt-body);
+  font-size: clamp(0.82rem, 1vw, 0.96rem);
+  line-height: 1.4;
 
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(255,255,255,.018),
-      rgba(255,255,255,.006)
-    );
+  color: rgba(190, 203, 209, 0.52);
 }
 
-.domain {
-  position: relative;
-  margin: 0;
-  padding: 20px 18px 21px 20px;
+.transitionLabel strong {
+  font-weight: 500;
 
-  border-bottom: 1px solid rgba(210,225,235,.055);
+  color: rgba(224, 231, 234, 0.86);
 }
 
-.domain::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 22px;
-  bottom: 22px;
-  width: 1px;
 
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(210,225,235,.16),
-      rgba(210,225,235,.025)
-    );
+/* ─────────────────────────────────────
+   RESPONSE
+───────────────────────────────────── */
+
+.response {
+  grid-column: 5 / 12;
+
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+
+  column-gap: 30px;
+  align-items: start;
+
+  padding-top: 18px;
+
+  border-top: 1px solid rgba(198, 216, 225, 0.065);
 }
 
-.domainKicker {
-  margin-bottom: 8px;
+.responseMark {
+  padding-top: 0.25em;
 
   font-family: var(--axpt-mono);
-  font-size: .58rem;
-  letter-spacing: .24em;
-  text-transform: uppercase;
+  font-size: 0.52rem;
+  line-height: 1;
 
-  color: rgba(215,225,235,.62);
+  letter-spacing: 0.3em;
+
+  color: rgba(198, 211, 220, 0.32);
 }
 
-.domain p {
+.response p {
   margin: 0;
 
-  font-size: .86rem;
-  line-height: 1.62;
+  max-width: 26ch;
 
-  color: rgba(210,220,228,.5);
+  font-family: var(--axpt-body);
+  font-size: clamp(1rem, 1.35vw, 1.22rem);
+  line-height: 1.45;
+
+  letter-spacing: -0.02em;
+
+  color: rgba(220, 228, 232, 0.82);
 }
 
-@keyframes foundationFieldDrift {
-  0% {
-    transform: translateX(5%) scaleX(1);
+
+/* ─────────────────────────────────────
+   TABLET
+───────────────────────────────────── */
+
+@media (max-width: 900px) {
+
+  .declaration {
+    grid-column: 1 / 11;
   }
 
-  100% {
-    transform: translateX(-5%) scaleX(1.04);
+  .explanation {
+    grid-column: 1 / 10;
   }
+
+  .transitionField {
+    grid-template-columns:
+      minmax(150px, 1fr)
+      minmax(130px, 0.65fr)
+      minmax(150px, 1fr);
+
+    column-gap: 24px;
+  }
+
+  .response {
+    grid-column: 3 / -1;
+  }
+
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .foundationSurface::before {
-    animation: none;
+
+/* ─────────────────────────────────────
+   MOBILE
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .foundationInner {
+    row-gap: 34px;
   }
+
+  .registration,
+  .declaration,
+  .explanation,
+  .transitionField,
+  .response {
+    grid-column: 1 / -1;
+  }
+
+  .registration {
+    white-space: normal;
+  }
+
+  .declaration h2 {
+    max-width: 12ch;
+
+    font-size: clamp(2.75rem, 13vw, 4rem);
+  }
+
+  .transitionField {
+    grid-template-columns: 1fr auto 1fr;
+
+    column-gap: 18px;
+
+    padding: 22px 0;
+  }
+
+  .stateBank {
+    grid-template-rows: repeat(4, minmax(66px, auto));
+    row-gap: 18px;
+  }
+
+  .stateName {
+    font-size: 0.54rem;
+    letter-spacing: 0.2em;
+  }
+
+  .stateNote {
+    font-size: 0.66rem;
+  }
+
+  .transitionLabel {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+
+    flex-direction: row;
+
+    gap: 0.35em;
+
+    padding: 14px 7px;
+
+    font-size: 0.7rem;
+  }
+
+  .response {
+    grid-template-columns: 54px 1fr;
+
+    column-gap: 18px;
+  }
+
 }
 
-/* ======================================================
-   RESPONSIVE
-====================================================== */
 
-@media (max-width: 980px) {
-  .foundationInner,
-  .foundationContent {
-    display: flex;
-    flex-direction: column;
+/* ─────────────────────────────────────
+   SMALL MOBILE
+───────────────────────────────────── */
+
+@media (max-width: 440px) {
+
+  .transitionField {
+    column-gap: 11px;
   }
 
-  .foundationContent::before {
-    display: none;
+  .stateName {
+    font-size: 0.5rem;
+    letter-spacing: 0.14em;
   }
 
-  .headline {
-    max-width: 24ch;
+  .stateNote {
+    max-width: 14ch;
   }
 
-  .domains {
-    width: 100%;
-    max-width: 560px;
-  }
 }

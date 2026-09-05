@@ -1,101 +1,97 @@
-.header {
+/* ─────────────────────────────────────
+   AXPT — HEADER RAIL
+   Identity + state only
+───────────────────────────────────── */
 
+.header {
   position: fixed;
+
   top: 0;
   left: 0;
   right: 0;
 
-  width: 100%;
-
-  padding: 10px clamp(24px, 4vw, 60px);
-
   z-index: 100;
 
-  background: transparent;
-
-}
-
-/* soft fade edge under header (no border line) */
-.header::after {
-  content: "";
-  position: absolute;
-  bottom: -1px;
-  left: 0;
-  right: 0;
-  height: 10px;
-  pointer-events: none;
-
-  background: linear-gradient(
-    to bottom,
-    rgba(6, 18, 30, 0.08),
-    transparent
-  );
-}
-
-
-.header::before {
-  content: "";
-
-  position: absolute;
-  inset: 0;
+  width: 100%;
 
   pointer-events: none;
-
-  z-index: 0;
-
-  background: linear-gradient(
-    to bottom,
-    rgba(4, 10, 18, 0.16),
-    rgba(4, 10, 18, 0.04),
-    transparent
-  );
-
-  opacity: 0.65;
 }
 
-/* ✅ make sure header content sits above the lens */
-.headerShell {
 
-  position: relative;
-  z-index: 1;
+/* ─────────────────────────────────────
+   RAIL
+───────────────────────────────────── */
 
+.headerRail {
   width: calc(100% - (var(--rail-inset) * 2));
+
   margin: 0 auto;
 
+  min-height: 68px;
+
   display: flex;
+  align-items: center;
   justify-content: space-between;
-  align-items: flex-end;
 
-  padding-top: 1.4rem;
-  padding-bottom: 1.2rem;
+  gap: 32px;
 
+  border-bottom: 1px solid rgba(210, 220, 226, 0.035);
 }
+
+
+/* ─────────────────────────────────────
+   IDENTITY
+───────────────────────────────────── */
+
+.brand {
+  display: flex;
+  align-items: center;
+
+  min-width: 0;
+}
+
+.brandText {
+  font-family: var(--axpt-declaration);
+
+  font-size: 0.92rem;
+  line-height: 1;
+
+  font-weight: 500;
+  letter-spacing: 0.18em;
+
+  color: rgba(218, 205, 165, 0.74);
+
+  text-transform: uppercase;
+}
+
+
+/* ─────────────────────────────────────
+   SYSTEM STATE
+───────────────────────────────────── */
 
 .layerSlot {
   display: flex;
-  align-items: flex-end;
-  padding-bottom: 6px;
-}
-
-.inner {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.brandMark {
-  display: flex;
   align-items: center;
+
+  min-width: 0;
+
+  pointer-events: auto;
 }
 
-.brandImage {
-  height: 60px;
-  width: auto;
 
-  opacity: 0.78;
-  mix-blend-mode: luminosity;
+/* ─────────────────────────────────────
+   MOBILE
+───────────────────────────────────── */
 
-  filter:
-   brightness(1.02)
-   contrast(1.04);
+@media (max-width: 680px) {
+
+  .headerRail {
+    min-height: 58px;
+  }
+
+  .brandText {
+    font-size: 0.82rem;
+    letter-spacing: 0.16em;
+  }
+
 }

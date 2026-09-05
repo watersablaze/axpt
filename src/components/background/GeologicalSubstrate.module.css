@@ -1,0 +1,195 @@
+/* ─────────────────────────────────────
+   AXPT — GEOLOGICAL SUBSTRATE
+   One continuous material body beneath
+   the public surface stack.
+───────────────────────────────────── */
+
+.substrate {
+  position: fixed;
+  inset: 0;
+
+  z-index: 0;
+
+  pointer-events: none;
+  overflow: hidden;
+
+  background: #0d171c;
+
+  isolation: isolate;
+}
+
+
+/* ─────────────────────────────────────
+   BASE MATERIAL
+───────────────────────────────────── */
+
+.materialBody {
+  position: absolute;
+  inset: 0;
+
+  background:
+    radial-gradient(
+      ellipse 90% 64% at 18% 12%,
+      rgba(68, 86, 91, 0.055),
+      transparent 68%
+    ),
+    radial-gradient(
+      ellipse 76% 54% at 82% 84%,
+      rgba(4, 10, 13, 0.22),
+      transparent 72%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(18, 31, 36, 0.18),
+      rgba(7, 15, 19, 0.12)
+    );
+
+  opacity: 0.72;
+
+  transition:
+    opacity 1200ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+/* ─────────────────────────────────────
+   STRATA
+───────────────────────────────────── */
+
+.strataField {
+  position: absolute;
+
+  inset: -12% -8%;
+
+  background:
+    linear-gradient(
+      176deg,
+
+      transparent 0%,
+      transparent 28%,
+
+      rgba(122, 143, 148, 0.018) 34%,
+      rgba(122, 143, 148, 0.028) 38%,
+      transparent 44%,
+
+      transparent 61%,
+
+      rgba(95, 113, 119, 0.018) 67%,
+      rgba(95, 113, 119, 0.025) 71%,
+      transparent 77%,
+
+      transparent 100%
+    );
+
+  opacity: 0.72;
+
+  transform: scale(1.02);
+
+  transition:
+    opacity 1200ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+/* ─────────────────────────────────────
+   PRESSURE FIELD
+───────────────────────────────────── */
+
+.pressureField {
+  position: absolute;
+
+  width: 84%;
+  height: 46%;
+
+  left: 8%;
+  top: 28%;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(83, 105, 111, 0.028),
+      rgba(32, 47, 53, 0.012) 42%,
+      transparent 72%
+    );
+
+  opacity: 0.64;
+
+  transform: scaleX(1.04);
+
+  transition:
+    opacity 1200ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 1600ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+
+/* ─────────────────────────────────────
+   ENTRY / THRESHOLD
+───────────────────────────────────── */
+
+:global(body[data-layer="ENTRY"]) .materialBody {
+  opacity: 0.6;
+  transform: translate3d(0, 0, 0);
+}
+
+:global(body[data-layer="ENTRY"]) .strataField {
+  opacity: 0.38;
+
+  transform:
+    translate3d(0, -1.5%, 0)
+    scale(1.02);
+}
+
+:global(body[data-layer="ENTRY"]) .pressureField {
+  opacity: 0.38;
+
+  transform:
+    translate3d(0, 1%, 0)
+    scaleX(1.04);
+}
+
+
+/* ─────────────────────────────────────
+   ACCESSIBILITY
+───────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .materialBody,
+  .strataField,
+  .pressureField {
+    transition: none;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   FRAMEWORK / REGISTRATION
+
+   Structure becomes more legible.
+   The substrate remains one material body.
+───────────────────────────────────── */
+
+:global(body[data-layer="FRAMEWORK"]) .materialBody {
+  opacity: 0.68;
+
+  transform:
+    translate3d(0, 0, 0)
+    scale(1.008);
+}
+
+:global(body[data-layer="FRAMEWORK"]) .strataField {
+  opacity: 0.62;
+
+  transform:
+    translate3d(0.6%, -0.4%, 0)
+    scale(1.028);
+}
+
+:global(body[data-layer="FRAMEWORK"]) .pressureField {
+  opacity: 0.46;
+
+  transform:
+    translate3d(-1%, 0, 0)
+    scaleX(1.05);
+}
