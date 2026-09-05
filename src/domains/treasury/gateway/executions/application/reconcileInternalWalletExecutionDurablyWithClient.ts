@@ -127,29 +127,11 @@ export async function reconcileInternalWalletExecutionDurablyWithClient(params: 
     }
 
     confirmed = await confirmTreasuryExecutionDurablyWithClient({
-      command: {
-        context,
-
-        payload: {
-          executionId,
-
-          treasuryActionId: confirmedEvidence.treasuryActionId,
-
-          idempotencyKey: confirmedEvidence.idempotencyKey,
-
-          debitTransactionId: confirmedEvidence.debitTransactionId,
-
-          creditTransactionId: confirmedEvidence.creditTransactionId,
-
-          assetCode: confirmedEvidence.assetCode,
-
-          amountBaseUnits: confirmedEvidence.amountBaseUnits,
-
-          confirmedAt: confirmedEvidence.confirmedAt,
-        },
-      },
+      evidence: confirmedEvidence,
 
       eventId: confirmedEventId,
+
+      context,
 
       client,
     });

@@ -37,6 +37,10 @@ export async function loadInternalWalletExecutionConfirmedEvidenceWithClient(par
     client,
   });
 
+  if (!action) {
+    return null;
+  }
+
   const [senderWallet, receiverWallet] = await Promise.all([
     client.wallet.findUnique({
       where: {
@@ -55,10 +59,6 @@ export async function loadInternalWalletExecutionConfirmedEvidenceWithClient(par
     throw new Error(
       `[TREASURY_GATEWAY_INTERNAL_WALLET_WALLET_IDENTITY_MISSING] ${executionId}`,
     );
-  }
-
-  if (!action) {
-    return null;
   }
 
   const debit = await client.transaction.findUnique({
