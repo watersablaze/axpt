@@ -2,6 +2,8 @@ import type { TransactionClient } from "@prisma/client";
 
 import { loadTransferCapacityAssessmentWithClient } from "../../transfer-capacity-assessments/persistence/loadTransferCapacityAssessmentWithClient";
 
+import { loadTreasuryTransferCapacityAssessmentEvidenceWithClient } from "../../transfers/persistence/loadTreasuryTransferCapacityAssessmentEvidenceWithClient";
+
 import { loadTreasuryTransferWithClient } from "../../transfers/persistence/loadTreasuryTransferWithClient";
 
 import { TREASURY_TRANSFER_STATUS } from "../../transfers/status";
@@ -52,6 +54,36 @@ export async function recordTreasuryExecutionPlanDurablyWithClient(params: {
   if (!loadedCapacityAssessment) {
     throw new Error(
       `[TREASURY_GATEWAY_TRANSFER_CAPACITY_ASSESSMENT_NOT_FOUND] ${request.payload.capacityAssessmentId}`,
+    );
+  }
+
+  if (loadedCapacityAssessment.aggregate.transferId !== loadedTransfer.aggregate.id) {
+    throw new Error(
+      `[TREASURY_EXECUTION_PLAN_TRANSFER_MISMATCH] ${loadedTransfer.aggregate.id} -> ${loadedCapacityAssessment.aggregate.transferId}`,
+    );
+  }
+
+  const operativeCapacityAssessment =
+    await loadTreasuryTransferCapacityAssessmentEvidenceWithClient({
+      transferId: loadedTransfer.aggregate.id,
+
+      transferVersion: loadedTransfer.aggregate.metadata.version,
+
+      client,
+    });
+
+  if (!operativeCapacityAssessment) {
+    throw new Error(
+      `[TREASURY_EXECUTION_PLAN_OPERATIVE_CAPACITY_ASSESSMENT_NOT_FOUND] ${loadedTransfer.aggregate.id}`,
+    );
+  }
+
+  if (
+    operativeCapacityAssessment.assessmentId !==
+    loadedCapacityAssessment.aggregate.id
+  ) {
+    throw new Error(
+      `[TREASURY_EXECUTION_PLAN_CAPACITY_ASSESSMENT_NOT_OPERATIVE] ${loadedCapacityAssessment.aggregate.id} -> ${operativeCapacityAssessment.assessmentId}`,
     );
   }
 

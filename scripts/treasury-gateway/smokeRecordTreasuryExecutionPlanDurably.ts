@@ -567,6 +567,8 @@ async function main(): Promise<void> {
 
   const targetCapacityAssessmentId = `execution-plan-durable-target-capacity-${fixtureId}`;
 
+  const nonOperativeCapacityAssessmentId = `execution-plan-durable-target-capacity-non-operative-${fixtureId}`;
+
   const foreignTransferId = `execution-plan-durable-foreign-transfer-${fixtureId}`;
 
   const foreignCapacityAssessmentId = `execution-plan-durable-foreign-capacity-${fixtureId}`;
@@ -583,6 +585,8 @@ async function main(): Promise<void> {
 
   const planId = `execution-plan-durable-plan-${fixtureId}`;
 
+  const nonOperativePlanId = `execution-plan-durable-non-operative-capacity-plan-${fixtureId}`;
+
   const actorId = `execution-plan-durable-planner-${fixtureId}`;
 
   const invalidPlanIds = [
@@ -590,6 +594,7 @@ async function main(): Promise<void> {
     `execution-plan-durable-wrong-posture-plan-${fixtureId}`,
     `execution-plan-durable-missing-capacity-plan-${fixtureId}`,
     `execution-plan-durable-mismatched-capacity-plan-${fixtureId}`,
+    nonOperativePlanId,
     `execution-plan-durable-undetermined-plan-${fixtureId}`,
     `execution-plan-durable-over-capacity-plan-${fixtureId}`,
     `execution-plan-durable-empty-tranches-plan-${fixtureId}`,
@@ -610,14 +615,71 @@ async function main(): Promise<void> {
      * Canonical fixture construction.
      */
     await prisma.$transaction(async (tx: TransactionClient) => {
-      await createCapacityAssessedTransfer({
+      await originateTransfer({
         transferId: targetTransferId,
-
-        capacityAssessmentId: targetCapacityAssessmentId,
 
         suffix: "target",
 
         fixtureId,
+
+        client: tx,
+      });
+
+      await authorizeTransfer({
+        transferId: targetTransferId,
+
+        suffix: "target",
+
+        fixtureId,
+
+        client: tx,
+      });
+
+      await recordCapacityAssessment({
+        transferId: targetTransferId,
+
+        assessmentId: targetCapacityAssessmentId,
+
+        suffix: "target",
+
+        fixtureId,
+
+        client: tx,
+      });
+
+      /*
+       * Canonical and transfer-bound, but deliberately not applied.
+       */
+      await recordCapacityAssessment({
+        transferId: targetTransferId,
+
+        assessmentId: nonOperativeCapacityAssessmentId,
+
+        suffix: "target-non-operative",
+
+        fixtureId,
+
+        client: tx,
+      });
+
+      await applyTreasuryTransferCapacityAssessmentDurablyWithClient({
+        transferId: targetTransferId,
+
+        assessmentId: targetCapacityAssessmentId,
+
+        eventId: `execution-plan-durable-capacity-application-event-target-${fixtureId}`,
+
+        context: {
+          commandId: `execution-plan-durable-capacity-application-command-target-${fixtureId}`,
+
+          actorId: `execution-plan-durable-capacity-applicator-${fixtureId}`,
+
+          correlationId: `execution-plan-durable-capacity-application-correlation-target-${fixtureId}`,
+
+          requestedAt: new Date("2026-08-24T18:05:00.000Z"),
+
+          idempotencyKey: `execution-plan-durable-capacity-application-target-${fixtureId}`,
+        },
 
         client: tx,
       });
@@ -898,6 +960,56 @@ async function main(): Promise<void> {
     assertErrorCode(
       mismatchedCapacityAssessmentError,
       "TREASURY_EXECUTION_PLAN_TRANSFER_MISMATCH",
+    );
+
+    /*
+     * A valid Capacity Assessment belonging to this Transfer may not govern
+     * planning unless its application established the Transfer's operative
+     * CAPACITY_ASSESSED posture.
+     */
+    let nonOperativeCapacityAssessmentError: unknown;
+
+    try {
+      await prisma.$transaction(async (tx: TransactionClient) =>
+        recordTreasuryExecutionPlanDurablyWithClient({
+          request: {
+            planId: nonOperativePlanId,
+
+            eventId: `execution-plan-durable-non-operative-capacity-event-${fixtureId}`,
+
+            context: {
+              commandId: `execution-plan-durable-non-operative-capacity-command-${fixtureId}`,
+
+              actorId,
+
+              correlationId: `execution-plan-durable-non-operative-capacity-correlation-${fixtureId}`,
+
+              requestedAt: new Date("2026-08-24T18:07:00.000Z"),
+
+              idempotencyKey: `execution-plan-durable-non-operative-capacity-${fixtureId}`,
+            },
+
+            payload: createPlanPayload({
+              transferId: targetTransferId,
+
+              capacityAssessmentId: nonOperativeCapacityAssessmentId,
+
+              fixtureId,
+
+              suffix: "non-operative-capacity",
+            }),
+          },
+
+          client: tx,
+        }),
+      );
+    } catch (error: unknown) {
+      nonOperativeCapacityAssessmentError = error;
+    }
+
+    assertErrorCode(
+      nonOperativeCapacityAssessmentError,
+      "TREASURY_EXECUTION_PLAN_CAPACITY_ASSESSMENT_NOT_OPERATIVE",
     );
 
     /*
@@ -1575,6 +1687,8 @@ async function main(): Promise<void> {
         missingCapacityAssessmentRejected: true,
 
         mismatchedCapacityAssessmentRejected: true,
+
+        nonOperativeCapacityAssessmentRejected: true,
 
         undeterminedCapacityCannotBePlanned: true,
 
