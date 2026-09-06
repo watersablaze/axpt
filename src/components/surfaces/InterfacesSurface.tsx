@@ -1,84 +1,84 @@
-'use client'
-
 import styles from './InterfacesSurface.module.css'
-import SurfaceHeader from '@/components/surfaces/SurfaceHeader'
-import CouncilGate from '@/components/council/CouncilGate'
 
-import { useState } from 'react'
+const ENCOUNTERS = [
+  {
+    label: 'Verify',
+    text: 'What is known before action proceeds.',
+  },
+  {
+    label: 'Authorize',
+    text: 'Who can act under established conditions.',
+  },
+  {
+    label: 'Act',
+    text: 'What is caused to proceed.',
+  },
+  {
+    label: 'Record',
+    text: 'What remains established after action occurs.',
+  },
+] as const
 
-interface Props {
-  onCouncilOpen?: () => void
-}
-
-export default function InterfacesSurface({ onCouncilOpen }: Props) {
-
-  const [councilGateOpen, setCouncilGateOpen] = useState(false)
-
+export default function InterfacesSurface() {
   return (
-
     <div className={styles.interfacesSurface}>
-
-      <CouncilGate
-        open={councilGateOpen}
-        onClose={() => setCouncilGateOpen(false)}
-      />
-
-      <div className="surfaceFrame">
-
-        <SurfaceHeader kicker="INTERFACES" />
-
-        <h2 className={styles.headline}>
-          Access is authority.
-        </h2>
-
-        <p className={styles.subline}>
-          Governance command and institutional integration.
-          Two pathways into the AXPT system.
+      <div className={styles.interfacesInner}>
+        <p className={styles.registration}>
+          Axis Point / Interfaces
         </p>
 
-        <div className={styles.interfaceGrid}>
+        <header className={styles.declaration}>
+          <h2>
+            Conditions become consequential
+            <span> at the point of action.</span>
+          </h2>
+        </header>
 
-          <article className={styles.interfaceCard}>
-
-          <h3>COUNCIL</h3>
-
-            <p>
-              Mandate review, policy enforcement, and governance execution.
-              Decisions issued here become system record.
-            </p>
-
-            <button
-              className={styles.inlineTrigger}
-              onClick={() => {
-                onCouncilOpen?.()
-                setCouncilGateOpen(true)
-              }}
-            >
-              Enter Council
-            </button>
-
-          </article>
-
-          <article className={`${styles.interfaceCard} ${styles.interfaceDormant}`}>
-
-            <h3>INSTITUTION</h3>
-
-            <p>
-              Partnership alignment, treasury coordination,
-              and broadcast participation across the AXPT network.
-            </p>
-
-            <span className={styles.inlineDisabled}>
-              Integration pathways coming online
-            </span>
-
-          </article>
-
+        <div className={styles.explanation}>
+          <p>
+            Infrastructure becomes tangible when
+            someone must verify what is known,
+            determine who can act, cause something to
+            proceed, or establish what occurred.
+          </p>
         </div>
 
+        <div
+          className={styles.encounterField}
+          aria-label="Points of encounter with infrastructure"
+        >
+          {ENCOUNTERS.map((encounter) => (
+            <article
+              className={styles.encounter}
+              key={encounter.label}
+            >
+              <h3>{encounter.label}</h3>
+              <p>{encounter.text}</p>
+            </article>
+          ))}
+
+          <div
+            className={styles.actionPoint}
+            aria-hidden="true"
+          >
+            <span className={styles.actionMark} />
+            <span className={styles.actionLabel}>
+              Point of Action
+            </span>
+          </div>
+        </div>
+
+        <footer className={styles.interfaceDefinition}>
+          <span className={styles.definitionLabel}>
+            INTERFACE
+          </span>
+
+          <p>
+            An interface is where established conditions
+            become actionable.
+          </p>
+        </footer>
       </div>
-
     </div>
-
   )
 }

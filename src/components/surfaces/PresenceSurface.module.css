@@ -1,187 +1,262 @@
-/* ──────────────────────────────
-   PRESENCE SURFACE
-   Closing chamber of the AXPT field
-────────────────────────────── */
+/* ─────────────────────────────────────
+   AXPT — SEAL
+   Closing condition
+───────────────────────────────────── */
 
 .presenceSurface {
+  position: relative;
+
   width: 100%;
-  position: relative;
-  overflow: hidden;
+
+  overflow: clip;
 }
 
-/* ──────────────────────────────
-   CHAMBER LAYOUT
-────────────────────────────── */
+.sealInner {
+  width: min(
+    calc(100% - (var(--rail-inset) * 2)),
+    1080px
+  );
 
-.chamber {
-  position: relative;
+  min-height: calc(
+    100svh -
+    clamp(40px, 5vh, 72px) -
+    clamp(80px, 8vh, 120px)
+  );
 
-  min-height: 68vh;
+  margin: 0 auto;
 
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  display: grid;
 
-  padding:
-    clamp(90px, 12vh, 160px)
-    0
-    40px;
+  grid-template-rows:
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  row-gap: clamp(28px, 4vh, 52px);
 }
 
-/* ──────────────────────────────
-   PRESENCE MARK
-────────────────────────────── */
 
-.presenceMark {
-  position: absolute;
+/* ─────────────────────────────────────
+   REGISTRATION
+───────────────────────────────────── */
 
-  inset: 0;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  pointer-events: none;
-
-  opacity: .04;
-}
-
-.sigil {
-  width: min(420px, 34vw);
-  height: auto;
-
-  opacity: .46;
-
-  mix-blend-mode: luminosity;
-
-  filter:
-    grayscale(100%)
-    contrast(.88);
-}
-
-/* ──────────────────────────────
-   CLOSING STATEMENT
-────────────────────────────── */
-
-.closingStatement {
-  position: relative;
-  z-index: 2;
-
-  max-width: 760px;
-
-  display: flex;
-  flex-direction: column;
-
-  gap: 22px;
-}
-
-.kicker {
-  width: fit-content;
+.registration {
+  margin: 0;
 
   font-family: var(--axpt-mono);
 
   font-size: .58rem;
+  line-height: 1;
 
-  letter-spacing: .34em;
-
+  letter-spacing: .32em;
   text-transform: uppercase;
 
-  color: rgba(210,220,228,.44);
+  color: rgba(204, 216, 222, .42);
+}
+
+
+/* ─────────────────────────────────────
+   SEAL FIELD
+───────────────────────────────────── */
+
+.sealField {
+  position: relative;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(240px, .78fr)
+    minmax(0, 1.22fr);
+
+  align-items: center;
+
+  column-gap: clamp(64px, 9vw, 140px);
+}
+
+
+/* ─────────────────────────────────────
+   MARK
+───────────────────────────────────── */
+
+.sealMark {
+  position: relative;
+
+  justify-self: center;
+
+  width: clamp(210px, 23vw, 320px);
+  aspect-ratio: 1;
+
+  display: grid;
+  place-items: center;
+}
+
+.registrationRing {
+  position: absolute;
+
+  inset: 4%;
+
+  border: 1px solid rgba(202, 216, 220, .055);
+  border-radius: 50%;
+}
+
+.registrationRing::before,
+.registrationRing::after {
+  content: "";
+
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  background: rgba(202, 216, 220, .045);
+
+  transform: translate(-50%, -50%);
+}
+
+.registrationRing::before {
+  width: 116%;
+  height: 1px;
+}
+
+.registrationRing::after {
+  width: 1px;
+  height: 116%;
+}
+
+.sigil {
+  position: relative;
+
+  z-index: 1;
+
+  width: 72%;
+  height: auto;
+
+  opacity: .12;
+
+  filter:
+    grayscale(100%)
+    contrast(.9);
+
+  mix-blend-mode: luminosity;
+
+  user-select: none;
+}
+
+
+/* ─────────────────────────────────────
+   CLOSING STATEMENT
+───────────────────────────────────── */
+
+.closingStatement {
+  position: relative;
+
+  max-width: 650px;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: clamp(24px, 3vh, 34px);
 }
 
 .closingStatement h2 {
   margin: 0;
 
-  max-width: 12ch;
+  max-width: 13ch;
 
-  font-size: clamp(2.4rem, 4vw, 4.8rem);
+  font-size: clamp(2.8rem, 5.1vw, 4.9rem);
+  line-height: .98;
 
-  line-height: .94;
+  font-weight: 500;
 
-  font-weight: 520;
+  letter-spacing: -.052em;
 
-  letter-spacing: -.06em;
-
-  color: rgba(240,244,246,.9);
+  color: rgba(239, 243, 244, .9);
 
   text-wrap: balance;
+}
+
+.closingStatement h2 span {
+  display: block;
+
+  margin-top: .24em;
+
+  color: rgba(202, 213, 218, .52);
 }
 
 .closingStatement p {
   margin: 0;
 
-  max-width: 56ch;
+  max-width: 40ch;
 
-  font-size: .98rem;
+  font-size: clamp(.92rem, 1.15vw, 1.02rem);
+  line-height: 1.75;
 
-  line-height: 1.8;
-
-  color: rgba(210,220,228,.58);
+  color: rgba(205, 216, 222, .5);
 }
 
-/* ──────────────────────────────
-   FOOTER BAR
-────────────────────────────── */
+
+/* ─────────────────────────────────────
+   FOOTER RECORD
+───────────────────────────────────── */
 
 .footerBar {
-  position: relative;
-  z-index: 2;
-
   width: 100%;
 
   display: grid;
 
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns:
+    1fr
+    auto
+    1fr;
 
   align-items: end;
 
   gap: 32px;
 
-  padding-top: 28px;
+  padding-top: 22px;
 
-  border-top: 1px solid rgba(255,255,255,.04);
+  border-top: 1px solid rgba(198, 216, 225, .055);
 }
 
-/* ──────────────────────────────
-   FOOTER TYPOGRAPHY
-────────────────────────────── */
+.footerIdentity,
+.footerContact,
+.footerRecord {
+  min-width: 0;
 
-.footerTitle {
   font-family: var(--axpt-mono);
 
-  font-size: .52rem;
+  font-size: .5rem;
+  line-height: 1.5;
 
-  letter-spacing: .28em;
-
+  letter-spacing: .22em;
   text-transform: uppercase;
 
-  color: rgba(210,220,228,.42);
+  color: rgba(194, 207, 213, .3);
 }
 
-.footerValue {
-  font-family: var(--axpt-mono);
+.footerIdentity {
+  display: flex;
 
-  font-size: .52rem;
+  gap: 18px;
+}
 
-  letter-spacing: .18em;
+.footerIdentity span:first-child {
+  color: rgba(218, 205, 165, .54);
+}
 
-  text-transform: uppercase;
+.footerContact {
+  display: flex;
+  align-items: center;
 
-  color: rgba(200,208,216,.32);
+  gap: 18px;
+}
 
-  line-height: 1.4;
+.footerLabel {
+  color: rgba(194, 207, 213, .3);
 }
 
 .footerLink {
-  margin-top: 10px;
-
-  font-family: var(--axpt-mono);
-
-  font-size: .56rem;
-
-  letter-spacing: .18em;
-
-  color: rgba(180,210,220,.58);
+  color: rgba(204, 218, 222, .5);
 
   text-decoration: none;
 
@@ -189,96 +264,89 @@
 }
 
 .footerLink:hover {
-  color: rgba(140,210,175,.82);
+  color: rgba(224, 232, 234, .78);
 }
 
-/* ──────────────────────────────
-   FOOTER COLUMNS
-────────────────────────────── */
-
-.col,
-.colCenter {
-  min-width: 0;
-
-  display: flex;
-  flex-direction: column;
-
-  justify-content: flex-end;
-}
-
-.col:first-child {
-  text-align: left;
-}
-
-.colCenter {
-  align-items: center;
-  text-align: center;
-}
-
-.col:last-child {
-  align-items: flex-end;
+.footerRecord {
   text-align: right;
 }
 
-/* ──────────────────────────────
-   SUBTLE CLOSING FIELD
-────────────────────────────── */
 
-.presenceSurface::after {
-  content: "";
+/* ─────────────────────────────────────
+   TABLET
+───────────────────────────────────── */
 
-  position: absolute;
+@media (max-width: 900px) {
+  .sealField {
+    grid-template-columns:
+      minmax(190px, .7fr)
+      minmax(0, 1.3fr);
 
-  left: 0;
-  right: 0;
-  bottom: 0;
+    column-gap: clamp(40px, 6vw, 72px);
+  }
 
-  height: 42%;
-
-  pointer-events: none;
-
-  background:
-    linear-gradient(
-      to top,
-      rgba(0,0,0,.28),
-      rgba(0,0,0,.08),
-      transparent
-    );
-
-  opacity: .72;
+  .sealMark {
+    width: clamp(190px, 28vw, 260px);
+  }
 }
 
-/* ──────────────────────────────
-   MOBILE
-────────────────────────────── */
 
-@media (max-width: 860px) {
-  .chamber {
-    min-height: 72vh;
+/* ─────────────────────────────────────
+   MOBILE
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+  .sealInner {
+    min-height: auto;
+
+    row-gap: 34px;
+  }
+
+  .sealField {
+    display: flex;
+    flex-direction: column;
+
+    align-items: flex-start;
+
+    gap: 44px;
+  }
+
+  .sealMark {
+    align-self: center;
+
+    width: min(230px, 64vw);
   }
 
   .closingStatement h2 {
-    max-width: 13ch;
-    font-size: clamp(2.3rem, 11vw, 4rem);
+    max-width: 12ch;
+
+    font-size: clamp(2.65rem, 12.5vw, 4rem);
   }
 
   .footerBar {
     grid-template-columns: 1fr;
-    gap: 18px;
-    text-align: left;
+
+    align-items: start;
+
+    gap: 16px;
   }
 
-  .col,
-  .colCenter {
+  .footerIdentity {
+    justify-content: flex-start;
+  }
+
+  .footerContact {
     align-items: flex-start;
+  }
+
+  .footerRecord {
     text-align: left;
   }
+}
 
-  .presenceMark {
-    opacity: .03;
-  }
 
-  .sigil {
-    width: min(360px, 74vw);
+@media (prefers-reduced-motion: reduce) {
+  .footerLink {
+    transition: none;
   }
 }

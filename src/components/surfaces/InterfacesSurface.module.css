@@ -1,228 +1,399 @@
+/* ─────────────────────────────────────
+   AXPT — INTERFACES
+   Conditions encounter action
+───────────────────────────────────── */
+
 .interfacesSurface {
-
-  width: 100%;
   position: relative;
-
+  width: 100%;
+  overflow: clip;
 }
 
-.interfaceDormant{
+.interfacesInner {
+  width: min(
+    calc(100% - (var(--rail-inset) * 2)),
+    1080px
+  );
 
-  opacity:.55;
-
-  filter:saturate(.4);
-
-}
-
-.interfaceDormant .inlineDisabled{
-
-  color:rgba(235,225,205,.35);
-
-}
-
-.interfaceDormant h3{
-  color:rgba(235,225,205,.45);
-}
-
-.interfaceDormant p{
-  color:rgba(235,225,205,.35);
-}
-
-/* headline */
-.headline {
-
-  margin-top: 10px;
-
-  max-width: 11ch;
-
-  font-size: clamp(2.2rem, 3.6vw, 3.8rem);
-
-  line-height: .98;
-
-  font-weight: 520;
-
-  letter-spacing: -0.04em;
-
-  color: rgba(245,242,236,.94);
-
-}
-
-/* description */
-
-.subline{
-
-  margin-top:12px;
-  margin-bottom:44px;
-
-  max-width:640px;
-
-  line-height:1.65;
-
-  color:rgba(235,225,205,0.58);
-}
-
-/* grid */
-
-.interfaceGrid {
+  margin: 0 auto;
 
   display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
 
-  grid-template-columns:
-    repeat(2, minmax(320px, 460px));
-
-  justify-content: center;
-
-  gap: 28px;
-
-  margin-top: 42px;
-
+  row-gap: clamp(26px, 3.2vh, 42px);
 }
 
-/* cards */
 
-.interfaceCard {
+/* ─────────────────────────────────────
+   REGISTRATION
+───────────────────────────────────── */
 
-  position: relative;
+.registration {
+  grid-column: 1 / -1;
 
-  width: 100%;
-  max-width: 460px;
-
-  display: flex;
-  flex-direction: column;
-
-  justify-content:space-between;
-
-  min-height: 240px;
-
-  padding: 28px;
-
-  border-radius: 12px;
-
-  border: 1px solid rgba(255,255,255,.045);
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,255,255,.028),
-      rgba(255,255,255,.01)
-    );
-
-  backdrop-filter: blur(6px);
-
-  box-shadow:
-    0 10px 24px rgba(0,0,0,.14);
-
-}
-
-.interfaceCard h3{
-
-  font-family:var(--axpt-mono);
-
-  letter-spacing:0.22em;
-
-  font-size:.78rem;
-
-  margin-bottom:12px;
-
-  color:rgba(240,232,214,0.85);
-
-}
-
-.interfaceCard p{
-
-  line-height:1.72;
-
-  color:rgba(235,225,205,0.55);
-
-  margin-bottom:18px;
-}
-
-/* triggers */
-
-.inlineTrigger {
-
-  margin-top: auto;
-
-  padding-top: 18px;
-
-  background: none;
-  border: none;
-
-  text-align: left;
+  margin: 0;
 
   font-family: var(--axpt-mono);
 
-  font-size: .64rem;
+  font-size: .58rem;
+  line-height: 1;
 
-  letter-spacing: .24em;
-
+  letter-spacing: .32em;
   text-transform: uppercase;
 
-  color: rgba(210,220,228,.52);
-
-  cursor: pointer;
-
-  transition:
-    color 220ms ease,
-    transform 220ms ease;
-
+  color: rgba(204, 216, 222, .42);
 }
 
-.inlineDisabled{
 
-  font-family:var(--axpt-mono);
+/* ─────────────────────────────────────
+   DECLARATION
+───────────────────────────────────── */
 
-  font-size:.72rem;
-
-  opacity:.55;
-
-  letter-spacing:.20em;
-
-  color:rgba(235,225,205,0.35);
-
+.declaration {
+  grid-column: 1 / 10;
 }
 
-.inlineTrigger,
-.inlineDisabled{
+.declaration h2 {
+  margin: 0;
 
-  margin-top:auto;
+  max-width: 14ch;
 
-  padding-top:16px;
+  font-size: clamp(2.9rem, 5.7vw, 5.15rem);
+  line-height: .94;
 
-  display:block;
+  font-weight: 500;
+  letter-spacing: -.055em;
 
-  width:100%;
+  color: rgba(239, 243, 244, .91);
 
-  text-align:center;
-
-  font-family:var(--axpt-mono);
-
-  font-size:.72rem;
-
-  letter-spacing:.20em;
-
-  text-transform:uppercase;
-
+  text-wrap: balance;
 }
 
-.inlineTrigger::before{
-  content:"> ";
-  opacity:.6;
+.declaration h2 span {
+  color: rgba(205, 215, 219, .56);
 }
 
-.inlineTrigger:hover {
 
-  color: rgba(240,244,248,.82);
+/* ─────────────────────────────────────
+   EXPLANATION
+───────────────────────────────────── */
 
-  transform: translateX(4px);
+.explanation {
+  grid-column: 2 / 9;
 
+  max-width: 680px;
 }
 
-/* responsive */
+.explanation p {
+  margin: 0;
 
-@media (max-width:880px){
+  font-size: clamp(.96rem, 1.25vw, 1.08rem);
+  line-height: 1.78;
 
-  .interfaceGrid{
-    grid-template-columns:1fr;
+  color: rgba(205, 216, 222, .58);
+}
+
+
+/* ─────────────────────────────────────
+   ENCOUNTER FIELD
+───────────────────────────────────── */
+
+.encounterField {
+  position: relative;
+
+  grid-column: 1 / -1;
+
+  min-height: clamp(260px, 29vh, 330px);
+}
+
+
+/* Four conditions remain spatial rather
+   than becoming a feature-card grid. */
+
+.encounter {
+  position: absolute;
+
+  width: min(31%, 280px);
+}
+
+.encounter:nth-child(1) {
+  top: 13%;
+  left: 4%;
+}
+
+.encounter:nth-child(2) {
+  top: 13%;
+  right: 4%;
+  text-align: right;
+}
+
+.encounter:nth-child(3) {
+  bottom: 13%;
+  left: 4%;
+}
+
+.encounter:nth-child(4) {
+  right: 4%;
+  bottom: 13%;
+  text-align: right;
+}
+
+.encounter h3 {
+  margin: 0 0 10px;
+
+  font-family: var(--axpt-mono);
+
+  font-size: .7rem;
+  line-height: 1;
+
+  font-weight: 520;
+
+  letter-spacing: .26em;
+  text-transform: uppercase;
+
+  color: rgba(229, 234, 236, .74);
+}
+
+.encounter p {
+  margin: 0;
+
+  max-width: 28ch;
+
+  font-size: .84rem;
+  line-height: 1.65;
+
+  color: rgba(195, 207, 213, .46);
+}
+
+.encounter:nth-child(2) p,
+.encounter:nth-child(4) p {
+  margin-left: auto;
+}
+
+
+/* ─────────────────────────────────────
+   POINT OF ACTION
+───────────────────────────────────── */
+
+.actionPoint {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 14px;
+
+  transform: translate(-50%, -50%);
+}
+
+.actionPoint::after {
+  content: "";
+
+  position: absolute;
+
+  top: 29px;
+  left: 50%;
+
+  width: 132px;
+  height: 132px;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      to right,
+      transparent calc(50% - .5px),
+      rgba(198, 214, 220, .05) calc(50% - .5px),
+      rgba(198, 214, 220, .05) calc(50% + .5px),
+      transparent calc(50% + .5px)
+    ),
+    linear-gradient(
+      to bottom,
+      transparent calc(50% - .5px),
+      rgba(198, 214, 220, .05) calc(50% - .5px),
+      rgba(198, 214, 220, .05) calc(50% + .5px),
+      transparent calc(50% + .5px)
+    );
+
+  transform: translate(-50%, -50%);
+
+  z-index: -1;
+}
+
+.actionPoint::before {
+  content: "";
+
+  position: absolute;
+
+  top: 29px;
+  left: 50%;
+
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: rgba(218, 227, 230, .66);
+
+  transform: translate(-50%, -50%);
+}
+
+.actionLabel {
+  font-family: var(--axpt-mono);
+
+  font-size: .5rem;
+  line-height: 1;
+
+  letter-spacing: .26em;
+  text-transform: uppercase;
+
+  white-space: nowrap;
+
+  color: rgba(196, 209, 214, .34);
+}
+
+
+/* ─────────────────────────────────────
+   DEFINITION
+───────────────────────────────────── */
+
+.interfaceDefinition {
+  grid-column: 5 / 12;
+
+  display: grid;
+  grid-template-columns: 92px 1fr;
+
+  column-gap: 30px;
+  align-items: start;
+
+  padding-top: 14px;
+
+  border-top: 1px solid rgba(198, 216, 225, .065);
+}
+
+.definitionLabel {
+  padding-top: .28em;
+
+  font-family: var(--axpt-mono);
+
+  font-size: .52rem;
+  line-height: 1;
+
+  letter-spacing: .28em;
+  text-transform: uppercase;
+
+  color: rgba(199, 212, 218, .34);
+}
+
+.interfaceDefinition p {
+  margin: 0;
+
+  max-width: 38ch;
+
+  font-size: clamp(.9rem, 1.1vw, 1rem);
+  line-height: 1.7;
+
+  color: rgba(210, 220, 224, .58);
+}
+
+
+/* ─────────────────────────────────────
+   TABLET
+───────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .declaration {
+    grid-column: 1 / 11;
   }
 
+  .explanation {
+    grid-column: 1 / 10;
+  }
+
+  .encounterField {
+    min-height: 330px;
+  }
+
+  .interfaceDefinition {
+    grid-column: 3 / -1;
+  }
+}
+
+
+/* ─────────────────────────────────────
+   MOBILE
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+  .interfacesInner {
+    display: flex;
+    flex-direction: column;
+
+    row-gap: 30px;
+  }
+
+  .declaration h2 {
+    max-width: 12ch;
+
+    font-size: clamp(2.7rem, 13vw, 4.3rem);
+  }
+
+  .explanation {
+    max-width: none;
+  }
+
+  .encounterField {
+    min-height: 460px;
+  }
+
+  .encounter {
+    width: 42%;
+  }
+
+  .encounter:nth-child(1) {
+    top: 10%;
+    left: 0;
+  }
+
+  .encounter:nth-child(2) {
+    top: 10%;
+    right: 0;
+  }
+
+  .encounter:nth-child(3) {
+    bottom: 10%;
+    left: 0;
+  }
+
+  .encounter:nth-child(4) {
+    right: 0;
+    bottom: 10%;
+  }
+
+  .actionMark {
+    width: 42px;
+    height: 42px;
+  }
+
+  .actionMark::before {
+    width: 42px;
+  }
+
+  .actionMark::after {
+    height: 42px;
+  }
+
+  .actionPoint::before {
+    top: 21px;
+  }
+
+  .interfaceDefinition {
+    grid-template-columns: 70px 1fr;
+
+    column-gap: 18px;
+  }
 }

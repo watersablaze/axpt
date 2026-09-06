@@ -1,72 +1,86 @@
 import styles from './EthosSurface.module.css'
-import SurfaceHeader from '@/components/surfaces/SurfaceHeader'
 
-const CIRCULATION_CHANNELS = [
+const PASSAGE_STATES = [
   {
-    title: 'Cultural Exchange',
-    text: 'Cross-border participation structured through consent, context, and reciprocal value.',
+    label: 'Action',
+    text: 'Something proceeds.',
   },
   {
-    title: 'Restorative Media',
-    text: 'Narrative systems maintained as record, witness, and authorship infrastructure.',
+    label: 'Transfer',
+    text: 'Value, information, custody, authority, or state changes position.',
   },
   {
-    title: 'Regenerative Systems',
-    text: 'Economic participation oriented toward preservation, repair, and long-term continuity.',
+    label: 'Consequence',
+    text: 'What moved changes what becomes possible next.',
   },
   {
-    title: 'Shared Custodianship',
-    text: 'Ledger, policy, treasury, and broadcast held as coordinated institutional responsibility.',
+    label: 'Continuity',
+    text: 'Responsibility and record remain connected through the change.',
   },
-]
-
-function CirculationChannel({
-  title,
-  text,
-}: {
-  title: string
-  text: string
-}) {
-  return (
-    <article className={styles.circulationChannel}>
-      <div className={styles.channelBody}>
-        <h3>{title}</h3>
-        <p>{text}</p>
-      </div>
-    </article>
-  )
-}
+] as const
 
 export default function EthosSurface() {
-
   return (
-
     <div className={styles.ethosSurface}>
+      <div className={styles.ethosInner}>
+        <p className={styles.registration}>
+          Axis Point / Circulation
+        </p>
 
-      <div className="surfaceFrame">
+        <header className={styles.declaration}>
+          <h2>
+            What moves carries
+            <span> consequence with it.</span>
+          </h2>
+        </header>
 
-        <div className={styles.ethosInner}>
-
-        <SurfaceHeader
-          kicker="CIRCULATION"
-          title="Infrastructure must remain accountable to what it moves."
-          subline="AXPT connects systems of value, record, narrative, and participation without separating coordination from responsibility."
-        />
-
-      <div className={styles.circulationRiver}>
-        {CIRCULATION_CHANNELS.map((channel) => (
-          <CirculationChannel
-            key={channel.title}
-            title={channel.title}
-            text={channel.text}
-          />
-        ))}
-      </div>
-
+        <div className={styles.explanation}>
+          <p>
+            An action may begin at a single point, but its effects
+            continue through records, relationships, obligations,
+            and subsequent decisions.
+          </p>
         </div>
 
-      </div>
+        <div
+          className={styles.passage}
+          aria-label="Circulation through action, transfer, consequence, and continuity"
+        >
+          <div className={styles.passageLine} aria-hidden="true">
+            <span className={styles.originMark} />
+            <span className={styles.directionMark} />
+          </div>
 
+          {PASSAGE_STATES.map((state, index) => (
+            <article
+              className={styles.passageState}
+              key={state.label}
+              data-position={index + 1}
+            >
+              <span
+                className={styles.stateMark}
+                aria-hidden="true"
+              />
+
+              <div className={styles.stateBody}>
+                <h3>{state.label}</h3>
+                <p>{state.text}</p>
+              </div>
+            </article>
+          ))}
+        </div>
+
+        <footer className={styles.circulationDefinition}>
+          <span className={styles.definitionLabel}>
+            CIRCULATION
+          </span>
+
+          <p>
+            Movement continues. Responsibility must remain
+            traceable through it.
+          </p>
+        </footer>
+      </div>
     </div>
   )
 }

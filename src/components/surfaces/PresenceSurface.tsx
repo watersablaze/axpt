@@ -3,10 +3,19 @@ import styles from './PresenceSurface.module.css'
 export default function PresenceSurface() {
   return (
     <div className={styles.presenceSurface}>
-      <div className="surfaceFrame">
-        <div className={styles.chamber}>
+      <div className={styles.sealInner}>
 
-          <div className={styles.presenceMark} aria-hidden="true">
+        <p className={styles.registration}>
+          Axis Point / Seal
+        </p>
+
+        <div className={styles.sealField}>
+          <div
+            className={styles.sealMark}
+            aria-hidden="true"
+          >
+            <span className={styles.registrationRing} />
+
             <img
               src="/sigil/v4/axis_sigil_full.png"
               alt=""
@@ -16,43 +25,49 @@ export default function PresenceSurface() {
           </div>
 
           <div className={styles.closingStatement}>
-            <span className={styles.kicker}>PRESENCE</span>
-
             <h2>
-              Systems endure when continuity is held.
+              What moves may continue.
+              <span>
+                What has been established should remain known.
+              </span>
             </h2>
 
             <p>
-              AXPT develops coordination environments for verification,
-              custody, institutional memory, and accountable exchange.
+              AXPT develops coordination infrastructure for
+              continuity through change.
             </p>
           </div>
-
-          <footer className={styles.footerBar} aria-label="Footer">
-            <div className={styles.col}>
-              <div className={styles.footerValue}>
-                ENGINEERED INFRASTRUCTURE LAYER
-              </div>
-            </div>
-
-            <div className={styles.colCenter}>
-              <div className={styles.footerTitle}>CONNECT</div>
-              <a
-                className={styles.footerLink}
-                href="mailto:connect@axpt.io"
-              >
-                connect@axpt.io
-              </a>
-            </div>
-
-            <div className={styles.col}>
-              <div className={styles.footerValue}>
-                © {new Date().getFullYear()} AXIS POINT
-              </div>
-            </div>
-          </footer>
-
         </div>
+
+        <footer
+          className={styles.footerBar}
+          aria-label="AXPT footer"
+        >
+          <div className={styles.footerIdentity}>
+            <span>AXPT</span>
+            <span>AXIS POINT</span>
+          </div>
+
+          <div className={styles.footerContact}>
+            <span className={styles.footerLabel}>
+              CONNECT
+            </span>
+
+            <a
+              href="mailto:connect@axpt.io"
+              className={styles.footerLink}
+            >
+              connect@axpt.io
+            </a>
+          </div>
+
+          <div className={styles.footerRecord}>
+            <span>
+              © {new Date().getFullYear()} AXIS POINT
+            </span>
+          </div>
+        </footer>
+
       </div>
     </div>
   )

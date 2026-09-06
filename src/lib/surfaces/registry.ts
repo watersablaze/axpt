@@ -5,7 +5,7 @@ import type { LayerName } from "@/shared/types/layers";
 const OriginSurface = dynamic(() => import("@/components/surfaces/OriginSurface"));
 const FoundationSurface = dynamic(() => import("@/components/surfaces/FoundationSurface"));
 const FrameworkSurface = dynamic(() => import("@/components/surfaces/FrameworkSurface"));
-// const InterfacesSurface = dynamic(() => import("@/components/surfaces/InterfacesSurface")); //
+const InterfacesSurface = dynamic(() => import("@/components/surfaces/InterfacesSurface"));
 const EthosSurface = dynamic(() => import("@/components/surfaces/EthosSurface"));
 const PresenceSurface = dynamic(() => import("@/components/surfaces/PresenceSurface"));
 
@@ -46,6 +46,15 @@ const SURFACE_REGISTRY = [
     ariaLabel: "Framework Layer",
     order: 3,
     component: FrameworkSurface,
+  },
+  {
+    id: "interfaces",
+    layer: "INTERFACES",
+    title: "Interfaces",
+    description: "Human-system boundary",
+    ariaLabel: "Interfaces Layer",
+    order: 4,
+    component: InterfacesSurface,
   },
   {
     id: "ethos",
