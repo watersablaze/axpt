@@ -3,7 +3,7 @@ import styles from './OriginSurface.module.css'
 export default function OriginSurface() {
   return (
     <div className={styles.thresholdSurface}>
-      <div className={`surfaceFrame ${styles.thresholdFrame}`}>
+      <div className={styles.thresholdFrame}>
 
         {/* 01 — DECLARATION */}
         <div className={styles.declaration}>

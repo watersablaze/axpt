@@ -56,8 +56,6 @@ html {
 
   overscroll-behavior-y: none;
 
-  scroll-snap-type: y mandatory;
-
 }
 
 html,
@@ -228,13 +226,8 @@ body[data-layer="PRESENCE"] .globalLayerIndicator {
 }
 
 .surfaceStack > section {
-
   position: relative;
-
   width: 100%;
-
-  min-height: 100svh;
-
 }
 
 /*
@@ -274,30 +267,21 @@ body[data-layer="PRESENCE"] .globalLayerIndicator {
 
   position: relative;
 
-  width: calc(100% - (var(--rail-inset) * 2));
-
-  margin-left: auto;
-  margin-right: auto;
-
+  width: 100%;
   min-height: 100svh;
+
+  box-sizing: border-box;
 
   padding-top: clamp(40px, 5vh, 72px);
   padding-bottom: clamp(80px, 8vh, 120px);
 
-  overflow: hidden;
+  overflow: clip;
 
   opacity: calc(.88 + ((1 - var(--axis-depth, 0)) * .12));
 
   transition:
     opacity 420ms ease;
 
-}
-
-/* inner breathing room: this is the controlled buffer */
-.surface > .surfaceFrame,
-.surface > div > .surfaceFrame {
-  padding-top: clamp(40px, 4vh, 64px);
-  padding-bottom: clamp(56px, 6vh, 96px);
 }
 
 /* atmospheric wash */
@@ -309,20 +293,14 @@ body[data-layer="PRESENCE"] .globalLayerIndicator {
 /* content container */
 
 .surfaceFrame {
-  width: 100%;
-  max-width: 1100px;
+  width: min(
+    calc(100% - (var(--rail-inset) * 2)),
+    1100px
+  );
 
   margin: 0 auto;
+
   perspective: 1200px;
-
-  padding-top: clamp(32px, 4vh, 56px);
-  padding-bottom: clamp(64px, 8vh, 104px);
-}
-
-/* section rhythm */
-
-.surfaceStack > section:first-child {
-  padding-top: 0;
 }
 
 .surfaceFrame > * {
@@ -333,11 +311,6 @@ body[data-layer="PRESENCE"] .globalLayerIndicator {
   position: relative;
   z-index: 1;
   transform: translateZ(0);
-}
-
-section[data-layer="PRESENCE"] {
-  padding-top: 6vh;
-  padding-bottom: 6vh;
 }
 
 /* ENTRY has no wash */

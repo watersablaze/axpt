@@ -6,7 +6,6 @@
 .thresholdSurface {
   position: relative;
   width: 100%;
-  min-height: 100svh;
 
   background: transparent;
 }
@@ -19,8 +18,12 @@
 .thresholdFrame {
   position: relative;
 
-  width: 100%;
-  min-height: 100svh;
+  width: min(
+    calc(100% - (var(--rail-inset) * 2)),
+    1100px
+  );
+
+  margin: 0 auto;
 
   display: grid;
 
@@ -39,8 +42,8 @@
 
   align-content: start;
 
-  padding-top: clamp(112px, 12vh, 136px);
-  padding-bottom: clamp(60px, 7vh, 88px);
+  padding-top: clamp(72px, 7vh, 96px);
+  padding-bottom: 0;
 }
 
 
