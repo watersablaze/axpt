@@ -43,23 +43,7 @@
    REGISTRATION
 ───────────────────────────────────── */
 
-.registration {
-  grid-column: 1 / -1;
 
-  margin: 0;
-
-  font-family: var(--axpt-mono);
-
-  font-size: 0.54rem;
-  line-height: 1;
-
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-
-  color: rgba(198, 211, 220, 0.34);
-
-  white-space: nowrap;
-}
 
 
 /* ─────────────────────────────────────
@@ -83,13 +67,13 @@
   font-weight: 500;
   letter-spacing: -0.055em;
 
-  color: rgba(231, 236, 239, 0.96);
+  color: rgba(var(--axpt-limestone), 0.96);
 
   text-wrap: balance;
 }
 
 .declaration h2 span {
-  color: rgba(196, 206, 211, 0.7);
+  color: rgba(var(--axpt-ash), 0.70);
 }
 
 
@@ -115,11 +99,11 @@
   font-size: clamp(0.94rem, 1.15vw, 1.08rem);
   line-height: 1.58;
 
-  color: rgba(197, 208, 214, 0.56);
+  color: rgba(var(--axpt-silver), 0.56);
 }
 
 .explanation .explanationFocus {
-  color: rgba(225, 231, 234, 0.84);
+  color: rgba(var(--axpt-ash), 0.84);
 }
 
 
@@ -134,8 +118,8 @@
 
   min-height: clamp(260px, 29vh, 330px);
 
-  border-top: 1px solid rgba(198, 216, 225, 0.07);
-  border-bottom: 1px solid rgba(198, 216, 225, 0.055);
+  border-top: 1px solid rgba(var(--axpt-silver), 0.07);
+  border-bottom: 1px solid rgba(var(--axpt-silver), 0.055);
 }
 
 
@@ -160,7 +144,7 @@
   letter-spacing: 0.25em;
   text-transform: uppercase;
 
-  color: rgba(213, 225, 230, 0.76);
+  color: rgba(var(--axpt-ash), 0.76);
 }
 
 .condition p {
@@ -173,7 +157,7 @@
   font-size: 0.76rem;
   line-height: 1.45;
 
-  color: rgba(180, 195, 201, 0.42);
+  color: rgba(var(--axpt-silver), 0.42);
 }
 
 
@@ -212,8 +196,7 @@
 /* ─────────────────────────────────────
    AXIS REGISTRATION
 
-   Not a diagram.
-   A measured point shared by the field.
+   A shared point within the field.
 ───────────────────────────────────── */
 
 .axisRegistration {
@@ -222,34 +205,8 @@
   left: 50%;
   top: 50%;
 
-  width: 58px;
-  height: 58px;
-
-  transform: translate(-50%, -50%);
-}
-
-.axisTickHorizontal,
-.axisTickVertical {
-  position: absolute;
-
-  left: 50%;
-  top: 50%;
-
-  display: block;
-
-  background: rgba(196, 215, 223, 0.16);
-}
-
-.axisTickHorizontal {
-  width: 58px;
-  height: 1px;
-
-  transform: translate(-50%, -50%);
-}
-
-.axisTickVertical {
-  width: 1px;
-  height: 58px;
+  width: 12px;
+  height: 12px;
 
   transform: translate(-50%, -50%);
 }
@@ -265,7 +222,7 @@
 
   transform: translate(-50%, -50%);
 
-  background: rgba(221, 232, 236, 0.72);
+  background: rgba(var(--axpt-mineral-cold), 0.72);
 }
 
 
@@ -284,7 +241,7 @@
 
   padding-top: 14px;
 
-  border-top: 1px solid rgba(198, 216, 225, 0.065);
+  border-top: 1px solid rgba(var(--axpt-silver), 0.065);
 }
 
 .axisLabel {
@@ -298,7 +255,7 @@
   letter-spacing: 0.27em;
   text-transform: uppercase;
 
-  color: rgba(198, 211, 220, 0.34);
+  color: rgba(var(--axpt-iron-silver), 0.34);
 }
 
 .axisDefinition p {
@@ -313,7 +270,7 @@
 
   letter-spacing: -0.02em;
 
-  color: rgba(220, 228, 232, 0.82);
+  color: rgba(var(--axpt-ash), 0.82);
 }
 
 
@@ -356,7 +313,6 @@
     row-gap: 30px;
   }
 
-  .registration,
   .declaration,
   .explanation,
   .conditionField,
@@ -364,9 +320,7 @@
     grid-column: 1 / -1;
   }
 
-  .registration {
-    white-space: normal;
-  }
+
 
   .declaration h2 {
     max-width: 12ch;
@@ -401,21 +355,7 @@
     right: 0;
     bottom: 10%;
   }
-
-  .axisRegistration {
-    width: 42px;
-    height: 42px;
-  }
-
-  .axisTickHorizontal {
-    width: 42px;
-  }
-
-  .axisTickVertical {
-    height: 42px;
-  }
-
-  .axisDefinition {
+.axisDefinition {
     grid-template-columns: 70px 1fr;
 
     column-gap: 18px;

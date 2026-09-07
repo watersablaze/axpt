@@ -27,6 +27,21 @@
   --axpt-text-primary: #e8edf2;
   --axpt-text-secondary: rgba(232,237,242,0.72);
   --axpt-text-muted: rgba(232,237,242,0.48);
+
+  /* AXPT material field */
+  --axpt-carbon: #10110f;
+  --axpt-basalt: #171815;
+  --axpt-iron: #24231f;
+
+  --axpt-limestone: 238, 235, 224;
+  --axpt-ash: 222, 220, 211;
+  --axpt-silver: 194, 195, 187;
+  --axpt-iron-silver: 164, 166, 160;
+
+  --axpt-bronze: 170, 151, 104;
+  --axpt-oxide: 143, 101, 72;
+  --axpt-mineral-green: 92, 121, 105;
+  --axpt-mineral-cold: 118, 139, 143;
   --axpt-declaration: "IBM Plex Sans", system-ui, sans-serif;
   --axpt-mono: "Share Tech Mono", monospace;
   --rail-inset: clamp(42px, 6vw, 72px);
@@ -74,7 +89,7 @@ body {
 ────────────────────────────── */
 
 html {
-  background: #0d171c;
+  background: #10110f;
 }
 
 body {
@@ -475,4 +490,23 @@ body[data-surface="PRESENCE"] .axisLine {
   100% {
     transform: translate3d(0, 5px, 0);
   }
+}
+
+/* =====================================
+   DOCUMENT CONTINUITY
+   Subsequent conditions continue the
+   established field rather than restart it.
+===================================== */
+
+.surface:not([data-layer="ENTRY"]) {
+  padding-top: clamp(18px, 2.5vh, 36px);
+}
+
+/* =====================================
+   TERMINAL CONDITION
+   The final record closes the document.
+===================================== */
+
+.surface[data-layer="PRESENCE"] {
+  padding-bottom: clamp(24px, 3vh, 40px);
 }

@@ -24,10 +24,6 @@ export default function FrameworkSurface() {
     <section className={styles.frameworkSurface}>
       <div className={styles.frameworkInner}>
 
-        <p className={styles.registration}>
-          Axis Point / How AXPT Works
-        </p>
-
         <header className={styles.declaration}>
           <h2>
             Movement depends on more
@@ -65,8 +61,6 @@ export default function FrameworkSurface() {
             className={styles.axisRegistration}
             aria-hidden="true"
           >
-            <span className={styles.axisTickHorizontal} />
-            <span className={styles.axisTickVertical} />
             <span className={styles.axisPoint} />
           </div>
         </div>

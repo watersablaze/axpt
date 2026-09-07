@@ -30,21 +30,7 @@
    REGISTRATION
 ───────────────────────────────────── */
 
-.registration {
-  grid-column: 1 / -1;
 
-  margin: 0;
-
-  font-family: var(--axpt-mono);
-
-  font-size: .58rem;
-  line-height: 1;
-
-  letter-spacing: .32em;
-  text-transform: uppercase;
-
-  color: rgba(204, 216, 222, .42);
-}
 
 
 /* ─────────────────────────────────────
@@ -52,28 +38,28 @@
 ───────────────────────────────────── */
 
 .declaration {
-  grid-column: 1 / 10;
+  grid-column: 1 / 11;
 }
 
 .declaration h2 {
   margin: 0;
 
-  max-width: 12ch;
+  max-width: 15ch;
 
-  font-size: clamp(3rem, 6vw, 5.45rem);
+  font-size: clamp(3rem, 5.7vw, 5.35rem);
   line-height: .94;
 
   font-weight: 500;
 
   letter-spacing: -.055em;
 
-  color: rgba(239, 243, 244, .91);
+  color: rgba(var(--axpt-limestone), .91);
 
   text-wrap: balance;
 }
 
 .declaration h2 span {
-  color: rgba(205, 215, 219, .56);
+  color: rgba(var(--axpt-ash), .56);
 }
 
 
@@ -93,7 +79,7 @@
   font-size: clamp(.96rem, 1.25vw, 1.08rem);
   line-height: 1.78;
 
-  color: rgba(205, 216, 222, .58);
+  color: rgba(var(--axpt-silver), .58);
 }
 
 
@@ -126,71 +112,14 @@
 
   background: linear-gradient(
     to right,
-    rgba(198, 214, 220, .04),
-    rgba(198, 214, 220, .13) 12%,
-    rgba(198, 214, 220, .10) 72%,
-    rgba(198, 214, 220, .025)
+    rgba(var(--axpt-iron-silver), .025),
+    rgba(var(--axpt-silver), .12) 14%,
+    rgba(var(--axpt-silver), .085) 72%,
+    rgba(var(--axpt-iron-silver), .02)
   );
 }
 
 
-/* Origin registration */
-
-.originMark {
-  position: absolute;
-
-  top: 50%;
-  left: 0;
-
-  width: 5px;
-  height: 5px;
-
-  border-radius: 50%;
-
-  background: rgba(220, 228, 231, .52);
-
-  transform: translate(-50%, -50%);
-}
-
-
-/* Direction without becoming an arrow graphic */
-
-.directionMark {
-  position: absolute;
-
-  top: 50%;
-  right: 0;
-
-  width: 24px;
-  height: 1px;
-
-  background: linear-gradient(
-    to right,
-    rgba(210, 222, 226, .12),
-    transparent
-  );
-
-  transform: translateY(-50%);
-}
-
-.directionMark::after {
-  content: "";
-
-  position: absolute;
-
-  top: 50%;
-  right: 0;
-
-  width: 5px;
-  height: 5px;
-
-  border-top: 1px solid rgba(210, 222, 226, .12);
-  border-right: 1px solid rgba(210, 222, 226, .12);
-
-  transform:
-    translateY(-50%)
-    rotate(45deg);
-}
 
 
 /* ─────────────────────────────────────
@@ -225,77 +154,6 @@
   text-align: right;
 }
 
-.stateMark {
-  position: absolute;
-
-  width: 5px;
-  height: 5px;
-
-  border-radius: 50%;
-
-  background: rgba(215, 225, 228, .48);
-}
-
-
-/* Upper states register downward
-   toward the passage. */
-
-.passageState[data-position="1"] .stateMark,
-.passageState[data-position="3"] .stateMark {
-  top: calc(100% + 28px);
-  left: 0;
-}
-
-
-/* Lower states register upward
-   toward the passage. */
-
-.passageState[data-position="2"] .stateMark {
-  bottom: calc(100% + 28px);
-  left: 0;
-}
-
-.passageState[data-position="4"] .stateMark {
-  right: 0;
-  bottom: calc(100% + 28px);
-}
-
-
-/* Small local registration stems */
-
-.stateMark::after {
-  content: "";
-
-  position: absolute;
-
-  left: 50%;
-
-  width: 1px;
-  height: 20px;
-
-  background: linear-gradient(
-    rgba(198, 214, 220, .10),
-    transparent
-  );
-
-  transform: translateX(-50%);
-}
-
-.passageState[data-position="1"] .stateMark::after,
-.passageState[data-position="3"] .stateMark::after {
-  bottom: 100%;
-}
-
-.passageState[data-position="2"] .stateMark::after,
-.passageState[data-position="4"] .stateMark::after {
-  top: 100%;
-
-  transform:
-    translateX(-50%)
-    rotate(180deg);
-}
-
-
 /* ─────────────────────────────────────
    STATE TYPOGRAPHY
 ───────────────────────────────────── */
@@ -320,7 +178,7 @@
   letter-spacing: .26em;
   text-transform: uppercase;
 
-  color: rgba(229, 234, 236, .74);
+  color: rgba(var(--axpt-ash), .74);
 }
 
 .stateBody p {
@@ -331,7 +189,7 @@
   font-size: .84rem;
   line-height: 1.65;
 
-  color: rgba(195, 207, 213, .46);
+  color: rgba(var(--axpt-silver), .46);
 }
 
 .passageState[data-position="4"] .stateBody p {
@@ -354,7 +212,7 @@
 
   padding-top: 14px;
 
-  border-top: 1px solid rgba(198, 216, 225, .065);
+  border-top: 1px solid rgba(var(--axpt-silver), .065);
 }
 
 .definitionLabel {
@@ -368,7 +226,7 @@
   letter-spacing: .26em;
   text-transform: uppercase;
 
-  color: rgba(199, 212, 218, .34);
+  color: rgba(var(--axpt-iron-silver), .34);
 }
 
 .circulationDefinition p {
@@ -379,7 +237,7 @@
   font-size: clamp(.9rem, 1.1vw, 1rem);
   line-height: 1.7;
 
-  color: rgba(210, 220, 224, .58);
+  color: rgba(var(--axpt-ash), .58);
 }
 
 
@@ -449,46 +307,18 @@
 
     background: linear-gradient(
       to bottom,
-      rgba(198, 214, 220, .04),
-      rgba(198, 214, 220, .13) 12%,
-      rgba(198, 214, 220, .10) 72%,
-      rgba(198, 214, 220, .025)
+      rgba(var(--axpt-iron-silver), .025),
+      rgba(var(--axpt-silver), .12) 14%,
+      rgba(var(--axpt-silver), .085) 72%,
+      rgba(var(--axpt-iron-silver), .02)
     );
   }
 
-  .originMark {
-    top: 0;
-    left: 50%;
-  }
 
-  .directionMark {
-    top: auto;
-    right: auto;
-    bottom: 0;
-    left: 50%;
 
-    width: 1px;
-    height: 24px;
 
-    background: linear-gradient(
-      to bottom,
-      rgba(210, 222, 226, .12),
-      transparent
-    );
 
-    transform: translateX(-50%);
-  }
 
-  .directionMark::after {
-    top: auto;
-    right: auto;
-    bottom: 0;
-    left: 50%;
-
-    transform:
-      translateX(-50%)
-      rotate(135deg);
-  }
 
   .passageState,
   .passageState[data-position="1"],
@@ -525,20 +355,9 @@
     margin-left: 0;
   }
 
-  .stateMark,
-  .passageState[data-position="1"] .stateMark,
-  .passageState[data-position="2"] .stateMark,
-  .passageState[data-position="3"] .stateMark,
-  .passageState[data-position="4"] .stateMark {
-    top: .2rem;
-    right: auto;
-    bottom: auto;
-    left: -46px;
-  }
 
-  .stateMark::after {
-    display: none;
-  }
+
+
 
   .circulationDefinition {
     grid-template-columns: 92px 1fr;

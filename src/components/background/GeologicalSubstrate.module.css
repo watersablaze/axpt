@@ -13,7 +13,7 @@
   pointer-events: none;
   overflow: hidden;
 
-  background: #0d171c;
+  background: #10110f;
 
   isolation: isolate;
 }
@@ -29,19 +29,25 @@
 
   background:
     radial-gradient(
-      ellipse 90% 64% at 18% 12%,
-      rgba(68, 86, 91, 0.055),
-      transparent 68%
+      ellipse 72% 48% at 14% 16%,
+      rgba(126, 116, 91, 0.052),
+      transparent 66%
     ),
     radial-gradient(
-      ellipse 76% 54% at 82% 84%,
-      rgba(4, 10, 13, 0.22),
+      ellipse 58% 72% at 88% 38%,
+      rgba(65, 68, 58, 0.032),
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 82% 46% at 54% 96%,
+      rgba(7, 8, 7, 0.30),
       transparent 72%
     ),
     linear-gradient(
-      180deg,
-      rgba(18, 31, 36, 0.18),
-      rgba(7, 15, 19, 0.12)
+      164deg,
+      rgba(35, 33, 27, 0.17),
+      rgba(15, 16, 13, 0.08) 46%,
+      rgba(6, 7, 6, 0.15)
     );
 
   opacity: 0.72;
@@ -63,21 +69,26 @@
 
   background:
     linear-gradient(
-      176deg,
-
+      173deg,
       transparent 0%,
-      transparent 28%,
-
-      rgba(122, 143, 148, 0.018) 34%,
-      rgba(122, 143, 148, 0.028) 38%,
-      transparent 44%,
-
-      transparent 61%,
-
-      rgba(95, 113, 119, 0.018) 67%,
-      rgba(95, 113, 119, 0.025) 71%,
-      transparent 77%,
-
+      transparent 19%,
+      rgba(158, 148, 116, 0.012) 25%,
+      rgba(158, 148, 116, 0.032) 29%,
+      rgba(92, 89, 74, 0.014) 34%,
+      transparent 40%,
+      transparent 58%,
+      rgba(112, 105, 84, 0.012) 64%,
+      rgba(139, 128, 98, 0.026) 69%,
+      transparent 75%,
+      transparent 100%
+    ),
+    linear-gradient(
+      187deg,
+      transparent 0%,
+      transparent 46%,
+      rgba(176, 164, 126, 0.010) 49%,
+      rgba(176, 164, 126, 0.020) 50%,
+      transparent 53%,
       transparent 100%
     );
 
@@ -106,10 +117,15 @@
 
   background:
     radial-gradient(
-      ellipse at center,
-      rgba(83, 105, 111, 0.028),
-      rgba(32, 47, 53, 0.012) 42%,
-      transparent 72%
+      ellipse at 42% 48%,
+      rgba(126, 115, 88, 0.030),
+      rgba(54, 52, 43, 0.014) 38%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse at 72% 56%,
+      rgba(74, 78, 67, 0.018),
+      transparent 58%
     );
 
   opacity: 0.64;

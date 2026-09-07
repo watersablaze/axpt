@@ -43,10 +43,6 @@ export default function FoundationSurface() {
     <section className={styles.foundationSurface}>
       <div className={styles.foundationInner}>
 
-        <p className={styles.registration}>
-          Axis Point / Why AXPT Exists
-        </p>
-
         <header className={styles.declaration}>
           <h2>
             <span>Continuity is most vulnerable</span>

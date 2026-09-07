@@ -5,17 +5,11 @@ export default function PresenceSurface() {
     <div className={styles.presenceSurface}>
       <div className={styles.sealInner}>
 
-        <p className={styles.registration}>
-          Axis Point / Seal
-        </p>
-
         <div className={styles.sealField}>
           <div
             className={styles.sealMark}
             aria-hidden="true"
           >
-            <span className={styles.registrationRing} />
-
             <img
               src="/sigil/v4/axis_sigil_full.png"
               alt=""

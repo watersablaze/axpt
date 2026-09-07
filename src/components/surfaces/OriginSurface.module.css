@@ -66,23 +66,7 @@
 }
 
 /* registration occupies its own coordinate */
-.registration {
-  position: static;
 
-  margin: 0;
-
-  font-family: var(--axpt-mono);
-
-  font-size: 0.54rem;
-  line-height: 1;
-
-  letter-spacing: 0.3em;
-  text-transform: uppercase;
-
-  color: rgba(198, 211, 220, 0.36);
-
-  white-space: nowrap;
-}
 
 
 .primaryStatement {
@@ -98,7 +82,7 @@
   font-weight: 500;
   letter-spacing: -0.045em;
 
-  color: rgba(242, 245, 246, 0.95);
+  color: rgba(var(--axpt-limestone), 0.95);
 
   text-wrap: balance;
 }
@@ -118,8 +102,8 @@
 
   padding: 14px 0;
 
-  border-top: 1px solid rgba(205, 221, 230, 0.05);
-  border-bottom: 1px solid rgba(205, 221, 230, 0.03);
+  border-top: 1px solid rgba(var(--axpt-silver), 0.05);
+  border-bottom: 1px solid rgba(var(--axpt-silver), 0.03);
 }
 
 /*
@@ -143,9 +127,9 @@
   background: linear-gradient(
     to right,
     transparent,
-    rgba(190, 214, 224, 0.03) 18%,
-    rgba(190, 214, 224, 0.065) 50%,
-    rgba(190, 214, 224, 0.03) 82%,
+    rgba(var(--axpt-silver), 0.03) 18%,
+    rgba(var(--axpt-silver), 0.065) 50%,
+    rgba(var(--axpt-silver), 0.03) 82%,
     transparent
   );
 
@@ -173,7 +157,7 @@
   letter-spacing: 0.16em;
   text-transform: uppercase;
 
-  color: rgba(211, 220, 226, 0.5);
+  color: rgba(var(--axpt-silver), 0.5);
 }
 
 .currentText span {
@@ -186,7 +170,7 @@
 
   margin-left: clamp(16px, 2vw, 28px);
 
-  color: rgba(190, 207, 216, 0.2);
+  color: rgba(var(--axpt-iron-silver), 0.2);
 }
 
 
@@ -202,9 +186,9 @@
 
   width: min(100%, 620px);
 
-  margin-left: clamp(40px, 5vw, 72px);
+  margin-left: clamp(72px, 9vw, 132px);
 
-  padding-top: clamp(18px, 2vh, 26px);
+  padding-top: clamp(24px, 3vh, 34px);
 }
 
 /* restrained fault registration */
@@ -214,37 +198,21 @@
 
   position: absolute;
 
-  left: calc(-1 * clamp(40px, 5vw, 72px));
+  left: calc(-1 * clamp(72px, 9vw, 132px));
   top: 0;
 
-  width: clamp(74px, 9vw, 122px);
+  width: clamp(108px, 13vw, 176px);
   height: 1px;
 
   background: linear-gradient(
     to right,
-    rgba(203, 218, 226, 0.14),
-    rgba(203, 218, 226, 0.03),
+    rgba(var(--axpt-silver), 0.14),
+    rgba(var(--axpt-silver), 0.03),
     transparent
   );
 }
 
-.consequence::after {
-  content: "";
 
-  position: absolute;
-
-  left: 0;
-  top: 0;
-
-  width: 1px;
-  height: 30px;
-
-  background: linear-gradient(
-    to bottom,
-    rgba(203, 218, 226, 0.12),
-    transparent
-  );
-}
 
 .consequence p {
   margin: 0;
@@ -259,7 +227,7 @@
   font-weight: 500;
   letter-spacing: -0.032em;
 
-  color: rgba(239, 243, 245, 0.9);
+  color: rgba(var(--axpt-limestone), 0.9);
 
   text-wrap: balance;
 }
@@ -279,37 +247,10 @@
 
   width: min(100%, 420px);
 
-  margin-top: clamp(36px, 6vh, 70px);
+  margin-top: clamp(68px, 9vh, 112px);
   margin-left: auto;
 
-  padding-left: 26px;
-}
-
-.registrationMark {
-  position: absolute;
-
-  left: 0;
-  top: 0.15em;
-
-  width: 12px;
-  height: 24px;
-
-  border-top: 1px solid rgba(198, 216, 225, 0.24);
-  border-left: 1px solid rgba(198, 216, 225, 0.24);
-}
-
-.registrationMark::after {
-  content: "";
-
-  position: absolute;
-
-  left: -1px;
-  top: -1px;
-
-  width: 3px;
-  height: 3px;
-
-  background: rgba(216, 229, 234, 0.54);
+  padding-left: 0;
 }
 
 .orientation p {
@@ -325,7 +266,7 @@
   font-weight: 500;
   letter-spacing: -0.024em;
 
-  color: rgba(238, 242, 244, 0.88);
+  color: rgba(var(--axpt-limestone), 0.88);
 
   text-wrap: balance;
 }
@@ -357,7 +298,7 @@
 
   padding-top: 18px;
 
-  border-top: 1px solid rgba(205, 220, 228, 0.07);
+  border-top: 1px solid rgba(var(--axpt-silver), 0.07);
 }
 
 .responseLabel {
@@ -371,7 +312,7 @@
   letter-spacing: 0.3em;
   text-transform: uppercase;
 
-  color: rgba(203, 219, 226, 0.46);
+  color: rgba(var(--axpt-iron-silver), 0.46);
 }
 
 .response p {
@@ -387,7 +328,7 @@
   font-weight: 400;
   letter-spacing: -0.008em;
 
-  color: rgba(230, 235, 237, 0.79);
+  color: rgba(var(--axpt-ash), 0.79);
 
   text-align: left;
 }
@@ -426,11 +367,12 @@
   }
 
   .consequence {
-    margin-left: 28px;
+    margin-left: 44px;
   }
 
   .consequence::before {
-    left: -28px;
+    left: -44px;
+    width: 92px;
   }
 
   .orientation {
@@ -462,9 +404,7 @@
     row-gap: 28px;
   }
 
-  .registration {
-    font-size: 0.52rem;
-  }
+
 
   .primaryStatement {
     max-width: 9ch;
@@ -496,15 +436,15 @@
   }
 
   .consequence {
-    width: calc(100% - 20px);
+    width: calc(100% - 28px);
 
-    margin-left: 20px;
+    margin-left: 28px;
   }
 
   .consequence::before {
-    left: -20px;
+    left: -28px;
 
-    width: 58px;
+    width: 68px;
   }
 
   .consequence p {

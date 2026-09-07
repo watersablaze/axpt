@@ -23,9 +23,6 @@ export default function InterfacesSurface() {
   return (
     <div className={styles.interfacesSurface}>
       <div className={styles.interfacesInner}>
-        <p className={styles.registration}>
-          Axis Point / Interfaces
-        </p>
 
         <header className={styles.declaration}>
           <h2>
@@ -61,7 +58,6 @@ export default function InterfacesSurface() {
             className={styles.actionPoint}
             aria-hidden="true"
           >
-            <span className={styles.actionMark} />
             <span className={styles.actionLabel}>
               Point of Action
             </span>

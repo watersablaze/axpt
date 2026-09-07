@@ -19,8 +19,8 @@
 
   min-height: calc(
     100svh -
-    clamp(40px, 5vh, 72px) -
-    clamp(80px, 8vh, 120px)
+    clamp(18px, 2.5vh, 36px) -
+    clamp(24px, 3vh, 40px)
   );
 
   margin: 0 auto;
@@ -28,7 +28,6 @@
   display: grid;
 
   grid-template-rows:
-    auto
     minmax(0, 1fr)
     auto;
 
@@ -40,19 +39,7 @@
    REGISTRATION
 ───────────────────────────────────── */
 
-.registration {
-  margin: 0;
 
-  font-family: var(--axpt-mono);
-
-  font-size: .58rem;
-  line-height: 1;
-
-  letter-spacing: .32em;
-  text-transform: uppercase;
-
-  color: rgba(204, 216, 222, .42);
-}
 
 
 /* ─────────────────────────────────────
@@ -90,59 +77,6 @@
   place-items: center;
 }
 
-.registrationRing {
-  position: absolute;
-
-  inset: 4%;
-
-  border: 1px solid rgba(202, 216, 220, .055);
-  border-radius: 50%;
-}
-
-.registrationRing::before,
-.registrationRing::after {
-  content: "";
-
-  position: absolute;
-
-  top: 50%;
-  left: 50%;
-
-  background: rgba(202, 216, 220, .045);
-
-  transform: translate(-50%, -50%);
-}
-
-.registrationRing::before {
-  width: 116%;
-  height: 1px;
-}
-
-.registrationRing::after {
-  width: 1px;
-  height: 116%;
-}
-
-.sigil {
-  position: relative;
-
-  z-index: 1;
-
-  width: 72%;
-  height: auto;
-
-  opacity: .12;
-
-  filter:
-    grayscale(100%)
-    contrast(.9);
-
-  mix-blend-mode: luminosity;
-
-  user-select: none;
-}
-
-
 /* ─────────────────────────────────────
    CLOSING STATEMENT
 ───────────────────────────────────── */
@@ -170,7 +104,7 @@
 
   letter-spacing: -.052em;
 
-  color: rgba(239, 243, 244, .9);
+  color: rgba(var(--axpt-limestone), .9);
 
   text-wrap: balance;
 }
@@ -180,7 +114,7 @@
 
   margin-top: .24em;
 
-  color: rgba(202, 213, 218, .52);
+  color: rgba(var(--axpt-ash), .52);
 }
 
 .closingStatement p {
@@ -191,7 +125,7 @@
   font-size: clamp(.92rem, 1.15vw, 1.02rem);
   line-height: 1.75;
 
-  color: rgba(205, 216, 222, .5);
+  color: rgba(var(--axpt-silver), .5);
 }
 
 
@@ -215,7 +149,7 @@
 
   padding-top: 22px;
 
-  border-top: 1px solid rgba(198, 216, 225, .055);
+  border-top: 1px solid rgba(var(--axpt-silver), .055);
 }
 
 .footerIdentity,
@@ -231,7 +165,7 @@
   letter-spacing: .22em;
   text-transform: uppercase;
 
-  color: rgba(194, 207, 213, .3);
+  color: rgba(var(--axpt-iron-silver), .3);
 }
 
 .footerIdentity {
@@ -241,7 +175,7 @@
 }
 
 .footerIdentity span:first-child {
-  color: rgba(218, 205, 165, .54);
+  color: rgba(var(--axpt-bronze), .54);
 }
 
 .footerContact {
@@ -252,11 +186,11 @@
 }
 
 .footerLabel {
-  color: rgba(194, 207, 213, .3);
+  color: rgba(var(--axpt-iron-silver), .3);
 }
 
 .footerLink {
-  color: rgba(204, 218, 222, .5);
+  color: rgba(var(--axpt-silver), .5);
 
   text-decoration: none;
 
@@ -264,7 +198,7 @@
 }
 
 .footerLink:hover {
-  color: rgba(224, 232, 234, .78);
+  color: rgba(var(--axpt-limestone), .78);
 }
 
 .footerRecord {

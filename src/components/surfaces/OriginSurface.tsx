@@ -7,9 +7,6 @@ export default function OriginSurface() {
 
         {/* 01 — DECLARATION */}
         <div className={styles.declaration}>
-          <p className={styles.registration}>
-            AXIS POINT / THRESHOLD
-          </p>
 
           <h1 className={styles.primaryStatement}>
             Movement is inevitable.
@@ -36,9 +33,7 @@ export default function OriginSurface() {
 
         {/* 04 — ORIENTATION */}
         <div className={styles.orientation}>
-          <span className={styles.registrationMark} aria-hidden="true" />
-
-          <p>
+              <p>
             Where things stand matters.
           </p>
         </div>

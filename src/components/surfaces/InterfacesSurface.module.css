@@ -28,21 +28,7 @@
    REGISTRATION
 ───────────────────────────────────── */
 
-.registration {
-  grid-column: 1 / -1;
 
-  margin: 0;
-
-  font-family: var(--axpt-mono);
-
-  font-size: .58rem;
-  line-height: 1;
-
-  letter-spacing: .32em;
-  text-transform: uppercase;
-
-  color: rgba(204, 216, 222, .42);
-}
 
 
 /* ─────────────────────────────────────
@@ -50,27 +36,27 @@
 ───────────────────────────────────── */
 
 .declaration {
-  grid-column: 1 / 10;
+  grid-column: 1 / 9;
 }
 
 .declaration h2 {
   margin: 0;
 
-  max-width: 14ch;
+  max-width: 15ch;
 
-  font-size: clamp(2.9rem, 5.7vw, 5.15rem);
-  line-height: .94;
+  font-size: clamp(2.65rem, 4.65vw, 4.55rem);
+  line-height: .98;
 
   font-weight: 500;
   letter-spacing: -.055em;
 
-  color: rgba(239, 243, 244, .91);
+  color: rgba(var(--axpt-limestone), .91);
 
   text-wrap: balance;
 }
 
 .declaration h2 span {
-  color: rgba(205, 215, 219, .56);
+  color: rgba(var(--axpt-ash), .56);
 }
 
 
@@ -90,7 +76,7 @@
   font-size: clamp(.96rem, 1.25vw, 1.08rem);
   line-height: 1.78;
 
-  color: rgba(205, 216, 222, .58);
+  color: rgba(var(--axpt-silver), .58);
 }
 
 
@@ -151,7 +137,7 @@
   letter-spacing: .26em;
   text-transform: uppercase;
 
-  color: rgba(229, 234, 236, .74);
+  color: rgba(var(--axpt-ash), .74);
 }
 
 .encounter p {
@@ -162,7 +148,7 @@
   font-size: .84rem;
   line-height: 1.65;
 
-  color: rgba(195, 207, 213, .46);
+  color: rgba(var(--axpt-silver), .46);
 }
 
 .encounter:nth-child(2) p,
@@ -173,6 +159,8 @@
 
 /* ─────────────────────────────────────
    POINT OF ACTION
+
+   A condition becomes an event.
 ───────────────────────────────────── */
 
 .actionPoint {
@@ -190,56 +178,34 @@
   transform: translate(-50%, -50%);
 }
 
-.actionPoint::after {
-  content: "";
-
-  position: absolute;
-
-  top: 29px;
-  left: 50%;
-
-  width: 132px;
-  height: 132px;
-
-  pointer-events: none;
-
-  background:
-    linear-gradient(
-      to right,
-      transparent calc(50% - .5px),
-      rgba(198, 214, 220, .05) calc(50% - .5px),
-      rgba(198, 214, 220, .05) calc(50% + .5px),
-      transparent calc(50% + .5px)
-    ),
-    linear-gradient(
-      to bottom,
-      transparent calc(50% - .5px),
-      rgba(198, 214, 220, .05) calc(50% - .5px),
-      rgba(198, 214, 220, .05) calc(50% + .5px),
-      transparent calc(50% + .5px)
-    );
-
-  transform: translate(-50%, -50%);
-
-  z-index: -1;
-}
-
 .actionPoint::before {
   content: "";
-
-  position: absolute;
-
-  top: 29px;
-  left: 50%;
 
   width: 5px;
   height: 5px;
 
   border-radius: 50%;
 
-  background: rgba(218, 227, 230, .66);
+  background: rgba(var(--axpt-mineral-cold), .72);
+}
+
+.actionPoint::after {
+  content: "";
+
+  position: absolute;
+
+  top: 2.5px;
+  left: 50%;
+
+  width: 24px;
+  height: 24px;
+
+  border: 1px solid rgba(var(--axpt-mineral-cold), .10);
+  border-radius: 50%;
 
   transform: translate(-50%, -50%);
+
+  pointer-events: none;
 }
 
 .actionLabel {
@@ -253,7 +219,7 @@
 
   white-space: nowrap;
 
-  color: rgba(196, 209, 214, .34);
+  color: rgba(var(--axpt-mineral-cold), .34);
 }
 
 
@@ -272,7 +238,7 @@
 
   padding-top: 14px;
 
-  border-top: 1px solid rgba(198, 216, 225, .065);
+  border-top: 1px solid rgba(var(--axpt-silver), .065);
 }
 
 .definitionLabel {
@@ -286,7 +252,7 @@
   letter-spacing: .28em;
   text-transform: uppercase;
 
-  color: rgba(199, 212, 218, .34);
+  color: rgba(var(--axpt-iron-silver), .34);
 }
 
 .interfaceDefinition p {
@@ -297,7 +263,7 @@
   font-size: clamp(.9rem, 1.1vw, 1rem);
   line-height: 1.7;
 
-  color: rgba(210, 220, 224, .58);
+  color: rgba(var(--axpt-ash), .58);
 }
 
 
@@ -373,25 +339,7 @@
     right: 0;
     bottom: 10%;
   }
-
-  .actionMark {
-    width: 42px;
-    height: 42px;
-  }
-
-  .actionMark::before {
-    width: 42px;
-  }
-
-  .actionMark::after {
-    height: 42px;
-  }
-
-  .actionPoint::before {
-    top: 21px;
-  }
-
-  .interfaceDefinition {
+.interfaceDefinition {
     grid-template-columns: 70px 1fr;
 
     column-gap: 18px;

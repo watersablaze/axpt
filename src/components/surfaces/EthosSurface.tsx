@@ -7,7 +7,7 @@ const PASSAGE_STATES = [
   },
   {
     label: 'Transfer',
-    text: 'Value, information, custody, authority, or state changes position.',
+    text: 'Value, information, custody, authority, or state passes into a new condition.',
   },
   {
     label: 'Consequence',
@@ -23,9 +23,6 @@ export default function EthosSurface() {
   return (
     <div className={styles.ethosSurface}>
       <div className={styles.ethosInner}>
-        <p className={styles.registration}>
-          Axis Point / Circulation
-        </p>
 
         <header className={styles.declaration}>
           <h2>
@@ -46,10 +43,10 @@ export default function EthosSurface() {
           className={styles.passage}
           aria-label="Circulation through action, transfer, consequence, and continuity"
         >
-          <div className={styles.passageLine} aria-hidden="true">
-            <span className={styles.originMark} />
-            <span className={styles.directionMark} />
-          </div>
+          <div
+            className={styles.passageLine}
+            aria-hidden="true"
+          />
 
           {PASSAGE_STATES.map((state, index) => (
             <article
@@ -57,11 +54,6 @@ export default function EthosSurface() {
               key={state.label}
               data-position={index + 1}
             >
-              <span
-                className={styles.stateMark}
-                aria-hidden="true"
-              />
-
               <div className={styles.stateBody}>
                 <h3>{state.label}</h3>
                 <p>{state.text}</p>
