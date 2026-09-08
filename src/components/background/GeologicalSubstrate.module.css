@@ -139,12 +139,27 @@
 
 
 /* ─────────────────────────────────────
-   ENTRY / THRESHOLD
+   MATERIAL CONDITIONS
+
+   One body. Six conditions.
+   State changes alter pressure, structure,
+   extension, and retention without
+   replacing the underlying material.
+───────────────────────────────────── */
+
+
+/* ─────────────────────────────────────
+   01 / THRESHOLD — FIELD
+
+   Material becomes perceptible.
 ───────────────────────────────────── */
 
 :global(body[data-layer="ENTRY"]) .materialBody {
-  opacity: 0.6;
-  transform: translate3d(0, 0, 0);
+  opacity: 0.60;
+
+  transform:
+    translate3d(0, 0, 0)
+    scale(1);
 }
 
 :global(body[data-layer="ENTRY"]) .strataField {
@@ -165,25 +180,43 @@
 
 
 /* ─────────────────────────────────────
-   ACCESSIBILITY
+   02 / FOUNDATION — PRESSURE
+
+   The field gathers.
+   Transition exposes compression.
 ───────────────────────────────────── */
 
-@media (prefers-reduced-motion: reduce) {
+:global(body[data-layer="FOUNDATION"]) .materialBody {
+  opacity: 0.66;
 
-  .materialBody,
-  .strataField,
-  .pressureField {
-    transition: none;
-  }
+  transform:
+    translate3d(0, 0.35%, 0)
+    scale(1.004);
+}
 
+:global(body[data-layer="FOUNDATION"]) .strataField {
+  opacity: 0.52;
+
+  transform:
+    translate3d(-0.35%, 0.15%, 0)
+    scale(1.024);
+}
+
+:global(body[data-layer="FOUNDATION"]) .pressureField {
+  opacity: 0.58;
+
+  transform:
+    translate3d(-0.5%, -0.25%, 0)
+    scaleX(1.025)
+    scaleY(0.96);
 }
 
 
 /* ─────────────────────────────────────
-   FRAMEWORK / REGISTRATION
+   03 / FRAMEWORK — RELATION
 
    Structure becomes more legible.
-   The substrate remains one material body.
+   Pressure resolves into relation.
 ───────────────────────────────────── */
 
 :global(body[data-layer="FRAMEWORK"]) .materialBody {
@@ -208,4 +241,118 @@
   transform:
     translate3d(-1%, 0, 0)
     scaleX(1.05);
+}
+
+
+/* ─────────────────────────────────────
+   04 / INTERFACES — CONCENTRATION
+
+   Established conditions meet action.
+   Pressure becomes locally consequential.
+───────────────────────────────────── */
+
+:global(body[data-layer="INTERFACES"]) .materialBody {
+  opacity: 0.70;
+
+  transform:
+    translate3d(0.2%, -0.15%, 0)
+    scale(1.006);
+}
+
+:global(body[data-layer="INTERFACES"]) .strataField {
+  opacity: 0.56;
+
+  transform:
+    translate3d(0.9%, 0.1%, 0)
+    scale(1.025);
+}
+
+:global(body[data-layer="INTERFACES"]) .pressureField {
+  opacity: 0.64;
+
+  transform:
+    translate3d(1.2%, -0.6%, 0)
+    scaleX(0.94)
+    scaleY(1.04);
+}
+
+
+/* ─────────────────────────────────────
+   05 / CIRCULATION — PASSAGE
+
+   Consequence extends through the field.
+   Compression gives way to direction.
+───────────────────────────────────── */
+
+:global(body[data-layer="ETHOS"]) .materialBody {
+  opacity: 0.67;
+
+  transform:
+    translate3d(-0.3%, 0.1%, 0)
+    scale(1.004);
+}
+
+:global(body[data-layer="ETHOS"]) .strataField {
+  opacity: 0.50;
+
+  transform:
+    translate3d(-1.1%, 0.45%, 0)
+    scale(1.022);
+}
+
+:global(body[data-layer="ETHOS"]) .pressureField {
+  opacity: 0.50;
+
+  transform:
+    translate3d(2.2%, 0.2%, 0)
+    scaleX(1.10)
+    scaleY(0.98);
+}
+
+
+/* ─────────────────────────────────────
+   06 / SEAL — TRACE
+
+   Active pressure recedes.
+   What was established remains.
+───────────────────────────────────── */
+
+:global(body[data-layer="PRESENCE"]) .materialBody {
+  opacity: 0.62;
+
+  transform:
+    translate3d(0, 0.25%, 0)
+    scale(1.002);
+}
+
+:global(body[data-layer="PRESENCE"]) .strataField {
+  opacity: 0.44;
+
+  transform:
+    translate3d(0.25%, 0.8%, 0)
+    scale(1.018);
+}
+
+:global(body[data-layer="PRESENCE"]) .pressureField {
+  opacity: 0.30;
+
+  transform:
+    translate3d(0, 1.2%, 0)
+    scaleX(1.02)
+    scaleY(0.98);
+}
+
+
+/* ─────────────────────────────────────
+   ACCESSIBILITY
+───────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .materialBody,
+  .strataField,
+  .pressureField {
+    transition: none;
+  }
+
 }

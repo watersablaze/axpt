@@ -284,3 +284,28 @@
     transition: none;
   }
 }
+
+
+/* ─────────────────────────────────────
+   LIVING DOCUMENT — INSCRIPTION
+───────────────────────────────────── */
+
+.closingStatement h2 {
+  opacity: .56;
+  transform: translate3d(0, 10px, 0);
+
+  transition:
+    opacity 900ms cubic-bezier(.22, 1, .36, 1),
+    transform 1100ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-layer="PRESENCE"]) .closingStatement h2 {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .closingStatement h2 {
+    transition: none;
+  }
+}
