@@ -387,3 +387,40 @@
     transition: none;
   }
 }
+
+
+/* ─────────────────────────────────────
+   LIVING DOCUMENT — POINT
+
+   Passage establishes position.
+   The point does not pulse or announce;
+   it resolves as a coordinate.
+───────────────────────────────────── */
+
+.axisPoint {
+  opacity: .30;
+  transform:
+    translate(-50%, -50%)
+    scale(.58);
+
+  transition:
+    opacity 900ms cubic-bezier(.22, 1, .36, 1),
+    transform 1100ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-layer="FRAMEWORK"]) .axisPoint {
+  opacity: 1;
+  transform:
+    translate(-50%, -50%)
+    scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .axisPoint {
+    opacity: 1;
+    transform:
+      translate(-50%, -50%)
+      scale(1);
+    transition: none;
+  }
+}

@@ -309,3 +309,33 @@
     transition: none;
   }
 }
+
+/* ─────────────────────────────────────
+   LIVING DOCUMENT — TRACE
+
+   Passage concludes as record.
+   The seal does not perform;
+   evidence becomes legible.
+───────────────────────────────────── */
+
+.footerRecord {
+  opacity: .48;
+  transform: translate3d(0, 5px, 0);
+
+  transition:
+    opacity 1000ms cubic-bezier(.22, 1, .36, 1),
+    transform 1200ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-layer="PRESENCE"]) .footerRecord {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footerRecord {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

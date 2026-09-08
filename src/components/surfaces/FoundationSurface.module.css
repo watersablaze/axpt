@@ -413,3 +413,42 @@
     transition: none;
   }
 }
+
+
+/* ─────────────────────────────────────
+   LIVING DOCUMENT — CORRIDOR
+
+   Pressure resolves into passage.
+   The transition is not introduced;
+   its existing axis becomes legible.
+───────────────────────────────────── */
+
+.transitionRule {
+  opacity: .34;
+  transform: scaleY(.56);
+
+  transition:
+    opacity 1000ms cubic-bezier(.22, 1, .36, 1),
+    transform 1300ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.transitionRule:first-child {
+  transform-origin: 50% 100%;
+}
+
+.transitionRule:last-child {
+  transform-origin: 50% 0%;
+}
+
+:global(body[data-layer="FOUNDATION"]) .transitionRule {
+  opacity: 1;
+  transform: scaleY(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .transitionRule {
+    opacity: 1;
+    transform: scaleY(1);
+    transition: none;
+  }
+}

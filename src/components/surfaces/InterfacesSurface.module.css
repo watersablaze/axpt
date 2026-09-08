@@ -370,3 +370,43 @@
     transition: none;
   }
 }
+
+/* ─────────────────────────────────────
+   LIVING DOCUMENT — EVENT
+
+   Position encounters condition.
+   The established point remains stable;
+   its perimeter resolves as consequence.
+───────────────────────────────────── */
+
+.actionPoint::after {
+  opacity: .28;
+
+  transform:
+    translate(-50%, -50%)
+    scale(.64);
+
+  transition:
+    opacity 1000ms cubic-bezier(.22, 1, .36, 1),
+    transform 1250ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-layer="INTERFACES"]) .actionPoint::after {
+  opacity: 1;
+
+  transform:
+    translate(-50%, -50%)
+    scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actionPoint::after {
+    opacity: 1;
+
+    transform:
+      translate(-50%, -50%)
+      scale(1);
+
+    transition: none;
+  }
+}

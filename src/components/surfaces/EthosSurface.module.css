@@ -400,3 +400,46 @@
     transition: none;
   }
 }
+
+/* ─────────────────────────────────────
+   LIVING DOCUMENT — PASSAGE
+
+   An event acquires direction.
+   The existing field extends into passage;
+   consequence is carried rather than announced.
+───────────────────────────────────── */
+
+.passageLine {
+  opacity: .38;
+
+  transform: scaleX(.58);
+  transform-origin: 0% 50%;
+
+  transition:
+    opacity 1000ms cubic-bezier(.22, 1, .36, 1),
+    transform 1400ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-layer="ETHOS"]) .passageLine {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+@media (max-width: 680px) {
+  .passageLine {
+    transform: scaleY(.58);
+    transform-origin: 50% 0%;
+  }
+
+  :global(body[data-layer="ETHOS"]) .passageLine {
+    transform: scaleY(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .passageLine {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
