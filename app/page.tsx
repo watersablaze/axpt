@@ -1,9 +1,7 @@
-import AxisRuntime from '@/components/system/AxisRuntime'
 import SurfaceStack from '@/components/system/SurfaceStack'
 import SurfaceBoundary from '@/components/system/SurfaceBoundary'
 import SurfaceObserver from '@/components/system/SurfaceObserver'
 import SurfaceSection from '@/components/system/SurfaceSection'
-import CommandCompass from '@/components/navigation/CommandCompass'
 import Header from '@/components/layout/Header'
 import GeologicalSubstrate from '@/components/background/GeologicalSubstrate'
 
@@ -15,9 +13,7 @@ export default function Home() {
 
       <GeologicalSubstrate />
 
-      <AxisRuntime />
       <SurfaceObserver />
-      <CommandCompass />
       <Header />
 
       <SurfaceStack>
