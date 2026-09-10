@@ -2,12 +2,19 @@
 
 import { usePathname, useRouter } from 'next/navigation'
 import { useEntity } from '@/lib/context/EntityContext'
-import { ADMIN_NAV } from './AdminNavConfig'
+import { getVisibleAdminNav } from './OperationsNavConfig'
 
-export default function AdminSidebar() {
+export default function OperationsSidebar({
+  permissions,
+}: {
+  permissions: readonly string[]
+}) {
   const pathname = usePathname()
   const router = useRouter()
   const { setEntity } = useEntity()
+
+  const visibleNav =
+    getVisibleAdminNav(permissions)
 
   return (
     <aside className="hidden h-full w-[240px] flex-col border-r border-neutral-800 bg-black lg:flex">
@@ -17,7 +24,7 @@ export default function AdminSidebar() {
       </div>
 
       <nav className="flex-1 p-2 space-y-1">
-        {ADMIN_NAV.map((item) => {
+        {visibleNav.map((item) => {
           const active =
             item.href === '/admin'
               ? pathname === '/admin'

@@ -1,4 +1,4 @@
-import AdminShell from '@/components/admin/layout/AdminLayout'
+import OperationsShell from '@/components/admin/layout/OperationsShell'
 import { EntityProvider } from '@/lib/context/EntityContext'
 import { OperatorProvider } from '@/lib/operator/OperatorContext'
 
@@ -38,7 +38,11 @@ export default async function AdminAppLayout({
   return (
     <OperatorProvider>
       <EntityProvider>
-        <AdminShell>{children}</AdminShell>
+        <OperationsShell
+          permissions={principal.permissions}
+        >
+          {children}
+        </OperationsShell>
       </EntityProvider>
     </OperatorProvider>
   )

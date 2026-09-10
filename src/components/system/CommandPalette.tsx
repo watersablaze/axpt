@@ -7,7 +7,7 @@ import { useEntity } from '@/lib/context/EntityContext'
 import { toast } from 'sonner'
 import SimulationModal from '@/components/system/SimulationModal'
 import ScenarioComparisonPanel from '@/components/admin/treasury/ScenarioComparisonPanel'
-import { ADMIN_NAV } from '@/components/admin/layout/AdminNavConfig'
+import { getVisibleAdminNav } from '@/components/admin/layout/OperationsNavConfig'
 import { toastWhy } from '@/lib/toasts/whyToast'
 
 type AdminAction =
@@ -32,13 +32,48 @@ type AdminAction =
       scope: 'SYSTEM'
     }
 
-export default function CommandPalette() {
+export default function CommandPalette({
+  permissions = [],
+}: {
+  permissions?: readonly string[]
+}) {
   const [open, setOpen] = useState(false)
   const [simulationData, setSimulationData] = useState<any | null>(null)
   const [scenarioData, setScenarioData] = useState<any | null>(null)
 
   const router = useRouter()
   const { entity } = useEntity()
+
+  const visibleNav =
+    getVisibleAdminNav(permissions)
+
+  const permissionSet =
+    new Set(permissions)
+
+  const canPauseTreasury =
+    permissionSet.has(
+      'TREASURY_PAUSE'
+    )
+
+  const canReadTreasury =
+    permissionSet.has(
+      'TREASURY_READ'
+    )
+
+  const canExecuteIntent =
+    permissionSet.has(
+      'TREASURY_EXECUTE_INTENT'
+    )
+
+  const canRunAutonomousLoop =
+    permissionSet.has(
+      'TREASURY_RUN_AUTONOMOUS_LOOP'
+    )
+
+  const canUseIntelligence =
+    canReadTreasury ||
+    canExecuteIntent ||
+    canRunAutonomousLoop
 
   // ⌘ + K
   useEffect(() => {
@@ -341,7 +376,7 @@ export default function CommandPalette() {
 
           {/* NAV */}
           <Command.Group heading="Navigation">
-            {ADMIN_NAV.map((item) => (
+            {visibleNav.map((item) => (
               <Command.Item
                 key={item.href}
                 onSelect={() => {
@@ -355,7 +390,8 @@ export default function CommandPalette() {
           </Command.Group>
 
           {/* SYSTEM */}
-          <Command.Group heading="System Control">
+          {canPauseTreasury ? (
+            <Command.Group heading="System Control">
             <Command.Item onSelect={() => runAction({ type: 'PAUSE', scope: 'SYSTEM' })}>
               Pause System
             </Command.Item>
@@ -387,9 +423,11 @@ export default function CommandPalette() {
             >
               Resume Mirror Layer
             </Command.Item>
-          </Command.Group>
+            </Command.Group>
+          ) : null}
 
-          <Command.Group heading="Context">
+          {canPauseTreasury ? (
+            <Command.Group heading="Context">
             {entity.assets.length > 0 ? (
               <Command.Item
                 onSelect={() =>
@@ -405,30 +443,43 @@ export default function CommandPalette() {
             ) : (
               <Command.Item disabled>No assets selected</Command.Item>
             )}
-          </Command.Group>
+            </Command.Group>
+          ) : null}
 
           {/* INTENTS */}
-          <Command.Group heading="Intelligence">
-            <Command.Item onSelect={() => runPredictive()}>
-              Run Predictive Engine
-            </Command.Item>
+          {canUseIntelligence ? (
+            <Command.Group heading="Intelligence">
+            {canExecuteIntent ? (
+              <Command.Item onSelect={() => runPredictive()}>
+                Run Predictive Engine
+              </Command.Item>
+            ) : null}
 
-            <Command.Item onSelect={() => runAdaptiveIntent()}>
-              Run Adaptive Intent
-            </Command.Item>
+            {canReadTreasury ? (
+              <Command.Item onSelect={() => runAdaptiveIntent()}>
+                Run Adaptive Intent
+              </Command.Item>
+            ) : null}
 
-            <Command.Item onSelect={() => runAutonomousLoopCommand()}>
-              Run Autonomous Loop
-            </Command.Item>
+            {canRunAutonomousLoop ? (
+              <Command.Item onSelect={() => runAutonomousLoopCommand()}>
+                Run Autonomous Loop
+              </Command.Item>
+            ) : null}
 
-            <Command.Item onSelect={() => runIntent('STABILIZE_SYSTEM')}>
-              Stabilize System
-            </Command.Item>
+            {canExecuteIntent ? (
+              <Command.Item onSelect={() => runIntent('STABILIZE_SYSTEM')}>
+                Stabilize System
+              </Command.Item>
+            ) : null}
 
-            <Command.Item onSelect={() => runIntent('PREPARE_SETTLEMENT')}>
-              Prepare Settlement
-            </Command.Item>
-          </Command.Group>
+            {canExecuteIntent ? (
+              <Command.Item onSelect={() => runIntent('PREPARE_SETTLEMENT')}>
+                Prepare Settlement
+              </Command.Item>
+            ) : null}
+            </Command.Group>
+          ) : null}
         </Command.List>
       </Command.Dialog>
 

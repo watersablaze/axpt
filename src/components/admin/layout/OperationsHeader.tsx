@@ -1,9 +1,9 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { getAdminPageMeta } from './AdminNavConfig'
+import { getAdminPageMeta } from './OperationsNavConfig'
 
-export default function AdminHeader() {
+export default function OperationsHeader() {
   const pathname = usePathname()
   const meta = getAdminPageMeta(pathname)
 
