@@ -50,6 +50,16 @@ export async function getConversationWithClient({
             },
           },
         },
+
+        operationalRoom: {
+          include: {
+            links: {
+              orderBy: {
+                linkedAt: "asc",
+              },
+            },
+          },
+        },
       },
     })
 

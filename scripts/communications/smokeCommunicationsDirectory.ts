@@ -223,6 +223,7 @@ async function main() {
       permissions: [
         PERMISSIONS.COMMUNICATIONS_ACCESS,
         PERMISSIONS.COMMUNICATIONS_DIRECT_CREATE,
+        PERMISSIONS.COMMUNICATIONS_GROUP_CREATE,
       ],
     }
 
@@ -318,6 +319,135 @@ async function main() {
     )
 
     /*
+     * Purpose-specific creation authority.
+     *
+     * DIRECT and GROUP initiation are independent.
+     */
+    const directOnlyPrincipal:
+      Principal = {
+        userId:
+          userA.id,
+
+        email:
+          userA.email,
+
+        roles:
+          [],
+
+        permissions: [
+          PERMISSIONS.COMMUNICATIONS_ACCESS,
+          PERMISSIONS.COMMUNICATIONS_DIRECT_CREATE,
+        ],
+      }
+
+    const groupOnlyPrincipal:
+      Principal = {
+        userId:
+          userA.id,
+
+        email:
+          userA.email,
+
+        roles:
+          [],
+
+        permissions: [
+          PERMISSIONS.COMMUNICATIONS_ACCESS,
+          PERMISSIONS.COMMUNICATIONS_GROUP_CREATE,
+        ],
+      }
+
+    const directDirectory =
+      await listCommunicationDirectoryWithClient({
+        client,
+
+        principal:
+          directOnlyPrincipal,
+
+        purpose:
+          "DIRECT",
+      })
+
+    assert(
+      directDirectory.some(
+        user =>
+          user.id ===
+          userB.id
+      ),
+      "DIRECT_PURPOSE_DIRECTORY_NOT_AVAILABLE_TO_DIRECT_CREATOR"
+    )
+
+    let directCannotBrowseGroup =
+      false
+
+    try {
+      await listCommunicationDirectoryWithClient({
+        client,
+
+        principal:
+          directOnlyPrincipal,
+
+        purpose:
+          "GROUP",
+      })
+    } catch (error: unknown) {
+      directCannotBrowseGroup =
+        error instanceof Error &&
+        error.message ===
+          "MISSING_PERMISSION:COMMUNICATIONS_GROUP_CREATE"
+    }
+
+    assert(
+      directCannotBrowseGroup,
+      "DIRECT_CREATE_IMPROPERLY_AUTHORIZES_GROUP_DIRECTORY"
+    )
+
+    const groupDirectory =
+      await listCommunicationDirectoryWithClient({
+        client,
+
+        principal:
+          groupOnlyPrincipal,
+
+        purpose:
+          "GROUP",
+      })
+
+    assert(
+      groupDirectory.some(
+        user =>
+          user.id ===
+          userB.id
+      ),
+      "GROUP_PURPOSE_DIRECTORY_NOT_AVAILABLE_TO_GROUP_CREATOR"
+    )
+
+    let groupCannotBrowseDirect =
+      false
+
+    try {
+      await listCommunicationDirectoryWithClient({
+        client,
+
+        principal:
+          groupOnlyPrincipal,
+
+        purpose:
+          "DIRECT",
+      })
+    } catch (error: unknown) {
+      groupCannotBrowseDirect =
+        error instanceof Error &&
+        error.message ===
+          "MISSING_PERMISSION:COMMUNICATIONS_DIRECT_CREATE"
+    }
+
+    assert(
+      groupCannotBrowseDirect,
+      "GROUP_CREATE_IMPROPERLY_AUTHORIZES_DIRECT_DIRECTORY"
+    )
+
+    /*
      * A user with Communications access but
      * without DIRECT_CREATE may not browse
      * this initiation directory.
@@ -381,6 +511,18 @@ async function main() {
         true,
 
       directCreateBoundaryEnforced:
+        true,
+
+      directPurposeAuthorized:
+        true,
+
+      groupPurposeAuthorized:
+        true,
+
+      directDoesNotImplyGroup:
+        true,
+
+      groupDoesNotImplyDirect:
         true,
     })
   } finally {

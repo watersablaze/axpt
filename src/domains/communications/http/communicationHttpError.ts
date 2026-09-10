@@ -51,7 +51,11 @@ export function communicationHttpError(
     error.message ===
       "COMMUNICATION_CONVERSATION_NOT_FOUND" ||
     error.message ===
-      "COMMUNICATION_READ_MESSAGE_NOT_FOUND"
+      "COMMUNICATION_READ_MESSAGE_NOT_FOUND" ||
+    error.message ===
+      "COMMUNICATION_OPERATIONAL_ROOM_NOT_FOUND" ||
+    error.message ===
+      "COMMUNICATION_OPERATIONAL_TARGET_NOT_FOUND"
   ) {
     return Response.json(
       {
@@ -71,7 +75,11 @@ export function communicationHttpError(
     error.message ===
       "COMMUNICATION_CONVERSATION_TRANSITION_INVALID" ||
     error.message ===
-      "COMMUNICATION_CONVERSATION_TRANSITION_CONFLICT"
+      "COMMUNICATION_CONVERSATION_TRANSITION_CONFLICT" ||
+    error.message ===
+      "COMMUNICATION_OPERATIONAL_ROOM_IDEMPOTENCY_COLLISION" ||
+    error.message ===
+      "COMMUNICATION_OPERATIONAL_ROOM_TOPOLOGY_INVALID"
   ) {
     return Response.json(
       {
@@ -91,7 +99,32 @@ export function communicationHttpError(
     error.message ===
       "DIRECT_CONVERSATION_SELF_NOT_ALLOWED" ||
     error.message ===
-      "DIRECT_CONVERSATION_USER_REQUIRED"
+      "DIRECT_CONVERSATION_USER_REQUIRED" ||
+    error.message ===
+      "COMMUNICATION_CLIENT_ROOM_ID_INVALID" ||
+    error.message ===
+      "COMMUNICATION_OPERATIONAL_ROOM_CLASS_INVALID" ||
+    error.message ===
+      "COMMUNICATION_OPERATIONAL_ROOM_TITLE_INVALID" ||
+    error.message ===
+      "COMMUNICATION_OPERATIONAL_ROOM_MEMBER_INVALID" ||
+    error.message.startsWith(
+      "COMMUNICATION_OPERATIONAL_ROOM_MEMBER_INELIGIBLE:"
+    ) ||
+    error.message ===
+      "COMMUNICATION_OPERATIONAL_ROOM_ID_REQUIRED" ||
+    error.message ===
+      "COMMUNICATION_OPERATIONAL_TARGET_TYPE_INVALID" ||
+    error.message ===
+      "COMMUNICATION_OPERATIONAL_TARGET_ID_REQUIRED" ||
+    error.message ===
+      "COMMUNICATION_OPERATIONAL_TARGET_SUBTYPE_REQUIRED" ||
+    error.message ===
+      "COMMUNICATION_OPERATIONAL_TREASURY_SUBTYPE_INVALID" ||
+    error.message ===
+      "COMMUNICATION_OPERATIONAL_TARGET_SUBTYPE_MISMATCH" ||
+    error.message ===
+      "COMMUNICATION_DIRECTORY_PURPOSE_INVALID"
   ) {
     return Response.json(
       {

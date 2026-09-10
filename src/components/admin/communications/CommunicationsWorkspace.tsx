@@ -9,6 +9,11 @@ import {
 
 import { useCommunicationsRealtime } from "@/lib/realtime/communications/CommunicationsProvider"
 import { isCurrentConversationLoad } from "@/domains/communications/client/isCurrentConversationLoad"
+import {
+  COMMUNICATION_OPERATIONAL_ROOM_CLASSES,
+  COMMUNICATION_OPERATIONAL_TARGET_TYPES,
+  COMMUNICATION_OPERATIONAL_TREASURY_SUBTYPES,
+} from "@/domains/communications/operational/operationalVocabulary"
 
 type CommunicationUser = {
   id: string
@@ -38,6 +43,24 @@ type CommunicationMessage = {
   createdAt: string
 }
 
+type CommunicationOperationalLink = {
+  id: string
+  targetType: string
+  targetSubtype: string
+  targetId: string
+  linkedByUserId: string
+  linkedAt: string
+}
+
+type CommunicationOperationalRoom = {
+  id: string
+  roomClass: string
+  createdByUserId: string
+  createdAt: string
+  updatedAt: string
+  links: CommunicationOperationalLink[]
+}
+
 type CommunicationConversation = {
   id: string
   kind: string
@@ -51,6 +74,7 @@ type CommunicationConversation = {
   members: CommunicationMember[]
   messages: CommunicationMessage[]
   unreadCount: number
+  operationalRoom: CommunicationOperationalRoom | null
 }
 
 type ConversationsResponse = {
@@ -90,6 +114,18 @@ type DirectConversationResponse = {
   error?: string
 }
 
+type OperationalRoomCreationResponse = {
+  ok: boolean
+  conversation?: CommunicationConversation
+  error?: string
+}
+
+type OperationalTargetLinkResponse = {
+  ok: boolean
+  link?: CommunicationOperationalLink
+  error?: string
+}
+
 function userLabel(
   user: CommunicationUser
 ) {
@@ -98,6 +134,90 @@ function userLabel(
     user.name ||
     user.email
   )
+}
+
+function operationalRoomClassLabel(
+  roomClass: string
+) {
+  return roomClass
+    .replaceAll(
+      "_",
+      " "
+    )
+}
+
+function operationalTargetTypeLabel(
+  targetType: string
+) {
+  if (
+    targetType ===
+    "TREASURY_GATEWAY_AGGREGATE"
+  ) {
+    return "TREASURY"
+  }
+
+  if (
+    targetType ===
+    "TRANSACTION_DOSSIER"
+  ) {
+    return "DOSSIER"
+  }
+
+  return targetType.replaceAll(
+    "_",
+    " "
+  )
+}
+
+function operationalTreasurySubtypeLabel(
+  targetSubtype: string
+) {
+  return targetSubtype.replaceAll(
+    "_",
+    " "
+  )
+}
+
+function operationalTargetLabel(
+  link: CommunicationOperationalLink
+) {
+  if (
+    link.targetType ===
+    "TREASURY_GATEWAY_AGGREGATE"
+  ) {
+    return `TREASURY · ${link.targetSubtype.replaceAll(
+      "_",
+      " "
+    )}`
+  }
+
+  if (
+    link.targetType ===
+    "TRANSACTION_DOSSIER"
+  ) {
+    return "DOSSIER"
+  }
+
+  return link.targetType.replaceAll(
+    "_",
+    " "
+  )
+}
+
+function compactOperationalTargetId(
+  targetId: string
+) {
+  if (
+    targetId.length <=
+    18
+  ) {
+    return targetId
+  }
+
+  return `${targetId.slice(
+    0,
+    10
+  )}…${targetId.slice(-6)}`
 }
 
 function conversationLabel(
@@ -165,9 +285,11 @@ function formatConversationTime(
 export default function CommunicationsWorkspace({
   currentUserId,
   canManageConversations,
+  canCreateOperationalRooms,
 }: {
   currentUserId: string
   canManageConversations: boolean
+  canCreateOperationalRooms: boolean
 }) {
   const realtime =
     useCommunicationsRealtime()
@@ -307,6 +429,78 @@ export default function CommunicationsWorkspace({
   ] =
     useState(false)
 
+  const [
+    operationalRoomOpen,
+    setOperationalRoomOpen,
+  ] =
+    useState(false)
+
+  const [
+    operationalRoomTitle,
+    setOperationalRoomTitle,
+  ] =
+    useState("")
+
+  const [
+    operationalRoomClass,
+    setOperationalRoomClass,
+  ] =
+    useState("GENERAL_OPERATIONS")
+
+  const [
+    operationalRoomMemberUserIds,
+    setOperationalRoomMemberUserIds,
+  ] =
+    useState<string[]>([])
+
+  const [
+    operationalRoomClientRoomId,
+    setOperationalRoomClientRoomId,
+  ] =
+    useState(() =>
+      crypto.randomUUID()
+    )
+
+  const [
+    creatingOperationalRoom,
+    setCreatingOperationalRoom,
+  ] =
+    useState(false)
+
+  const [
+    linkContextOpen,
+    setLinkContextOpen,
+  ] =
+    useState(false)
+
+  const [
+    operationalTargetType,
+    setOperationalTargetType,
+  ] =
+    useState<string>(
+      COMMUNICATION_OPERATIONAL_TARGET_TYPES[0]
+    )
+
+  const [
+    operationalTreasurySubtype,
+    setOperationalTreasurySubtype,
+  ] =
+    useState<string>(
+      COMMUNICATION_OPERATIONAL_TREASURY_SUBTYPES[0]
+    )
+
+  const [
+    operationalTargetId,
+    setOperationalTargetId,
+  ] =
+    useState("")
+
+  const [
+    linkingOperationalTarget,
+    setLinkingOperationalTarget,
+  ] =
+    useState(false)
+
   const selectedConversation =
     conversations.find(
       (conversation) =>
@@ -323,6 +517,21 @@ export default function CommunicationsWorkspace({
   const conversationArchived =
     selectedConversation?.status ===
     "ARCHIVED"
+
+  useEffect(
+    () => {
+      setLinkContextOpen(
+        false
+      )
+
+      setOperationalTargetId(
+        ""
+      )
+    },
+    [
+      selectedConversationId,
+    ]
+  )
 
   const loadConversations =
     useCallback(
@@ -681,7 +890,7 @@ export default function CommunicationsWorkspace({
     try {
       const response =
         await fetch(
-          "/api/communications/directory",
+          "/api/communications/directory?purpose=DIRECT",
           {
             cache:
               "no-store",
@@ -715,6 +924,182 @@ export default function CommunicationsWorkspace({
       )
     } finally {
       setLoadingDirectory(false)
+    }
+  }
+
+  async function openOperationalRoom() {
+    if (
+      !canCreateOperationalRooms
+    ) {
+      return
+    }
+
+    if (operationalRoomOpen) {
+      setOperationalRoomOpen(false)
+      return
+    }
+
+    setDirectoryOpen(false)
+    setOperationalRoomOpen(true)
+    setLoadingDirectory(true)
+
+    try {
+      const response =
+        await fetch(
+          "/api/communications/directory?purpose=GROUP",
+          {
+            cache:
+              "no-store",
+          }
+        )
+
+      const payload =
+        await response.json() as DirectoryResponse
+
+      if (
+        !response.ok ||
+        !payload.ok ||
+        !payload.users
+      ) {
+        throw new Error(
+          payload.error ??
+            "COMMUNICATION_GROUP_DIRECTORY_FAILED"
+        )
+      }
+
+      setDirectoryUsers(
+        payload.users
+      )
+
+      setError(null)
+    } catch (cause) {
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "COMMUNICATION_GROUP_DIRECTORY_FAILED"
+      )
+    } finally {
+      setLoadingDirectory(false)
+    }
+  }
+
+  function toggleOperationalRoomMember(
+    userId: string
+  ) {
+    setOperationalRoomMemberUserIds(
+      current =>
+        current.includes(
+          userId
+        )
+          ? current.filter(
+              id =>
+                id !==
+                userId
+            )
+          : [
+              ...current,
+              userId,
+            ]
+    )
+  }
+
+  async function createOperationalRoom() {
+    if (
+      !canCreateOperationalRooms ||
+      creatingOperationalRoom ||
+      !operationalRoomTitle.trim()
+    ) {
+      return
+    }
+
+    setCreatingOperationalRoom(
+      true
+    )
+
+    try {
+      const response =
+        await fetch(
+          "/api/communications/operational-rooms",
+          {
+            method:
+              "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body:
+              JSON.stringify({
+                clientRoomId:
+                  operationalRoomClientRoomId,
+
+                title:
+                  operationalRoomTitle,
+
+                roomClass:
+                  operationalRoomClass,
+
+                memberUserIds:
+                  operationalRoomMemberUserIds,
+              }),
+          }
+        )
+
+      const payload =
+        await response.json() as OperationalRoomCreationResponse
+
+      if (
+        !response.ok ||
+        !payload.ok ||
+        !payload.conversation
+      ) {
+        throw new Error(
+          payload.error ??
+            "COMMUNICATION_OPERATIONAL_ROOM_CREATE_FAILED"
+        )
+      }
+
+      const conversationId =
+        payload.conversation.id
+
+      /*
+       * Rotate clientRoomId only after durable
+       * success. Ambiguous/failed retries retain
+       * the same submission identity.
+       */
+      setOperationalRoomClientRoomId(
+        crypto.randomUUID()
+      )
+
+      setOperationalRoomTitle("")
+      setOperationalRoomClass(
+        "GENERAL_OPERATIONS"
+      )
+      setOperationalRoomMemberUserIds(
+        []
+      )
+      setOperationalRoomOpen(
+        false
+      )
+
+      await loadConversations()
+
+      selectConversation(
+        conversationId
+      )
+
+      setError(null)
+    } catch (cause) {
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "COMMUNICATION_OPERATIONAL_ROOM_CREATE_FAILED"
+      )
+    } finally {
+      setCreatingOperationalRoom(
+        false
+      )
     }
   }
 
@@ -785,6 +1170,104 @@ export default function CommunicationsWorkspace({
       )
     } finally {
       setCreatingConversation(false)
+    }
+  }
+
+  async function linkOperationalContext() {
+    const conversation =
+      selectedConversation
+
+    const room =
+      conversation?.operationalRoom
+
+    if (
+      !conversation ||
+      !room ||
+      conversation.status !==
+        "ACTIVE" ||
+      !canManageConversations ||
+      linkingOperationalTarget ||
+      !operationalTargetId.trim()
+    ) {
+      return
+    }
+
+    setLinkingOperationalTarget(
+      true
+    )
+
+    try {
+      const targetSubtype =
+        operationalTargetType ===
+        "TREASURY_GATEWAY_AGGREGATE"
+          ? operationalTreasurySubtype
+          : operationalTargetType
+
+      const response =
+        await fetch(
+          `/api/communications/operational-rooms/${room.id}/links`,
+          {
+            method:
+              "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+
+            body:
+              JSON.stringify({
+                targetType:
+                  operationalTargetType,
+
+                targetSubtype,
+
+                targetId:
+                  operationalTargetId,
+              }),
+          }
+        )
+
+      const payload =
+        await response.json() as OperationalTargetLinkResponse
+
+      if (
+        !response.ok ||
+        !payload.ok ||
+        !payload.link
+      ) {
+        throw new Error(
+          payload.error ??
+            "COMMUNICATION_OPERATIONAL_TARGET_LINK_FAILED"
+        )
+      }
+
+      setOperationalTargetId(
+        ""
+      )
+
+      setLinkContextOpen(
+        false
+      )
+
+      /*
+       * Conversation retrieval is authoritative
+       * for room context. The link response itself
+       * is only the command acknowledgement.
+       */
+      await loadConversations()
+
+      setError(null)
+    } catch (cause) {
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : "COMMUNICATION_OPERATIONAL_TARGET_LINK_FAILED"
+      )
+    } finally {
+      setLinkingOperationalTarget(
+        false
+      )
     }
   }
 
@@ -1067,6 +1550,14 @@ export default function CommunicationsWorkspace({
                 )}
               </div>
 
+              {conversation.operationalRoom ? (
+                <span className="shrink-0 rounded-full border border-neutral-800 bg-neutral-950 px-1.5 py-0.5 text-[8px] uppercase tracking-[0.12em] text-neutral-500">
+                  {operationalRoomClassLabel(
+                    conversation.operationalRoom.roomClass
+                  )}
+                </span>
+              ) : null}
+
               {archived ? (
                 <span className="shrink-0 rounded-full border border-neutral-800 px-1.5 py-0.5 text-[8px] uppercase tracking-[0.12em] text-neutral-600">
                   Archived
@@ -1109,12 +1600,28 @@ export default function CommunicationsWorkspace({
               <button
                 type="button"
                 onClick={() => {
+                  setOperationalRoomOpen(
+                    false
+                  )
+
                   void openDirectory()
                 }}
                 className="rounded-md border border-neutral-700 bg-neutral-950 px-2.5 py-1.5 text-[10px] uppercase tracking-[0.14em] text-neutral-300 transition hover:border-neutral-500 hover:text-white"
               >
                 New
               </button>
+
+              {canCreateOperationalRooms ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    void openOperationalRoom()
+                  }}
+                  className="rounded-md border border-neutral-700 bg-neutral-950 px-2.5 py-1.5 text-[10px] uppercase tracking-[0.14em] text-neutral-300 transition hover:border-neutral-500 hover:text-white"
+                >
+                  Room
+                </button>
+              ) : null}
 
               <div
                 className={`rounded-full border px-2 py-1 text-[10px] uppercase tracking-[0.16em] ${
@@ -1130,6 +1637,154 @@ export default function CommunicationsWorkspace({
             </div>
           </div>
         </div>
+
+        {operationalRoomOpen ? (
+          <div className="border-b border-neutral-800 bg-neutral-950/80">
+            <div className="space-y-3 px-4 py-4">
+              <div>
+                <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
+                  New Operational Room
+                </div>
+
+                <div className="mt-1 text-xs leading-5 text-neutral-600">
+                  Governed coordination space. Creating a room does not execute institutional action.
+                </div>
+              </div>
+
+              <input
+                value={
+                  operationalRoomTitle
+                }
+                onChange={event => {
+                  setOperationalRoomTitle(
+                    event.target.value
+                  )
+                }}
+                maxLength={200}
+                placeholder="Room title"
+                className="w-full rounded-md border border-neutral-800 bg-black px-3 py-2 text-xs text-white outline-none placeholder:text-neutral-700 focus:border-neutral-600"
+              />
+
+              <select
+                value={
+                  operationalRoomClass
+                }
+                onChange={event => {
+                  setOperationalRoomClass(
+                    event.target.value
+                  )
+                }}
+                className="w-full rounded-md border border-neutral-800 bg-black px-3 py-2 text-xs text-neutral-300 outline-none focus:border-neutral-600"
+              >
+                {COMMUNICATION_OPERATIONAL_ROOM_CLASSES.map(
+                  roomClass => (
+                    <option
+                      key={
+                        roomClass
+                      }
+                      value={
+                        roomClass
+                      }
+                    >
+                      {operationalRoomClassLabel(
+                        roomClass
+                      )}
+                    </option>
+                  )
+                )}
+              </select>
+
+              <div>
+                <div className="mb-2 text-[9px] uppercase tracking-[0.16em] text-neutral-600">
+                  Members
+                </div>
+
+                <div className="max-h-[150px] overflow-y-auto rounded-md border border-neutral-900">
+                  {loadingDirectory ? (
+                    <div className="px-3 py-3 text-xs text-neutral-600">
+                      Loading people…
+                    </div>
+                  ) : directoryUsers.length ===
+                    0 ? (
+                    <div className="px-3 py-3 text-xs text-neutral-600">
+                      No eligible participants.
+                    </div>
+                  ) : (
+                    directoryUsers.map(
+                      user => {
+                        const selected =
+                          operationalRoomMemberUserIds.includes(
+                            user.id
+                          )
+
+                        return (
+                          <button
+                            key={
+                              user.id
+                            }
+                            type="button"
+                            onClick={() => {
+                              toggleOperationalRoomMember(
+                                user.id
+                              )
+                            }}
+                            className={`block w-full border-t border-neutral-900 px-3 py-2.5 text-left first:border-t-0 ${
+                              selected
+                                ? "bg-neutral-900"
+                                : "hover:bg-neutral-950"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="min-w-0">
+                                <div className="truncate text-xs text-neutral-300">
+                                  {userLabel(
+                                    user
+                                  )}
+                                </div>
+
+                                <div className="mt-0.5 truncate text-[10px] text-neutral-700">
+                                  {user.email}
+                                </div>
+                              </div>
+
+                              <span className="shrink-0 text-[9px] uppercase tracking-[0.12em] text-neutral-600">
+                                {selected
+                                  ? "Included"
+                                  : "Add"}
+                              </span>
+                            </div>
+                          </button>
+                        )
+                      }
+                    )
+                  )}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-3">
+                <div className="text-[9px] uppercase tracking-[0.14em] text-neutral-700">
+                  {operationalRoomMemberUserIds.length} additional members
+                </div>
+
+                <button
+                  type="button"
+                  disabled={
+                    creatingOperationalRoom ||
+                    !operationalRoomTitle.trim()
+                  }
+                  onClick={() => {
+                    void createOperationalRoom()
+                  }}
+                  className="rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-neutral-200 transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {creatingOperationalRoom
+                    ? "Creating"
+                    : "Create Room"}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         {directoryOpen ? (
           <div className="border-b border-neutral-800 bg-neutral-950/80">
@@ -1258,8 +1913,18 @@ export default function CommunicationsWorkspace({
                 <div className="min-w-0">
                   <div className="flex items-center gap-3">
                     <div className="text-xs uppercase tracking-[0.16em] text-neutral-500">
-                      Direct Conversation
+                      {selectedConversation.operationalRoom
+                        ? "Operational Room"
+                        : "Direct Conversation"}
                     </div>
+
+                    {selectedConversation.operationalRoom ? (
+                      <div className="rounded-full border border-neutral-700 bg-neutral-950 px-2 py-1 text-[9px] uppercase tracking-[0.14em] text-neutral-400">
+                        {operationalRoomClassLabel(
+                          selectedConversation.operationalRoom.roomClass
+                        )}
+                      </div>
+                    ) : null}
 
                     {conversationArchived ? (
                       <div className="rounded-full border border-neutral-700 bg-neutral-950 px-2 py-1 text-[9px] uppercase tracking-[0.14em] text-neutral-500">
@@ -1274,6 +1939,193 @@ export default function CommunicationsWorkspace({
                       currentUserId
                     )}
                   </div>
+
+                  {selectedConversation.operationalRoom ? (
+                    <div className="mt-3">
+                      <div className="text-[9px] uppercase tracking-[0.16em] text-neutral-600">
+                        {selectedConversation.operationalRoom.links.length ===
+                        1
+                          ? "1 linked institutional object"
+                          : `${selectedConversation.operationalRoom.links.length} linked institutional objects`}
+                      </div>
+
+                      {selectedConversation.operationalRoom.links.length >
+                      0 ? (
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          {selectedConversation.operationalRoom.links.map(
+                            link => (
+                              <div
+                                key={
+                                  link.id
+                                }
+                                title={
+                                  link.targetId
+                                }
+                                className="rounded-md border border-neutral-800 bg-neutral-950/80 px-2 py-1 text-[9px] uppercase tracking-[0.1em] text-neutral-500"
+                              >
+                                <span className="text-neutral-400">
+                                  {operationalTargetLabel(
+                                    link
+                                  )}
+                                </span>
+
+                                <span className="mx-1.5 text-neutral-700">
+                                  ·
+                                </span>
+
+                                <span className="font-mono normal-case tracking-normal text-neutral-600">
+                                  {compactOperationalTargetId(
+                                    link.targetId
+                                  )}
+                                </span>
+                              </div>
+                            )
+                          )}
+                        </div>
+                      ) : null}
+
+                      {canManageConversations &&
+                      !conversationArchived ? (
+                        <div className="mt-3">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setLinkContextOpen(
+                                current =>
+                                  !current
+                              )
+                            }}
+                            className="rounded-md border border-neutral-800 bg-neutral-950 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-neutral-500 transition hover:border-neutral-600 hover:text-neutral-300"
+                          >
+                            {linkContextOpen
+                              ? "Close Context"
+                              : "Link Context"}
+                          </button>
+
+                          {linkContextOpen ? (
+                            <div className="mt-3 grid max-w-xl grid-cols-1 gap-2 rounded-lg border border-neutral-800 bg-black/60 p-3 sm:grid-cols-2">
+                              <label className="block">
+                                <span className="mb-1 block text-[8px] uppercase tracking-[0.14em] text-neutral-600">
+                                  Target
+                                </span>
+
+                                <select
+                                  value={
+                                    operationalTargetType
+                                  }
+                                  onChange={event => {
+                                    setOperationalTargetType(
+                                      event.target.value
+                                    )
+                                  }}
+                                  className="w-full rounded-md border border-neutral-800 bg-black px-2.5 py-2 text-[10px] text-neutral-300 outline-none focus:border-neutral-600"
+                                >
+                                  {COMMUNICATION_OPERATIONAL_TARGET_TYPES.map(
+                                    targetType => (
+                                      <option
+                                        key={
+                                          targetType
+                                        }
+                                        value={
+                                          targetType
+                                        }
+                                      >
+                                        {operationalTargetTypeLabel(
+                                          targetType
+                                        )}
+                                      </option>
+                                    )
+                                  )}
+                                </select>
+                              </label>
+
+                              {operationalTargetType ===
+                              "TREASURY_GATEWAY_AGGREGATE" ? (
+                                <label className="block">
+                                  <span className="mb-1 block text-[8px] uppercase tracking-[0.14em] text-neutral-600">
+                                    Treasury Object
+                                  </span>
+
+                                  <select
+                                    value={
+                                      operationalTreasurySubtype
+                                    }
+                                    onChange={event => {
+                                      setOperationalTreasurySubtype(
+                                        event.target.value
+                                      )
+                                    }}
+                                    className="w-full rounded-md border border-neutral-800 bg-black px-2.5 py-2 text-[10px] text-neutral-300 outline-none focus:border-neutral-600"
+                                  >
+                                    {COMMUNICATION_OPERATIONAL_TREASURY_SUBTYPES.map(
+                                      targetSubtype => (
+                                        <option
+                                          key={
+                                            targetSubtype
+                                          }
+                                          value={
+                                            targetSubtype
+                                          }
+                                        >
+                                          {operationalTreasurySubtypeLabel(
+                                            targetSubtype
+                                          )}
+                                        </option>
+                                      )
+                                    )}
+                                  </select>
+                                </label>
+                              ) : null}
+
+                              <label
+                                className={
+                                  operationalTargetType ===
+                                  "TREASURY_GATEWAY_AGGREGATE"
+                                    ? "block sm:col-span-2"
+                                    : "block"
+                                }
+                              >
+                                <span className="mb-1 block text-[8px] uppercase tracking-[0.14em] text-neutral-600">
+                                  Target ID
+                                </span>
+
+                                <input
+                                  value={
+                                    operationalTargetId
+                                  }
+                                  onChange={event => {
+                                    setOperationalTargetId(
+                                      event.target.value
+                                    )
+                                  }}
+                                  placeholder="Institutional object ID"
+                                  className="w-full rounded-md border border-neutral-800 bg-black px-2.5 py-2 font-mono text-[10px] text-neutral-300 outline-none placeholder:text-neutral-700 focus:border-neutral-600"
+                                />
+                              </label>
+
+                              <div className="flex items-end justify-end">
+                                <button
+                                  type="button"
+                                  disabled={
+                                    linkingOperationalTarget ||
+                                    !operationalTargetId.trim()
+                                  }
+                                  onClick={() => {
+                                    void linkOperationalContext()
+                                  }}
+                                  className="rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-[9px] uppercase tracking-[0.14em] text-neutral-300 transition hover:bg-neutral-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                                >
+                                  {linkingOperationalTarget
+                                    ? "Attaching"
+                                    : "Attach Context"}
+                                </button>
+                              </div>
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
                 </div>
 
                 {canManageConversations ? (

@@ -1,5 +1,7 @@
-import { prisma } from '@/infrastructure/db/prisma'
+import { PrismaClient } from '@prisma/client'
 import type { PermissionKey } from '@/domains/auth/permissions'
+
+const prisma = new PrismaClient()
 
 const ROLES = [
   {
@@ -9,6 +11,10 @@ const ROLES = [
   {
     key: 'RESIDENT',
     label: 'Resident',
+  },
+  {
+    key: 'COMMUNICATIONS_OPERATOR',
+    label: 'Communications Operator',
   },
   {
     key: 'TREASURY_OPERATOR',
@@ -35,10 +41,25 @@ const ROLES = [
 const ROLE_PERMISSIONS = {
   ADMIN_PLATFORM: [
     'admin.access',
+    'ADMIN_SURFACE_ACCESS',
+
+    'COMMUNICATIONS_ACCESS',
+    'COMMUNICATIONS_DIRECT_CREATE',
+    'COMMUNICATIONS_GROUP_CREATE',
+    'COMMUNICATIONS_MESSAGE_SEND',
+    'COMMUNICATIONS_CONVERSATION_MANAGE',
+
     'SYSTEM_MANAGE_AUTH',
     'SYSTEM_READ_AUDIT',
     'SYSTEM_VIEW_REPLAY',
     'SYSTEM_VIEW_DRIFT',
+  ],
+  COMMUNICATIONS_OPERATOR: [
+    'ADMIN_SURFACE_ACCESS',
+    'COMMUNICATIONS_ACCESS',
+    'COMMUNICATIONS_DIRECT_CREATE',
+    'COMMUNICATIONS_MESSAGE_SEND',
+    'COMMUNICATIONS_CONVERSATION_MANAGE',
   ],
   RESIDENT: [
     'PORTAL_ACCESS',

@@ -17,6 +17,19 @@ const prisma = new PrismaClient()
 type ConversationListRow = {
   id: string
   unreadCount: number
+  operationalRoom:
+    | {
+        id: string
+        roomClass: unknown
+        links: Array<{
+          id: string
+          targetType: unknown
+          targetSubtype: string
+          targetId: string
+          linkedAt: Date
+        }>
+      }
+    | null
 }
 
 function assert(
@@ -130,6 +143,134 @@ async function main() {
     createdConversationIds.push(
       conversationAC.id
     )
+
+    /*
+     * C2 retrieval fixture:
+     *
+     * A durable GROUP conversation with an
+     * Operational Room and two pointer-only
+     * institutional links.
+     *
+     * Creation/link command semantics are covered
+     * by their dedicated C2 smokes. This fixture
+     * isolates Communications retrieval behavior.
+     */
+    const operationalConversation =
+      await prisma.communicationConversation.create({
+        data: {
+          kind:
+            "GROUP",
+
+          status:
+            "ACTIVE",
+
+          title:
+            `Treasury Retrieval Room ${nonce}`,
+
+          createdByUserId:
+            userA.id,
+
+          members: {
+            create: [
+              {
+                userId:
+                  userA.id,
+
+                role:
+                  "OWNER",
+              },
+
+              {
+                userId:
+                  userB.id,
+
+                role:
+                  "MEMBER",
+              },
+            ],
+          },
+        },
+      })
+
+    createdConversationIds.push(
+      operationalConversation.id
+    )
+
+    const operationalRoom =
+      await prisma.communicationOperationalRoom.create({
+        data: {
+          conversationId:
+            operationalConversation.id,
+
+          clientRoomId:
+            `retrieval-room-${nonce}`,
+
+          requestFingerprint:
+            `retrieval-fingerprint-${nonce}`,
+
+          roomClass:
+            "TREASURY",
+
+          createdByUserId:
+            userA.id,
+        },
+      })
+
+    const firstLinkedAt =
+      new Date(
+        Date.now() - 2_000
+      )
+
+    const secondLinkedAt =
+      new Date(
+        Date.now() - 1_000
+      )
+
+    const caseLink =
+      await prisma.communicationOperationalLink.create({
+        data: {
+          roomId:
+            operationalRoom.id,
+
+          targetType:
+            "CASE",
+
+          targetSubtype:
+            "CASE",
+
+          targetId:
+            `case-retrieval-${nonce}`,
+
+          linkedByUserId:
+            userA.id,
+
+          linkedAt:
+            firstLinkedAt,
+        },
+      })
+
+    const treasuryLink =
+      await prisma.communicationOperationalLink.create({
+        data: {
+          roomId:
+            operationalRoom.id,
+
+          targetType:
+            "TREASURY_GATEWAY_AGGREGATE",
+
+          targetSubtype:
+            "TREASURY_INSTRUCTION",
+
+          targetId:
+            `treasury-instruction-retrieval-${nonce}`,
+
+          linkedByUserId:
+            userA.id,
+
+          linkedAt:
+            secondLinkedAt,
+        },
+      })
 
     /*
      * Conversation listing boundaries.
@@ -573,6 +714,294 @@ async function main() {
       "NON_MEMBER_MESSAGE_LIST_NOT_BLOCKED"
     )
 
+    /*
+     * ──────────────────────────────────────────
+     * C2 — OPERATIONAL ROOM RETRIEVAL
+     * ──────────────────────────────────────────
+     */
+
+    /*
+     * DIRECT conversations have no operational
+     * room projection at the domain read layer.
+     */
+    const directDetail =
+      await getConversationWithClient({
+        client,
+        principal:
+          principalA,
+        conversationId:
+          conversationAB.id,
+      })
+
+    assert(
+      directDetail.operationalRoom ===
+        null,
+      "DIRECT_CONVERSATION_OPERATIONAL_ROOM_NOT_NULL"
+    )
+
+    /*
+     * Active operational room is discoverable by
+     * an active member, with its room class and
+     * links preserved.
+     */
+    const operationalListB =
+      await listConversationsWithClient({
+        client,
+        principal:
+          principalB,
+      })
+
+    const operationalListRow =
+      operationalListB.find(
+        (conversation: ConversationListRow) =>
+          conversation.id ===
+          operationalConversation.id
+      )
+
+    assert(
+      operationalListRow !==
+        undefined,
+      "ACTIVE_OPERATIONAL_ROOM_NOT_LISTED_FOR_MEMBER"
+    )
+
+    assert(
+      operationalListRow.operationalRoom !==
+        null,
+      "ACTIVE_OPERATIONAL_ROOM_METADATA_MISSING"
+    )
+
+    assert(
+      operationalListRow.operationalRoom.roomClass ===
+        "TREASURY",
+      "ACTIVE_OPERATIONAL_ROOM_CLASS_INVALID"
+    )
+
+    assert(
+      operationalListRow.operationalRoom.links.length ===
+        2,
+      "ACTIVE_OPERATIONAL_ROOM_LINK_COUNT_INVALID"
+    )
+
+    assert(
+      operationalListRow.operationalRoom.links[0]?.id ===
+        caseLink.id &&
+        operationalListRow.operationalRoom.links[1]?.id ===
+          treasuryLink.id,
+      "OPERATIONAL_ROOM_LINK_ORDER_INVALID"
+    )
+
+    const operationalDetail =
+      await getConversationWithClient({
+        client,
+        principal:
+          principalB,
+        conversationId:
+          operationalConversation.id,
+      })
+
+    assert(
+      operationalDetail.operationalRoom?.id ===
+        operationalRoom.id,
+      "OPERATIONAL_ROOM_DETAIL_METADATA_MISSING"
+    )
+
+    assert(
+      operationalDetail.operationalRoom.links.length ===
+        2,
+      "OPERATIONAL_ROOM_DETAIL_LINKS_MISSING"
+    )
+
+    /*
+     * Retrieval remains pointer-only.
+     *
+     * Communications receives institutional
+     * coordinates, not hydrated Case / Dossier /
+     * Transaction / Treasury aggregate state.
+     */
+    for (
+      const link of
+      operationalDetail.operationalRoom.links
+    ) {
+      const record =
+        link as unknown as Record<
+          string,
+          unknown
+        >
+
+      assert(
+        !(
+          "case" in
+          record
+        ),
+        "OPERATIONAL_RETRIEVAL_HYDRATED_CASE"
+      )
+
+      assert(
+        !(
+          "opportunity" in
+          record
+        ),
+        "OPERATIONAL_RETRIEVAL_HYDRATED_OPPORTUNITY"
+      )
+
+      assert(
+        !(
+          "transactionDossier" in
+          record
+        ),
+        "OPERATIONAL_RETRIEVAL_HYDRATED_DOSSIER"
+      )
+
+      assert(
+        !(
+          "transaction" in
+          record
+        ),
+        "OPERATIONAL_RETRIEVAL_HYDRATED_TRANSACTION"
+      )
+
+      assert(
+        !(
+          "treasuryGatewayAggregate" in
+          record
+        ),
+        "OPERATIONAL_RETRIEVAL_HYDRATED_TREASURY"
+      )
+    }
+
+    /*
+     * Archive changes operational availability,
+     * not institutional-record visibility.
+     */
+    await prisma.communicationConversation.update({
+      where: {
+        id:
+          operationalConversation.id,
+      },
+
+      data: {
+        status:
+          "ARCHIVED",
+
+        archivedAt:
+          new Date(),
+      },
+    })
+
+    const archivedListB =
+      await listConversationsWithClient({
+        client,
+        principal:
+          principalB,
+      })
+
+    const archivedOperationalRow =
+      archivedListB.find(
+        (conversation: ConversationListRow) =>
+          conversation.id ===
+          operationalConversation.id
+      )
+
+    assert(
+      archivedOperationalRow !==
+        undefined,
+      "ARCHIVED_OPERATIONAL_ROOM_NOT_RETRIEVABLE"
+    )
+
+    assert(
+      archivedOperationalRow.operationalRoom !==
+        null,
+      "ARCHIVED_OPERATIONAL_ROOM_METADATA_MISSING"
+    )
+
+    assert(
+      archivedOperationalRow.operationalRoom.id ===
+        operationalRoom.id,
+      "ARCHIVED_OPERATIONAL_ROOM_ID_INVALID"
+    )
+
+    assert(
+      archivedOperationalRow.operationalRoom.links.length ===
+        2,
+      "ARCHIVED_OPERATIONAL_ROOM_LINKS_LOST"
+    )
+
+    const archivedOperationalDetail =
+      await getConversationWithClient({
+        client,
+        principal:
+          principalB,
+        conversationId:
+          operationalConversation.id,
+      })
+
+    assert(
+      archivedOperationalDetail.operationalRoom?.id ===
+        operationalRoom.id,
+      "ARCHIVED_OPERATIONAL_ROOM_DETAIL_NOT_RETRIEVABLE"
+    )
+
+    /*
+     * Revocation removes authority regardless of
+     * the room being retained as an archive.
+     */
+    await prisma.communicationMember.updateMany({
+      where: {
+        conversationId:
+          operationalConversation.id,
+
+        userId:
+          userB.id,
+
+        leftAt:
+          null,
+      },
+
+      data: {
+        leftAt:
+          new Date(),
+      },
+    })
+
+    const revokedListB =
+      await listConversationsWithClient({
+        client,
+        principal:
+          principalB,
+      })
+
+    assert(
+      !revokedListB.some(
+        (conversation: ConversationListRow) =>
+          conversation.id ===
+          operationalConversation.id
+      ),
+      "REVOKED_MEMBER_CAN_LIST_OPERATIONAL_ROOM"
+    )
+
+    let revokedDetailBlocked =
+      false
+
+    try {
+      await getConversationWithClient({
+        client,
+        principal:
+          principalB,
+        conversationId:
+          operationalConversation.id,
+      })
+    } catch (error: unknown) {
+      revokedDetailBlocked =
+        error instanceof Error &&
+        error.message ===
+          "COMMUNICATION_CONVERSATION_ACCESS_DENIED"
+    }
+
+    assert(
+      revokedDetailBlocked,
+      "REVOKED_MEMBER_CAN_GET_OPERATIONAL_ROOM"
+    )
+
     console.log(
       "✓ Communications retrieval smoke passed"
     )
@@ -618,6 +1047,30 @@ async function main() {
         true,
 
       nonMemberMessageListingBlocked:
+        true,
+
+      directOperationalRoomNull:
+        true,
+
+      activeOperationalRoomRetrievable:
+        true,
+
+      operationalRoomClassPreserved:
+        true,
+
+      operationalLinksOrdered:
+        true,
+
+      operationalTargetsPointerOnly:
+        true,
+
+      archivedOperationalRoomRetrievable:
+        true,
+
+      revokedOperationalRoomHidden:
+        true,
+
+      revokedOperationalRoomDetailBlocked:
         true,
     })
   } finally {

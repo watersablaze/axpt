@@ -4,6 +4,10 @@ import type { Principal } from "@/domains/auth/types"
 
 import type { CommunicationsDatabaseClient } from "../shared/databaseTypes"
 
+export type CommunicationDirectoryPurpose =
+  | "DIRECT"
+  | "GROUP"
+
 export type CommunicationDirectoryEntry = {
   id: string
   displayName: string | null
@@ -21,15 +25,23 @@ type CommunicationDirectoryRow = {
 export async function listCommunicationDirectoryWithClient({
   client,
   principal,
+  purpose = "DIRECT",
 }: {
   client: CommunicationsDatabaseClient
   principal: Principal
+  purpose?: CommunicationDirectoryPurpose
 }): Promise<
   CommunicationDirectoryEntry[]
 > {
+  const requiredPermission =
+    purpose ===
+    "GROUP"
+      ? PERMISSIONS.COMMUNICATIONS_GROUP_CREATE
+      : PERMISSIONS.COMMUNICATIONS_DIRECT_CREATE
+
   authorityKernel.require(
     principal,
-    PERMISSIONS.COMMUNICATIONS_DIRECT_CREATE
+    requiredPermission
   )
 
   const users =

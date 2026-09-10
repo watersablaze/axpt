@@ -57,9 +57,11 @@ model User {
   transactions          Transaction[]
   userRoles             UserRole[]
 
-  createdCommunicationConversations CommunicationConversation[] @relation("CommunicationConversationCreator")
-  communicationMemberships          CommunicationMember[]       @relation("CommunicationMembership")
-  sentCommunicationMessages         CommunicationMessage[]      @relation("CommunicationMessageSender")
+  createdCommunicationConversations    CommunicationConversation[]    @relation("CommunicationConversationCreator")
+  communicationMemberships             CommunicationMember[]          @relation("CommunicationMembership")
+  sentCommunicationMessages            CommunicationMessage[]         @relation("CommunicationMessageSender")
+  createdCommunicationOperationalRooms CommunicationOperationalRoom[] @relation("CommunicationOperationalRoomCreator")
+  createdCommunicationOperationalLinks CommunicationOperationalLink[] @relation("CommunicationOperationalLinkCreator")
 
   wallets Wallet?
 }
@@ -2252,8 +2254,9 @@ model CommunicationConversation {
 
   createdBy User @relation("CommunicationConversationCreator", fields: [createdByUserId], references: [id])
 
-  members  CommunicationMember[]
-  messages CommunicationMessage[]
+  members         CommunicationMember[]
+  messages        CommunicationMessage[]
+  operationalRoom CommunicationOperationalRoom?
 
   @@index([createdByUserId, createdAt])
   @@index([status, updatedAt])
@@ -2296,6 +2299,65 @@ model CommunicationMessage {
   @@unique([conversationId, senderUserId, clientMessageId])
   @@index([conversationId, createdAt])
   @@index([senderUserId, createdAt])
+}
+
+enum CommunicationOperationalRoomClass {
+  GENERAL_OPERATIONS
+  TRANSACTION
+  TREASURY
+  DOSSIER
+  CASE
+  OPPORTUNITY
+}
+
+enum CommunicationOperationalTargetType {
+  CASE
+  OPPORTUNITY
+  TRANSACTION_DOSSIER
+  TRANSACTION
+  TREASURY_GATEWAY_AGGREGATE
+}
+
+model CommunicationOperationalRoom {
+  id                 String                            @id @default(cuid())
+  conversationId     String                            @unique
+  clientRoomId       String
+  requestFingerprint String
+  roomClass          CommunicationOperationalRoomClass
+
+  createdByUserId String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  conversation CommunicationConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  createdBy User @relation("CommunicationOperationalRoomCreator", fields: [createdByUserId], references: [id])
+
+  links CommunicationOperationalLink[]
+
+  @@unique([createdByUserId, clientRoomId])
+  @@index([roomClass, updatedAt])
+  @@index([createdByUserId, createdAt])
+}
+
+model CommunicationOperationalLink {
+  id     String @id @default(cuid())
+  roomId String
+
+  targetType    CommunicationOperationalTargetType
+  targetSubtype String
+  targetId      String
+
+  linkedByUserId String
+  linkedAt       DateTime @default(now())
+
+  room CommunicationOperationalRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  linkedBy User @relation("CommunicationOperationalLinkCreator", fields: [linkedByUserId], references: [id])
+
+  @@unique([roomId, targetType, targetSubtype, targetId])
+  @@index([targetType, targetSubtype, targetId])
+  @@index([linkedByUserId, linkedAt])
 }
 
 model TreasuryGatewayAggregate {

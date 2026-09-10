@@ -40,6 +40,28 @@ type ConversationListMessage = {
   systemCode: string | null
 }
 
+type ConversationListOperationalLink = {
+  id: string
+  roomId: string
+  targetType: unknown
+  targetSubtype: string
+  targetId: string
+  linkedByUserId: string
+  linkedAt: Date
+}
+
+type ConversationListOperationalRoom = {
+  id: string
+  conversationId: string
+  clientRoomId: string
+  requestFingerprint: string
+  roomClass: unknown
+  createdByUserId: string
+  createdAt: Date
+  updatedAt: Date
+  links: ConversationListOperationalLink[]
+}
+
 type ConversationListRecord = {
   id: string
   kind: unknown
@@ -52,6 +74,7 @@ type ConversationListRecord = {
   archivedAt: Date | null
   members: ConversationListMember[]
   messages: ConversationListMessage[]
+  operationalRoom: ConversationListOperationalRoom | null
 }
 
 export async function listConversationsWithClient({
@@ -107,6 +130,16 @@ export async function listConversationsWithClient({
 
           orderBy: {
             createdAt: "desc",
+          },
+        },
+
+        operationalRoom: {
+          include: {
+            links: {
+              orderBy: {
+                linkedAt: "asc",
+              },
+            },
           },
         },
       },

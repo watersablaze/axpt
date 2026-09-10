@@ -2,6 +2,7 @@ import { getPrincipal } from "@/domains/auth/getPrincipal"
 
 import { getConversation } from "@/domains/communications/conversations/getConversation"
 import { communicationHttpError } from "@/domains/communications/http/communicationHttpError"
+import { toPublicCommunicationConversation } from "@/domains/communications/http/toPublicCommunicationConversation"
 
 export const dynamic =
   "force-dynamic"
@@ -46,7 +47,11 @@ export async function GET(
 
     return Response.json({
       ok: true,
-      conversation,
+
+      conversation:
+        toPublicCommunicationConversation(
+          conversation
+        ),
     })
   } catch (error) {
     return communicationHttpError(
