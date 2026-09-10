@@ -6,6 +6,8 @@ import { bindExecutableTrancheToTreasuryExecution } from "../bindExecutableTranc
 
 import { loadTreasuryTransferWithClient } from "../../transfers/persistence/loadTreasuryTransferWithClient";
 
+import { loadTreasuryTransferPlanningEvidenceWithClient } from "../../transfers/persistence/loadTreasuryTransferPlanningEvidenceWithClient";
+
 import { loadTreasuryExecutionPlanWithClient } from "../persistence/loadTreasuryExecutionPlanWithClient";
 
 import { persistNewTreasuryExecutionWithClient } from "../../executions/persistence/persistNewTreasuryExecutionWithClient";
@@ -75,6 +77,27 @@ export async function instantiateTreasuryExecutionFromEligibleTrancheDurablyWith
       },
     },
   });
+
+  const operativePlanningEvidence =
+    await loadTreasuryTransferPlanningEvidenceWithClient({
+      transferId: loadedTransfer.aggregate.id,
+
+      transferVersion: loadedTransfer.aggregate.metadata.version,
+
+      client,
+    });
+
+  if (!operativePlanningEvidence) {
+    throw new Error(
+      `[TREASURY_EXECUTION_INSTANTIATION_OPERATIVE_PLAN_NOT_FOUND] ${loadedTransfer.aggregate.id}`,
+    );
+  }
+
+  if (operativePlanningEvidence.planId !== loadedPlan.aggregate.id) {
+    throw new Error(
+      `[TREASURY_EXECUTION_INSTANTIATION_PLAN_NOT_OPERATIVE] ${loadedPlan.aggregate.id} -> ${operativePlanningEvidence.planId}`,
+    );
+  }
 
   const bindingResult = bindExecutableTrancheToTreasuryExecution(
     loadedPlan.aggregate,

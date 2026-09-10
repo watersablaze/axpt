@@ -69,6 +69,15 @@ function assertError(error: unknown): void {
   assert(error instanceof Error);
 }
 
+function assertErrorCode(error: unknown, code: string): void {
+  assert(error instanceof Error);
+
+  assert(
+    error.message.includes(`[${code}]`),
+    `expected ${code}, received: ${error.message}`,
+  );
+}
+
 async function main(): Promise<void> {
   const fixtureId = randomUUID();
 
@@ -79,6 +88,22 @@ async function main(): Promise<void> {
   const capacityAssessmentId = `smoke-mesh-capacity-assessment-${fixtureId}`;
 
   const planId = `smoke-mesh-plan-${fixtureId}`;
+
+  const nonOperativePlanId = `smoke-mesh-plan-non-operative-${fixtureId}`;
+
+  const nonOperativeTrancheId = `smoke-mesh-tranche-non-operative-${fixtureId}`;
+
+  const nonOperativeEligibilityAssessmentId =
+    `smoke-mesh-eligibility-non-operative-${fixtureId}`;
+
+  const nonOperativeExecutionId =
+    `smoke-mesh-execution-non-operative-${fixtureId}`;
+
+  const nonOperativeExecutionEventId =
+    `smoke-mesh-execution-non-operative-event-${fixtureId}`;
+
+  const nonOperativeBindingEventId =
+    `smoke-mesh-binding-non-operative-event-${fixtureId}`;
 
   const firstTrancheId = `smoke-mesh-tranche-001-${fixtureId}`;
 
@@ -304,6 +329,70 @@ async function main(): Promise<void> {
         plannedAt: new Date(),
 
         notes: "Two-tranche atomic execution mesh fixture",
+      },
+    },
+  });
+
+  const nonOperativeRecordedPlan = recordTreasuryExecutionPlan({
+    planId: nonOperativePlanId,
+
+    capacityAssessment: capacityAssessment.aggregate,
+
+    command: {
+      context: {
+        ...baseContext,
+
+        commandId: `smoke-mesh-record-plan-non-operative-${fixtureId}`,
+
+        actorId: `smoke-mesh-planner-non-operative-${fixtureId}`,
+
+        idempotencyKey: `smoke-mesh-record-plan-non-operative-${fixtureId}`,
+      },
+
+      payload: {
+        transferId,
+
+        capacityAssessmentId,
+
+        plannedAmount: {
+          amount: "500000.00",
+
+          currency: "USD",
+        },
+
+        destinationCurrency: "EUR",
+
+        tranches: [
+          {
+            trancheId: nonOperativeTrancheId,
+
+            sequence: 1,
+
+            amount: {
+              amount: "500000.00",
+
+              currency: "USD",
+            },
+
+            executionKind: TREASURY_EXECUTION_KIND.PROGRAM_TRANSFER,
+
+            allocationId: `smoke-mesh-allocation-non-operative-${fixtureId}`,
+
+            instructionId: createdTransfer.aggregate.instructionId,
+
+            beneficiaryProfileId:
+              `smoke-mesh-beneficiary-non-operative-${fixtureId}`,
+
+            settlementEndpointId:
+              `smoke-mesh-settlement-endpoint-${fixtureId}`,
+
+            purpose: "Authentic but non-operative execution tranche",
+          },
+        ],
+
+        plannedAt: new Date(),
+
+        notes: "Authentic same-transfer Plan deliberately not applied",
       },
     },
   });
@@ -677,6 +766,223 @@ async function main(): Promise<void> {
     );
 
     /*
+     * Persist the authentic but non-operative Plan.
+     *
+     * The Transfer is already PLANNED by planId. This Plan belongs to
+     * the same Transfer and Capacity Assessment but is never applied.
+     */
+    await prisma.$transaction(async (tx: TransactionClient) => {
+      await persistNewTreasuryExecutionPlanWithClient({
+        result: nonOperativeRecordedPlan,
+
+        eventId: `smoke-mesh-plan-non-operative-recorded-event-${fixtureId}`,
+
+        context: {
+          ...baseContext,
+
+          commandId: `smoke-mesh-record-plan-non-operative-${fixtureId}`,
+
+          actorId: `smoke-mesh-planner-non-operative-${fixtureId}`,
+
+          idempotencyKey: `smoke-mesh-record-plan-non-operative-${fixtureId}`,
+        },
+
+        client: tx,
+      });
+    });
+
+    const nonOperativeEligibilityAssessment =
+      recordExecutableTrancheEligibilityAssessment({
+        assessmentId: nonOperativeEligibilityAssessmentId,
+
+        plan: nonOperativeRecordedPlan.aggregate,
+
+        command: {
+          context: {
+            ...baseContext,
+
+            commandId:
+              `smoke-mesh-record-eligibility-non-operative-${fixtureId}`,
+
+            idempotencyKey:
+              `smoke-mesh-record-eligibility-non-operative-${fixtureId}`,
+          },
+
+          payload: {
+            transferId,
+
+            planId: nonOperativePlanId,
+
+            trancheId: nonOperativeTrancheId,
+
+            result: EXECUTABLE_TRANCHE_ELIGIBILITY_RESULT.ELIGIBLE,
+
+            evidenceArtifactIds: [
+              `smoke-mesh-eligibility-evidence-non-operative-${fixtureId}`,
+            ],
+
+            assessedAt: new Date(),
+          },
+        },
+      });
+
+    await prisma.$transaction(async (tx: TransactionClient) =>
+      executeDurableTreasuryExecutionPlanTransitionWithClient({
+        planId: nonOperativePlanId,
+
+        eventId:
+          `smoke-mesh-eligibility-applied-non-operative-event-${fixtureId}`,
+
+        context: {
+          ...baseContext,
+
+          commandId:
+            `smoke-mesh-apply-eligibility-non-operative-${fixtureId}`,
+
+          idempotencyKey:
+            `smoke-mesh-apply-eligibility-non-operative-${fixtureId}`,
+        },
+
+        apply: (aggregate) =>
+          applyExecutableTrancheEligibilityAssessment(
+            aggregate,
+
+            nonOperativeEligibilityAssessment.aggregate,
+
+            {
+              context: {
+                ...baseContext,
+
+                commandId:
+                  `smoke-mesh-apply-eligibility-non-operative-${fixtureId}`,
+
+                idempotencyKey:
+                  `smoke-mesh-apply-eligibility-non-operative-${fixtureId}`,
+              },
+
+              payload: {
+                planId: nonOperativePlanId,
+
+                assessmentId: nonOperativeEligibilityAssessmentId,
+              },
+            },
+          ),
+
+        client: tx,
+      }),
+    );
+
+    /*
+     * OPERATIVE PLAN AUTHORITY:
+     *
+     * Plan B is canonical, belongs to this Transfer, is RECORDED,
+     * and contains an ELIGIBLE tranche. But Plan A established the
+     * Transfer's PLANNED posture.
+     *
+     * Plan B therefore has no execution authority.
+     */
+    let nonOperativePlanError: unknown;
+
+    try {
+      await prisma.$transaction(async (tx: TransactionClient) =>
+        instantiateTreasuryExecutionFromEligibleTrancheDurablyWithClient({
+          transferId,
+
+          planId: nonOperativePlanId,
+
+          trancheId: nonOperativeTrancheId,
+
+          executionId: nonOperativeExecutionId,
+
+          executionReference:
+            `AXPT-MESH-EXECUTION-NON-OPERATIVE-${fixtureId}`,
+
+          executionCreatedEventId: nonOperativeExecutionEventId,
+
+          trancheBoundEventId: nonOperativeBindingEventId,
+
+          context: {
+            ...baseContext,
+
+            commandId:
+              `smoke-mesh-instantiate-non-operative-${fixtureId}`,
+
+            actorId: `smoke-mesh-instantiator-${fixtureId}`,
+
+            idempotencyKey:
+              `smoke-mesh-instantiate-non-operative-${fixtureId}`,
+          },
+
+          client: tx,
+        }),
+      );
+    } catch (error: unknown) {
+      nonOperativePlanError = error;
+    }
+
+    assertErrorCode(
+      nonOperativePlanError,
+      "TREASURY_EXECUTION_INSTANTIATION_PLAN_NOT_OPERATIVE",
+    );
+
+    const nonOperativeExecution = await prisma.$transaction(
+      async (tx: TransactionClient) =>
+        loadTreasuryExecutionWithClient({
+          executionId: nonOperativeExecutionId,
+
+          client: tx,
+        }),
+    );
+
+    assert.equal(nonOperativeExecution, null);
+
+    const nonOperativeExecutionEventCount =
+      await prisma.treasuryGatewayEvent.count({
+        where: {
+          eventId: nonOperativeExecutionEventId,
+        },
+      });
+
+    assert.equal(nonOperativeExecutionEventCount, 0);
+
+    const nonOperativeBindingEventCount =
+      await prisma.treasuryGatewayEvent.count({
+        where: {
+          eventId: nonOperativeBindingEventId,
+        },
+      });
+
+    assert.equal(nonOperativeBindingEventCount, 0);
+
+    const finalNonOperativePlan = await prisma.$transaction(
+      async (tx: TransactionClient) =>
+        loadTreasuryExecutionPlanWithClient({
+          planId: nonOperativePlanId,
+
+          client: tx,
+        }),
+    );
+
+    assert(finalNonOperativePlan);
+
+    assert.equal(finalNonOperativePlan.aggregate.metadata.version, 2);
+
+    const finalNonOperativeTranche =
+      finalNonOperativePlan.aggregate.tranches.find(
+        (tranche: ExecutableTranche) =>
+          tranche.id === nonOperativeTrancheId,
+      );
+
+    assert(finalNonOperativeTranche);
+
+    assert.equal(
+      finalNonOperativeTranche.status,
+      EXECUTABLE_TRANCHE_STATUS.ELIGIBLE,
+    );
+
+    assert.equal(finalNonOperativeTranche.executionId, undefined);
+
+    /*
      * SUCCESS PATH:
      *
      * execution created
@@ -947,6 +1253,20 @@ async function main(): Promise<void> {
 
         eligibleTrancheRequired: true,
 
+        nonOperativePlanRejected: true,
+
+        nonOperativeExecutionDoesNotExist: true,
+
+        nonOperativeExecutionEventDoesNotExist: true,
+
+        nonOperativeBindingEventDoesNotExist: true,
+
+        nonOperativeTrancheRemainsEligible: true,
+
+        nonOperativeTrancheRemainsUnbound: true,
+
+        nonOperativePlanVersionUnchanged: true,
+
         executionFactsInheritedFromTranche: true,
 
         successfulExecutionPersisted: true,
@@ -977,6 +1297,8 @@ async function main(): Promise<void> {
               in: [
                 transferId,
                 planId,
+                nonOperativePlanId,
+                nonOperativeExecutionId,
                 successfulExecutionId,
                 rolledBackExecutionId,
                 conflictSeedAggregateId,
@@ -989,6 +1311,8 @@ async function main(): Promise<void> {
               in: [
                 successfulExecutionEventId,
                 successfulBindingEventId,
+                nonOperativeExecutionEventId,
+                nonOperativeBindingEventId,
                 rolledBackExecutionEventId,
                 conflictingBindingEventId,
               ],
@@ -1004,6 +1328,8 @@ async function main(): Promise<void> {
           in: [
             transferId,
             planId,
+            nonOperativePlanId,
+            nonOperativeExecutionId,
             successfulExecutionId,
             rolledBackExecutionId,
           ],
