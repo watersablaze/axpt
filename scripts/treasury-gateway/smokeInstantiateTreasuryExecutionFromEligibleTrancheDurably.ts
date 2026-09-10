@@ -7,6 +7,20 @@ import { TREASURY_AGGREGATE_TYPE } from "../../src/domains/treasury/gateway/even
 
 import { TREASURY_EVENT_TYPE } from "../../src/domains/treasury/gateway/events/eventType";
 
+import { createTreasuryAllocationIdempotentlyWithClient } from "../../src/domains/treasury/gateway/allocations/application/createTreasuryAllocationIdempotentlyWithClient";
+
+import { submitTreasuryAllocationForReviewDurablyWithClient } from "../../src/domains/treasury/gateway/allocations/application/submitTreasuryAllocationForReviewDurablyWithClient";
+
+import { approveTreasuryAllocationDurablyWithClient } from "../../src/domains/treasury/gateway/allocations/application/approveTreasuryAllocationDurablyWithClient";
+
+import { activateTreasuryAllocationDurablyWithClient } from "../../src/domains/treasury/gateway/allocations/application/activateTreasuryAllocationDurablyWithClient";
+
+import { TREASURY_ALLOCATION_PURPOSE } from "../../src/domains/treasury/gateway/allocations/contracts";
+
+import { TREASURY_ALLOCATION_STATUS } from "../../src/domains/treasury/gateway/allocations/status";
+
+import { loadTreasuryAllocationWithClient } from "../../src/domains/treasury/gateway/allocations/persistence/loadTreasuryAllocationWithClient";
+
 import { TREASURY_EXECUTION_KIND } from "../../src/domains/treasury/gateway/executions/contracts";
 
 import { loadTreasuryExecutionWithClient } from "../../src/domains/treasury/gateway/executions/persistence/loadTreasuryExecutionWithClient";
@@ -89,6 +103,15 @@ async function main(): Promise<void> {
 
   const planId = `smoke-mesh-plan-${fixtureId}`;
 
+  const firstAllocationId =
+    `smoke-mesh-allocation-001-${fixtureId}`;
+
+  const secondAllocationId =
+    `smoke-mesh-allocation-002-${fixtureId}`;
+
+  const nonOperativeAllocationId =
+    `smoke-mesh-allocation-non-operative-${fixtureId}`;
+
   const nonOperativePlanId = `smoke-mesh-plan-non-operative-${fixtureId}`;
 
   const nonOperativeTrancheId = `smoke-mesh-tranche-non-operative-${fixtureId}`;
@@ -141,6 +164,138 @@ async function main(): Promise<void> {
     idempotencyKey: `smoke-mesh-${fixtureId}`,
   };
 
+  const programId = `smoke-mesh-program-${fixtureId}`;
+
+  const sourceProgramAccountId =
+    `smoke-mesh-program-account-${fixtureId}`;
+
+  async function establishActiveAllocation(params: {
+    allocationId: string;
+
+    amount: string;
+
+    label: string;
+  }): Promise<void> {
+    const { allocationId, amount, label } = params;
+
+    await prisma.$transaction(async (tx: TransactionClient) => {
+      await createTreasuryAllocationIdempotentlyWithClient({
+        request: {
+          allocationId,
+
+          reference: `AXPT-MESH-ALLOCATION-${label}-${fixtureId}`,
+
+          eventId:
+            `smoke-mesh-allocation-created-${label}-${fixtureId}`,
+
+          context: {
+            ...baseContext,
+
+            commandId:
+              `smoke-mesh-allocation-create-${label}-${fixtureId}`,
+
+            idempotencyKey:
+              `smoke-mesh-allocation-create-${label}-${fixtureId}`,
+          },
+
+          payload: {
+            programId,
+
+            sourceProgramAccountId,
+
+            purposeType:
+              TREASURY_ALLOCATION_PURPOSE.PROGRAM_OPERATIONS,
+
+            amount: {
+              amount,
+
+              currency: "USD",
+            },
+          },
+        },
+
+        client: tx,
+      });
+    });
+
+    await prisma.$transaction(async (tx: TransactionClient) =>
+      submitTreasuryAllocationForReviewDurablyWithClient({
+        allocationId,
+
+        eventId:
+          `smoke-mesh-allocation-review-${label}-${fixtureId}`,
+
+        context: {
+          ...baseContext,
+
+          commandId:
+            `smoke-mesh-allocation-review-command-${label}-${fixtureId}`,
+
+          idempotencyKey:
+            `smoke-mesh-allocation-review-${label}-${fixtureId}`,
+        },
+
+        client: tx,
+      }),
+    );
+
+    await prisma.$transaction(async (tx: TransactionClient) =>
+      approveTreasuryAllocationDurablyWithClient({
+        allocationId,
+
+        approvalIds: [
+          `smoke-mesh-allocation-approval-${label}-${fixtureId}`,
+        ],
+
+        eventId:
+          `smoke-mesh-allocation-approved-${label}-${fixtureId}`,
+
+        context: {
+          ...baseContext,
+
+          commandId:
+            `smoke-mesh-allocation-approve-command-${label}-${fixtureId}`,
+
+          idempotencyKey:
+            `smoke-mesh-allocation-approve-${label}-${fixtureId}`,
+        },
+
+        client: tx,
+      }),
+    );
+
+    const active = await prisma.$transaction(
+      async (tx: TransactionClient) =>
+        activateTreasuryAllocationDurablyWithClient({
+          allocationId,
+
+          eventId:
+            `smoke-mesh-allocation-activated-${label}-${fixtureId}`,
+
+          context: {
+            ...baseContext,
+
+            commandId:
+              `smoke-mesh-allocation-activate-command-${label}-${fixtureId}`,
+
+            idempotencyKey:
+              `smoke-mesh-allocation-activate-${label}-${fixtureId}`,
+          },
+
+          client: tx,
+        }),
+    );
+
+    assert.equal(
+      active.aggregate.status,
+      TREASURY_ALLOCATION_STATUS.ACTIVE,
+    );
+
+    assert.equal(active.aggregate.metadata.version, 4);
+
+    assert.equal(active.aggregate.consumedAmount.amount, "0");
+  }
+
   const createdTransfer = createTreasuryTransfer({
     transferId,
 
@@ -156,14 +311,14 @@ async function main(): Promise<void> {
       },
 
       payload: {
-        programId: `smoke-mesh-program-${fixtureId}`,
+        programId,
 
         instructionId: `smoke-mesh-instruction-${fixtureId}`,
 
         source: {
           kind: TREASURY_TRANSFER_LOCATION_KIND.PROGRAM_ACCOUNT,
 
-          programAccountId: `smoke-mesh-program-account-${fixtureId}`,
+          programAccountId: sourceProgramAccountId,
         },
 
         destination: {
@@ -290,7 +445,7 @@ async function main(): Promise<void> {
 
             executionKind: TREASURY_EXECUTION_KIND.PROGRAM_TRANSFER,
 
-            allocationId: `smoke-mesh-allocation-001-${fixtureId}`,
+            allocationId: firstAllocationId,
 
             instructionId: createdTransfer.aggregate.instructionId,
 
@@ -314,7 +469,7 @@ async function main(): Promise<void> {
 
             executionKind: TREASURY_EXECUTION_KIND.PROGRAM_TRANSFER,
 
-            allocationId: `smoke-mesh-allocation-002-${fixtureId}`,
+            allocationId: secondAllocationId,
 
             instructionId: createdTransfer.aggregate.instructionId,
 
@@ -376,7 +531,7 @@ async function main(): Promise<void> {
 
             executionKind: TREASURY_EXECUTION_KIND.PROGRAM_TRANSFER,
 
-            allocationId: `smoke-mesh-allocation-non-operative-${fixtureId}`,
+            allocationId: nonOperativeAllocationId,
 
             instructionId: createdTransfer.aggregate.instructionId,
 
@@ -398,6 +553,36 @@ async function main(): Promise<void> {
   });
 
   try {
+    /*
+     * Establish canonical Allocation authority for every tranche used by
+     * the pre-existing execution-instantiation cases.
+     *
+     * EP-3A proves Allocation authority but does not consume it.
+     */
+    await establishActiveAllocation({
+      allocationId: firstAllocationId,
+
+      amount: "500000.00",
+
+      label: "001",
+    });
+
+    await establishActiveAllocation({
+      allocationId: secondAllocationId,
+
+      amount: "500000.00",
+
+      label: "002",
+    });
+
+    await establishActiveAllocation({
+      allocationId: nonOperativeAllocationId,
+
+      amount: "500000.00",
+
+      label: "non-operative",
+    });
+
     /*
      * Persist and advance the Transfer to PLANNED.
      */
@@ -1209,6 +1394,35 @@ async function main(): Promise<void> {
       finalFirstTranche.amount,
     );
 
+    /*
+     * EP-3A:
+     *
+     * Execution creation proves Allocation authority. It does not consume
+     * that authority. Consumption is a distinct governed Treasury fact.
+     */
+    const finalSuccessfulAllocation = await prisma.$transaction(
+      async (tx: TransactionClient) =>
+        loadTreasuryAllocationWithClient({
+          allocationId: firstAllocationId,
+
+          client: tx,
+        }),
+    );
+
+    assert(finalSuccessfulAllocation);
+
+    assert.equal(
+      finalSuccessfulAllocation.aggregate.status,
+      TREASURY_ALLOCATION_STATUS.ACTIVE,
+    );
+
+    assert.equal(
+      finalSuccessfulAllocation.aggregate.consumedAmount.amount,
+      "0",
+    );
+
+    assert.equal(finalSuccessfulAllocation.aggregate.metadata.version, 4);
+
     console.log("✓ Atomic Treasury Execution instantiation smoke test passed");
 
     console.log({
@@ -1269,6 +1483,12 @@ async function main(): Promise<void> {
 
         executionFactsInheritedFromTranche: true,
 
+        allocationAuthorityProvenBeforeExecutionCreation: true,
+
+        executionCreationDoesNotConsumeAllocation: true,
+
+        successfulAllocationRemainsActive: true,
+
         successfulExecutionPersisted: true,
 
         successfulTrancheBindingPersisted: true,
@@ -1289,6 +1509,18 @@ async function main(): Promise<void> {
       },
     });
   } finally {
+    await prisma.treasuryGatewayCommandReceipt.deleteMany({
+      where: {
+        aggregateId: {
+          in: [
+            firstAllocationId,
+            secondAllocationId,
+            nonOperativeAllocationId,
+          ],
+        },
+      },
+    });
+
     await prisma.treasuryGatewayEvent.deleteMany({
       where: {
         OR: [
@@ -1298,6 +1530,9 @@ async function main(): Promise<void> {
                 transferId,
                 planId,
                 nonOperativePlanId,
+                firstAllocationId,
+                secondAllocationId,
+                nonOperativeAllocationId,
                 nonOperativeExecutionId,
                 successfulExecutionId,
                 rolledBackExecutionId,
@@ -1329,6 +1564,9 @@ async function main(): Promise<void> {
             transferId,
             planId,
             nonOperativePlanId,
+            firstAllocationId,
+            secondAllocationId,
+            nonOperativeAllocationId,
             nonOperativeExecutionId,
             successfulExecutionId,
             rolledBackExecutionId,

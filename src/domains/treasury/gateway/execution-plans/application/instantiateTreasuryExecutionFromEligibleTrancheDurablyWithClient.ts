@@ -8,6 +8,10 @@ import { loadTreasuryTransferWithClient } from "../../transfers/persistence/load
 
 import { loadTreasuryTransferPlanningEvidenceWithClient } from "../../transfers/persistence/loadTreasuryTransferPlanningEvidenceWithClient";
 
+import { loadTreasuryAllocationWithClient } from "../../allocations/persistence/loadTreasuryAllocationWithClient";
+
+import { assertTreasuryExecutionAllocationAuthority } from "../assertTreasuryExecutionAllocationAuthority";
+
 import { loadTreasuryExecutionPlanWithClient } from "../persistence/loadTreasuryExecutionPlanWithClient";
 
 import { persistNewTreasuryExecutionWithClient } from "../../executions/persistence/persistNewTreasuryExecutionWithClient";
@@ -98,6 +102,26 @@ export async function instantiateTreasuryExecutionFromEligibleTrancheDurablyWith
       `[TREASURY_EXECUTION_INSTANTIATION_PLAN_NOT_OPERATIVE] ${loadedPlan.aggregate.id} -> ${operativePlanningEvidence.planId}`,
     );
   }
+
+  const loadedAllocation = await loadTreasuryAllocationWithClient({
+    allocationId: executionResult.aggregate.allocationId,
+
+    client,
+  });
+
+  if (!loadedAllocation) {
+    throw new Error(
+      `[TREASURY_EXECUTION_INSTANTIATION_ALLOCATION_NOT_FOUND] ${executionResult.aggregate.allocationId}`,
+    );
+  }
+
+  assertTreasuryExecutionAllocationAuthority({
+    allocation: loadedAllocation.aggregate,
+
+    transfer: loadedTransfer.aggregate,
+
+    execution: executionResult.aggregate,
+  });
 
   const bindingResult = bindExecutableTrancheToTreasuryExecution(
     loadedPlan.aggregate,
