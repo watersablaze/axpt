@@ -56,7 +56,12 @@ model User {
   tokenIssuanceRequests TokenIssuanceRequest[]   @relation("RequestsByUser")
   transactions          Transaction[]
   userRoles             UserRole[]
-  wallets               Wallet?
+
+  createdCommunicationConversations CommunicationConversation[] @relation("CommunicationConversationCreator")
+  communicationMemberships          CommunicationMember[]       @relation("CommunicationMembership")
+  sentCommunicationMessages         CommunicationMessage[]      @relation("CommunicationMessageSender")
+
+  wallets Wallet?
 }
 
 model UserTrustEdge {
@@ -2200,6 +2205,97 @@ enum DossierIssuanceApprovalStatus {
   APPROVED
   REJECTED
   REVOKED
+}
+
+// ═════════════════════════════════════════════
+// COMMUNICATIONS
+// ═════════════════════════════════════════════
+
+enum CommunicationConversationKind {
+  DIRECT
+  GROUP
+}
+
+enum CommunicationConversationStatus {
+  ACTIVE
+  ARCHIVED
+}
+
+enum CommunicationMemberRole {
+  OWNER
+  MEMBER
+}
+
+enum CommunicationMessageKind {
+  TEXT
+  SYSTEM
+  NOTICE
+  REQUEST
+  DECISION
+  APPROVAL_REQUEST
+  STATUS_UPDATE
+  DOCUMENT_REFERENCE
+}
+
+model CommunicationConversation {
+  id     String                          @id @default(cuid())
+  kind   CommunicationConversationKind
+  status CommunicationConversationStatus @default(ACTIVE)
+
+  title     String?
+  directKey String? @unique
+
+  createdByUserId String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  archivedAt      DateTime?
+
+  createdBy User @relation("CommunicationConversationCreator", fields: [createdByUserId], references: [id])
+
+  members  CommunicationMember[]
+  messages CommunicationMessage[]
+
+  @@index([createdByUserId, createdAt])
+  @@index([status, updatedAt])
+}
+
+model CommunicationMember {
+  id             String                  @id @default(cuid())
+  conversationId String
+  userId         String
+  role           CommunicationMemberRole @default(MEMBER)
+
+  joinedAt DateTime  @default(now())
+  leftAt   DateTime?
+
+  lastReadMessageId String?
+  lastReadAt        DateTime?
+
+  conversation    CommunicationConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  user            User                      @relation("CommunicationMembership", fields: [userId], references: [id])
+  lastReadMessage CommunicationMessage?     @relation("CommunicationLastReadMessage", fields: [lastReadMessageId], references: [id], onDelete: SetNull)
+
+  @@unique([conversationId, userId])
+  @@index([userId, leftAt])
+  @@index([conversationId, leftAt])
+}
+
+model CommunicationMessage {
+  id              String                   @id @default(cuid())
+  conversationId  String
+  senderUserId    String
+  clientMessageId String                   @default(cuid())
+  kind            CommunicationMessageKind @default(TEXT)
+  body            String
+  createdAt       DateTime                 @default(now())
+
+  conversation CommunicationConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  sender       User                      @relation("CommunicationMessageSender", fields: [senderUserId], references: [id])
+  readMarkers  CommunicationMember[]     @relation("CommunicationLastReadMessage")
+
+  @@unique([conversationId, senderUserId, clientMessageId])
+  @@index([conversationId, createdAt])
+  @@index([senderUserId, createdAt])
 }
 
 model TreasuryGatewayAggregate {

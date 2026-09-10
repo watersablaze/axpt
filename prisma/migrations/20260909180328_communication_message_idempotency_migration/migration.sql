@@ -1,0 +1,2 @@
+-- RenameIndex
+ALTER INDEX "CommunicationMessage_conversationId_senderUserId_clientMessageI" RENAME TO "CommunicationMessage_conversationId_senderUserId_clientMess_key";
