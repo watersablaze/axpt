@@ -134,7 +134,9 @@ export function communicationHttpError(
     error.message ===
       "COMMUNICATION_MESSAGE_WORKFLOW_REFERENCE_NOT_ALLOWED" ||
     error.message ===
-      "COMMUNICATION_MESSAGE_WORKFLOW_TARGET_NOT_LINKED"
+      "COMMUNICATION_MESSAGE_WORKFLOW_TARGET_NOT_LINKED" ||
+    error.message ===
+      "COMMUNICATION_TIMELINE_LIMIT_INVALID"
   ) {
     return Response.json(
       {

@@ -429,6 +429,27 @@ async function main() {
    * through console.error.
    */
 
+  const timelineLimitInvalid =
+    await readError(
+      communicationHttpError(
+        new Error(
+          "COMMUNICATION_TIMELINE_LIMIT_INVALID"
+        )
+      )
+    )
+
+  assert(
+    timelineLimitInvalid.status ===
+      400,
+    "HTTP_TIMELINE_LIMIT_INVALID_STATUS_INVALID"
+  )
+
+  assert(
+    timelineLimitInvalid.error ===
+      "COMMUNICATION_TIMELINE_LIMIT_INVALID",
+    "HTTP_TIMELINE_LIMIT_INVALID_BODY_INVALID"
+  )
+
   console.log(
     "✓ Communications HTTP error contract smoke passed"
   )

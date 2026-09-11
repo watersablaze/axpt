@@ -92,9 +92,56 @@ type ConversationsResponse = {
   error?: string
 }
 
-type MessagesResponse = {
+type CommunicationInstitutionalReflection = {
+  id: string
+  operationalRoomId: string
+
+  sourceSystem: string
+  sourceEventId: string
+
+  sourceAggregateType: string
+  sourceAggregateId: string
+  sourceEventType: string
+  sourceOccurredAt: string
+
+  targetType: string
+  targetSubtype: string
+  targetId: string
+
+  reflectionType: string
+  reflectionCode: string
+
+  createdAt: string
+}
+
+type CommunicationTimelineMessageItem = {
+  itemType: "MESSAGE"
+  id: string
+  occurredAt: string
+  message: CommunicationMessage
+}
+
+type CommunicationTimelineReflectionItem = {
+  itemType: "INSTITUTIONAL_REFLECTION"
+  id: string
+  occurredAt: string
+  reflection: CommunicationInstitutionalReflection
+}
+
+type CommunicationTimelineItem =
+  | CommunicationTimelineMessageItem
+  | CommunicationTimelineReflectionItem
+
+type CommunicationTimeline = {
+  conversationId: string
+  items: CommunicationTimelineItem[]
+  messageCount: number
+  reflectionCount: number
+}
+
+type TimelineResponse = {
   ok: boolean
-  messages?: CommunicationMessage[]
+  timeline?: CommunicationTimeline
   error?: string
 }
 
@@ -336,11 +383,11 @@ export default function CommunicationsWorkspace({
     )
 
   const [
-    messages,
-    setMessages,
+    timelineItems,
+    setTimelineItems,
   ] =
     useState<
-      CommunicationMessage[]
+      CommunicationTimelineItem[]
     >([])
 
   /*
@@ -353,10 +400,10 @@ export default function CommunicationsWorkspace({
     )
 
   /*
-   * Each selection change or message retrieval
-   * invalidates older message-load generations.
+   * Each selection change or timeline retrieval
+   * invalidates older timeline-load generations.
    */
-  const messageLoadGenerationRef =
+  const timelineLoadGenerationRef =
     useRef(0)
 
   const selectConversation =
@@ -367,7 +414,7 @@ export default function CommunicationsWorkspace({
         selectedConversationIdRef.current =
           conversationId
 
-        messageLoadGenerationRef.current +=
+        timelineLoadGenerationRef.current +=
           1
 
         setSelectedConversationId(
@@ -375,7 +422,7 @@ export default function CommunicationsWorkspace({
         )
 
         if (!conversationId) {
-          setMessages([])
+          setTimelineItems([])
         }
       },
       []
@@ -685,7 +732,7 @@ export default function CommunicationsWorkspace({
       []
     )
 
-  const loadMessages =
+  const loadTimeline =
     useCallback(
       async (
         conversationId: string
@@ -695,7 +742,7 @@ export default function CommunicationsWorkspace({
          * invalidates this generation.
          */
         const generation =
-          ++messageLoadGenerationRef.current
+          ++timelineLoadGenerationRef.current
 
         setLoadingMessages(
           true
@@ -706,7 +753,7 @@ export default function CommunicationsWorkspace({
             await fetch(
               `/api/communications/conversations/${encodeURIComponent(
                 conversationId
-              )}/messages?limit=100`,
+              )}/timeline?messageLimit=100&reflectionLimit=100`,
               {
                 cache:
                   "no-store",
@@ -714,24 +761,19 @@ export default function CommunicationsWorkspace({
             )
 
           const payload =
-            await response.json() as MessagesResponse
+            await response.json() as TimelineResponse
 
           if (
             !response.ok ||
             !payload.ok ||
-            !payload.messages
+            !payload.timeline
           ) {
             throw new Error(
               payload.error ??
-                "COMMUNICATION_MESSAGES_FAILED"
+                "COMMUNICATION_TIMELINE_FAILED"
             )
           }
 
-          /*
-           * The request is authoritative only
-           * if it still belongs to the currently
-           * selected conversation and generation.
-           */
           if (
             !isCurrentConversationLoad({
               requestedConversationId:
@@ -740,29 +782,44 @@ export default function CommunicationsWorkspace({
                 selectedConversationIdRef.current,
               generation,
               currentGeneration:
-                messageLoadGenerationRef.current,
+                timelineLoadGenerationRef.current,
             })
           ) {
             return
           }
 
-          setMessages(
-            payload.messages
+          setTimelineItems(
+            payload.timeline.items
           )
 
-          const newest =
-            payload.messages[0]
+          /*
+           * Read acknowledgement remains message-only.
+           *
+           * The timeline is chronological ascending,
+           * so the newest MESSAGE is found from the end.
+           * A reflection never advances lastReadMessageId.
+           */
+          const newestMessage =
+            [...payload.timeline.items]
+              .reverse()
+              .find(
+                (
+                  item
+                ): item is CommunicationTimelineMessageItem =>
+                  item.itemType ===
+                  "MESSAGE"
+              )
 
-          if (newest) {
+          if (newestMessage) {
             await markRead(
               conversationId,
-              newest.id
+              newestMessage.message.id
             )
           }
 
           /*
            * Selection may have changed while the
-           * read acknowledgement was in flight.
+           * message read acknowledgement was in flight.
            */
           if (
             !isCurrentConversationLoad({
@@ -772,7 +829,7 @@ export default function CommunicationsWorkspace({
                 selectedConversationIdRef.current,
               generation,
               currentGeneration:
-                messageLoadGenerationRef.current,
+                timelineLoadGenerationRef.current,
             })
           ) {
             return
@@ -789,18 +846,12 @@ export default function CommunicationsWorkspace({
           const message =
             cause instanceof Error
               ? cause.message
-              : "COMMUNICATION_MESSAGES_FAILED"
+              : "COMMUNICATION_TIMELINE_FAILED"
 
           if (
             message ===
               "COMMUNICATION_CONVERSATION_ACCESS_DENIED"
           ) {
-            /*
-             * Membership authority changed while
-             * this thread was selected.
-             *
-             * Eject stale local state immediately.
-             */
             if (
               selectedConversationIdRef.current ===
               conversationId
@@ -817,13 +868,9 @@ export default function CommunicationsWorkspace({
             message
           )
         } finally {
-          /*
-           * An obsolete request must not clear the
-           * loading state owned by a newer request.
-           */
           if (
             generation ===
-            messageLoadGenerationRef.current
+            timelineLoadGenerationRef.current
           ) {
             setLoadingMessages(
               false
@@ -852,16 +899,16 @@ export default function CommunicationsWorkspace({
       if (
         !selectedConversationId
       ) {
-        setMessages([])
+        setTimelineItems([])
         return
       }
 
-      void loadMessages(
+      void loadTimeline(
         selectedConversationId
       )
     },
     [
-      loadMessages,
+      loadTimeline,
       selectedConversationId,
     ]
   )
@@ -890,10 +937,10 @@ export default function CommunicationsWorkspace({
          * Active conversation:
          * retrieve → mark read → refresh list.
          *
-         * loadMessages owns this sequence so
-         * unread state cannot race the read marker.
+         * loadTimeline owns this sequence so
+         * unread state cannot race the message read marker.
          */
-        void loadMessages(
+        void loadTimeline(
           signal.conversationId
         )
 
@@ -912,7 +959,7 @@ export default function CommunicationsWorkspace({
       realtime.lastSignal,
       selectedConversationId,
       loadConversations,
-      loadMessages,
+      loadTimeline,
     ]
   )
 
@@ -1529,7 +1576,7 @@ export default function CommunicationsWorkspace({
         crypto.randomUUID()
       )
 
-      await loadMessages(
+      await loadTimeline(
         conversationId
       )
 
@@ -1583,9 +1630,6 @@ export default function CommunicationsWorkspace({
         conversation.status ===
         "ARCHIVED"
     )
-
-  const chronologicalMessages =
-    [...messages].reverse()
 
   function renderConversationRow(
     conversation: CommunicationConversation,
@@ -2254,11 +2298,11 @@ export default function CommunicationsWorkspace({
                 <div className="text-sm text-neutral-500">
                   Loading history…
                 </div>
-              ) : chronologicalMessages.length === 0 ? (
+              ) : timelineItems.length === 0 ? (
                 <div className="flex h-full items-center justify-center">
                   <div className="max-w-sm text-center">
                     <div className="text-sm text-neutral-300">
-                      No messages yet.
+                      No timeline activity yet.
                     </div>
                     <div className="mt-2 text-xs leading-5 text-neutral-600">
                       This conversation is durable, private to its members, and governed by AXPT Communications authority.
@@ -2267,8 +2311,78 @@ export default function CommunicationsWorkspace({
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {chronologicalMessages.map(
-                    (message) => {
+                  {timelineItems.map(
+                    (item) => {
+                      if (
+                        item.itemType ===
+                        "INSTITUTIONAL_REFLECTION"
+                      ) {
+                        const reflection =
+                          item.reflection
+
+                        return (
+                          <div
+                            key={`reflection:${reflection.id}`}
+                            className="flex justify-center py-2"
+                          >
+                            <div className="w-full max-w-[78%] rounded-xl border border-neutral-800 bg-neutral-950/70 px-4 py-3">
+                              <div className="flex flex-wrap items-center gap-2 text-[9px] uppercase tracking-[0.14em] text-neutral-500">
+                                <span className="rounded border border-neutral-700 px-1.5 py-0.5 text-neutral-400">
+                                  Institutional Observation
+                                </span>
+
+                                <span>
+                                  {reflection.reflectionCode.replaceAll(
+                                    "_",
+                                    " "
+                                  )}
+                                </span>
+
+                                <span>
+                                  {formatTime(
+                                    reflection.sourceOccurredAt
+                                  )}
+                                </span>
+                              </div>
+
+                              <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] uppercase tracking-[0.12em] text-neutral-600">
+                                <span>
+                                  {reflection.sourceSystem.replaceAll(
+                                    "_",
+                                    " "
+                                  )}
+                                </span>
+
+                                <span>
+                                  ·
+                                </span>
+
+                                <span>
+                                  {reflection.sourceAggregateType.replaceAll(
+                                    "_",
+                                    " "
+                                  )}
+                                </span>
+                              </div>
+
+                              <div
+                                title={`${reflection.targetSubtype} · ${reflection.targetId}`}
+                                className="mt-2 truncate font-mono text-[10px] text-neutral-500"
+                              >
+                                {operationalTargetTypeLabel(
+                                  reflection.targetType
+                                )}
+                                {" · "}
+                                {reflection.targetId}
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      }
+
+                      const message =
+                        item.message
+
                       const own =
                         message.senderUserId ===
                         currentUserId
@@ -2282,9 +2396,7 @@ export default function CommunicationsWorkspace({
 
                       return (
                         <div
-                          key={
-                            message.id
-                          }
+                          key={`message:${message.id}`}
                           className={`flex ${
                             own
                               ? "justify-end"
