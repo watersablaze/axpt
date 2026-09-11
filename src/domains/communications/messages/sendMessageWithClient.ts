@@ -7,6 +7,11 @@ import { COMMUNICATION_EVENT_TYPE } from "../events"
 import { requireConversationWritable } from "../conversations/requireConversationWritable"
 
 import {
+  isCommunicationSendableMessageKind,
+  type CommunicationSendableMessageKind,
+} from "./messageVocabulary"
+
+import {
   requireConversationMember,
   type CommunicationMemberClient,
 } from "../membership/requireConversationMember"
@@ -35,18 +40,33 @@ export async function sendMessageWithClient({
   principal,
   conversationId,
   clientMessageId,
+  kind = "TEXT",
   body,
 }: {
   client: CommunicationsDatabaseClient
   principal: Principal
   conversationId: string
   clientMessageId: string
+  kind?: CommunicationSendableMessageKind
   body: string
 }) {
   authorityKernel.require(
     principal,
     PERMISSIONS.COMMUNICATIONS_MESSAGE_SEND
   )
+
+  if (
+    !isCommunicationSendableMessageKind(
+      kind
+    )
+  ) {
+    throw new Error(
+      "COMMUNICATION_MESSAGE_KIND_INVALID"
+    )
+  }
+
+  const normalizedKind =
+    kind
 
   const normalizedBody =
     body.trim()
@@ -111,7 +131,7 @@ export async function sendMessageWithClient({
         if (existing) {
           if (
             existing.body !== normalizedBody ||
-            existing.kind !== "TEXT"
+            existing.kind !== normalizedKind
           ) {
             throw new Error(
               "COMMUNICATION_MESSAGE_IDEMPOTENCY_COLLISION"
@@ -135,7 +155,7 @@ export async function sendMessageWithClient({
               clientMessageId:
                 normalizedClientMessageId,
               kind:
-                "TEXT",
+                normalizedKind,
               body:
                 normalizedBody,
             },
@@ -217,7 +237,7 @@ export async function sendMessageWithClient({
 
     if (
       existing.body !== normalizedBody ||
-      existing.kind !== "TEXT"
+      existing.kind !== normalizedKind
     ) {
       throw new Error(
         "COMMUNICATION_MESSAGE_IDEMPOTENCY_COLLISION"

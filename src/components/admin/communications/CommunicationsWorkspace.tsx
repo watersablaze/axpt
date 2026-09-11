@@ -14,6 +14,11 @@ import {
   COMMUNICATION_OPERATIONAL_TARGET_TYPES,
   COMMUNICATION_OPERATIONAL_TREASURY_SUBTYPES,
 } from "@/domains/communications/operational/operationalVocabulary"
+import {
+  COMMUNICATION_SENDABLE_MESSAGE_KINDS,
+  type CommunicationMessageKind,
+  type CommunicationSendableMessageKind,
+} from "@/domains/communications/messages/messageVocabulary"
 
 type CommunicationUser = {
   id: string
@@ -38,7 +43,7 @@ type CommunicationMessage = {
   id: string
   conversationId: string
   senderUserId: string
-  kind: string
+  kind: CommunicationMessageKind
   body: string
   createdAt: string
 }
@@ -252,6 +257,22 @@ function conversationLabel(
     .join(", ")
 }
 
+function communicationMessageKindLabel(
+  kind: CommunicationMessageKind
+) {
+  if (
+    kind ===
+    "TEXT"
+  ) {
+    return "Message"
+  }
+
+  return kind.replaceAll(
+    "_",
+    " "
+  )
+}
+
 function formatTime(
   value: string
 ) {
@@ -369,6 +390,14 @@ export default function CommunicationsWorkspace({
     useState(() =>
       crypto.randomUUID()
     )
+
+  const [
+    composerKind,
+    setComposerKind,
+  ] =
+    useState<
+      CommunicationSendableMessageKind
+    >("TEXT")
 
   const [
     loadingConversations,
@@ -1379,6 +1408,9 @@ export default function CommunicationsWorkspace({
     const body =
       composerBody.trim()
 
+    const kind =
+      composerKind
+
     const conversationId =
       selectedConversationId
 
@@ -1402,6 +1434,7 @@ export default function CommunicationsWorkspace({
             body:
               JSON.stringify({
                 body,
+                kind,
                 clientMessageId:
                   composerClientMessageId,
               }),
@@ -1429,6 +1462,9 @@ export default function CommunicationsWorkspace({
        * the same clientMessageId.
        */
       setComposerBody("")
+      setComposerKind(
+        "TEXT"
+      )
       setComposerClientMessageId(
         crypto.randomUUID()
       )
@@ -2203,6 +2239,15 @@ export default function CommunicationsWorkspace({
                             }`}
                           >
                             <div className="mb-1 flex items-center gap-3 text-[10px] uppercase tracking-[0.12em] text-neutral-500">
+                              {message.kind !==
+                              "TEXT" ? (
+                                <span className="rounded border border-neutral-700 px-1.5 py-0.5 text-[9px] tracking-[0.14em] text-neutral-400">
+                                  {communicationMessageKindLabel(
+                                    message.kind
+                                  )}
+                                </span>
+                              ) : null}
+
                               <span>
                                 {own
                                   ? "You"
@@ -2270,56 +2315,108 @@ export default function CommunicationsWorkspace({
                 </div>
               ) : (
                 <>
-                  <div className="flex items-end gap-3">
-                    <textarea
-                      value={
-                        composerBody
-                      }
-                      onChange={(
-                        event
-                      ) => {
-                        setComposerBody(
-                          event.target.value
-                        )
-                      }}
-                      onKeyDown={(
-                        event
-                      ) => {
-                        if (
-                          event.key ===
-                            "Enter" &&
-                          !event.shiftKey &&
-                          !event.nativeEvent.isComposing
-                        ) {
-                          event.preventDefault()
-                          void sendMessage()
-                        }
-                      }}
-                      placeholder="Write a message…"
-                      rows={2}
-                      maxLength={10000}
-                      disabled={sending}
-                      className="min-h-[52px] flex-1 resize-none rounded-lg border border-neutral-800 bg-neutral-950 px-3 py-3 text-sm text-white outline-none placeholder:text-neutral-600 focus:border-neutral-600 disabled:cursor-wait disabled:opacity-70"
-                    />
+                  <div className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950">
+                    <div className="flex items-center justify-between border-b border-neutral-900 px-3 py-2">
+                      <span className="text-[9px] uppercase tracking-[0.16em] text-neutral-600">
+                        Classification
+                      </span>
 
-                    <button
-                      type="button"
-                      disabled={
-                        sending ||
-                        !composerBody.trim()
-                      }
-                      onClick={() => {
-                        void sendMessage()
-                      }}
-                      className="rounded-lg border border-neutral-700 bg-neutral-900 px-5 py-3 text-xs font-medium uppercase tracking-[0.14em] text-white transition hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      {sending
-                        ? "Sending"
-                        : "Send"}
-                    </button>
+                      <label>
+                        <span className="sr-only">
+                          Message classification
+                        </span>
+
+                        <select
+                          value={
+                            composerKind
+                          }
+                          onChange={(
+                            event
+                          ) => {
+                            setComposerKind(
+                              event.target.value as
+                                CommunicationSendableMessageKind
+                            )
+                          }}
+                          disabled={
+                            sending
+                          }
+                          aria-label="Message classification"
+                          className="cursor-pointer border-0 bg-transparent py-0.5 text-right text-[9px] uppercase tracking-[0.14em] text-neutral-400 outline-none disabled:cursor-wait disabled:opacity-60"
+                        >
+                          {COMMUNICATION_SENDABLE_MESSAGE_KINDS.map(
+                            (
+                              kind
+                            ) => (
+                              <option
+                                key={
+                                  kind
+                                }
+                                value={
+                                  kind
+                                }
+                              >
+                                {communicationMessageKindLabel(
+                                  kind
+                                )}
+                              </option>
+                            )
+                          )}
+                        </select>
+                      </label>
+                    </div>
+
+                    <div className="flex items-end gap-3 p-3">
+                      <textarea
+                        value={
+                          composerBody
+                        }
+                        onChange={(
+                          event
+                        ) => {
+                          setComposerBody(
+                            event.target.value
+                          )
+                        }}
+                        onKeyDown={(
+                          event
+                        ) => {
+                          if (
+                            event.key ===
+                              "Enter" &&
+                            !event.shiftKey &&
+                            !event.nativeEvent.isComposing
+                          ) {
+                            event.preventDefault()
+                            void sendMessage()
+                          }
+                        }}
+                        placeholder="Write a message…"
+                        rows={2}
+                        maxLength={10000}
+                        disabled={sending}
+                        className="min-h-[52px] flex-1 resize-none border-0 bg-transparent px-1 py-1 text-sm leading-6 text-white outline-none placeholder:text-neutral-600 disabled:cursor-wait disabled:opacity-70"
+                      />
+
+                      <button
+                        type="button"
+                        disabled={
+                          sending ||
+                          !composerBody.trim()
+                        }
+                        onClick={() => {
+                          void sendMessage()
+                        }}
+                        className="shrink-0 rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2.5 text-[10px] font-medium uppercase tracking-[0.14em] text-neutral-200 transition hover:border-neutral-600 hover:bg-neutral-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                      >
+                        {sending
+                          ? "Sending"
+                          : "Send"}
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="mt-2 text-[10px] uppercase tracking-[0.14em] text-neutral-600">
+                  <div className="mt-2 px-1 text-[9px] uppercase tracking-[0.14em] text-neutral-700">
                     Enter to send · Shift + Enter for line break
                   </div>
                 </>

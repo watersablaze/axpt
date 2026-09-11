@@ -3,6 +3,9 @@ import { getPrincipal } from "@/domains/auth/getPrincipal"
 import { listMessages } from "@/domains/communications/messages/listMessages"
 import { sendMessage } from "@/domains/communications/messages/sendMessage"
 import { communicationHttpError } from "@/domains/communications/http/communicationHttpError"
+import {
+  isCommunicationSendableMessageKind,
+} from "@/domains/communications/messages/messageVocabulary"
 
 export const dynamic =
   "force-dynamic"
@@ -122,6 +125,7 @@ export async function POST(
       await request.json() as {
         body?: unknown
         clientMessageId?: unknown
+        kind?: unknown
       }
 
     if (
@@ -134,6 +138,27 @@ export async function POST(
           ok: false,
           error:
             "COMMUNICATION_CLIENT_MESSAGE_ID_REQUIRED",
+        },
+        {
+          status: 400,
+        }
+      )
+    }
+
+    const kind =
+      requestBody.kind ??
+      "TEXT"
+
+    if (
+      !isCommunicationSendableMessageKind(
+        kind
+      )
+    ) {
+      return Response.json(
+        {
+          ok: false,
+          error:
+            "COMMUNICATION_MESSAGE_KIND_INVALID",
         },
         {
           status: 400,
@@ -163,6 +188,7 @@ export async function POST(
         conversationId,
         clientMessageId:
           requestBody.clientMessageId,
+        kind,
         body:
           requestBody.body,
       })

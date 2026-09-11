@@ -344,6 +344,30 @@ async function main() {
   )
 
   /*
+   * C3.1A semantic message contract.
+   */
+  const messageKindInvalid =
+    await readError(
+      communicationHttpError(
+        new Error(
+          "COMMUNICATION_MESSAGE_KIND_INVALID"
+        )
+      )
+    )
+
+  assert(
+    messageKindInvalid.status ===
+      400,
+    "HTTP_MESSAGE_KIND_INVALID_STATUS_INVALID"
+  )
+
+  assert(
+    messageKindInvalid.error ===
+      "COMMUNICATION_MESSAGE_KIND_INVALID",
+    "HTTP_MESSAGE_KIND_INVALID_BODY_INVALID"
+  )
+
+  /*
    * Avoid exercising the unknown/internal-error
    * branches here because those intentionally log
    * through console.error.
@@ -400,6 +424,9 @@ async function main() {
       true,
 
     directoryPurposeInvalid400:
+      true,
+
+    messageKindInvalid400:
       true,
   })
 }

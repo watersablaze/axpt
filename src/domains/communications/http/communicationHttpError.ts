@@ -124,7 +124,9 @@ export function communicationHttpError(
     error.message ===
       "COMMUNICATION_OPERATIONAL_TARGET_SUBTYPE_MISMATCH" ||
     error.message ===
-      "COMMUNICATION_DIRECTORY_PURPOSE_INVALID"
+      "COMMUNICATION_DIRECTORY_PURPOSE_INVALID" ||
+    error.message ===
+      "COMMUNICATION_MESSAGE_KIND_INVALID"
   ) {
     return Response.json(
       {

@@ -5,6 +5,10 @@ import type { Principal } from "../../src/domains/auth/types"
 
 import { createDirectConversationWithClient } from "../../src/domains/communications/conversations/createDirectConversationWithClient"
 import { sendMessageWithClient } from "../../src/domains/communications/messages/sendMessageWithClient"
+import {
+  COMMUNICATION_SENDABLE_MESSAGE_KINDS,
+  type CommunicationSendableMessageKind,
+} from "../../src/domains/communications/messages/messageVocabulary"
 
 import type { CommunicationsDatabaseClient } from "../../src/domains/communications/shared/databaseTypes"
 
@@ -207,6 +211,16 @@ async function main() {
     )
 
     /*
+     * Backward-compatible omission of kind
+     * must remain canonical TEXT.
+     */
+    assert(
+      persistedMessage.kind ===
+        "TEXT",
+      "DEFAULT_MESSAGE_KIND_NOT_TEXT"
+    )
+
+    /*
      * Exact retry must resolve to the
      * original durable message.
      */
@@ -330,6 +344,296 @@ async function main() {
     )
 
     /*
+     * C3.1A semantic message classification.
+     *
+     * Every human-sendable semantic kind must
+     * survive the command boundary unchanged.
+     */
+    const semanticKinds =
+      COMMUNICATION_SENDABLE_MESSAGE_KINDS.filter(
+        (
+          kind
+        ): kind is Exclude<
+          CommunicationSendableMessageKind,
+          "TEXT"
+        > =>
+          kind !==
+          "TEXT"
+      )
+
+    const semanticMessageIds: string[] = []
+
+    for (
+      const kind of
+      semanticKinds
+    ) {
+      const semanticBody =
+        `semantic-${kind}-${nonce}`
+
+      const semanticClientMessageId =
+        `semantic-${kind}-${nonce}`
+
+      const semanticMessage =
+        await sendMessageWithClient({
+          client,
+          principal:
+            principalA,
+          conversationId:
+            conversationA.id,
+          clientMessageId:
+            semanticClientMessageId,
+          kind,
+          body:
+            semanticBody,
+        })
+
+      semanticMessageIds.push(
+        semanticMessage.id
+      )
+
+      assert(
+        semanticMessage.kind ===
+          kind,
+        `SEMANTIC_MESSAGE_KIND_CHANGED:${kind}`
+      )
+
+      const persistedSemanticMessage =
+        await prisma.communicationMessage.findUnique({
+          where: {
+            id:
+              semanticMessage.id,
+          },
+        })
+
+      assert(
+        persistedSemanticMessage !==
+          null,
+        `SEMANTIC_MESSAGE_NOT_DURABLE:${kind}`
+      )
+
+      assert(
+        persistedSemanticMessage.kind ===
+          kind,
+        `SEMANTIC_MESSAGE_KIND_NOT_DURABLE:${kind}`
+      )
+
+      /*
+       * Same submission identity + same body +
+       * same semantic kind is a canonical retry.
+       */
+      const semanticRetry =
+        await sendMessageWithClient({
+          client,
+          principal:
+            principalA,
+          conversationId:
+            conversationA.id,
+          clientMessageId:
+            semanticClientMessageId,
+          kind,
+          body:
+            semanticBody,
+        })
+
+      assert(
+        semanticRetry.id ===
+          semanticMessage.id,
+        `SEMANTIC_RETRY_CREATED_DIFFERENT_MESSAGE:${kind}`
+      )
+
+      /*
+       * Same submission identity and body but a
+       * different semantic classification is not
+       * the same logical command.
+       */
+      const collisionKind:
+        CommunicationSendableMessageKind =
+          kind ===
+          "NOTICE"
+            ? "REQUEST"
+            : "NOTICE"
+
+      let semanticKindCollisionBlocked =
+        false
+
+      try {
+        await sendMessageWithClient({
+          client,
+          principal:
+            principalA,
+          conversationId:
+            conversationA.id,
+          clientMessageId:
+            semanticClientMessageId,
+          kind:
+            collisionKind,
+          body:
+            semanticBody,
+        })
+      } catch (error: unknown) {
+        semanticKindCollisionBlocked =
+          error instanceof Error &&
+          error.message ===
+            "COMMUNICATION_MESSAGE_IDEMPOTENCY_COLLISION"
+      }
+
+      assert(
+        semanticKindCollisionBlocked,
+        `SEMANTIC_KIND_IDEMPOTENCY_COLLISION_NOT_BLOCKED:${kind}`
+      )
+
+      /*
+       * MESSAGE_SENT remains the canonical event.
+       * Semantic classification belongs in its
+       * payload; message body must remain private.
+       */
+      const semanticEvent =
+        await prisma.domainEvent.findFirst({
+          where: {
+            streamType:
+              "COMMUNICATION_CONVERSATION",
+
+            streamId:
+              conversationA.id,
+
+            eventType:
+              "COMMUNICATION_MESSAGE_SENT",
+
+            payload: {
+              path: [
+                "messageId",
+              ],
+              equals:
+                semanticMessage.id,
+            },
+          },
+        })
+
+      assert(
+        semanticEvent !==
+          null,
+        `SEMANTIC_MESSAGE_EVENT_NOT_FOUND:${kind}`
+      )
+
+      const semanticEnvelope =
+        JSON.stringify({
+          payload:
+            semanticEvent.payload,
+          metadata:
+            semanticEvent.metadata,
+        })
+
+      assert(
+        semanticEnvelope.includes(
+          `"kind":"${kind}"`
+        ),
+        `SEMANTIC_MESSAGE_EVENT_KIND_MISSING:${kind}`
+      )
+
+      assert(
+        !semanticEnvelope.includes(
+          semanticBody
+        ),
+        `SEMANTIC_MESSAGE_BODY_LEAKED_TO_EVENT:${kind}`
+      )
+    }
+
+    /*
+     * SYSTEM is schema vocabulary but not a
+     * human-sendable semantic kind.
+     *
+     * Cast deliberately crosses the compile-time
+     * boundary so this smoke proves the runtime
+     * guard still exists.
+     */
+    let systemKindBlocked =
+      false
+
+    try {
+      await sendMessageWithClient({
+        client,
+        principal:
+          principalA,
+        conversationId:
+          conversationA.id,
+        clientMessageId:
+          `system-kind-${nonce}`,
+        kind:
+          "SYSTEM" as unknown as
+            CommunicationSendableMessageKind,
+        body:
+          "SYSTEM MUST NOT BE HUMAN AUTHORED",
+      })
+    } catch (error: unknown) {
+      systemKindBlocked =
+        error instanceof Error &&
+        error.message ===
+          "COMMUNICATION_MESSAGE_KIND_INVALID"
+    }
+
+    assert(
+      systemKindBlocked,
+      "SYSTEM_MESSAGE_KIND_NOT_BLOCKED"
+    )
+
+    /*
+     * Arbitrary runtime values must be rejected
+     * independently of TypeScript.
+     */
+    let arbitraryKindBlocked =
+      false
+
+    try {
+      await sendMessageWithClient({
+        client,
+        principal:
+          principalA,
+        conversationId:
+          conversationA.id,
+        clientMessageId:
+          `arbitrary-kind-${nonce}`,
+        kind:
+          "EXECUTE_TREASURY" as unknown as
+            CommunicationSendableMessageKind,
+        body:
+          "INVALID SEMANTIC KIND",
+      })
+    } catch (error: unknown) {
+      arbitraryKindBlocked =
+        error instanceof Error &&
+        error.message ===
+          "COMMUNICATION_MESSAGE_KIND_INVALID"
+    }
+
+    assert(
+      arbitraryKindBlocked,
+      "ARBITRARY_MESSAGE_KIND_NOT_BLOCKED"
+    )
+
+    /*
+     * Invalid semantic kinds must never persist.
+     */
+    const invalidSemanticMessageCount =
+      await prisma.communicationMessage.count({
+        where: {
+          conversationId:
+            conversationA.id,
+          clientMessageId: {
+            in: [
+              `system-kind-${nonce}`,
+              `arbitrary-kind-${nonce}`,
+            ],
+          },
+        },
+      })
+
+    assert(
+      invalidSemanticMessageCount ===
+        0,
+      "INVALID_SEMANTIC_MESSAGE_PERSISTED"
+    )
+
+    /*
      * C has platform send permission,
      * but no conversation membership.
      */
@@ -445,6 +749,33 @@ async function main() {
 
       bodyExcludedFromEvent:
         true,
+
+      defaultMessageKindText:
+        true,
+
+      semanticKindsPersisted:
+        semanticKinds.length,
+
+      semanticRetriesCanonical:
+        true,
+
+      semanticKindCollisionBlocked:
+        true,
+
+      semanticEventKindPreserved:
+        true,
+
+      semanticBodiesExcludedFromEvents:
+        true,
+
+      systemKindBlocked:
+        true,
+
+      arbitraryKindBlocked:
+        true,
+
+      invalidSemanticMessagesPersisted:
+        false,
 
       nonMemberBlocked:
         true,
