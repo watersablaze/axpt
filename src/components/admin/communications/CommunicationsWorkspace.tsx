@@ -735,8 +735,14 @@ export default function CommunicationsWorkspace({
   const loadTimeline =
     useCallback(
       async (
-        conversationId: string
+        conversationId: string,
+        options?: {
+          acknowledgeMessages?: boolean
+        }
       ) => {
+        const acknowledgeMessages =
+          options?.acknowledgeMessages ??
+          true
         /*
          * A newer load or selection change
          * invalidates this generation.
@@ -810,7 +816,10 @@ export default function CommunicationsWorkspace({
                   "MESSAGE"
               )
 
-          if (newestMessage) {
+          if (
+            acknowledgeMessages &&
+            newestMessage
+          ) {
             await markRead(
               conversationId,
               newestMessage.message.id
@@ -934,23 +943,33 @@ export default function CommunicationsWorkspace({
         selectedConversationId
       ) {
         /*
-         * Active conversation:
-         * retrieve → mark read → refresh list.
+         * Realtime remains advisory.
          *
-         * loadTimeline owns this sequence so
-         * unread state cannot race the message read marker.
+         * A reflection signal may refresh the
+         * authoritative timeline, but it has no
+         * authority to acknowledge messages.
          */
+        const isReflectionSignal =
+          signal.type ===
+          "COMMUNICATION_INSTITUTIONAL_REFLECTION_AVAILABLE"
+
         void loadTimeline(
-          signal.conversationId
+          signal.conversationId,
+          {
+            acknowledgeMessages:
+              !isReflectionSignal,
+          }
         )
 
         return
       }
 
       /*
-       * Background conversation:
-       * refresh the authoritative unread count
-       * without marking anything read.
+       * Background signals may refresh the
+       * authoritative conversation list.
+       *
+       * Reflections are not unread messages, so
+       * this retrieval cannot create unread state.
        */
       void loadConversations()
     },

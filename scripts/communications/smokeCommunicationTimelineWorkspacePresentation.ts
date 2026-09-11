@@ -98,50 +98,61 @@ assert(
 );
 
 /*
- * Read acknowledgement must select the newest
- * MESSAGE item, never the newest timeline item.
+ * Read acknowledgement must remain MESSAGE-only.
+ *
+ * Normal timeline retrieval may acknowledge the
+ * newest MESSAGE, while reflection-triggered
+ * retrieval explicitly disables acknowledgement.
  */
-const newestMessageStart = source.indexOf("const newestMessage =");
-
-assert(newestMessageStart !== -1, "WORKSPACE_NEWEST_MESSAGE_SELECTION_MISSING");
-
-const newestMessageEnd = source.indexOf(
-  "if (newestMessage)",
-  newestMessageStart,
-);
+const newestMessageStart =
+  source.indexOf("const newestMessage =");
 
 assert(
-  newestMessageEnd !== -1,
-  "WORKSPACE_NEWEST_MESSAGE_SELECTION_END_MISSING",
+  newestMessageStart !== -1,
+  "WORKSPACE_NEWEST_MESSAGE_SELECTION_MISSING",
 );
 
-const newestMessageSelection = source.slice(
-  newestMessageStart,
-  newestMessageEnd,
-);
+const newestMessageWindow =
+  source.slice(
+    newestMessageStart,
+    newestMessageStart + 1400,
+  );
 
 assert(
-  newestMessageSelection.includes(".reverse()") &&
-    newestMessageSelection.includes("item.itemType ===") &&
-    newestMessageSelection.includes('"MESSAGE"'),
+  newestMessageWindow.includes(".reverse()") &&
+    newestMessageWindow.includes("item.itemType ===") &&
+    newestMessageWindow.includes('"MESSAGE"'),
   "WORKSPACE_NEWEST_MESSAGE_SELECTION_INVALID",
 );
 
-const markReadStart = source.indexOf("if (newestMessage)", newestMessageEnd);
-
-assert(markReadStart !== -1, "WORKSPACE_MESSAGE_READ_GATE_MISSING");
-
-const markReadWindow = source.slice(markReadStart, markReadStart + 600);
+assert(
+  source.includes("acknowledgeMessages?: boolean") &&
+    source.includes("options?.acknowledgeMessages") &&
+    source.includes("true"),
+  "WORKSPACE_MESSAGE_ACKNOWLEDGEMENT_MODE_MISSING",
+);
 
 assert(
-  markReadWindow.includes("markRead(") &&
-    markReadWindow.includes("newestMessage.message.id"),
-  "WORKSPACE_MESSAGE_READ_ACKNOWLEDGEMENT_INVALID",
+  newestMessageWindow.includes("acknowledgeMessages &&") &&
+    newestMessageWindow.includes("newestMessage") &&
+    newestMessageWindow.includes("markRead(") &&
+    newestMessageWindow.includes("newestMessage.message.id"),
+  "WORKSPACE_MESSAGE_READ_GUARD_INVALID",
+);
+
+assert(
+  source.includes(
+    '"COMMUNICATION_INSTITUTIONAL_REFLECTION_AVAILABLE"',
+  ) &&
+    source.includes("const isReflectionSignal =") &&
+    source.includes("acknowledgeMessages:") &&
+    source.includes("!isReflectionSignal"),
+  "WORKSPACE_REFLECTION_REALTIME_READ_SUPPRESSION_MISSING",
 );
 
 assert(
   !reflectionBranch.includes("markRead("),
-  "WORKSPACE_REFLECTION_READ_ACKNOWLEDGEMENT_PRESENT",
+  "WORKSPACE_REFLECTION_RENDER_READ_ACKNOWLEDGEMENT_PRESENT",
 );
 
 /*

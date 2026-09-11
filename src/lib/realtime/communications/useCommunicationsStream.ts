@@ -12,10 +12,15 @@ export type CommunicationRealtimeSignal = {
   type:
     | "COMMUNICATION_CONVERSATION_CREATED"
     | "COMMUNICATION_MESSAGE_SENT"
+    | "COMMUNICATION_INSTITUTIONAL_REFLECTION_AVAILABLE"
 
   conversationId: string
   messageId?: string
   senderUserId?: string
+
+  reflectionId?: string
+  operationalRoomId?: string
+
   createdAt: string
 }
 

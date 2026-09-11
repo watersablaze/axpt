@@ -5,6 +5,7 @@ import { authorityKernel } from "@/domains/auth/AuthorityKernel"
 import { PERMISSIONS } from "@/domains/auth/permissions"
 
 import { loadCommunicationRealtimeSignalsWithClient } from "@/domains/communications/realtime/loadCommunicationRealtimeSignalsWithClient"
+import { loadCommunicationReflectionRealtimeSignalsWithClient } from "@/domains/communications/realtime/loadCommunicationReflectionRealtimeSignalsWithClient"
 
 export const dynamic = "force-dynamic"
 export const runtime = "nodejs"
@@ -70,12 +71,20 @@ export async function GET(
          * Startup overlap protects against an event
          * committed immediately before connection.
          */
-        let cursor =
+        let communicationEventCursor =
+          new Date(
+            Date.now() - 3000
+          )
+
+        let reflectionCursor =
           new Date(
             Date.now() - 3000
           )
 
         const deliveredEventIds =
+          new Set<string>()
+
+        const deliveredReflectionIds =
           new Set<string>()
 
         let lastHeartbeatAt =
@@ -105,22 +114,40 @@ export async function GET(
              * The application core re-resolves
              * membership every poll.
              */
-            const records =
-              await loadCommunicationRealtimeSignalsWithClient({
-                client:
-                  prisma,
+            const [
+              communicationRecords,
+              reflectionRecords,
+            ] =
+              await Promise.all([
+                loadCommunicationRealtimeSignalsWithClient({
+                  client:
+                    prisma,
 
-                principal,
+                  principal,
 
-                since:
-                  cursor,
+                  since:
+                    communicationEventCursor,
 
-                limit:
-                  100,
-              })
+                  limit:
+                    100,
+                }),
+
+                loadCommunicationReflectionRealtimeSignalsWithClient({
+                  client:
+                    prisma,
+
+                  principal,
+
+                  since:
+                    reflectionCursor,
+
+                  limit:
+                    100,
+                }),
+              ])
 
             for (
-              const record of records
+              const record of communicationRecords
             ) {
               if (
                 !active ||
@@ -143,10 +170,49 @@ export async function GET(
 
               if (
                 record.occurredAt >
-                cursor
+                communicationEventCursor
               ) {
-                cursor =
+                communicationEventCursor =
                   record.occurredAt
+              }
+
+              controller.enqueue(
+                encoder.encode(
+                  `data: ${JSON.stringify(
+                    record.signal
+                  )}\n\n`
+                )
+              )
+            }
+
+            for (
+              const record of reflectionRecords
+            ) {
+              if (
+                !active ||
+                abortSignal.aborted
+              ) {
+                break
+              }
+
+              if (
+                deliveredReflectionIds.has(
+                  record.signal.id
+                )
+              ) {
+                continue
+              }
+
+              deliveredReflectionIds.add(
+                record.signal.id
+              )
+
+              if (
+                record.createdAt >
+                reflectionCursor
+              ) {
+                reflectionCursor =
+                  record.createdAt
               }
 
               controller.enqueue(
