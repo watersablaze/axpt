@@ -2338,7 +2338,8 @@ model CommunicationOperationalRoom {
 
   createdBy User @relation("CommunicationOperationalRoomCreator", fields: [createdByUserId], references: [id])
 
-  links CommunicationOperationalLink[]
+  links       CommunicationOperationalLink[]
+  reflections CommunicationOperationalReflection[]
 
   @@unique([createdByUserId, clientRoomId])
   @@index([roomClass, updatedAt])
@@ -2363,6 +2364,35 @@ model CommunicationOperationalLink {
   @@unique([roomId, targetType, targetSubtype, targetId])
   @@index([targetType, targetSubtype, targetId])
   @@index([linkedByUserId, linkedAt])
+}
+
+model CommunicationOperationalReflection {
+  id String @id @default(cuid())
+
+  operationalRoomId String
+
+  sourceSystem  String
+  sourceEventId String
+
+  sourceAggregateType String
+  sourceAggregateId   String
+  sourceEventType     String
+  sourceOccurredAt    DateTime
+
+  targetType    CommunicationOperationalTargetType
+  targetSubtype String
+  targetId      String
+
+  reflectionType String
+  reflectionCode String
+
+  createdAt DateTime @default(now())
+
+  operationalRoom CommunicationOperationalRoom @relation(fields: [operationalRoomId], references: [id], onDelete: Cascade)
+
+  @@unique([operationalRoomId, sourceSystem, sourceEventId])
+  @@index([operationalRoomId, sourceOccurredAt])
+  @@index([targetType, targetSubtype, targetId])
 }
 
 model TreasuryGatewayAggregate {
