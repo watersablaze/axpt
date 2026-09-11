@@ -2395,6 +2395,16 @@ model CommunicationOperationalReflection {
   @@index([targetType, targetSubtype, targetId])
 }
 
+model CommunicationReflectionIntakeCursor {
+  sourceSystem String @id
+
+  lastSequence BigInt
+  lastEventId  String?
+
+  initializedAt DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
 model TreasuryGatewayAggregate {
   aggregateType String
   aggregateId   String

@@ -1,0 +1,13 @@
+export const COMMUNICATION_REFLECTION_SOURCE_SYSTEM = {
+  TREASURY_GATEWAY: "TREASURY_GATEWAY",
+} as const;
+
+export type CommunicationReflectionSourceSystem =
+  (typeof COMMUNICATION_REFLECTION_SOURCE_SYSTEM)[keyof typeof COMMUNICATION_REFLECTION_SOURCE_SYSTEM];
+
+export const COMMUNICATION_REFLECTION_TYPE = {
+  STATE_OBSERVATION: "STATE_OBSERVATION",
+} as const;
+
+export type CommunicationReflectionType =
+  (typeof COMMUNICATION_REFLECTION_TYPE)[keyof typeof COMMUNICATION_REFLECTION_TYPE];

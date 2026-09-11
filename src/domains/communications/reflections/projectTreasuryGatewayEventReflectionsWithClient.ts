@@ -1,103 +1,75 @@
 import {
   TREASURY_AGGREGATE_TYPE,
   type TreasuryAggregateType,
-} from "@/domains/treasury/gateway/events/aggregateTypes"
+} from "@/domains/treasury/gateway/events/aggregateTypes";
 
 import {
   TREASURY_EVENT_TYPE,
   type TreasuryEventType,
-} from "@/domains/treasury/gateway/events/eventType"
+} from "@/domains/treasury/gateway/events/eventType";
 
-import type {
-  CommunicationsTransactionClient,
-} from "../shared/databaseTypes"
+import type { CommunicationsTransactionClient } from "../shared/databaseTypes";
 
-const SOURCE_SYSTEM =
-  "TREASURY_GATEWAY" as const
+import {
+  COMMUNICATION_REFLECTION_SOURCE_SYSTEM,
+  COMMUNICATION_REFLECTION_TYPE,
+} from "./reflectionVocabulary";
 
-const REFLECTION_TYPE =
-  "STATE_OBSERVATION" as const
+const TREASURY_AGGREGATE_TYPES = new Set<string>(
+  Object.values(TREASURY_AGGREGATE_TYPE),
+);
 
-const TREASURY_AGGREGATE_TYPES =
-  new Set<string>(
-    Object.values(
-      TREASURY_AGGREGATE_TYPE
-    )
-  )
+const TREASURY_EVENT_TYPES = new Set<string>(
+  Object.values(TREASURY_EVENT_TYPE),
+);
 
-const TREASURY_EVENT_TYPES =
-  new Set<string>(
-    Object.values(
-      TREASURY_EVENT_TYPE
-    )
-  )
+export type TreasuryGatewayReflectionProjectionResult = Readonly<{
+  sourceEventId: string;
 
-export type TreasuryGatewayReflectionProjectionResult =
-  Readonly<{
-    sourceEventId: string
+  aggregateType: TreasuryAggregateType;
 
-    aggregateType:
-      TreasuryAggregateType
+  aggregateId: string;
 
-    aggregateId:
-      string
+  eventType: TreasuryEventType;
 
-    eventType:
-      TreasuryEventType
+  eligibleRoomCount: number;
 
-    eligibleRoomCount:
-      number
+  createdCount: number;
+}>;
 
-    createdCount:
-      number
-  }>
-
-function requireTreasuryAggregateType(
-  value: string
-): TreasuryAggregateType {
-  if (
-    !TREASURY_AGGREGATE_TYPES.has(
-      value
-    )
-  ) {
+function requireTreasuryAggregateType(value: string): TreasuryAggregateType {
+  if (!TREASURY_AGGREGATE_TYPES.has(value)) {
     throw new Error(
-      `COMMUNICATION_TREASURY_REFLECTION_AGGREGATE_TYPE_INVALID:${value}`
-    )
+      `COMMUNICATION_TREASURY_REFLECTION_AGGREGATE_TYPE_INVALID:${value}`,
+    );
   }
 
-  return value as TreasuryAggregateType
+  return value as TreasuryAggregateType;
 }
 
-function requireTreasuryEventType(
-  value: string
-): TreasuryEventType {
-  if (
-    !TREASURY_EVENT_TYPES.has(
-      value
-    )
-  ) {
+function requireTreasuryEventType(value: string): TreasuryEventType {
+  if (!TREASURY_EVENT_TYPES.has(value)) {
     throw new Error(
-      `COMMUNICATION_TREASURY_REFLECTION_EVENT_TYPE_INVALID:${value}`
-    )
+      `COMMUNICATION_TREASURY_REFLECTION_EVENT_TYPE_INVALID:${value}`,
+    );
   }
 
-  return value as TreasuryEventType
+  return value as TreasuryEventType;
 }
 
 export async function projectTreasuryGatewayEventReflectionsWithClient({
   sourceEventId,
   client,
 }: {
-  sourceEventId: string
-  client: CommunicationsTransactionClient
+  sourceEventId: string;
+  client: CommunicationsTransactionClient;
 }): Promise<TreasuryGatewayReflectionProjectionResult> {
-  const normalizedEventId =
-    sourceEventId.trim()
+  const normalizedEventId = sourceEventId.trim();
 
   if (!normalizedEventId) {
     throw new Error(
-      "COMMUNICATION_TREASURY_REFLECTION_SOURCE_EVENT_ID_REQUIRED"
-    )
+      "COMMUNICATION_TREASURY_REFLECTION_SOURCE_EVENT_ID_REQUIRED",
+    );
   }
 
   /*
@@ -106,46 +78,33 @@ export async function projectTreasuryGatewayEventReflectionsWithClient({
    * Communications does not infer the event from aggregate state
    * and does not reconstruct it from a human message.
    */
-  const sourceEvent =
-    await client.treasuryGatewayEvent.findUnique({
-      where: {
-        eventId:
-          normalizedEventId,
-      },
+  const sourceEvent = await client.treasuryGatewayEvent.findUnique({
+    where: {
+      eventId: normalizedEventId,
+    },
 
-      select: {
-        eventId:
-          true,
+    select: {
+      eventId: true,
 
-        aggregateType:
-          true,
+      aggregateType: true,
 
-        aggregateId:
-          true,
+      aggregateId: true,
 
-        eventType:
-          true,
+      eventType: true,
 
-        occurredAt:
-          true,
-      },
-    })
+      occurredAt: true,
+    },
+  });
 
   if (!sourceEvent) {
     throw new Error(
-      `COMMUNICATION_TREASURY_REFLECTION_SOURCE_EVENT_NOT_FOUND:${normalizedEventId}`
-    )
+      `COMMUNICATION_TREASURY_REFLECTION_SOURCE_EVENT_NOT_FOUND:${normalizedEventId}`,
+    );
   }
 
-  const aggregateType =
-    requireTreasuryAggregateType(
-      sourceEvent.aggregateType
-    )
+  const aggregateType = requireTreasuryAggregateType(sourceEvent.aggregateType);
 
-  const eventType =
-    requireTreasuryEventType(
-      sourceEvent.eventType
-    )
+  const eventType = requireTreasuryEventType(sourceEvent.eventType);
 
   /*
    * Scope is granted only by an already-existing
@@ -153,50 +112,38 @@ export async function projectTreasuryGatewayEventReflectionsWithClient({
    *
    * This projector must never create institutional scope.
    */
-  const eligibleLinks =
-    await client.communicationOperationalLink.findMany({
-      where: {
-        targetType:
-          "TREASURY_GATEWAY_AGGREGATE",
+  const eligibleLinks = await client.communicationOperationalLink.findMany({
+    where: {
+      targetType: "TREASURY_GATEWAY_AGGREGATE",
 
-        targetSubtype:
-          aggregateType,
+      targetSubtype: aggregateType,
 
-        targetId:
-          sourceEvent.aggregateId,
-      },
+      targetId: sourceEvent.aggregateId,
+    },
 
-      select: {
-        roomId:
-          true,
-      },
+    select: {
+      roomId: true,
+    },
 
-      orderBy: {
-        linkedAt:
-          "asc",
-      },
-    })
+    orderBy: {
+      linkedAt: "asc",
+    },
+  });
 
-  if (
-    eligibleLinks.length === 0
-  ) {
+  if (eligibleLinks.length === 0) {
     return {
-      sourceEventId:
-        sourceEvent.eventId,
+      sourceEventId: sourceEvent.eventId,
 
       aggregateType,
 
-      aggregateId:
-        sourceEvent.aggregateId,
+      aggregateId: sourceEvent.aggregateId,
 
       eventType,
 
-      eligibleRoomCount:
-        0,
+      eligibleRoomCount: 0,
 
-      createdCount:
-        0,
-    }
+      createdCount: 0,
+    };
   }
 
   /*
@@ -211,68 +158,47 @@ export async function projectTreasuryGatewayEventReflectionsWithClient({
    * skipDuplicates makes retries and concurrent projection
    * safe without mutating an existing reflection.
    */
-  const created =
-    await client.communicationOperationalReflection.createMany({
-      data:
-        eligibleLinks.map(
-          ({ roomId }) => ({
-            operationalRoomId:
-              roomId,
+  const created = await client.communicationOperationalReflection.createMany({
+    data: eligibleLinks.map(({ roomId }) => ({
+      operationalRoomId: roomId,
 
-            sourceSystem:
-              SOURCE_SYSTEM,
+      sourceSystem: COMMUNICATION_REFLECTION_SOURCE_SYSTEM.TREASURY_GATEWAY,
 
-            sourceEventId:
-              sourceEvent.eventId,
+      sourceEventId: sourceEvent.eventId,
 
-            sourceAggregateType:
-              aggregateType,
+      sourceAggregateType: aggregateType,
 
-            sourceAggregateId:
-              sourceEvent.aggregateId,
+      sourceAggregateId: sourceEvent.aggregateId,
 
-            sourceEventType:
-              eventType,
+      sourceEventType: eventType,
 
-            sourceOccurredAt:
-              sourceEvent.occurredAt,
+      sourceOccurredAt: sourceEvent.occurredAt,
 
-            targetType:
-              "TREASURY_GATEWAY_AGGREGATE",
+      targetType: "TREASURY_GATEWAY_AGGREGATE",
 
-            targetSubtype:
-              aggregateType,
+      targetSubtype: aggregateType,
 
-            targetId:
-              sourceEvent.aggregateId,
+      targetId: sourceEvent.aggregateId,
 
-            reflectionType:
-              REFLECTION_TYPE,
+      reflectionType: COMMUNICATION_REFLECTION_TYPE.STATE_OBSERVATION,
 
-            reflectionCode:
-              eventType,
-          })
-        ),
+      reflectionCode: eventType,
+    })),
 
-      skipDuplicates:
-        true,
-    })
+    skipDuplicates: true,
+  });
 
   return {
-    sourceEventId:
-      sourceEvent.eventId,
+    sourceEventId: sourceEvent.eventId,
 
     aggregateType,
 
-    aggregateId:
-      sourceEvent.aggregateId,
+    aggregateId: sourceEvent.aggregateId,
 
     eventType,
 
-    eligibleRoomCount:
-      eligibleLinks.length,
+    eligibleRoomCount: eligibleLinks.length,
 
-    createdCount:
-      created.count,
-  }
+    createdCount: created.count,
+  };
 }
