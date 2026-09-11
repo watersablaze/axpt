@@ -18,6 +18,8 @@ export async function reconcileInternalWalletExecutionDurably(params: {
 
   initiatedEventId: TreasuryEventId;
 
+  allocationConsumedEventId: TreasuryEventId;
+
   confirmedEventId: TreasuryEventId;
 
   context: TreasuryCommandContext;

@@ -3,15 +3,11 @@ import { randomUUID } from "node:crypto";
 
 import { PrismaClient, type TransactionClient } from "@prisma/client";
 
-import { createTreasuryExecution } from "../../src/domains/treasury/gateway/executions/createTreasuryExecution";
-
-import { persistNewTreasuryExecutionWithClient } from "../../src/domains/treasury/gateway/executions/persistence/persistNewTreasuryExecutionWithClient";
-
-import { beginTreasuryExecutionValidationDurablyWithClient } from "../../src/domains/treasury/gateway/executions/application/beginTreasuryExecutionValidationDurablyWithClient";
-
-import { markTreasuryExecutionReadyForAuthorizationDurablyWithClient } from "../../src/domains/treasury/gateway/executions/application/markTreasuryExecutionReadyForAuthorizationDurablyWithClient";
-
-import { authorizeTreasuryExecutionDurablyWithClient } from "../../src/domains/treasury/gateway/executions/application/authorizeTreasuryExecutionDurablyWithClient";
+import {
+  cleanupGovernedTreasuryExecutionFixture,
+  type GovernedTreasuryExecutionFixtureIdentity,
+} from "./support/cleanupGovernedTreasuryExecutionFixture";
+import { establishGovernedAuthorizedTreasuryExecutionFixture } from "./support/establishGovernedAuthorizedTreasuryExecutionFixture";
 
 import { dispatchAuthorizedInternalWalletExecutionDurablyWithClient } from "../../src/domains/treasury/gateway/executions/application/dispatchAuthorizedInternalWalletExecutionDurablyWithClient";
 
@@ -131,142 +127,22 @@ async function createFixture(prefix: string): Promise<Fixture> {
   };
 }
 
-async function createAuthorizedExecution(fixture: Fixture): Promise<void> {
+async function createAuthorizedExecution(
+  fixture: Fixture,
+): Promise<GovernedTreasuryExecutionFixtureIdentity> {
   const { fixtureId, executionId, settlementEndpointId } = fixture;
 
-  const correlationId = `correlation-${fixtureId}`;
-
-  const createdAt = new Date();
-
-  const createContext = {
-    commandId: `command-create-${fixtureId}`,
-
-    actorId: `actor-create-${fixtureId}`,
-
-    correlationId,
-
-    requestedAt: createdAt,
-
-    idempotencyKey: `create-${fixtureId}`,
-  };
-
-  const created = createTreasuryExecution({
-    executionId,
-
-    reference: `SMOKE-${fixtureId}`,
-
-    command: {
-      context: createContext,
-
-      payload: {
-        programId: `program-${fixtureId}`,
-
-        allocationId: `allocation-${fixtureId}`,
-
-        kind: "BENEFICIARY_DISTRIBUTION",
-
-        beneficiaryProfileId: `beneficiary-${fixtureId}`,
-
-        settlementEndpointId,
-
-        amount: {
-          amount: "25.50",
-
-          currency: "USD",
-        },
-
-        purpose: "Dispatch ownership reconciliation smoke test",
-      },
-    },
-  });
-
-  await prisma.$transaction(async (tx: TransactionClient) => {
-    await persistNewTreasuryExecutionWithClient({
-      result: created,
-
-      eventId: `event-created-${fixtureId}`,
-
-      context: createContext,
-
+  return prisma.$transaction(async (tx: TransactionClient) =>
+    establishGovernedAuthorizedTreasuryExecutionFixture({
+      fixtureId,
+      executionId,
+      settlementEndpointId,
+      amount: "25.50",
+      currency: "USD",
+      purpose: "Dispatch ownership reconciliation smoke test",
       client: tx,
-    });
-
-    await beginTreasuryExecutionValidationDurablyWithClient({
-      command: {
-        context: {
-          commandId: `command-validation-${fixtureId}`,
-
-          actorId: `actor-validation-${fixtureId}`,
-
-          correlationId,
-
-          requestedAt: new Date(createdAt.getTime() + 60_000),
-
-          idempotencyKey: `validation-${fixtureId}`,
-        },
-
-        payload: {
-          executionId,
-        },
-      },
-
-      eventId: `event-validation-${fixtureId}`,
-
-      client: tx,
-    });
-
-    await markTreasuryExecutionReadyForAuthorizationDurablyWithClient({
-      command: {
-        context: {
-          commandId: `command-ready-${fixtureId}`,
-
-          actorId: `actor-ready-${fixtureId}`,
-
-          correlationId,
-
-          requestedAt: new Date(createdAt.getTime() + 120_000),
-
-          idempotencyKey: `ready-${fixtureId}`,
-        },
-
-        payload: {
-          executionId,
-        },
-      },
-
-      eventId: `event-ready-${fixtureId}`,
-
-      client: tx,
-    });
-
-    await authorizeTreasuryExecutionDurablyWithClient({
-      command: {
-        context: {
-          commandId: `command-authorized-${fixtureId}`,
-
-          actorId: `actor-authorized-${fixtureId}`,
-
-          authorityGrantId: `authority-grant-${fixtureId}`,
-
-          correlationId,
-
-          requestedAt: new Date(createdAt.getTime() + 180_000),
-
-          idempotencyKey: `authorized-${fixtureId}`,
-        },
-
-        payload: {
-          executionId,
-
-          approvalIds: [`approval-${fixtureId}`],
-        },
-      },
-
-      eventId: `event-authorized-${fixtureId}`,
-
-      client: tx,
-    });
-  });
+    }),
+  );
 }
 
 async function dispatchInternalWallet(fixture: Fixture) {
@@ -465,6 +341,8 @@ async function reconcile(fixture: Fixture) {
 
       initiatedEventId: `event-initiated-${fixture.fixtureId}`,
 
+      allocationConsumedEventId: `event-allocation-consumed-${fixture.fixtureId}`,
+
       confirmedEventId: `event-confirmed-${fixture.fixtureId}`,
 
       context: createReconciliationContext(fixture.fixtureId),
@@ -474,7 +352,10 @@ async function reconcile(fixture: Fixture) {
   );
 }
 
-async function cleanupFixture(fixture: Fixture): Promise<void> {
+async function cleanupFixture(
+  fixture: Fixture,
+  governedFixture: GovernedTreasuryExecutionFixtureIdentity | undefined,
+): Promise<void> {
   const actions = await prisma.treasuryAction.findMany({
     where: {
       metadata: {
@@ -530,21 +411,14 @@ async function cleanupFixture(fixture: Fixture): Promise<void> {
     });
   }
 
-  await prisma.treasuryGatewayEvent.deleteMany({
-    where: {
-      aggregateType: TREASURY_AGGREGATE_TYPE.TREASURY_EXECUTION,
-
-      aggregateId: fixture.executionId,
-    },
-  });
-
-  await prisma.treasuryGatewayAggregate.deleteMany({
-    where: {
-      aggregateType: TREASURY_AGGREGATE_TYPE.TREASURY_EXECUTION,
-
-      aggregateId: fixture.executionId,
-    },
-  });
+  if (governedFixture) {
+    await prisma.$transaction(async (tx: TransactionClient) => {
+      await cleanupGovernedTreasuryExecutionFixture({
+        fixture: governedFixture,
+        client: tx,
+      });
+    });
+  }
 
   const userIds = [
     fixture.walletFixture.operatorUserId,
@@ -588,9 +462,17 @@ async function main(): Promise<void> {
 
   const fixtures = [noOwnership, unsupported, noChange, catchup] as const;
 
+  const governedFixtures = new Map<
+    string,
+    GovernedTreasuryExecutionFixtureIdentity
+  >();
+
   try {
     for (const fixture of fixtures) {
-      await createAuthorizedExecution(fixture);
+      governedFixtures.set(
+        fixture.executionId,
+        await createAuthorizedExecution(fixture),
+      );
     }
 
     const missingOwnershipResult = await reconcile(noOwnership);
@@ -765,7 +647,7 @@ async function main(): Promise<void> {
     });
   } finally {
     for (const fixture of fixtures) {
-      await cleanupFixture(fixture);
+      await cleanupFixture(fixture, governedFixtures.get(fixture.executionId));
     }
   }
 }

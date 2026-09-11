@@ -3,15 +3,15 @@ import { randomUUID } from "node:crypto";
 
 import { PrismaClient, type TransactionClient } from "@prisma/client";
 
-import { createTreasuryExecution } from "../../src/domains/treasury/gateway/executions/createTreasuryExecution";
+import {
+  cleanupGovernedTreasuryExecutionFixture,
+  type GovernedTreasuryExecutionFixtureIdentity,
+} from "./support/cleanupGovernedTreasuryExecutionFixture";
+import { establishGovernedAuthorizedTreasuryExecutionFixture } from "./support/establishGovernedAuthorizedTreasuryExecutionFixture";
 
-import { persistNewTreasuryExecutionWithClient } from "../../src/domains/treasury/gateway/executions/persistence/persistNewTreasuryExecutionWithClient";
+import { loadTreasuryAllocationWithClient } from "../../src/domains/treasury/gateway/allocations/persistence/loadTreasuryAllocationWithClient";
 
-import { beginTreasuryExecutionValidationDurablyWithClient } from "../../src/domains/treasury/gateway/executions/application/beginTreasuryExecutionValidationDurablyWithClient";
-
-import { markTreasuryExecutionReadyForAuthorizationDurablyWithClient } from "../../src/domains/treasury/gateway/executions/application/markTreasuryExecutionReadyForAuthorizationDurablyWithClient";
-
-import { authorizeTreasuryExecutionDurablyWithClient } from "../../src/domains/treasury/gateway/executions/application/authorizeTreasuryExecutionDurablyWithClient";
+import { TREASURY_ALLOCATION_STATUS } from "../../src/domains/treasury/gateway/allocations/status";
 
 import { dispatchAuthorizedInternalWalletExecutionDurablyWithClient } from "../../src/domains/treasury/gateway/executions/application/dispatchAuthorizedInternalWalletExecutionDurablyWithClient";
 
@@ -115,142 +115,20 @@ async function createAuthorizedExecution(params: {
   executionId: string;
 
   settlementEndpointId: string;
-}): Promise<void> {
+}) {
   const { fixtureId, executionId, settlementEndpointId } = params;
 
-  const correlationId = `correlation-${fixtureId}`;
-
-  const createdAt = new Date();
-
-  const createContext = {
-    commandId: `command-create-${fixtureId}`,
-
-    actorId: `actor-create-${fixtureId}`,
-
-    correlationId,
-
-    requestedAt: createdAt,
-
-    idempotencyKey: `create-${fixtureId}`,
-  };
-
-  const created = createTreasuryExecution({
-    executionId,
-
-    reference: `SMOKE-${fixtureId}`,
-
-    command: {
-      context: createContext,
-
-      payload: {
-        programId: `program-${fixtureId}`,
-
-        allocationId: `allocation-${fixtureId}`,
-
-        kind: "BENEFICIARY_DISTRIBUTION",
-
-        beneficiaryProfileId: `beneficiary-${fixtureId}`,
-
-        settlementEndpointId,
-
-        amount: {
-          amount: "25.50",
-
-          currency: "USD",
-        },
-
-        purpose: "Internal-wallet lifecycle reconciliation smoke test",
-      },
-    },
-  });
-
-  await prisma.$transaction(async (tx: TransactionClient) => {
-    await persistNewTreasuryExecutionWithClient({
-      result: created,
-
-      eventId: `event-created-${fixtureId}`,
-
-      context: createContext,
-
+  return prisma.$transaction(async (tx: TransactionClient) =>
+    establishGovernedAuthorizedTreasuryExecutionFixture({
+      fixtureId,
+      executionId,
+      settlementEndpointId,
+      amount: "25.50",
+      currency: "USD",
+      purpose: "Internal-wallet lifecycle reconciliation smoke test",
       client: tx,
-    });
-
-    await beginTreasuryExecutionValidationDurablyWithClient({
-      command: {
-        context: {
-          commandId: `command-validation-${fixtureId}`,
-
-          actorId: `actor-validation-${fixtureId}`,
-
-          correlationId,
-
-          requestedAt: new Date(createdAt.getTime() + 60_000),
-
-          idempotencyKey: `validation-${fixtureId}`,
-        },
-
-        payload: {
-          executionId,
-        },
-      },
-
-      eventId: `event-validation-${fixtureId}`,
-
-      client: tx,
-    });
-
-    await markTreasuryExecutionReadyForAuthorizationDurablyWithClient({
-      command: {
-        context: {
-          commandId: `command-ready-${fixtureId}`,
-
-          actorId: `actor-ready-${fixtureId}`,
-
-          correlationId,
-
-          requestedAt: new Date(createdAt.getTime() + 120_000),
-
-          idempotencyKey: `ready-${fixtureId}`,
-        },
-
-        payload: {
-          executionId,
-        },
-      },
-
-      eventId: `event-ready-${fixtureId}`,
-
-      client: tx,
-    });
-
-    await authorizeTreasuryExecutionDurablyWithClient({
-      command: {
-        context: {
-          commandId: `command-authorized-${fixtureId}`,
-
-          actorId: `actor-authorized-${fixtureId}`,
-
-          authorityGrantId: `authority-grant-${fixtureId}`,
-
-          correlationId,
-
-          requestedAt: new Date(createdAt.getTime() + 180_000),
-
-          idempotencyKey: `authorized-${fixtureId}`,
-        },
-
-        payload: {
-          executionId,
-
-          approvalIds: [`approval-${fixtureId}`],
-        },
-      },
-
-      eventId: `event-authorized-${fixtureId}`,
-
-      client: tx,
-    });
-  });
+    }),
+  );
 }
 
 async function dispatchExecution(params: {
@@ -419,6 +297,8 @@ async function reconcile(params: {
 
       initiatedEventId: `event-initiated-${suffix}-${fixtureId}`,
 
+      allocationConsumedEventId: `event-allocation-consumed-${suffix}-${fixtureId}`,
+
       confirmedEventId: `event-confirmed-${suffix}-${fixtureId}`,
 
       context: createReconciliationContext(fixtureId, suffix),
@@ -448,12 +328,41 @@ async function loadEvents(executionId: string) {
   });
 }
 
+async function loadAllocation(allocationId: string) {
+  return prisma.$transaction(async (tx: TransactionClient) =>
+    loadTreasuryAllocationWithClient({
+      allocationId,
+      client: tx,
+    }),
+  );
+}
+
+async function loadAllocationConsumptionEvents(allocationId: string) {
+  return prisma.treasuryGatewayEvent.findMany({
+    where: {
+      aggregateType: TREASURY_AGGREGATE_TYPE.TREASURY_ALLOCATION,
+      aggregateId: allocationId,
+      eventType: TREASURY_EVENT_TYPE.TREASURY_ALLOCATION_CONSUMED,
+    },
+    orderBy: {
+      aggregateVersion: "asc",
+    },
+    select: {
+      aggregateVersion: true,
+      eventType: true,
+      payload: true,
+    },
+  });
+}
+
 async function cleanupFixture(params: {
   executionId: string;
 
   walletFixture: WalletFixture;
+
+  governedFixture: GovernedTreasuryExecutionFixtureIdentity | undefined;
 }): Promise<void> {
-  const { executionId, walletFixture } = params;
+  const { executionId, walletFixture, governedFixture } = params;
 
   const actions = await prisma.treasuryAction.findMany({
     where: {
@@ -509,21 +418,14 @@ async function cleanupFixture(params: {
     });
   }
 
-  await prisma.treasuryGatewayEvent.deleteMany({
-    where: {
-      aggregateType: TREASURY_AGGREGATE_TYPE.TREASURY_EXECUTION,
-
-      aggregateId: executionId,
-    },
-  });
-
-  await prisma.treasuryGatewayAggregate.deleteMany({
-    where: {
-      aggregateType: TREASURY_AGGREGATE_TYPE.TREASURY_EXECUTION,
-
-      aggregateId: executionId,
-    },
-  });
+  if (governedFixture) {
+    await prisma.$transaction(async (tx: TransactionClient) => {
+      await cleanupGovernedTreasuryExecutionFixture({
+        fixture: governedFixture,
+        client: tx,
+      });
+    });
+  }
 
   const userIds = [
     walletFixture.operatorUserId,
@@ -573,14 +475,36 @@ async function main(): Promise<void> {
 
   const catchupWalletFixture = await createWalletFixture(catchupFixtureId);
 
+  let stagedGoverned: GovernedTreasuryExecutionFixtureIdentity | undefined;
+
+  let catchupGoverned: GovernedTreasuryExecutionFixtureIdentity | undefined;
+
   try {
-    await createAuthorizedExecution({
+    const establishedStagedGoverned = await createAuthorizedExecution({
       fixtureId: stagedFixtureId,
 
       executionId: stagedExecutionId,
 
       settlementEndpointId: stagedEndpointId,
     });
+
+    stagedGoverned = establishedStagedGoverned;
+
+    const stagedAllocationBeforeSettlement = await loadAllocation(
+      establishedStagedGoverned.allocationId,
+    );
+
+    assert(stagedAllocationBeforeSettlement);
+
+    assert.equal(
+      stagedAllocationBeforeSettlement.aggregate.status,
+      TREASURY_ALLOCATION_STATUS.ACTIVE,
+    );
+
+    assert.equal(
+      stagedAllocationBeforeSettlement.aggregate.consumedAmount.amount,
+      "0",
+    );
 
     const stagedDispatch = await dispatchExecution({
       fixtureId: stagedFixtureId,
@@ -669,6 +593,46 @@ async function main(): Promise<void> {
 
     assert(confirmed.confirmed);
 
+    const stagedAllocationAfterSettlement = await loadAllocation(
+      establishedStagedGoverned.allocationId,
+    );
+
+    assert(stagedAllocationAfterSettlement);
+
+    assert.equal(
+      stagedAllocationAfterSettlement.aggregate.status,
+      TREASURY_ALLOCATION_STATUS.CONSUMED,
+    );
+
+    assert.equal(
+      stagedAllocationAfterSettlement.aggregate.consumedAmount.amount,
+      "25.5",
+    );
+
+    const consumptionEventsAfterSettlement =
+      await loadAllocationConsumptionEvents(
+        establishedStagedGoverned.allocationId,
+      );
+
+    assert.equal(consumptionEventsAfterSettlement.length, 1);
+
+    const consumptionPayload = consumptionEventsAfterSettlement[0]?.payload;
+
+    assert(
+      consumptionPayload &&
+        typeof consumptionPayload === "object" &&
+        !Array.isArray(consumptionPayload),
+    );
+
+    assert.equal(consumptionPayload.consumingSubjectType, "TREASURY_EXECUTION");
+
+    assert.equal(consumptionPayload.consumingSubjectId, stagedExecutionId);
+
+    assert.deepEqual(consumptionPayload.consumedAmount, {
+      amount: "25.50",
+      currency: "USD",
+    });
+
     const repeat = await reconcile({
       fixtureId: stagedFixtureId,
 
@@ -684,6 +648,28 @@ async function main(): Promise<void> {
     assert.equal(repeat.initiated, null);
 
     assert.equal(repeat.confirmed, null);
+
+    const stagedAllocationAfterRetry = await loadAllocation(
+      establishedStagedGoverned.allocationId,
+    );
+
+    assert(stagedAllocationAfterRetry);
+
+    assert.equal(
+      stagedAllocationAfterRetry.aggregate.status,
+      TREASURY_ALLOCATION_STATUS.CONSUMED,
+    );
+
+    assert.equal(
+      stagedAllocationAfterRetry.aggregate.consumedAmount.amount,
+      "25.5",
+    );
+
+    const consumptionEventsAfterRetry = await loadAllocationConsumptionEvents(
+      establishedStagedGoverned.allocationId,
+    );
+
+    assert.equal(consumptionEventsAfterRetry.length, 1);
 
     const stagedEvents = await loadEvents(stagedExecutionId);
 
@@ -711,7 +697,7 @@ async function main(): Promise<void> {
       1,
     );
 
-    await createAuthorizedExecution({
+    catchupGoverned = await createAuthorizedExecution({
       fixtureId: catchupFixtureId,
 
       executionId: catchupExecutionId,
@@ -813,6 +799,17 @@ async function main(): Promise<void> {
 
         finalVersion: stagedLoaded.aggregate.metadata.version,
 
+        allocationStatus: stagedAllocationAfterRetry.aggregate.status,
+
+        allocationConsumedAmount:
+          stagedAllocationAfterRetry.aggregate.consumedAmount.amount,
+
+        allocationConsumptionEventCount: consumptionEventsAfterRetry.length,
+
+        allocationConsumptionAttributedToExecution:
+          consumptionPayload.consumingSubjectType === "TREASURY_EXECUTION" &&
+          consumptionPayload.consumingSubjectId === stagedExecutionId,
+
         eventVersions: stagedEvents.map(
           (event: GatewayEventFixtureRow) => event.aggregateVersion,
         ),
@@ -847,12 +844,16 @@ async function main(): Promise<void> {
       executionId: stagedExecutionId,
 
       walletFixture: stagedWalletFixture,
+
+      governedFixture: stagedGoverned,
     });
 
     await cleanupFixture({
       executionId: catchupExecutionId,
 
       walletFixture: catchupWalletFixture,
+
+      governedFixture: catchupGoverned,
     });
   }
 }

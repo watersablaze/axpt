@@ -25,14 +25,22 @@ export async function reconcileTreasuryExecutionByDispatchOwnershipDurablyWithCl
 
   initiatedEventId: TreasuryEventId;
 
+  allocationConsumedEventId: TreasuryEventId;
+
   confirmedEventId: TreasuryEventId;
 
   context: TreasuryCommandContext;
 
   client: TransactionClient;
 }): Promise<ReconcileTreasuryExecutionByDispatchOwnershipResult> {
-  const { executionId, initiatedEventId, confirmedEventId, context, client } =
-    params;
+  const {
+    executionId,
+    initiatedEventId,
+    allocationConsumedEventId,
+    confirmedEventId,
+    context,
+    client,
+  } = params;
 
   const loaded = await loadTreasuryExecutionWithClient({
     executionId,
@@ -107,6 +115,8 @@ export async function reconcileTreasuryExecutionByDispatchOwnershipDurablyWithCl
       executionId,
 
       initiatedEventId,
+
+      allocationConsumedEventId,
 
       confirmedEventId,
 

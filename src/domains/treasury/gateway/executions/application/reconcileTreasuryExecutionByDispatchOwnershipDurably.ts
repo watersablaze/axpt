@@ -18,6 +18,8 @@ export async function reconcileTreasuryExecutionByDispatchOwnershipDurably(param
 
   initiatedEventId: TreasuryEventId;
 
+  allocationConsumedEventId: TreasuryEventId;
+
   confirmedEventId: TreasuryEventId;
 
   context: TreasuryCommandContext;

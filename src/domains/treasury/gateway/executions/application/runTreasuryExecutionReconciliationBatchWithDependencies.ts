@@ -32,6 +32,8 @@ type ReconcileExecution = (params: {
 
   initiatedEventId: TreasuryEventId;
 
+  allocationConsumedEventId: TreasuryEventId;
+
   confirmedEventId: TreasuryEventId;
 
   context: TreasuryCommandContext;
@@ -97,6 +99,8 @@ export async function runTreasuryExecutionReconciliationBatchWithDependencies(pa
         executionId: candidate.aggregate.id,
 
         initiatedEventId: `event-reconcile-initiated-${reconciliationId}`,
+
+        allocationConsumedEventId: `event-reconcile-allocation-consumed-${reconciliationId}`,
 
         confirmedEventId: `event-reconcile-confirmed-${reconciliationId}`,
 

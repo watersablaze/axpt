@@ -8,7 +8,7 @@ import { loadTreasuryExecutionWithClient } from "../persistence/loadTreasuryExec
 
 import { TREASURY_EXECUTION_STATUS } from "../status";
 
-import { confirmTreasuryExecutionDurablyWithClient } from "./confirmTreasuryExecutionDurablyWithClient";
+import { confirmTreasuryExecutionWithAllocationSettlementDurablyWithClient } from "./confirmTreasuryExecutionWithAllocationSettlementDurablyWithClient";
 
 import { markTreasuryExecutionInitiatedDurablyWithClient } from "./markTreasuryExecutionInitiatedDurablyWithClient";
 
@@ -26,14 +26,22 @@ export async function reconcileInternalWalletExecutionDurablyWithClient(params: 
 
   initiatedEventId: TreasuryEventId;
 
+  allocationConsumedEventId: TreasuryEventId;
+
   confirmedEventId: TreasuryEventId;
 
   context: TreasuryCommandContext;
 
   client: TransactionClient;
 }): Promise<ReconciledInternalWalletExecution> {
-  const { executionId, initiatedEventId, confirmedEventId, context, client } =
-    params;
+  const {
+    executionId,
+    initiatedEventId,
+    allocationConsumedEventId,
+    confirmedEventId,
+    context,
+    client,
+  } = params;
 
   const loaded = await loadTreasuryExecutionWithClient({
     executionId,
@@ -126,15 +134,20 @@ export async function reconcileInternalWalletExecutionDurablyWithClient(params: 
       };
     }
 
-    confirmed = await confirmTreasuryExecutionDurablyWithClient({
-      evidence: confirmedEvidence,
+    const settlement =
+      await confirmTreasuryExecutionWithAllocationSettlementDurablyWithClient({
+        evidence: confirmedEvidence,
 
-      eventId: confirmedEventId,
+        allocationConsumedEventId,
 
-      context,
+        confirmedEventId,
 
-      client,
-    });
+        context,
+
+        client,
+      });
+
+    confirmed = settlement.confirmed;
 
     aggregate = confirmed.aggregate;
   }
