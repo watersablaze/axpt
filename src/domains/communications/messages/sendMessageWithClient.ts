@@ -12,6 +12,16 @@ import {
 } from "./messageVocabulary"
 
 import {
+  communicationMessageMatchesWorkflowReference,
+  normalizeCommunicationMessageWorkflowReference,
+  type CommunicationMessageWorkflowReferenceInput,
+} from "./messageWorkflowReference"
+
+import {
+  requireCommunicationOperationalTargetExists,
+} from "../operational/operationalTargetPointer"
+
+import {
   requireConversationMember,
   type CommunicationMemberClient,
 } from "../membership/requireConversationMember"
@@ -42,6 +52,7 @@ export async function sendMessageWithClient({
   clientMessageId,
   kind = "TEXT",
   body,
+  workflowReference,
 }: {
   client: CommunicationsDatabaseClient
   principal: Principal
@@ -49,6 +60,9 @@ export async function sendMessageWithClient({
   clientMessageId: string
   kind?: CommunicationSendableMessageKind
   body: string
+  workflowReference?:
+    | CommunicationMessageWorkflowReferenceInput
+    | null
 }) {
   authorityKernel.require(
     principal,
@@ -73,6 +87,11 @@ export async function sendMessageWithClient({
 
   const normalizedClientMessageId =
     clientMessageId.trim()
+
+  const normalizedWorkflowReference =
+    normalizeCommunicationMessageWorkflowReference(
+      workflowReference
+    )
 
   if (!normalizedBody) {
     throw new Error(
@@ -131,7 +150,14 @@ export async function sendMessageWithClient({
         if (existing) {
           if (
             existing.body !== normalizedBody ||
-            existing.kind !== normalizedKind
+            existing.kind !== normalizedKind ||
+            !communicationMessageMatchesWorkflowReference({
+              message:
+                existing,
+
+              workflowReference:
+                normalizedWorkflowReference,
+            })
           ) {
             throw new Error(
               "COMMUNICATION_MESSAGE_IDEMPOTENCY_COLLISION"
@@ -146,6 +172,78 @@ export async function sendMessageWithClient({
           conversationId
         )
 
+        if (
+          normalizedWorkflowReference
+        ) {
+          const operationalRoom =
+            await tx.communicationOperationalRoom.findUnique({
+              where: {
+                conversationId,
+              },
+
+              select: {
+                id:
+                  true,
+              },
+            })
+
+          if (!operationalRoom) {
+            throw new Error(
+              "COMMUNICATION_MESSAGE_WORKFLOW_REFERENCE_NOT_ALLOWED"
+            )
+          }
+
+          const roomLink =
+            await tx.communicationOperationalLink.findUnique({
+              where: {
+                roomId_targetType_targetSubtype_targetId: {
+                  roomId:
+                    operationalRoom.id,
+
+                  targetType:
+                    normalizedWorkflowReference.targetType,
+
+                  targetSubtype:
+                    normalizedWorkflowReference.targetSubtype,
+
+                  targetId:
+                    normalizedWorkflowReference.targetId,
+                },
+              },
+
+              select: {
+                id:
+                  true,
+              },
+            })
+
+          if (!roomLink) {
+            throw new Error(
+              "COMMUNICATION_MESSAGE_WORKFLOW_TARGET_NOT_LINKED"
+            )
+          }
+
+          /*
+           * A room link establishes communication
+           * scope, but the referenced institutional
+           * object must still exist at send time.
+           *
+           * Validation only. No target mutation.
+           */
+          await requireCommunicationOperationalTargetExists({
+            tx,
+
+            targetType:
+              normalizedWorkflowReference.targetType,
+
+            targetSubtype:
+              normalizedWorkflowReference.targetSubtype,
+
+            targetId:
+              normalizedWorkflowReference.targetId,
+          })
+        }
+
         const message =
           await tx.communicationMessage.create({
             data: {
@@ -158,6 +256,18 @@ export async function sendMessageWithClient({
                 normalizedKind,
               body:
                 normalizedBody,
+
+              workflowTargetType:
+                normalizedWorkflowReference?.targetType ??
+                null,
+
+              workflowTargetSubtype:
+                normalizedWorkflowReference?.targetSubtype ??
+                null,
+
+              workflowTargetId:
+                normalizedWorkflowReference?.targetId ??
+                null,
             },
           })
 
@@ -191,6 +301,23 @@ export async function sendMessageWithClient({
                 principal.userId,
               kind:
                 message.kind,
+
+              workflowReference:
+                message.workflowTargetType &&
+                message.workflowTargetSubtype &&
+                message.workflowTargetId
+                  ? {
+                      targetType:
+                        message.workflowTargetType,
+
+                      targetSubtype:
+                        message.workflowTargetSubtype,
+
+                      targetId:
+                        message.workflowTargetId,
+                    }
+                  : null,
+
               createdAt:
                 message.createdAt.toISOString(),
             },
@@ -237,7 +364,14 @@ export async function sendMessageWithClient({
 
     if (
       existing.body !== normalizedBody ||
-      existing.kind !== normalizedKind
+      existing.kind !== normalizedKind ||
+      !communicationMessageMatchesWorkflowReference({
+        message:
+          existing,
+
+        workflowReference:
+          normalizedWorkflowReference,
+      })
     ) {
       throw new Error(
         "COMMUNICATION_MESSAGE_IDEMPOTENCY_COLLISION"

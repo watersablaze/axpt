@@ -2292,6 +2292,10 @@ model CommunicationMessage {
   body            String
   createdAt       DateTime                 @default(now())
 
+  workflowTargetType    CommunicationOperationalTargetType?
+  workflowTargetSubtype String?
+  workflowTargetId      String?
+
   conversation CommunicationConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender       User                      @relation("CommunicationMessageSender", fields: [senderUserId], references: [id])
   readMarkers  CommunicationMember[]     @relation("CommunicationLastReadMessage")
@@ -2299,6 +2303,7 @@ model CommunicationMessage {
   @@unique([conversationId, senderUserId, clientMessageId])
   @@index([conversationId, createdAt])
   @@index([senderUserId, createdAt])
+  @@index([workflowTargetType, workflowTargetSubtype, workflowTargetId])
 }
 
 enum CommunicationOperationalRoomClass {

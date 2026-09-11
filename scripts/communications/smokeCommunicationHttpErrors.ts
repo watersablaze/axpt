@@ -368,6 +368,62 @@ async function main() {
   )
 
   /*
+   * C3.1B workflow-reference HTTP contract.
+   */
+  const workflowValidationErrors = [
+    "COMMUNICATION_MESSAGE_WORKFLOW_REFERENCE_INVALID",
+    "COMMUNICATION_MESSAGE_WORKFLOW_REFERENCE_NOT_ALLOWED",
+    "COMMUNICATION_MESSAGE_WORKFLOW_TARGET_NOT_LINKED",
+  ]
+
+  for (
+    const errorCode of
+    workflowValidationErrors
+  ) {
+    const response =
+      await readError(
+        communicationHttpError(
+          new Error(
+            errorCode
+          )
+        )
+      )
+
+    assert(
+      response.status ===
+        400,
+      `HTTP_WORKFLOW_REFERENCE_STATUS_INVALID:${errorCode}`
+    )
+
+    assert(
+      response.error ===
+        errorCode,
+      `HTTP_WORKFLOW_REFERENCE_BODY_INVALID:${errorCode}`
+    )
+  }
+
+  const messageIdempotencyCollision =
+    await readError(
+      communicationHttpError(
+        new Error(
+          "COMMUNICATION_MESSAGE_IDEMPOTENCY_COLLISION"
+        )
+      )
+    )
+
+  assert(
+    messageIdempotencyCollision.status ===
+      409,
+    "HTTP_MESSAGE_IDEMPOTENCY_COLLISION_STATUS_INVALID"
+  )
+
+  assert(
+    messageIdempotencyCollision.error ===
+      "COMMUNICATION_MESSAGE_IDEMPOTENCY_COLLISION",
+    "HTTP_MESSAGE_IDEMPOTENCY_COLLISION_BODY_INVALID"
+  )
+
+  /*
    * Avoid exercising the unknown/internal-error
    * branches here because those intentionally log
    * through console.error.
@@ -427,6 +483,12 @@ async function main() {
       true,
 
     messageKindInvalid400:
+      true,
+
+    workflowReferenceValidation400:
+      true,
+
+    messageIdempotencyCollision409:
       true,
   })
 }

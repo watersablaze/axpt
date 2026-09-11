@@ -126,6 +126,7 @@ export async function POST(
         body?: unknown
         clientMessageId?: unknown
         kind?: unknown
+        workflowReference?: unknown
       }
 
     if (
@@ -182,6 +183,76 @@ export async function POST(
       )
     }
 
+    let workflowReference:
+      | {
+          targetType: string
+          targetSubtype: string
+          targetId: string
+        }
+      | null =
+        null
+
+    if (
+      requestBody.workflowReference !==
+        undefined &&
+      requestBody.workflowReference !==
+        null
+    ) {
+      if (
+        typeof requestBody.workflowReference !==
+          "object" ||
+        Array.isArray(
+          requestBody.workflowReference
+        )
+      ) {
+        return Response.json(
+          {
+            ok: false,
+            error:
+              "COMMUNICATION_MESSAGE_WORKFLOW_REFERENCE_INVALID",
+          },
+          {
+            status: 400,
+          }
+        )
+      }
+
+      const rawWorkflowReference =
+        requestBody.workflowReference as
+          Record<string, unknown>
+
+      if (
+        typeof rawWorkflowReference.targetType !==
+          "string" ||
+        typeof rawWorkflowReference.targetSubtype !==
+          "string" ||
+        typeof rawWorkflowReference.targetId !==
+          "string"
+      ) {
+        return Response.json(
+          {
+            ok: false,
+            error:
+              "COMMUNICATION_MESSAGE_WORKFLOW_REFERENCE_INVALID",
+          },
+          {
+            status: 400,
+          }
+        )
+      }
+
+      workflowReference = {
+        targetType:
+          rawWorkflowReference.targetType,
+
+        targetSubtype:
+          rawWorkflowReference.targetSubtype,
+
+        targetId:
+          rawWorkflowReference.targetId,
+      }
+    }
+
     const message =
       await sendMessage({
         principal,
@@ -191,6 +262,7 @@ export async function POST(
         kind,
         body:
           requestBody.body,
+        workflowReference,
       })
 
     return Response.json({

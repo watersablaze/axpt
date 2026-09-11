@@ -79,6 +79,8 @@ export function communicationHttpError(
     error.message ===
       "COMMUNICATION_OPERATIONAL_ROOM_IDEMPOTENCY_COLLISION" ||
     error.message ===
+      "COMMUNICATION_MESSAGE_IDEMPOTENCY_COLLISION" ||
+    error.message ===
       "COMMUNICATION_OPERATIONAL_ROOM_TOPOLOGY_INVALID"
   ) {
     return Response.json(
@@ -126,7 +128,13 @@ export function communicationHttpError(
     error.message ===
       "COMMUNICATION_DIRECTORY_PURPOSE_INVALID" ||
     error.message ===
-      "COMMUNICATION_MESSAGE_KIND_INVALID"
+      "COMMUNICATION_MESSAGE_KIND_INVALID" ||
+    error.message ===
+      "COMMUNICATION_MESSAGE_WORKFLOW_REFERENCE_INVALID" ||
+    error.message ===
+      "COMMUNICATION_MESSAGE_WORKFLOW_REFERENCE_NOT_ALLOWED" ||
+    error.message ===
+      "COMMUNICATION_MESSAGE_WORKFLOW_TARGET_NOT_LINKED"
   ) {
     return Response.json(
       {

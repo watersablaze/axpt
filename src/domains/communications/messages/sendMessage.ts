@@ -6,18 +6,26 @@ import type {
   CommunicationSendableMessageKind,
 } from "./messageVocabulary"
 
+import type {
+  CommunicationMessageWorkflowReferenceInput,
+} from "./messageWorkflowReference"
+
 export async function sendMessage({
   principal,
   conversationId,
   clientMessageId,
   kind = "TEXT",
   body,
+  workflowReference,
 }: {
   principal: Principal
   conversationId: string
   clientMessageId: string
   kind?: CommunicationSendableMessageKind
   body: string
+  workflowReference?:
+    | CommunicationMessageWorkflowReferenceInput
+    | null
 }) {
   return sendMessageWithClient({
     client: prisma,
@@ -26,5 +34,6 @@ export async function sendMessage({
     clientMessageId,
     kind,
     body,
+    workflowReference,
   })
 }

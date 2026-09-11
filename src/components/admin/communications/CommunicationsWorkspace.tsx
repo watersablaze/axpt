@@ -46,6 +46,10 @@ type CommunicationMessage = {
   kind: CommunicationMessageKind
   body: string
   createdAt: string
+
+  workflowTargetType: string | null
+  workflowTargetSubtype: string | null
+  workflowTargetId: string | null
 }
 
 type CommunicationOperationalLink = {
@@ -400,6 +404,12 @@ export default function CommunicationsWorkspace({
     >("TEXT")
 
   const [
+    composerWorkflowLinkId,
+    setComposerWorkflowLinkId,
+  ] =
+    useState("")
+
+  const [
     loadingConversations,
     setLoadingConversations,
   ] =
@@ -554,6 +564,10 @@ export default function CommunicationsWorkspace({
       )
 
       setOperationalTargetId(
+        ""
+      )
+
+      setComposerWorkflowLinkId(
         ""
       )
     },
@@ -1414,6 +1428,48 @@ export default function CommunicationsWorkspace({
     const conversationId =
       selectedConversationId
 
+    const workflowLink =
+      composerWorkflowLinkId
+        ? selectedConversation?.operationalRoom?.links.find(
+            (link) =>
+              link.id ===
+              composerWorkflowLinkId
+          ) ?? null
+        : null
+
+    /*
+     * Composer context may only narrow scope
+     * already established by an Operational Room
+     * link. It cannot synthesize a target.
+     */
+    if (
+      composerWorkflowLinkId &&
+      !workflowLink
+    ) {
+      setError(
+        "COMMUNICATION_MESSAGE_WORKFLOW_TARGET_NOT_LINKED"
+      )
+
+      sendingRef.current =
+        false
+
+      return
+    }
+
+    const workflowReference =
+      workflowLink
+        ? {
+            targetType:
+              workflowLink.targetType,
+
+            targetSubtype:
+              workflowLink.targetSubtype,
+
+            targetId:
+              workflowLink.targetId,
+          }
+        : null
+
     setSending(true)
 
     try {
@@ -1437,6 +1493,7 @@ export default function CommunicationsWorkspace({
                 kind,
                 clientMessageId:
                   composerClientMessageId,
+                workflowReference,
               }),
           }
         )
@@ -1464,6 +1521,9 @@ export default function CommunicationsWorkspace({
       setComposerBody("")
       setComposerKind(
         "TEXT"
+      )
+      setComposerWorkflowLinkId(
+        ""
       )
       setComposerClientMessageId(
         crypto.randomUUID()
@@ -2248,6 +2308,21 @@ export default function CommunicationsWorkspace({
                                 </span>
                               ) : null}
 
+                              {message.workflowTargetType &&
+                              message.workflowTargetSubtype &&
+                              message.workflowTargetId ? (
+                                <span
+                                  title={`${message.workflowTargetSubtype} · ${message.workflowTargetId}`}
+                                  className="max-w-[220px] truncate rounded border border-neutral-800 px-1.5 py-0.5 text-[9px] tracking-[0.12em] text-neutral-500"
+                                >
+                                  {operationalTargetTypeLabel(
+                                    message.workflowTargetType
+                                  )}
+                                  {" · "}
+                                  {message.workflowTargetId}
+                                </span>
+                              ) : null}
+
                               <span>
                                 {own
                                   ? "You"
@@ -2321,11 +2396,7 @@ export default function CommunicationsWorkspace({
                         Classification
                       </span>
 
-                      <label>
-                        <span className="sr-only">
-                          Message classification
-                        </span>
-
+                      <label className="min-w-0">
                         <select
                           value={
                             composerKind
@@ -2342,7 +2413,7 @@ export default function CommunicationsWorkspace({
                             sending
                           }
                           aria-label="Message classification"
-                          className="cursor-pointer border-0 bg-transparent py-0.5 text-right text-[9px] uppercase tracking-[0.14em] text-neutral-400 outline-none disabled:cursor-wait disabled:opacity-60"
+                          className="max-w-[260px] cursor-pointer appearance-none border-0 bg-neutral-950 px-2 py-1 text-right text-[9px] uppercase tracking-[0.14em] text-neutral-400 outline-none disabled:cursor-wait disabled:opacity-60"
                         >
                           {COMMUNICATION_SENDABLE_MESSAGE_KINDS.map(
                             (
@@ -2365,6 +2436,61 @@ export default function CommunicationsWorkspace({
                         </select>
                       </label>
                     </div>
+
+                    {selectedConversation?.operationalRoom &&
+                    selectedConversation.operationalRoom.links.length >
+                      0 ? (
+                      <div className="flex items-center justify-between border-b border-neutral-900 px-3 py-2">
+                        <span className="text-[9px] uppercase tracking-[0.16em] text-neutral-600">
+                          Context
+                        </span>
+
+                        <label className="min-w-0">
+                          <select
+                            value={
+                              composerWorkflowLinkId
+                            }
+                            onChange={(
+                              event
+                            ) => {
+                              setComposerWorkflowLinkId(
+                                event.target.value
+                              )
+                            }}
+                            disabled={
+                              sending
+                            }
+                            aria-label="Workflow context"
+                            className="max-w-[340px] cursor-pointer appearance-none border-0 bg-neutral-950 px-2 py-1 text-right text-[9px] uppercase tracking-[0.12em] text-neutral-400 outline-none disabled:cursor-wait disabled:opacity-60"
+                          >
+                            <option value="">
+                              No linked context
+                            </option>
+
+                            {selectedConversation.operationalRoom.links.map(
+                              (
+                                link
+                              ) => (
+                                <option
+                                  key={
+                                    link.id
+                                  }
+                                  value={
+                                    link.id
+                                  }
+                                >
+                                  {operationalTargetTypeLabel(
+                                    link.targetType
+                                  )}
+                                  {" · "}
+                                  {link.targetId}
+                                </option>
+                              )
+                            )}
+                          </select>
+                        </label>
+                      </div>
+                    ) : null}
 
                     <div className="flex items-end gap-3 p-3">
                       <textarea
