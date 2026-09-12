@@ -159,7 +159,8 @@ export async function projectTreasuryGatewayEventReflectionsWithClient({
    * safe without mutating an existing reflection.
    */
   const created = await client.communicationOperationalReflection.createMany({
-    data: eligibleLinks.map(({ roomId }) => ({
+    data: eligibleLinks.map(
+      ({ roomId }: { roomId: string }) => ({
       operationalRoomId: roomId,
 
       sourceSystem: COMMUNICATION_REFLECTION_SOURCE_SYSTEM.TREASURY_GATEWAY,

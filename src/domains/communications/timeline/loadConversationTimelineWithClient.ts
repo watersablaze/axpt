@@ -260,7 +260,9 @@ export async function loadConversationTimelineWithClient({
   ]);
 
   const messageItems: CommunicationTimelineMessageItem[] = messages.map(
-    (message) => ({
+    (
+      message: CommunicationTimelineMessageItem["message"],
+    ) => ({
       itemType: COMMUNICATION_TIMELINE_ITEM_TYPE.MESSAGE,
 
       id: message.id,
@@ -272,15 +274,19 @@ export async function loadConversationTimelineWithClient({
   );
 
   const reflectionItems: CommunicationTimelineReflectionItem[] =
-    reflections.map((reflection) => ({
+    reflections.map(
+      (
+        reflection: CommunicationTimelineReflectionItem["reflection"],
+      ) => ({
       itemType: COMMUNICATION_TIMELINE_ITEM_TYPE.INSTITUTIONAL_REFLECTION,
 
       id: reflection.id,
 
       occurredAt: reflection.sourceOccurredAt,
 
-      reflection,
-    }));
+        reflection,
+      }),
+    );
 
   const items = [...messageItems, ...reflectionItems].sort(
     compareTimelineItems,

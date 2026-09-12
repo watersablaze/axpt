@@ -92,8 +92,10 @@ export async function runTreasuryReflectionIntakeBatchWithDependencies({
 
   for (const event of batch.events) {
     const item = await client.$transaction(
-      async (transaction): Promise<TreasuryReflectionIntakeBatchItem> => {
-        const tx = transaction as CommunicationsTransactionClient;
+      async (
+        transaction: CommunicationsTransactionClient,
+      ): Promise<TreasuryReflectionIntakeBatchItem> => {
+        const tx = transaction;
 
         const currentCursor =
           await tx.communicationReflectionIntakeCursor.findUnique({

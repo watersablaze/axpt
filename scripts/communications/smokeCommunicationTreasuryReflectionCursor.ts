@@ -291,7 +291,10 @@ async function main() {
     });
 
     const discoveredFutureEvent = discoverable.find(
-      (event) => event.eventId === futureEventId,
+      (event: {
+        sequence: bigint;
+        eventId: string;
+      }) => event.eventId === futureEventId,
     );
 
     assert(
