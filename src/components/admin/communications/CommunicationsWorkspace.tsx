@@ -260,22 +260,6 @@ function operationalTargetLabel(
   )
 }
 
-function compactOperationalTargetId(
-  targetId: string
-) {
-  if (
-    targetId.length <=
-    18
-  ) {
-    return targetId
-  }
-
-  return `${targetId.slice(
-    0,
-    10
-  )}…${targetId.slice(-6)}`
-}
-
 function conversationLabel(
   conversation: CommunicationConversation,
   currentUserId: string
@@ -560,6 +544,12 @@ export default function CommunicationsWorkspace({
     useState(false)
 
   const [
+    responsiveContextOpen,
+    setResponsiveContextOpen,
+  ] =
+    useState(false)
+
+  const [
     operationalTargetType,
     setOperationalTargetType,
   ] =
@@ -607,6 +597,10 @@ export default function CommunicationsWorkspace({
   useEffect(
     () => {
       setLinkContextOpen(
+        false
+      )
+
+      setResponsiveContextOpen(
         false
       )
 
@@ -1436,6 +1430,15 @@ export default function CommunicationsWorkspace({
        */
       await loadConversations()
 
+      /*
+       * Lifecycle settlement collapses transient
+       * governance editing state without disorienting
+       * the operator by closing Room Context itself.
+       */
+      setLinkContextOpen(
+        false
+      )
+
       setError(null)
     } catch (cause) {
       const message =
@@ -1741,8 +1744,192 @@ export default function CommunicationsWorkspace({
     )
   }
 
+  function renderRoomGovernance() {
+    if (
+      !selectedConversation ||
+      !canManageConversations
+    ) {
+      return null
+    }
+
+    return (
+      <div className="mt-5 border-t border-neutral-800 pt-4">
+        <div className="text-[9px] uppercase tracking-[0.18em] text-neutral-600">
+          Room Governance
+        </div>
+
+{selectedConversation.operationalRoom ? (
+                    <div className="mt-3">
+                      {canManageConversations &&
+                      !conversationArchived ? (
+                        <div className="mt-3">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setLinkContextOpen(
+                                current =>
+                                  !current
+                              )
+                            }}
+                            className="rounded-md border border-neutral-800 bg-neutral-950 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-neutral-500 transition hover:border-neutral-600 hover:text-neutral-300"
+                          >
+                            {linkContextOpen
+                              ? "Close Link Context"
+                              : "Link Institutional Context"}
+                          </button>
+
+                          {linkContextOpen ? (
+                            <div className="mt-3 grid max-w-xl grid-cols-1 gap-2 rounded-lg border border-neutral-800 bg-black/60 p-3 sm:grid-cols-2">
+                              <label className="block">
+                                <span className="mb-1 block text-[8px] uppercase tracking-[0.14em] text-neutral-600">
+                                  Target
+                                </span>
+
+                                <select
+                                  value={
+                                    operationalTargetType
+                                  }
+                                  onChange={event => {
+                                    setOperationalTargetType(
+                                      event.target.value
+                                    )
+                                  }}
+                                  className="w-full rounded-md border border-neutral-800 bg-black px-2.5 py-2 text-[10px] text-neutral-300 outline-none focus:border-neutral-600"
+                                >
+                                  {COMMUNICATION_OPERATIONAL_TARGET_TYPES.map(
+                                    targetType => (
+                                      <option
+                                        key={
+                                          targetType
+                                        }
+                                        value={
+                                          targetType
+                                        }
+                                      >
+                                        {operationalTargetTypeLabel(
+                                          targetType
+                                        )}
+                                      </option>
+                                    )
+                                  )}
+                                </select>
+                              </label>
+
+                              {operationalTargetType ===
+                              "TREASURY_GATEWAY_AGGREGATE" ? (
+                                <label className="block">
+                                  <span className="mb-1 block text-[8px] uppercase tracking-[0.14em] text-neutral-600">
+                                    Treasury Object
+                                  </span>
+
+                                  <select
+                                    value={
+                                      operationalTreasurySubtype
+                                    }
+                                    onChange={event => {
+                                      setOperationalTreasurySubtype(
+                                        event.target.value
+                                      )
+                                    }}
+                                    className="w-full rounded-md border border-neutral-800 bg-black px-2.5 py-2 text-[10px] text-neutral-300 outline-none focus:border-neutral-600"
+                                  >
+                                    {COMMUNICATION_OPERATIONAL_TREASURY_SUBTYPES.map(
+                                      targetSubtype => (
+                                        <option
+                                          key={
+                                            targetSubtype
+                                          }
+                                          value={
+                                            targetSubtype
+                                          }
+                                        >
+                                          {operationalTreasurySubtypeLabel(
+                                            targetSubtype
+                                          )}
+                                        </option>
+                                      )
+                                    )}
+                                  </select>
+                                </label>
+                              ) : null}
+
+                              <label
+                                className={
+                                  operationalTargetType ===
+                                  "TREASURY_GATEWAY_AGGREGATE"
+                                    ? "block sm:col-span-2"
+                                    : "block"
+                                }
+                              >
+                                <span className="mb-1 block text-[8px] uppercase tracking-[0.14em] text-neutral-600">
+                                  Target ID
+                                </span>
+
+                                <input
+                                  value={
+                                    operationalTargetId
+                                  }
+                                  onChange={event => {
+                                    setOperationalTargetId(
+                                      event.target.value
+                                    )
+                                  }}
+                                  placeholder="Institutional object ID"
+                                  className="w-full rounded-md border border-neutral-800 bg-black px-2.5 py-2 font-mono text-[10px] text-neutral-300 outline-none placeholder:text-neutral-700 focus:border-neutral-600"
+                                />
+                              </label>
+
+                              <div className="flex items-end justify-end">
+                                <button
+                                  type="button"
+                                  disabled={
+                                    linkingOperationalTarget ||
+                                    !operationalTargetId.trim()
+                                  }
+                                  onClick={() => {
+                                    void linkOperationalContext()
+                                  }}
+                                  className="rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-[9px] uppercase tracking-[0.14em] text-neutral-300 transition hover:bg-neutral-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                                >
+                                  {linkingOperationalTarget
+                                    ? "Attaching"
+                                    : "Attach Context"}
+                                </button>
+                              </div>
+                            </div>
+                          ) : null}
+                        </div>
+                      ) : null}
+                    </div>
+                  ) : null}
+
+
+        <button
+          type="button"
+          disabled={
+            changingConversationStatus
+          }
+          onClick={() => {
+            void changeConversationStatus(
+              conversationArchived
+                ? "reactivate"
+                : "archive"
+            )
+          }}
+          className="mt-3 w-full rounded-md border border-neutral-800 bg-black/25 px-3 py-2 text-left text-[9px] uppercase tracking-[0.14em] text-neutral-500 transition hover:border-neutral-600 hover:text-neutral-300 disabled:cursor-wait disabled:opacity-50"
+        >
+          {changingConversationStatus
+            ? "Updating"
+            : conversationArchived
+              ? "Reactivate Conversation"
+              : "Archive Conversation"}
+        </button>
+      </div>
+    )
+  }
+
   return (
-    <div className="flex h-[calc(100vh-9.5rem)] min-h-[560px] overflow-hidden rounded-xl border border-neutral-800 bg-black/40">
+    <div className="relative flex h-full min-h-0 overflow-hidden rounded-xl border border-neutral-800 bg-black/40">
       <aside className="flex w-[320px] shrink-0 flex-col border-r border-neutral-800">
         <div className="border-b border-neutral-800 px-4 py-4">
           <div className="flex items-center justify-between gap-3">
@@ -2099,216 +2286,26 @@ export default function CommunicationsWorkspace({
                     )}
                   </div>
 
-                  {selectedConversation.operationalRoom ? (
-                    <div className="mt-3">
-                      <div className="text-[9px] uppercase tracking-[0.16em] text-neutral-600">
-                        {selectedConversation.operationalRoom.links.length ===
-                        1
-                          ? "1 linked institutional object"
-                          : `${selectedConversation.operationalRoom.links.length} linked institutional objects`}
-                      </div>
+                  </div>
 
-                      {selectedConversation.operationalRoom.links.length >
-                      0 ? (
-                        <div className="mt-2 flex flex-wrap gap-2">
-                          {selectedConversation.operationalRoom.links.map(
-                            link => (
-                              <div
-                                key={
-                                  link.id
-                                }
-                                title={
-                                  link.targetId
-                                }
-                                className="rounded-md border border-neutral-800 bg-neutral-950/80 px-2 py-1 text-[9px] uppercase tracking-[0.1em] text-neutral-500"
-                              >
-                                <span className="text-neutral-400">
-                                  {operationalTargetLabel(
-                                    link
-                                  )}
-                                </span>
-
-                                <span className="mx-1.5 text-neutral-700">
-                                  ·
-                                </span>
-
-                                <span className="font-mono normal-case tracking-normal text-neutral-600">
-                                  {compactOperationalTargetId(
-                                    link.targetId
-                                  )}
-                                </span>
-                              </div>
-                            )
-                          )}
-                        </div>
-                      ) : null}
-
-                      {canManageConversations &&
-                      !conversationArchived ? (
-                        <div className="mt-3">
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setLinkContextOpen(
-                                current =>
-                                  !current
-                              )
-                            }}
-                            className="rounded-md border border-neutral-800 bg-neutral-950 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-neutral-500 transition hover:border-neutral-600 hover:text-neutral-300"
-                          >
-                            {linkContextOpen
-                              ? "Close Context"
-                              : "Link Context"}
-                          </button>
-
-                          {linkContextOpen ? (
-                            <div className="mt-3 grid max-w-xl grid-cols-1 gap-2 rounded-lg border border-neutral-800 bg-black/60 p-3 sm:grid-cols-2">
-                              <label className="block">
-                                <span className="mb-1 block text-[8px] uppercase tracking-[0.14em] text-neutral-600">
-                                  Target
-                                </span>
-
-                                <select
-                                  value={
-                                    operationalTargetType
-                                  }
-                                  onChange={event => {
-                                    setOperationalTargetType(
-                                      event.target.value
-                                    )
-                                  }}
-                                  className="w-full rounded-md border border-neutral-800 bg-black px-2.5 py-2 text-[10px] text-neutral-300 outline-none focus:border-neutral-600"
-                                >
-                                  {COMMUNICATION_OPERATIONAL_TARGET_TYPES.map(
-                                    targetType => (
-                                      <option
-                                        key={
-                                          targetType
-                                        }
-                                        value={
-                                          targetType
-                                        }
-                                      >
-                                        {operationalTargetTypeLabel(
-                                          targetType
-                                        )}
-                                      </option>
-                                    )
-                                  )}
-                                </select>
-                              </label>
-
-                              {operationalTargetType ===
-                              "TREASURY_GATEWAY_AGGREGATE" ? (
-                                <label className="block">
-                                  <span className="mb-1 block text-[8px] uppercase tracking-[0.14em] text-neutral-600">
-                                    Treasury Object
-                                  </span>
-
-                                  <select
-                                    value={
-                                      operationalTreasurySubtype
-                                    }
-                                    onChange={event => {
-                                      setOperationalTreasurySubtype(
-                                        event.target.value
-                                      )
-                                    }}
-                                    className="w-full rounded-md border border-neutral-800 bg-black px-2.5 py-2 text-[10px] text-neutral-300 outline-none focus:border-neutral-600"
-                                  >
-                                    {COMMUNICATION_OPERATIONAL_TREASURY_SUBTYPES.map(
-                                      targetSubtype => (
-                                        <option
-                                          key={
-                                            targetSubtype
-                                          }
-                                          value={
-                                            targetSubtype
-                                          }
-                                        >
-                                          {operationalTreasurySubtypeLabel(
-                                            targetSubtype
-                                          )}
-                                        </option>
-                                      )
-                                    )}
-                                  </select>
-                                </label>
-                              ) : null}
-
-                              <label
-                                className={
-                                  operationalTargetType ===
-                                  "TREASURY_GATEWAY_AGGREGATE"
-                                    ? "block sm:col-span-2"
-                                    : "block"
-                                }
-                              >
-                                <span className="mb-1 block text-[8px] uppercase tracking-[0.14em] text-neutral-600">
-                                  Target ID
-                                </span>
-
-                                <input
-                                  value={
-                                    operationalTargetId
-                                  }
-                                  onChange={event => {
-                                    setOperationalTargetId(
-                                      event.target.value
-                                    )
-                                  }}
-                                  placeholder="Institutional object ID"
-                                  className="w-full rounded-md border border-neutral-800 bg-black px-2.5 py-2 font-mono text-[10px] text-neutral-300 outline-none placeholder:text-neutral-700 focus:border-neutral-600"
-                                />
-                              </label>
-
-                              <div className="flex items-end justify-end">
-                                <button
-                                  type="button"
-                                  disabled={
-                                    linkingOperationalTarget ||
-                                    !operationalTargetId.trim()
-                                  }
-                                  onClick={() => {
-                                    void linkOperationalContext()
-                                  }}
-                                  className="rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-[9px] uppercase tracking-[0.14em] text-neutral-300 transition hover:bg-neutral-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
-                                >
-                                  {linkingOperationalTarget
-                                    ? "Attaching"
-                                    : "Attach Context"}
-                                </button>
-                              </div>
-                            </div>
-                          ) : null}
-                        </div>
-                      ) : null}
-                    </div>
-                  ) : null}
-                </div>
-
-                {canManageConversations ? (
-                  <button
-                    type="button"
-                    disabled={
-                      changingConversationStatus
-                    }
-                    onClick={() => {
-                      void changeConversationStatus(
-                        conversationArchived
-                          ? "reactivate"
-                          : "archive"
-                      )
-                    }}
-                    className="shrink-0 rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-neutral-400 transition hover:border-neutral-500 hover:text-white disabled:cursor-wait disabled:opacity-50"
-                  >
-                    {changingConversationStatus
-                      ? "Updating"
-                      : conversationArchived
-                        ? "Reactivate"
-                        : "Archive"}
-                  </button>
-                ) : null}
+                <div className="flex shrink-0 items-center gap-2">
+              <button
+                type="button"
+                aria-expanded={
+                  responsiveContextOpen
+                }
+                aria-controls="communications-responsive-context"
+                onClick={() => {
+                  setResponsiveContextOpen(
+                    current =>
+                      !current
+                  )
+                }}
+                className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-neutral-400 transition hover:border-neutral-500 hover:text-white xl:hidden"
+              >
+                Context
+              </button>
+            </div>
               </div>
             </div>
 
@@ -2693,6 +2690,360 @@ export default function CommunicationsWorkspace({
           </div>
         )}
       </section>
+
+      {selectedConversation &&
+      responsiveContextOpen ? (
+        <>
+          <button
+            type="button"
+            aria-label="Close room context"
+            onClick={() => {
+              setResponsiveContextOpen(
+                false
+              )
+            }}
+            className="absolute inset-0 z-20 bg-black/35 xl:hidden"
+          />
+
+          <aside
+            id="communications-responsive-context"
+            aria-label="Room context"
+            className="absolute z-30 flex flex-col border-l border-neutral-700 bg-neutral-950 shadow-2xl xl:hidden"
+            style={{
+              top: 0,
+              bottom: 0,
+              right: 0,
+              left: "auto",
+              width: "320px",
+              maxWidth:
+                "calc(100% - 1.5rem)",
+            }}
+          >
+            <div className="flex items-start justify-between gap-4 border-b border-neutral-800 px-4 py-4">
+              <div className="min-w-0">
+                <div className="text-[9px] uppercase tracking-[0.18em] text-neutral-600">
+                  Room Context
+                </div>
+
+                <div className="mt-2 truncate text-sm font-medium text-neutral-200">
+                  {conversationLabel(
+                    selectedConversation,
+                    currentUserId
+                  )}
+                </div>
+
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <span className="rounded border border-neutral-800 bg-black/30 px-2 py-1 text-[9px] uppercase tracking-[0.12em] text-neutral-500">
+                    {selectedConversation.operationalRoom
+                      ? operationalRoomClassLabel(
+                          selectedConversation.operationalRoom.roomClass
+                        )
+                      : "Direct"}
+                  </span>
+
+                  <span className="rounded border border-neutral-800 bg-black/30 px-2 py-1 text-[9px] uppercase tracking-[0.12em] text-neutral-600">
+                    {conversationArchived
+                      ? "Archived"
+                      : "Active"}
+                  </span>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                aria-label="Close room context"
+                onClick={() => {
+                  setResponsiveContextOpen(
+                    false
+                  )
+                }}
+                className="shrink-0 rounded-md border border-neutral-800 bg-black/30 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-neutral-500 transition hover:border-neutral-600 hover:text-neutral-300"
+              >
+                Close
+              </button>
+            </div>
+
+            <div className="min-h-0 flex-1 overflow-y-auto">
+              {selectedConversation.operationalRoom ? (
+                <div className="border-b border-neutral-800 px-4 py-4">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-[9px] uppercase tracking-[0.18em] text-neutral-600">
+                      Institutional Context
+                    </div>
+
+                    <div className="text-[9px] tabular-nums text-neutral-700">
+                      {selectedConversation.operationalRoom.links.length}
+                    </div>
+                  </div>
+
+                  {selectedConversation.operationalRoom.links.length >
+                  0 ? (
+                    <div className="mt-3 space-y-2">
+                      {selectedConversation.operationalRoom.links.map(
+                        link => (
+                          <div
+                            key={
+                              link.id
+                            }
+                            title={
+                              `${link.targetSubtype} · ${link.targetId}`
+                            }
+                            className="rounded-lg border border-neutral-800 bg-black/35 px-3 py-2.5"
+                          >
+                            <div className="text-[9px] uppercase tracking-[0.13em] text-neutral-400">
+                              {operationalTargetLabel(
+                                link
+                              )}
+                            </div>
+
+                            <div className="mt-1 truncate font-mono text-[10px] text-neutral-600">
+                              {link.targetId}
+                            </div>
+                          </div>
+                        )
+                      )}
+                    </div>
+                  ) : (
+                    <div className="mt-3 text-xs leading-5 text-neutral-600">
+                      No institutional objects are linked to this room.
+                    </div>
+                  )}
+                </div>
+              ) : null}
+
+              <div className="px-4 py-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-[9px] uppercase tracking-[0.18em] text-neutral-600">
+                    Participants
+                  </div>
+
+                  <div className="text-[9px] tabular-nums text-neutral-700">
+                    {
+                      selectedConversation.members.filter(
+                        member =>
+                          member.leftAt ===
+                          null
+                      ).length
+                    }
+                  </div>
+                </div>
+
+                <div className="mt-3 space-y-1">
+                  {selectedConversation.members
+                    .filter(
+                      member =>
+                        member.leftAt ===
+                        null
+                    )
+                    .map(
+                      member => (
+                        <div
+                          key={
+                            member.id
+                          }
+                          className="rounded-lg px-2 py-2"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="min-w-0">
+                              <div className="truncate text-xs text-neutral-300">
+                                {member.userId ===
+                                currentUserId
+                                  ? "You"
+                                  : userLabel(
+                                      member.user
+                                    )}
+                              </div>
+
+                              <div className="mt-0.5 truncate text-[10px] text-neutral-700">
+                                {member.user.email}
+                              </div>
+                            </div>
+
+                            <div className="shrink-0 text-[8px] uppercase tracking-[0.12em] text-neutral-700">
+                              {member.role}
+                            </div>
+                          </div>
+                        </div>
+                      )
+                    )}
+                </div>
+              </div>
+            </div>
+
+            <div className="px-4 pb-4">
+          {renderRoomGovernance()}
+        </div>
+
+        <div className="border-t border-neutral-800 px-4 py-3">
+              <div className="text-[9px] leading-4 text-neutral-700">
+                Room context is informational. Institutional action remains governed by its authoritative domain.
+              </div>
+            </div>
+          </aside>
+        </>
+      ) : null}
+
+      <aside className="hidden w-[300px] shrink-0 flex-col border-l border-neutral-800 bg-neutral-950/35 xl:flex">
+        {selectedConversation ? (
+          <>
+            <div className="border-b border-neutral-800 px-4 py-4">
+              <div className="text-[9px] uppercase tracking-[0.18em] text-neutral-600">
+                Room Context
+              </div>
+
+              <div className="mt-2 text-sm font-medium text-neutral-200">
+                {conversationLabel(
+                  selectedConversation,
+                  currentUserId
+                )}
+              </div>
+
+              <div className="mt-2 flex flex-wrap gap-2">
+                <span className="rounded border border-neutral-800 bg-black/30 px-2 py-1 text-[9px] uppercase tracking-[0.12em] text-neutral-500">
+                  {selectedConversation.operationalRoom
+                    ? operationalRoomClassLabel(
+                        selectedConversation.operationalRoom.roomClass
+                      )
+                    : "Direct"}
+                </span>
+
+                <span className="rounded border border-neutral-800 bg-black/30 px-2 py-1 text-[9px] uppercase tracking-[0.12em] text-neutral-600">
+                  {conversationArchived
+                    ? "Archived"
+                    : "Active"}
+                </span>
+              </div>
+            </div>
+
+            {selectedConversation.operationalRoom ? (
+              <div className="border-b border-neutral-800 px-4 py-4">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-[9px] uppercase tracking-[0.18em] text-neutral-600">
+                    Institutional Context
+                  </div>
+
+                  <div className="text-[9px] tabular-nums text-neutral-700">
+                    {selectedConversation.operationalRoom.links.length}
+                  </div>
+                </div>
+
+                {selectedConversation.operationalRoom.links.length >
+                0 ? (
+                  <div className="mt-3 space-y-2">
+                    {selectedConversation.operationalRoom.links.map(
+                      link => (
+                        <div
+                          key={
+                            link.id
+                          }
+                          title={
+                            `${link.targetSubtype} · ${link.targetId}`
+                          }
+                          className="rounded-lg border border-neutral-800 bg-black/35 px-3 py-2.5"
+                        >
+                          <div className="text-[9px] uppercase tracking-[0.13em] text-neutral-400">
+                            {operationalTargetLabel(
+                              link
+                            )}
+                          </div>
+
+                          <div className="mt-1 truncate font-mono text-[10px] text-neutral-600">
+                            {link.targetId}
+                          </div>
+                        </div>
+                      )
+                    )}
+                  </div>
+                ) : (
+                  <div className="mt-3 text-xs leading-5 text-neutral-600">
+                    No institutional objects are linked to this room.
+                  </div>
+                )}
+              </div>
+            ) : null}
+
+            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
+              <div className="flex items-center justify-between gap-3">
+                <div className="text-[9px] uppercase tracking-[0.18em] text-neutral-600">
+                  Participants
+                </div>
+
+                <div className="text-[9px] tabular-nums text-neutral-700">
+                  {
+                    selectedConversation.members.filter(
+                      member =>
+                        member.leftAt ===
+                        null
+                    ).length
+                  }
+                </div>
+              </div>
+
+              <div className="mt-3 space-y-1">
+                {selectedConversation.members
+                  .filter(
+                    member =>
+                      member.leftAt ===
+                      null
+                  )
+                  .map(
+                    member => (
+                      <div
+                        key={
+                          member.id
+                        }
+                        className="rounded-lg border border-transparent px-2 py-2 hover:border-neutral-900 hover:bg-black/20"
+                      >
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <div className="truncate text-xs text-neutral-300">
+                              {member.userId ===
+                              currentUserId
+                                ? "You"
+                                : userLabel(
+                                    member.user
+                                  )}
+                            </div>
+
+                            <div className="mt-0.5 truncate text-[10px] text-neutral-700">
+                              {member.user.email}
+                            </div>
+                          </div>
+
+                          <div className="shrink-0 text-[8px] uppercase tracking-[0.12em] text-neutral-700">
+                            {member.role}
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  )}
+              </div>
+            </div>
+
+            <div className="px-4 pb-4">
+          {renderRoomGovernance()}
+        </div>
+
+        <div className="border-t border-neutral-800 px-4 py-3">
+              <div className="text-[9px] leading-4 text-neutral-700">
+                Room context is informational. Institutional action remains governed by its authoritative domain.
+              </div>
+            </div>
+          </>
+        ) : (
+          <div className="flex flex-1 items-center justify-center px-5">
+            <div className="text-center">
+              <div className="text-[9px] uppercase tracking-[0.18em] text-neutral-700">
+                Room Context
+              </div>
+
+              <div className="mt-2 text-xs leading-5 text-neutral-700">
+                Select a conversation to inspect its operational context.
+              </div>
+            </div>
+          </div>
+        )}
+      </aside>
     </div>
   )
 }

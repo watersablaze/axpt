@@ -10,13 +10,18 @@ export default function OperationsShell({
   permissions: readonly string[]
 }) {
   return (
-    <div className="flex h-screen overflow-hidden bg-black text-white">
+    <div
+      className="flex overflow-hidden bg-black text-white"
+      style={{
+        height: "100dvh",
+      }}
+    >
       <OperationsSidebar
         permissions={permissions}
       />
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col">
         <OperationsHeader />
-        <main className="flex-1 overflow-auto bg-neutral-950 px-6 py-6">
+        <main className="min-h-0 flex-1 overflow-auto bg-neutral-950 px-6 py-6">
           {children}
         </main>
         <CommandPalette
