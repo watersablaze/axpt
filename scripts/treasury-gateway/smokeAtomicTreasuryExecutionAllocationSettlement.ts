@@ -406,17 +406,13 @@ async function main(): Promise<void> {
     try {
       await prisma.$transaction(async (tx: TransactionClient) =>
         confirmTreasuryExecutionWithAllocationSettlementDurablyWithClient({
-          evidence: {
+          settlement: {
             executionId,
-            treasuryActionId: dispatch.dispatch.treasuryActionId,
-            idempotencyKey: `confirmed-evidence-atomic-settlement-${fixtureId}`,
-            debitTransactionId: `debit-evidence-atomic-settlement-${fixtureId}`,
-            creditTransactionId: `credit-evidence-atomic-settlement-${fixtureId}`,
-            assetCode: "USD",
-            amountBaseUnits: persistedAction.amountBaseUnits.toString(),
-            confirmedAt: new Date(),
-          },
 
+            amount: beforeExecution.aggregate.amount,
+
+            verifiedAt: new Date(),
+          },
           allocationConsumedEventId,
           confirmedEventId: conflictingConfirmedEventId,
 

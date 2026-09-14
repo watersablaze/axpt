@@ -4,7 +4,7 @@ import { TRANSACTION_TYPES } from "@/domains/wallet/constants/transactionTypes";
 
 import type { TreasuryExecutionId } from "../../../shared/identifiers";
 
-import type { InternalWalletExecutionConfirmedEvidence } from "./executionEvidenceContracts";
+import type { InternalWalletExecutionSettlementProof } from "./executionEvidenceContracts";
 
 import { loadInternalWalletTreasuryActionWithClient } from "./loadInternalWalletTreasuryActionWithClient";
 
@@ -25,11 +25,11 @@ function readMetadataString(metadata: unknown, key: string): string | null {
 export async function loadInternalWalletExecutionConfirmedEvidenceWithClient(params: {
   executionId: TreasuryExecutionId;
 
-  confirmedAt: Date;
+  verifiedAt: Date;
 
   client: TransactionClient;
-}): Promise<InternalWalletExecutionConfirmedEvidence | null> {
-  const { executionId, confirmedAt, client } = params;
+}): Promise<InternalWalletExecutionSettlementProof | null> {
+  const { executionId, verifiedAt, client } = params;
 
   const action = await loadInternalWalletTreasuryActionWithClient({
     executionId,
@@ -166,6 +166,6 @@ export async function loadInternalWalletExecutionConfirmedEvidenceWithClient(par
 
     amountBaseUnits: actionAmount,
 
-    confirmedAt,
+    verifiedAt,
   };
 }

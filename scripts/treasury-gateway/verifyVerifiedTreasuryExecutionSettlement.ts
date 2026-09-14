@@ -33,7 +33,7 @@ const execution: TreasuryExecution = {
   settlementEndpointId: "endpoint-er1c-001",
 
   amount: {
-    amount: "2550",
+    amount: "25.50",
 
     currency: "USD",
   },
@@ -62,13 +62,18 @@ const execution: TreasuryExecution = {
 const validSettlement: VerifiedTreasuryExecutionSettlement = {
   executionId: execution.id,
 
-  assetCode: "USD",
+  amount: {
+    amount: "25.5",
 
-  amountBaseUnits: "2550",
+    currency: "USD",
+  },
 
   verifiedAt: new Date("2026-09-14T05:30:00.000Z"),
 };
 
+/*
+ * Representation-equivalent decimal strings must be accepted.
+ */
 assert.doesNotThrow(() =>
   assertVerifiedTreasuryExecutionSettlementMatchesExecution({
     settlement: validSettlement,
@@ -97,12 +102,16 @@ assertThrowsWithCode(
       settlement: {
         ...validSettlement,
 
-        assetCode: "",
+        amount: {
+          amount: validSettlement.amount.amount,
+
+          currency: "",
+        },
       },
 
       execution,
     }),
-  "TREASURY_EXECUTION_VERIFIED_SETTLEMENT_ASSET_REQUIRED",
+  "TREASURY_EXECUTION_VERIFIED_SETTLEMENT_CURRENCY_REQUIRED",
 );
 
 assertThrowsWithCode(
@@ -111,7 +120,11 @@ assertThrowsWithCode(
       settlement: {
         ...validSettlement,
 
-        amountBaseUnits: "",
+        amount: {
+          amount: "",
+
+          currency: validSettlement.amount.currency,
+        },
       },
 
       execution,
@@ -139,12 +152,16 @@ assertThrowsWithCode(
       settlement: {
         ...validSettlement,
 
-        assetCode: "EUR",
+        amount: {
+          amount: validSettlement.amount.amount,
+
+          currency: "EUR",
+        },
       },
 
       execution,
     }),
-  "TREASURY_EXECUTION_VERIFIED_SETTLEMENT_ASSET_MISMATCH",
+  "TREASURY_EXECUTION_VERIFIED_SETTLEMENT_CURRENCY_MISMATCH",
 );
 
 assertThrowsWithCode(
@@ -153,7 +170,11 @@ assertThrowsWithCode(
       settlement: {
         ...validSettlement,
 
-        amountBaseUnits: "2549",
+        amount: {
+          amount: "25.49",
+
+          currency: "USD",
+        },
       },
 
       execution,

@@ -1,5 +1,7 @@
 import type { TreasuryExecutionId } from "../shared/identifiers";
 
+import type { TreasuryMoney } from "../shared/money";
+
 export type VerifiedTreasuryExecutionSettlement = Readonly<{
   /*
    * Treasury subject identity.
@@ -10,19 +12,22 @@ export type VerifiedTreasuryExecutionSettlement = Readonly<{
   executionId: TreasuryExecutionId;
 
   /*
-   * Normalized financial fact independently established by a
-   * rail-specific verifier.
+   * Rail-neutral financial fact.
+   *
+   * A rail-specific verifier / translator must normalize its native
+   * representation into TreasuryMoney before crossing this boundary.
+   *
+   * Treasury therefore does not know whether the proving rail used
+   * cents, base units, wei, satoshis, journal units, or another native
+   * representation.
    */
-  assetCode: string;
-
-  amountBaseUnits: string;
+  amount: TreasuryMoney;
 
   /*
    * Time at which AXPT completed verification of the rail evidence.
    *
-   * This is deliberately not named settledAt. A rail may later expose
-   * its own settlement, value, posting, inclusion, or finality time as
-   * rail-specific provenance.
+   * This is not rail settlement time, value time, posting time,
+   * inclusion time, or finality time.
    */
   verifiedAt: Date;
 }>;

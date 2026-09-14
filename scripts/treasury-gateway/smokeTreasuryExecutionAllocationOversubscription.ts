@@ -197,34 +197,57 @@ async function advanceExecutionToInitiated(params: {
 
 async function settleExecution(params: {
   fixtureId: string;
+
   label: string;
+
   executionId: string;
+
   initiated: InitiatedExecutionFixture;
 }): Promise<void> {
-  const { fixtureId, label, executionId, initiated } = params;
+  const { fixtureId, label, executionId } = params;
 
   await prisma.$transaction(async (tx: TransactionClient) => {
+    const loadedExecution = await loadTreasuryExecutionWithClient({
+      executionId,
+
+      client: tx,
+    });
+
+    if (!loadedExecution) {
+      throw new Error(
+        `[TREASURY_GATEWAY_EXECUTION_NOT_FOUND] ${executionId}`,
+      );
+    }
+
     await confirmTreasuryExecutionWithAllocationSettlementDurablyWithClient({
-      evidence: {
+      settlement: {
         executionId,
-        treasuryActionId: initiated.treasuryActionId,
-        idempotencyKey: `confirmed-evidence-oversubscription-${label}-${fixtureId}`,
-        debitTransactionId: `debit-evidence-oversubscription-${label}-${fixtureId}`,
-        creditTransactionId: `credit-evidence-oversubscription-${label}-${fixtureId}`,
-        assetCode: "USD",
-        amountBaseUnits: initiated.amountBaseUnits,
-        confirmedAt: new Date(),
+
+        amount: loadedExecution.aggregate.amount,
+
+        verifiedAt: new Date(),
       },
 
-      allocationConsumedEventId: `event-allocation-consumed-oversubscription-${label}-${fixtureId}`,
-      confirmedEventId: `event-confirmed-oversubscription-${label}-${fixtureId}`,
+      allocationConsumedEventId:
+        `event-allocation-consumed-oversubscription-${label}-${fixtureId}`,
+
+      confirmedEventId:
+        `event-confirmed-oversubscription-${label}-${fixtureId}`,
 
       context: {
-        commandId: `command-confirm-oversubscription-${label}-${fixtureId}`,
-        actorId: `actor-oversubscription-${label}-${fixtureId}`,
-        correlationId: `correlation-oversubscription-${label}-${fixtureId}`,
+        commandId:
+          `command-confirm-oversubscription-${label}-${fixtureId}`,
+
+        actorId:
+          `actor-oversubscription-${label}-${fixtureId}`,
+
+        correlationId:
+          `correlation-oversubscription-${label}-${fixtureId}`,
+
         requestedAt: new Date(),
-        idempotencyKey: `confirm-oversubscription-${label}-${fixtureId}`,
+
+        idempotencyKey:
+          `confirm-oversubscription-${label}-${fixtureId}`,
       },
 
       client: tx,

@@ -4,7 +4,7 @@ import { confirmTreasuryExecution } from "../confirmTreasuryExecution";
 
 import { executeDurableTreasuryExecutionTransitionWithClient } from "./executeDurableTreasuryExecutionTransitionWithClient";
 
-import type { InternalWalletExecutionConfirmedEvidence } from "../adapters/internal-wallet/executionEvidenceContracts";
+import type { VerifiedTreasuryExecutionSettlement } from "../verifiedSettlementContracts";
 
 import type { TreasuryCommandContext } from "../../shared/commandContext";
 
@@ -15,7 +15,7 @@ import type { TreasuryExecutionConfirmedPayload } from "../events";
 import type { PersistedTreasuryExecutionTransition } from "../persistence/contracts";
 
 export async function confirmTreasuryExecutionDurablyWithClient(params: {
-  evidence: InternalWalletExecutionConfirmedEvidence;
+  settlement: VerifiedTreasuryExecutionSettlement;
 
   eventId: TreasuryEventId;
 
@@ -25,10 +25,10 @@ export async function confirmTreasuryExecutionDurablyWithClient(params: {
 }): Promise<
   PersistedTreasuryExecutionTransition<TreasuryExecutionConfirmedPayload>
 > {
-  const { evidence, eventId, context, client } = params;
+  const { settlement, eventId, context, client } = params;
 
   return executeDurableTreasuryExecutionTransitionWithClient({
-    executionId: evidence.executionId,
+    executionId: settlement.executionId,
 
     eventId,
 
@@ -39,21 +39,11 @@ export async function confirmTreasuryExecutionDurablyWithClient(params: {
         context,
 
         payload: {
-          executionId: evidence.executionId,
+          executionId: settlement.executionId,
 
-          treasuryActionId: evidence.treasuryActionId,
+          amount: settlement.amount,
 
-          idempotencyKey: evidence.idempotencyKey,
-
-          debitTransactionId: evidence.debitTransactionId,
-
-          creditTransactionId: evidence.creditTransactionId,
-
-          assetCode: evidence.assetCode,
-
-          amountBaseUnits: evidence.amountBaseUnits,
-
-          confirmedAt: evidence.confirmedAt,
+          verifiedAt: settlement.verifiedAt,
         },
       }),
 

@@ -1,3 +1,5 @@
+import { compareDecimals } from "../shared/decimalAmount";
+
 import type { TreasuryExecution } from "./contracts";
 
 import type { VerifiedTreasuryExecutionSettlement } from "./verifiedSettlementContracts";
@@ -15,13 +17,13 @@ export function assertVerifiedTreasuryExecutionSettlementMatchesExecution(params
     );
   }
 
-  if (settlement.assetCode.trim().length === 0) {
+  if (settlement.amount.currency.trim().length === 0) {
     throw new Error(
-      "[TREASURY_EXECUTION_VERIFIED_SETTLEMENT_ASSET_REQUIRED]",
+      "[TREASURY_EXECUTION_VERIFIED_SETTLEMENT_CURRENCY_REQUIRED]",
     );
   }
 
-  if (settlement.amountBaseUnits.trim().length === 0) {
+  if (settlement.amount.amount.trim().length === 0) {
     throw new Error(
       "[TREASURY_EXECUTION_VERIFIED_SETTLEMENT_AMOUNT_REQUIRED]",
     );
@@ -39,15 +41,26 @@ export function assertVerifiedTreasuryExecutionSettlementMatchesExecution(params
    * The rail is a witness to external reality, not an authority capable
    * of changing the governed financial instruction.
    */
-  if (settlement.assetCode !== execution.amount.currency) {
+  if (settlement.amount.currency !== execution.amount.currency) {
     throw new Error(
-      `[TREASURY_EXECUTION_VERIFIED_SETTLEMENT_ASSET_MISMATCH] ${settlement.assetCode} -> ${execution.amount.currency}`,
+      `[TREASURY_EXECUTION_VERIFIED_SETTLEMENT_CURRENCY_MISMATCH] ${settlement.amount.currency} -> ${execution.amount.currency}`,
     );
   }
 
-  if (settlement.amountBaseUnits !== execution.amount.amount) {
+  /*
+   * Decimal strings are representations, not financial identity.
+   *
+   * "25.5" and "25.50" represent the same Treasury amount and therefore
+   * must compare numerically rather than by raw string equality.
+   */
+  if (
+    compareDecimals(
+      settlement.amount.amount,
+      execution.amount.amount,
+    ) !== 0
+  ) {
     throw new Error(
-      `[TREASURY_EXECUTION_VERIFIED_SETTLEMENT_AMOUNT_MISMATCH] ${settlement.amountBaseUnits} -> ${execution.amount.amount}`,
+      `[TREASURY_EXECUTION_VERIFIED_SETTLEMENT_AMOUNT_MISMATCH] ${settlement.amount.amount} -> ${execution.amount.amount}`,
     );
   }
 }

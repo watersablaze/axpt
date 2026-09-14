@@ -14,7 +14,9 @@ import { loadTreasuryExecutionPlanWithClient } from "../../execution-plans/persi
 
 import { loadTreasuryTransferWithClient } from "../../transfers/persistence/loadTreasuryTransferWithClient";
 
-import type { InternalWalletExecutionConfirmedEvidence } from "../adapters/internal-wallet/executionEvidenceContracts";
+import { assertVerifiedTreasuryExecutionSettlementMatchesExecution } from "../assertVerifiedTreasuryExecutionSettlementMatchesExecution";
+
+import type { VerifiedTreasuryExecutionSettlement } from "../verifiedSettlementContracts";
 
 import { loadTreasuryExecutionWithClient } from "../persistence/loadTreasuryExecutionWithClient";
 
@@ -25,7 +27,7 @@ import type { TreasuryCommandContext } from "../../shared/commandContext";
 import type { TreasuryEventId } from "../../shared/identifiers";
 
 export async function confirmTreasuryExecutionWithAllocationSettlementDurablyWithClient(params: {
-  evidence: InternalWalletExecutionConfirmedEvidence;
+  settlement: VerifiedTreasuryExecutionSettlement;
 
   allocationConsumedEventId: TreasuryEventId;
 
@@ -36,7 +38,7 @@ export async function confirmTreasuryExecutionWithAllocationSettlementDurablyWit
   client: TransactionClient;
 }) {
   const {
-    evidence,
+    settlement,
     allocationConsumedEventId,
     confirmedEventId,
     context,
@@ -44,18 +46,28 @@ export async function confirmTreasuryExecutionWithAllocationSettlementDurablyWit
   } = params;
 
   const loadedExecution = await loadTreasuryExecutionWithClient({
-    executionId: evidence.executionId,
+    executionId: settlement.executionId,
 
     client,
   });
 
   if (!loadedExecution) {
     throw new Error(
-      `[TREASURY_GATEWAY_EXECUTION_NOT_FOUND] ${evidence.executionId}`,
+      `[TREASURY_GATEWAY_EXECUTION_NOT_FOUND] ${settlement.executionId}`,
     );
   }
 
   const execution = loadedExecution.aggregate;
+
+  /*
+   * The verified external financial observation must agree with the
+   * already-governed Execution before any Allocation capital is consumed.
+   */
+  assertVerifiedTreasuryExecutionSettlementMatchesExecution({
+    settlement,
+
+    execution,
+  });
 
   const bindingEvidence =
     await loadTreasuryExecutionPlanBindingEvidenceWithClient({
@@ -153,7 +165,7 @@ export async function confirmTreasuryExecutionWithAllocationSettlementDurablyWit
   });
 
   const confirmed = await confirmTreasuryExecutionDurablyWithClient({
-    evidence,
+    settlement,
 
     eventId: confirmedEventId,
 

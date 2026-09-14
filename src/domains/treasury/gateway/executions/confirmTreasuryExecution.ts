@@ -1,5 +1,7 @@
 import { TREASURY_EVENT_TYPE } from "../events/eventType";
 
+import { assertVerifiedTreasuryExecutionSettlementMatchesExecution } from "./assertVerifiedTreasuryExecutionSettlementMatchesExecution";
+
 import { assertTreasuryExecutionTransition } from "./assertTransition";
 
 import { TREASURY_EXECUTION_STATUS } from "./status";
@@ -17,33 +19,36 @@ export function confirmTreasuryExecution(
 
   command: ConfirmTreasuryExecution,
 ): TreasuryDomainResult<TreasuryExecution, TreasuryExecutionConfirmedPayload> {
-  if (command.payload.executionId !== aggregate.id) {
-    throw new Error(
-      `[TREASURY_EXECUTION_COMMAND_TARGET_MISMATCH] ${command.payload.executionId} -> ${aggregate.id}`,
-    );
-  }
+  /*
+   * Confirmation may only admit a verified settlement observation that
+   * exactly agrees with the already-governed Treasury Execution.
+   *
+   * The rail proves reality. It does not redefine Treasury intent.
+   */
+  assertVerifiedTreasuryExecutionSettlementMatchesExecution({
+    settlement: {
+      executionId: command.payload.executionId,
 
-  if (
-    command.payload.treasuryActionId.trim().length === 0 ||
-    command.payload.idempotencyKey.trim().length === 0 ||
-    command.payload.debitTransactionId.trim().length === 0 ||
-    command.payload.creditTransactionId.trim().length === 0
-  ) {
-    throw new Error("[TREASURY_EXECUTION_CONFIRMATION_EVIDENCE_REQUIRED]");
-  }
+      amount: command.payload.amount,
 
-  if (
-    command.payload.assetCode.trim().length === 0 ||
-    command.payload.amountBaseUnits.trim().length === 0
-  ) {
-    throw new Error("[TREASURY_EXECUTION_CONFIRMATION_VALUE_REQUIRED]");
-  }
+      verifiedAt: command.payload.verifiedAt,
+    },
+
+    execution: aggregate,
+  });
 
   const to = TREASURY_EXECUTION_STATUS.CONFIRMED;
 
   assertTreasuryExecutionTransition(aggregate.status, to);
 
-  const now = command.context.requestedAt;
+  /*
+   * confirmedAt belongs to Treasury, not the rail.
+   *
+   * verifiedAt records when AXPT completed verification of external
+   * evidence. confirmedAt records when Treasury admitted that verified
+   * fact and changed canonical state.
+   */
+  const confirmedAt = command.context.requestedAt;
 
   return {
     aggregate: {
@@ -54,7 +59,7 @@ export function confirmTreasuryExecution(
       metadata: {
         ...aggregate.metadata,
 
-        updatedAt: now,
+        updatedAt: confirmedAt,
 
         lastModifiedByActorId: command.context.actorId,
 
@@ -68,22 +73,14 @@ export function confirmTreasuryExecution(
       payload: {
         executionId: aggregate.id,
 
-        treasuryActionId: command.payload.treasuryActionId,
+        amount: command.payload.amount,
 
-        idempotencyKey: command.payload.idempotencyKey,
+        verifiedAt: command.payload.verifiedAt,
 
-        debitTransactionId: command.payload.debitTransactionId,
-
-        creditTransactionId: command.payload.creditTransactionId,
-
-        assetCode: command.payload.assetCode,
-
-        amountBaseUnits: command.payload.amountBaseUnits,
-
-        confirmedAt: command.payload.confirmedAt,
+        confirmedAt,
       },
 
-      occurredAt: command.payload.confirmedAt,
+      occurredAt: confirmedAt,
     },
   };
 }

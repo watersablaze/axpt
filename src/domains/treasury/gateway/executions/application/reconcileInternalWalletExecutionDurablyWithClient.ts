@@ -2,6 +2,8 @@ import type { TransactionClient } from "@prisma/client";
 
 import { loadInternalWalletExecutionConfirmedEvidenceWithClient } from "../adapters/internal-wallet/loadInternalWalletExecutionConfirmedEvidenceWithClient";
 
+import { toVerifiedTreasuryExecutionSettlement } from "../adapters/internal-wallet/toVerifiedTreasuryExecutionSettlement";
+
 import { loadInternalWalletExecutionInitiatedEvidenceWithClient } from "../adapters/internal-wallet/loadInternalWalletExecutionInitiatedEvidenceWithClient";
 
 import { loadTreasuryExecutionWithClient } from "../persistence/loadTreasuryExecutionWithClient";
@@ -119,7 +121,7 @@ export async function reconcileInternalWalletExecutionDurablyWithClient(params: 
       await loadInternalWalletExecutionConfirmedEvidenceWithClient({
         executionId,
 
-        confirmedAt: context.requestedAt,
+        verifiedAt: context.requestedAt,
 
         client,
       });
@@ -133,10 +135,12 @@ export async function reconcileInternalWalletExecutionDurablyWithClient(params: 
         confirmed,
       };
     }
-
     const settlement =
+      toVerifiedTreasuryExecutionSettlement(confirmedEvidence);
+
+    const confirmation =
       await confirmTreasuryExecutionWithAllocationSettlementDurablyWithClient({
-        evidence: confirmedEvidence,
+        settlement,
 
         allocationConsumedEventId,
 
@@ -147,7 +151,7 @@ export async function reconcileInternalWalletExecutionDurablyWithClient(params: 
         client,
       });
 
-    confirmed = settlement.confirmed;
+    confirmed = confirmation.confirmed;
 
     aggregate = confirmed.aggregate;
   }

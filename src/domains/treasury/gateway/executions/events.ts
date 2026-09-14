@@ -88,17 +88,9 @@ export type TreasuryExecutionInitiatedPayload = Readonly<{
 export type TreasuryExecutionConfirmedPayload = Readonly<{
   executionId: TreasuryExecutionId;
 
-  treasuryActionId: string;
+  amount: TreasuryMoney;
 
-  idempotencyKey: string;
-
-  debitTransactionId: string;
-
-  creditTransactionId: string;
-
-  assetCode: string;
-
-  amountBaseUnits: string;
+  verifiedAt: Date;
 
   confirmedAt: Date;
 }>;

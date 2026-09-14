@@ -87,18 +87,8 @@ export type ConfirmTreasuryExecution = TreasuryCommand<
   Readonly<{
     executionId: TreasuryExecutionId;
 
-    treasuryActionId: string;
+    amount: TreasuryMoney;
 
-    idempotencyKey: string;
-
-    debitTransactionId: string;
-
-    creditTransactionId: string;
-
-    assetCode: string;
-
-    amountBaseUnits: string;
-
-    confirmedAt: Date;
+    verifiedAt: Date;
   }>
 >;

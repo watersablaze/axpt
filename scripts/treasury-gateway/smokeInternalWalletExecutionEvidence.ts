@@ -123,7 +123,7 @@ async function main() {
         await loadInternalWalletExecutionConfirmedEvidenceWithClient({
           executionId,
 
-          confirmedAt: new Date(),
+          verifiedAt: new Date(),
 
           client: tx,
         });
@@ -182,7 +182,7 @@ async function main() {
         await loadInternalWalletExecutionConfirmedEvidenceWithClient({
           executionId,
 
-          confirmedAt: new Date(),
+          verifiedAt: new Date(),
 
           client: tx,
         });
@@ -212,7 +212,7 @@ async function main() {
         await loadInternalWalletExecutionConfirmedEvidenceWithClient({
           executionId,
 
-          confirmedAt: new Date(),
+          verifiedAt: new Date(),
 
           client: tx,
         });
