@@ -1,5 +1,5 @@
 import { formatUnits } from "viem"
-import { publicClient } from "./clients"
+import { getPublicClient } from "./clients"
 import { TOKENS } from "./config"
 import { erc20TransferAbi } from "./erc20TransferAbi"
 
@@ -14,6 +14,7 @@ export type TransferRecord = {
 }
 
 export async function getUsdtTransfers(address: `0x${string}`) {
+  const publicClient = getPublicClient()
   const currentBlock = await publicClient.getBlockNumber()
 
   const fromBlock = currentBlock - 10_000n

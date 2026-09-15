@@ -2,15 +2,27 @@
 import { createPublicClient, http } from "viem"
 import { mainnet } from "viem/chains"
 
-const rpcUrl = process.env.RPC_URL
+type TreasuryPublicClient = ReturnType<typeof createPublicClient>
 
-if (!rpcUrl) {
-  throw new Error(
-    "Missing RPC_URL. Set it in .env.local (Alchemy Ethereum Mainnet)."
-  )
+let cachedPublicClient: TreasuryPublicClient | null = null
+
+export function getPublicClient(): TreasuryPublicClient {
+  if (cachedPublicClient) {
+    return cachedPublicClient
+  }
+
+  const rpcUrl = process.env.RPC_URL?.trim()
+
+  if (!rpcUrl) {
+    throw new Error(
+      "Missing RPC_URL. Configure the Ethereum Mainnet RPC environment."
+    )
+  }
+
+  cachedPublicClient = createPublicClient({
+    chain: mainnet,
+    transport: http(rpcUrl),
+  })
+
+  return cachedPublicClient
 }
-
-export const publicClient = createPublicClient({
-  chain: mainnet,
-  transport: http(rpcUrl),
-})

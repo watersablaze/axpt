@@ -1,5 +1,5 @@
 import { formatEther, formatUnits } from "viem"
-import { publicClient } from "./clients"
+import { getPublicClient } from "./clients"
 import { TREASURY_WALLETS, TOKENS } from "./config"
 import { erc20Abi } from "./erc20Abi"
 
@@ -31,6 +31,8 @@ function safeFixed(value: string, digits = 6) {
 }
 
 export async function getTreasurySnapshot(): Promise<TreasurySnapshot> {
+  const publicClient = getPublicClient()
+
   const wallets = await Promise.all(
     TREASURY_WALLETS.map(async (wallet) => {
       const [ethBalance, usdtBalance] = await Promise.all([
