@@ -1,2 +1,37 @@
-node_modules
-.pnpm-store
+# Package/runtime caches
+node_modules/
+.pnpm-store/
+.next/
+.vercel/
+
+# Local environment material
+.env
+.env.*
+!.env.example
+
+# Logs / traces
+*.log
+.logs/
+logs/
+artifacts/logs/
+
+# Database and local recovery material
+*.sql
+!prisma/migrations/**/migration.sql
+*.sqlite
+*.sqlite3
+axpt_db_backup_before_push.sql
+
+# Repository repair / diagnostic artifacts
+*.diff
+emergency-contract-sweep-status.txt
+patchTempImports.log
+
+# Local archives / transfer artifacts
+*.zip
+
+# Editor / local machine material
+.vscode/
+
+# Historical repository material not required at runtime
+archive/
