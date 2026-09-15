@@ -3,7 +3,7 @@ import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  productionBrowserSourceMaps: true,
+  productionBrowserSourceMaps: false,
 
   /*
    * Local mobile visual-QA builds may proceed
