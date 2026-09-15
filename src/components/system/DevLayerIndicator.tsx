@@ -7,8 +7,9 @@ const DISPLAY_LAYER: Record<string, string> = {
   FOUNDATION: 'FOUNDATION',
   FRAMEWORK: 'FRAMEWORK',
   INTERFACES: 'INTERFACES',
-  ETHOS: 'CIRCULATION',  // optional but nice (matches your kicker)
-  PRESENCE: 'SEAL',      // ✅ this is the key change
+  ETHOS: 'CIRCULATION',
+  FRENCH_WARD: 'FRENCH-WARD',
+  PRESENCE: 'SEAL',
 };
 
 export default function DevLayerIndicator() {

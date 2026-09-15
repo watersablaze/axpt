@@ -1,6 +1,13 @@
 /* ─────────────────────────────────────
    AXPT — INTERFACES
-   Conditions encounter action
+
+   Before action, conditions govern
+   possibility.
+
+   At action, possibility becomes event.
+
+   After action, consequence becomes part
+   of the established condition.
 ───────────────────────────────────── */
 
 .interfacesSurface {
@@ -19,24 +26,17 @@
 
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-
-  row-gap: clamp(26px, 3.2vh, 42px);
 }
 
 
 /* ─────────────────────────────────────
-   REGISTRATION
-───────────────────────────────────── */
-
-
-
-
-/* ─────────────────────────────────────
-   DECLARATION
+   01 — DECLARATION
 ───────────────────────────────────── */
 
 .declaration {
   grid-column: 1 / 9;
+
+  padding-top: clamp(26px, 3vh, 44px);
 }
 
 .declaration h2 {
@@ -44,212 +44,513 @@
 
   max-width: 15ch;
 
-  font-size: clamp(2.65rem, 4.65vw, 4.55rem);
-  line-height: .98;
+  font-family: var(--axpt-declaration);
+  font-size: clamp(2.5rem, 4vw, 4.15rem);
+  line-height: .99;
 
   font-weight: 500;
-  letter-spacing: -.055em;
+  letter-spacing: -.052em;
 
-  color: rgba(var(--axpt-limestone), .91);
+  color: rgba(var(--axpt-limestone), .94);
 
   text-wrap: balance;
+
+  opacity: .50;
+
+  transform:
+    translate3d(0, 7px, 0)
+    scaleX(.988);
+
+  transform-origin: left center;
+
+  filter: contrast(.94);
+
+  transition:
+    opacity 900ms cubic-bezier(.22, 1, .36, 1),
+    transform 1200ms cubic-bezier(.22, 1, .36, 1),
+    filter 1050ms cubic-bezier(.22, 1, .36, 1);
 }
 
 .declaration h2 span {
-  color: rgba(var(--axpt-ash), .56);
+  color: rgba(var(--axpt-ash), .62);
+}
+
+:global(body[data-established-interfaces="true"]) .declaration h2 {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0)
+    scaleX(1);
+
+  filter: contrast(1);
 }
 
 
 /* ─────────────────────────────────────
-   EXPLANATION
+   02 — CONSEQUENCE FIELD
+
+   This is not a process diagram.
+
+   The architecture distinguishes three
+   conditions of reality:
+
+   possibility → event → consequence
 ───────────────────────────────────── */
 
-.explanation {
-  grid-column: 2 / 9;
-
-  max-width: 680px;
-}
-
-.explanation p {
-  margin: 0;
-
-  font-size: clamp(.96rem, 1.25vw, 1.08rem);
-  line-height: 1.78;
-
-  color: rgba(var(--axpt-silver), .58);
-}
-
-
-/* ─────────────────────────────────────
-   ENCOUNTER FIELD
-───────────────────────────────────── */
-
-.encounterField {
-  position: relative;
-
+.consequenceField {
   grid-column: 1 / -1;
 
-  min-height: clamp(260px, 29vh, 330px);
-}
+  position: relative;
 
+  min-height: clamp(285px, 34vh, 365px);
+  margin-top: clamp(36px, 4.5vh, 56px);
 
-/* Four conditions remain spatial rather
-   than becoming a feature-card grid. */
+  display: grid;
 
-.encounter {
-  position: absolute;
+  /*
+    One temporal register.
 
-  width: min(31%, 280px);
-}
+    BEFORE establishes condition.
+    ACTION concentrates the event.
+    AFTER registers consequence.
+  */
+  grid-template-columns:
+    minmax(0, 1fr)
+    minmax(150px, .46fr)
+    minmax(0, 1fr);
 
-.encounter:nth-child(1) {
-  top: 13%;
-  left: 4%;
-}
+  column-gap:
+    clamp(68px, 7.5vw, 108px);
 
-.encounter:nth-child(2) {
-  top: 13%;
-  right: 4%;
-  text-align: right;
-}
-
-.encounter:nth-child(3) {
-  bottom: 13%;
-  left: 4%;
-}
-
-.encounter:nth-child(4) {
-  right: 4%;
-  bottom: 13%;
-  text-align: right;
-}
-
-.encounter h3 {
-  margin: 0 0 10px;
-
-  font-family: var(--axpt-mono);
-
-  font-size: .7rem;
-  line-height: 1;
-
-  font-weight: 520;
-
-  letter-spacing: .26em;
-  text-transform: uppercase;
-
-  color: rgba(var(--axpt-ash), .74);
-}
-
-.encounter p {
-  margin: 0;
-
-  max-width: 28ch;
-
-  font-size: .84rem;
-  line-height: 1.65;
-
-  color: rgba(var(--axpt-silver), .46);
-}
-
-.encounter:nth-child(2) p,
-.encounter:nth-child(4) p {
-  margin-left: auto;
+  align-items: start;
 }
 
 
 /* ─────────────────────────────────────
-   POINT OF ACTION
+   BEFORE ACTION
 
-   A condition becomes an event.
+   Conditions exist here as constraints
+   upon what may occur.
 ───────────────────────────────────── */
 
-.actionPoint {
-  position: absolute;
+.beforeField {
+  align-self: start;
 
-  top: 50%;
-  left: 50%;
+  padding-top: 0;
+  padding-left: clamp(12px, 1.8vw, 28px);
+
+  display: flex;
+  flex-direction: column;
+
+  gap: clamp(30px, 3.8vh, 44px);
+}
+
+.fieldRegistration,
+.eventRegistration {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  min-height: 14px;
+
+  font-family: var(--axpt-mono);
+  font-size: .52rem;
+  line-height: 1;
+
+  letter-spacing: .24em;
+  text-transform: uppercase;
+
+  white-space: nowrap;
+
+  color: rgba(var(--axpt-iron-silver), .38);
+}
+
+.beforeField .fieldRegistration::after {
+  content: "";
+
+  flex: 1;
+
+  height: 1px;
+  margin-left: 18px;
+
+  background: rgba(var(--axpt-silver), .10);
+}
+
+
+.condition {
+  display: flex;
+  align-items: baseline;
+
+  gap: 10px;
+
+  opacity: .54;
+
+  transform:
+    translate3d(-6px, 0, 0);
+
+  transition:
+    opacity 1050ms cubic-bezier(.22, 1, .36, 1),
+    transform 1300ms cubic-bezier(.22, 1, .36, 1),
+    filter 1150ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.condition strong,
+.eventStatement strong {
+  font-family: var(--axpt-mono);
+  font-size: .62rem;
+  line-height: 1.35;
+
+  font-weight: 500;
+  letter-spacing: .2em;
+  text-transform: uppercase;
+
+  color: rgba(var(--axpt-ash), .8);
+}
+
+.condition span,
+.eventStatement span {
+  font-family: var(--axpt-body);
+  font-size: clamp(.9rem, 1.04vw, .99rem);
+  line-height: 1.5;
+
+  letter-spacing: -.01em;
+
+  color: rgba(var(--axpt-silver), .52);
+}
+
+
+/* ─────────────────────────────────────
+   EVENT
+
+   The event is deliberately narrow.
+
+   It is not the center of a taxonomy.
+   It is the interval through which the
+   condition of the field changes.
+───────────────────────────────────── */
+
+.eventField {
+  position: relative;
+
+  align-self: start;
 
   display: flex;
   flex-direction: column;
   align-items: center;
 
-  gap: 14px;
-
-  transform: translate(-50%, -50%);
+  padding-top: 0;
 }
 
-.actionPoint::before {
+.eventRegistration {
+  position: relative;
+
+  top: auto;
+  left: auto;
+
+  justify-content: center;
+
+  transform: none;
+
+  color: rgba(var(--axpt-ash), .78);
+}
+
+.eventRegistration::before,
+.eventRegistration::after {
   content: "";
 
-  width: 5px;
-  height: 5px;
+  flex: 1;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--axpt-silver), .035),
+      rgba(var(--axpt-mineral-cold), .18)
+    );
+
+  opacity: .42;
+
+  transform: scaleX(.68);
+
+  transition:
+    opacity 950ms cubic-bezier(.22, 1, .36, 1),
+    transform 1250ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.eventRegistration::before {
+  transform-origin: right center;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--axpt-silver), .035),
+      rgba(var(--axpt-mineral-cold), .18)
+    );
+}
+
+.eventRegistration::after {
+  transform-origin: left center;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--axpt-mineral-cold), .18),
+      rgba(var(--axpt-silver), .035)
+    );
+}
+
+.eventRegistration::before {
+  margin-right: 16px;
+}
+
+.eventRegistration::after {
+  margin-left: 16px;
+}
+
+:global(body[data-established-interfaces="true"])
+.eventRegistration::before,
+:global(body[data-established-interfaces="true"])
+.eventRegistration::after {
+  opacity: .88;
+
+  transform: scaleX(1);
+}
+
+.event {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: clamp(28px, 3.4vh, 42px);
+
+  opacity: .52;
+
+  transform:
+    translate3d(0, 3px, 0)
+    scale(.975);
+
+  transform-origin: center top;
+
+  transition:
+    opacity 850ms cubic-bezier(.22, 1, .36, 1),
+    transform 1150ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-interfaces="true"]) .event {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0)
+    scale(1);
+}
+
+.eventPoint {
+  display: block;
+
+  width: 8px;
+  height: 8px;
 
   border-radius: 50%;
 
-  background: rgba(var(--axpt-mineral-cold), .72);
+  background:
+    rgba(var(--axpt-mineral-cold), .88);
+
+  box-shadow:
+    0 0 0 0 rgba(var(--axpt-mineral-cold), 0);
+
+  opacity: .18;
+
+  transform:
+    scale(.38);
+
+  transition:
+    opacity 800ms cubic-bezier(.22, 1, .36, 1),
+    transform 1050ms cubic-bezier(.16, 1, .3, 1),
+    box-shadow 1100ms cubic-bezier(.22, 1, .36, 1);
 }
 
-.actionPoint::after {
-  content: "";
+.eventStatement {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  position: absolute;
+  gap: 8px;
 
-  top: 2.5px;
-  left: 50%;
+  text-align: center;
 
-  width: 24px;
-  height: 24px;
-
-  border: 1px solid rgba(var(--axpt-mineral-cold), .10);
-  border-radius: 50%;
-
-  transform: translate(-50%, -50%);
-
-  pointer-events: none;
+  transition:
+    opacity 900ms cubic-bezier(.22, 1, .36, 1),
+    transform 1100ms cubic-bezier(.22, 1, .36, 1);
 }
 
-.actionLabel {
-  font-family: var(--axpt-mono);
-
-  font-size: .5rem;
+.eventStatement strong {
+  font-size: clamp(.8rem, .92vw, .92rem);
   line-height: 1;
 
-  letter-spacing: .26em;
-  text-transform: uppercase;
+  letter-spacing: .3em;
 
-  white-space: nowrap;
+  color: rgba(var(--axpt-limestone), 1);
+}
 
-  color: rgba(var(--axpt-mineral-cold), .34);
+.eventStatement span {
+  max-width: 18ch;
+
+  font-size: clamp(.98rem, 1.12vw, 1.07rem);
+  line-height: 1.45;
+
+  color: rgba(var(--axpt-ash), .80);
 }
 
 
 /* ─────────────────────────────────────
-   DEFINITION
+   AFTER ACTION
+
+   The field no longer contains merely
+   possibility. Something has occurred.
+───────────────────────────────────── */
+
+.afterField {
+  align-self: start;
+
+  padding-top: 0;
+  padding-right: clamp(12px, 1.8vw, 28px);
+
+  display: flex;
+  flex-direction: column;
+
+  gap: clamp(30px, 3.8vh, 44px);
+}
+
+.afterField .fieldRegistration::before {
+  content: "";
+
+  flex: 1;
+
+  height: 1px;
+  margin-right: 18px;
+
+  background: rgba(var(--axpt-silver), .10);
+}
+
+
+.afterField .condition {
+  align-items: flex-start;
+
+  opacity: .28;
+
+  transform:
+    translate3d(-7px, 2px, 0)
+    scaleX(.992);
+
+  transform-origin: left center;
+
+  filter:
+    contrast(.90)
+    brightness(.88);
+}
+
+.afterField .condition span {
+  max-width: 24ch;
+}
+.afterField .condition:first-of-type strong {
+  transition:
+    color 1200ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-interfaces="true"])
+.afterField .condition:first-of-type strong {
+  color:
+    rgba(var(--axpt-bronze), .64);
+}
+
+
+
+
+
+/* ─────────────────────────────────────
+   CURRENT CONDITION
+
+   Before → event → after.
+
+   The event does not flash.
+   Consequence simply resolves into a
+   different established disposition.
+───────────────────────────────────── */
+
+:global(body[data-established-interfaces="true"]) .beforeField .condition {
+  opacity: .78;
+  transform: translate3d(0, 0, 0);
+}
+
+:global(body[data-established-interfaces="true"]) .eventPoint {
+  opacity: 1;
+
+  transform:
+    scale(1);
+
+  box-shadow:
+    0 0 0 2px rgba(var(--axpt-mineral-cold), .045);
+}
+
+
+
+/* ─────────────────────────────────────
+   03 — INSTITUTIONAL DEFINITION
 ───────────────────────────────────── */
 
 .interfaceDefinition {
   grid-column: 5 / 12;
 
   display: grid;
-  grid-template-columns: 92px 1fr;
+  grid-template-columns:
+    minmax(82px, .18fr)
+    minmax(0, 1fr);
 
-  column-gap: 30px;
+  column-gap: clamp(28px, 4vw, 52px);
+
   align-items: start;
 
-  padding-top: 14px;
+  margin-top: clamp(-44px, -4vh, -28px);
+  padding-top: 16px;
 
-  border-top: 1px solid rgba(var(--axpt-silver), .065);
+  border-top:
+    1px solid rgba(var(--axpt-mineral-cold), .075);
+
+  opacity: .50;
+
+  transform:
+    translate3d(0, 5px, 0)
+    scaleX(.99);
+
+  transform-origin: left top;
+
+  transition:
+    opacity 1050ms cubic-bezier(.22, 1, .36, 1),
+    transform 1250ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-interfaces="true"])
+.interfaceDefinition {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0)
+    scaleX(1);
 }
 
 .definitionLabel {
-  padding-top: .28em;
+  padding-top: .3em;
 
   font-family: var(--axpt-mono);
-
   font-size: .52rem;
   line-height: 1;
 
-  letter-spacing: .28em;
+  letter-spacing: .27em;
   text-transform: uppercase;
 
   color: rgba(var(--axpt-iron-silver), .34);
@@ -260,10 +561,13 @@
 
   max-width: 38ch;
 
-  font-size: clamp(.9rem, 1.1vw, 1rem);
-  line-height: 1.7;
+  font-family: var(--axpt-body);
+  font-size: clamp(1rem, 1.25vw, 1.16rem);
+  line-height: 1.52;
 
-  color: rgba(var(--axpt-ash), .58);
+  letter-spacing: -.016em;
+
+  color: rgba(var(--axpt-ash), .72);
 }
 
 
@@ -272,141 +576,3454 @@
 ───────────────────────────────────── */
 
 @media (max-width: 900px) {
+
   .declaration {
     grid-column: 1 / 11;
   }
 
-  .explanation {
-    grid-column: 1 / 10;
-  }
+  .consequenceField {
+    grid-template-columns:
+      minmax(0, 1fr)
+      minmax(120px, .34fr)
+      minmax(0, 1fr);
 
-  .encounterField {
-    min-height: 330px;
+    column-gap: 30px;
   }
 
   .interfaceDefinition {
     grid-column: 3 / -1;
   }
+
 }
 
 
 /* ─────────────────────────────────────
    MOBILE
+
+   Preserve before → event → after
+   without reproducing a flowchart.
 ───────────────────────────────────── */
 
 @media (max-width: 680px) {
-  .interfacesInner {
+
+  .declaration,
+  .consequenceField,
+  .interfaceDefinition {
+    grid-column: 1 / -1;
+  }
+
+  .declaration {
+    padding-top: 18px;
+  }
+
+  .declaration h2 {
+    max-width: 13ch;
+
+    font-size: clamp(2.5rem, 11vw, 3.7rem);
+  }
+
+  .consequenceField {
+    min-height: 0;
+
+    margin-top: 56px;
+
     display: flex;
     flex-direction: column;
 
-    row-gap: 30px;
+    align-items: stretch;
+
+    gap: 52px;
   }
 
-  .declaration h2 {
-    max-width: 12ch;
-
-    font-size: clamp(2.7rem, 13vw, 4.3rem);
+  .beforeField,
+  .afterField {
+    width: min(88%, 360px);
+    padding: 0;
   }
 
-  .explanation {
-    max-width: none;
+  .beforeField {
+    align-self: flex-start;
   }
 
-  .encounterField {
-    min-height: 460px;
+  .eventField {
+    min-height: 150px;
+
+    align-self: center;
   }
 
-  .encounter {
-    width: 42%;
+  .eventRegistration {
+    top: 0;
   }
 
-  .encounter:nth-child(1) {
-    top: 10%;
-    left: 0;
+  .afterField {
+    align-self: flex-end;
   }
 
-  .encounter:nth-child(2) {
-    top: 10%;
-    right: 0;
-  }
-
-  .encounter:nth-child(3) {
-    bottom: 10%;
-    left: 0;
-  }
-
-  .encounter:nth-child(4) {
-    right: 0;
-    bottom: 10%;
-  }
-.interfaceDefinition {
-    grid-template-columns: 70px 1fr;
+  .interfaceDefinition {
+    grid-template-columns: 76px 1fr;
 
     column-gap: 18px;
+
+    margin-top: 54px;
   }
+
 }
 
 
 /* ─────────────────────────────────────
-   LIVING DOCUMENT — INSCRIPTION
+   REDUCED MOTION
 ───────────────────────────────────── */
 
-.declaration h2 {
-  opacity: .56;
-  transform: translate3d(0, 10px, 0);
 
-  transition:
-    opacity 900ms cubic-bezier(.22, 1, .36, 1),
-    transform 1100ms cubic-bezier(.22, 1, .36, 1);
+/* ─────────────────────────────────────
+   INTERFACES — CAUSAL GRAVITY FIELD
+
+   Before remains slightly above the event.
+   Action occupies the gravitational center.
+   Consequence settles into a lower state.
+
+   This block intentionally overrides the
+   earlier structural declarations without
+   replacing their underlying architecture.
+───────────────────────────────────── */
+
+
+/* 01 — CAUSAL HEIGHT */
+
+.beforeField {
+  transform:
+    translate3d(0, -8px, 0);
 }
 
-:global(body[data-layer="INTERFACES"]) .declaration h2 {
+.eventField {
+  transform:
+    translate3d(0, 14px, 0);
+}
+
+.afterField {
+  transform:
+    translate3d(30px, 34px, 0);
+}
+
+
+/* 02 — GRAVITATIONAL EVENT FIELD */
+
+.eventField::before {
+  content: "";
+
+  position: absolute;
+
+  left: 50%;
+  top: 43%;
+
+  width: clamp(260px, 28vw, 430px);
+  aspect-ratio: 1;
+
+  pointer-events: none;
+
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(var(--axpt-mineral-cold), .080) 0%,
+      rgba(var(--axpt-mineral-cold), .042) 20%,
+      rgba(var(--axpt-mineral-green), .020) 42%,
+      rgba(var(--axpt-mineral-cold), .008) 58%,
+      transparent 74%
+    );
+
+  opacity: .72;
+
+  transform:
+    translate3d(-50%, -50%, 0)
+    scale(.94);
+
+  filter:
+    blur(12px);
+
+  animation:
+    interfaceGravityField
+    11200ms
+    ease-in-out
+    infinite;
+}
+
+@keyframes interfaceGravityField {
+
+  0%,
+  100% {
+    opacity: .62;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(.965);
+  }
+
+  46% {
+    opacity: .94;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(1.045);
+  }
+
+  74% {
+    opacity: .78;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(1.01);
+  }
+
+}
+
+
+/* 03 — CONVERGENCE INTO ACTION */
+
+.eventRegistration::before {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--axpt-silver), .025),
+      rgba(var(--axpt-mineral-cold), .42)
+    );
+}
+
+.eventRegistration::after {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--axpt-mineral-cold), .42),
+      rgba(var(--axpt-silver), .025)
+    );
+}
+
+:global(body[data-established-interfaces="true"])
+.eventRegistration::before,
+:global(body[data-established-interfaces="true"])
+.eventRegistration::after {
   opacity: 1;
-  transform: translate3d(0, 0, 0);
+
+  animation:
+    interfaceConvergenceCurrent
+    9200ms
+    ease-in-out
+    infinite;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .declaration h2 {
-    transition: none;
+@keyframes interfaceConvergenceCurrent {
+
+  0%,
+  100% {
+    opacity: .78;
+    transform: scaleX(.96);
+    filter: brightness(.96);
   }
+
+  48% {
+    opacity: 1;
+    transform: scaleX(1.055);
+    filter: brightness(1.18);
+  }
+
+  74% {
+    opacity: .90;
+    transform: scaleX(1.012);
+    filter: brightness(1.05);
+  }
+
 }
 
-/* ─────────────────────────────────────
-   LIVING DOCUMENT — EVENT
 
-   Position encounters condition.
-   The established point remains stable;
-   its perimeter resolves as consequence.
-───────────────────────────────────── */
+/* 04 — EXECUTION APERTURE
 
-.actionPoint::after {
+   Not a point placed in the field.
+   A narrow opening through which an
+   established condition becomes action.
+*/
+
+.eventPoint {
+  position: relative;
+
+  display: block;
+
+  width: 2px;
+  height: 19px;
+
+  border-radius: 1px;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(var(--axpt-mineral-cold), .18),
+      rgba(var(--axpt-mineral-cold), .96) 42%,
+      rgba(var(--axpt-limestone), .88) 50%,
+      rgba(var(--axpt-mineral-cold), .96) 58%,
+      rgba(var(--axpt-mineral-cold), .18)
+    );
+
   opacity: .28;
 
   transform:
-    translate(-50%, -50%)
-    scale(.64);
+    translate3d(0, 2px, 0)
+    scaleY(.52);
+
+  transform-origin: center;
+
+  box-shadow:
+    0 0 8px rgba(var(--axpt-mineral-cold), .08);
 
   transition:
-    opacity 1000ms cubic-bezier(.22, 1, .36, 1),
-    transform 1250ms cubic-bezier(.22, 1, .36, 1);
+    opacity 800ms cubic-bezier(.22, 1, .36, 1),
+    transform 1100ms cubic-bezier(.16, 1, .3, 1),
+    box-shadow 1200ms cubic-bezier(.22, 1, .36, 1);
 }
 
-:global(body[data-layer="INTERFACES"]) .actionPoint::after {
+
+/* displaced execution trace */
+
+.eventPoint::after {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  width: 1px;
+
+  margin: auto;
+
+  background:
+    rgba(var(--axpt-mineral-green), .42);
+
+  opacity: 0;
+
+  transform:
+    translate3d(-4px, 0, 0)
+    scaleY(.72);
+
+  transform-origin: center;
+}
+
+
+:global(body[data-established-interfaces="true"])
+.eventPoint {
   opacity: 1;
 
   transform:
-    translate(-50%, -50%)
-    scale(1);
+    translate3d(0, 0, 0)
+    scaleY(1);
+
+  box-shadow:
+    0 0 8px rgba(var(--axpt-mineral-cold), .18),
+    0 0 18px rgba(var(--axpt-mineral-cold), .085),
+    0 0 30px rgba(var(--axpt-mineral-green), .035);
+
+  animation:
+    interfaceExecutionAperture
+    7600ms
+    ease-in-out
+    infinite;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .actionPoint::after {
+:global(body[data-established-interfaces="true"])
+.eventPoint::after {
+  animation:
+    interfaceExecutionTrace
+    7600ms
+    ease-in-out
+    infinite;
+}
+
+
+@keyframes interfaceExecutionAperture {
+
+  0%,
+  100% {
+    transform:
+      translate3d(0, 0, 0)
+      scaleY(1);
+
+    filter:
+      brightness(1);
+  }
+
+  43% {
+    transform:
+      translate3d(-1px, 0, 0)
+      scaleY(.88);
+
+    filter:
+      brightness(1.14);
+  }
+
+  52% {
+    transform:
+      translate3d(1.5px, 0, 0)
+      scaleY(1.08);
+
+    filter:
+      brightness(1.24);
+  }
+
+  68% {
+    transform:
+      translate3d(.35px, 0, 0)
+      scaleY(1.02);
+
+    filter:
+      brightness(1.05);
+  }
+
+}
+
+
+@keyframes interfaceExecutionTrace {
+
+  0%,
+  38%,
+  100% {
+    opacity: 0;
+
+    transform:
+      translate3d(-4px, 0, 0)
+      scaleY(.72);
+  }
+
+  49% {
+    opacity: .42;
+
+    transform:
+      translate3d(-1px, 0, 0)
+      scaleY(.92);
+  }
+
+  58% {
+    opacity: .16;
+
+    transform:
+      translate3d(4px, 0, 0)
+      scaleY(1);
+  }
+
+  70% {
+    opacity: 0;
+
+    transform:
+      translate3d(7px, 0, 0)
+      scaleY(.78);
+  }
+
+}
+
+
+/* 05 — CONSEQUENCE OCCUPIES A NEW STATE */
+
+:global(body[data-established-interfaces="true"])
+.afterField .condition {
+  opacity: 1;
+
+  transform:
+    translate3d(6px, 0, 0)
+    scaleX(1);
+
+  filter:
+    contrast(1)
+    brightness(1);
+}
+
+:global(body[data-established-interfaces="true"])
+.afterField .condition:first-of-type strong {
+  color:
+    rgba(var(--axpt-bronze), .88);
+
+  text-shadow:
+    0 0 7px rgba(var(--axpt-bronze), .13),
+    0 0 18px rgba(var(--axpt-oxide), .045);
+}
+
+
+/* 06 — CENTER INSCRIPTION */
+
+:global(body[data-established-interfaces="true"])
+.eventStatement strong {
+  text-shadow:
+    0 0 9px rgba(var(--axpt-mineral-cold), .075),
+    0 0 20px rgba(var(--axpt-mineral-cold), .030);
+}
+
+
+
+/* ─────────────────────────────────────
+   INTERFACES — ARRIVAL SETTLEMENT
+
+   The three causal conditions enter the
+   field with related but distinct physics.
+
+   No explicit delays.
+───────────────────────────────────── */
+
+
+/* BEFORE — known conditions register */
+
+:global(body[data-established-interfaces="true"])
+.beforeField .fieldRegistration,
+:global(body[data-established-interfaces="true"])
+.beforeField .condition {
+  animation:
+    interfaceBeforeArrival
+    1220ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+@keyframes interfaceBeforeArrival {
+
+  0% {
+    opacity: .46;
+
+    transform:
+      translate3d(-5px, 1px, 0)
+      scaleX(.994);
+
+    filter:
+      contrast(.94)
+      brightness(.96);
+  }
+
+  58% {
+    opacity: .84;
+
+    transform:
+      translate3d(-1px, 0, 0)
+      scaleX(.999);
+  }
+
+  100% {
     opacity: 1;
 
     transform:
-      translate(-50%, -50%)
+      translate3d(0, 0, 0)
+      scaleX(1);
+
+    filter:
+      contrast(1)
+      brightness(1);
+  }
+
+}
+
+
+/* ACTION — field contracts into execution */
+
+:global(body[data-established-interfaces="true"])
+.eventRegistration,
+:global(body[data-established-interfaces="true"])
+.event {
+  animation:
+    interfaceActionArrival
+    1480ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+@keyframes interfaceActionArrival {
+
+  0%,
+  10% {
+    opacity: .42;
+
+    transform:
+      translate3d(0, 5px, 0)
+      scale(.982);
+
+    filter:
+      contrast(.94)
+      brightness(.94);
+  }
+
+  62% {
+    opacity: .92;
+
+    transform:
+      translate3d(0, -1px, 0)
+      scale(1.006);
+
+    filter:
+      contrast(1.015)
+      brightness(1.02);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0)
       scale(1);
 
+    filter:
+      contrast(1)
+      brightness(1);
+  }
+
+}
+
+
+/* AFTER — consequence occupies its new position */
+
+:global(body[data-established-interfaces="true"])
+.afterField .fieldRegistration {
+  animation:
+    interfaceAfterRegistrationArrival
+    1680ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+:global(body[data-established-interfaces="true"])
+.afterField .condition {
+  animation:
+    interfaceAfterArrival
+    1760ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+@keyframes interfaceAfterRegistrationArrival {
+
+  0%,
+  18% {
+    opacity: .32;
+
+    transform:
+      translate3d(-5px, 2px, 0);
+  }
+
+  68% {
+    opacity: .84;
+
+    transform:
+      translate3d(1px, 0, 0);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0);
+  }
+
+}
+
+@keyframes interfaceAfterArrival {
+
+  0%,
+  20% {
+    opacity: .28;
+
+    transform:
+      translate3d(-7px, 2px, 0)
+      scaleX(.992);
+
+    filter:
+      contrast(.90)
+      brightness(.88);
+  }
+
+  68% {
+    opacity: .88;
+
+    transform:
+      translate3d(7px, 0, 0)
+      scaleX(1.002);
+
+    filter:
+      contrast(1.01)
+      brightness(1.015);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translate3d(6px, 0, 0)
+      scaleX(1);
+
+    filter:
+      contrast(1)
+      brightness(1);
+  }
+
+}
+
+
+/* DEFINITION — documentary conclusion */
+
+:global(body[data-established-interfaces="true"])
+.interfaceDefinition {
+  animation:
+    interfaceDefinitionArrival
+    1920ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+@keyframes interfaceDefinitionArrival {
+
+  0%,
+  26% {
+    opacity: .46;
+
+    transform:
+      translate3d(0, 5px, 0)
+      scaleX(.99);
+  }
+
+  72% {
+    opacity: .90;
+
+    transform:
+      translate3d(1px, 0, 0)
+      scaleX(1.002);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0)
+      scaleX(1);
+  }
+
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+
+  .beforeField .fieldRegistration,
+  .beforeField .condition,
+  .eventRegistration,
+  .event,
+  .afterField .fieldRegistration,
+  .afterField .condition,
+  .interfaceDefinition,
+  .eventField::before,
+  .eventRegistration::before,
+  .eventRegistration::after,
+  .eventPoint,
+  .eventPoint::after {
+    animation: none;
+  }
+
+  .beforeField {
+    transform:
+      translate3d(0, -8px, 0);
+  }
+
+  .eventField {
+    transform:
+      translate3d(0, 14px, 0);
+  }
+
+  .afterField {
+    transform:
+      translate3d(30px, 34px, 0);
+  }
+
+  .eventField::before {
+    opacity: .78;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(1);
+  }
+
+
+  .declaration h2,
+  .condition,
+  .event,
+  .eventPoint,
+  .eventStatement,
+  .interfaceDefinition,
+  .eventRegistration::before,
+  .eventRegistration::after {
+    opacity: 1;
+    transform: none;
+    filter: none;
     transition: none;
   }
+
+  .afterField .condition {
+    transform:
+      translate3d(6px, 0, 0)
+      scaleX(1);
+  }
+
+  .eventPoint {
+    box-shadow:
+      0 0 0 2px rgba(var(--axpt-mineral-cold), .045);
+  }
+
+}
+
+/* HEADER ANCHOR OFFSET — interfacesSurface */
+
+.interfacesSurface {
+  scroll-margin-top: 76px;
+}
+
+@media (max-width: 680px) {
+
+  .interfacesSurface {
+    scroll-margin-top: 64px;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — INTERFACES MOBILE M5A
+
+   Mobile constitution:
+   verification + authority
+   → convergence
+   → point of action
+   → consequence + record.
+
+   The surface behaves as an action gate,
+   not as a vertically stretched process.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .interfacesSurface {
+    scroll-margin-top: 60px;
+  }
+
+
+  .interfacesInner {
+    width:
+      calc(100% - 40px);
+
+    margin:
+      0
+      auto;
+
+    row-gap: 0;
+  }
+
+
+  /* ── DECLARATION ── */
+
+  .declaration {
+    padding-top: 0;
+  }
+
+
+  .declaration h2 {
+    max-width: 11.7ch;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        2.15rem,
+        9.4vw,
+        2.65rem
+      );
+
+    line-height: 1.01;
+
+    letter-spacing: -.047em;
+  }
+
+
+  .declaration h2 span {
+    color:
+      rgba(var(--axpt-ash), .72);
+  }
+
+
+  /* ── ACTION SYSTEM ── */
+
+  .consequenceField {
+    grid-column:
+      1 / -1;
+
+    width: 100%;
+
+    min-height: 0;
+
+    margin-top: 34px;
+
+    display: grid;
+
+    grid-template-columns: 1fr;
+
+    gap: 0;
+  }
+
+
+  /*
+   * Remove inherited desktop causal offsets.
+   * Mobile owns its own event geometry.
+   */
+
+  .beforeField,
+  .eventField,
+  .afterField {
+    transform: none;
+
+    width: 100%;
+
+    max-width: none;
+
+    align-self: auto;
+  }
+
+
+  /* ── BEFORE / TWO INPUT CONDITIONS ── */
+
+  .beforeField {
+    position: relative;
+
+    display: grid;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      40px
+      minmax(0, 1fr);
+
+    grid-template-areas:
+      "registration registration registration"
+      "verify gap authorize";
+
+    align-items: start;
+
+    padding: 0;
+
+    min-height: 122px;
+  }
+
+
+  .beforeField .fieldRegistration {
+    grid-area: registration;
+
+    justify-self: center;
+
+    margin-bottom: 24px;
+
+    font-size: .47rem;
+
+    letter-spacing: .23em;
+
+    color:
+      rgba(var(--axpt-silver), .54);
+  }
+
+
+  .beforeField .condition {
+    width: auto;
+
+    margin: 0;
+
+    padding: 0;
+  }
+
+
+  .beforeField .condition:first-of-type {
+    grid-area: verify;
+
+    text-align: right;
+  }
+
+
+  .beforeField .condition:last-of-type {
+    grid-area: authorize;
+
+    text-align: left;
+  }
+
+
+  .beforeField .condition strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: .49rem;
+    line-height: 1;
+
+    letter-spacing: .22em;
+
+    color:
+      rgba(var(--axpt-mineral-cold), .80);
+  }
+
+
+  .beforeField .condition span {
+    display: block;
+
+    font-size:
+      clamp(
+        .88rem,
+        3.8vw,
+        .96rem
+      );
+
+    line-height: 1.38;
+
+    color:
+      rgba(var(--axpt-silver), .64);
+  }
+
+
+  /*
+   * Two faint convergence currents.
+   * They do not meet each other:
+   * they terminate into the event field.
+   */
+
+  .beforeField::before,
+  .beforeField::after {
+    content: "";
+
+    position: absolute;
+
+    bottom: 4px;
+
+    width: 76px;
+    height: 1px;
+
+    pointer-events: none;
+
+    opacity: .46;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--axpt-mineral-cold), .28),
+        rgba(var(--axpt-silver), .08)
+      );
+  }
+
+
+  .beforeField::before {
+    left: calc(50% - 78px);
+
+    transform:
+      rotate(24deg);
+
+    transform-origin:
+      right center;
+  }
+
+
+  .beforeField::after {
+    right: calc(50% - 78px);
+
+    transform:
+      rotate(-24deg);
+
+    transform-origin:
+      left center;
+  }
+
+
+  /* ── POINT OF ACTION ── */
+
+  .eventField {
+    position: relative;
+
+    min-height: 142px;
+
+    display: grid;
+    justify-items: center;
+
+    align-content: start;
+
+    margin-top: -2px;
+
+    padding: 0;
+  }
+
+
+  /*
+   * Existing desktop gravity field becomes
+   * a tighter mobile aperture.
+   */
+
+  .eventField::before {
+    left: 50%;
+    top: 62px;
+
+    width: 172px;
+
+    opacity: .58;
+
+    filter:
+      blur(15px);
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(.92);
+  }
+
+
+  .eventRegistration {
+    position: relative;
+
+    left: auto;
+    right: auto;
+    top: auto;
+
+    width: fit-content;
+
+    margin: 0 auto;
+
+    font-size: .47rem;
+
+    letter-spacing: .24em;
+
+    color:
+      rgba(var(--axpt-limestone), .72);
+  }
+
+
+  .eventRegistration::before,
+  .eventRegistration::after {
+    width: 38px;
+
+    opacity: .54;
+  }
+
+
+  .event {
+    position: relative;
+
+    display: grid;
+    justify-items: center;
+
+    margin-top: 19px;
+  }
+
+
+  .eventPoint {
+    width: 3px;
+    height: 29px;
+
+    margin-bottom: 11px;
+
+    background:
+      linear-gradient(
+        180deg,
+        transparent,
+        rgba(var(--axpt-mineral-cold), .90) 44%,
+        rgba(var(--axpt-limestone), .64) 58%,
+        transparent
+      );
+
+    box-shadow:
+      0 0 12px
+      rgba(var(--axpt-mineral-cold), .16);
+  }
+
+
+  .eventStatement {
+    text-align: center;
+  }
+
+
+  .eventStatement strong {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-size: .78rem;
+
+    letter-spacing: .30em;
+
+    color:
+      rgba(var(--axpt-limestone), .92);
+  }
+
+
+  .eventStatement span {
+    display: block;
+
+    font-size:
+      clamp(
+        .98rem,
+        4.3vw,
+        1.08rem
+      );
+
+    line-height: 1.36;
+
+    color:
+      rgba(var(--axpt-silver), .76);
+  }
+
+
+  /* ── AFTER / RESULTING CONDITIONS ── */
+
+  .afterField {
+    position: relative;
+
+    display: grid;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      24px
+      minmax(0, 1fr);
+
+    grid-template-areas:
+      "registration registration registration"
+      "consequence gap record";
+
+    margin-top: 22px;
+
+    padding: 0;
+  }
+
+
+  .afterField .fieldRegistration {
+    grid-area: registration;
+
+    justify-self: center;
+
+    margin-bottom: 20px;
+
+    font-size: .47rem;
+
+    letter-spacing: .23em;
+
+    color:
+      rgba(var(--axpt-mineral-cold), .60);
+  }
+
+
+  .afterField .condition {
+    width: auto;
+
+    margin: 0;
+
+    padding: 0;
+  }
+
+
+  .afterField .condition:first-of-type {
+    grid-area: consequence;
+
+    text-align: right;
+  }
+
+
+  .afterField .condition:last-of-type {
+    grid-area: record;
+
+    text-align: left;
+  }
+
+
+  .afterField .condition strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: .47rem;
+
+    letter-spacing: .20em;
+
+    color:
+      rgba(var(--axpt-mineral-cold), .72);
+  }
+
+
+  .afterField .condition span {
+    display: block;
+
+    font-size: .82rem;
+    line-height: 1.42;
+
+    color:
+      rgba(var(--axpt-silver), .58);
+  }
+
+
+  /* ── DOCUMENTARY DEFINITION ── */
+
+  .interfaceDefinition {
+    grid-column:
+      1 / -1;
+
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      64px
+      minmax(0, 1fr);
+
+    column-gap: 12px;
+
+    margin-top: 30px;
+
+    padding-top: 15px;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-mineral-cold), .09);
+  }
+
+
+  .definitionLabel {
+    padding-top: 2px;
+
+    font-size: .46rem;
+
+    letter-spacing: .22em;
+
+    color:
+      rgba(var(--axpt-mineral-cold), .70);
+  }
+
+
+  .interfaceDefinition p {
+    max-width: 27ch;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        .91rem,
+        3.8vw,
+        .98rem
+      );
+
+    line-height: 1.54;
+
+    color:
+      rgba(var(--axpt-ash), .80);
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — INTERFACES MOBILE M5B
+
+   Tighten the action gate.
+
+   Before conditions converge more visibly,
+   the event gains gravitational authority,
+   and the resulting state reopens beneath it.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── GLOBAL FIELD COMPRESSION ── */
+
+  .consequenceField {
+    margin-top: 28px;
+  }
+
+
+  /* ── BEFORE ACTION ── */
+
+  .beforeField {
+    grid-template-columns:
+      minmax(0, 1fr)
+      24px
+      minmax(0, 1fr);
+
+    min-height: 104px;
+  }
+
+
+  .beforeField .fieldRegistration {
+    margin-bottom: 18px;
+  }
+
+
+  .beforeField .condition:first-of-type,
+  .beforeField .condition:last-of-type {
+    text-align: center;
+  }
+
+
+  .beforeField .condition strong {
+    font-size: .48rem;
+    letter-spacing: .20em;
+  }
+
+
+  .beforeField .condition span {
+    max-width: 12ch;
+
+    margin:
+      0
+      auto;
+
+    font-size:
+      clamp(
+        .86rem,
+        3.7vw,
+        .94rem
+      );
+
+    line-height: 1.34;
+  }
+
+
+  /* convergence currents come closer */
+
+  .beforeField::before,
+  .beforeField::after {
+    bottom: 0;
+
+    width: 88px;
+
+    opacity: .62;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--axpt-mineral-cold), .34),
+        rgba(var(--axpt-silver), .10)
+      );
+  }
+
+
+  .beforeField::before {
+    left:
+      calc(50% - 90px);
+
+    transform:
+      rotate(27deg);
+  }
+
+
+  .beforeField::after {
+    right:
+      calc(50% - 90px);
+
+    transform:
+      rotate(-27deg);
+  }
+
+
+  /* ── POINT OF ACTION / APERTURE ── */
+
+  .eventField {
+    min-height: 126px;
+
+    margin-top: -8px;
+  }
+
+
+  .eventField::before {
+    top: 56px;
+
+    width: 148px;
+
+    opacity: .66;
+
+    filter:
+      blur(13px);
+  }
+
+
+  .eventRegistration {
+    margin-top: 0;
+
+    color:
+      rgba(var(--axpt-limestone), .78);
+  }
+
+
+  .eventRegistration::before,
+  .eventRegistration::after {
+    width: 30px;
+
+    opacity: .66;
+  }
+
+
+  .event {
+    margin-top: 15px;
+  }
+
+
+  .eventPoint {
+    width: 3px;
+    height: 34px;
+
+    margin-bottom: 9px;
+
+    box-shadow:
+      0 0 10px
+        rgba(var(--axpt-mineral-cold), .20),
+      0 0 24px
+        rgba(var(--axpt-mineral-cold), .06);
+  }
+
+
+  .eventStatement strong {
+    margin-bottom: 5px;
+
+    font-size: .80rem;
+
+    letter-spacing: .32em;
+  }
+
+
+  .eventStatement span {
+    font-size:
+      clamp(
+        .96rem,
+        4.1vw,
+        1.05rem
+      );
+  }
+
+
+  /* ── AFTER ACTION / REOPENED STATE ── */
+
+  .afterField {
+    grid-template-columns:
+      minmax(0, 1fr)
+      20px
+      minmax(0, 1fr);
+
+    margin-top: 12px;
+  }
+
+
+  .afterField .fieldRegistration {
+    justify-self: center;
+
+    width: auto;
+
+    margin:
+      0
+      auto
+      16px;
+
+    text-align: center;
+
+    transform: none;
+  }
+
+
+  .afterField .condition:first-of-type,
+  .afterField .condition:last-of-type {
+    text-align: center;
+
+    transform: none;
+  }
+
+
+  .afterField .condition strong {
+    font-size: .46rem;
+
+    letter-spacing: .17em;
+  }
+
+
+  .afterField .condition span {
+    max-width: 13ch;
+
+    margin:
+      0
+      auto;
+
+    font-size: .80rem;
+    line-height: 1.36;
+  }
+
+
+  /* slightly greater distinction after action */
+
+  .afterField .condition:first-of-type strong {
+    color:
+      rgba(var(--axpt-bronze), .66);
+  }
+
+
+  .afterField .condition:last-of-type strong {
+    color:
+      rgba(var(--axpt-mineral-cold), .72);
+  }
+
+
+  /* ── DOCUMENTARY CONSEQUENCE ── */
+
+  .interfaceDefinition {
+    margin-top: 22px;
+
+    padding-top: 14px;
+  }
+
+
+  .interfaceDefinition p {
+    line-height: 1.50;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — INTERFACES MOBILE M5C
+
+   Optical compression of the action gate.
+
+   Inputs move inward.
+   Action gains central gravity.
+   Resulting conditions reopen nearby.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── OPERATIONAL CORE ── */
+
+  .consequenceField {
+    width: min(100%, 340px);
+
+    justify-self: center;
+
+    margin:
+      20px
+      auto
+      0;
+  }
+
+
+  /* ── BEFORE / INWARD CONVERGENCE ── */
+
+  .beforeField {
+    width: min(100%, 326px);
+
+    justify-self: center;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      18px
+      minmax(0, 1fr);
+
+    min-height: 88px;
+  }
+
+
+  .beforeField .fieldRegistration {
+    margin-bottom: 12px;
+  }
+
+
+  .beforeField .condition span {
+    max-width: 10.5ch;
+
+    font-size:
+      clamp(
+        .84rem,
+        3.55vw,
+        .91rem
+      );
+
+    line-height: 1.30;
+  }
+
+
+  .beforeField::before,
+  .beforeField::after {
+    bottom: -2px;
+
+    width: 72px;
+
+    opacity: .66;
+  }
+
+
+  .beforeField::before {
+    left:
+      calc(50% - 74px);
+
+    transform:
+      rotate(29deg);
+  }
+
+
+  .beforeField::after {
+    right:
+      calc(50% - 74px);
+
+    transform:
+      rotate(-29deg);
+  }
+
+
+  /* ── ACTION CORE ── */
+
+  .eventField {
+    width: min(100%, 300px);
+
+    justify-self: center;
+
+    min-height: 108px;
+
+    margin-top: -12px;
+  }
+
+
+  .eventField::before {
+    top: 50px;
+
+    width: 132px;
+
+    opacity: .70;
+
+    filter:
+      blur(12px);
+  }
+
+
+  .eventRegistration {
+    font-size: .46rem;
+
+    letter-spacing: .22em;
+  }
+
+
+  .eventRegistration::before,
+  .eventRegistration::after {
+    width: 26px;
+  }
+
+
+  .event {
+    margin-top: 12px;
+  }
+
+
+  .eventPoint {
+    height: 30px;
+
+    margin-bottom: 7px;
+  }
+
+
+  .eventStatement strong {
+    margin-bottom: 4px;
+  }
+
+
+  .eventStatement span {
+    font-size:
+      clamp(
+        .94rem,
+        4vw,
+        1.02rem
+      );
+
+    line-height: 1.32;
+  }
+
+
+  /* ── RESULTING STATE ── */
+
+  .afterField {
+    width: min(100%, 326px);
+
+    justify-self: center;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      18px
+      minmax(0, 1fr);
+
+    margin:
+      4px
+      auto
+      0;
+  }
+
+
+  .afterField .fieldRegistration {
+    margin-bottom: 11px;
+  }
+
+
+  .afterField .condition span {
+    max-width: 11ch;
+
+    font-size: .78rem;
+    line-height: 1.31;
+  }
+
+
+  .afterField .condition strong {
+    margin-bottom: 4px;
+  }
+
+
+  /* ── DOCUMENTARY RESOLUTION ── */
+
+  .interfaceDefinition {
+    margin-top: 16px;
+
+    padding-top: 13px;
+
+    grid-template-columns:
+      58px
+      minmax(0, 1fr);
+
+    column-gap: 10px;
+  }
+
+
+  .interfaceDefinition p {
+    max-width: 26ch;
+
+    font-size:
+      clamp(
+        .90rem,
+        3.7vw,
+        .96rem
+      );
+
+    line-height: 1.48;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — INTERFACES MOBILE M5D
+
+   ACTION RESTRAINT
+
+   Verification + authority converge.
+   One aperture marks execution.
+   Consequence + record remain afterward.
+
+   Remove duplicate explanatory geometry.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .consequenceField {
+    width: min(100%, 326px);
+
+    margin:
+      18px
+      auto
+      0;
+  }
+
+
+  /* ── INPUT CONDITIONS ── */
+
+  .beforeField {
+    width: 100%;
+
+    min-height: 82px;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      16px
+      minmax(0, 1fr);
+  }
+
+
+  .beforeField .fieldRegistration {
+    margin-bottom: 10px;
+  }
+
+
+  .beforeField .condition strong {
+    font-size: .45rem;
+
+    letter-spacing: .17em;
+  }
+
+
+  .beforeField .condition span {
+    max-width: 10ch;
+
+    font-size: .82rem;
+    line-height: 1.28;
+  }
+
+
+  /* only two restrained input traces */
+
+  .beforeField::before,
+  .beforeField::after {
+    bottom: 0;
+
+    width: 62px;
+
+    opacity: .34;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--axpt-mineral-cold), .24),
+        rgba(var(--axpt-silver), .055)
+      );
+  }
+
+
+  .beforeField::before {
+    left:
+      calc(50% - 66px);
+
+    transform:
+      rotate(27deg);
+  }
+
+
+  .beforeField::after {
+    right:
+      calc(50% - 66px);
+
+    transform:
+      rotate(-27deg);
+  }
+
+
+  /* ── ACTION CORE ── */
+
+  .eventField {
+    width: min(100%, 280px);
+
+    min-height: 94px;
+
+    margin-top: -8px;
+  }
+
+
+  /* remove atmospheric gravity field */
+
+  .eventField::before {
+    display: none;
+  }
+
+
+  .eventRegistration {
+    font-size: .43rem;
+
+    letter-spacing: .19em;
+  }
+
+
+  /* registration does not need its own lines */
+
+  .eventRegistration::before,
+  .eventRegistration::after {
+    display: none;
+  }
+
+
+  .event {
+    margin-top: 11px;
+  }
+
+
+  /* one restrained execution aperture */
+
+  .eventPoint {
+    width: 2px;
+    height: 24px;
+
+    margin-bottom: 7px;
+
+    opacity: .90;
+
+    box-shadow:
+      0 0 8px
+        rgba(var(--axpt-mineral-cold), .10);
+  }
+
+
+  /* remove duplicate displaced execution trace */
+
+  .eventPoint::after {
+    display: none;
+  }
+
+
+  .eventStatement strong {
+    margin-bottom: 3px;
+
+    font-size: .72rem;
+
+    letter-spacing: .26em;
+  }
+
+
+  .eventStatement span {
+    font-size: .91rem;
+    line-height: 1.30;
+  }
+
+
+  /* ── RESULTING CONDITION ── */
+
+  .afterField {
+    width: 100%;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      16px
+      minmax(0, 1fr);
+
+    margin-top: 2px;
+  }
+
+
+  .afterField .fieldRegistration {
+    margin-bottom: 9px;
+
+    font-size: .43rem;
+
+    letter-spacing: .18em;
+  }
+
+
+  .afterField .condition strong {
+    margin-bottom: 3px;
+
+    font-size: .43rem;
+
+    letter-spacing: .15em;
+  }
+
+
+  .afterField .condition span {
+    max-width: 11ch;
+
+    font-size: .76rem;
+    line-height: 1.30;
+  }
+
+
+  .interfaceDefinition {
+    margin-top: 14px;
+
+    padding-top: 12px;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — INTERFACES MOBILE M5E
+
+   MIRRORED CAUSAL REGISTER
+
+   BEFORE and AFTER share one visual law.
+
+   Each outer condition is:
+   registration
+   → plain-language consequence.
+
+   The two fields mirror one another around
+   the Point of Action without becoming a
+   literal process diagram.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── SHARED BEFORE / AFTER FIELD LAW ── */
+
+  .beforeField,
+  .afterField {
+    position: relative;
+
+    width: min(100%, 314px);
+
+    margin-left: auto;
+    margin-right: auto;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      18px
+      minmax(0, 1fr);
+
+    align-items: start;
+  }
+
+
+  /* shared temporal registration */
+
+  .beforeField .fieldRegistration,
+  .afterField .fieldRegistration {
+    justify-self: center;
+
+    width: auto;
+
+    margin:
+      0
+      auto
+      13px;
+
+    font-size: .40rem;
+    line-height: 1;
+
+    letter-spacing: .17em;
+
+    text-align: center;
+
+    color:
+      rgba(var(--axpt-iron-silver), .48);
+  }
+
+
+  /* ── FOUR CONDITION OBJECTS ── */
+
+  .beforeField .condition,
+  .afterField .condition {
+    display: block;
+
+    width: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    text-align: center;
+
+    transform: none;
+  }
+
+
+  .beforeField .condition:first-of-type,
+  .beforeField .condition:last-of-type,
+  .afterField .condition:first-of-type,
+  .afterField .condition:last-of-type {
+    text-align: center;
+  }
+
+
+  .beforeField .condition strong,
+  .afterField .condition strong {
+    display: block;
+
+    min-height: 1em;
+
+    margin:
+      0
+      0
+      6px;
+
+    font-size: .43rem;
+    line-height: 1;
+
+    letter-spacing: .16em;
+
+    text-align: center;
+  }
+
+
+  .beforeField .condition span,
+  .afterField .condition span {
+    display: block;
+
+    max-width: 12ch;
+
+    margin:
+      0
+      auto;
+
+    font-size: .79rem;
+    line-height: 1.34;
+
+    text-align: center;
+
+    color:
+      rgba(var(--axpt-silver), .58);
+  }
+
+
+  /* BEFORE remains slightly colder */
+
+  .beforeField .condition strong {
+    color:
+      rgba(var(--axpt-mineral-cold), .70);
+  }
+
+
+  /* AFTER differentiates consequence / record quietly */
+
+  .afterField .condition:first-of-type strong {
+    color:
+      rgba(var(--axpt-bronze), .62);
+  }
+
+
+  .afterField .condition:last-of-type strong {
+    color:
+      rgba(var(--axpt-mineral-cold), .66);
+  }
+
+
+  /* ── BEFORE / CONVERGENCE ── */
+
+  .beforeField {
+    min-height: 84px;
+  }
+
+
+  .beforeField::before,
+  .beforeField::after {
+    bottom: -1px;
+
+    width: 58px;
+
+    opacity: .28;
+  }
+
+
+  .beforeField::before {
+    left:
+      calc(50% - 62px);
+
+    transform:
+      rotate(26deg);
+  }
+
+
+  .beforeField::after {
+    right:
+      calc(50% - 62px);
+
+    transform:
+      rotate(-26deg);
+  }
+
+
+  /* ── ACTION / CENTRAL APERTURE ── */
+
+  .eventField {
+    width: min(100%, 250px);
+
+    min-height: 90px;
+
+    margin-top: -5px;
+  }
+
+
+  .eventRegistration {
+    font-size: .40rem;
+
+    letter-spacing: .18em;
+  }
+
+
+  .event {
+    margin-top: 10px;
+  }
+
+
+  .eventPoint {
+    height: 22px;
+
+    margin-bottom: 6px;
+  }
+
+
+  .eventStatement strong {
+    margin-bottom: 4px;
+
+    font-size: .68rem;
+
+    letter-spacing: .24em;
+  }
+
+
+  .eventStatement span {
+    font-size: .88rem;
+
+    line-height: 1.28;
+  }
+
+
+  /* ── AFTER / REOPENING ── */
+
+  .afterField {
+    margin-top: 3px;
+
+    padding-top: 18px;
+  }
+
+
+  /*
+    Two faint currents reopen from action.
+    Same family as BEFORE, but reversed
+    and slightly quieter.
+  */
+
+  .afterField::before,
+  .afterField::after {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+
+    width: 58px;
+    height: 1px;
+
+    pointer-events: none;
+
+    opacity: .22;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--axpt-mineral-cold), .18),
+        rgba(var(--axpt-bronze), .055)
+      );
+  }
+
+
+  .afterField::before {
+    left:
+      calc(50% - 62px);
+
+    transform:
+      rotate(-26deg);
+
+    transform-origin:
+      right center;
+  }
+
+
+  .afterField::after {
+    right:
+      calc(50% - 62px);
+
+    transform:
+      rotate(26deg);
+
+    transform-origin:
+      left center;
+  }
+
+
+  /* ── DOCUMENTARY RESOLUTION ── */
+
+  .interfaceDefinition {
+    margin-top: 15px;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — INTERFACES MOBILE M5F
+
+   CAUSAL TAILORING
+
+   Final spatial calibration:
+   - convergence lines extend farther
+   - lines descend more vertically
+   - action core sits slightly lower
+   - AFTER ACTION regains breathing room
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── BEFORE / CONVERGENCE ── */
+
+  .beforeField {
+    min-height: 92px;
+  }
+
+
+  .beforeField::before,
+  .beforeField::after {
+    bottom: -5px;
+
+    width: 70px;
+
+    opacity: .30;
+  }
+
+
+  .beforeField::before {
+    left:
+      calc(50% - 68px);
+
+    transform:
+      rotate(34deg);
+
+    transform-origin:
+      right center;
+  }
+
+
+  .beforeField::after {
+    right:
+      calc(50% - 68px);
+
+    transform:
+      rotate(-34deg);
+
+    transform-origin:
+      left center;
+  }
+
+
+  /* ── POINT OF ACTION / LOWER SETTLEMENT ── */
+
+  .eventField {
+    min-height: 102px;
+
+    margin-top: 3px;
+  }
+
+
+  .eventRegistration {
+    margin-top: 5px;
+  }
+
+
+  .event {
+    margin-top: 12px;
+  }
+
+
+  .eventPoint {
+    height: 24px;
+
+    margin-bottom: 7px;
+  }
+
+
+  /* ── AFTER / RELEASE ── */
+
+  .afterField {
+    margin-top: 14px;
+
+    padding-top: 22px;
+  }
+
+
+  .afterField::before,
+  .afterField::after {
+    top: 2px;
+
+    width: 64px;
+
+    opacity: .18;
+  }
+
+
+  .afterField::before {
+    left:
+      calc(50% - 66px);
+
+    transform:
+      rotate(-30deg);
+
+    transform-origin:
+      right center;
+  }
+
+
+  .afterField::after {
+    right:
+      calc(50% - 66px);
+
+    transform:
+      rotate(30deg);
+
+    transform-origin:
+      left center;
+  }
+
+
+  .afterField .fieldRegistration {
+    margin-bottom: 14px;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — INTERFACES MOBILE M5G
+
+   FINAL THREAD CALIBRATION
+
+   The causal architecture remains quiet,
+   but its connective threads become just
+   perceptible enough to complete the field.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── INPUT THREADS ── */
+
+  .beforeField::before,
+  .beforeField::after {
+    bottom: -8px;
+
+    width: 76px;
+
+    opacity: .38;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(var(--axpt-mineral-cold), .12) 18%,
+        rgba(var(--axpt-mineral-cold), .30) 62%,
+        rgba(var(--axpt-silver), .07) 100%
+      );
+  }
+
+
+  .beforeField::before {
+    left:
+      calc(50% - 72px);
+
+    transform:
+      rotate(38deg);
+  }
+
+
+  .beforeField::after {
+    right:
+      calc(50% - 72px);
+
+    transform:
+      rotate(-38deg);
+  }
+
+
+  /* ── ACTION LANDING ── */
+
+  .eventField {
+    margin-top: 7px;
+  }
+
+
+  .eventRegistration {
+    margin-top: 7px;
+  }
+
+
+  .event {
+    margin-top: 13px;
+  }
+
+
+  /* ── OUTPUT THREADS ── */
+
+  .afterField {
+    margin-top: 17px;
+
+    padding-top: 25px;
+  }
+
+
+  .afterField::before,
+  .afterField::after {
+    top: 1px;
+
+    width: 68px;
+
+    opacity: .25;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(var(--axpt-mineral-cold), .10) 22%,
+        rgba(var(--axpt-bronze), .12) 68%,
+        rgba(var(--axpt-silver), .045) 100%
+      );
+  }
+
+
+  .afterField::before {
+    left:
+      calc(50% - 68px);
+
+    transform:
+      rotate(-33deg);
+  }
+
+
+  .afterField::after {
+    right:
+      calc(50% - 68px);
+
+    transform:
+      rotate(33deg);
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — INTERFACES MOBILE M5H
+
+   PLATED CONDITIONS / TEMPORAL REGISTER
+
+   Four causal conditions become recessed
+   institutional plates.
+
+   BEFORE ACTION and AFTER ACTION share one
+   centered registration device so the two
+   states visibly belong to the same system.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── SHARED TEMPORAL REGISTER ── */
+
+  .beforeField .fieldRegistration,
+  .afterField .fieldRegistration {
+    grid-area: registration;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 156px;
+    min-height: 14px;
+
+    margin:
+      0
+      auto
+      14px;
+
+    padding: 0;
+
+    font-size: .39rem;
+    line-height: 1;
+
+    letter-spacing: .16em;
+
+    text-align: center;
+
+    color:
+      rgba(var(--axpt-iron-silver), .52);
+
+    transform: none;
+  }
+
+
+  /*
+    Matching registration rails.
+
+    These replace the asymmetric desktop
+    before/after line treatments.
+  */
+
+  .beforeField .fieldRegistration::before,
+  .beforeField .fieldRegistration::after,
+  .afterField .fieldRegistration::before,
+  .afterField .fieldRegistration::after {
+    content: "";
+
+    display: block;
+
+    flex:
+      0
+      0
+      22px;
+
+    height: 1px;
+
+    margin: 0 9px;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--axpt-mineral-cold), .18)
+      );
+
+    opacity: .72;
+  }
+
+
+  .beforeField .fieldRegistration::after,
+  .afterField .fieldRegistration::after {
+    transform: scaleX(-1);
+  }
+
+
+  /* ── FOUR RECESSED CONDITION PLATES ── */
+
+  .beforeField .condition,
+  .afterField .condition {
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    min-height: 70px;
+
+    margin: 0;
+
+    padding:
+      10px
+      8px
+      9px;
+
+    border:
+      1px solid
+      rgba(var(--axpt-silver), .050);
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--axpt-silver), .018),
+        rgba(var(--axpt-mineral-cold), .010)
+      );
+
+    box-shadow:
+      inset
+      0
+      1px
+      0
+      rgba(var(--axpt-limestone), .020),
+      inset
+      0
+      -10px
+      24px
+      rgba(0, 0, 0, .10);
+
+    text-align: center;
+
+    opacity: .92;
+
+    transform: none;
+    filter: none;
+  }
+
+
+  /*
+    Tiny registration notch:
+    enough to make these feel fabricated /
+    entered into the field, not UI cards.
+  */
+
+  .beforeField .condition::before,
+  .afterField .condition::before {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: -1px;
+
+    width: 18px;
+    height: 1px;
+
+    background:
+      rgba(var(--axpt-mineral-cold), .22);
+
+    transform:
+      translateX(-50%);
+  }
+
+
+  .beforeField .condition strong,
+  .afterField .condition strong {
+    min-height: 0;
+
+    margin:
+      0
+      0
+      7px;
+
+    font-size: .42rem;
+    line-height: 1;
+
+    letter-spacing: .15em;
+  }
+
+
+  .beforeField .condition span,
+  .afterField .condition span {
+    max-width: 12ch;
+
+    margin: 0 auto;
+
+    font-size: .76rem;
+    line-height: 1.31;
+
+    color:
+      rgba(var(--axpt-silver), .60);
+  }
+
+
+  /* ── BEFORE PLATES ── */
+
+  .beforeField .condition {
+    border-color:
+      rgba(var(--axpt-mineral-cold), .055);
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--axpt-mineral-cold), .024),
+        rgba(var(--axpt-mineral-cold), .008)
+      );
+  }
+
+
+  /* ── AFTER PLATES ── */
+
+  .afterField .condition:first-of-type {
+    border-color:
+      rgba(var(--axpt-bronze), .060);
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--axpt-bronze), .022),
+        rgba(var(--axpt-oxide), .007)
+      );
+  }
+
+
+  .afterField .condition:first-of-type::before {
+    background:
+      rgba(var(--axpt-bronze), .24);
+  }
+
+
+  .afterField .condition:last-of-type {
+    border-color:
+      rgba(var(--axpt-mineral-cold), .050);
+  }
+
+
+  /* ── GEOMETRIC ALIGNMENT ── */
+
+  .beforeField,
+  .afterField {
+    width: min(100%, 314px);
+
+    margin-left: auto;
+    margin-right: auto;
+
+    grid-template-columns:
+      minmax(0, 1fr)
+      18px
+      minmax(0, 1fr);
+  }
+
+
+  /*
+    AFTER must begin on exactly the same
+    center axis as BEFORE.
+  */
+
+  .afterField {
+    justify-self: center;
+  }
+
+
+  /* keep the action field centered between them */
+
+  .eventField {
+    justify-self: center;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — INTERFACES MOBILE M5I
+
+   AFTER-ACTION RELEASE ALIGNMENT
+
+   BEFORE and AFTER become true mirrored
+   temporal hinges.
+
+   Lower connector threads now originate
+   beneath AFTER ACTION and release outward
+   toward CONSEQUENCE / RECORD.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── TEMPORAL REGISTER ALIGNMENT ── */
+
+  .beforeField .fieldRegistration,
+  .afterField .fieldRegistration {
+    position: relative;
+
+    left: auto;
+    right: auto;
+
+    justify-self: center;
+
+    width: 156px;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    transform: none;
+  }
+
+
+  /* ── AFTER ACTION BECOMES RELEASE HINGE ── */
+
+  .afterField {
+    position: relative;
+
+    margin-top: 18px;
+
+    padding-top: 24px;
+  }
+
+
+  .afterField .fieldRegistration {
+    margin-bottom: 22px;
+  }
+
+
+  /*
+    Remove prior field-level release threads.
+    We will attach them directly to the
+    AFTER ACTION register instead.
+  */
+
+  .afterField::before,
+  .afterField::after {
+    display: none;
+  }
+
+
+  /* ── LOWER RELEASE THREADS ── */
+
+  .afterField .fieldRegistration::before,
+  .afterField .fieldRegistration::after {
+    content: "";
+
+    position: absolute;
+
+    top: calc(100% + 8px);
+
+    width: 66px;
+    height: 1px;
+
+    margin: 0;
+
+    pointer-events: none;
+
+    opacity: .24;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(var(--axpt-mineral-cold), .10) 22%,
+        rgba(var(--axpt-bronze), .13) 68%,
+        rgba(var(--axpt-silver), .045) 100%
+      );
+  }
+
+
+  .afterField .fieldRegistration::before {
+    left: 50%;
+
+    transform:
+      translateX(-100%)
+      rotate(-32deg);
+
+    transform-origin:
+      right center;
+  }
+
+
+  .afterField .fieldRegistration::after {
+    right: 50%;
+
+    transform:
+      translateX(100%)
+      rotate(32deg);
+
+    transform-origin:
+      left center;
+  }
+
+
+  /* ── RESULT PLATES RECEIVE THE RELEASE ── */
+
+  .afterField .condition {
+    margin-top: 4px;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — INTERFACES MOBILE M5J
+
+   FINAL CAUSAL FINISH
+
+   Tighten the center,
+   strengthen the lower release,
+   lift the result plates,
+   and soften plate edges.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── CENTRAL HIERARCHY ── */
+
+  .eventRegistration {
+    font-size: .39rem;
+
+    letter-spacing: .17em;
+
+    opacity: .72;
+  }
+
+
+  .eventStatement strong {
+    font-size: .70rem;
+
+    letter-spacing: .25em;
+
+    color:
+      rgba(var(--axpt-limestone), .94);
+  }
+
+
+  .eventStatement span {
+    font-size: .84rem;
+
+    line-height: 1.26;
+
+    color:
+      rgba(var(--axpt-silver), .64);
+  }
+
+
+  /* ── AFTER ACTION MOVES UP ── */
+
+  .afterField {
+    margin-top: 8px;
+
+    padding-top: 19px;
+  }
+
+
+  .afterField .fieldRegistration {
+    margin-bottom: 18px;
+  }
+
+
+  /* ── LOWER RELEASE THREADS ── */
+
+  .afterField .fieldRegistration::before,
+  .afterField .fieldRegistration::after {
+    top: calc(100% + 7px);
+
+    width: 74px;
+
+    opacity: .31;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(var(--axpt-mineral-cold), .11) 20%,
+        rgba(var(--axpt-bronze), .16) 66%,
+        rgba(var(--axpt-silver), .05) 100%
+      );
+  }
+
+
+  .afterField .fieldRegistration::before {
+    transform:
+      translateX(-100%)
+      rotate(-34deg);
+  }
+
+
+  .afterField .fieldRegistration::after {
+    transform:
+      translateX(100%)
+      rotate(34deg);
+  }
+
+
+  /* ── RESULT PLATES LIFT / SOFTEN ── */
+
+  .afterField .condition {
+    margin-top: 0;
+  }
+
+
+  .beforeField .condition,
+  .afterField .condition {
+    min-height: 66px;
+
+    border-color:
+      rgba(var(--axpt-silver), .036);
+
+    box-shadow:
+      inset
+      0
+      1px
+      0
+      rgba(var(--axpt-limestone), .015),
+      inset
+      0
+      -9px
+      22px
+      rgba(0, 0, 0, .12);
+  }
+
+
+  .beforeField .condition {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--axpt-mineral-cold), .018),
+        rgba(var(--axpt-mineral-cold), .006)
+      );
+  }
+
+
+  .afterField .condition:first-of-type {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--axpt-bronze), .017),
+        rgba(var(--axpt-oxide), .005)
+      );
+  }
+
+
+  .afterField .condition:last-of-type {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--axpt-mineral-cold), .016),
+        rgba(var(--axpt-mineral-cold), .005)
+      );
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — INTERFACES MOBILE M5K
+
+   THRESHOLD PASSAGE
+
+   Mobile abandons the diagram.
+
+   condition
+   → aperture
+   → changed condition
+
+   Geometry exists only at action.
+───────────────────────────────────── */
+
+.mobilePassage {
+  display: none;
+}
+
+
+@media (max-width: 680px) {
+
+  /* old diagram remains desktop architecture only */
+
+  .consequenceField {
+    display: none;
+  }
+
+
+  /* ── PASSAGE ── */
+
+  .mobilePassage {
+    grid-column: 1 / -1;
+
+    display: block;
+
+    width: min(100%, 310px);
+
+    margin:
+      32px
+      auto
+      0;
+
+    text-align: left;
+  }
+
+
+  /* ── BEFORE / AFTER CONDITIONS ── */
+
+  .mobilePassageState {
+    width: 100%;
+
+    margin: 0;
+  }
+
+
+  .mobilePassageLabel {
+    display: block;
+
+    margin:
+      0
+      0
+      10px;
+
+    font-family: var(--axpt-mono);
+
+    font-size: .42rem;
+    line-height: 1;
+
+    letter-spacing: .18em;
+
+    text-transform: uppercase;
+
+    color:
+      rgba(var(--axpt-mineral-cold), .58);
+  }
+
+
+  .mobilePassageText {
+    max-width: 24ch;
+
+    margin: 0;
+
+    font-family: var(--axpt-body);
+
+    font-size:
+      clamp(
+        1rem,
+        4.25vw,
+        1.10rem
+      );
+
+    line-height: 1.56;
+
+    letter-spacing: -.012em;
+
+    color:
+      rgba(var(--axpt-silver), .67);
+  }
+
+
+  /*
+    After action is not another diagram state.
+    It is the same document after consequence.
+  */
+
+  .mobilePassageState:last-child {
+    margin-top: 0;
+
+    text-align: right;
+  }
+
+
+  .mobilePassageState:last-child
+  .mobilePassageLabel {
+    text-align: right;
+
+    color:
+      rgba(var(--axpt-bronze), .54);
+  }
+
+
+  .mobilePassageState:last-child
+  .mobilePassageText {
+    margin-left: auto;
+
+    text-align: right;
+
+    color:
+      rgba(var(--axpt-silver), .60);
+  }
+
+
+  /* ── ACTION APERTURE ── */
+
+  .mobileAperture {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    width: 100%;
+
+    margin:
+      30px
+      0
+      30px;
+
+    text-align: center;
+  }
+
+
+  .mobileApertureLabel {
+    margin-bottom: 14px;
+
+    font-family: var(--axpt-mono);
+
+    font-size: .39rem;
+    line-height: 1;
+
+    letter-spacing: .18em;
+
+    text-transform: uppercase;
+
+    color:
+      rgba(var(--axpt-iron-silver), .48);
+  }
+
+
+  /*
+    One incision through the field.
+    No convergence diagram.
+  */
+
+  .mobileApertureLine {
+    display: block;
+
+    width: 1px;
+    height: 30px;
+
+    background:
+      linear-gradient(
+        180deg,
+        transparent,
+        rgba(var(--axpt-mineral-cold), .48),
+        rgba(var(--axpt-limestone), .24),
+        transparent
+      );
+
+    opacity: .76;
+  }
+
+
+  .mobileAct {
+    display: block;
+
+    margin:
+      11px
+      0
+      7px;
+
+    font-family: var(--axpt-mono);
+
+    font-size: .73rem;
+    line-height: 1;
+
+    font-weight: 500;
+
+    letter-spacing: .30em;
+
+    text-transform: uppercase;
+
+    color:
+      rgba(var(--axpt-limestone), .94);
+
+    text-shadow:
+      0 0 12px
+      rgba(var(--axpt-mineral-cold), .055);
+  }
+
+
+  .mobileOccurrence {
+    display: block;
+
+    margin-bottom: 11px;
+
+    font-family: var(--axpt-body);
+
+    font-size: .88rem;
+    line-height: 1.3;
+
+    color:
+      rgba(var(--axpt-silver), .60);
+  }
+
+
+  /* ── DEFINITION FOLLOWS PASSAGE ── */
+
+  .interfaceDefinition {
+    margin-top: 30px;
+
+    padding-top: 14px;
+  }
+
+}
+
+/* ─────────────────────────────────────
+   AXPT V1 — DESKTOP CONTAINMENT D1
+   INTERFACES / TEMPORAL DEPTH
+
+   BEFORE remains upstream.
+   ACTION occupies the optical center.
+   AFTER settles distinctly downstream.
+───────────────────────────────────── */
+
+@media (min-width: 681px) {
+
+  .consequenceField {
+    min-height:
+      clamp(
+        330px,
+        39vh,
+        420px
+      );
+  }
+
+
+  .beforeField {
+    transform:
+      translate3d(
+        0,
+        -8px,
+        0
+      );
+  }
+
+
+  .eventField {
+    transform:
+      translate3d(
+        0,
+        42px,
+        0
+      );
+  }
+
+
+  .afterField {
+    transform:
+      translate3d(
+        30px,
+        82px,
+        0
+      );
+  }
+
 }

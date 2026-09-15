@@ -20,7 +20,9 @@ export async function POST(req: Request) {
     }
 
     // dev bypass allowed like other admin routes
-    const bypass = req.headers.get('x-dev-bypass') === '1';
+    const bypass =
+      process.env.NODE_ENV === 'development' &&
+      req.headers.get('x-dev-bypass') === '1';
     if (!bypass) await requireElderServer();
 
     const rpcUrl = process.env.SEPOLIA_RPC_URL || process.env.RPC_URL;

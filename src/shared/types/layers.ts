@@ -4,4 +4,5 @@ export type LayerName =
   | 'FRAMEWORK'
   | 'INTERFACES'
   | 'ETHOS'
+  | 'FRENCH_WARD'
   | 'PRESENCE';

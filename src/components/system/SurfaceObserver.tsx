@@ -1,95 +1,228 @@
 'use client'
 
 import { useEffect, useRef } from 'react'
+
 import { useLayer } from '@/lib/context/LayerContext'
+import { SURFACES } from '@/lib/surfaces/registry'
+
 import type { LayerName } from '@/shared/types/layers'
+
+
+type ResolvedSurface = {
+  element: HTMLElement
+  layer: LayerName
+}
+
 
 export default function SurfaceObserver() {
   const { setActiveLayer } = useLayer()
 
-  const currentLayer = useRef<LayerName | null>(null)
-  const frame = useRef<number | null>(null)
+  const currentLayer =
+    useRef<LayerName | null>(null)
+
+  const frame =
+    useRef<number | null>(null)
+
 
   useEffect(() => {
+    const getSurfaces = (): ResolvedSurface[] =>
+      SURFACES.flatMap((surface) => {
+        const element =
+          document.getElementById(surface.id)
+
+        if (!element) return []
+
+        return [{
+          element,
+          layer: surface.layer,
+        }]
+      })
+
+
     const resolveActiveLayer = () => {
       frame.current = null
 
-      const viewportCenter = window.innerHeight / 2
+      const surfaces = getSurfaces()
 
-      const sections = Array.from(
-        document.querySelectorAll<HTMLElement>('.surface[data-layer]')
-      )
+      if (surfaces.length === 0) return
 
-      let activeSection: HTMLElement | null = null
 
-      for (const section of sections) {
-        const rect = section.getBoundingClientRect()
+      const visualViewport =
+        window.visualViewport
+
+      const viewportCenter =
+        visualViewport
+          ? visualViewport.offsetTop +
+            visualViewport.height / 2
+          : window.innerHeight / 2
+
+      let activeSurface:
+        ResolvedSurface | null = null
+
+
+      /*
+       * Primary resolution:
+       * whichever canonical surface contains
+       * the vertical center of the viewport.
+       */
+
+      for (const surface of surfaces) {
+        const rect =
+          surface.element.getBoundingClientRect()
 
         if (
           rect.top <= viewportCenter &&
           rect.bottom >= viewportCenter
         ) {
-          activeSection = section
+          activeSurface = surface
           break
         }
       }
 
+
       /*
        * Defensive fallback:
-       * if center falls into an unexpected gap,
-       * choose the nearest surface boundary.
+       * if the center falls inside a gap,
+       * resolve to the nearest canonical surface.
        */
-      if (!activeSection) {
+
+      if (!activeSurface) {
         let nearestDistance = Infinity
 
-        for (const section of sections) {
-          const rect = section.getBoundingClientRect()
+        for (const surface of surfaces) {
+          const rect =
+            surface.element.getBoundingClientRect()
 
           const distance = Math.min(
-            Math.abs(rect.top - viewportCenter),
-            Math.abs(rect.bottom - viewportCenter)
+            Math.abs(
+              rect.top - viewportCenter
+            ),
+            Math.abs(
+              rect.bottom - viewportCenter
+            )
           )
 
           if (distance < nearestDistance) {
             nearestDistance = distance
-            activeSection = section
+            activeSurface = surface
           }
         }
       }
 
-      const layer =
-        activeSection?.dataset.layer as LayerName | undefined
 
-      if (!layer || layer === currentLayer.current) return
+      if (!activeSurface) return
+
+      const layer =
+        activeSurface.layer
+
+      if (
+        layer === currentLayer.current
+      ) {
+        return
+      }
 
       currentLayer.current = layer
       setActiveLayer(layer)
     }
 
+
     const scheduleResolve = () => {
       if (frame.current !== null) return
 
       frame.current =
-        window.requestAnimationFrame(resolveActiveLayer)
+        window.requestAnimationFrame(
+          resolveActiveLayer
+        )
     }
+
+
+    /*
+     * Resolve once immediately, then again
+     * after browser layout has settled.
+     */
 
     resolveActiveLayer()
 
-    window.addEventListener('scroll', scheduleResolve, {
-      passive: true,
-    })
+    frame.current =
+      window.requestAnimationFrame(
+        resolveActiveLayer
+      )
 
-    window.addEventListener('resize', scheduleResolve)
+
+    window.addEventListener(
+      'scroll',
+      scheduleResolve,
+      { passive: true }
+    )
+
+    window.addEventListener(
+      'resize',
+      scheduleResolve
+    )
+
+    window.addEventListener(
+      'pageshow',
+      scheduleResolve
+    )
+
+    window.addEventListener(
+      'load',
+      scheduleResolve
+    )
+
+    const visualViewport =
+      window.visualViewport
+
+    visualViewport?.addEventListener(
+      'resize',
+      scheduleResolve
+    )
+
+    visualViewport?.addEventListener(
+      'scroll',
+      scheduleResolve
+    )
+
 
     return () => {
-      window.removeEventListener('scroll', scheduleResolve)
-      window.removeEventListener('resize', scheduleResolve)
+      window.removeEventListener(
+        'scroll',
+        scheduleResolve
+      )
+
+      window.removeEventListener(
+        'resize',
+        scheduleResolve
+      )
+
+      window.removeEventListener(
+        'pageshow',
+        scheduleResolve
+      )
+
+      window.removeEventListener(
+        'load',
+        scheduleResolve
+      )
+
+      visualViewport?.removeEventListener(
+        'resize',
+        scheduleResolve
+      )
+
+      visualViewport?.removeEventListener(
+        'scroll',
+        scheduleResolve
+      )
 
       if (frame.current !== null) {
-        window.cancelAnimationFrame(frame.current)
+        window.cancelAnimationFrame(
+          frame.current
+        )
       }
     }
   }, [setActiveLayer])
+
 
   return null
 }

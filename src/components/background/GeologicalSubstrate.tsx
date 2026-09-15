@@ -9,6 +9,8 @@ export default function GeologicalSubstrate() {
       <div className={styles.materialBody} />
       <div className={styles.strataField} />
       <div className={styles.pressureField} />
+
+      <div className={styles.chromaticField} />
     </div>
   )
 }

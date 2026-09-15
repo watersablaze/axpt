@@ -26,7 +26,9 @@ export async function POST(req: Request) {
     }
 
     // Allow dev-bypass for cURL without cookies
-    const devBypass = req.headers.get('x-dev-bypass') === '1';
+    const devBypass =
+      process.env.NODE_ENV === 'development' &&
+      req.headers.get('x-dev-bypass') === '1';
     if (!devBypass) {
       await requireElderServer();
     }

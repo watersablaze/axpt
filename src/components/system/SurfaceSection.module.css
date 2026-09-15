@@ -23,3 +23,11 @@
   justify-content: center;
 
 }
+
+@media (max-width: 680px) {
+
+  .surface[data-layer="PRESENCE"] {
+    margin-top: 42px;
+  }
+
+}

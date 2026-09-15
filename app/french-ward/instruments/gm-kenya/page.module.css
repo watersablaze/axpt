@@ -1,0 +1,107 @@
+.movement {
+  display: grid;
+  gap: clamp(2.5rem, 5vw, 5.5rem);
+}
+
+.movementHeader {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: clamp(1.25rem, 3vw, 3rem);
+  align-items: start;
+  max-width: 980px;
+}
+
+.movementNumber {
+  font-size: clamp(0.72rem, 1vw, 0.82rem);
+  letter-spacing: 0.18em;
+  color: rgba(232, 224, 204, 0.52);
+  padding-top: 0.45rem;
+}
+
+.movementKicker {
+  margin: 0 0 0.85rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(232, 224, 204, 0.58);
+}
+
+.movementHeader h2 {
+  margin: 0;
+  max-width: 760px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  font-size: clamp(2rem, 4.4vw, 4.7rem);
+  line-height: 0.98;
+  letter-spacing: -0.035em;
+}
+
+.movementLead {
+  margin: 1.5rem 0 0;
+  max-width: 720px;
+  color: rgba(232, 224, 204, 0.7);
+  line-height: 1.75;
+  font-size: clamp(0.95rem, 1.4vw, 1.08rem);
+}
+
+@media (max-width: 680px) {
+  .movementHeader {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  .movementNumber {
+    padding-top: 0;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   GM / MOVEMENT 01 — FULL-BLEED FIELD BREAKOUT
+   The relational map belongs to the viewport,
+   not the prose column.
+   ───────────────────────────────────────────── */
+
+.relationshipField {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+/* ─────────────────────────────────────────────
+   GM / MOVEMENT 02 — AUTHORITY FIELD
+   ───────────────────────────────────────────── */
+
+.movement + .movement {
+  margin-top: clamp(7rem, 12vw, 13rem);
+}
+
+.architectureField {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+/* ─────────────────────────────────────────────
+   GM / MOVEMENT 03 — ECONOMIC CORRIDOR FIELD
+   ───────────────────────────────────────────── */
+
+.corridorField {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+/* ─────────────────────────────────────────────
+   GM / MOVEMENT 04 — FUTURE BODY FIELD
+   ───────────────────────────────────────────── */
+
+.futureField {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}
+
+/* ─────────────────────────────────────────────
+   GM / MOVEMENT 05 — DELIBERATION FIELD
+   ───────────────────────────────────────────── */
+
+.deliberationField {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+}

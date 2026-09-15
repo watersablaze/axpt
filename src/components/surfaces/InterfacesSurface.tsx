@@ -1,29 +1,13 @@
 import styles from './InterfacesSurface.module.css'
 
-const ENCOUNTERS = [
-  {
-    label: 'Verify',
-    text: 'What is known before action proceeds.',
-  },
-  {
-    label: 'Authorize',
-    text: 'Who can act under established conditions.',
-  },
-  {
-    label: 'Act',
-    text: 'What is caused to proceed.',
-  },
-  {
-    label: 'Record',
-    text: 'What remains established after action occurs.',
-  },
-] as const
-
 export default function InterfacesSurface() {
   return (
-    <div className={styles.interfacesSurface}>
+    <div
+      className={styles.interfacesSurface}
+    >
       <div className={styles.interfacesInner}>
 
+        {/* 01 — DECLARATION */}
         <header className={styles.declaration}>
           <h2>
             Conditions become consequential
@@ -31,39 +15,125 @@ export default function InterfacesSurface() {
           </h2>
         </header>
 
-        <div className={styles.explanation}>
-          <p>
-            Infrastructure becomes tangible when
-            someone must verify what is known,
-            determine who can act, cause something to
-            proceed, or establish what occurred.
-          </p>
-        </div>
-
-        <div
-          className={styles.encounterField}
-          aria-label="Points of encounter with infrastructure"
+        {/* MOBILE — CAUSAL PASSAGE */}
+        <section
+          className={styles.mobilePassage}
+          aria-label="Interface causal passage"
         >
-          {ENCOUNTERS.map((encounter) => (
-            <article
-              className={styles.encounter}
-              key={encounter.label}
-            >
-              <h3>{encounter.label}</h3>
-              <p>{encounter.text}</p>
-            </article>
-          ))}
+          <div className={styles.mobilePassageState}>
+            <span className={styles.mobilePassageLabel}>
+              Before action
+            </span>
+
+            <p className={styles.mobilePassageText}>
+              Verify what is known.
+              <br />
+              Authorize who may act.
+            </p>
+          </div>
 
           <div
-            className={styles.actionPoint}
-            aria-hidden="true"
+            className={styles.mobileAperture}
+            aria-label="Point of Action"
           >
-            <span className={styles.actionLabel}>
+            <span className={styles.mobileApertureLabel}>
               Point of Action
             </span>
+
+            <span
+              className={styles.mobileApertureLine}
+              aria-hidden="true"
+            />
+
+            <strong className={styles.mobileAct}>
+              Act
+            </strong>
+
+            <span className={styles.mobileOccurrence}>
+              something occurs.
+            </span>
+
+            <span
+              className={styles.mobileApertureLine}
+              aria-hidden="true"
+            />
           </div>
+
+          <div className={styles.mobilePassageState}>
+            <span className={styles.mobilePassageLabel}>
+              After action
+            </span>
+
+            <p className={styles.mobilePassageText}>
+              Conditions have changed.
+              <br />
+              What occurred remains known.
+            </p>
+          </div>
+        </section>
+
+        {/* 02 — CONSEQUENCE FIELD */}
+        <div
+          className={styles.consequenceField}
+          aria-label="Conditions before and after action"
+        >
+
+          {/* BEFORE */}
+          <div className={styles.beforeField}>
+            <span className={styles.fieldRegistration}>
+              Before action
+            </span>
+
+            <div className={styles.condition}>
+              <strong>Verify</strong>
+              <span>what is known.</span>
+            </div>
+
+            <div className={styles.condition}>
+              <strong>Authorize</strong>
+              <span>who may act.</span>
+            </div>
+          </div>
+
+          {/* EVENT */}
+          <div className={styles.eventField}>
+            <span className={styles.eventRegistration}>
+              Point of Action
+            </span>
+
+            <div className={styles.event}>
+              <span
+                className={styles.eventPoint}
+                aria-hidden="true"
+              />
+
+              <div className={styles.eventStatement}>
+                <strong>Act</strong>
+                <span>something occurs.</span>
+              </div>
+            </div>
+          </div>
+
+          {/* AFTER */}
+          <div className={styles.afterField}>
+            <span className={styles.fieldRegistration}>
+              After action
+            </span>
+
+            <div className={styles.condition}>
+              <strong>Consequence</strong>
+              <span>conditions have changed.</span>
+            </div>
+
+            <div className={styles.condition}>
+              <strong>Record</strong>
+              <span>what occurred remains known.</span>
+            </div>
+          </div>
+
         </div>
 
+        {/* 03 — INSTITUTIONAL DEFINITION */}
         <footer className={styles.interfaceDefinition}>
           <span className={styles.definitionLabel}>
             INTERFACE
@@ -71,9 +141,10 @@ export default function InterfacesSurface() {
 
           <p>
             An interface is where established conditions
-            become actionable.
+            pass into action and consequence.
           </p>
         </footer>
+
       </div>
     </div>
   )

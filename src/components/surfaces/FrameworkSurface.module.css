@@ -1,16 +1,19 @@
 /* ─────────────────────────────────────
    AXPT — FRAMEWORK
-   HOW AXPT WORKS
 
-   Conditions are registered around
-   a common operational point.
+   Movement is the subject.
+
+   What may responsibly happen next
+   depends upon the relational condition
+   surrounding what moves.
+
+   Dependencies resolve into an
+   established position.
 ───────────────────────────────────── */
 
 .frameworkSurface {
   position: relative;
-
   width: 100%;
-
   overflow: clip;
   isolation: isolate;
 }
@@ -35,242 +38,747 @@
 
   align-content: start;
 
-  row-gap: clamp(26px, 3.2vh, 42px);
+  row-gap: 0;
 }
 
 
 /* ─────────────────────────────────────
-   REGISTRATION
-───────────────────────────────────── */
+   01 — DECLARATION
 
-
-
-
-/* ─────────────────────────────────────
-   DECLARATION
+   The proposition establishes the law
+   governing everything beneath it.
 ───────────────────────────────────── */
 
 .declaration {
   grid-column: 1 / 9;
+
+  padding-top: clamp(28px, 3.5vh, 48px);
 }
 
 .declaration h2 {
   margin: 0;
 
-  max-width: 11ch;
+  max-width: 15ch;
 
   font-family: var(--axpt-declaration);
-
-  font-size: clamp(3.1rem, 5.25vw, 5.7rem);
-  line-height: 0.98;
+  font-size: clamp(2.55rem, 4vw, 4.2rem);
+  line-height: .99;
 
   font-weight: 500;
-  letter-spacing: -0.055em;
+  letter-spacing: -.05em;
 
-  color: rgba(var(--axpt-limestone), 0.96);
+  color: rgba(var(--axpt-limestone), .96);
 
   text-wrap: balance;
+
+  opacity: .50;
+
+  transform:
+    translate3d(-7px, 5px, 0)
+    scaleX(.985);
+
+  transform-origin: left center;
+
+  filter:
+    contrast(.94);
+
+  transition:
+    opacity 900ms cubic-bezier(.22, 1, .36, 1),
+    transform 1250ms cubic-bezier(.22, 1, .36, 1),
+    filter 1100ms cubic-bezier(.22, 1, .36, 1);
 }
 
 .declaration h2 span {
-  color: rgba(var(--axpt-ash), 0.70);
+  color: rgba(var(--axpt-ash), .66);
+}
+
+:global(body[data-established-framework="true"]) .declaration h2 {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0)
+    scaleX(1);
+
+  filter:
+    contrast(1);
 }
 
 
 /* ─────────────────────────────────────
-   EXPLANATION
+   02 — SUBJECT
+
+   WHAT MOVES is deliberately not one
+   condition among four.
+
+   It is the subject whose ability to
+   proceed depends upon the field below.
 ───────────────────────────────────── */
 
-.explanation {
-  grid-column: 2 / 9;
+.movementSubject {
+  grid-column: 1 / 6;
 
-  max-width: 680px;
+  margin-top: clamp(58px, 7vh, 88px);
+  margin-left: clamp(18px, 2.5vw, 38px);
 
-  display: grid;
+  width: min(100%, 360px);
 
-  gap: 10px;
+  opacity: .48;
+
+  transform:
+    translate3d(-7px, 0, 0)
+    scaleX(.993);
+
+  transform-origin: left center;
+
+  transition:
+    opacity 1000ms cubic-bezier(.22, 1, .36, 1),
+    transform 1350ms cubic-bezier(.22, 1, .36, 1);
 }
 
-.explanation p {
-  margin: 0;
+:global(body[data-established-framework="true"]) .movementSubject {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0)
+    scaleX(1);
+}
+
+.fieldLabel {
+  display: block;
+
+  font-family: var(--axpt-mono);
+  font-size: .62rem;
+  line-height: 1;
+
+  font-weight: 500;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+
+  color: rgba(var(--axpt-ash), .82);
+}
+
+.movementSubject p {
+  margin: 10px 0 0;
+
+  max-width: 30ch;
 
   font-family: var(--axpt-body);
+  font-size: clamp(.98rem, 1.18vw, 1.1rem);
+  line-height: 1.5;
 
-  font-size: clamp(0.94rem, 1.15vw, 1.08rem);
-  line-height: 1.58;
+  letter-spacing: -.012em;
 
-  color: rgba(var(--axpt-silver), 0.56);
-}
-
-.explanation .explanationFocus {
-  color: rgba(var(--axpt-ash), 0.84);
+  color: rgba(var(--axpt-silver), .58);
 }
 
 
 /* ─────────────────────────────────────
-   CONDITION FIELD
+   03 — DEPENDENCY FIELD
+
+   The architecture turns here.
+
+   Movement begins at left.
+   Its dependencies occupy another
+   jurisdiction farther into the field.
 ───────────────────────────────────── */
 
-.conditionField {
+.dependencyField {
+  grid-column: 4 / 12;
+
   position: relative;
 
-  grid-column: 1 / -1;
+  margin-top: clamp(48px, 6vh, 76px);
 
-  min-height: clamp(260px, 29vh, 330px);
+  display: grid;
+  grid-template-columns:
+    minmax(118px, .28fr)
+    minmax(0, 1fr);
 
-  border-top: 1px solid rgba(var(--axpt-silver), 0.07);
-  border-bottom: 1px solid rgba(var(--axpt-silver), 0.055);
+  column-gap: clamp(34px, 4.5vw, 64px);
+
+  align-items: start;
+}
+
+
+/*
+   This is connective language, not
+   another heading.
+*/
+
+.dependencyStatement {
+  align-self: start;
+
+  margin-top: clamp(2px, .4vh, 6px);
+  padding-top: 0;
+
+  font-family: var(--axpt-mono);
+  font-size: .54rem;
+  line-height: 1.35;
+
+  letter-spacing: .2em;
+  text-transform: uppercase;
+
+  color: rgba(var(--axpt-mineral-green), .78);
+
+  opacity: .54;
+
+  transform: translate3d(-3px, 0, 0);
+
+  transition:
+    opacity 1000ms cubic-bezier(.22, 1, .36, 1),
+    transform 1200ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-framework="true"]) .dependencyStatement {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+
+  color: rgba(var(--axpt-mineral-green), .98);
+
+  text-shadow:
+    0 0 7px rgba(var(--axpt-mineral-green), .15),
+    0 0 18px rgba(var(--axpt-mineral-green), .070),
+    0 0 32px rgba(var(--axpt-mineral-green), .025);
+
+  animation:
+    frameworkConnectiveCurrent
+    10200ms
+    ease-in-out
+    infinite;
+}
+
+@keyframes frameworkConnectiveCurrent {
+
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+
+    text-shadow:
+      0 0 7px rgba(var(--axpt-mineral-green), .13),
+      0 0 18px rgba(var(--axpt-mineral-green), .055),
+      0 0 30px rgba(var(--axpt-mineral-green), .020);
+  }
+
+  47% {
+    transform: translate3d(1.2px, -.4px, 0);
+
+    text-shadow:
+      0 0 8px rgba(var(--axpt-mineral-green), .19),
+      0 0 21px rgba(var(--axpt-mineral-green), .085),
+      0 0 36px rgba(var(--axpt-mineral-green), .032);
+  }
+
+  76% {
+    transform: translate3d(.3px, .35px, 0);
+  }
+
 }
 
 
 /* ─────────────────────────────────────
-   CONDITION
+   DEPENDENCIES
+
+   One continuous institutional field,
+   not cards, nodes, or quadrants.
 ───────────────────────────────────── */
 
-.condition {
-  position: absolute;
+.dependencies {
+  display: flex;
+  flex-direction: column;
 
-  width: min(38%, 360px);
+  gap: clamp(30px, 3.8vh, 46px);
+
+  width: min(100%, 520px);
 }
 
-.condition h3 {
+.dependency {
+  position: relative;
+
+  display: grid;
+  grid-template-columns:
+    minmax(190px, .92fr)
+    minmax(0, 1fr);
+
+  column-gap: clamp(22px, 3vw, 42px);
+
+  align-items: baseline;
+
+  opacity: .38;
+
+  filter:
+    contrast(.91)
+    brightness(.90);
+
+  transition:
+    opacity 1050ms cubic-bezier(.22, 1, .36, 1),
+    transform 1450ms cubic-bezier(.22, 1, .36, 1),
+    filter 1250ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.dependency:nth-child(1) {
+  margin-left: 0;
+
+  transform:
+    translate3d(7px, -2px, 0)
+    scaleX(.993);
+}
+
+.dependency:nth-child(2) {
+  margin-left: clamp(34px, 4.5vw, 66px);
+
+  transform:
+    translate3d(-5px, 1px, 0)
+    scaleX(.995);
+}
+
+.dependency:nth-child(3) {
+  margin-left: clamp(82px, 9vw, 132px);
+
+  transform:
+    translate3d(6px, 2px, 0)
+    scaleX(.994);
+}
+
+:global(body[data-established-framework="true"]) .dependency {
+  opacity: 1;
+
+  filter:
+    contrast(1)
+    brightness(1);
+
+  transform:
+    translate3d(0, 0, 0)
+    scaleX(1);
+}
+
+.dependency h3 {
   margin: 0;
 
   font-family: var(--axpt-mono);
+  font-size: .6rem;
+  line-height: 1.35;
 
-  font-size: 0.62rem;
-  line-height: 1;
-
-  letter-spacing: 0.25em;
+  font-weight: 500;
+  letter-spacing: .21em;
   text-transform: uppercase;
 
-  color: rgba(var(--axpt-ash), 0.76);
+  color: rgba(var(--axpt-ash), .80);
+
+  transform: translate3d(0, 0, 0);
+
+  transition:
+    color 1150ms cubic-bezier(.22, 1, .36, 1),
+    text-shadow 1350ms cubic-bezier(.22, 1, .36, 1);
 }
 
-.condition p {
-  margin: 9px 0 0;
+:global(body[data-established-framework="true"])
+.dependency h3 {
+  color: rgba(var(--axpt-mineral-green), .99);
 
-  max-width: 34ch;
+  text-shadow:
+    0 0 6px rgba(var(--axpt-mineral-green), .16),
+    0 0 16px rgba(var(--axpt-mineral-green), .075),
+    0 0 28px rgba(var(--axpt-mineral-green), .025);
+}
+
+:global(body[data-established-framework="true"])
+.dependency:nth-child(1) h3 {
+  animation:
+    frameworkRelationDrift01
+    11800ms
+    ease-in-out
+    infinite;
+}
+
+:global(body[data-established-framework="true"])
+.dependency:nth-child(2) h3 {
+  animation:
+    frameworkRelationDrift02
+    13700ms
+    ease-in-out
+    infinite;
+}
+
+:global(body[data-established-framework="true"])
+.dependency:nth-child(3) h3 {
+  animation:
+    frameworkRelationDrift03
+    15300ms
+    ease-in-out
+    infinite;
+}
+
+@keyframes frameworkRelationDrift01 {
+
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  42% {
+    transform: translate3d(1.7px, -.7px, 0);
+  }
+
+  74% {
+    transform: translate3d(.5px, .8px, 0);
+  }
+
+}
+
+@keyframes frameworkRelationDrift02 {
+
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  36% {
+    transform: translate3d(-1.5px, .8px, 0);
+  }
+
+  69% {
+    transform: translate3d(.8px, -.6px, 0);
+  }
+
+}
+
+@keyframes frameworkRelationDrift03 {
+
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+
+  31% {
+    transform: translate3d(1.4px, -.8px, 0);
+  }
+
+  67% {
+    transform: translate3d(-1.1px, .7px, 0);
+  }
+
+}
+
+.dependency p {
+  margin: 0;
+
+  max-width: 29ch;
 
   font-family: var(--axpt-body);
+  font-size: clamp(.9rem, 1.03vw, .99rem);
+  line-height: 1.5;
 
-  font-size: 0.76rem;
-  line-height: 1.45;
+  letter-spacing: -.008em;
 
-  color: rgba(var(--axpt-silver), 0.42);
-}
-
-
-/* upper left */
-
-.condition:nth-child(1) {
-  left: 4%;
-  top: 13%;
-}
-
-
-/* upper right */
-
-.condition:nth-child(2) {
-  right: 4%;
-  top: 13%;
-}
-
-
-/* lower left */
-
-.condition:nth-child(3) {
-  left: 4%;
-  bottom: 13%;
-}
-
-
-/* lower right */
-
-.condition:nth-child(4) {
-  right: 4%;
-  bottom: 13%;
+  color: rgba(var(--axpt-silver), .52);
 }
 
 
 /* ─────────────────────────────────────
-   AXIS REGISTRATION
+   04 — ESTABLISHED POSITION
 
-   A shared point within the field.
+   The point is not the hub of the field.
+
+   It appears after the dependencies:
+   a resulting position from which
+   responsible action may proceed.
 ───────────────────────────────────── */
 
-.axisRegistration {
-  position: absolute;
+.establishedPosition {
+  grid-column: 7 / 11;
 
-  left: 50%;
-  top: 50%;
+  position: relative;
 
-  width: 12px;
-  height: 12px;
+  min-height: clamp(96px, 12vh, 138px);
 
-  transform: translate(-50%, -50%);
+  margin-top: clamp(24px, 3vh, 40px);
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+
+.axisPosition {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  margin-top: clamp(18px, 2.2vh, 30px);
+
+  padding: 8px 0;
 }
 
 .axisPoint {
+  position: relative;
+
+  display: block;
+
+  width: 6px;
+  height: 6px;
+
+  flex: 0 0 auto;
+
+  background:
+    rgba(var(--axpt-mineral-cold), .94);
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 0 0 0 rgba(var(--axpt-mineral-green), 0);
+
+  opacity: .20;
+
+  transform:
+    scale(.34);
+
+  transition:
+    opacity 800ms cubic-bezier(.22, 1, .36, 1),
+    transform 1050ms cubic-bezier(.22, 1, .36, 1),
+    box-shadow 1250ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.axisPoint::before {
+  content: "";
+
   position: absolute;
 
   left: 50%;
   top: 50%;
 
-  width: 4px;
-  height: 4px;
+  width: clamp(112px, 10vw, 168px);
+  height: 1px;
 
-  transform: translate(-50%, -50%);
+  pointer-events: none;
 
-  background: rgba(var(--axpt-mineral-cold), 0.72);
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(var(--axpt-mineral-green), .10) 14%,
+      rgba(var(--axpt-mineral-green), .46) 46%,
+      rgba(var(--axpt-mineral-cold), .68) 50%,
+      rgba(var(--axpt-mineral-green), .46) 54%,
+      rgba(var(--axpt-mineral-green), .10) 86%,
+      transparent 100%
+    );
+
+  opacity: .22;
+
+  transform:
+    translate3d(-50%, -50%, 0)
+    scaleX(.46);
+
+  transform-origin: center;
+
+  filter:
+    blur(.12px);
+
+  transition:
+    opacity 1100ms cubic-bezier(.22, 1, .36, 1),
+    transform 1450ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-framework="true"])
+.axisPoint::before {
+  opacity: .68;
+
+  transform:
+    translate3d(-50%, -50%, 0)
+    scaleX(1);
+
+  animation:
+    frameworkAxisLineField
+    11200ms
+    ease-in-out
+    infinite;
+}
+
+@keyframes frameworkAxisLineField {
+
+  0%,
+  100% {
+    opacity: .70;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scaleX(.97);
+  }
+
+  44% {
+    opacity: .90;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scaleX(1.055);
+
+    filter:
+      blur(.12px)
+      brightness(1.12);
+  }
+
+  73% {
+    opacity: .78;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scaleX(1.015);
+
+    filter:
+      blur(.12px)
+      brightness(1.04);
+  }
+
+}
+
+
+.axisPositionLabel {
+  font-family: var(--axpt-mono);
+  font-size: .52rem;
+  line-height: 1;
+
+  letter-spacing: .25em;
+  text-transform: uppercase;
+
+  color: rgba(var(--axpt-iron-silver), .52);
+
+  opacity: .58;
+
+  transition:
+    opacity 1000ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-framework="true"]) .axisPoint,
+:global(body[data-established-framework="true"]) .axisPositionLabel {
+  opacity: 1;
+}
+
+:global(body[data-established-framework="true"])
+.axisPositionLabel {
+  color: rgba(var(--axpt-mineral-cold), .76);
+
+  text-shadow:
+    0 0 8px rgba(var(--axpt-mineral-green), .075),
+    0 0 16px rgba(var(--axpt-mineral-cold), .035);
+}
+
+:global(body[data-established-framework="true"]) .axisPoint {
+  transform: scale(1);
+
+  box-shadow:
+    0 0 0 4px rgba(var(--axpt-mineral-green), .055);
+
+  animation:
+    frameworkAxisField
+    8600ms
+    ease-in-out
+    infinite;
+}
+
+@keyframes frameworkAxisField {
+
+  0%,
+  100% {
+    transform: scale(1);
+
+    box-shadow:
+      0 0 0 4px rgba(var(--axpt-mineral-green), .11),
+      0 0 10px rgba(var(--axpt-mineral-cold), .075),
+      0 0 20px rgba(var(--axpt-mineral-green), .025);
+  }
+
+  46% {
+    transform: scale(1.12);
+
+    box-shadow:
+      0 0 0 6px rgba(var(--axpt-mineral-green), .17),
+      0 0 17px rgba(var(--axpt-mineral-cold), .12),
+      0 0 30px rgba(var(--axpt-mineral-green), .055);
+  }
+
+  73% {
+    transform: scale(1.045);
+
+    box-shadow:
+      0 0 0 5px rgba(var(--axpt-mineral-green), .13),
+      0 0 12px rgba(var(--axpt-mineral-cold), .085),
+      0 0 23px rgba(var(--axpt-mineral-green), .032);
+  }
+
 }
 
 
 /* ─────────────────────────────────────
-   AXIS DEFINITION
+   05 — INSTITUTIONAL DEFINITION
+
+   Once position has been established,
+   AXPT names what that position means.
 ───────────────────────────────────── */
 
 .axisDefinition {
   grid-column: 5 / 12;
 
   display: grid;
-  grid-template-columns: 88px minmax(0, 1fr);
+  grid-template-columns:
+    minmax(82px, .18fr)
+    minmax(0, 1fr);
 
-  column-gap: 30px;
+  column-gap: clamp(28px, 4vw, 52px);
+
   align-items: start;
 
-  padding-top: 14px;
+  margin-top: clamp(4px, .7vh, 10px);
+  padding-top: 16px;
 
-  border-top: 1px solid rgba(var(--axpt-silver), 0.065);
+  border-top:
+    1px solid rgba(var(--axpt-mineral-green), .075);
+
+  opacity: .56;
+
+  transform:
+    translate3d(0, 4px, 0);
+
+  transition:
+    opacity 1050ms cubic-bezier(.22, 1, .36, 1),
+    transform 1250ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-framework="true"])
+.axisDefinition {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0);
 }
 
 .axisLabel {
-  padding-top: 0.28em;
+  padding-top: .32em;
 
   font-family: var(--axpt-mono);
-
-  font-size: 0.52rem;
+  font-size: .52rem;
   line-height: 1;
 
-  letter-spacing: 0.27em;
+  letter-spacing: .27em;
   text-transform: uppercase;
 
-  color: rgba(var(--axpt-iron-silver), 0.34);
+  color: rgba(var(--axpt-iron-silver), .34);
 }
 
 .axisDefinition p {
   margin: 0;
 
-  max-width: 34ch;
+  max-width: 38ch;
 
   font-family: var(--axpt-body);
+  font-size: clamp(1.02rem, 1.32vw, 1.22rem);
+  line-height: 1.5;
 
-  font-size: clamp(1.04rem, 1.4vw, 1.3rem);
-  line-height: 1.46;
+  letter-spacing: -.018em;
 
-  letter-spacing: -0.02em;
-
-  color: rgba(var(--axpt-ash), 0.82);
+  color: rgba(var(--axpt-ash), .8);
 }
 
 
@@ -284,16 +792,16 @@
     grid-column: 1 / 11;
   }
 
-  .explanation {
-    grid-column: 1 / 10;
+  .movementSubject {
+    grid-column: 1 / 7;
   }
 
-  .conditionField {
-    min-height: 330px;
+  .dependencyField {
+    grid-column: 4 / -1;
   }
 
-  .condition {
-    width: 40%;
+  .establishedPosition {
+    grid-column: 6 / 12;
   }
 
   .axisDefinition {
@@ -305,122 +813,1897 @@
 
 /* ─────────────────────────────────────
    MOBILE
+
+   Preserve hierarchy:
+   subject → dependency → position.
 ───────────────────────────────────── */
 
 @media (max-width: 680px) {
 
-  .frameworkInner {
-    row-gap: 30px;
-  }
-
   .declaration,
-  .explanation,
-  .conditionField,
+  .movementSubject,
+  .dependencyField,
+  .establishedPosition,
   .axisDefinition {
     grid-column: 1 / -1;
   }
 
-
+  .declaration {
+    padding-top: 18px;
+  }
 
   .declaration h2 {
-    max-width: 12ch;
+    max-width: 13ch;
 
-    font-size: clamp(2.75rem, 13vw, 4rem);
+    font-size: clamp(2.5rem, 11vw, 3.7rem);
   }
 
-  .conditionField {
-    min-height: 460px;
+  .movementSubject {
+    width: min(88%, 360px);
+
+    margin-top: 48px;
+    margin-left: 0;
   }
 
-  .condition {
-    width: 42%;
+  .dependencyField {
+    margin-top: 48px;
+    margin-left: clamp(24px, 8vw, 48px);
+
+    display: block;
   }
 
-  .condition:nth-child(1) {
-    left: 0;
-    top: 10%;
+  .dependencyStatement {
+    display: block;
+
+    margin-bottom: 28px;
   }
 
-  .condition:nth-child(2) {
-    right: 0;
-    top: 10%;
+  .dependencies {
+    gap: 30px;
   }
 
-  .condition:nth-child(3) {
-    left: 0;
-    bottom: 10%;
+  .dependency {
+    display: block;
+
+    width: min(100%, 360px);
   }
 
-  .condition:nth-child(4) {
-    right: 0;
-    bottom: 10%;
+  .dependency:nth-child(2),
+  .dependency:nth-child(3) {
+    margin-left: clamp(18px, 6vw, 34px);
   }
-.axisDefinition {
-    grid-template-columns: 70px 1fr;
+
+  .dependency p {
+    margin-top: 8px;
+  }
+
+  .establishedPosition {
+    min-height: 100px;
+
+    margin-top: 28px;
+    padding-right: 8%;
+  }
+
+  .axisDefinition {
+    grid-template-columns: 76px 1fr;
 
     column-gap: 18px;
+
+    margin-top: 8px;
   }
 
 }
 
 
 /* ─────────────────────────────────────
-   LIVING DOCUMENT — INSCRIPTION
+   REDUCED MOTION
 ───────────────────────────────────── */
 
-.declaration h2 {
-  opacity: .56;
-  transform: translate3d(0, 10px, 0);
-
-  transition:
-    opacity 900ms cubic-bezier(.22, 1, .36, 1),
-    transform 1100ms cubic-bezier(.22, 1, .36, 1);
-}
-
-:global(body[data-layer="FRAMEWORK"]) .declaration h2 {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .declaration h2 {
-    transition: none;
-  }
-}
 
-
-/* ─────────────────────────────────────
-   LIVING DOCUMENT — POINT
-
-   Passage establishes position.
-   The point does not pulse or announce;
-   it resolves as a coordinate.
-───────────────────────────────────── */
-
-.axisPoint {
-  opacity: .30;
-  transform:
-    translate(-50%, -50%)
-    scale(.58);
-
-  transition:
-    opacity 900ms cubic-bezier(.22, 1, .36, 1),
-    transform 1100ms cubic-bezier(.22, 1, .36, 1);
-}
-
-:global(body[data-layer="FRAMEWORK"]) .axisPoint {
-  opacity: 1;
-  transform:
-    translate(-50%, -50%)
-    scale(1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .axisPoint {
+  .declaration h2,
+  .movementSubject,
+  .dependencyStatement,
+  .dependency,
+  .axisPoint,
+  .axisPositionLabel,
+  .axisDefinition {
     opacity: 1;
-    transform:
-      translate(-50%, -50%)
-      scale(1);
     transition: none;
   }
+
+  .declaration h2,
+  .movementSubject,
+  .dependencyStatement,
+  .dependency,
+  .axisPoint,
+  .axisDefinition {
+    transform: none;
+    filter: none;
+  }
+
+  .dependencyStatement,
+  .dependency h3,
+  .axisPoint,
+  .axisPoint::before {
+    animation: none;
+  }
+
+  .dependency h3 {
+    transform: none;
+  }
+
+  :global(body[data-established-framework="true"])
+  .dependency h3 {
+    color: rgba(var(--axpt-mineral-green), .99);
+
+    text-shadow:
+      0 0 6px rgba(var(--axpt-mineral-green), .16),
+      0 0 16px rgba(var(--axpt-mineral-green), .075),
+      0 0 28px rgba(var(--axpt-mineral-green), .025);
+  }
+
+  :global(body[data-established-framework="true"])
+  .dependencyStatement {
+    color: rgba(var(--axpt-mineral-green), .98);
+
+    text-shadow:
+      0 0 7px rgba(var(--axpt-mineral-green), .15),
+      0 0 18px rgba(var(--axpt-mineral-green), .070),
+      0 0 32px rgba(var(--axpt-mineral-green), .025);
+  }
+
+  :global(body[data-established-framework="true"])
+  .axisPoint::before {
+    opacity: .78;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scaleX(1);
+
+    filter:
+      blur(.12px)
+      brightness(1.04);
+  }
+
+  :global(body[data-established-framework="true"])
+  .axisPoint {
+    transform: scale(1);
+
+    box-shadow:
+      0 0 0 4px rgba(var(--axpt-mineral-green), .055);
+  }
+
+}
+
+/* HEADER ANCHOR OFFSET — frameworkSurface */
+
+.frameworkSurface {
+  scroll-margin-top: 76px;
+}
+
+@media (max-width: 680px) {
+
+  .frameworkSurface {
+    scroll-margin-top: 64px;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — FRAMEWORK MOBILE M4A
+
+   Mobile constitution:
+   proposition
+   → subject
+   → dependency hinge
+   → surrounding conditions
+   → established axis point
+   → institutional definition.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .frameworkSurface {
+    scroll-margin-top: 60px;
+  }
+
+
+  .frameworkInner {
+    width:
+      calc(100% - 40px);
+
+    margin:
+      0
+      auto;
+
+    row-gap: 0;
+  }
+
+
+  /* ── DECLARATION ── */
+
+  .declaration {
+    padding-top: 0;
+  }
+
+
+  .declaration h2 {
+    max-width: 11.5ch;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        2.15rem,
+        9.4vw,
+        2.65rem
+      );
+
+    line-height: 1.01;
+
+    letter-spacing: -.046em;
+  }
+
+
+  .declaration h2 span {
+    color:
+      rgba(var(--axpt-ash), .72);
+  }
+
+
+  /* ── WHAT MOVES ── */
+
+  .movementSubject {
+    width: 100%;
+    max-width: 29ch;
+
+    margin:
+      30px
+      0
+      0;
+
+    padding: 0;
+  }
+
+
+  .fieldLabel {
+    font-size: .48rem;
+
+    letter-spacing: .22em;
+
+    color:
+      rgba(var(--axpt-limestone), .70);
+  }
+
+
+  .movementSubject p {
+    margin-top: 10px;
+
+    font-size:
+      clamp(
+        .94rem,
+        4vw,
+        1.02rem
+      );
+
+    line-height: 1.56;
+
+    color:
+      rgba(var(--axpt-silver), .66);
+  }
+
+
+  /* ── DEPENDENCY HINGE ── */
+
+  .dependencyField {
+    width: 100%;
+
+    margin:
+      26px
+      0
+      0;
+
+    display: block;
+  }
+
+
+  .dependencyStatement {
+    display: block;
+
+    width: fit-content;
+
+    margin:
+      0
+      auto
+      18px;
+
+    font-size: .49rem;
+
+    letter-spacing: .24em;
+
+    text-align: center;
+
+    color:
+      rgba(var(--axpt-mineral-green), .82);
+  }
+
+
+  .dependencyStatement::after {
+    content: "";
+
+    display: block;
+
+    width: 1px;
+    height: 18px;
+
+    margin:
+      9px
+      auto
+      0;
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--axpt-mineral-green), .38),
+        rgba(var(--axpt-silver), .08)
+      );
+
+    opacity: .72;
+  }
+
+
+  /* ── SURROUNDING CONDITIONS ── */
+
+  .dependencies {
+    width: 100%;
+
+    display: grid;
+
+    gap: 22px;
+  }
+
+
+  .dependency {
+    width: 100%;
+    max-width: 31ch;
+
+    margin:
+      0
+      auto;
+
+    padding: 0;
+
+    text-align: left;
+  }
+
+
+  .dependency:nth-child(2) {
+    transform:
+      translate3d(10px, 0, 0);
+  }
+
+
+  .dependency:nth-child(3) {
+    transform:
+      translate3d(-8px, 0, 0);
+  }
+
+
+  .dependency h3 {
+    margin: 0;
+
+    font-size: .49rem;
+    line-height: 1.2;
+
+    letter-spacing: .21em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .82);
+  }
+
+
+  .dependency p {
+    max-width: 29ch;
+
+    margin:
+      7px
+      0
+      0;
+
+    font-size:
+      .88rem;
+
+    line-height: 1.48;
+
+    color:
+      rgba(var(--axpt-silver), .62);
+  }
+
+
+  /* ── AXIS POINT ── */
+
+  .establishedPosition {
+    min-height: 0;
+
+    display: flex;
+    justify-content: center;
+
+    margin-top: 28px;
+
+    padding: 0;
+  }
+
+
+  .axisPosition {
+    position: relative;
+
+    display: grid;
+    justify-items: center;
+
+    gap: 10px;
+  }
+
+
+  .axisPoint {
+    position: relative;
+
+    left: auto;
+    top: auto;
+
+    width: 7px;
+    height: 7px;
+
+    transform: none;
+  }
+
+
+  .axisPoint::before {
+    width: 72px;
+  }
+
+
+  .axisPositionLabel {
+    font-size: .47rem;
+
+    letter-spacing: .22em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .72);
+  }
+
+
+  /* ── INSTITUTIONAL DEFINITION ── */
+
+  .axisDefinition {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      64px
+      minmax(0, 1fr);
+
+    column-gap: 12px;
+
+    margin-top: 22px;
+
+    padding-top: 15px;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-mineral-green), .09);
+  }
+
+
+  .axisLabel {
+    padding-top: 2px;
+
+    font-size: .46rem;
+
+    letter-spacing: .22em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .72);
+  }
+
+
+  .axisDefinition p {
+    max-width: 28ch;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        .92rem,
+        3.85vw,
+        1rem
+      );
+
+    line-height: 1.56;
+
+    color:
+      rgba(var(--axpt-ash), .82);
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   FRAMEWORK — MOBILE RELATIONAL FIELD
+   Hidden outside the mobile constitution.
+───────────────────────────────────── */
+
+.mobileRelationalField {
+  display: none;
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — FRAMEWORK MOBILE M4B
+
+   Three surrounding conditions resolve
+   around an established Axis Point.
+
+   No literal triangle.
+   Relationship is carried by coordinates,
+   traces, asymmetry, and registration.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /*
+   * Desktop dependency architecture is
+   * replaced by the relational field.
+   */
+
+  .dependencyField,
+  .establishedPosition {
+    display: none;
+  }
+
+
+  /* ── SUBJECT INTO FIELD ── */
+
+  .movementSubject {
+    max-width: 28ch;
+
+    margin-top: 27px;
+  }
+
+
+  .mobileRelationalField {
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+    height: 304px;
+
+    max-width: 350px;
+
+    margin:
+      30px
+      auto
+      0;
+  }
+
+
+  /*
+   * Quiet environmental field.
+   * This is not a card or infographic.
+   */
+
+  .mobileRelationalField::before {
+    content: "";
+
+    position: absolute;
+
+    inset:
+      18px
+      18px
+      14px;
+
+    pointer-events: none;
+
+    background:
+      radial-gradient(
+        ellipse 46% 40% at 50% 68%,
+        rgba(var(--axpt-mineral-green), .042),
+        transparent 72%
+      );
+
+    opacity: .82;
+  }
+
+
+  /* ── SHARED NODE ── */
+
+  .mobileNode {
+    position: absolute;
+
+    z-index: 2;
+
+    width: 142px;
+
+    margin: 0;
+
+    opacity: .48;
+
+    transform:
+      translate3d(0, 5px, 0);
+
+    filter:
+      contrast(.96)
+      brightness(.94);
+
+    transition:
+      opacity 980ms cubic-bezier(.22, 1, .36, 1),
+      transform 1180ms cubic-bezier(.22, 1, .36, 1),
+      filter 1080ms cubic-bezier(.22, 1, .36, 1);
+  }
+
+
+  .mobileNode h3 {
+    margin: 0;
+
+    font-family: var(--axpt-mono);
+
+    font-size: .45rem;
+    line-height: 1.35;
+
+    letter-spacing: .18em;
+
+    text-transform: uppercase;
+
+    color:
+      rgba(var(--axpt-mineral-green), .70);
+  }
+
+
+  .mobileNode p {
+    max-width: 19ch;
+
+    margin:
+      6px
+      0
+      0;
+
+    font-family: var(--axpt-body);
+
+    font-size: .76rem;
+    line-height: 1.40;
+
+    letter-spacing: -.006em;
+
+    color:
+      rgba(var(--axpt-silver), .55);
+  }
+
+
+  /* ── THREE FIELD COORDINATES ── */
+
+  .mobileNodeEstablished {
+    top: 2px;
+    left: 50%;
+
+    width: 176px;
+
+    text-align: center;
+
+    transform:
+      translate3d(-50%, 5px, 0);
+  }
+
+
+  .mobileNodeEstablished p {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+
+  .mobileNodeResponsibility {
+    left: 0;
+    bottom: 54px;
+
+    text-align: left;
+  }
+
+
+  .mobileNodeAuthority {
+    right: 0;
+    bottom: 82px;
+
+    text-align: right;
+  }
+
+
+  .mobileNodeAuthority p {
+    margin-left: auto;
+  }
+
+
+  /* ── AXIS POINT / CONVERGENCE ── */
+
+  .mobileAxisField {
+    position: absolute;
+
+    z-index: 4;
+
+    left: 50%;
+    bottom: 12px;
+
+    display: grid;
+    justify-items: center;
+
+    gap: 7px;
+
+    transform:
+      translate3d(-50%, 0, 0);
+  }
+
+
+  .mobileAxisPoint {
+    position: relative;
+
+    display: block;
+
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background:
+      rgba(var(--axpt-mineral-green), .88);
+
+    box-shadow:
+      0 0 0 5px
+      rgba(var(--axpt-mineral-green), .045);
+  }
+
+
+  .mobileAxisPoint::before {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 54px;
+    height: 1px;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--axpt-mineral-green), .26),
+        transparent
+      );
+
+    transform:
+      translate3d(-50%, -50%, 0);
+
+    opacity: .68;
+  }
+
+
+  .mobileAxisLabel {
+    font-family: var(--axpt-mono);
+
+    font-size: .44rem;
+    line-height: 1;
+
+    letter-spacing: .22em;
+
+    text-transform: uppercase;
+
+    color:
+      rgba(var(--axpt-mineral-green), .74);
+  }
+
+
+  /* ── RELATIONAL TRACES ── */
+
+  .mobileTrace {
+    position: absolute;
+
+    z-index: 1;
+
+    height: 1px;
+
+    pointer-events: none;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--axpt-mineral-green), .17),
+        rgba(var(--axpt-silver), .065),
+        transparent
+      );
+
+    opacity: .46;
+
+    transform-origin: left center;
+  }
+
+
+  .mobileTraceEstablished {
+    left: 50%;
+    top: 86px;
+
+    width: 122px;
+
+    transform:
+      rotate(90deg)
+      scaleX(.74);
+  }
+
+
+  .mobileTraceResponsibility {
+    left: 118px;
+    bottom: 91px;
+
+    width: 94px;
+
+    transform:
+      rotate(28deg)
+      scaleX(.70);
+  }
+
+
+  .mobileTraceAuthority {
+    right: 106px;
+    bottom: 104px;
+
+    width: 92px;
+
+    transform-origin: right center;
+
+    transform:
+      rotate(-31deg)
+      scaleX(.70);
+  }
+
+
+  /* ── ESTABLISHMENT SEQUENCE ── */
+
+  :global(body[data-established-framework="true"])
+  .mobileNodeEstablished {
+    animation:
+      frameworkMobileEstablishedRegister
+      1280ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  :global(body[data-established-framework="true"])
+  .mobileNodeAuthority {
+    animation:
+      frameworkMobileAuthorityRegister
+      1520ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  :global(body[data-established-framework="true"])
+  .mobileNodeResponsibility {
+    animation:
+      frameworkMobileResponsibilityRegister
+      1740ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  :global(body[data-established-framework="true"])
+  .mobileAxisField {
+    animation:
+      frameworkMobileAxisEstablish
+      2080ms
+      cubic-bezier(.16, 1, .3, 1)
+      both;
+  }
+
+
+  :global(body[data-established-framework="true"])
+  .mobileTrace {
+    animation:
+      frameworkMobileTraceResolve
+      1960ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  /* ── DEFINITION FOLLOWS THE FIELD ── */
+
+  .axisDefinition {
+    margin-top: 24px;
+
+    grid-template-columns:
+      62px
+      minmax(0, 1fr);
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   FRAMEWORK MOBILE FIELD REGISTRATION
+───────────────────────────────────── */
+
+@keyframes frameworkMobileEstablishedRegister {
+
+  0%,
+  18% {
+    opacity: .12;
+
+    transform:
+      translate3d(-50%, 8px, 0);
+
+    filter:
+      blur(2px)
+      brightness(.82);
+  }
+
+  58% {
+    opacity: .78;
+
+    transform:
+      translate3d(-50%, 0, 0);
+
+    filter: none;
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translate3d(-50%, 0, 0);
+
+    filter: none;
+  }
+
+}
+
+
+@keyframes frameworkMobileAuthorityRegister {
+
+  0%,
+  30% {
+    opacity: .08;
+
+    transform:
+      translate3d(7px, 5px, 0);
+  }
+
+  66% {
+    opacity: .72;
+
+    transform:
+      translate3d(-1px, 0, 0);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform: none;
+    filter: none;
+  }
+
+}
+
+
+@keyframes frameworkMobileResponsibilityRegister {
+
+  0%,
+  38% {
+    opacity: .08;
+
+    transform:
+      translate3d(-7px, 5px, 0);
+  }
+
+  70% {
+    opacity: .70;
+
+    transform:
+      translate3d(1px, 0, 0);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform: none;
+    filter: none;
+  }
+
+}
+
+
+@keyframes frameworkMobileAxisEstablish {
+
+  0%,
+  52% {
+    opacity: 0;
+
+    transform:
+      translate3d(-50%, 6px, 0)
+      scale(.72);
+
+    filter:
+      blur(2px);
+  }
+
+  76% {
+    opacity: .74;
+
+    transform:
+      translate3d(-50%, 0, 0)
+      scale(1.12);
+
+    filter: none;
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translate3d(-50%, 0, 0)
+      scale(1);
+  }
+
+}
+
+
+@keyframes frameworkMobileTraceResolve {
+
+  0%,
+  46% {
+    opacity: 0;
+  }
+
+  72% {
+    opacity: .24;
+  }
+
+  100% {
+    opacity: .46;
+  }
+
+}
+
+
+@media
+  (max-width: 680px)
+  and (prefers-reduced-motion: reduce) {
+
+  .mobileNode,
+  .mobileAxisField,
+  .mobileTrace {
+    animation: none !important;
+
+    opacity: 1;
+    filter: none;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — FRAMEWORK MOBILE M4C
+   RELATIONAL FIELD GRID AUTHORITY
+
+   The mobile relational organism is a
+   first-class surface field and must span
+   the complete canonical mobile grid.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .mobileRelationalField {
+    grid-column:
+      1 / -1;
+
+    justify-self: stretch;
+
+    min-width: 0;
+
+    box-sizing: border-box;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — FRAMEWORK MOBILE M4D
+
+   The Axis Point becomes the gravitational
+   center of the surrounding conditions.
+
+   Three forces surround a coordinate;
+   the coordinate no longer sits beneath them.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── FIELD COMPRESSION ── */
+
+  .mobileRelationalField {
+    height: 252px;
+
+    max-width: 340px;
+
+    margin-top: 24px;
+  }
+
+
+  .mobileRelationalField::before {
+    inset:
+      20px
+      32px
+      18px;
+
+    background:
+      radial-gradient(
+        circle at 50% 54%,
+        rgba(var(--axpt-mineral-green), .062) 0%,
+        rgba(var(--axpt-mineral-green), .026) 18%,
+        transparent 58%
+      );
+
+    opacity: .90;
+  }
+
+
+  /* ── CENTRAL AXIS ── */
+
+  .mobileAxisField {
+    left: 50%;
+    top: 54%;
+    bottom: auto;
+
+    gap: 8px;
+
+    transform:
+      translate3d(-50%, -50%, 0);
+  }
+
+
+  .mobileAxisPoint {
+    width: 9px;
+    height: 9px;
+
+    background:
+      rgba(var(--axpt-mineral-green), .96);
+
+    box-shadow:
+      0 0 0 5px
+        rgba(var(--axpt-mineral-green), .050),
+      0 0 22px
+        rgba(var(--axpt-mineral-green), .080);
+  }
+
+
+  .mobileAxisPoint::before {
+    width: 66px;
+
+    opacity: .74;
+  }
+
+
+  .mobileAxisLabel {
+    font-size: .46rem;
+
+    letter-spacing: .24em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .82);
+  }
+
+
+  /* ── TOP FORCE ── */
+
+  .mobileNodeEstablished {
+    top: 0;
+    left: 50%;
+
+    width: 188px;
+
+    text-align: center;
+
+    transform:
+      translate3d(-50%, 0, 0);
+  }
+
+
+  /* ── LOWER FORCES ── */
+
+  .mobileNodeResponsibility {
+    left: 0;
+    top: 158px;
+    bottom: auto;
+
+    width: 138px;
+
+    text-align: left;
+  }
+
+
+  .mobileNodeAuthority {
+    right: 0;
+    top: 158px;
+    bottom: auto;
+
+    width: 138px;
+
+    text-align: right;
+  }
+
+
+  .mobileNode h3 {
+    font-size: .47rem;
+
+    letter-spacing: .17em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .80);
+  }
+
+
+  .mobileNode p {
+    margin-top: 5px;
+
+    font-size: .78rem;
+    line-height: 1.38;
+
+    color:
+      rgba(var(--axpt-silver), .61);
+  }
+
+
+  /* ── FORCE TRACES ── */
+
+  .mobileTrace {
+    opacity: .58;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--axpt-mineral-green), .23),
+        rgba(var(--axpt-silver), .085),
+        transparent
+      );
+  }
+
+
+  /* established → center */
+
+  .mobileTraceEstablished {
+    left: 50%;
+    top: 67px;
+
+    width: 64px;
+
+    transform-origin: left center;
+
+    transform:
+      rotate(90deg)
+      scaleX(.86);
+  }
+
+
+  /* responsibility → center */
+
+  .mobileTraceResponsibility {
+    left: 112px;
+    top: 174px;
+    bottom: auto;
+
+    width: 74px;
+
+    transform:
+      rotate(-28deg)
+      scaleX(.82);
+  }
+
+
+  /* authority → center */
+
+  .mobileTraceAuthority {
+    right: 111px;
+    top: 174px;
+    bottom: auto;
+
+    width: 74px;
+
+    transform-origin: right center;
+
+    transform:
+      rotate(28deg)
+      scaleX(.82);
+  }
+
+
+  /* ── DOCUMENTARY CONSEQUENCE ── */
+
+  .axisDefinition {
+    margin-top: 16px;
+
+    padding-top: 14px;
+
+    grid-template-columns:
+      60px
+      minmax(0, 1fr);
+
+    column-gap: 11px;
+  }
+
+
+  .axisDefinition p {
+    max-width: 27ch;
+
+    font-size:
+      clamp(
+        .91rem,
+        3.8vw,
+        .98rem
+      );
+
+    line-height: 1.52;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — FRAMEWORK MOBILE M4E
+
+   Increase relational tension without
+   drawing a literal triangle.
+
+   The three surrounding conditions should
+   visibly hold the Axis Point in position.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── FIELD TIGHTENING ── */
+
+  .mobileRelationalField {
+    height: 236px;
+
+    margin-top: 22px;
+  }
+
+
+  .mobileNodeEstablished {
+    top: 8px;
+  }
+
+
+  .mobileNodeResponsibility,
+  .mobileNodeAuthority {
+    top: 148px;
+  }
+
+
+  /* ── AXIS GRAVITY ── */
+
+  .mobileAxisField {
+    top: 55%;
+
+    gap: 7px;
+  }
+
+
+  .mobileAxisPoint {
+    width: 10px;
+    height: 10px;
+
+    box-shadow:
+      0 0 0 5px
+        rgba(var(--axpt-mineral-green), .060),
+      0 0 18px
+        rgba(var(--axpt-mineral-green), .115),
+      0 0 38px
+        rgba(var(--axpt-mineral-green), .045);
+  }
+
+
+  /*
+   * Diffuse orbital residue.
+   * Not a visible ring.
+   */
+
+  .mobileAxisField::before {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 5px;
+
+    width: 108px;
+    height: 62px;
+
+    border-radius: 50%;
+
+    background:
+      radial-gradient(
+        ellipse,
+        transparent 46%,
+        rgba(var(--axpt-mineral-green), .032) 58%,
+        transparent 72%
+      );
+
+    transform:
+      translate3d(-50%, -50%, 0);
+
+    pointer-events: none;
+
+    opacity: .86;
+  }
+
+
+  /* ── RELATIONAL TRACES ── */
+
+  .mobileTrace {
+    opacity: .68;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(var(--axpt-mineral-green), .10) 14%,
+        rgba(var(--axpt-mineral-green), .30) 46%,
+        rgba(var(--axpt-silver), .11) 68%,
+        transparent 100%
+      );
+  }
+
+
+  .mobileTraceEstablished {
+    top: 70px;
+
+    width: 57px;
+
+    transform:
+      rotate(90deg)
+      scaleX(.92);
+  }
+
+
+  .mobileTraceResponsibility {
+    left: 111px;
+    top: 162px;
+
+    width: 77px;
+
+    transform:
+      rotate(-27deg)
+      scaleX(.90);
+  }
+
+
+  .mobileTraceAuthority {
+    right: 110px;
+    top: 162px;
+
+    width: 77px;
+
+    transform:
+      rotate(27deg)
+      scaleX(.90);
+  }
+
+
+  /* ── NODE REGISTER ── */
+
+  .mobileNode h3 {
+    color:
+      rgba(var(--axpt-mineral-green), .86);
+  }
+
+
+  .mobileNode p {
+    color:
+      rgba(var(--axpt-silver), .64);
+  }
+
+
+  /* definition follows immediately */
+
+  .axisDefinition {
+    margin-top: 14px;
+  }
+
+}
+
+
+/*
+ * M4D moved the Axis Point to the true
+ * center of the field. The establishment
+ * animation must resolve to that same
+ * coordinate rather than the older
+ * bottom-oriented position.
+ */
+
+@keyframes frameworkMobileAxisEstablish {
+
+  0%,
+  52% {
+    opacity: 0;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(.72);
+
+    filter:
+      blur(2px);
+  }
+
+  76% {
+    opacity: .76;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(1.14);
+
+    filter: none;
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(1);
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — FRAMEWORK MOBILE M4F
+
+   Final relational registration.
+
+   Conditions gain quiet coordinate anchors.
+   Traces become perceptible enough to show
+   that the Axis Point is held by the field,
+   without resolving into a literal triangle.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── NODE COORDINATES ── */
+
+  .mobileNode {
+    position: absolute;
+  }
+
+
+  .mobileNode::after {
+    content: "";
+
+    position: absolute;
+
+    width: 4px;
+    height: 4px;
+
+    border-radius: 50%;
+
+    background:
+      rgba(var(--axpt-mineral-green), .54);
+
+    box-shadow:
+      0 0 10px
+      rgba(var(--axpt-mineral-green), .10);
+
+    opacity: .82;
+  }
+
+
+  .mobileNodeEstablished::after {
+    left: 50%;
+    bottom: -10px;
+
+    transform:
+      translate3d(-50%, 0, 0);
+  }
+
+
+  .mobileNodeResponsibility::after {
+    right: -8px;
+    top: 12px;
+  }
+
+
+  .mobileNodeAuthority::after {
+    left: -8px;
+    top: 12px;
+  }
+
+
+  /* ── RELATIONAL FIELD ── */
+
+  .mobileTrace {
+    height: 1px;
+
+    opacity: .78;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent 0%,
+        rgba(var(--axpt-mineral-green), .16) 12%,
+        rgba(var(--axpt-mineral-green), .38) 48%,
+        rgba(var(--axpt-silver), .13) 72%,
+        transparent 100%
+      );
+
+    filter:
+      drop-shadow(
+        0 0 3px
+        rgba(var(--axpt-mineral-green), .055)
+      );
+  }
+
+
+  .mobileTraceEstablished {
+    top: 73px;
+
+    width: 54px;
+
+    transform:
+      rotate(90deg)
+      scaleX(.96);
+  }
+
+
+  .mobileTraceResponsibility {
+    left: 117px;
+    top: 160px;
+
+    width: 70px;
+
+    transform:
+      rotate(-28deg)
+      scaleX(.94);
+  }
+
+
+  .mobileTraceAuthority {
+    right: 116px;
+    top: 160px;
+
+    width: 70px;
+
+    transform:
+      rotate(28deg)
+      scaleX(.94);
+  }
+
+
+  /* ── AXIS EMPHASIS ── */
+
+  .mobileAxisPoint {
+    width: 11px;
+    height: 11px;
+
+    background:
+      rgba(var(--axpt-mineral-green), .98);
+
+    box-shadow:
+      0 0 0 5px
+        rgba(var(--axpt-mineral-green), .065),
+      0 0 20px
+        rgba(var(--axpt-mineral-green), .14),
+      0 0 42px
+        rgba(var(--axpt-mineral-green), .055);
+  }
+
+
+  .mobileAxisLabel {
+    color:
+      rgba(var(--axpt-mineral-green), .88);
+
+    letter-spacing: .23em;
+  }
+
+
+  /*
+   * Definition follows as documentary
+   * consequence of the resolved field.
+   */
+
+  .axisDefinition {
+    margin-top: 12px;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — FRAMEWORK MOBILE M4G
+
+   RELATIONAL RESTRAINT
+
+   Three conditions.
+   Three traces.
+   One established coordinate.
+
+   Remove secondary anchors, orbital residue,
+   and duplicate axis-line effects.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .mobileRelationalField {
+    height: 214px;
+    max-width: 330px;
+    margin-top: 20px;
+  }
+
+
+  /* environmental glow is no longer necessary */
+
+  .mobileRelationalField::before {
+    display: none;
+  }
+
+
+  /* remove secondary coordinate dots */
+
+  .mobileNode::after {
+    display: none;
+  }
+
+
+  /* conditions remain legible but quieter */
+
+  .mobileNode h3 {
+    font-size: .44rem;
+
+    letter-spacing: .15em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .70);
+  }
+
+
+  .mobileNode p {
+    margin-top: 4px;
+
+    font-size: .74rem;
+    line-height: 1.36;
+
+    color:
+      rgba(var(--axpt-silver), .55);
+  }
+
+
+  .mobileNodeEstablished {
+    top: 4px;
+  }
+
+
+  .mobileNodeResponsibility,
+  .mobileNodeAuthority {
+    top: 136px;
+  }
+
+
+  /* one quiet central coordinate */
+
+  .mobileAxisField {
+    top: 54%;
+
+    gap: 6px;
+  }
+
+
+  .mobileAxisField::before {
+    display: none;
+  }
+
+
+  .mobileAxisPoint {
+    width: 7px;
+    height: 7px;
+
+    background:
+      rgba(var(--axpt-mineral-green), .90);
+
+    box-shadow:
+      0 0 0 3px
+        rgba(var(--axpt-mineral-green), .035),
+      0 0 12px
+        rgba(var(--axpt-mineral-green), .065);
+  }
+
+
+  /* remove redundant horizontal axis-line */
+
+  .mobileAxisPoint::before {
+    display: none;
+  }
+
+
+  .mobileAxisLabel {
+    font-size: .42rem;
+
+    letter-spacing: .20em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .70);
+  }
+
+
+  /* the traces now carry the entire relationship */
+
+  .mobileTrace {
+    height: 1px;
+
+    opacity: .36;
+
+    filter: none;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--axpt-mineral-green), .25),
+        rgba(var(--axpt-silver), .07),
+        transparent
+      );
+  }
+
+
+  .mobileTraceEstablished {
+    top: 65px;
+
+    width: 47px;
+
+    transform:
+      rotate(90deg)
+      scaleX(.88);
+  }
+
+
+  .mobileTraceResponsibility {
+    left: 116px;
+    top: 148px;
+
+    width: 61px;
+
+    transform:
+      rotate(-27deg)
+      scaleX(.86);
+  }
+
+
+  .mobileTraceAuthority {
+    right: 115px;
+    top: 148px;
+
+    width: 61px;
+
+    transform:
+      rotate(27deg)
+      scaleX(.86);
+  }
+
+
+  .axisDefinition {
+    margin-top: 10px;
+  }
+
 }

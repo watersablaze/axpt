@@ -1,0 +1,395 @@
+.field {
+  --field-ink: rgba(232, 224, 204, 0.92);
+  --field-muted: rgba(232, 224, 204, 0.5);
+  --field-faint: rgba(232, 224, 204, 0.075);
+  --field-line: rgba(232, 224, 204, 0.15);
+  --field-line-strong: rgba(232, 224, 204, 0.22);
+
+  width: 100%;
+  padding: clamp(1.5rem, 3vw, 3rem) clamp(1.5rem, 4vw, 4.5rem) 0;
+  border-top: 1px solid var(--field-line);
+  border-bottom: 1px solid var(--field-line);
+  background:
+    radial-gradient(
+      circle at 50% 40%,
+      rgba(232, 224, 204, 0.035),
+      transparent 30rem
+    ),
+    rgba(8, 13, 11, 0.12);
+}
+
+.fieldMeta {
+  width: min(1480px, 100%);
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  color: rgba(232, 224, 204, 0.34);
+  font-size: 0.57rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.diagram {
+  position: relative;
+  width: min(1480px, 100%);
+  min-height: 860px;
+  margin: clamp(2rem, 4vw, 4rem) auto 0;
+
+  display: grid;
+  grid-template-columns:
+    minmax(170px, 0.8fr)
+    minmax(80px, 0.35fr)
+    minmax(250px, 1fr)
+    minmax(140px, 0.55fr)
+    minmax(250px, 1fr)
+    minmax(80px, 0.35fr)
+    minmax(170px, 0.8fr);
+
+  grid-template-rows:
+    minmax(110px, auto)
+    minmax(150px, auto)
+    minmax(155px, auto)
+    minmax(80px, auto)
+    minmax(180px, auto)
+    minmax(95px, auto)
+    minmax(165px, auto);
+
+  grid-template-areas:
+    "ingress ingress ingress ingress . . ."
+    ". . mother mother mother . ."
+    ". . authority authority authority . ."
+    ". . . spacer . . ."
+    ". council council . french french ."
+    ". . . merge . . ."
+    ". . family family family . .";
+
+  align-items: center;
+}
+
+/* geometry field */
+
+.geometry {
+  position: absolute;
+  inset: 1rem 1rem 1.5rem;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cornerTL,
+.cornerTR,
+.cornerBL,
+.cornerBR {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+}
+
+.cornerTL {
+  top: 0;
+  left: 0;
+  border-top: 1px solid var(--field-faint);
+  border-left: 1px solid var(--field-faint);
+}
+
+.cornerTR {
+  top: 0;
+  right: 0;
+  border-top: 1px solid var(--field-faint);
+  border-right: 1px solid var(--field-faint);
+}
+
+.cornerBL {
+  bottom: 0;
+  left: 0;
+  border-bottom: 1px solid var(--field-faint);
+  border-left: 1px solid var(--field-faint);
+}
+
+.cornerBR {
+  bottom: 0;
+  right: 0;
+  border-bottom: 1px solid var(--field-faint);
+  border-right: 1px solid var(--field-faint);
+}
+
+.axisVertical,
+.branchHorizontal,
+.branchLeftDrop,
+.branchRightDrop,
+.mergeLeft,
+.mergeRight,
+.familyStem,
+.ingressLine {
+  position: absolute;
+  display: block;
+  background: var(--field-line);
+}
+
+.axisVertical {
+  top: 14%;
+  bottom: 15%;
+  left: 50%;
+  width: 1px;
+}
+
+.branchHorizontal {
+  top: 55%;
+  left: 22%;
+  width: 56%;
+  height: 1px;
+}
+
+.branchLeftDrop,
+.branchRightDrop {
+  top: 55%;
+  width: 1px;
+  height: 5%;
+}
+
+.branchLeftDrop {
+  left: 22%;
+}
+
+.branchRightDrop {
+  right: 22%;
+}
+
+.mergeLeft,
+.mergeRight {
+  top: 72%;
+  width: 1px;
+  height: 11%;
+  transform-origin: top;
+}
+
+.mergeLeft {
+  left: 30%;
+  transform: rotate(-33deg);
+}
+
+.mergeRight {
+  right: 30%;
+  transform: rotate(33deg);
+}
+
+.familyStem {
+  top: 80.7%;
+  left: 50%;
+  width: 1px;
+  height: 5%;
+}
+
+.ingressLine {
+  top: 10%;
+  left: 25%;
+  width: 20%;
+  height: 1px;
+}
+
+/* institutional nodes */
+
+.node,
+.ingress {
+  position: relative;
+  z-index: 2;
+  border: 1px solid rgba(232, 224, 204, 0.14);
+  background: rgba(8, 13, 11, 0.94);
+  backdrop-filter: blur(12px);
+}
+
+.node {
+  width: min(100%, 310px);
+  padding: 1.2rem 1.35rem 1.3rem;
+  justify-self: center;
+}
+
+.ingress {
+  grid-area: ingress;
+  width: min(100%, 320px);
+  padding: 1rem 1.2rem 1.05rem;
+  align-self: center;
+}
+
+.greatMother {
+  grid-area: mother;
+}
+
+.royalAuthority {
+  grid-area: authority;
+}
+
+.royalCouncil {
+  grid-area: council;
+  justify-self: start;
+}
+
+.frenchWard {
+  grid-area: french;
+  justify-self: end;
+}
+
+.globalFamily {
+  grid-area: family;
+  border-color: rgba(232, 224, 204, 0.21);
+}
+
+.nodeEyebrow {
+  display: block;
+  margin-bottom: 0.75rem;
+  color: rgba(232, 224, 204, 0.42);
+  font-size: 0.56rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.node h3,
+.ingress h3 {
+  margin: 0;
+  color: var(--field-ink);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.25rem, 2vw, 2rem);
+  line-height: 1.04;
+  font-weight: 400;
+}
+
+.node p,
+.ingress p {
+  margin: 0.75rem 0 0;
+  color: var(--field-muted);
+  font-size: 0.76rem;
+  line-height: 1.6;
+}
+
+/* integrated doctrine */
+
+.doctrine {
+  width: min(1480px, 100%);
+  margin: 0 auto;
+  padding: clamp(1.6rem, 3vw, 2.8rem) 0 clamp(2.2rem, 4vw, 4rem);
+
+  display: grid;
+  grid-template-columns: minmax(140px, 0.7fr) minmax(0, 4fr);
+  gap: clamp(1.5rem, 4vw, 5rem);
+
+  border-top: 1px solid var(--field-line);
+}
+
+.doctrine > span {
+  padding-top: 0.45rem;
+  color: rgba(232, 224, 204, 0.4);
+  font-size: 0.56rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.doctrine p {
+  margin: 0;
+  max-width: 950px;
+  color: rgba(232, 224, 204, 0.62);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.15rem, 2.2vw, 1.8rem);
+  line-height: 1.48;
+}
+
+/* medium */
+
+@media (max-width: 1100px) {
+  .diagram {
+    grid-template-columns:
+      minmax(160px, 0.8fr)
+      minmax(50px, 0.25fr)
+      minmax(220px, 1fr)
+      minmax(80px, 0.4fr)
+      minmax(220px, 1fr)
+      minmax(50px, 0.25fr)
+      minmax(160px, 0.8fr);
+  }
+
+  .branchHorizontal {
+    left: 18%;
+    width: 64%;
+  }
+
+  .branchLeftDrop {
+    left: 18%;
+  }
+
+  .branchRightDrop {
+    right: 18%;
+  }
+}
+
+/* responsive topology */
+
+@media (max-width: 860px) {
+  .field {
+    padding-inline: 1rem;
+  }
+
+  .diagram {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+      "ingress"
+      "mother"
+      "authority"
+      "council"
+      "french"
+      "family";
+    gap: 0.75rem;
+  }
+
+  .geometry {
+    display: none;
+  }
+
+  .node,
+  .ingress {
+    width: 100%;
+    max-width: none;
+    justify-self: stretch;
+  }
+
+  .royalCouncil,
+  .frenchWard {
+    justify-self: stretch;
+  }
+
+  .doctrine {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+}
+
+/* ─────────────────────────────────────────────
+   GM / MOVEMENT 01 — INGRESS BALANCE
+   Bring relational ingress into the field
+   without making it part of the authority spine.
+   ───────────────────────────────────────────── */
+
+.ingress {
+  transform: translateX(12%);
+}
+
+.ingressLine {
+  top: 10%;
+  left: 28%;
+  width: 22%;
+}
+
+/* slightly reinforce the central constitutional axis */
+
+.axisVertical {
+  background: rgba(232, 224, 204, 0.19);
+}
+
+/* soften the outer corners so the field reads as measured, not boxed */
+
+.cornerTL,
+.cornerTR,
+.cornerBL,
+.cornerBR {
+  opacity: 0.7;
+}

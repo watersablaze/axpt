@@ -1,29 +1,24 @@
 import styles from './EthosSurface.module.css'
 
-const PASSAGE_STATES = [
+const CARRIED_FORWARD = [
   {
-    label: 'Action',
-    text: 'Something proceeds.',
+    label: 'Consequence / Responsibility',
+    text: 'What happened continues to shape what comes next; accountability stays connected as conditions change.',
   },
   {
-    label: 'Transfer',
-    text: 'Value, information, custody, authority, or state passes into a new condition.',
-  },
-  {
-    label: 'Consequence',
-    text: 'What moved changes what becomes possible next.',
-  },
-  {
-    label: 'Continuity',
-    text: 'Responsibility and record remain connected through the change.',
+    label: 'Obligation / Record',
+    text: 'Commitments continue with what moves forward; what was established remains available to the next decision.',
   },
 ] as const
 
 export default function EthosSurface() {
   return (
-    <div className={styles.ethosSurface}>
+    <div
+      className={styles.ethosSurface}
+    >
       <div className={styles.ethosInner}>
 
+        {/* 01 — DECLARATION */}
         <header className={styles.declaration}>
           <h2>
             What moves carries
@@ -31,47 +26,107 @@ export default function EthosSurface() {
           </h2>
         </header>
 
-        <div className={styles.explanation}>
-          <p>
-            An action may begin at a single point, but its effects
-            continue through records, relationships, obligations,
-            and subsequent decisions.
-          </p>
-        </div>
-
+        {/* 02 — TRANSMISSION FIELD */}
         <div
-          className={styles.passage}
-          aria-label="Circulation through action, transfer, consequence, and continuity"
+          className={styles.transmissionField}
+          aria-label="What moves and what remains connected through circulation"
         >
-          <div
-            className={styles.passageLine}
-            aria-hidden="true"
-          />
+          <section className={styles.movementField}>
+            <span className={styles.fieldRegistration}>
+              What moves
+            </span>
 
-          {PASSAGE_STATES.map((state, index) => (
-            <article
-              className={styles.passageState}
-              key={state.label}
-              data-position={index + 1}
+            <p className={styles.movementStatement}>
+              Value, information, custody, authority,
+              and institutional state.
+            </p>
+          </section>
+
+          <div className={styles.passageField}>
+            <span className={styles.passageRegistration}>
+              Circulation
+            </span>
+
+            <div
+              className={styles.passageRule}
+              aria-hidden="true"
+            />
+
+            <div
+              className={styles.circulationFieldVisual}
+              aria-hidden="true"
             >
-              <div className={styles.stateBody}>
-                <h3>{state.label}</h3>
-                <p>{state.text}</p>
-              </div>
-            </article>
-          ))}
+              <span className={styles.circulationTrack} />
+              <span className={styles.circulationParticle} />
+            </div>
+
+            <p className={styles.circulationDoctrine}>
+              What moves does not move alone.
+            </p>
+          </div>
+
+          <section className={styles.mobileCarriedField}>
+            <span className={styles.mobileCarriedRegistration}>
+              Carried forward
+            </span>
+
+            <div className={styles.mobileRelationshipField}>
+              <article className={styles.mobileRelationship}>
+                <h3>
+                  Consequence / Responsibility
+                </h3>
+
+                <p>
+                  What happened continues to shape what comes next;
+                  accountability stays connected as conditions change.
+                </p>
+              </article>
+
+              <article className={styles.mobileRelationship}>
+                <h3>
+                  Obligation / Record
+                </h3>
+
+                <p>
+                  Commitments continue with what moves forward;
+                  what was established remains available to the next decision.
+                </p>
+              </article>
+            </div>
+          </section>
+
+          <section className={styles.carriedField}>
+            <span className={styles.fieldRegistration}>
+              Carried forward
+            </span>
+
+            <div className={styles.carriedRelations}>
+              {CARRIED_FORWARD.map((item) => (
+                <div
+                  className={styles.carriedRelation}
+                  key={item.label}
+                >
+                  <strong>{item.label}</strong>
+                  <span>{item.text}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+
         </div>
 
+        {/* 03 — INSTITUTIONAL DEFINITION */}
         <footer className={styles.circulationDefinition}>
           <span className={styles.definitionLabel}>
             CIRCULATION
           </span>
 
           <p>
-            Movement continues. Responsibility must remain
-            traceable through it.
+            Movement carries relationship. Circulation preserves
+            what remains connected through change.
           </p>
         </footer>
+
       </div>
     </div>
   )

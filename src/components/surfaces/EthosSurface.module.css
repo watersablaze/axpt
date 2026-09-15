@@ -1,13 +1,16 @@
 /* ─────────────────────────────────────
    AXPT — CIRCULATION
-   Movement carries consequence
+
+   Movement does not travel alone.
+
+   What proceeds carries consequence,
+   responsibility, obligation, and record
+   into what becomes possible next.
 ───────────────────────────────────── */
 
 .ethosSurface {
   position: relative;
-
   width: 100%;
-
   overflow: clip;
 }
 
@@ -21,209 +24,900 @@
 
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
-
-  row-gap: clamp(26px, 3.2vh, 42px);
 }
 
 
 /* ─────────────────────────────────────
-   REGISTRATION
-───────────────────────────────────── */
-
-
-
-
-/* ─────────────────────────────────────
-   DECLARATION
+   01 — DECLARATION
 ───────────────────────────────────── */
 
 .declaration {
-  grid-column: 1 / 11;
+  grid-column: 1 / 10;
+
+  padding-top: clamp(24px, 3vh, 42px);
 }
 
 .declaration h2 {
   margin: 0;
 
-  max-width: 15ch;
+  max-width: 14ch;
 
-  font-size: clamp(3rem, 5.7vw, 5.35rem);
-  line-height: .94;
+  font-family: var(--axpt-declaration);
+  font-size: clamp(2.7rem, 4.6vw, 4.55rem);
+  line-height: .97;
 
   font-weight: 500;
+  letter-spacing: -.052em;
 
-  letter-spacing: -.055em;
-
-  color: rgba(var(--axpt-limestone), .91);
+  color: rgba(var(--axpt-limestone), .94);
 
   text-wrap: balance;
+
+  opacity: .64;
+  transform:
+    translate3d(0, 3px, 0)
+    scaleY(.996);
+
+  filter:
+    contrast(.96)
+    brightness(.985);
+
+  transition:
+    opacity 760ms cubic-bezier(.22, 1, .36, 1),
+    transform 980ms cubic-bezier(.22, 1, .36, 1),
+    filter 980ms cubic-bezier(.22, 1, .36, 1);
 }
 
 .declaration h2 span {
-  color: rgba(var(--axpt-ash), .56);
+  color: rgba(var(--axpt-ash), .6);
+}
+
+:global(body[data-established-ethos="true"]) .declaration h2 {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0)
+    scaleY(1);
+
+  filter:
+    contrast(1)
+    brightness(1);
 }
 
 
 /* ─────────────────────────────────────
-   EXPLANATION
+   02 — TRANSMISSION FIELD
+
+   Not a timeline.
+
+   The field distinguishes:
+   what enters passage,
+   what remains attached,
+   and what becomes possible after.
 ───────────────────────────────────── */
 
-.explanation {
-  grid-column: 2 / 9;
+.transmissionField {
+  grid-column: 1 / -1;
 
-  max-width: 660px;
+  position: relative;
+
+  min-height: clamp(360px, 41vh, 450px);
+
+  margin-top: clamp(48px, 6vh, 76px);
+
+  display: grid;
+  grid-template-columns:
+    minmax(240px, 2.6fr)
+    minmax(120px, 1.35fr)
+    minmax(390px, 4fr);
+
+  grid-template-rows:
+    minmax(0, 1fr)
+    auto;
+
+  column-gap: clamp(42px, 5vw, 70px);
+  row-gap: clamp(18px, 2.2vh, 28px);
+
+  align-items: start;
 }
 
-.explanation p {
+
+/* ─────────────────────────────────────
+   SHARED REGISTRATION
+───────────────────────────────────── */
+
+.fieldRegistration,
+.passageRegistration {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+
+  color: rgba(var(--axpt-ash), .68);
+
+  transition:
+    color 1200ms cubic-bezier(.22, 1, .36, 1),
+    text-shadow 1400ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.passageRegistration::before,
+.passageRegistration::after {
+  content: "";
+
+  flex: 1;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--axpt-silver), .018) 0%,
+      rgba(var(--axpt-mineral-cold), .055) 30%,
+      rgba(var(--axpt-mineral-green), .24) 48%,
+      rgba(var(--axpt-mineral-cold), .12) 58%,
+      rgba(var(--axpt-silver), .018) 100%
+    );
+
+  background-size: 220% 100%;
+
+  opacity: .56;
+  transform: scaleX(.82);
+
+  transition:
+    opacity 900ms cubic-bezier(.22, 1, .36, 1),
+    transform 1260ms cubic-bezier(.22, 1, .36, 1),
+    filter 1260ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.passageRegistration::before {
+  margin-right: 12px;
+  transform-origin: 100% 50%;
+}
+
+.passageRegistration::after {
+  margin-left: 12px;
+  transform-origin: 0% 50%;
+}
+
+:global(body[data-established-ethos="true"])
+.passageRegistration::before {
+  opacity: 1;
+  transform: scaleX(1);
+
+  animation:
+    circulationWingCurrentLeft
+    9600ms
+    ease-in-out
+    infinite;
+}
+
+:global(body[data-established-ethos="true"])
+.passageRegistration::after {
+  opacity: 1;
+  transform: scaleX(1);
+
+  animation:
+    circulationWingCurrentRight
+    9600ms
+    ease-in-out
+    infinite;
+}
+
+@keyframes circulationWingCurrentLeft {
+
+  0%,
+  100% {
+    opacity: .70;
+    background-position: 100% 50%;
+    filter: brightness(.96);
+  }
+
+  48% {
+    opacity: 1;
+    background-position: 0% 50%;
+    filter: brightness(1.16);
+  }
+
+  76% {
+    opacity: .84;
+    background-position: 18% 50%;
+    filter: brightness(1.04);
+  }
+
+}
+
+@keyframes circulationWingCurrentRight {
+
+  0%,
+  100% {
+    opacity: .70;
+    background-position: 0% 50%;
+    filter: brightness(.96);
+  }
+
+  48% {
+    opacity: 1;
+    background-position: 100% 50%;
+    filter: brightness(1.16);
+  }
+
+  76% {
+    opacity: .84;
+    background-position: 82% 50%;
+    filter: brightness(1.04);
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   WHAT MOVES
+───────────────────────────────────── */
+
+.movementField > .fieldRegistration {
+  color: rgba(var(--axpt-silver), .68);
+}
+
+.carriedField > .fieldRegistration {
+  color: rgba(var(--axpt-silver), .72);
+}
+
+:global(body[data-established-ethos="true"])
+.movementField > .fieldRegistration,
+:global(body[data-established-ethos="true"])
+.carriedField > .fieldRegistration {
+  text-shadow:
+    0 0 10px rgba(var(--axpt-silver), .018);
+}
+
+
+.movementField {
+  grid-column: 1;
+  grid-row: 1;
+
+  padding-left: clamp(10px, 1.4vw, 20px);
+
+  display: flex;
+  flex-direction: column;
+
+  gap: clamp(34px, 4.2vh, 48px);
+}
+
+.movementStatement {
   margin: 0;
 
-  font-size: clamp(.96rem, 1.25vw, 1.08rem);
-  line-height: 1.78;
+  max-width: 21ch;
 
-  color: rgba(var(--axpt-silver), .58);
+  font-family: var(--axpt-body);
+  font-size: clamp(1.08rem, 1.42vw, 1.24rem);
+  line-height: 1.58;
+
+  letter-spacing: -.018em;
+
+  color: rgba(var(--axpt-ash), .74);
 }
 
 
 /* ─────────────────────────────────────
    PASSAGE
 
-   One directional field rather than
-   another centered four-part diagram.
+   The rule does not describe stages.
+   It establishes directional continuity.
 ───────────────────────────────────── */
 
-.passage {
+.passageField {
+  grid-column: 2;
+  grid-row: 1 / 3;
+
   position: relative;
 
-  grid-column: 1 / -1;
+  align-self: stretch;
 
-  min-height: clamp(260px, 30vh, 340px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  text-align: center;
 }
 
+.passageField::before,
+.passageField::after {
+  content: "";
 
-/* Primary passage */
-
-.passageLine {
   position: absolute;
 
-  top: 48%;
-  left: 3%;
-  right: 3%;
+  left: 50%;
+  top: 50%;
 
-  height: 1px;
+  pointer-events: none;
+
+  border: 0;
+  border-radius: 50%;
+
+  opacity: 0;
+
+  transform-origin: center;
+
+  mix-blend-mode: screen;
+
+  z-index: 0;
+}
+
+.passageField::before {
+  width: clamp(360px, 34vw, 560px);
+  height: clamp(118px, 10vw, 168px);
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      transparent 0%,
+      transparent 31%,
+      rgba(var(--axpt-mineral-cold), .075) 31.5%,
+      rgba(var(--axpt-mineral-cold), .075) 32%,
+      transparent 32.7%,
+      transparent 47%,
+      rgba(var(--axpt-mineral-green), .055) 47.5%,
+      rgba(var(--axpt-mineral-green), .055) 48%,
+      transparent 48.8%,
+      transparent 65%,
+      rgba(var(--axpt-mineral-cold), .035) 65.5%,
+      rgba(var(--axpt-mineral-cold), .035) 66%,
+      transparent 66.8%
+    );
+
+  filter: blur(.2px);
+
+  transform:
+    translate3d(-50%, -50%, 0)
+    scale(.95);
+}
+
+.passageField::after {
+  width: clamp(500px, 46vw, 760px);
+  height: clamp(170px, 15vw, 245px);
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      transparent 0%,
+      transparent 42%,
+      rgba(var(--axpt-mineral-green), .035) 42.5%,
+      rgba(var(--axpt-mineral-green), .035) 43%,
+      transparent 43.8%,
+      transparent 61%,
+      rgba(var(--axpt-mineral-cold), .028) 61.5%,
+      rgba(var(--axpt-mineral-cold), .028) 62%,
+      transparent 62.8%
+    );
+
+  filter: blur(.35px);
+
+  transform:
+    translate3d(-50%, -50%, 0)
+    scale(.96);
+}
+
+.passageField > * {
+  position: relative;
+  z-index: 1;
+}
+
+:global(body[data-established-ethos="true"])
+.passageField::before {
+  animation:
+    circulationHumRingNear
+    13200ms
+    ease-in-out
+    infinite;
+}
+
+:global(body[data-established-ethos="true"])
+.passageField::after {
+  animation:
+    circulationHumRingFar
+    17600ms
+    ease-in-out
+    infinite;
+}
+
+@keyframes circulationHumRingNear {
+
+  0%,
+  100% {
+    opacity: .16;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      rotate(-.3deg)
+      scaleX(.94)
+      scaleY(1.015)
+      skewX(-.45deg);
+  }
+
+  46% {
+    opacity: .34;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      rotate(.45deg)
+      scaleX(1.055)
+      scaleY(.93)
+      skewX(.8deg);
+  }
+
+  74% {
+    opacity: .21;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      rotate(-.15deg)
+      scaleX(.985)
+      scaleY(1.045)
+      skewX(-.3deg);
+  }
+
+}
+
+@keyframes circulationHumRingFar {
+
+  0%,
+  100% {
+    opacity: .09;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      rotate(.35deg)
+      scaleX(.96)
+      scaleY(1.04)
+      skewX(.35deg);
+  }
+
+  39% {
+    opacity: .20;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      rotate(-.55deg)
+      scaleX(1.075)
+      scaleY(.90)
+      skewX(-.75deg);
+  }
+
+  71% {
+    opacity: .13;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      rotate(.15deg)
+      scaleX(.985)
+      scaleY(1.055)
+      skewX(.25deg);
+  }
+
+}
+
+.passageRegistration {
+  color: rgba(var(--axpt-mineral-cold), .68);
+}
+
+:global(body[data-established-ethos="true"])
+.passageRegistration {
+  color: rgba(var(--axpt-mineral-cold), 1);
+
+  letter-spacing: .015em;
+
+  text-shadow:
+    0 0 8px rgba(var(--axpt-mineral-cold), .11),
+    0 0 20px rgba(var(--axpt-mineral-green), .045),
+    0 0 32px rgba(var(--axpt-mineral-cold), .018);
+
+  animation:
+    circulationRegistrationPulse
+    10400ms
+    ease-in-out
+    infinite;
+}
+
+@keyframes circulationRegistrationPulse {
+
+  0%,
+  100% {
+    text-shadow:
+      0 0 7px rgba(var(--axpt-mineral-cold), .055),
+      0 0 16px rgba(var(--axpt-mineral-green), .020);
+  }
+
+  48% {
+    text-shadow:
+      0 0 9px rgba(var(--axpt-mineral-cold), .095),
+      0 0 21px rgba(var(--axpt-mineral-green), .040);
+  }
+
+}
+
+.passageRule {
+  width: 1px;
+  flex: 0 0 auto;
+
+  height: clamp(164px, 20vh, 205px);
+
+  margin: 20px 0 12px;
 
   background: linear-gradient(
-    to right,
-    rgba(var(--axpt-iron-silver), .025),
-    rgba(var(--axpt-silver), .12) 14%,
-    rgba(var(--axpt-silver), .085) 72%,
-    rgba(var(--axpt-iron-silver), .02)
+    to bottom,
+    rgba(var(--axpt-silver), .05),
+    rgba(var(--axpt-silver), .18) 24%,
+    rgba(var(--axpt-silver), .13) 72%,
+    rgba(var(--axpt-silver), .025)
   );
+
+  opacity: .46;
+
+  transform:
+    scaleY(.82)
+    scaleX(.72);
+
+  transform-origin: 50% 18%;
+
+  filter:
+    contrast(.88)
+    brightness(.94);
+
+  transition:
+    opacity 980ms cubic-bezier(.22, 1, .36, 1),
+    transform 1380ms cubic-bezier(.22, 1, .36, 1),
+    filter 1380ms cubic-bezier(.22, 1, .36, 1);
 }
 
+:global(body[data-established-ethos="true"]) .passageRule {
+  opacity: .86;
 
+  transform:
+    scaleY(1)
+    scaleX(1);
+
+  filter:
+    contrast(1)
+    brightness(1);
+
+  animation:
+    circulationRuleField
+    9800ms
+    ease-in-out
+    infinite;
+}
+
+@keyframes circulationRuleField {
+
+  0%,
+  100% {
+    opacity: .84;
+
+    transform:
+      scaleY(1)
+      scaleX(1);
+
+    filter:
+      contrast(1)
+      brightness(1);
+  }
+
+  46% {
+    opacity: .96;
+
+    transform:
+      scaleY(1.03)
+      scaleX(1.02);
+
+    filter:
+      contrast(1.03)
+      brightness(1.06);
+  }
+
+  74% {
+    opacity: .90;
+
+    transform:
+      scaleY(1.015)
+      scaleX(1.01);
+
+    filter:
+      contrast(1.01)
+      brightness(1.02);
+  }
+
+}
+
+.passageField p {
+  margin: 0;
+
+  max-width: 14ch;
+
+  font-family: var(--axpt-body);
+  font-size: clamp(.9rem, 1vw, .96rem);
+  line-height: 1.52;
+
+  letter-spacing: -.01em;
+
+  color: rgba(var(--axpt-ash), .5);
+}
 
 
 /* ─────────────────────────────────────
-   PASSAGE STATES
+   CARRIED FORWARD
 ───────────────────────────────────── */
 
-.passageState {
-  position: absolute;
+.carriedField {
+  grid-column: 3;
+  grid-row: 1;
 
-  width: min(24%, 240px);
-}
-
-.passageState[data-position="1"] {
-  top: 7%;
-  left: 5%;
-}
-
-.passageState[data-position="2"] {
-  bottom: 5%;
-  left: 29%;
-}
-
-.passageState[data-position="3"] {
-  top: 7%;
-  left: 55%;
-}
-
-.passageState[data-position="4"] {
-  right: 4%;
-  bottom: 5%;
-
-  text-align: right;
-}
-
-/* ─────────────────────────────────────
-   STATE TYPOGRAPHY
-───────────────────────────────────── */
-
-.stateBody {
   display: flex;
   flex-direction: column;
 
-  gap: 10px;
+  gap: clamp(34px, 4.2vh, 48px);
 }
 
-.stateBody h3 {
-  margin: 0;
+.carriedRelations {
+  display: flex;
+  flex-direction: column;
 
+  gap: clamp(22px, 2.8vh, 32px);
+}
+
+.carriedRelation {
+  display: grid;
+  grid-template-columns:
+    minmax(112px, .32fr)
+    minmax(0, 1fr);
+
+  column-gap: clamp(20px, 2.8vw, 34px);
+
+  align-items: baseline;
+
+  opacity: .68;
+
+  transform:
+    translate3d(-3px, 0, 0)
+    scaleX(.994);
+
+  transform-origin: 0% 50%;
+
+  filter:
+    contrast(.965)
+    brightness(.985);
+
+  transition:
+    opacity 980ms cubic-bezier(.22, 1, .36, 1),
+    transform 1320ms cubic-bezier(.22, 1, .36, 1),
+    filter 1180ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-ethos="true"]) .carriedRelation {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0)
+    scaleX(1);
+
+  filter:
+    contrast(1)
+    brightness(1);
+}
+
+.carriedRelation strong {
   font-family: var(--axpt-mono);
+  font-size: .62rem;
+  line-height: 1.35;
 
-  font-size: .7rem;
-  line-height: 1;
-
-  font-weight: 520;
-
-  letter-spacing: .26em;
+  font-weight: 500;
+  letter-spacing: .2em;
   text-transform: uppercase;
 
-  color: rgba(var(--axpt-ash), .74);
+  color: rgba(var(--axpt-silver), .76);
+
+  transition:
+    color 1200ms cubic-bezier(.22, 1, .36, 1),
+    text-shadow 1400ms cubic-bezier(.22, 1, .36, 1);
 }
 
-.stateBody p {
-  margin: 0;
+:global(body[data-established-ethos="true"])
+.carriedRelation strong {
+  color: rgba(var(--axpt-limestone), .80);
 
-  max-width: 28ch;
-
-  font-size: .84rem;
-  line-height: 1.65;
-
-  color: rgba(var(--axpt-silver), .46);
+  text-shadow:
+    0 0 9px rgba(var(--axpt-silver), .020);
 }
 
-.passageState[data-position="4"] .stateBody p {
-  margin-left: auto;
+.carriedRelation span {
+  font-family: var(--axpt-body);
+  font-size: clamp(.9rem, 1.04vw, .99rem);
+  line-height: 1.5;
+
+  letter-spacing: -.01em;
+
+  color: rgba(var(--axpt-silver), .54);
 }
 
 
 /* ─────────────────────────────────────
-   CIRCULATION DEFINITION
+   WHAT FOLLOWS
+
+   Consequence is not a terminal state.
+   It alters the next field of possibility.
+───────────────────────────────────── */
+
+.followingField {
+  grid-column: 3;
+  grid-row: 2;
+
+  position: relative;
+
+  display: grid;
+  grid-template-columns:
+    minmax(112px, .32fr)
+    minmax(0, 1fr);
+
+  column-gap: clamp(20px, 2.8vw, 34px);
+
+  align-items: start;
+
+  margin-top: clamp(-8px, -.8vh, -3px);
+  padding-top: clamp(18px, 2vh, 24px);
+
+  opacity: .76;
+
+  transform:
+    translate3d(-2px, 0, 0)
+    scaleX(.997);
+
+  transform-origin: 0% 50%;
+
+  filter:
+    contrast(.97)
+    brightness(.985);
+
+  transition:
+    opacity 1080ms cubic-bezier(.22, 1, .36, 1),
+    transform 1450ms cubic-bezier(.22, 1, .36, 1),
+    filter 1320ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-ethos="true"]) .followingField {
+  opacity: 1;
+
+  transform:
+    translate3d(2px, 0, 0)
+    scaleX(1);
+
+  filter:
+    contrast(1)
+    brightness(1);
+}
+
+.followingField::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: calc(112px + clamp(20px, 2.8vw, 34px));
+  right: 0;
+
+  height: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--axpt-mineral-cold), .030) 0%,
+      rgba(var(--axpt-silver), .050) 34%,
+      rgba(var(--axpt-bronze), .085) 68%,
+      rgba(var(--axpt-oxide), .055) 100%
+    );
+
+  opacity: .54;
+  transform: scaleX(.9);
+  transform-origin: 0% 50%;
+
+  transition:
+    opacity 1080ms cubic-bezier(.22, 1, .36, 1),
+    transform 1450ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-ethos="true"]) .followingField::before {
+  opacity: .9;
+  transform: scaleX(1);
+}
+
+.followingField .fieldRegistration {
+  padding-top: .35em;
+
+  font-family: var(--axpt-mono);
+  font-size: .52rem;
+  line-height: 1.25;
+
+  letter-spacing: .25em;
+  text-transform: uppercase;
+
+  color: rgba(var(--axpt-iron-silver), .60);
+}
+
+:global(body[data-established-ethos="true"])
+.followingField .fieldRegistration {
+  color: rgba(var(--axpt-bronze), .56);
+
+  text-shadow:
+    0 0 10px rgba(var(--axpt-bronze), .025);
+}
+
+.followingField p {
+  margin: 0;
+
+  max-width: 31ch;
+
+  font-family: var(--axpt-body);
+  font-size: clamp(1.02rem, 1.22vw, 1.12rem);
+  line-height: 1.52;
+
+  letter-spacing: -.016em;
+
+  color: rgba(var(--axpt-ash), .73);
+}
+
+
+/* ─────────────────────────────────────
+   03 — INSTITUTIONAL DEFINITION
 ───────────────────────────────────── */
 
 .circulationDefinition {
   grid-column: 5 / 12;
 
   display: grid;
-  grid-template-columns: 112px 1fr;
+  grid-template-columns:
+    minmax(96px, .2fr)
+    minmax(0, 1fr);
 
-  column-gap: 30px;
+  column-gap: clamp(28px, 4vw, 52px);
+
   align-items: start;
 
-  padding-top: 14px;
+  margin-top: clamp(8px, 1vh, 16px);
+  padding-top: 16px;
 
   border-top: 1px solid rgba(var(--axpt-silver), .065);
+
+  opacity: .58;
+  transform: translate3d(0, 2px, 0);
+
+  filter:
+    contrast(.97)
+    brightness(.985);
+
+  transition:
+    opacity 980ms cubic-bezier(.22, 1, .36, 1),
+    transform 1180ms cubic-bezier(.22, 1, .36, 1),
+    filter 1180ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-ethos="true"]) .circulationDefinition {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+
+  filter:
+    contrast(1)
+    brightness(1);
 }
 
 .definitionLabel {
-  padding-top: .28em;
+  padding-top: .3em;
 
   font-family: var(--axpt-mono);
-
   font-size: .52rem;
   line-height: 1;
 
-  letter-spacing: .26em;
+  letter-spacing: .27em;
   text-transform: uppercase;
 
   color: rgba(var(--axpt-iron-silver), .34);
@@ -234,10 +928,11 @@
 
   max-width: 40ch;
 
-  font-size: clamp(.9rem, 1.1vw, 1rem);
-  line-height: 1.7;
+  font-family: var(--axpt-body);
+  font-size: clamp(.94rem, 1.14vw, 1.04rem);
+  line-height: 1.62;
 
-  color: rgba(var(--axpt-ash), .58);
+  color: rgba(var(--axpt-ash), .68);
 }
 
 
@@ -246,200 +941,3794 @@
 ───────────────────────────────────── */
 
 @media (max-width: 900px) {
+
   .declaration {
     grid-column: 1 / 11;
   }
 
-  .explanation {
-    grid-column: 1 / 10;
+  .transmissionField {
+    grid-template-columns:
+      minmax(180px, 1fr)
+      110px
+      minmax(260px, 1.4fr);
+
+    column-gap: 34px;
   }
 
-  .passage {
-    min-height: 340px;
-  }
-
-  .passageState {
-    width: 27%;
+  .followingField {
+    grid-column: 3;
   }
 
   .circulationDefinition {
     grid-column: 3 / -1;
   }
+
 }
 
 
 /* ─────────────────────────────────────
    MOBILE
-
-   Direction rotates into vertical passage.
 ───────────────────────────────────── */
 
 @media (max-width: 680px) {
-  .ethosInner {
-    display: flex;
-    flex-direction: column;
 
-    row-gap: 30px;
+  .declaration,
+  .transmissionField,
+  .circulationDefinition {
+    grid-column: 1 / -1;
+  }
+
+  .declaration {
+    padding-top: 18px;
   }
 
   .declaration h2 {
-    max-width: 11ch;
+    max-width: 12ch;
 
-    font-size: clamp(2.7rem, 13vw, 4.3rem);
+    font-size: clamp(2.6rem, 11vw, 3.9rem);
   }
 
-  .explanation {
-    max-width: none;
+  .transmissionField {
+    min-height: 0;
+
+    margin-top: 54px;
+
+    display: flex;
+    flex-direction: column;
+
+    gap: 48px;
   }
 
-  .passage {
-    min-height: 540px;
+  .movementField,
+  .carriedField {
+    padding: 0;
   }
 
-  .passageLine {
-    top: 4%;
-    bottom: 4%;
-    left: 26px;
-    right: auto;
-
-    width: 1px;
-    height: auto;
-
-    background: linear-gradient(
-      to bottom,
-      rgba(var(--axpt-iron-silver), .025),
-      rgba(var(--axpt-silver), .12) 14%,
-      rgba(var(--axpt-silver), .085) 72%,
-      rgba(var(--axpt-iron-silver), .02)
-    );
+  .passageField {
+    min-height: 180px;
   }
 
-
-
-
-
-
-
-  .passageState,
-  .passageState[data-position="1"],
-  .passageState[data-position="2"],
-  .passageState[data-position="3"],
-  .passageState[data-position="4"] {
-    right: auto;
-    left: 70px;
-
-    width: calc(100% - 70px);
-
-    text-align: left;
+  .passageRule {
+    min-height: 110px;
   }
 
-  .passageState[data-position="1"] {
-    top: 4%;
+  .followingField {
+    display: grid;
+    grid-template-columns: 96px 1fr;
+
+    column-gap: 18px;
   }
-
-  .passageState[data-position="2"] {
-    top: 31%;
-    bottom: auto;
-  }
-
-  .passageState[data-position="3"] {
-    top: 58%;
-  }
-
-  .passageState[data-position="4"] {
-    top: 82%;
-    bottom: auto;
-  }
-
-  .passageState[data-position="4"] .stateBody p {
-    margin-left: 0;
-  }
-
-
-
-
 
   .circulationDefinition {
     grid-template-columns: 92px 1fr;
 
     column-gap: 18px;
-  }
-}
 
-
-@media (prefers-reduced-motion: reduce) {
-  .ethosSurface *,
-  .ethosSurface *::before,
-  .ethosSurface *::after {
-    transition: none !important;
-    animation: none !important;
+    margin-top: 42px;
   }
+
 }
 
 
 /* ─────────────────────────────────────
-   LIVING DOCUMENT — INSCRIPTION
+   REDUCED MOTION
 ───────────────────────────────────── */
 
-.declaration h2 {
-  opacity: .56;
-  transform: translate3d(0, 10px, 0);
 
-  transition:
-    opacity 900ms cubic-bezier(.22, 1, .36, 1),
-    transform 1100ms cubic-bezier(.22, 1, .36, 1);
+/* ─────────────────────────────────────
+   CIRCULATION — CARRIED CURRENT
+
+   Movement does not merely appear here.
+   It remains attached to consequence as
+   it passes through the field.
+───────────────────────────────────── */
+
+
+/* 01 — PASSAGE CURRENT */
+
+.passageRule {
+  position: relative;
+  overflow: hidden;
 }
 
-:global(body[data-layer="ETHOS"]) .declaration h2 {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
+.passageRule::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: -34%;
+
+  width: 1px;
+  height: 34%;
+
+  background:
+    linear-gradient(
+      to bottom,
+      transparent,
+      rgba(var(--axpt-mineral-cold), .34) 42%,
+      rgba(var(--axpt-mineral-green), .22) 62%,
+      transparent
+    );
+
+  opacity: 0;
 }
+
+:global(body[data-established-ethos="true"])
+.passageRule::after {
+  animation:
+    circulationPassageCurrent
+    8600ms
+    cubic-bezier(.45, 0, .25, 1)
+    infinite;
+}
+
+@keyframes circulationPassageCurrent {
+
+  0% {
+    opacity: 0;
+    transform: translate3d(0, -12px, 0);
+  }
+
+  18% {
+    opacity: .22;
+  }
+
+  48% {
+    opacity: .54;
+  }
+
+  78% {
+    opacity: .18;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate3d(0, 235px, 0);
+  }
+
+}
+
+
+/* 02 — CARRIED RELATIONS
+
+   No explicit delay. Increasing hold
+   percentages create a carried sequence.
+*/
+
+:global(body[data-established-ethos="true"])
+.carriedRelation:nth-child(1) {
+  animation:
+    circulationCarry01
+    1320ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+:global(body[data-established-ethos="true"])
+.carriedRelation:nth-child(2) {
+  animation:
+    circulationCarry02
+    1480ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+:global(body[data-established-ethos="true"])
+.carriedRelation:nth-child(3) {
+  animation:
+    circulationCarry03
+    1640ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+:global(body[data-established-ethos="true"])
+.carriedRelation:nth-child(4) {
+  animation:
+    circulationCarry04
+    1800ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+@keyframes circulationCarry01 {
+
+  0% {
+    opacity: .60;
+    transform: translate3d(-4px, -1px, 0) scaleX(.994);
+    filter: contrast(.96) brightness(.98);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleX(1);
+    filter: contrast(1) brightness(1);
+  }
+
+}
+
+@keyframes circulationCarry02 {
+
+  0%,
+  10% {
+    opacity: .58;
+    transform: translate3d(-5px, 1px, 0) scaleX(.993);
+    filter: contrast(.955) brightness(.975);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(1px, 0, 0) scaleX(1);
+    filter: contrast(1) brightness(1);
+  }
+
+}
+
+@keyframes circulationCarry03 {
+
+  0%,
+  18% {
+    opacity: .56;
+    transform: translate3d(-5px, 2px, 0) scaleX(.992);
+    filter: contrast(.95) brightness(.97);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(2px, 0, 0) scaleX(1);
+    filter: contrast(1) brightness(1);
+  }
+
+}
+
+@keyframes circulationCarry04 {
+
+  0%,
+  26% {
+    opacity: .54;
+    transform: translate3d(-6px, 3px, 0) scaleX(.991);
+    filter: contrast(.945) brightness(.965);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(3px, 0, 0) scaleX(1);
+    filter: contrast(1) brightness(1);
+  }
+
+}
+
+
+/* 03 — WHAT FOLLOWS
+
+   Passage changes the next available field.
+*/
+
+:global(body[data-established-ethos="true"])
+.followingField {
+  animation:
+    circulationFollowingArrival
+    2050ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+@keyframes circulationFollowingArrival {
+
+  0%,
+  30% {
+    opacity: .54;
+
+    transform:
+      translate3d(-5px, 3px, 0)
+      scaleX(.994);
+
+    filter:
+      contrast(.94)
+      brightness(.96);
+  }
+
+  72% {
+    opacity: .92;
+
+    transform:
+      translate3d(3px, 0, 0)
+      scaleX(1.002);
+
+    filter:
+      contrast(1.01)
+      brightness(1.015);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translate3d(2px, 0, 0)
+      scaleX(1);
+
+    filter:
+      contrast(1)
+      brightness(1);
+  }
+
+}
+
+
+/* 04 — DOCUMENTARY CONCLUSION */
+
+:global(body[data-established-ethos="true"])
+.circulationDefinition {
+  animation:
+    circulationDefinitionArrival
+    2200ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+@keyframes circulationDefinitionArrival {
+
+  0%,
+  34% {
+    opacity: .52;
+    transform: translate3d(0, 3px, 0);
+  }
+
+  76% {
+    opacity: .92;
+    transform: translate3d(1px, 0, 0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+}
+
+
 
 @media (prefers-reduced-motion: reduce) {
-  .declaration h2 {
+
+  .passageField::before,
+  .passageField::after,
+  .passageRule,
+  .passageRule::after,
+  .passageRegistration,
+  .passageRegistration::before,
+  .passageRegistration::after,
+  .carriedRelation,
+  .followingField,
+  .circulationDefinition {
+    animation: none;
+  }
+
+  .passageField::before {
+    opacity: .06;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(1);
+  }
+
+  .passageField::after {
+    opacity: .035;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(1);
+  }
+
+  .passageRule::after {
+    opacity: 0;
+  }
+
+  .declaration h2,
+  .carriedRelation,
+  .circulationDefinition,
+  :global(body[data-established-ethos="true"]) .declaration h2,
+  :global(body[data-established-ethos="true"]) .carriedRelation,
+  :global(body[data-established-ethos="true"]) .circulationDefinition {
+    opacity: 1;
+    transform: none;
+    filter: none;
     transition: none;
   }
-}
 
-/* ─────────────────────────────────────
-   LIVING DOCUMENT — PASSAGE
+  .passageRule,
+  :global(body[data-established-ethos="true"]) .passageRule {
+    opacity: .86;
 
-   An event acquires direction.
-   The existing field extends into passage;
-   consequence is carried rather than announced.
-───────────────────────────────────── */
+    transform:
+      scaleY(1)
+      scaleX(1);
 
-.passageLine {
-  opacity: .38;
-
-  transform: scaleX(.58);
-  transform-origin: 0% 50%;
-
-  transition:
-    opacity 1000ms cubic-bezier(.22, 1, .36, 1),
-    transform 1400ms cubic-bezier(.22, 1, .36, 1);
-}
-
-:global(body[data-layer="ETHOS"]) .passageLine {
-  opacity: 1;
-  transform: scaleX(1);
-}
-
-@media (max-width: 680px) {
-  .passageLine {
-    transform: scaleY(.58);
-    transform-origin: 50% 0%;
+    filter: none;
+    transition: none;
   }
 
-  :global(body[data-layer="ETHOS"]) .passageLine {
-    transform: scaleY(1);
-  }
-}
+  .followingField,
+  :global(body[data-established-ethos="true"]) .followingField {
+    opacity: 1;
 
-@media (prefers-reduced-motion: reduce) {
-  .passageLine {
+    transform:
+      translate3d(2px, 0, 0)
+      scaleX(1);
+
+    filter: none;
+    transition: none;
+  }
+
+  .passageRegistration::before,
+  .passageRegistration::after,
+  :global(body[data-established-ethos="true"])
+  .passageRegistration::before,
+  :global(body[data-established-ethos="true"])
+  .passageRegistration::after {
     opacity: 1;
     transform: none;
     transition: none;
   }
+
+  .followingField::before,
+  :global(body[data-established-ethos="true"])
+  .followingField::before {
+    opacity: .9;
+    transform: scaleX(1);
+    transition: none;
+  }
+
+}
+
+/* HEADER ANCHOR OFFSET — ethosSurface */
+
+.ethosSurface {
+  scroll-margin-top: 76px;
+}
+
+@media (max-width: 680px) {
+
+  .ethosSurface {
+    scroll-margin-top: 64px;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — CIRCULATION MOBILE M6A
+
+   Mobile constitution:
+   movement enters a compact passage,
+   consequence remains attached,
+   and the resulting field changes.
+
+   Carried material is treated as a field,
+   not a long vertical register.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .ethosSurface {
+    scroll-margin-top: 60px;
+  }
+
+
+  .ethosInner {
+    width:
+      calc(100% - 40px);
+
+    margin:
+      0
+      auto;
+
+    row-gap: 0;
+  }
+
+
+  /* ── DECLARATION ── */
+
+  .declaration {
+    padding-top: 0;
+  }
+
+
+  .declaration h2 {
+    max-width: 10.8ch;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        2.15rem,
+        9.4vw,
+        2.65rem
+      );
+
+    line-height: 1.01;
+
+    letter-spacing: -.047em;
+  }
+
+
+  .declaration h2 span {
+    color:
+      rgba(var(--axpt-ash), .70);
+  }
+
+
+  /* ── TRANSMISSION CORE ── */
+
+  .transmissionField {
+    width: 100%;
+
+    min-height: 0;
+
+    margin-top: 28px;
+
+    display: grid;
+
+    grid-template-columns: 1fr;
+
+    gap: 0;
+  }
+
+
+  /* ── WHAT MOVES ── */
+
+  .movementField {
+    width: 100%;
+    max-width: 30ch;
+
+    margin: 0;
+
+    padding: 0;
+  }
+
+
+  .movementField .fieldRegistration {
+    font-size: .47rem;
+
+    letter-spacing: .22em;
+
+    color:
+      rgba(var(--axpt-limestone), .68);
+  }
+
+
+  .movementStatement {
+    max-width: 28ch;
+
+    margin-top: 9px;
+
+    font-size:
+      clamp(
+        .93rem,
+        3.95vw,
+        1rem
+      );
+
+    line-height: 1.52;
+
+    color:
+      rgba(var(--axpt-silver), .65);
+  }
+
+
+  /* ── PASSAGE ── */
+
+  .passageField {
+    width: 100%;
+
+    min-height: 0;
+
+    display: grid;
+    justify-items: center;
+
+    margin:
+      22px
+      0
+      18px;
+
+    padding: 0;
+  }
+
+
+  .passageRegistration {
+    margin: 0;
+
+    font-size: .49rem;
+
+    letter-spacing: .23em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .80);
+  }
+
+
+  .passageRule {
+    width: 1px;
+
+    min-height: 0;
+    height: 50px;
+
+    margin:
+      9px
+      auto
+      8px;
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--axpt-mineral-green), .10),
+        rgba(var(--axpt-mineral-cold), .34) 48%,
+        rgba(var(--axpt-bronze), .12),
+        transparent
+      );
+  }
+
+
+  .passageField p {
+    max-width: 22ch;
+
+    margin: 0;
+
+    text-align: center;
+
+    font-size: .76rem;
+    line-height: 1.38;
+
+    color:
+      rgba(var(--axpt-silver), .48);
+  }
+
+
+  /* ── CARRIED FIELD ── */
+
+  .carriedField {
+    width: 100%;
+
+    margin-top: 4px;
+
+    padding: 0;
+  }
+
+
+  .carriedField > .fieldRegistration {
+    display: block;
+
+    margin-bottom: 16px;
+
+    text-align: center;
+
+    font-size: .47rem;
+
+    letter-spacing: .22em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .70);
+  }
+
+
+  .carriedRelations {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap:
+      18px
+      18px;
+  }
+
+
+  .carriedRelation {
+    min-width: 0;
+
+    margin: 0;
+    padding: 0;
+
+    display: block;
+  }
+
+
+  .carriedRelation strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: .45rem;
+    line-height: 1.15;
+
+    letter-spacing: .16em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .76);
+  }
+
+
+  .carriedRelation span {
+    display: block;
+
+    max-width: 18ch;
+
+    font-size: .76rem;
+    line-height: 1.40;
+
+    color:
+      rgba(var(--axpt-silver), .56);
+  }
+
+
+  .carriedRelation:nth-child(1) strong,
+  .carriedRelation:nth-child(4) strong {
+    color:
+      rgba(var(--axpt-bronze), .68);
+  }
+
+
+  /* ── WHAT FOLLOWS ── */
+
+  .followingField {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      72px
+      minmax(0, 1fr);
+
+    column-gap: 12px;
+
+    margin-top: 24px;
+
+    padding-top: 14px;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-silver), .055);
+  }
+
+
+  .followingField .fieldRegistration {
+    padding-top: 2px;
+
+    font-size: .45rem;
+    line-height: 1.35;
+
+    letter-spacing: .18em;
+
+    color:
+      rgba(var(--axpt-mineral-cold), .64);
+  }
+
+
+  .followingField p {
+    max-width: 25ch;
+
+    margin: 0;
+
+    font-size: .84rem;
+    line-height: 1.48;
+
+    color:
+      rgba(var(--axpt-ash), .72);
+  }
+
+
+  /* ── DOCUMENTARY DEFINITION ── */
+
+  .circulationDefinition {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      72px
+      minmax(0, 1fr);
+
+    column-gap: 12px;
+
+    margin-top: 18px;
+
+    padding-top: 14px;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-mineral-green), .08);
+  }
+
+
+  .definitionLabel {
+    padding-top: 2px;
+
+    font-size: .45rem;
+
+    letter-spacing: .19em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .70);
+  }
+
+
+  .circulationDefinition p {
+    max-width: 26ch;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        .89rem,
+        3.7vw,
+        .96rem
+      );
+
+    line-height: 1.50;
+
+    color:
+      rgba(var(--axpt-ash), .80);
+  }
+
+
+  /* ── MOBILE PASSAGE CURRENT ── */
+
+  :global(body[data-established-ethos="true"])
+  .passageRule::after {
+    animation:
+      circulationMobilePassageCurrent
+      6200ms
+      cubic-bezier(.45, 0, .25, 1)
+      infinite;
+  }
+
+}
+
+
+/* Compact mobile current.
+   Movement traverses the passage rather
+   than travelling through desktop-scale
+   vertical territory.
+*/
+
+@keyframes circulationMobilePassageCurrent {
+
+  0% {
+    opacity: 0;
+
+    transform:
+      translate3d(0, -6px, 0);
+  }
+
+  20% {
+    opacity: .24;
+  }
+
+  48% {
+    opacity: .62;
+  }
+
+  76% {
+    opacity: .22;
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      translate3d(0, 66px, 0);
+  }
+
+}
+
+
+@media
+  (max-width: 680px)
+  and (prefers-reduced-motion: reduce) {
+
+  .passageRule::after {
+    animation: none !important;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — CIRCULATION MOBILE M6A
+
+   Mobile constitution:
+   movement enters a compact passage,
+   consequence remains attached,
+   and the resulting field changes.
+
+   Carried material is treated as a field,
+   not a long vertical register.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .ethosSurface {
+    scroll-margin-top: 60px;
+  }
+
+
+  .ethosInner {
+    width:
+      calc(100% - 40px);
+
+    margin:
+      0
+      auto;
+
+    row-gap: 0;
+  }
+
+
+  /* ── DECLARATION ── */
+
+  .declaration {
+    padding-top: 0;
+  }
+
+
+  .declaration h2 {
+    max-width: 10.8ch;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        2.15rem,
+        9.4vw,
+        2.65rem
+      );
+
+    line-height: 1.01;
+
+    letter-spacing: -.047em;
+  }
+
+
+  .declaration h2 span {
+    color:
+      rgba(var(--axpt-ash), .70);
+  }
+
+
+  /* ── TRANSMISSION CORE ── */
+
+  .transmissionField {
+    width: 100%;
+
+    min-height: 0;
+
+    margin-top: 28px;
+
+    display: grid;
+
+    grid-template-columns: 1fr;
+
+    gap: 0;
+  }
+
+
+  /* ── WHAT MOVES ── */
+
+  .movementField {
+    width: 100%;
+    max-width: 30ch;
+
+    margin: 0;
+
+    padding: 0;
+  }
+
+
+  .movementField .fieldRegistration {
+    font-size: .47rem;
+
+    letter-spacing: .22em;
+
+    color:
+      rgba(var(--axpt-limestone), .68);
+  }
+
+
+  .movementStatement {
+    max-width: 28ch;
+
+    margin-top: 9px;
+
+    font-size:
+      clamp(
+        .93rem,
+        3.95vw,
+        1rem
+      );
+
+    line-height: 1.52;
+
+    color:
+      rgba(var(--axpt-silver), .65);
+  }
+
+
+  /* ── PASSAGE ── */
+
+  .passageField {
+    width: 100%;
+
+    min-height: 0;
+
+    display: grid;
+    justify-items: center;
+
+    margin:
+      22px
+      0
+      18px;
+
+    padding: 0;
+  }
+
+
+  .passageRegistration {
+    margin: 0;
+
+    font-size: .49rem;
+
+    letter-spacing: .23em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .80);
+  }
+
+
+  .passageRule {
+    width: 1px;
+
+    min-height: 0;
+    height: 50px;
+
+    margin:
+      9px
+      auto
+      8px;
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--axpt-mineral-green), .10),
+        rgba(var(--axpt-mineral-cold), .34) 48%,
+        rgba(var(--axpt-bronze), .12),
+        transparent
+      );
+  }
+
+
+  .passageField p {
+    max-width: 22ch;
+
+    margin: 0;
+
+    text-align: center;
+
+    font-size: .76rem;
+    line-height: 1.38;
+
+    color:
+      rgba(var(--axpt-silver), .48);
+  }
+
+
+  /* ── CARRIED FIELD ── */
+
+  .carriedField {
+    width: 100%;
+
+    margin-top: 4px;
+
+    padding: 0;
+  }
+
+
+  .carriedField > .fieldRegistration {
+    display: block;
+
+    margin-bottom: 16px;
+
+    text-align: center;
+
+    font-size: .47rem;
+
+    letter-spacing: .22em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .70);
+  }
+
+
+  .carriedRelations {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    gap:
+      18px
+      18px;
+  }
+
+
+  .carriedRelation {
+    min-width: 0;
+
+    margin: 0;
+    padding: 0;
+
+    display: block;
+  }
+
+
+  .carriedRelation strong {
+    display: block;
+
+    margin-bottom: 5px;
+
+    font-size: .45rem;
+    line-height: 1.15;
+
+    letter-spacing: .16em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .76);
+  }
+
+
+  .carriedRelation span {
+    display: block;
+
+    max-width: 18ch;
+
+    font-size: .76rem;
+    line-height: 1.40;
+
+    color:
+      rgba(var(--axpt-silver), .56);
+  }
+
+
+  .carriedRelation:nth-child(1) strong,
+  .carriedRelation:nth-child(4) strong {
+    color:
+      rgba(var(--axpt-bronze), .68);
+  }
+
+
+  /* ── WHAT FOLLOWS ── */
+
+  .followingField {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      72px
+      minmax(0, 1fr);
+
+    column-gap: 12px;
+
+    margin-top: 24px;
+
+    padding-top: 14px;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-silver), .055);
+  }
+
+
+  .followingField .fieldRegistration {
+    padding-top: 2px;
+
+    font-size: .45rem;
+    line-height: 1.35;
+
+    letter-spacing: .18em;
+
+    color:
+      rgba(var(--axpt-mineral-cold), .64);
+  }
+
+
+  .followingField p {
+    max-width: 25ch;
+
+    margin: 0;
+
+    font-size: .84rem;
+    line-height: 1.48;
+
+    color:
+      rgba(var(--axpt-ash), .72);
+  }
+
+
+  /* ── DOCUMENTARY DEFINITION ── */
+
+  .circulationDefinition {
+    width: 100%;
+
+    display: grid;
+
+    grid-template-columns:
+      72px
+      minmax(0, 1fr);
+
+    column-gap: 12px;
+
+    margin-top: 18px;
+
+    padding-top: 14px;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-mineral-green), .08);
+  }
+
+
+  .definitionLabel {
+    padding-top: 2px;
+
+    font-size: .45rem;
+
+    letter-spacing: .19em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .70);
+  }
+
+
+  .circulationDefinition p {
+    max-width: 26ch;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        .89rem,
+        3.7vw,
+        .96rem
+      );
+
+    line-height: 1.50;
+
+    color:
+      rgba(var(--axpt-ash), .80);
+  }
+
+
+  /* ── MOBILE PASSAGE CURRENT ── */
+
+  :global(body[data-established-ethos="true"])
+  .passageRule::after {
+    animation:
+      circulationMobilePassageCurrent
+      6200ms
+      cubic-bezier(.45, 0, .25, 1)
+      infinite;
+  }
+
+}
+
+
+/* Compact mobile current.
+   Movement traverses the passage rather
+   than travelling through desktop-scale
+   vertical territory.
+*/
+
+@keyframes circulationMobilePassageCurrent {
+
+  0% {
+    opacity: 0;
+
+    transform:
+      translate3d(0, -6px, 0);
+  }
+
+  20% {
+    opacity: .24;
+  }
+
+  48% {
+    opacity: .62;
+  }
+
+  76% {
+    opacity: .22;
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      translate3d(0, 66px, 0);
+  }
+
+}
+
+
+@media
+  (max-width: 680px)
+  and (prefers-reduced-motion: reduce) {
+
+  .passageRule::after {
+    animation: none !important;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — CIRCULATION MOBILE M6B
+
+   Mobile grid authority repair.
+
+   Desktop transmission coordinates must not
+   create implicit columns on the phone.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .transmissionField {
+    display: grid;
+
+    grid-template-columns:
+      minmax(0, 1fr);
+
+    grid-template-rows:
+      auto;
+
+    width: 100%;
+
+    min-width: 0;
+  }
+
+
+  .movementField,
+  .passageField,
+  .carriedField,
+  .followingField {
+    grid-column:
+      1 / -1;
+
+    grid-row: auto;
+
+    min-width: 0;
+  }
+
+
+  .movementField {
+    justify-self: stretch;
+  }
+
+
+  .passageField {
+    justify-self: stretch;
+  }
+
+
+  .carriedField {
+    justify-self: stretch;
+  }
+
+
+  .followingField {
+    justify-self: stretch;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — CIRCULATION MOBILE M6C
+
+   The passage becomes a compact hinge.
+   Carried consequence becomes the primary
+   visual organism of the mobile surface.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── TRANSMISSION APPROACH ── */
+
+  .transmissionField {
+    margin-top: 22px;
+  }
+
+
+  /* What moves belongs to the document edge,
+     not the center of the passage. */
+
+  .movementField {
+    max-width: 100%;
+  }
+
+
+  .movementField .fieldRegistration {
+    display: block;
+
+    text-align: left;
+  }
+
+
+  .movementStatement {
+    max-width: 29ch;
+
+    margin-top: 8px;
+
+    line-height: 1.47;
+  }
+
+
+  /* ── COMPACT PASSAGE HINGE ── */
+
+  .passageField {
+    position: relative;
+
+    min-height: 0;
+
+    margin:
+      18px
+      0
+      14px;
+
+    display: grid;
+    justify-items: center;
+  }
+
+
+  /*
+   * Circulation sits inside a horizontal
+   * registration line rather than occupying
+   * a separate vertical territory.
+   */
+
+  .passageField::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    top: 7px;
+
+    height: 1px;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--axpt-silver), .07) 15%,
+        rgba(var(--axpt-mineral-green), .12) 50%,
+        rgba(var(--axpt-silver), .07) 85%,
+        transparent
+      );
+
+    pointer-events: none;
+  }
+
+
+  .passageRegistration {
+    position: relative;
+    z-index: 2;
+
+    padding:
+      0
+      12px;
+
+    background:
+      rgba(var(--axpt-carbon), .94);
+
+    font-size: .47rem;
+
+    letter-spacing: .21em;
+  }
+
+
+  .passageRule {
+    height: 34px;
+
+    margin:
+      7px
+      auto
+      5px;
+  }
+
+
+  .passageField p {
+    max-width: 24ch;
+
+    font-size: .72rem;
+    line-height: 1.34;
+
+    color:
+      rgba(var(--axpt-silver), .52);
+  }
+
+
+  /* ── CARRIED CONSEQUENCE ── */
+
+  .carriedField {
+    margin-top: 8px;
+  }
+
+
+  .carriedField > .fieldRegistration {
+    margin-bottom: 13px;
+
+    font-size: .46rem;
+
+    color:
+      rgba(var(--axpt-mineral-green), .74);
+  }
+
+
+  .carriedRelations {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+
+    column-gap: 22px;
+    row-gap: 15px;
+  }
+
+
+  .carriedRelation strong {
+    margin-bottom: 4px;
+
+    font-size: .44rem;
+
+    letter-spacing: .145em;
+  }
+
+
+  .carriedRelation span {
+    max-width: none;
+
+    font-size: .73rem;
+    line-height: 1.35;
+
+    color:
+      rgba(var(--axpt-silver), .61);
+  }
+
+
+  /* slightly stronger documentary polarity */
+
+  .carriedRelation:nth-child(1) strong,
+  .carriedRelation:nth-child(4) strong {
+    color:
+      rgba(var(--axpt-bronze), .74);
+  }
+
+
+  .carriedRelation:nth-child(2) strong,
+  .carriedRelation:nth-child(3) strong {
+    color:
+      rgba(var(--axpt-mineral-green), .78);
+  }
+
+
+  /* ── CHANGED FIELD ── */
+
+  .followingField {
+    grid-template-columns:
+      68px
+      minmax(0, 1fr);
+
+    column-gap: 10px;
+
+    margin-top: 18px;
+
+    padding-top: 12px;
+  }
+
+
+  .followingField p {
+    font-size: .81rem;
+    line-height: 1.43;
+  }
+
+
+  /* ── DEFINITION / RESOLUTION ── */
+
+  .circulationDefinition {
+    grid-template-columns:
+      68px
+      minmax(0, 1fr);
+
+    column-gap: 10px;
+
+    margin-top: 14px;
+
+    padding-top: 12px;
+  }
+
+
+  .circulationDefinition p {
+    font-size:
+      clamp(
+        .88rem,
+        3.6vw,
+        .94rem
+      );
+
+    line-height: 1.46;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — CIRCULATION MOBILE M6D
+
+   Final mobile optical tightening.
+   Preserve the M6C architecture while
+   reducing unnecessary vertical separation.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* What moves reads as one documentary unit. */
+
+  .movementStatement {
+    margin-top: 5px;
+  }
+
+
+  /* Passage resolves directly into carried consequence. */
+
+  .passageField {
+    margin-bottom: 8px;
+  }
+
+
+  .carriedField {
+    margin-top: 2px;
+  }
+
+
+  .carriedField > .fieldRegistration {
+    margin-bottom: 12px;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — CIRCULATION MOBILE M6E
+
+   CURRENT / RESIDUE
+
+   Mobile reduces the surface to:
+
+   what moves
+   → passage
+   → what remains carried
+   → what follows.
+
+   Circulation is felt through one current,
+   not explained through many fragments.
+───────────────────────────────────── */
+
+.mobileCarriedField {
+  display: none;
+}
+
+
+@media (max-width: 680px) {
+
+  /* ── FIELD COMPRESSION ── */
+
+  .transmissionField {
+    display: block;
+
+    width: 100%;
+
+    margin-top: 27px;
+  }
+
+
+  /* ── WHAT MOVES ── */
+
+  .movementField {
+    width: 100%;
+
+    margin: 0;
+
+    padding: 0;
+  }
+
+
+  .fieldRegistration {
+    margin-bottom: 11px;
+  }
+
+
+  .movementStatement {
+    max-width: 29ch;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        .98rem,
+        4.1vw,
+        1.06rem
+      );
+
+    line-height: 1.52;
+
+    color:
+      rgba(var(--axpt-silver), .64);
+  }
+
+
+  /* ── CIRCULATION CURRENT ── */
+
+  .passageField {
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    width: min(100%, 290px);
+
+    margin:
+      30px
+      auto
+      28px;
+
+    padding: 0;
+
+    text-align: center;
+  }
+
+
+  .passageRegistration {
+    margin:
+      0
+      0
+      13px;
+
+    font-size: .41rem;
+
+    letter-spacing: .18em;
+
+    color:
+      rgba(var(--axpt-mineral-cold), .62);
+  }
+
+
+  /*
+    One visible current.
+    This becomes the organism of the surface.
+  */
+
+  .passageRule {
+    position: relative;
+
+    display: block;
+
+    width: 1px;
+    height: 68px;
+
+    margin:
+      0
+      auto
+      15px;
+
+    background:
+      linear-gradient(
+        180deg,
+        transparent 0%,
+        rgba(var(--axpt-mineral-cold), .18) 18%,
+        rgba(var(--axpt-mineral-green), .46) 48%,
+        rgba(var(--axpt-bronze), .16) 76%,
+        transparent 100%
+      );
+
+    opacity: .78;
+  }
+
+
+  .passageRule::after {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 18%;
+
+    width: 3px;
+    height: 16px;
+
+    border-radius: 999px;
+
+    background:
+      rgba(var(--axpt-mineral-cold), .42);
+
+    box-shadow:
+      0 0 10px
+      rgba(var(--axpt-mineral-cold), .10);
+
+    opacity: .42;
+
+    transform:
+      translateX(-50%);
+
+    animation:
+      circulationCurrentDrift
+      5200ms
+      ease-in-out
+      infinite;
+  }
+
+
+  .passageField p {
+    max-width: 22ch;
+
+    margin: 0;
+
+    font-size: .88rem;
+    line-height: 1.42;
+
+    color:
+      rgba(var(--axpt-silver), .58);
+  }
+
+
+  /* ── DESKTOP FOUR-FRAGMENT FIELD OFF ── */
+
+  .carriedField {
+    display: none;
+  }
+
+
+  /* ── MOBILE CARRIED RESIDUE ── */
+
+  .mobileCarriedField {
+    display: block;
+
+    width: 100%;
+
+    margin:
+      0
+      0
+      27px;
+
+    padding:
+      17px
+      0
+      0;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-mineral-green), .060);
+  }
+
+
+  .mobileCarriedRegistration {
+    display: block;
+
+    margin:
+      0
+      0
+      16px;
+
+    font-family: var(--axpt-mono);
+
+    font-size: .41rem;
+    line-height: 1;
+
+    letter-spacing: .18em;
+
+    text-transform: uppercase;
+
+    color:
+      rgba(var(--axpt-mineral-green), .60);
+  }
+
+
+  .mobileCarriedRelations {
+    display: grid;
+
+    grid-template-columns: 1fr;
+
+    gap: 18px;
+  }
+
+
+  .mobileCarriedRelation {
+    margin: 0;
+    padding: 0;
+  }
+
+
+  .mobileCarriedRelation h3 {
+    margin:
+      0
+      0
+      7px;
+
+    font-family: var(--axpt-mono);
+
+    font-size: .43rem;
+    line-height: 1;
+
+    font-weight: 500;
+
+    letter-spacing: .15em;
+
+    text-transform: uppercase;
+
+    color:
+      rgba(var(--axpt-mineral-green), .72);
+  }
+
+
+  .mobileCarriedRelation p {
+    max-width: 31ch;
+
+    margin: 0;
+
+    font-family: var(--axpt-body);
+
+    font-size: .84rem;
+    line-height: 1.48;
+
+    letter-spacing: -.007em;
+
+    color:
+      rgba(var(--axpt-silver), .58);
+  }
+
+
+  /* ── WHAT FOLLOWS ── */
+
+  .followingField {
+    width: 100%;
+
+    margin: 0;
+
+    padding:
+      16px
+      0
+      0;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-silver), .055);
+  }
+
+
+  .followingField p {
+    max-width: 30ch;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        .91rem,
+        3.8vw,
+        .98rem
+      );
+
+    line-height: 1.50;
+  }
+
+
+  /*
+    Mobile no longer needs a second
+    explanatory definition after the
+    surface has already demonstrated it.
+  */
+
+  .circulationDefinition {
+    display: none;
+  }
+
+}
+
+
+@keyframes circulationCurrentDrift {
+
+  0%,
+  100% {
+    top: 15%;
+
+    opacity: .22;
+
+    transform:
+      translateX(-50%)
+      scaleY(.82);
+  }
+
+  48% {
+    top: 58%;
+
+    opacity: .66;
+
+    transform:
+      translateX(-50%)
+      scaleY(1.08);
+  }
+
+  78% {
+    top: 72%;
+
+    opacity: .30;
+
+    transform:
+      translateX(-50%)
+      scaleY(.90);
+  }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+  .passageRule::after {
+    animation: none;
+
+    top: 48%;
+
+    opacity: .42;
+  }
+
+}
+
+/* ─────────────────────────────────────
+   AXPT V1 — CIRCULATION MOBILE M6F
+
+   RETURNING CURRENT
+
+   Circulation is not a connector.
+   It is a changing field through which
+   state continues and consequence remains.
+───────────────────────────────────── */
+
+.circulationFieldVisual {
+  display: none;
+}
+
+
+@media (max-width: 680px) {
+
+  .circulationFieldVisual {
+    position: relative;
+
+    display: block;
+
+    width: 148px;
+    height: 96px;
+
+    margin:
+      0
+      auto
+      17px;
+  }
+
+
+  /*
+    Two incomplete bodies imply circulation
+    without resolving into a literal icon.
+  */
+
+  .circulationArc {
+    position: absolute;
+
+    left: 50%;
+
+    width: 104px;
+    height: 42px;
+
+    border-radius: 999px;
+
+    pointer-events: none;
+  }
+
+
+  .circulationArcUpper {
+    top: 9px;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-mineral-cold), .28);
+
+    border-left:
+      1px solid
+      rgba(var(--axpt-mineral-cold), .08);
+
+    border-right:
+      1px solid
+      rgba(var(--axpt-mineral-green), .13);
+
+    opacity: .62;
+
+    transform:
+      translateX(-50%)
+      rotate(-9deg);
+  }
+
+
+  .circulationArcLower {
+    bottom: 9px;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-bronze), .20);
+
+    border-left:
+      1px solid
+      rgba(var(--axpt-mineral-green), .11);
+
+    border-right:
+      1px solid
+      rgba(var(--axpt-mineral-cold), .07);
+
+    opacity: .48;
+
+    transform:
+      translateX(-50%)
+      rotate(171deg);
+  }
+
+
+  /*
+    A quiet established condition at the
+    center of the circulating field.
+  */
+
+  .circulationCore {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 3px;
+    height: 3px;
+
+    border-radius: 50%;
+
+    background:
+      rgba(var(--axpt-mineral-green), .44);
+
+    box-shadow:
+      0 0 13px
+      rgba(var(--axpt-mineral-green), .09);
+
+    opacity: .74;
+
+    transform:
+      translate3d(-50%, -50%, 0);
+  }
+
+
+  /*
+    A carried condition moving around,
+    rather than through, the field.
+  */
+
+  .circulationParticle {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 4px;
+    height: 4px;
+
+    border-radius: 50%;
+
+    background:
+      rgba(var(--axpt-mineral-cold), .44);
+
+    box-shadow:
+      0 0 10px
+      rgba(var(--axpt-mineral-cold), .09);
+
+    animation:
+      circulationFieldOrbit
+      7200ms
+      cubic-bezier(.42, 0, .58, 1)
+      infinite;
+  }
+
+
+  .passageField p {
+    max-width: 22ch;
+
+    margin:
+      0
+      auto;
+
+    font-size: .86rem;
+    line-height: 1.43;
+
+    color:
+      rgba(var(--axpt-silver), .57);
+  }
+
+}
+
+
+@keyframes circulationFieldOrbit {
+
+  0% {
+    opacity: .18;
+
+    transform:
+      translate3d(-49px, -15px, 0)
+      scale(.88);
+  }
+
+  23% {
+    opacity: .42;
+
+    transform:
+      translate3d(-9px, -31px, 0)
+      scale(1);
+  }
+
+  48% {
+    opacity: .28;
+
+    transform:
+      translate3d(45px, -4px, 0)
+      scale(.94);
+  }
+
+  72% {
+    opacity: .38;
+
+    transform:
+      translate3d(8px, 27px, 0)
+      scale(.91);
+  }
+
+  100% {
+    opacity: .18;
+
+    transform:
+      translate3d(-49px, -15px, 0)
+      scale(.88);
+  }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+  .circulationParticle {
+    animation: none;
+
+    opacity: .30;
+
+    transform:
+      translate3d(32px, -8px, 0);
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — CIRCULATION MOBILE M6G
+
+   INTEGRATED CURRENT FIELD
+
+   Circulation is no longer represented
+   by an isolated diagram.
+
+   The transmission field itself carries
+   pressure, drift, and consequence.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── WHOLE FIELD BECOMES THE ORGANISM ── */
+
+  .transmissionField {
+    position: relative;
+
+    isolation: isolate;
+
+    overflow: visible;
+  }
+
+
+  /*
+    Broad geological circulation.
+    Not a visible ring.
+    Not a connector.
+  */
+
+  .transmissionField::before {
+    content: "";
+
+    position: absolute;
+
+    z-index: -1;
+
+    left: 50%;
+    top: 25%;
+
+    width: 150%;
+    height: 58%;
+
+    transform:
+      translateX(-50%)
+      rotate(-5deg);
+
+    background:
+      radial-gradient(
+        ellipse at 43% 38%,
+        rgba(var(--axpt-mineral-green), .055) 0%,
+        rgba(var(--axpt-mineral-green), .025) 27%,
+        transparent 58%
+      ),
+      radial-gradient(
+        ellipse at 62% 68%,
+        rgba(var(--axpt-mineral-cold), .045) 0%,
+        rgba(var(--axpt-mineral-cold), .018) 30%,
+        transparent 62%
+      );
+
+    filter:
+      blur(8px);
+
+    opacity: .78;
+
+    pointer-events: none;
+
+    animation:
+      circulationFieldBreath
+      11s
+      ease-in-out
+      infinite;
+  }
+
+
+  /*
+    A second buried current crosses the first.
+    This gives circulation without drawing it.
+  */
+
+  .transmissionField::after {
+    content: "";
+
+    position: absolute;
+
+    z-index: -1;
+
+    left: 4%;
+    top: 33%;
+
+    width: 92%;
+    height: 42%;
+
+    border-radius: 50%;
+
+    border:
+      1px solid
+      rgba(var(--axpt-mineral-cold), .028);
+
+    border-left-color:
+      rgba(var(--axpt-mineral-green), .070);
+
+    border-right-color:
+      rgba(var(--axpt-bronze), .050);
+
+    transform:
+      rotate(-11deg)
+      scaleX(1.16);
+
+    opacity: .70;
+
+    pointer-events: none;
+  }
+
+
+  /* ── REMOVE THE OBJECT-LIKE CHAMBER ── */
+
+  .circulationFieldVisual {
+    position: relative;
+
+    width: 100%;
+    height: 58px;
+
+    margin:
+      4px
+      auto
+      10px;
+  }
+
+
+  .circulationArc {
+    display: none;
+  }
+
+
+  .circulationCore {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 3px;
+    height: 3px;
+
+    border-radius: 50%;
+
+    background:
+      rgba(var(--axpt-mineral-green), .34);
+
+    box-shadow:
+      0 0 18px
+      rgba(var(--axpt-mineral-green), .10);
+
+    opacity: .58;
+
+    transform:
+      translate(-50%, -50%);
+  }
+
+
+  /*
+    One carried registration remains.
+    It moves across the field rather than
+    orbiting a graphic.
+  */
+
+  .circulationParticle {
+    left: 50%;
+    top: 50%;
+
+    width: 4px;
+    height: 4px;
+
+    opacity: .26;
+
+    animation:
+      circulationIntegratedDrift
+      8600ms
+      ease-in-out
+      infinite;
+  }
+
+
+  /* ── PASSAGE BECOMES PART OF THE CURRENT ── */
+
+  .passageField {
+    position: relative;
+
+    width: 100%;
+
+    margin:
+      25px
+      auto
+      24px;
+
+    padding:
+      18px
+      0
+      20px;
+
+    text-align: center;
+  }
+
+
+  .passageField::before {
+    content: "";
+
+    position: absolute;
+
+    left: 12%;
+    right: 12%;
+    top: 0;
+
+    height: 1px;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--axpt-mineral-green), .055),
+        rgba(var(--axpt-mineral-cold), .080),
+        rgba(var(--axpt-bronze), .040),
+        transparent
+      );
+
+    opacity: .65;
+  }
+
+
+  .passageRegistration {
+    margin-bottom: 6px;
+
+    color:
+      rgba(var(--axpt-mineral-cold), .56);
+  }
+
+
+  .passageField p {
+    position: relative;
+
+    max-width: 24ch;
+
+    margin:
+      0
+      auto;
+
+    font-size:
+      clamp(
+        .88rem,
+        3.7vw,
+        .95rem
+      );
+
+    line-height: 1.48;
+
+    color:
+      rgba(var(--axpt-silver), .62);
+  }
+
+
+  /* ── CARRIED FORWARD EMERGES FROM SAME FIELD ── */
+
+  .mobileCarriedField {
+    position: relative;
+
+    margin-top: 0;
+
+    padding-top: 21px;
+
+    border-top: 0;
+  }
+
+
+  .mobileCarriedField::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    top: 0;
+
+    height: 1px;
+
+    background:
+      linear-gradient(
+        90deg,
+        rgba(var(--axpt-mineral-green), .07),
+        rgba(var(--axpt-mineral-cold), .025) 44%,
+        transparent 88%
+      );
+  }
+
+
+  .mobileCarriedRelations {
+    gap: 21px;
+  }
+
+
+  .mobileCarriedRelation p {
+    max-width: 32ch;
+
+    font-size: .86rem;
+
+    line-height: 1.52;
+
+    color:
+      rgba(var(--axpt-silver), .62);
+  }
+
+
+  /* ── FOLLOWING IS RELEASE, NOT ANOTHER BLOCK ── */
+
+  .followingField {
+    margin-top: 3px;
+
+    padding-top: 18px;
+  }
+
+}
+
+
+@keyframes circulationFieldBreath {
+
+  0%,
+  100% {
+    opacity: .56;
+
+    transform:
+      translateX(-50%)
+      rotate(-5deg)
+      scale(.97);
+  }
+
+  50% {
+    opacity: .82;
+
+    transform:
+      translateX(-50%)
+      rotate(-2deg)
+      scale(1.035);
+  }
+
+}
+
+
+@keyframes circulationIntegratedDrift {
+
+  0% {
+    opacity: .12;
+
+    transform:
+      translate3d(-54px, -7px, 0);
+  }
+
+  28% {
+    opacity: .34;
+
+    transform:
+      translate3d(-13px, -16px, 0);
+  }
+
+  58% {
+    opacity: .24;
+
+    transform:
+      translate3d(44px, 5px, 0);
+  }
+
+  82% {
+    opacity: .30;
+
+    transform:
+      translate3d(8px, 15px, 0);
+  }
+
+  100% {
+    opacity: .12;
+
+    transform:
+      translate3d(-54px, -7px, 0);
+  }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+  .transmissionField::before,
+  .circulationParticle {
+    animation: none;
+  }
+
+}
+
+/* ─────────────────────────────────────
+   AXPT V1 — CIRCULATION MOBILE M6I
+
+   MOVEMENT CARRIES RELATIONSHIP
+
+   Public doctrine:
+   What moves does not move alone.
+
+   Hidden architecture:
+   Movement carries relationship.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ───────────────────────────────
+     AGGRESSIVE VERTICAL COMPRESSION
+  ─────────────────────────────── */
+
+  .transmissionField {
+    position: relative;
+
+    margin-top: 18px;
+
+    overflow: visible;
+  }
+
+
+  .movementField {
+    margin: 0;
+    padding: 0;
+  }
+
+
+  .movementField .fieldRegistration {
+    margin:
+      0
+      0
+      7px;
+  }
+
+
+  .movementStatement {
+    max-width: 31ch;
+
+    margin:
+      0 !important;
+
+    padding: 0;
+
+    font-size:
+      clamp(
+        .96rem,
+        4vw,
+        1.04rem
+      );
+
+    line-height: 1.46;
+
+    letter-spacing: -.010em;
+
+    color:
+      rgba(var(--axpt-silver), .66);
+  }
+
+
+  /* ───────────────────────────────
+     CIRCULATION DOCTRINE
+  ─────────────────────────────── */
+
+  .passageField {
+    position: relative;
+
+    width: 100%;
+
+    margin:
+      20px
+      auto
+      17px;
+
+    padding:
+      15px
+      0
+      12px;
+
+    text-align: center;
+  }
+
+
+  /*
+    One quiet threshold into the
+    circulation condition.
+  */
+
+  .passageField::before {
+    content: "";
+
+    position: absolute;
+
+    left: 11%;
+    right: 11%;
+    top: 0;
+
+    height: 1px;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--axpt-mineral-green), .045),
+        rgba(var(--axpt-mineral-cold), .065),
+        rgba(var(--axpt-bronze), .035),
+        transparent
+      );
+
+    opacity: .72;
+  }
+
+
+  .passageRegistration {
+    display: block;
+
+    margin:
+      0
+      0
+      7px;
+
+    font-size: .40rem;
+    line-height: 1;
+
+    letter-spacing: .18em;
+
+    text-transform: uppercase;
+
+    color:
+      rgba(var(--axpt-mineral-cold), .57);
+  }
+
+
+  .circulationDoctrine {
+    max-width: 25ch;
+
+    margin:
+      0
+      auto
+      13px;
+
+    font-family: var(--axpt-body);
+
+    font-size:
+      clamp(
+        .99rem,
+        4.15vw,
+        1.08rem
+      );
+
+    line-height: 1.40;
+
+    letter-spacing: -.012em;
+
+    color:
+      rgba(var(--axpt-limestone), .77);
+  }
+
+
+  /* ───────────────────────────────
+     CIRCULATION FIELD
+
+     Not a symbol placed on the page.
+     One accountable path within the
+     surrounding transmission field.
+  ─────────────────────────────── */
+
+  .circulationFieldVisual {
+    position: relative;
+
+    display: block;
+
+    width: 158px;
+    height: 78px;
+
+    margin:
+      0
+      auto;
+
+    isolation: isolate;
+  }
+
+
+  /*
+    The path is intentionally incomplete
+    in emphasis, but continuous in form.
+  */
+
+  .circulationTrack {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 118px;
+    height: 50px;
+
+    border-radius: 50%;
+
+    border:
+      1px solid
+      rgba(var(--axpt-mineral-cold), .050);
+
+    border-left-color:
+      rgba(var(--axpt-mineral-green), .105);
+
+    border-top-color:
+      rgba(var(--axpt-mineral-cold), .080);
+
+    border-right-color:
+      rgba(var(--axpt-bronze), .065);
+
+    border-bottom-color:
+      rgba(var(--axpt-mineral-green), .040);
+
+    box-shadow:
+      inset 0 0 18px
+      rgba(var(--axpt-mineral-green), .010);
+
+    opacity: .82;
+
+    transform:
+      translate(-50%, -50%)
+      rotate(-7deg);
+  }
+
+
+  /*
+    One carried condition.
+    It follows the actual perimeter.
+    No wandering particles.
+  */
+
+  .circulationParticle {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 4px;
+    height: 4px;
+
+    border-radius: 50%;
+
+    background:
+      rgba(var(--axpt-mineral-cold), .46);
+
+    box-shadow:
+      0 0 10px
+      rgba(var(--axpt-mineral-cold), .10);
+
+    opacity: .34;
+
+    offset-path:
+      ellipse(
+        59px
+        25px
+        at
+        79px
+        39px
+      );
+
+    offset-distance: 0%;
+
+    offset-rotate: 0deg;
+
+    animation:
+      circulationRelationshipOrbit
+      8200ms
+      linear
+      infinite;
+  }
+
+
+  /* ───────────────────────────────
+     FIELD ATMOSPHERE
+
+     Keep the movement embedded in the
+     whole surface rather than isolated.
+  ─────────────────────────────── */
+
+  .transmissionField::before {
+    content: "";
+
+    position: absolute;
+
+    z-index: -1;
+
+    left: 50%;
+    top: 20%;
+
+    width: 142%;
+    height: 64%;
+
+    background:
+      radial-gradient(
+        ellipse at 44% 40%,
+        rgba(var(--axpt-mineral-green), .045),
+        transparent 54%
+      ),
+      radial-gradient(
+        ellipse at 61% 65%,
+        rgba(var(--axpt-mineral-cold), .032),
+        transparent 58%
+      );
+
+    filter: blur(10px);
+
+    opacity: .76;
+
+    transform:
+      translateX(-50%)
+      rotate(-4deg);
+
+    pointer-events: none;
+
+    animation:
+      circulationRelationshipBreath
+      12s
+      ease-in-out
+      infinite;
+  }
+
+
+  /*
+    Remove the old large elliptical
+    secondary outline from M6G.
+  */
+
+  .transmissionField::after {
+    display: none;
+  }
+
+
+  /* ───────────────────────────────
+     CARRIED FORWARD
+  ─────────────────────────────── */
+
+  .mobileCarriedField {
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+
+    margin:
+      0
+      0
+      10px;
+
+    padding:
+      15px
+      0
+      0;
+
+    border-top: 0;
+  }
+
+
+  .mobileCarriedField::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 18%;
+    top: 0;
+
+    height: 1px;
+
+    background:
+      linear-gradient(
+        90deg,
+        rgba(var(--axpt-mineral-green), .065),
+        rgba(var(--axpt-mineral-cold), .025),
+        transparent
+      );
+
+    opacity: .78;
+  }
+
+
+  .mobileCarriedRegistration {
+    display: block;
+
+    margin:
+      0
+      0
+      8px;
+
+    font-family: var(--axpt-mono);
+
+    font-size: .40rem;
+    line-height: 1;
+
+    letter-spacing: .18em;
+
+    text-transform: uppercase;
+
+    color:
+      rgba(var(--axpt-mineral-green), .60);
+  }
+
+
+  .mobileContinuityLines {
+    display: grid;
+
+    gap: 2px;
+
+    max-width: 31ch;
+  }
+
+
+  .mobileContinuityLines p {
+    margin: 0;
+
+    font-family: var(--axpt-body);
+
+    font-size:
+      clamp(
+        .91rem,
+        3.85vw,
+        .99rem
+      );
+
+    line-height: 1.43;
+
+    letter-spacing: -.009em;
+
+    color:
+      rgba(var(--axpt-silver), .64);
+  }
+
+
+  /*
+    The last sentence bears slightly more
+    institutional weight.
+  */
+
+  .mobileContinuityLines p:last-child {
+    margin-top: 4px;
+
+    color:
+      rgba(var(--axpt-limestone), .72);
+  }
+
+
+  /* ───────────────────────────────
+     MOBILE ENDS HERE
+
+     "What follows" and the institutional
+     definition belong to the fuller
+     desktop reading, not this compressed
+     mobile organism.
+  ─────────────────────────────── */
+
+  .followingField,
+  .circulationDefinition {
+    display: none;
+  }
+
+}
+
+
+@keyframes circulationRelationshipOrbit {
+
+  from {
+    offset-distance: 0%;
+
+    opacity: .20;
+  }
+
+  18% {
+    opacity: .42;
+  }
+
+  48% {
+    opacity: .27;
+  }
+
+  76% {
+    opacity: .39;
+  }
+
+  to {
+    offset-distance: 100%;
+
+    opacity: .20;
+  }
+
+}
+
+
+@keyframes circulationRelationshipBreath {
+
+  0%,
+  100% {
+    opacity: .55;
+
+    transform:
+      translateX(-50%)
+      rotate(-4deg)
+      scale(.98);
+  }
+
+  50% {
+    opacity: .78;
+
+    transform:
+      translateX(-50%)
+      rotate(-2deg)
+      scale(1.025);
+  }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+  .circulationParticle,
+  .transmissionField::before {
+    animation: none;
+  }
+
+  .circulationParticle {
+    offset-distance: 14%;
+
+    opacity: .30;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — CIRCULATION MOBILE M6J
+
+   RELATIONSHIP IN MOTION
+
+   Public doctrine:
+   What moves does not move alone.
+
+   Hidden architecture:
+   Movement carries relationship.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ───────────────────────────────
+     WHAT MOVES = ONE EXPRESSION
+  ─────────────────────────────── */
+
+  .transmissionField {
+    margin-top: 14px;
+  }
+
+
+  .movementField {
+    display: block;
+
+    margin: 0;
+
+    padding: 0;
+  }
+
+
+  .movementField .fieldRegistration {
+    margin:
+      0
+      0
+      5px;
+  }
+
+
+  .movementStatement {
+    max-width: 31ch;
+
+    margin:
+      0 !important;
+
+    padding: 0;
+
+    font-size:
+      clamp(
+        .96rem,
+        4vw,
+        1.04rem
+      );
+
+    line-height: 1.43;
+
+    letter-spacing: -.011em;
+
+    color:
+      rgba(var(--axpt-silver), .67);
+  }
+
+
+  /* ───────────────────────────────
+     CIRCULATION FIELD
+  ─────────────────────────────── */
+
+  .passageField {
+    position: relative;
+
+    width: 100%;
+
+    margin:
+      16px
+      auto
+      14px;
+
+    padding:
+      13px
+      0
+      13px;
+
+    text-align: center;
+  }
+
+
+  .passageField::before {
+    left: 14%;
+    right: 14%;
+
+    opacity: .62;
+  }
+
+
+  .passageRegistration {
+    margin:
+      0
+      0
+      8px;
+
+    font-size: .40rem;
+
+    letter-spacing: .18em;
+
+    color:
+      rgba(var(--axpt-mineral-cold), .56);
+  }
+
+
+  /* ───────────────────────────────
+     GOVERNED CIRCULATION
+
+     One path.
+     One carried condition.
+     No wandering field particles.
+  ─────────────────────────────── */
+
+  .circulationFieldVisual {
+    position: relative;
+
+    display: block;
+
+    width: 170px;
+    height: 82px;
+
+    margin:
+      0
+      auto
+      9px;
+
+    isolation: isolate;
+  }
+
+
+  .circulationTrack {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 126px;
+    height: 52px;
+
+    border-radius: 50%;
+
+    border:
+      1px solid
+      rgba(var(--axpt-mineral-cold), .045);
+
+    border-top-color:
+      rgba(var(--axpt-mineral-cold), .085);
+
+    border-left-color:
+      rgba(var(--axpt-mineral-green), .110);
+
+    border-right-color:
+      rgba(var(--axpt-bronze), .070);
+
+    border-bottom-color:
+      rgba(var(--axpt-mineral-green), .042);
+
+    opacity: .82;
+
+    transform:
+      translate(-50%, -50%)
+      rotate(-6deg);
+  }
+
+
+  /*
+    Buried pressure within the track:
+    the orbit belongs to a field rather
+    than appearing as a drawn symbol.
+  */
+
+  .circulationTrack::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 7px 14px;
+
+    border-radius: 50%;
+
+    background:
+      radial-gradient(
+        ellipse at 43% 42%,
+        rgba(var(--axpt-mineral-green), .038),
+        transparent 64%
+      );
+
+    filter: blur(5px);
+
+    opacity: .80;
+  }
+
+
+  /*
+    One moving registration follows the
+    same perimeter continuously.
+  */
+
+  .circulationParticle {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 4px;
+    height: 4px;
+
+    margin:
+      -2px
+      0
+      0
+      -2px;
+
+    border-radius: 50%;
+
+    background:
+      rgba(var(--axpt-mineral-cold), .50);
+
+    box-shadow:
+      0 0 9px
+      rgba(var(--axpt-mineral-cold), .11);
+
+    offset-path:
+      ellipse(
+        63px
+        26px
+        at
+        85px
+        41px
+      );
+
+    offset-distance: 0%;
+
+    offset-rotate: 0deg;
+
+    animation:
+      circulationRelationshipCircuit
+      9200ms
+      linear
+      infinite;
+  }
+
+
+  /* ───────────────────────────────
+     DOCTRINE EMERGES FROM THE FIELD
+  ─────────────────────────────── */
+
+  .circulationDoctrine {
+    max-width: 25ch;
+
+    margin:
+      0
+      auto;
+
+    font-family: var(--axpt-body);
+
+    font-size:
+      clamp(
+        .98rem,
+        4.1vw,
+        1.06rem
+      );
+
+    line-height: 1.38;
+
+    letter-spacing: -.012em;
+
+    color:
+      rgba(var(--axpt-limestone), .76);
+  }
+
+
+  /* ───────────────────────────────
+     WHOLE SURFACE ATMOSPHERE
+  ─────────────────────────────── */
+
+  .transmissionField::before {
+    top: 17%;
+
+    height: 68%;
+
+    opacity: .64;
+
+    animation:
+      circulationRelationshipPressure
+      14s
+      ease-in-out
+      infinite;
+  }
+
+
+  .transmissionField::after {
+    display: none;
+  }
+
+
+  /* ───────────────────────────────
+     CARRIED FORWARD
+  ─────────────────────────────── */
+
+  .mobileCarriedField {
+    position: relative;
+
+    width: 100%;
+
+    margin:
+      0
+      0
+      8px;
+
+    padding:
+      14px
+      0
+      0;
+
+    border: 0;
+  }
+
+
+  .mobileCarriedField::before {
+    left: 0;
+    right: 20%;
+
+    opacity: .65;
+  }
+
+
+  .mobileCarriedRegistration {
+    margin:
+      0
+      0
+      11px;
+
+    font-size: .40rem;
+
+    letter-spacing: .18em;
+  }
+
+
+  .mobileRelationshipField {
+    display: grid;
+
+    grid-template-columns: 1fr;
+
+    gap: 14px;
+  }
+
+
+  .mobileRelationship {
+    margin: 0;
+
+    padding: 0;
+  }
+
+
+  .mobileRelationship h3 {
+    margin:
+      0
+      0
+      5px;
+
+    font-family: var(--axpt-mono);
+
+    font-size: .41rem;
+    line-height: 1.1;
+
+    font-weight: 500;
+
+    letter-spacing: .145em;
+
+    text-transform: uppercase;
+
+    color:
+      rgba(var(--axpt-mineral-green), .67);
+  }
+
+
+  .mobileRelationship p {
+    max-width: 32ch;
+
+    margin: 0;
+
+    font-family: var(--axpt-body);
+
+    font-size:
+      clamp(
+        .85rem,
+        3.6vw,
+        .92rem
+      );
+
+    line-height: 1.47;
+
+    letter-spacing: -.006em;
+
+    color:
+      rgba(var(--axpt-silver), .60);
+  }
+
+
+  /*
+    Do not restart the argument after
+    carried-forward on mobile.
+  */
+
+  .followingField,
+  .circulationDefinition {
+    display: none;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   CIRCUIT
+
+   One condition remains visibly attached
+   to the field throughout the full orbit.
+───────────────────────────────────── */
+
+@keyframes circulationRelationshipCircuit {
+
+  0% {
+    offset-distance: 0%;
+    opacity: .18;
+  }
+
+  12% {
+    opacity: .43;
+  }
+
+  32% {
+    opacity: .30;
+  }
+
+  50% {
+    opacity: .18;
+  }
+
+  68% {
+    opacity: .32;
+  }
+
+  86% {
+    opacity: .44;
+  }
+
+  100% {
+    offset-distance: 100%;
+    opacity: .18;
+  }
+
+}
+
+
+/*
+  The field itself changes pressure much
+  more slowly than the carried condition.
+*/
+
+@keyframes circulationRelationshipPressure {
+
+  0%,
+  100% {
+    opacity: .54;
+
+    transform:
+      translateX(-50%)
+      rotate(-4deg)
+      scale(.985);
+  }
+
+  50% {
+    opacity: .72;
+
+    transform:
+      translateX(-50%)
+      rotate(-2deg)
+      scale(1.02);
+  }
+
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+
+  .circulationParticle,
+  .transmissionField::before {
+    animation: none;
+  }
+
+
+  .circulationParticle {
+    offset-distance: 16%;
+
+    opacity: .32;
+  }
+
+}
+
+/* ─────────────────────────────────────
+   AXPT V1 — DESKTOP CONTAINMENT D1
+   CIRCULATION OWNERSHIP
+
+   Desktop regains its passage architecture.
+   Mobile circulation remains mobile-only.
+───────────────────────────────────── */
+
+@media (min-width: 681px) {
+
+  .circulationFieldVisual,
+  .mobileCarriedField {
+    display: none !important;
+  }
+
+
+  .passageRule {
+    display: block;
+  }
+
+
+  /*
+    "What follows" was removed canonically.
+    Reclaim the vertical territory it occupied.
+  */
+
+  .transmissionField {
+    min-height:
+      clamp(
+        300px,
+        34vh,
+        360px
+      );
+  }
+
+
+  .circulationDefinition {
+    margin-top: 0;
+  }
+
 }

@@ -2,19 +2,25 @@ import styles from './OriginSurface.module.css'
 
 export default function OriginSurface() {
   return (
-    <div className={styles.thresholdSurface}>
+    <div
+      className={styles.thresholdSurface}
+      data-settled="true"
+    >
       <div className={styles.thresholdFrame}>
 
-        {/* 01 — DECLARATION */}
+        {/* 01 — DECLARATION / FIRST EVENT */}
         <div className={styles.declaration}>
-
           <h1 className={styles.primaryStatement}>
-            Movement is inevitable.
+            <span>Movement</span>
+            <span>is inevitable.</span>
           </h1>
         </div>
 
-        {/* 02 — CURRENT */}
-        <div className={styles.current} aria-label="Forms of movement">
+        {/* 02 — OBSERVATION */}
+        <div
+          className={styles.current}
+          aria-label="Forms of movement"
+        >
           <p className={styles.currentText}>
             <span>Money changes hands.</span>
             <span>People cross borders.</span>
@@ -24,23 +30,11 @@ export default function OriginSurface() {
           </p>
         </div>
 
-        {/* 03 — CONSEQUENCE */}
-        <div className={styles.consequence}>
-          <p>
-            What moves changes what can happen next.
-          </p>
-        </div>
-
-        {/* 04 — ORIENTATION */}
-        <div className={styles.orientation}>
-              <p>
-            Where things stand matters.
-          </p>
-        </div>
-
-        {/* 05 — INSTITUTIONAL RESPONSE */}
+        {/* 03 — INSTITUTIONAL POSITION */}
         <div className={styles.response}>
-          <span className={styles.responseLabel}>AXPT</span>
+          <span className={styles.responseLabel}>
+            AXPT
+          </span>
 
           <p>
             AXPT develops coordination infrastructure so that as conditions

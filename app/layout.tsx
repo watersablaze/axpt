@@ -2,11 +2,11 @@ import '@/styles/globals.css'
 
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import Script from 'next/script'
 import { Toaster } from 'sonner'
 
 import AuraDiagnostics from '@/components/devtools/AuraDiagnostics'
 import DeploymentBanner from '@/components/system/DeploymentBanner'
+import DocumentReadyGate from '@/components/system/DocumentReadyGate'
 import { LayerProvider } from '@/lib/context/LayerContext'
 import { OrganismStateProvider } from '@/ui/organism/OrganismStateProvider'
 
@@ -16,8 +16,9 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: 'AXPT.io Portal',
-  description: 'Culturally awakened economies and regenerative systems.',
+  title: 'AXPT — Axis Point',
+  description:
+    'Coordination infrastructure for continuity, authority, trade, and institutional passage.',
 }
 
 export default function RootLayout({
@@ -28,24 +29,66 @@ export default function RootLayout({
   const isDev = process.env.NODE_ENV === 'development'
 
   return (
-    <html lang="en">
+    <html
+        lang="en"
+        style={{
+          backgroundColor: '#10110f',
+          color: 'rgba(245, 242, 235, 0.92)',
+        }}
+      >
+        <head>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                try {
+                  if (
+                    window.location.pathname === '/' &&
+                    !window.location.hash
+                  ) {
+                    history.scrollRestoration = 'manual';
+
+                    document.documentElement
+                      .setAttribute(
+                        'data-entry-normalizing',
+                        'true'
+                      );
+
+                    document.documentElement.style
+                      .scrollBehavior = 'auto';
+
+                    window.scrollTo(0, 0);
+                  }
+                } catch {}
+              `,
+            }}
+          />
+        </head>
+
       <body className={inter.className}>
         <OrganismStateProvider>
           <LayerProvider>
-            <div id="app-content">{children}</div>
+            <div
+                id="app-content"
+                style={{
+                  visibility: 'hidden',
+                }}
+              >
+                <DocumentReadyGate />
+                {children}
+              </div>
 
-            {isDev ? <AuraDiagnostics /> : null}
+            {isDev ? (
+              <>
+                <AuraDiagnostics />
+                <DeploymentBanner />
+              </>
+            ) : null}
           </LayerProvider>
         </OrganismStateProvider>
 
-        <DeploymentBanner />
 
         <Toaster richColors position="top-right" />
 
-        <Script
-          src="https://meet.jit.si/external_api.js"
-          strategy="afterInteractive"
-        />
       </body>
     </html>
   )

@@ -7,6 +7,11 @@
 
   z-index: 80;
 
+  /*
+   * The header field itself remains transparent
+   * to the document. Only its actual controls
+   * receive pointer interaction.
+   */
   pointer-events: none;
 
   background:
@@ -22,7 +27,10 @@
   backdrop-filter: blur(12px);
 }
 
+
 .register {
+  position: relative;
+
   width: min(
     calc(100% - (var(--rail-inset) * 2)),
     1480px
@@ -36,19 +44,34 @@
   align-items: center;
   justify-content: space-between;
 
-  border-bottom: 1px solid rgba(var(--axpt-silver), .07);
+  border-bottom:
+    1px solid
+    rgba(var(--axpt-silver), .07);
 }
 
+
+/* ─────────────────────────────────────
+   IDENTITY / RETURN
+───────────────────────────────────── */
+
 .identity {
+  pointer-events: auto;
+
   display: flex;
   align-items: baseline;
 
   gap: 16px;
+
+  text-decoration: none;
+
+  cursor: pointer;
 }
+
 
 .brand,
 .identityName,
-.condition {
+.condition,
+.indexPanel {
   font-family: var(--axpt-mono);
 
   line-height: 1;
@@ -56,52 +79,136 @@
   text-transform: uppercase;
 }
 
+
 .brand {
   font-size: .66rem;
   font-weight: 600;
 
   letter-spacing: .26em;
 
-  color: rgba(var(--axpt-bronze), .60);
+  color:
+    rgba(var(--axpt-bronze), .60);
+
+  transition:
+    color 240ms ease,
+    text-shadow 240ms ease;
 }
+
 
 .identityName {
   font-size: .47rem;
 
   letter-spacing: .30em;
 
-  color: rgba(var(--axpt-iron-silver), .34);
+  color:
+    rgba(var(--axpt-iron-silver), .34);
+
+  transition:
+    color 240ms ease;
 }
 
+
+.identity:hover .brand,
+.identity:focus-visible .brand {
+  color:
+    rgba(var(--axpt-bronze), .82);
+
+  text-shadow:
+    0 0 12px
+    rgba(var(--axpt-bronze), .035);
+}
+
+
+.identity:hover .identityName,
+.identity:focus-visible .identityName {
+  color:
+    rgba(var(--axpt-iron-silver), .52);
+}
+
+
+.identity:focus-visible {
+  outline:
+    1px solid
+    rgba(var(--axpt-limestone), .36);
+
+  outline-offset: 7px;
+}
+
+
+/* ─────────────────────────────────────
+   CURRENT CONDITION / INDEX TRIGGER
+───────────────────────────────────── */
+
+.indexControl {
+  position: relative;
+
+  pointer-events: auto;
+}
+
+
 .condition {
+  appearance: none;
+
   display: flex;
   align-items: baseline;
 
   gap: 8px;
 
+  margin: 0;
+  padding: 10px 0 10px 12px;
+
+  border: 0;
+
+  background: transparent;
+
   font-size: .49rem;
   letter-spacing: .28em;
 
-  color: rgba(var(--axpt-iron-silver), .40);
-}
+  color:
+    rgba(var(--axpt-iron-silver), .40);
 
-.conditionIndex {
-  color: rgba(var(--axpt-silver), .46);
-}
+  cursor: pointer;
 
-.conditionDivider {
-  color: rgba(var(--axpt-iron-silver), .20);
-}
-
-.conditionName {
-  color: rgba(var(--axpt-ash), .52);
-}
-
-.condition {
   transition:
     color 180ms ease,
     opacity 180ms ease;
 }
+
+
+.conditionIndex {
+  color:
+    rgba(var(--axpt-silver), .46);
+}
+
+
+.conditionDivider {
+  color:
+    rgba(var(--axpt-iron-silver), .20);
+}
+
+
+.conditionName {
+  color:
+    rgba(var(--axpt-ash), .52);
+}
+
+
+.conditionDisclosure {
+  min-width: 1ch;
+
+  margin-left: 3px;
+
+  color:
+    rgba(var(--axpt-bronze), .42);
+
+  font-size: .60rem;
+
+  letter-spacing: 0;
+
+  transition:
+    color 180ms ease;
+}
+
 
 .conditionName,
 .conditionIndex {
@@ -111,19 +218,53 @@
     text-shadow 180ms ease;
 }
 
+
+.condition:hover .conditionIndex,
+.condition:hover .conditionName,
+.condition:focus-visible .conditionIndex,
+.condition:focus-visible .conditionName {
+  color:
+    rgba(var(--axpt-limestone), .74);
+}
+
+
+.condition:hover .conditionDisclosure,
+.condition:focus-visible .conditionDisclosure {
+  color:
+    rgba(var(--axpt-bronze), .72);
+}
+
+
+.condition:focus-visible {
+  outline:
+    1px solid
+    rgba(var(--axpt-limestone), .34);
+
+  outline-offset: 4px;
+}
+
+
 .registering .conditionIndex,
 .registering .conditionName {
-  color: rgba(var(--axpt-limestone), .88);
+  color:
+    rgba(var(--axpt-limestone), .88);
 
   text-shadow:
-    0 0 10px rgba(var(--axpt-mineral-cold), .16);
+    0 0 10px
+    rgba(var(--axpt-mineral-cold), .16);
 }
+
 
 .registering {
-  animation: conditionRegister 460ms ease-out;
+  animation:
+    conditionRegister
+    460ms
+    ease-out;
 }
 
+
 @keyframes conditionRegister {
+
   0% {
     opacity: .52;
   }
@@ -135,9 +276,217 @@
   100% {
     opacity: 1;
   }
+
 }
 
+
+/* ─────────────────────────────────────
+   DOCUMENT INDEX
+
+   Register, not conventional navigation.
+───────────────────────────────────── */
+
+.indexPanel {
+  position: absolute;
+
+  top: calc(100% + 1px);
+  right: 0;
+
+  width:
+    clamp(224px, 18vw, 286px);
+
+  pointer-events: auto;
+
+  padding:
+    17px
+    0
+    8px;
+
+  background:
+    radial-gradient(
+      ellipse 72% 46% at 82% 8%,
+      rgba(var(--axpt-mineral-cold), .030) 0%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 58% 54% at 10% 92%,
+      rgba(var(--axpt-bronze), .024) 0%,
+      transparent 76%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(var(--axpt-carbon), .975) 0%,
+      rgba(var(--axpt-carbon), .945) 70%,
+      rgba(var(--axpt-carbon), .91) 100%
+    );
+
+  border-top:
+    1px solid
+    rgba(var(--axpt-bronze), .16);
+
+  border-left:
+    1px solid
+    rgba(var(--axpt-silver), .070);
+
+  border-bottom:
+    1px solid
+    rgba(var(--axpt-silver), .035);
+
+  box-shadow:
+    -20px 24px 58px
+    rgba(var(--axpt-carbon), .46),
+    0 0 32px
+    rgba(var(--axpt-mineral-cold), .012);
+
+  -webkit-backdrop-filter:
+    blur(14px);
+
+  backdrop-filter:
+    blur(14px);
+}
+
+
+.indexHeading {
+  margin:
+    0
+    18px
+    13px;
+
+  font-size: .43rem;
+  line-height: 1;
+
+  letter-spacing: .26em;
+
+  color:
+    rgba(var(--axpt-bronze), .62);
+}
+
+
+.indexEntries {
+  display: grid;
+}
+
+
+.indexEntry {
+  position: relative;
+
+  display: grid;
+
+  grid-template-columns:
+    30px
+    minmax(0, 1fr)
+    12px;
+
+  column-gap: 10px;
+
+  align-items: center;
+
+  min-height: 37px;
+
+  padding:
+    0
+    17px;
+
+  text-decoration: none;
+
+  border-top:
+    1px solid
+    rgba(var(--axpt-silver), .035);
+
+  color:
+    rgba(var(--axpt-iron-silver), .44);
+
+  transition:
+    color 180ms ease,
+    background 180ms ease;
+}
+
+
+.indexEntryNumber {
+  font-size: .44rem;
+
+  letter-spacing: .18em;
+
+  color:
+    rgba(var(--axpt-iron-silver), .38);
+
+  transition:
+    color 180ms ease;
+}
+
+
+.indexEntryName {
+  font-size: .48rem;
+
+  letter-spacing: .20em;
+}
+
+
+.indexEntryState {
+  justify-self: end;
+
+  color:
+    rgba(var(--axpt-bronze), .60);
+
+  font-size: .52rem;
+
+  letter-spacing: 0;
+}
+
+
+.indexEntry:hover,
+.indexEntry:focus-visible {
+  color:
+    rgba(var(--axpt-limestone), .76);
+
+  background:
+    rgba(var(--axpt-silver), .016);
+}
+
+
+.indexEntry:hover .indexEntryNumber,
+.indexEntry:focus-visible .indexEntryNumber {
+  color:
+    rgba(var(--axpt-bronze), .64);
+}
+
+
+.indexEntry[aria-current="location"] {
+  color:
+    rgba(var(--axpt-limestone), .88);
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--axpt-bronze), .028) 0%,
+      rgba(var(--axpt-mineral-cold), .012) 64%,
+      transparent 100%
+    );
+}
+
+
+.indexEntry[aria-current="location"]
+.indexEntryNumber {
+  color:
+    rgba(var(--axpt-bronze), .76);
+}
+
+
+.indexEntry:focus-visible {
+  outline:
+    1px solid
+    rgba(var(--axpt-limestone), .30);
+
+  outline-offset: -3px;
+}
+
+
+/* ─────────────────────────────────────
+   MOBILE
+───────────────────────────────────── */
+
 @media (max-width: 680px) {
+
   .register {
     height: 56px;
   }
@@ -149,16 +498,809 @@
   .condition {
     gap: 6px;
 
+    padding-left: 8px;
+
     font-size: .46rem;
     letter-spacing: .22em;
   }
+
+  .conditionDisclosure {
+    margin-left: 1px;
+  }
+
+  .indexPanel {
+    width:
+      min(
+        calc(100vw - 32px),
+        300px
+      );
+
+    padding-top: 15px;
+  }
+
+  .indexEntry {
+    min-height: 40px;
+  }
+
 }
 
+
+/* ─────────────────────────────────────
+   REDUCED MOTION
+───────────────────────────────────── */
+
 @media (prefers-reduced-motion: reduce) {
+
   .header *,
   .header *::before,
   .header *::after {
     transition: none !important;
     animation: none !important;
   }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT HEADER — PUBLIC V1 PRESENCE
+
+   Identity at left.
+   Axis mark at center.
+   Document condition at right.
+───────────────────────────────────── */
+
+.register {
+  height: 70px;
+
+  border-bottom-color:
+    rgba(var(--axpt-silver), .10);
+}
+
+
+.brand {
+  color:
+    rgba(var(--axpt-bronze), .72);
+}
+
+
+.identityName {
+  color:
+    rgba(var(--axpt-iron-silver), .42);
+}
+
+
+.conditionIndex {
+  color:
+    rgba(var(--axpt-silver), .54);
+}
+
+
+.conditionName {
+  color:
+    rgba(var(--axpt-ash), .64);
+}
+
+
+/* ─────────────────────────────────────
+   CENTER AXIS MARK
+───────────────────────────────────── */
+
+.headerSigil {
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  transform:
+    translate3d(-50%, -50%, 0);
+
+  pointer-events: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 138px;
+  height: 66px;
+}
+
+
+
+.headerSigil::before {
+  content: "";
+
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  width: 150px;
+  height: 58px;
+
+  transform:
+    translate3d(-50%, -50%, 0)
+    scale(.88);
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(var(--axpt-mineral-cold), .085) 0%,
+      rgba(var(--axpt-bronze), .038) 34%,
+      transparent 74%
+    );
+
+  filter:
+    blur(10px);
+
+  transition:
+    opacity 300ms cubic-bezier(.22, 1, .36, 1),
+    transform 360ms cubic-bezier(.22, 1, .36, 1);
+}
+
+
+.headerSigil img {
+  display: block;
+
+  width: 100%;
+  height: auto;
+
+  opacity: .84;
+
+  transform:
+    scale(1);
+
+  filter:
+    grayscale(.24)
+    saturate(.92)
+    contrast(1.05)
+    brightness(1.04)
+    drop-shadow(
+      0 0 10px
+      rgba(var(--axpt-mineral-cold), .028)
+    )
+    drop-shadow(
+      0 0 18px
+      rgba(var(--axpt-bronze), .014)
+    );
+
+  transition:
+    opacity 260ms cubic-bezier(.22, 1, .36, 1),
+    transform 320ms cubic-bezier(.22, 1, .36, 1),
+    filter 320ms cubic-bezier(.22, 1, .36, 1);
+
+  user-select: none;
+}
+
+
+.headerSigilActive::before {
+  opacity: .52;
+
+  transform:
+    translate3d(-50%, -50%, 0)
+    scale(1.08);
+}
+
+
+.headerSigilActive img {
+  opacity: .98;
+
+  transform:
+    scale(1.065);
+
+  filter:
+    grayscale(.08)
+    saturate(1.08)
+    contrast(1.08)
+    brightness(1.10)
+    drop-shadow(
+      0 0 14px
+      rgba(var(--axpt-mineral-cold), .085)
+    )
+    drop-shadow(
+      0 0 26px
+      rgba(var(--axpt-bronze), .045)
+    );
+}
+
+
+
+/* ─────────────────────────────────────
+   INDEX COORDINATES
+───────────────────────────────────── */
+
+.indexCoordinates {
+  margin:
+    10px
+    17px
+    4px;
+
+  padding-top: 13px;
+
+  border-top:
+    1px solid
+    rgba(var(--axpt-silver), .055);
+
+  display: grid;
+
+  gap: 10px;
+}
+
+
+.indexCoordinateRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 18px;
+
+  font-size: .42rem;
+  line-height: 1;
+
+  letter-spacing: .20em;
+
+  color:
+    rgba(var(--axpt-iron-silver), .36);
+}
+
+
+.indexCoordinateRow span:first-child {
+  color:
+    rgba(var(--axpt-bronze), .50);
+}
+
+
+.indexContact {
+  width: max-content;
+
+  font-size: .46rem;
+  line-height: 1.2;
+
+  letter-spacing: .17em;
+
+  text-transform: lowercase;
+
+  color:
+    rgba(var(--axpt-silver), .52);
+
+  text-decoration: none;
+
+  transition:
+    color 180ms ease;
+}
+
+
+.indexContact:hover,
+.indexContact:focus-visible {
+  color:
+    rgba(var(--axpt-limestone), .76);
+}
+
+
+.indexContact:focus-visible {
+  outline:
+    1px solid
+    rgba(var(--axpt-limestone), .32);
+
+  outline-offset: 4px;
+}
+
+
+/* ─────────────────────────────────────
+   MOBILE
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .register {
+    height: 60px;
+  }
+
+  .headerSigil {
+    width: 98px;
+    height: 50px;
+  }
+
+  .headerSigil img {
+    opacity: .76;
+  }
+
+  .headerSigil::before {
+    width: 112px;
+    height: 48px;
+  }
+
+  .indexCoordinates {
+    margin-left: 16px;
+    margin-right: 16px;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   REDUCED MOTION
+───────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .indexContact,
+  .headerSigil::before,
+  .headerSigil img {
+    transition: none;
+  }
+
+  .headerSigilActive::before {
+    opacity: .52;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(1.08);
+  }
+
+  .headerSigilActive img {
+    opacity: .98;
+
+    transform:
+      scale(1.065);
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT HEADER — MOBILE DOCUMENT REGISTER
+   PUBLIC V1
+
+   Mobile is not a compressed desktop rail.
+
+   CLOSED:
+   identity → current location → disclosure
+
+   OPEN:
+   compact document register occupying the
+   readable width beneath the fixed header.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .register {
+    height: 60px;
+
+    display: grid;
+    grid-template-columns:
+      auto
+      minmax(0, 1fr);
+
+    align-items: center;
+
+    column-gap: 18px;
+  }
+
+
+  /* ── IDENTITY ── */
+
+  .identity {
+    position: relative;
+    z-index: 3;
+
+    align-items: center;
+
+    gap: 0;
+  }
+
+  .identityName {
+    display: none;
+  }
+
+  .brand {
+    font-size: .64rem;
+
+    letter-spacing: .24em;
+
+    color:
+      rgba(var(--axpt-bronze), .76);
+  }
+
+
+  /* ── AXIS MARK
+     Removed from the closed mobile rail.
+     It reappears as quiet index material.
+  ── */
+
+  .headerSigil {
+    display: none;
+  }
+
+
+  /* ── CURRENT DOCUMENT POSITION ── */
+
+  .indexControl {
+    position: static;
+
+    min-width: 0;
+
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .condition {
+    min-width: 0;
+
+    display: grid;
+    grid-template-columns:
+      auto
+      minmax(0, auto)
+      auto;
+
+    grid-template-areas:
+      "index name disclosure";
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin: 0;
+    padding:
+      10px
+      0
+      10px
+      10px;
+
+    font-size: .46rem;
+    line-height: 1;
+
+    letter-spacing: .17em;
+  }
+
+  .conditionIndex {
+    grid-area: index;
+
+    font-size: .52rem;
+    letter-spacing: .16em;
+
+    color:
+      rgba(var(--axpt-silver), .66);
+  }
+
+  .conditionDivider {
+    display: none;
+  }
+
+  .conditionName {
+    grid-area: name;
+
+    min-width: 0;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    color:
+      rgba(var(--axpt-limestone), .72);
+  }
+
+  .conditionDisclosure {
+    grid-area: disclosure;
+
+    margin-left: 3px;
+
+    font-size: .72rem;
+
+    color:
+      rgba(var(--axpt-bronze), .66);
+  }
+
+
+  /* ── OPEN DOCUMENT REGISTER ── */
+
+  .indexPanel {
+    position: fixed;
+
+    top: 60px;
+    left: 12px;
+    right: 12px;
+
+    width: auto;
+    max-width: none;
+
+    max-height:
+      calc(100dvh - 76px);
+
+    overflow-y: auto;
+    overscroll-behavior: contain;
+
+    padding:
+      20px
+      18px
+      18px;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-bronze), .18);
+
+    border-left:
+      1px solid
+      rgba(var(--axpt-silver), .055);
+
+    border-right:
+      1px solid
+      rgba(var(--axpt-silver), .035);
+
+    border-bottom:
+      1px solid
+      rgba(var(--axpt-silver), .035);
+
+    background:
+      radial-gradient(
+        ellipse 72% 48% at 86% 0%,
+        rgba(var(--axpt-mineral-cold), .040),
+        transparent 72%
+      ),
+      radial-gradient(
+        ellipse 68% 42% at 10% 100%,
+        rgba(var(--axpt-bronze), .032),
+        transparent 76%
+      ),
+      rgba(7, 8, 9, .965);
+
+    box-shadow:
+      0 24px 52px
+      rgba(0, 0, 0, .44);
+
+    backdrop-filter:
+      blur(18px);
+
+    -webkit-backdrop-filter:
+      blur(18px);
+  }
+
+  .indexHeading {
+    margin-bottom: 16px;
+
+    font-size: .50rem;
+
+    letter-spacing: .25em;
+
+    color:
+      rgba(var(--axpt-bronze), .68);
+  }
+
+  .indexEntries {
+    display: grid;
+
+    gap: 0;
+  }
+
+  .indexEntry {
+    min-height: 48px;
+
+    display: grid;
+    grid-template-columns:
+      34px
+      minmax(0, 1fr);
+
+    align-items: center;
+
+    column-gap: 12px;
+
+    padding:
+      0
+      2px;
+
+    border-bottom:
+      1px solid
+      rgba(var(--axpt-silver), .045);
+  }
+
+  .indexEntryNumber {
+    font-size: .48rem;
+
+    letter-spacing: .14em;
+
+    color:
+      rgba(var(--axpt-silver), .40);
+  }
+
+  .indexEntryName {
+    font-size: .56rem;
+
+    letter-spacing: .18em;
+
+    color:
+      rgba(var(--axpt-ash), .62);
+  }
+
+  .indexEntry[aria-current="location"] {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(var(--axpt-bronze), .035),
+        rgba(var(--axpt-mineral-cold), .018),
+        transparent 82%
+      );
+  }
+
+  .indexEntry[aria-current="location"]
+  .indexEntryNumber {
+    color:
+      rgba(var(--axpt-bronze), .84);
+  }
+
+  .indexEntry[aria-current="location"]
+  .indexEntryName {
+    color:
+      rgba(var(--axpt-limestone), .88);
+  }
+
+
+  /*
+   * Existing coordinate/footer material stays
+   * inside the panel but receives mobile spacing.
+   */
+
+  .indexCoordinates {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 18px;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — HEADER DESKTOP D7
+
+   TERMINAL OPENING REGISTRATION
+
+   The central axis mark does not precede
+   the document's institutional position.
+
+   It resolves as the AXPT response enters.
+───────────────────────────────────── */
+
+@media (min-width: 981px) {
+
+  .headerSigil img {
+    opacity: 0;
+
+    transform:
+      scale(.92);
+
+    filter:
+      blur(8px)
+      grayscale(.34)
+      saturate(.78)
+      contrast(.96)
+      brightness(.86);
+  }
+
+
+  :global(html[data-document-ready="true"])
+  .headerSigil img {
+    animation:
+      headerSigilInstitutionRegister
+      1380ms
+      cubic-bezier(.16, 1, .3, 1)
+      3050ms
+      both;
+  }
+
+
+  :global(html[data-document-ready="true"])
+  .headerSigil::before {
+    animation:
+      headerSigilFieldRegister
+      1500ms
+      cubic-bezier(.16, 1, .3, 1)
+      3050ms
+      both;
+  }
+
+}
+
+
+@keyframes headerSigilInstitutionRegister {
+
+  0% {
+    opacity: 0;
+
+    transform:
+      scale(.90);
+
+    filter:
+      blur(10px)
+      grayscale(.42)
+      saturate(.72)
+      contrast(.94)
+      brightness(.82);
+  }
+
+
+  34% {
+    opacity: .24;
+
+    transform:
+      scale(.96);
+
+    filter:
+      blur(5px)
+      grayscale(.34)
+      saturate(.80)
+      contrast(.98)
+      brightness(.92);
+  }
+
+
+  68% {
+    opacity: .70;
+
+    transform:
+      scale(1.012);
+
+    filter:
+      blur(1.4px)
+      grayscale(.27)
+      saturate(.88)
+      contrast(1.03)
+      brightness(1.02);
+  }
+
+
+  100% {
+    opacity: .84;
+
+    transform:
+      scale(1);
+
+    filter:
+      grayscale(.24)
+      saturate(.92)
+      contrast(1.05)
+      brightness(1.04)
+      drop-shadow(
+        0 0 10px
+        rgba(var(--axpt-mineral-cold), .028)
+      )
+      drop-shadow(
+        0 0 18px
+        rgba(var(--axpt-bronze), .014)
+      );
+  }
+
+}
+
+
+@keyframes headerSigilFieldRegister {
+
+  0%,
+  22% {
+    opacity: 0;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(.84);
+  }
+
+
+  62% {
+    opacity: .24;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(1.04);
+  }
+
+
+  100% {
+    opacity: .12;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(1);
+  }
+
 }

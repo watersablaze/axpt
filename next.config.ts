@@ -5,6 +5,18 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   productionBrowserSourceMaps: true,
 
+  /*
+   * Local mobile visual-QA builds may proceed
+   * while unrelated worktree TypeScript is in
+   * flight. Normal production builds remain
+   * strict because this requires an explicit
+   * environment flag.
+   */
+  typescript: {
+    ignoreBuildErrors:
+      process.env.AXPT_MOBILE_QA === "1",
+  },
+
   compiler: {
     removeConsole: process.env.NODE_ENV === "production",
   },

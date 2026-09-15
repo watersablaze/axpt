@@ -1,12 +1,13 @@
 /* ─────────────────────────────────────
    AXPT — THRESHOLD
-   Single field of thought
+
+   Statement → movement → observation →
+   institutional position.
 ───────────────────────────────────── */
 
 .thresholdSurface {
   position: relative;
   width: 100%;
-
   background: transparent;
 }
 
@@ -26,293 +27,725 @@
   margin: 0 auto;
 
   display: grid;
-
   grid-template-columns:
     minmax(0, 1.05fr)
-    minmax(280px, 0.95fr);
+    minmax(280px, .95fr);
 
   grid-template-rows:
-    auto
     auto
     auto
     auto;
 
   column-gap: clamp(64px, 8vw, 132px);
-  row-gap: clamp(28px, 4vh, 52px);
+  row-gap: clamp(26px, 3.5vh, 46px);
 
   align-content: start;
 
-  padding-top: clamp(72px, 7vh, 96px);
+  padding-top: clamp(84px, 9vh, 126px);
   padding-bottom: 0;
 }
 
 
 /* ─────────────────────────────────────
-   01 — DECLARATION
+   01 — DECLARATION / FIRST EVENT
+
+   The opening proposition begins in a
+   familiar coordinate, then establishes
+   itself elsewhere in the field.
 ───────────────────────────────────── */
 
 .declaration {
-  grid-column: 1;
+  grid-column: 1 / -1;
   grid-row: 1;
 
   position: relative;
 
-  width: min(100%, 720px);
-
-  display: flex;
-  flex-direction: column;
-
-  gap: 18px;
+  width: 100%;
+  min-height: clamp(170px, 20vh, 230px);
 }
 
-/* registration occupies its own coordinate */
-
-
-
 .primaryStatement {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
   margin: 0;
 
+  width: max-content;
   max-width: 10ch;
 
   font-family: var(--axpt-declaration);
-
   font-size: clamp(3rem, 5.5vw, 5.8rem);
-  line-height: 0.96;
+  line-height: .96;
 
   font-weight: 500;
-  letter-spacing: -0.045em;
+  letter-spacing: -.045em;
 
-  color: rgba(var(--axpt-limestone), 0.95);
+  color: rgba(var(--axpt-limestone), .95);
 
-  text-wrap: balance;
+  transform: translate3d(0, 0, 0);
+  transform-origin: left center;
+
+  transition:
+    color 1100ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.primaryStatement span {
+  display: block;
+}
+
+.primaryStatement span:last-child {
+  margin-left: clamp(24px, 3vw, 48px);
+}
+
+/*
+   Established position.
+
+   It does not return. Movement has
+   produced a different condition.
+*/
+
+.thresholdSurface[data-settled="true"] .primaryStatement {
+  left: clamp(58%, 61vw, 66%);
+  top: clamp(96px, 12vh, 136px);
+
+  font-size: clamp(2rem, 2.9vw, 3rem);
+
+  color: rgba(var(--axpt-limestone), .86);
+
+  animation:
+    thresholdCoordinateShift
+    1450ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+.thresholdSurface[data-settled="true"] .primaryStatement span:last-child {
+  margin-left: 0;
+}
+
+.thresholdSurface[data-settled="true"] .primaryStatement span {
+  animation:
+    thresholdStatementGlimmer
+    11600ms
+    ease-in-out
+    infinite;
+}
+
+@keyframes thresholdStatementGlimmer {
+
+  0%,
+  100% {
+    color: rgba(var(--axpt-limestone), .86);
+
+    text-shadow:
+      0 0 0 rgba(var(--axpt-bronze), 0);
+  }
+
+  31% {
+    color: rgba(var(--axpt-limestone), .885);
+
+    text-shadow:
+      0 0 11px rgba(var(--axpt-bronze), .018);
+  }
+
+  57% {
+    color: rgba(var(--axpt-limestone), .91);
+
+    text-shadow:
+      0 0 14px rgba(var(--axpt-bronze), .040),
+      0 0 28px rgba(var(--axpt-limestone), .012);
+  }
+
+  76% {
+    color: rgba(var(--axpt-limestone), .87);
+
+    text-shadow:
+      0 0 9px rgba(var(--axpt-oxide), .016);
+  }
+
 }
 
 
 /* ─────────────────────────────────────
-   02 — CURRENT
+   02 — OBSERVATION
+
+   One field of evidence. Difference is
+   carried by language, not illustration.
 ───────────────────────────────────── */
 
 .current {
+  position: relative;
+
   grid-column: 1 / -1;
   grid-row: 2;
 
   position: relative;
 
-  width: 100%;
+  width: min(72%, 760px);
 
-  padding: 14px 0;
-
-  border-top: 1px solid rgba(var(--axpt-silver), 0.05);
-  border-bottom: 1px solid rgba(var(--axpt-silver), 0.03);
+  padding: clamp(14px, 1.8vh, 22px) 0;
 }
-
-/*
-   One horizontal stratum.
-   Static for now.
-*/
 
 .current::before {
   content: "";
 
   position: absolute;
 
-  left: 50%;
-  top: 50%;
+  left: 0;
+  top: 0;
 
-  width: 100vw;
-  height: 1px;
-
-  transform: translate(-50%, -50%);
-
-  background: linear-gradient(
-    to right,
-    transparent,
-    rgba(var(--axpt-silver), 0.03) 18%,
-    rgba(var(--axpt-silver), 0.065) 50%,
-    rgba(var(--axpt-silver), 0.03) 82%,
-    transparent
-  );
+  width: min(72%, 760px);
+  height: 100%;
 
   pointer-events: none;
+
+  opacity: 0;
+
+  background-image:
+    radial-gradient(
+      circle,
+      rgba(var(--axpt-limestone), .50) 0 0.65px,
+      transparent 0.9px
+    ),
+    radial-gradient(
+      circle,
+      rgba(var(--axpt-bronze), .42) 0 0.55px,
+      transparent 0.85px
+    ),
+    radial-gradient(
+      circle,
+      rgba(var(--axpt-oxide), .30) 0 0.5px,
+      transparent 0.8px
+    );
+
+  background-size:
+    7px 7px,
+    11px 11px,
+    17px 17px;
+
+  background-position:
+    0 0,
+    3px 2px,
+    6px 5px;
+
+  -webkit-mask-image:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      #000 14%,
+      #000 72%,
+      transparent 100%
+    );
+
+  mask-image:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      #000 14%,
+      #000 72%,
+      transparent 100%
+    );
+
+  transform:
+    translate3d(-8px, 2px, 0)
+    scaleX(.985);
+
+  transform-origin: left center;
 }
 
-.currentText {
-  position: relative;
+.thresholdSurface[data-settled="true"] .current::before {
+  animation:
+    thresholdDitherRegistration
+    1180ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
 
+
+.currentText {
   margin: 0;
 
-  display: flex;
-  flex-wrap: wrap;
+  opacity: 0;
+  visibility: hidden;
 
-  align-items: center;
+  max-width: 33ch;
 
-  column-gap: clamp(16px, 2vw, 28px);
-  row-gap: 8px;
+  font-family: var(--axpt-body);
+  font-size: clamp(1.35rem, 1.9vw, 1.8rem);
+  line-height: 1.42;
 
-  font-family: var(--axpt-mono);
+  font-weight: 400;
+  letter-spacing: -.012em;
 
-  font-size: clamp(0.6rem, 0.72vw, 0.7rem);
-  line-height: 1.45;
+  color: rgba(var(--axpt-silver), .62);
 
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-
-  color: rgba(var(--axpt-silver), 0.5);
+  transition:
+    color 1100ms cubic-bezier(.22, 1, .36, 1),
+    transform 1300ms cubic-bezier(.22, 1, .36, 1),
+    letter-spacing 1400ms cubic-bezier(.22, 1, .36, 1);
 }
 
 .currentText span {
-  position: relative;
-  white-space: nowrap;
+  display: inline;
+
+  opacity: 1;
+
+  transition:
+    opacity 1100ms cubic-bezier(.22, 1, .36, 1);
 }
 
 .currentText span:not(:last-child)::after {
-  content: "/";
+  content: " ";
+}
 
-  margin-left: clamp(16px, 2vw, 28px);
+.thresholdSurface[data-settled="true"] .currentText {
+  visibility: visible;
 
-  color: rgba(var(--axpt-iron-silver), 0.2);
+  color: rgba(var(--axpt-silver), .82);
+  letter-spacing: .006em;
+
+  animation:
+    thresholdInscriptionResolve
+    980ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+.thresholdSurface[data-settled="true"] .currentText span {
+  opacity: 1;
 }
 
 
 /* ─────────────────────────────────────
-   03 — CONSEQUENCE
+   OBSERVATION — PASSING CURRENT
+
+   Movement passes through the inscription.
+   The sweep changes legibility rather than
+   introducing a decorative light source.
 ───────────────────────────────────── */
 
-.consequence {
-  grid-column: 1;
-  grid-row: 3;
+@keyframes thresholdInscriptionResolve {
 
-  position: relative;
+  0% {
+    opacity: 0;
+    filter: contrast(.88);
 
-  width: min(100%, 620px);
+    transform:
+      translate3d(-2px, 0, 0);
 
-  margin-left: clamp(72px, 9vw, 132px);
+    letter-spacing: .026em;
+  }
 
-  padding-top: clamp(24px, 3vh, 34px);
+  28% {
+    opacity: .08;
+  }
+
+  48% {
+    opacity: .30;
+    filter: contrast(.94);
+  }
+
+  68% {
+    opacity: .68;
+
+    transform:
+      translate3d(0, -2px, 0);
+
+    letter-spacing: .012em;
+  }
+
+  84% {
+    opacity: .92;
+  }
+
+  100% {
+    opacity: 1;
+    filter: contrast(1);
+
+    transform:
+      translate3d(0, -4px, 0);
+
+    letter-spacing: .006em;
+  }
+
 }
 
-/* restrained fault registration */
 
-.consequence::before {
-  content: "";
+@keyframes thresholdDitherRegistration {
 
-  position: absolute;
+  0% {
+    opacity: 0;
 
-  left: calc(-1 * clamp(72px, 9vw, 132px));
-  top: 0;
+    clip-path:
+      inset(0 100% 0 0);
 
-  width: clamp(108px, 13vw, 176px);
-  height: 1px;
+    filter: blur(.7px);
 
-  background: linear-gradient(
-    to right,
-    rgba(var(--axpt-silver), 0.14),
-    rgba(var(--axpt-silver), 0.03),
-    transparent
-  );
+    transform:
+      translate3d(-5px, 1px, 0)
+      scaleX(.99);
+  }
+
+  12% {
+    opacity: .22;
+
+    clip-path:
+      inset(0 86% 0 0);
+
+    filter: blur(.35px);
+  }
+
+  34% {
+    opacity: .56;
+
+    clip-path:
+      inset(0 58% 0 8%);
+
+    filter: blur(0);
+  }
+
+  56% {
+    opacity: .68;
+
+    clip-path:
+      inset(0 28% 0 30%);
+
+    transform:
+      translate3d(3px, 0, 0)
+      scaleX(1);
+  }
+
+  74% {
+    opacity: .46;
+
+    clip-path:
+      inset(0 7% 0 61%);
+  }
+
+  90% {
+    opacity: .16;
+
+    clip-path:
+      inset(0 0 0 84%);
+
+    filter: blur(.3px);
+  }
+
+  100% {
+    opacity: 0;
+
+    clip-path:
+      inset(0 0 0 100%);
+
+    filter: blur(.7px);
+
+    transform:
+      translate3d(8px, -2px, 0)
+      scaleX(1.008);
+  }
+
 }
 
 
+@keyframes thresholdResponseIgnition {
 
-.consequence p {
-  margin: 0;
+  0%,
+  58.376% {
+    opacity: 0;
 
-  max-width: 17ch;
+    border-color:
+      rgba(var(--axpt-silver), .025);
 
-  font-family: var(--axpt-declaration);
+    transform:
+      translate3d(0, 5px, 0);
 
-  font-size: clamp(1.9rem, 2.7vw, 3rem);
-  line-height: 1.08;
+    filter:
+      brightness(.72)
+      contrast(.94);
+  }
 
-  font-weight: 500;
-  letter-spacing: -0.032em;
+  63.371% {
+    opacity: .18;
 
-  color: rgba(var(--axpt-limestone), 0.9);
+    border-color:
+      rgba(var(--axpt-bronze), .22);
 
-  text-wrap: balance;
+    filter:
+      brightness(1.12)
+      contrast(1.02);
+  }
+
+  68.365% {
+    opacity: .72;
+
+    border-color:
+      rgba(var(--axpt-bronze), .18);
+
+    transform:
+      translate3d(0, 1px, 0);
+
+    filter:
+      brightness(1.06)
+      contrast(1.01);
+  }
+
+  78.355% {
+    opacity: .94;
+
+    border-color:
+      rgba(var(--axpt-bronze), .145);
+
+    filter:
+      brightness(1.015)
+      contrast(1);
+  }
+
+  100% {
+    opacity: 1;
+
+    border-color:
+      rgba(var(--axpt-bronze), .13);
+
+    transform:
+      translate3d(0, 0, 0);
+
+    filter:
+      brightness(1)
+      contrast(1);
+  }
+
 }
 
 
 /* ─────────────────────────────────────
-   04 — ORIENTATION
-───────────────────────────────────── */
-
-.orientation {
-  grid-column: 2;
-  grid-row: 3;
-
-  position: relative;
-
-  align-self: end;
-
-  width: min(100%, 420px);
-
-  margin-top: clamp(68px, 9vh, 112px);
-  margin-left: auto;
-
-  padding-left: 0;
-}
-
-.orientation p {
-  margin: 0;
-
-  max-width: 15ch;
-
-  font-family: var(--axpt-declaration);
-
-  font-size: clamp(1.55rem, 2vw, 2.05rem);
-  line-height: 1.12;
-
-  font-weight: 500;
-  letter-spacing: -0.024em;
-
-  color: rgba(var(--axpt-limestone), 0.88);
-
-  text-wrap: balance;
-}
-
-
-/* ─────────────────────────────────────
-   05 — INSTITUTIONAL RESPONSE
+   03 — INSTITUTIONAL POSITION
 ───────────────────────────────────── */
 
 .response {
+  position: relative;
+  isolation: isolate;
   grid-column: 1 / -1;
-  grid-row: 4;
-
-  margin-top: clamp(76px, 9vh, 110px);
+  grid-row: 3;
 
   width: 100%;
 
   display: grid;
-
   grid-template-columns:
-    minmax(72px, 0.16fr)
+    minmax(72px, .16fr)
     minmax(0, 1fr);
 
   column-gap: clamp(30px, 4vw, 56px);
 
   align-items: start;
 
-  margin-top: clamp(46px, 6vh, 68px);
+  margin-top: clamp(82px, 10vh, 124px);
 
   padding-top: 18px;
 
-  border-top: 1px solid rgba(var(--axpt-silver), 0.07);
+  border-top: 1px solid rgba(var(--axpt-silver), .045);
+
+  opacity: 0;
+  transform: translate3d(0, 8px, 0);
 }
+
+.thresholdSurface[data-settled="true"] .response {
+  animation:
+    thresholdResponseIgnition
+    1970ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+.thresholdSurface[data-settled="true"] .response::before {
+  content: "";
+
+  position: absolute;
+
+  z-index: -1;
+
+  pointer-events: none;
+
+  left: clamp(-90px, -7vw, -36px);
+  right: clamp(-70px, -5vw, -28px);
+
+  top: -34px;
+  bottom: -42px;
+
+  opacity: 0;
+
+  background:
+    radial-gradient(
+      ellipse 58% 115% at 8% 74%,
+      rgba(var(--axpt-bronze), .115) 0%,
+      rgba(var(--axpt-oxide), .070) 24%,
+      rgba(var(--axpt-oxide), .026) 52%,
+      transparent 78%
+    ),
+    radial-gradient(
+      ellipse 62% 90% at 54% 44%,
+      rgba(var(--axpt-limestone), .038) 0%,
+      rgba(var(--axpt-bronze), .020) 46%,
+      transparent 78%
+    ),
+    linear-gradient(
+      96deg,
+      rgba(var(--axpt-bronze), .026) 0%,
+      rgba(var(--axpt-oxide), .012) 34%,
+      transparent 76%
+    );
+
+  filter:
+    blur(10px)
+    brightness(.72);
+
+  transform:
+    translate3d(-2.5%, 4px, 0)
+    scale(.985);
+
+  transform-origin: left center;
+}
+
+.thresholdSurface[data-settled="true"] .response::before {
+  animation:
+    thresholdRoomIllumination
+    2180ms
+    cubic-bezier(.16, 1, .3, 1)
+    both;
+}
+
+
+@keyframes thresholdRoomIllumination {
+
+  0%,
+  51.835% {
+    opacity: 0;
+
+    filter:
+      blur(12px)
+      brightness(.64);
+
+    transform:
+      translate3d(-2.5%, 4px, 0)
+      scale(.985);
+  }
+
+  /*
+   * Contact.
+   * The source comes online considerably
+   * faster than the room settles.
+   */
+  55.688% {
+    opacity: .34;
+
+    filter:
+      blur(9px)
+      brightness(1.12);
+  }
+
+  59.541% {
+    opacity: .92;
+
+    filter:
+      blur(7px)
+      brightness(1.08);
+
+    transform:
+      translate3d(-.5%, 1px, 0)
+      scale(1.004);
+  }
+
+  /*
+   * Brief reflected intensity.
+   * Not a pulse — the material catches
+   * the newly introduced source.
+   */
+  65.321% {
+    opacity: 1;
+
+    filter:
+      blur(8px)
+      brightness(1.035);
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+  }
+
+  76.881% {
+    opacity: .88;
+
+    filter:
+      blur(9px)
+      brightness(1.01);
+  }
+
+  /*
+   * Established room condition.
+   * Illumination remains after ignition.
+   */
+  100% {
+    opacity: .76;
+
+    filter:
+      blur(10px)
+      brightness(1);
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+  }
+
+}
+
+
+.responseLabel,
+.response p {
+  position: relative;
+  z-index: 1;
+}
+
+.responseLabel {
+  animation:
+    thresholdResponseLabelRegister
+    1830ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+@keyframes thresholdResponseLabelRegister {
+
+  0%,
+  62.842% {
+    color: rgba(var(--axpt-bronze), .18);
+    letter-spacing: .20em;
+  }
+
+  69.530% {
+    color: rgba(var(--axpt-bronze), .90);
+    letter-spacing: .16em;
+  }
+
+  100% {
+    color: rgba(var(--axpt-bronze), .72);
+    letter-spacing: .14em;
+  }
+
+}
+
 
 .responseLabel {
   padding-top: 4px;
 
   font-family: var(--axpt-mono);
-
-  font-size: 0.58rem;
+  font-size: .58rem;
   line-height: 1;
 
-  letter-spacing: 0.3em;
+  letter-spacing: .3em;
   text-transform: uppercase;
 
-  color: rgba(var(--axpt-iron-silver), 0.46);
+  color: rgba(var(--axpt-iron-silver), .46);
 }
 
 .response p {
@@ -321,16 +754,200 @@
   max-width: 68ch;
 
   font-family: var(--axpt-declaration);
-
   font-size: clamp(1rem, 1.25vw, 1.16rem);
   line-height: 1.62;
 
   font-weight: 400;
-  letter-spacing: -0.008em;
+  letter-spacing: -.008em;
 
-  color: rgba(var(--axpt-ash), 0.79);
+  color: rgba(var(--axpt-ash), .79);
+}
 
-  text-align: left;
+
+/* ─────────────────────────────────────
+   FIRST EVENT — COORDINATE SHIFT
+
+   Movement is perceived as a change in
+   established position rather than a
+   continuously traversed path.
+───────────────────────────────────── */
+
+@keyframes thresholdCoordinateShift {
+
+  /*
+   * ORIGIN
+   *
+   * The proposition is allowed to exist
+   * fully in its first coordinate before
+   * movement begins.
+   */
+
+  0% {
+    left: var(--threshold-origin-left);
+    top: var(--threshold-origin-top);
+
+    font-size:
+      var(--threshold-origin-size);
+
+    opacity: 1;
+
+    color:
+      rgba(var(--axpt-limestone), .95);
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+
+    filter:
+      blur(0);
+  }
+
+  18% {
+    left: var(--threshold-origin-left);
+    top: var(--threshold-origin-top);
+
+    font-size:
+      var(--threshold-origin-size);
+
+    opacity: 1;
+
+    color:
+      rgba(var(--axpt-limestone), .95);
+
+    transform:
+      translate3d(-2px, 1px, 0)
+      scale(1.015);
+
+    filter:
+      blur(0);
+  }
+
+  /*
+   * MATERIAL DEPARTURE
+   */
+
+  34% {
+    left: var(--threshold-origin-left);
+    top: var(--threshold-origin-top);
+
+    font-size:
+      var(--threshold-origin-size);
+
+    opacity: .16;
+
+    color:
+      rgba(var(--axpt-bronze), .72);
+
+    transform:
+      translate3d(7px, -2px, 0)
+      scale(.975);
+
+    filter:
+      blur(1.1px);
+  }
+
+  42% {
+    left: var(--threshold-origin-left);
+    top: var(--threshold-origin-top);
+
+    font-size:
+      var(--threshold-origin-size);
+
+    opacity: 0;
+
+    color:
+      rgba(var(--axpt-oxide), .68);
+
+    transform:
+      translate3d(12px, -4px, 0)
+      scale(.95);
+
+    filter:
+      blur(2px);
+  }
+
+  /*
+   * COORDINATE CHANGE
+   *
+   * Position changes only while the
+   * proposition is visually absent.
+   */
+
+  48% {
+    left: var(--threshold-settled-left);
+    top: var(--threshold-settled-top);
+
+    font-size:
+      var(--threshold-settled-size);
+
+    opacity: 0;
+
+    transform:
+      translate3d(-6px, 3px, 0)
+      scale(.965);
+
+    filter:
+      blur(1.6px);
+  }
+
+  /*
+   * RE-REGISTRATION
+   */
+
+  58% {
+    left: var(--threshold-settled-left);
+    top: var(--threshold-settled-top);
+
+    font-size:
+      var(--threshold-settled-size);
+
+    opacity: .26;
+
+    transform:
+      translate3d(-3px, 2px, 0)
+      scale(.98);
+
+    filter:
+      blur(.8px);
+  }
+
+  76% {
+    left: var(--threshold-settled-left);
+    top: var(--threshold-settled-top);
+
+    font-size:
+      var(--threshold-settled-size);
+
+    opacity: .78;
+
+    transform:
+      translate3d(1px, 0, 0)
+      scale(1.008);
+
+    filter:
+      blur(.1px);
+  }
+
+  100% {
+    left: var(--threshold-settled-left);
+    top: var(--threshold-settled-top);
+
+    font-size:
+      var(--threshold-settled-size);
+
+    opacity: 1;
+
+    color:
+      rgba(var(--axpt-limestone), .86);
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+
+    filter:
+      blur(0);
+  }
+
 }
 
 
@@ -342,48 +959,43 @@
 
   .thresholdFrame {
     grid-template-columns: 1fr;
-
     grid-template-rows: auto;
 
-    row-gap: 34px;
+    row-gap: 30px;
 
-    padding-top: clamp(136px, 15vh, 168px);
+    padding-top: clamp(118px, 13vh, 150px);
     padding-bottom: 72px;
   }
 
   .declaration,
   .current,
-  .consequence,
-  .orientation,
   .response {
     grid-column: 1;
     grid-row: auto;
   }
 
-  .primaryStatement {
-    max-width: 9ch;
+  .declaration {
+    min-height: clamp(210px, 27vh, 280px);
+  }
 
+  .primaryStatement {
     font-size: clamp(3rem, 9vw, 5rem);
   }
 
-  .consequence {
-    margin-left: 44px;
+  .thresholdSurface[data-settled="true"] .primaryStatement {
+    left: 44%;
+    top: clamp(112px, 14vh, 150px);
+
+    font-size: clamp(1.75rem, 4.6vw, 2.55rem);
   }
 
-  .consequence::before {
-    left: -44px;
-    width: 92px;
+  .current {
+    width: min(84%, 650px);
   }
 
-  .orientation {
-    width: min(72%, 420px);
-
-    margin-top: 12px;
-    margin-left: auto;
-  }
 
   .response {
-    margin-top: 20px;
+    margin-top: 18px;
   }
 
 }
@@ -396,113 +1008,2531 @@
 @media (max-width: 680px) {
 
   .thresholdFrame {
-    min-height: auto;
+    padding-top: 86px;
+    padding-bottom: 58px;
 
-    padding-top: 112px;
-    padding-bottom: 64px;
-
-    row-gap: 28px;
+    row-gap: 20px;
   }
 
-
+  .declaration {
+    min-height: 172px;
+  }
 
   .primaryStatement {
-    max-width: 9ch;
+    max-width: none;
 
-    font-size: clamp(2.8rem, 13vw, 4.4rem);
-    line-height: 0.97;
+    font-size:
+      clamp(2.55rem, 11.2vw, 3.55rem);
+
+    line-height: .96;
+  }
+
+  .primaryStatement span:last-child {
+    margin-left:
+      clamp(12px, 3.8vw, 20px);
+
+    white-space: nowrap;
+  }
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement {
+    left: 36%;
+    top: 92px;
+
+    font-size:
+      clamp(1.45rem, 5.8vw, 1.9rem);
+  }
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement span:last-child {
+    white-space: nowrap;
   }
 
   .current {
-    padding: 16px 0;
+    width: 100%;
+
+    padding:
+      10px
+      0;
   }
 
   .currentText {
-    display: block;
+    max-width: 26ch;
 
-    font-size: 0.58rem;
-    line-height: 1.7;
+    font-size:
+      clamp(1.02rem, 4.7vw, 1.22rem);
 
-    letter-spacing: 0.14em;
-  }
-
-  .currentText span {
-    display: block;
-    white-space: normal;
-  }
-
-  .currentText span:not(:last-child)::after {
-    content: none;
-  }
-
-  .consequence {
-    width: calc(100% - 28px);
-
-    margin-left: 28px;
-  }
-
-  .consequence::before {
-    left: -28px;
-
-    width: 68px;
-  }
-
-  .consequence p {
-    max-width: 15ch;
-
-    font-size: clamp(1.8rem, 8vw, 2.55rem);
-  }
-
-  .orientation {
-    width: 78%;
-
-    margin-top: 12px;
-    margin-left: auto;
-
-    padding-left: 22px;
-  }
-
-  .orientation p {
-    font-size: clamp(1.4rem, 6.4vw, 1.85rem);
+    line-height: 1.46;
   }
 
   .response {
     grid-template-columns: 1fr;
 
-    row-gap: 14px;
+    row-gap: 12px;
 
-    margin-top: 18px;
+    margin-top: 10px;
+    padding-top: 16px;
+  }
 
-    padding-top: 18px;
+  .responseLabel {
+    padding-top: 0;
   }
 
   .response p {
-    max-width: 38ch;
+    max-width: 36ch;
 
-    font-size: 0.97rem;
-    line-height: 1.65;
+    font-size: .94rem;
+    line-height: 1.62;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   REDUCED MOTION
+
+   Preserve the established condition.
+───────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+
+
+  .primaryStatement,
+  .currentText,
+  .currentText span,
+  .response {
+    transition: none;
+  }
+
+  .thresholdSurface[data-settled="true"] .primaryStatement,
+  .thresholdSurface[data-settled="true"] .primaryStatement span {
+    animation: none;
+  }
+
+  .thresholdSurface[data-settled="true"] .current::before {
+    animation: none;
+    opacity: 0;
+  }
+
+  .thresholdSurface[data-settled="true"] .currentText {
+    animation: none;
+
+    visibility: visible;
+    opacity: 1;
+    filter: none;
+    transform: none;
+
+    color: rgba(var(--axpt-silver), .82);
+
+    -webkit-text-fill-color: currentColor;
+  }
+
+  .currentText span,
+  .response {
+    opacity: 1;
+  }
+
+  .currentText,
+  .response {
+    transform: none;
+  }
+
+  .thresholdSurface[data-settled="true"] .response,
+  .thresholdSurface[data-settled="true"] .responseLabel,
+  .thresholdSurface[data-settled="true"] .response::before {
+    animation: none;
+  }
+
+  .thresholdSurface[data-settled="true"] .response::before {
+    opacity: .76;
+    filter: blur(10px) brightness(1);
+    transform: none;
+  }
+
+  .thresholdSurface[data-settled="true"] .response {
+    opacity: 1;
+    filter: none;
+    border-color: rgba(var(--axpt-bronze), .13);
+  }
+
+}
+
+/* HEADER ANCHOR OFFSET — thresholdSurface */
+
+.thresholdSurface {
+  scroll-margin-top: 76px;
+}
+
+@media (max-width: 680px) {
+
+  .thresholdSurface {
+    scroll-margin-top: 64px;
   }
 
 }
 
 /* ─────────────────────────────────────
-   LIVING DOCUMENT — INSCRIPTION
+   THRESHOLD COORDINATE REGISTER — V1
 
-   Threshold is the originating condition.
-   It begins established.
+   The runtime begins settled.
+   The animation itself owns the first
+   visual condition and its relocation.
 ───────────────────────────────────── */
 
 .primaryStatement {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
+  --threshold-origin-left: 0;
+  --threshold-origin-top: 0;
 
-  transition:
-    opacity 900ms cubic-bezier(.22, 1, .36, 1),
-    transform 1100ms cubic-bezier(.22, 1, .36, 1);
+  --threshold-origin-size:
+    clamp(3rem, 5.5vw, 5.8rem);
+
+  --threshold-origin-indent:
+    clamp(24px, 3vw, 48px);
+
+  --threshold-settled-left:
+    clamp(58%, 61vw, 66%);
+
+  --threshold-settled-top:
+    clamp(96px, 12vh, 136px);
+
+  --threshold-settled-size:
+    clamp(2rem, 2.9vw, 3rem);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .primaryStatement {
-    transition: none;
+
+/*
+ * The second line belongs to the original
+ * proposition until disappearance.
+ */
+
+.thresholdSurface[data-settled="true"]
+.primaryStatement span:last-child {
+  animation:
+    thresholdStatementIndent
+    1450ms
+    cubic-bezier(.22, 1, .36, 1)
+    both,
+
+    thresholdStatementGlimmer
+    11600ms
+    ease-in-out
+    infinite;
+}
+
+
+@keyframes thresholdStatementIndent {
+
+  0%,
+  42% {
+    margin-left:
+      var(--threshold-origin-indent);
   }
+
+  48%,
+  100% {
+    margin-left: 0;
+  }
+
+}
+
+
+/* TABLET */
+
+@media (max-width: 980px) {
+
+  .primaryStatement {
+    --threshold-origin-size:
+      clamp(3rem, 9vw, 5rem);
+
+    --threshold-settled-left: 44%;
+
+    --threshold-settled-top:
+      clamp(112px, 14vh, 150px);
+
+    --threshold-settled-size:
+      clamp(1.75rem, 4.6vw, 2.55rem);
+  }
+
+}
+
+
+/* MOBILE */
+
+@media (max-width: 680px) {
+
+  .primaryStatement {
+    --threshold-origin-left: 0;
+    --threshold-origin-top: 0;
+
+    --threshold-origin-size:
+      clamp(2.55rem, 11.2vw, 3.55rem);
+
+    --threshold-origin-indent:
+      clamp(12px, 3.8vw, 20px);
+
+    --threshold-settled-left: 36%;
+    --threshold-settled-top: 92px;
+
+    --threshold-settled-size:
+      clamp(1.45rem, 5.8vw, 1.9rem);
+  }
+
+}
+
+
+/* REDUCED MOTION */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement {
+    left:
+      var(--threshold-settled-left);
+
+    top:
+      var(--threshold-settled-top);
+
+    font-size:
+      var(--threshold-settled-size);
+  }
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement span:last-child {
+    animation: none;
+
+    margin-left: 0;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — THRESHOLD MOBILE FIRST EVENT
+
+   Mobile constitution:
+   declaration
+   → passing current
+   → embedded institutional response.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .thresholdSurface {
+    scroll-margin-top: 60px;
+  }
+
+
+  .thresholdFrame {
+    min-height:
+      calc(100svh - 132px);
+
+    display: grid;
+    align-content: start;
+
+    grid-template-rows:
+      auto
+      auto
+      auto;
+  }
+
+
+  /* ── 01 / DECLARATION ── */
+
+  .declaration {
+    min-height: 42svh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding-top: 18px;
+    margin: 0;
+  }
+
+
+  .primaryStatement {
+    width: 100%;
+    max-width: 7.5ch;
+
+    margin: 0 auto;
+
+    font-size:
+      clamp(
+        3.2rem,
+        15vw,
+        4.8rem
+      );
+
+    line-height: .90;
+    letter-spacing: -.055em;
+
+    text-align: left;
+  }
+
+
+  .primaryStatement span {
+    display: block;
+  }
+
+
+  .thresholdSurface[data-settled="true"] .primaryStatement {
+    animation:
+      thresholdMobileStatementLand
+      760ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  .thresholdSurface[data-settled="true"] .primaryStatement span:last-child {
+    animation:
+      thresholdMobileStatementResolve
+      840ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  /* ── 02 / PASSING CURRENT ── */
+
+  .current {
+    margin: 18px 0 0;
+    padding: 0;
+  }
+
+
+  .currentText {
+    max-width: 12.5ch;
+
+    margin: 0 auto;
+
+    font-size:
+      clamp(
+        1rem,
+        4.8vw,
+        1.18rem
+      );
+
+    line-height: 1.48;
+    letter-spacing: -.012em;
+
+    color:
+      rgba(var(--axpt-limestone), .72);
+  }
+
+
+  .thresholdSurface[data-settled="true"] .currentText {
+    animation:
+      thresholdMobileCurrentReveal
+      820ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  /* ── 03 / EMBEDDED RESPONSE ── */
+
+  .response {
+    position: relative;
+
+    width:
+      calc(100% - 40px);
+
+    max-width: none;
+
+    margin:
+      34px
+      auto
+      0;
+
+    padding:
+      18px
+      0
+      0;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-silver), .08);
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--axpt-carbon), .16) 0%,
+        rgba(var(--axpt-carbon), 0) 100%
+      );
+  }
+
+
+  .response::before {
+    left: 0;
+    right: 0;
+
+    opacity: .42;
+  }
+
+
+  .responseLabel {
+    display: block;
+
+    margin:
+      0
+      0
+      12px;
+
+    font-size: .47rem;
+    line-height: 1;
+
+    letter-spacing: .22em;
+
+    color:
+      rgba(var(--axpt-bronze), .68);
+  }
+
+
+  .response p {
+    max-width: 31ch;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        .98rem,
+        4.2vw,
+        1.08rem
+      );
+
+    line-height: 1.66;
+    letter-spacing: -.008em;
+
+    color:
+      rgba(var(--axpt-limestone), .84);
+  }
+
+
+  .thresholdSurface[data-settled="true"] .response {
+    animation:
+      thresholdMobileResponseEmbed
+      920ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   MOBILE THRESHOLD KEYFRAMES
+───────────────────────────────────── */
+
+@keyframes thresholdMobileStatementLand {
+
+  0% {
+    opacity: 0;
+
+    transform:
+      translate3d(0, 18px, 0)
+      scale(.93, .97);
+
+    filter:
+      blur(7px)
+      brightness(.82);
+  }
+
+  18% {
+    opacity: .28;
+
+    transform:
+      translate3d(0, 10px, 0)
+      scale(1.015, .985);
+
+    filter:
+      blur(3px)
+      brightness(.90);
+  }
+
+  42% {
+    opacity: .82;
+
+    transform:
+      translate3d(0, 2px, 0)
+      scale(.992, 1.01);
+
+    filter:
+      blur(1px)
+      brightness(.98);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform: none;
+    filter: none;
+  }
+
+}
+
+
+@keyframes thresholdMobileStatementResolve {
+
+  0%,
+  26% {
+    opacity: .70;
+
+    transform:
+      translate3d(0, 5px, 0);
+
+    filter:
+      blur(1.5px);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform: none;
+    filter: none;
+  }
+
+}
+
+
+@keyframes thresholdMobileCurrentReveal {
+
+  0%,
+  36% {
+    opacity: 0;
+
+    transform:
+      translate3d(0, 14px, 0);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform: none;
+  }
+
+}
+
+
+@keyframes thresholdMobileResponseEmbed {
+
+  0%,
+  46% {
+    opacity: 0;
+
+    transform:
+      translate3d(0, 18px, 0);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform: none;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — THRESHOLD MOBILE COMPOSITION
+   M2B / authoritative correction
+
+   First viewport:
+   declaration → complete passing current.
+
+   Institutional response occupies the
+   deeper register below.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /*
+   * Remove inherited desktop/tablet space.
+   */
+
+  .thresholdFrame {
+    width:
+      calc(100% - 40px);
+
+    min-height: 0;
+
+    padding-top: 18px;
+    padding-bottom: 0;
+
+    row-gap: 0;
+  }
+
+
+  /* ── FIRST EVENT ── */
+
+  .declaration {
+    min-height: 34svh;
+
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+  /*
+   * Important:
+   * this selector intentionally matches
+   * established-state specificity so the
+   * old coordinate rule cannot continue
+   * owning mobile placement or scale.
+   */
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement {
+    position: relative;
+
+    left: auto;
+    top: auto;
+
+    width: 100%;
+    max-width: 7.4ch;
+
+    margin:
+      0
+      auto;
+
+    font-size:
+      clamp(
+        3rem,
+        13vw,
+        3.7rem
+      );
+
+    line-height: .91;
+
+    letter-spacing: -.055em;
+
+    color:
+      rgba(var(--axpt-limestone), .94);
+
+    animation:
+      thresholdMobileSignalEstablish
+      1520ms
+      cubic-bezier(.16, 1, .3, 1)
+      both;
+  }
+
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement span:last-child {
+    margin-left: 0;
+
+    animation:
+      thresholdMobileSecondLineEstablish
+      1640ms
+      cubic-bezier(.16, 1, .3, 1)
+      both;
+  }
+
+
+  /* ── PASSING CURRENT ── */
+
+  .current {
+    width: 100%;
+
+    margin:
+      8px
+      0
+      0;
+
+    padding:
+      12px
+      0
+      14px;
+  }
+
+
+  .currentText {
+    max-width: 21ch;
+
+    margin:
+      0
+      auto;
+
+    font-size:
+      clamp(
+        1rem,
+        4.45vw,
+        1.12rem
+      );
+
+    line-height: 1.48;
+
+    letter-spacing: -.008em;
+
+    color:
+      rgba(var(--axpt-silver), .74);
+  }
+
+
+  .thresholdSurface[data-settled="true"]
+  .currentText {
+    animation:
+      thresholdMobileCurrentEstablish
+      1840ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  /* ── DEEPER INSTITUTIONAL REGISTER ── */
+
+  .response {
+    width:
+      calc(100% + 40px);
+
+    max-width: none;
+
+    margin:
+      34px
+      0
+      0
+      -20px;
+
+    padding:
+      23px
+      20px
+      27px;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-bronze), .12);
+
+    border-bottom:
+      1px solid
+      rgba(var(--axpt-silver), .04);
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--axpt-bronze), .024) 0%,
+        rgba(var(--axpt-carbon), .22) 30%,
+        rgba(var(--axpt-carbon), .09) 100%
+      );
+  }
+
+
+  .response::before {
+    left: -10px;
+    right: -10px;
+
+    top: -18px;
+    bottom: -22px;
+
+    opacity: .48;
+  }
+
+
+  .responseLabel {
+    margin-bottom: 14px;
+
+    padding: 0;
+
+    font-size: .46rem;
+
+    letter-spacing: .24em;
+  }
+
+
+  .response p {
+    max-width: 32ch;
+
+    font-size:
+      clamp(
+        .94rem,
+        4.05vw,
+        1.02rem
+      );
+
+    line-height: 1.68;
+
+    color:
+      rgba(var(--axpt-limestone), .82);
+  }
+
+
+  .thresholdSurface[data-settled="true"]
+  .response {
+    animation:
+      thresholdMobileInstitutionEmbed
+      2260ms
+      cubic-bezier(.16, 1, .3, 1)
+      both;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   MOBILE FIRST EVENT — SIGNAL ESTABLISHES
+
+   Starts compressed and imperfectly
+   registered; resolves into full authority.
+───────────────────────────────────── */
+
+@keyframes thresholdMobileSignalEstablish {
+
+  0%,
+  12% {
+    opacity: .14;
+
+    transform:
+      translate3d(-2px, 7px, 0)
+      scale(.76, .91);
+
+    filter:
+      blur(5px)
+      brightness(.72);
+  }
+
+  18% {
+    opacity: .30;
+
+    transform:
+      translate3d(2px, 5px, 0)
+      scale(.82, .94);
+
+    filter:
+      blur(3px)
+      brightness(.84);
+  }
+
+  23% {
+    transform:
+      translate3d(-1px, 4px, 0)
+      scale(.86, .95);
+  }
+
+  29% {
+    opacity: .54;
+
+    transform:
+      translate3d(1px, 2px, 0)
+      scale(.91, .97);
+
+    filter:
+      blur(1.7px)
+      brightness(.92);
+  }
+
+  43% {
+    opacity: .82;
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1.018, .995);
+
+    filter:
+      blur(.5px)
+      brightness(1.01);
+  }
+
+  62% {
+    opacity: .96;
+
+    transform:
+      scale(.996, 1.003);
+
+    filter: none;
+  }
+
+  100% {
+    opacity: 1;
+
+    transform: none;
+    filter: none;
+  }
+
+}
+
+
+@keyframes thresholdMobileSecondLineEstablish {
+
+  0%,
+  24% {
+    opacity: .20;
+
+    transform:
+      translate3d(3px, 5px, 0);
+
+    filter:
+      blur(2.5px);
+  }
+
+  34% {
+    opacity: .58;
+
+    transform:
+      translate3d(-1px, 2px, 0);
+
+    filter:
+      blur(1px);
+  }
+
+  58% {
+    opacity: .94;
+
+    transform:
+      translate3d(0, 0, 0);
+
+    filter: none;
+  }
+
+  100% {
+    opacity: 1;
+
+    transform: none;
+    filter: none;
+  }
+
+}
+
+
+@keyframes thresholdMobileCurrentEstablish {
+
+  0%,
+  48% {
+    opacity: 0;
+
+    transform:
+      translate3d(0, 10px, 0);
+  }
+
+  64% {
+    opacity: .38;
+  }
+
+  100% {
+    opacity: 1;
+
+    transform: none;
+  }
+
+}
+
+
+@keyframes thresholdMobileInstitutionEmbed {
+
+  0%,
+  58% {
+    opacity: 0;
+
+    transform:
+      translate3d(0, 14px, 0);
+  }
+
+  76% {
+    opacity: .52;
+  }
+
+  100% {
+    opacity: 1;
+
+    transform: none;
+  }
+
+}
+
+
+/* Mobile reduced-motion documentary condition */
+
+@media
+  (max-width: 680px)
+  and (prefers-reduced-motion: reduce) {
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement,
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement span:last-child,
+
+  .thresholdSurface[data-settled="true"]
+  .currentText,
+
+  .thresholdSurface[data-settled="true"]
+  .response {
+    animation: none;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — THRESHOLD MOBILE SIGNAL M2C
+
+   The declaration arrives as an unstable
+   compressed signal, registers, expands,
+   and resolves into documentary authority.
+
+   Institutional response remains embedded
+   but never escapes the canonical surface.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── DECLARATION / SIGNAL EVENT ── */
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement {
+    animation:
+      thresholdMobileSignalArrival
+      2240ms
+      cubic-bezier(.16, 1, .3, 1)
+      both;
+  }
+
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement span:first-child {
+    animation:
+      thresholdMobileSignalLineOne
+      2240ms
+      cubic-bezier(.16, 1, .3, 1)
+      both;
+  }
+
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement span:last-child {
+    margin-left: 0;
+
+    animation:
+      thresholdMobileSignalLineTwo
+      2240ms
+      cubic-bezier(.16, 1, .3, 1)
+      both;
+  }
+
+
+  /*
+   * Current follows the completed declaration.
+   * It should feel revealed by the statement,
+   * not animated alongside it.
+   */
+
+  .thresholdSurface[data-settled="true"]
+  .currentText {
+    animation:
+      thresholdMobileCurrentAfterSignal
+      2580ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  /* ── EMBEDDED AXPT RESPONSE ── */
+
+  .response {
+    width: 100%;
+    max-width: none;
+
+    margin:
+      34px
+      0
+      0;
+
+    padding:
+      22px
+      0
+      28px;
+
+    box-sizing: border-box;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-bronze), .13);
+
+    border-bottom:
+      1px solid
+      rgba(var(--axpt-silver), .045);
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--axpt-bronze), .028) 0%,
+        rgba(var(--axpt-carbon), .20) 28%,
+        rgba(var(--axpt-carbon), .07) 100%
+      );
+  }
+
+
+  .response::before {
+    left: 0;
+    right: 0;
+
+    top: -16px;
+    bottom: -18px;
+
+    opacity: .42;
+  }
+
+
+  .responseLabel,
+  .response p {
+    width:
+      calc(100% - 8px);
+
+    margin-left: 4px;
+    margin-right: 4px;
+  }
+
+
+  .response p {
+    max-width: 31ch;
+  }
+
+
+  .thresholdSurface[data-settled="true"]
+  .response {
+    animation:
+      thresholdMobileInstitutionArrival
+      3100ms
+      cubic-bezier(.16, 1, .3, 1)
+      both;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   DECLARATION REGISTRATION EVENT
+───────────────────────────────────── */
+
+@keyframes thresholdMobileSignalArrival {
+
+  0%,
+  8% {
+    opacity: .08;
+
+    transform:
+      translate3d(0, 10px, 0)
+      scale(.68, .88);
+
+    filter:
+      blur(6px)
+      brightness(.68);
+  }
+
+
+  /* first registration */
+
+  14% {
+    opacity: .22;
+
+    transform:
+      translate3d(-3px, 8px, 0)
+      scale(.74, .90);
+
+    filter:
+      blur(4px)
+      brightness(.78);
+  }
+
+
+  18% {
+    transform:
+      translate3d(3px, 7px, 0)
+      scale(.78, .92);
+  }
+
+
+  22% {
+    opacity: .36;
+
+    transform:
+      translate3d(-1px, 5px, 0)
+      scale(.81, .94);
+
+    filter:
+      blur(2.8px)
+      brightness(.86);
+  }
+
+
+  /* signal briefly loses registration */
+
+  26% {
+    opacity: .27;
+
+    transform:
+      translate3d(2px, 4px, 0)
+      scale(.80, .93);
+
+    filter:
+      blur(3.4px)
+      brightness(.80);
+  }
+
+
+  /* expansion begins */
+
+  34% {
+    opacity: .58;
+
+    transform:
+      translate3d(0, 2px, 0)
+      scale(.90, .97);
+
+    filter:
+      blur(1.6px)
+      brightness(.92);
+  }
+
+
+  46% {
+    opacity: .86;
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1.025, .995);
+
+    filter:
+      blur(.4px)
+      brightness(1.015);
+  }
+
+
+  /* overshoot resolves */
+
+  58% {
+    opacity: .98;
+
+    transform:
+      scale(.992, 1.004);
+
+    filter: none;
+  }
+
+
+  68%,
+  100% {
+    opacity: 1;
+
+    transform: none;
+    filter: none;
+  }
+
+}
+
+
+@keyframes thresholdMobileSignalLineOne {
+
+  0%,
+  10% {
+    opacity: .20;
+  }
+
+  16% {
+    opacity: .58;
+
+    transform:
+      translate3d(-2px, 0, 0);
+  }
+
+  23% {
+    opacity: .82;
+
+    transform:
+      translate3d(1px, 0, 0);
+  }
+
+  38%,
+  100% {
+    opacity: 1;
+
+    transform: none;
+  }
+
+}
+
+
+@keyframes thresholdMobileSignalLineTwo {
+
+  0%,
+  18% {
+    opacity: 0;
+
+    transform:
+      translate3d(4px, 5px, 0)
+      scale(.96);
+  }
+
+  24% {
+    opacity: .24;
+
+    transform:
+      translate3d(-2px, 4px, 0)
+      scale(.975);
+  }
+
+  31% {
+    opacity: .62;
+
+    transform:
+      translate3d(1px, 2px, 0)
+      scale(.99);
+  }
+
+  46% {
+    opacity: .94;
+  }
+
+  58%,
+  100% {
+    opacity: 1;
+
+    transform: none;
+  }
+
+}
+
+
+@keyframes thresholdMobileCurrentAfterSignal {
+
+  0%,
+  56% {
+    opacity: 0;
+
+    transform:
+      translate3d(0, 9px, 0);
+  }
+
+  70% {
+    opacity: .38;
+  }
+
+  100% {
+    opacity: 1;
+
+    transform: none;
+  }
+
+}
+
+
+@keyframes thresholdMobileInstitutionArrival {
+
+  0%,
+  66% {
+    opacity: 0;
+
+    transform:
+      translate3d(0, 12px, 0);
+  }
+
+  80% {
+    opacity: .46;
+  }
+
+  100% {
+    opacity: 1;
+
+    transform: none;
+  }
+
+}
+
+
+@media
+  (max-width: 680px)
+  and (prefers-reduced-motion: reduce) {
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement,
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement span:first-child,
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement span:last-child,
+
+  .thresholdSurface[data-settled="true"]
+  .currentText,
+
+  .thresholdSurface[data-settled="true"]
+  .response {
+    animation: none;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — THRESHOLD MOBILE DEPTH M2D
+
+   Lift institutional response slightly
+   and establish chromatic hierarchy.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── PRIMARY AUTHORITY ── */
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement {
+    color:
+      rgba(var(--axpt-limestone), .96);
+  }
+
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement span:first-child {
+    color:
+      rgba(var(--axpt-limestone), .92);
+  }
+
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement span:last-child {
+    color:
+      rgba(var(--axpt-limestone), 1);
+  }
+
+
+  /* ── MOVEMENT FIELD ── */
+
+  .current {
+    padding-bottom: 8px;
+  }
+
+
+  .currentText {
+    color:
+      rgba(var(--axpt-silver), .68);
+  }
+
+
+  .currentText span:nth-child(1),
+  .currentText span:nth-child(3),
+  .currentText span:nth-child(5) {
+    color:
+      rgba(var(--axpt-ash), .76);
+  }
+
+
+  .currentText span:nth-child(2),
+  .currentText span:nth-child(4) {
+    color:
+      rgba(var(--axpt-mineral-cold), .70);
+  }
+
+
+  /* ── EMBEDDED INSTITUTIONAL RESPONSE ── */
+
+  .response {
+    margin-top: 18px;
+
+    padding-top: 19px;
+    padding-bottom: 34px;
+
+    border-top-color:
+      rgba(var(--axpt-bronze), .16);
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--axpt-bronze), .034) 0%,
+        rgba(var(--axpt-carbon), .18) 24%,
+        rgba(var(--axpt-carbon), .06) 100%
+      );
+  }
+
+
+  .responseLabel {
+    color:
+      rgba(var(--axpt-bronze), .78);
+  }
+
+
+  .response p {
+    max-width: 31ch;
+
+    color:
+      rgba(var(--axpt-ash), .86);
+
+    line-height: 1.64;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — THRESHOLD MOBILE VERTICAL BALANCE M2E
+
+   Lift the first event and reclaim enough
+   vertical territory for the institutional
+   response to remain complete.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .thresholdFrame {
+    padding-top: 0;
+  }
+
+
+  /* lift declaration into upper field */
+
+  .declaration {
+    min-height: 28svh;
+
+    padding-top: 0;
+
+    transform:
+      translate3d(0, -18px, 0);
+  }
+
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement {
+    margin-top: 0;
+  }
+
+
+  /* movement field follows more closely */
+
+  .current {
+    margin-top: -4px;
+
+    padding-top: 6px;
+    padding-bottom: 4px;
+  }
+
+
+  .currentText {
+    max-width: 21ch;
+
+    line-height: 1.44;
+  }
+
+
+  /* institutional response comes into view earlier */
+
+  .response {
+    margin-top: 10px;
+
+    padding-top: 17px;
+    padding-bottom: 24px;
+  }
+
+
+  .responseLabel {
+    margin-bottom: 11px;
+  }
+
+
+  .response p {
+    max-width: 31ch;
+
+    line-height: 1.58;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — THRESHOLD DESKTOP D2
+
+   CONTINUOUS REGISTRATION
+
+   Movement no longer disappears in order
+   to change coordinate.
+
+   The proposition remains materially
+   present while its position, scale,
+   density, and authority change.
+───────────────────────────────────── */
+
+@media (min-width: 981px) {
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement {
+    animation:
+      thresholdDesktopContinuousRegister
+      1620ms
+      cubic-bezier(.16, 1, .3, 1)
+      both;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   CONTINUOUS COORDINATE TRANSFER
+───────────────────────────────────── */
+
+@keyframes thresholdDesktopContinuousRegister {
+
+  /* original condition */
+
+  0%,
+  15% {
+    left:
+      var(--threshold-origin-left);
+
+    top:
+      var(--threshold-origin-top);
+
+    font-size:
+      var(--threshold-origin-size);
+
+    opacity: 1;
+
+    color:
+      rgba(var(--axpt-limestone), .95);
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+
+    filter:
+      blur(0);
+  }
+
+
+  /*
+    Material pressure becomes visible,
+    but the proposition never disappears.
+  */
+
+  28% {
+    left:
+      calc(
+        var(--threshold-origin-left)
+        + 8%
+      );
+
+    top:
+      calc(
+        var(--threshold-origin-top)
+        + 8px
+      );
+
+    font-size:
+      calc(
+        var(--threshold-origin-size)
+        * .93
+      );
+
+    opacity: .82;
+
+    color:
+      rgba(var(--axpt-bronze), .82);
+
+    transform:
+      translate3d(4px, -1px, 0)
+      scale(.985);
+
+    filter:
+      blur(.45px);
+  }
+
+
+  /*
+    Coordinate transfer remains visible.
+    Lowest material density occurs here,
+    rather than complete disappearance.
+  */
+
+  46% {
+    left: 31%;
+
+    top: clamp(48px, 6vh, 72px);
+
+    font-size:
+      clamp(2.55rem, 4.15vw, 4.25rem);
+
+    opacity: .58;
+
+    color:
+      rgba(var(--axpt-oxide), .76);
+
+    transform:
+      translate3d(7px, -2px, 0)
+      scale(.965);
+
+    filter:
+      blur(.9px);
+  }
+
+
+  /*
+    Established coordinate begins
+    asserting itself.
+  */
+
+  64% {
+    left:
+      var(--threshold-settled-left);
+
+    top:
+      var(--threshold-settled-top);
+
+    font-size:
+      var(--threshold-settled-size);
+
+    opacity: .78;
+
+    color:
+      rgba(var(--axpt-limestone), .78);
+
+    transform:
+      translate3d(-2px, 2px, 0)
+      scale(.985);
+
+    filter:
+      blur(.35px);
+  }
+
+
+  82% {
+    left:
+      var(--threshold-settled-left);
+
+    top:
+      var(--threshold-settled-top);
+
+    font-size:
+      var(--threshold-settled-size);
+
+    opacity: .96;
+
+    color:
+      rgba(var(--axpt-limestone), .85);
+
+    transform:
+      translate3d(1px, 0, 0)
+      scale(1.004);
+
+    filter:
+      blur(.05px);
+  }
+
+
+  /* established condition */
+
+  100% {
+    left:
+      var(--threshold-settled-left);
+
+    top:
+      var(--threshold-settled-top);
+
+    font-size:
+      var(--threshold-settled-size);
+
+    opacity: 1;
+
+    color:
+      rgba(var(--axpt-limestone), .86);
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+
+    filter:
+      blur(0);
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — THRESHOLD DESKTOP D3
+
+   DOCUMENTARY OPENING ORDER
+
+   01 declaration establishes
+   02 evidence of movement resolves
+   03 institutional position follows
+
+   Mobile chronology remains untouched.
+───────────────────────────────────── */
+
+@media (min-width: 981px) {
+
+  /*
+    01 / DECLARATION
+
+    D2 already owns 0 → 1620ms.
+    Nothing else should materially precede it.
+  */
+
+
+  /*
+    02 / OBSERVATION
+
+    Begin only as the proposition reaches
+    its established coordinate.
+  */
+
+  .thresholdSurface[data-settled="true"]
+  .currentText {
+    animation:
+      thresholdInscriptionResolve
+      1050ms
+      cubic-bezier(.22, 1, .36, 1)
+      1450ms
+      both;
+  }
+
+
+  .thresholdSurface[data-settled="true"]
+  .current::before {
+    animation:
+      thresholdDitherRegistration
+      1180ms
+      cubic-bezier(.22, 1, .36, 1)
+      1450ms
+      both;
+  }
+
+
+  /*
+    03 / INSTITUTIONAL POSITION
+
+    AXPT enters after the evidence of
+    movement has become legible.
+  */
+
+  .thresholdSurface[data-settled="true"]
+  .response {
+    animation:
+      thresholdResponseIgnition
+      1760ms
+      cubic-bezier(.22, 1, .36, 1)
+      2500ms
+      both;
+  }
+
+
+  .thresholdSurface[data-settled="true"]
+  .response::before {
+    animation:
+      thresholdRoomIllumination
+      1880ms
+      cubic-bezier(.16, 1, .3, 1)
+      2500ms
+      both;
+  }
+
+
+  .thresholdSurface[data-settled="true"]
+  .responseLabel {
+    animation:
+      thresholdResponseLabelRegister
+      1540ms
+      cubic-bezier(.22, 1, .36, 1)
+      2500ms
+      both;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — THRESHOLD D3C
+
+   CRITICAL FIRST-PAINT CONSTITUTION
+
+   Raw server paint exposes only the
+   declaration. CSS animation subsequently
+   assumes ownership of later stages.
+
+   Reduced motion must reveal all documentary
+   material without animation.
+───────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .currentText,
+  .response {
+    --axpt-threshold-critical-opacity: 1;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — THRESHOLD DESKTOP D5
+
+   CANONICAL OPENING SEQUENCE
+
+   One timeline owns the opening:
+
+   01 declaration exists
+   02 declaration changes coordinate
+   03 movement evidence resolves
+   04 institutional position follows
+
+   Desktop only.
+   Mobile constitution remains untouched.
+───────────────────────────────────── */
+
+@media (min-width: 981px) {
+
+  /*
+    MASTER CLOCK — 4300ms
+
+    0–24%   proposition alone
+    24–43%  coordinate transfer
+    48–68%  observation resolves
+    72–94%  institutional response
+  */
+
+
+  /* 01 / DECLARATION */
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement {
+    animation:
+      thresholdDesktopCanonicalDeclaration
+      4300ms
+      cubic-bezier(.16, 1, .3, 1)
+      both;
+  }
+
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement span:last-child {
+    animation:
+      thresholdDesktopCanonicalIndent
+      4300ms
+      cubic-bezier(.16, 1, .3, 1)
+      both,
+
+      thresholdStatementGlimmer
+      11600ms
+      ease-in-out
+      4300ms
+      infinite;
+  }
+
+
+  /* 02 / OBSERVATION */
+
+  .thresholdSurface[data-settled="true"]
+  .currentText {
+    visibility: hidden;
+
+    animation:
+      thresholdDesktopCanonicalObservation
+      4300ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  .thresholdSurface[data-settled="true"]
+  .current::before {
+    animation:
+      thresholdDesktopCanonicalCurrent
+      4300ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  /* 03 / INSTITUTIONAL POSITION */
+
+  .thresholdSurface[data-settled="true"]
+  .response {
+    visibility: hidden;
+
+    animation:
+      thresholdDesktopCanonicalResponse
+      4300ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  .thresholdSurface[data-settled="true"]
+  .response::before {
+    animation:
+      thresholdDesktopCanonicalRoom
+      4300ms
+      cubic-bezier(.16, 1, .3, 1)
+      both;
+  }
+
+
+  .thresholdSurface[data-settled="true"]
+  .responseLabel {
+    animation: none;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   01 / DECLARATION
+───────────────────────────────────── */
+
+@keyframes thresholdDesktopCanonicalDeclaration {
+
+  0%,
+  24% {
+    left:
+      var(--threshold-origin-left);
+
+    top:
+      var(--threshold-origin-top);
+
+    font-size:
+      var(--threshold-origin-size);
+
+    opacity: 1;
+
+    color:
+      rgba(var(--axpt-limestone), .95);
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+
+    filter:
+      blur(0);
+  }
+
+
+  /*
+    Pressure enters before relocation.
+  */
+
+  31% {
+    left:
+      var(--threshold-origin-left);
+
+    top:
+      var(--threshold-origin-top);
+
+    font-size:
+      var(--threshold-origin-size);
+
+    opacity: .98;
+
+    color:
+      rgba(var(--axpt-oxide), .82);
+
+    transform:
+      translate3d(7px, -2px, 0)
+      scale(.975);
+
+    filter:
+      blur(.65px);
+  }
+
+
+  /*
+    Registration / coordinate transfer.
+    Fast enough to feel like a state change,
+    not a slow traversal.
+  */
+
+  39% {
+    left:
+      31%;
+
+    top:
+      clamp(48px, 6vh, 72px);
+
+    font-size:
+      clamp(2.55rem, 4.15vw, 4.25rem);
+
+    opacity: .92;
+
+    color:
+      rgba(var(--axpt-bronze), .82);
+
+    transform:
+      translate3d(-2px, 2px, 0)
+      scale(.985);
+
+    filter:
+      blur(.4px);
+  }
+
+
+  46%,
+  100% {
+    left:
+      var(--threshold-settled-left);
+
+    top:
+      var(--threshold-settled-top);
+
+    font-size:
+      var(--threshold-settled-size);
+
+    opacity: 1;
+
+    color:
+      rgba(var(--axpt-limestone), .86);
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+
+    filter:
+      blur(0);
+  }
+
+}
+
+
+@keyframes thresholdDesktopCanonicalIndent {
+
+  0%,
+  31% {
+    margin-left:
+      var(--threshold-origin-indent);
+  }
+
+  39% {
+    margin-left:
+      clamp(8px, 1vw, 16px);
+  }
+
+  46%,
+  100% {
+    margin-left: 0;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   02 / OBSERVATION
+───────────────────────────────────── */
+
+@keyframes thresholdDesktopCanonicalObservation {
+
+  0%,
+  54% {
+    visibility: hidden;
+    opacity: 0;
+
+    transform:
+      translate3d(0, 9px, 0);
+
+    filter:
+      blur(2px);
+
+    letter-spacing: .022em;
+  }
+
+
+  55% {
+    visibility: visible;
+    opacity: 0;
+  }
+
+
+  61% {
+    visibility: visible;
+    opacity: .34;
+
+    transform:
+      translate3d(0, 4px, 0);
+
+    filter:
+      blur(.8px);
+  }
+
+
+  70%,
+  100% {
+    visibility: visible;
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0);
+
+    filter:
+      blur(0);
+
+    letter-spacing: .006em;
+  }
+
+}
+
+
+@keyframes thresholdDesktopCanonicalCurrent {
+
+  0%,
+  43% {
+    opacity: 0;
+
+    clip-path:
+      inset(0 100% 0 0);
+
+    filter:
+      blur(.7px);
+
+    transform:
+      translate3d(-8px, 2px, 0)
+      scaleX(.985);
+  }
+
+
+  46% {
+    opacity: .24;
+
+    clip-path:
+      inset(0 84% 0 0);
+
+    filter:
+      blur(.35px);
+  }
+
+
+  49% {
+    opacity: .56;
+
+    clip-path:
+      inset(0 56% 0 8%);
+
+    filter:
+      blur(0);
+  }
+
+
+  52% {
+    opacity: .70;
+
+    clip-path:
+      inset(0 26% 0 30%);
+
+    transform:
+      translate3d(3px, 0, 0)
+      scaleX(1);
+  }
+
+
+  55% {
+    opacity: .46;
+
+    clip-path:
+      inset(0 7% 0 61%);
+  }
+
+
+  58% {
+    opacity: .14;
+
+    clip-path:
+      inset(0 0 0 86%);
+
+    filter:
+      blur(.3px);
+  }
+
+
+  60%,
+  100% {
+    opacity: 0;
+
+    clip-path:
+      inset(0 0 0 100%);
+
+    filter:
+      blur(.7px);
+
+    transform:
+      translate3d(8px, -2px, 0)
+      scaleX(1.008);
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   03 / INSTITUTIONAL POSITION
+───────────────────────────────────── */
+
+@keyframes thresholdDesktopCanonicalResponse {
+
+  0%,
+  71% {
+    visibility: hidden;
+    opacity: 0;
+
+    transform:
+      translate3d(0, 10px, 0);
+
+    filter:
+      brightness(.76)
+      contrast(.96);
+  }
+
+
+  72% {
+    visibility: visible;
+    opacity: 0;
+  }
+
+
+  81% {
+    visibility: visible;
+    opacity: .42;
+
+    transform:
+      translate3d(0, 5px, 0);
+
+    filter:
+      brightness(1.04)
+      contrast(1);
+  }
+
+
+  94%,
+  100% {
+    visibility: visible;
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0);
+
+    filter:
+      brightness(1)
+      contrast(1);
+  }
+
+}
+
+
+@keyframes thresholdDesktopCanonicalRoom {
+
+  0%,
+  76% {
+    opacity: 0;
+  }
+
+  84% {
+    opacity: .38;
+  }
+
+  94%,
+  100% {
+    opacity: .76;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — THRESHOLD DESKTOP D6
+
+   DOCUMENT-READY INTERLOCK
+
+   Before canonical document readiness:
+   - declaration is held at origin
+   - observation is absent
+   - institutional response is absent
+   - no opening animation may progress
+
+   When readiness is established, D5 begins
+   from frame zero.
+
+   Desktop only.
+───────────────────────────────────── */
+
+@media (min-width: 981px) {
+
+  :global(html:not([data-document-ready="true"]))
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement {
+    animation: none !important;
+
+    left:
+      var(--threshold-origin-left);
+
+    top:
+      var(--threshold-origin-top);
+
+    font-size:
+      var(--threshold-origin-size);
+
+    opacity: 1;
+
+    color:
+      rgba(var(--axpt-limestone), .95);
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+
+    filter: none;
+  }
+
+
+  :global(html:not([data-document-ready="true"]))
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement span:first-child,
+
+  :global(html:not([data-document-ready="true"]))
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement span:last-child {
+    animation: none !important;
+  }
+
+
+  :global(html:not([data-document-ready="true"]))
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement span:last-child {
+    margin-left:
+      var(--threshold-origin-indent);
+  }
+
+
+  :global(html:not([data-document-ready="true"]))
+  .thresholdSurface[data-settled="true"]
+  .currentText {
+    animation: none !important;
+
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+
+
+  :global(html:not([data-document-ready="true"]))
+  .thresholdSurface[data-settled="true"]
+  .current::before {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+
+  :global(html:not([data-document-ready="true"]))
+  .thresholdSurface[data-settled="true"]
+  .response {
+    animation: none !important;
+
+    visibility: hidden !important;
+    opacity: 0 !important;
+  }
+
+
+  :global(html:not([data-document-ready="true"]))
+  .thresholdSurface[data-settled="true"]
+  .response::before {
+    animation: none !important;
+    opacity: 0 !important;
+  }
+
+
+  :global(html:not([data-document-ready="true"]))
+  .thresholdSurface[data-settled="true"]
+  .responseLabel {
+    animation: none !important;
+  }
+
 }

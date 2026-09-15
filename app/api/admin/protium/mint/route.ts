@@ -31,7 +31,8 @@ export async function POST(req: Request) {
     }
 
     const devBypass =
-      process.env.NODE_ENV !== 'production' && req.headers.get('x-dev-bypass') === '1';
+      process.env.NODE_ENV === 'development' &&
+      req.headers.get('x-dev-bypass') === '1';
     if (!devBypass) {
       await requireElderServer();
     }

@@ -149,6 +149,46 @@
 
 
 /* ─────────────────────────────────────
+   CHROMATIC MINERAL FIELD
+
+   Color behaves as material evidence,
+   not atmospheric decoration.
+───────────────────────────────────── */
+
+.chromaticField {
+  position: absolute;
+
+  inset: 0;
+
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      ellipse 34% 30% at 68% 36%,
+      rgba(var(--axpt-bronze), .070) 0%,
+      rgba(var(--axpt-oxide), .034) 34%,
+      rgba(var(--axpt-oxide), .012) 58%,
+      transparent 78%
+    ),
+    radial-gradient(
+      ellipse 46% 38% at 45% 61%,
+      rgba(var(--axpt-oxide), .022) 0%,
+      transparent 72%
+    );
+
+  opacity: 0;
+
+  transform:
+    translate3d(0, 0, 0)
+    scale(1.025);
+
+  transition:
+    opacity 1500ms cubic-bezier(.22, 1, .36, 1),
+    transform 1700ms cubic-bezier(.22, 1, .36, 1);
+}
+
+
+/* ─────────────────────────────────────
    01 / THRESHOLD — FIELD
 
    Material becomes perceptible.
@@ -163,7 +203,7 @@
 }
 
 :global(body[data-layer="ENTRY"]) .strataField {
-  opacity: 0.38;
+  opacity: 0.45;
 
   transform:
     translate3d(0, -1.5%, 0)
@@ -176,6 +216,14 @@
   transform:
     translate3d(0, 1%, 0)
     scaleX(1.04);
+}
+
+:global(body[data-layer="ENTRY"]) .chromaticField {
+  opacity: 1;
+
+  transform:
+    translate3d(.6%, -.35%, 0)
+    scale(1.01);
 }
 
 
@@ -212,6 +260,37 @@
 }
 
 
+
+:global(body[data-layer="FOUNDATION"]) .chromaticField {
+  opacity: 1;
+
+  background:
+    radial-gradient(
+      ellipse 46% 54% at 24% 56%,
+      rgba(var(--axpt-oxide), .105) 0%,
+      rgba(var(--axpt-oxide), .058) 28%,
+      rgba(var(--axpt-bronze), .024) 52%,
+      transparent 78%
+    ),
+    radial-gradient(
+      ellipse 34% 62% at 72% 48%,
+      rgba(var(--axpt-bronze), .036) 0%,
+      rgba(var(--axpt-oxide), .018) 44%,
+      transparent 76%
+    ),
+    linear-gradient(
+      102deg,
+      rgba(var(--axpt-oxide), .018) 0%,
+      transparent 48%
+    );
+
+  transform:
+    translate3d(-1.2%, .45%, 0)
+    scaleX(.985)
+    scaleY(1.018);
+}
+
+
 /* ─────────────────────────────────────
    03 / FRAMEWORK — RELATION
 
@@ -228,19 +307,52 @@
 }
 
 :global(body[data-layer="FRAMEWORK"]) .strataField {
-  opacity: 0.62;
+  opacity: 0.66;
 
   transform:
-    translate3d(0.6%, -0.4%, 0)
-    scale(1.028);
+    translate3d(0.8%, -0.55%, 0)
+    scale(1.03);
 }
 
 :global(body[data-layer="FRAMEWORK"]) .pressureField {
-  opacity: 0.46;
+  opacity: 0.42;
 
   transform:
-    translate3d(-1%, 0, 0)
-    scaleX(1.05);
+    translate3d(-1.2%, 0, 0)
+    scaleX(1.045)
+    scaleY(0.98);
+}
+
+
+
+:global(body[data-layer="FRAMEWORK"]) .chromaticField {
+  opacity: 1;
+
+  background:
+    radial-gradient(
+      ellipse 48% 44% at 64% 54%,
+      rgba(var(--axpt-mineral-green), .090) 0%,
+      rgba(var(--axpt-mineral-green), .046) 34%,
+      rgba(var(--axpt-mineral-cold), .018) 58%,
+      transparent 80%
+    ),
+    radial-gradient(
+      ellipse 34% 52% at 38% 38%,
+      rgba(var(--axpt-bronze), .020) 0%,
+      rgba(var(--axpt-mineral-green), .018) 42%,
+      transparent 74%
+    ),
+    linear-gradient(
+      112deg,
+      transparent 18%,
+      rgba(var(--axpt-mineral-green), .014) 52%,
+      transparent 82%
+    );
+
+  transform:
+    translate3d(.8%, -.45%, 0)
+    scaleX(1.025)
+    scaleY(.99);
 }
 
 
@@ -260,20 +372,51 @@
 }
 
 :global(body[data-layer="INTERFACES"]) .strataField {
-  opacity: 0.56;
+  opacity: 0.54;
 
   transform:
-    translate3d(0.9%, 0.1%, 0)
-    scale(1.025);
+    translate3d(1.05%, 0.05%, 0)
+    scale(1.024);
 }
 
 :global(body[data-layer="INTERFACES"]) .pressureField {
-  opacity: 0.64;
+  opacity: 0.66;
 
   transform:
-    translate3d(1.2%, -0.6%, 0)
-    scaleX(0.94)
-    scaleY(1.04);
+    translate3d(1.6%, -0.75%, 0)
+    scaleX(0.88)
+    scaleY(1.07);
+}
+
+
+
+:global(body[data-layer="INTERFACES"]) .chromaticField {
+  opacity: 1;
+
+  background:
+    radial-gradient(
+      ellipse 28% 38% at 55% 53%,
+      rgba(var(--axpt-mineral-cold), .105) 0%,
+      rgba(var(--axpt-mineral-cold), .052) 30%,
+      rgba(var(--axpt-mineral-green), .022) 54%,
+      transparent 78%
+    ),
+    radial-gradient(
+      ellipse 18% 28% at 55% 53%,
+      rgba(var(--axpt-limestone), .026) 0%,
+      rgba(var(--axpt-mineral-cold), .022) 42%,
+      transparent 74%
+    ),
+    radial-gradient(
+      ellipse 42% 32% at 66% 62%,
+      rgba(var(--axpt-bronze), .012) 0%,
+      transparent 72%
+    );
+
+  transform:
+    translate3d(1.4%, -.65%, 0)
+    scaleX(.91)
+    scaleY(1.045);
 }
 
 
@@ -288,7 +431,7 @@
   opacity: 0.67;
 
   transform:
-    translate3d(-0.3%, 0.1%, 0)
+    translate3d(-0.55%, 0.1%, 0)
     scale(1.004);
 }
 
@@ -296,24 +439,122 @@
   opacity: 0.50;
 
   transform:
-    translate3d(-1.1%, 0.45%, 0)
-    scale(1.022);
+    translate3d(-1.65%, 0.45%, 0)
+    scaleX(1.028)
+    scaleY(1.018);
 }
 
 :global(body[data-layer="ETHOS"]) .pressureField {
   opacity: 0.50;
 
   transform:
-    translate3d(2.2%, 0.2%, 0)
-    scaleX(1.10)
-    scaleY(0.98);
+    translate3d(3.1%, 0.2%, 0)
+    scaleX(1.14)
+    scaleY(0.97);
+}
+
+
+
+:global(body[data-layer="ETHOS"]) .chromaticField {
+  opacity: 1;
+
+  background:
+    radial-gradient(
+      ellipse 58% 34% at 34% 48%,
+      rgba(var(--axpt-mineral-green), .066) 0%,
+      rgba(var(--axpt-mineral-green), .032) 36%,
+      transparent 74%
+    ),
+    radial-gradient(
+      ellipse 54% 30% at 72% 54%,
+      rgba(var(--axpt-mineral-cold), .074) 0%,
+      rgba(var(--axpt-mineral-cold), .034) 38%,
+      transparent 76%
+    ),
+    linear-gradient(
+      96deg,
+      rgba(var(--axpt-bronze), .012) 4%,
+      rgba(var(--axpt-mineral-green), .016) 34%,
+      rgba(var(--axpt-mineral-cold), .020) 68%,
+      transparent 94%
+    );
+
+  transform:
+    translate3d(2.8%, .2%, 0)
+    scaleX(1.075)
+    scaleY(.985);
 }
 
 
 /* ─────────────────────────────────────
-   06 / SEAL — TRACE
+   06 / FRENCH-WARD — MANIFESTATION
 
-   Active pressure recedes.
+   Circulation's mineral-cold condition
+   assumes institutional specificity.
+
+   Establishment becomes practice.
+───────────────────────────────────── */
+
+:global(body[data-layer="FRENCH_WARD"]) .materialBody {
+  opacity: 0.65;
+
+  transform:
+    translate3d(-0.15%, 0.18%, 0)
+    scale(1.003);
+}
+
+:global(body[data-layer="FRENCH_WARD"]) .strataField {
+  opacity: 0.48;
+
+  transform:
+    translate3d(-0.45%, 0.62%, 0)
+    scaleX(1.024)
+    scaleY(1.012);
+}
+
+:global(body[data-layer="FRENCH_WARD"]) .pressureField {
+  opacity: 0.34;
+
+  transform:
+    translate3d(1.35%, 0.55%, 0)
+    scaleX(1.055)
+    scaleY(0.978);
+}
+
+:global(body[data-layer="FRENCH_WARD"]) .chromaticField {
+  opacity: 1;
+
+  background:
+    radial-gradient(
+      ellipse 54% 34% at 66% 49%,
+      rgba(52, 82, 102, .078) 0%,
+      rgba(52, 82, 102, .034) 40%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 30% 26% at 30% 55%,
+      rgba(var(--axpt-mineral-cold), .032) 0%,
+      transparent 74%
+    ),
+    linear-gradient(
+      101deg,
+      rgba(var(--axpt-bronze), .010) 8%,
+      rgba(var(--axpt-mineral-cold), .015) 44%,
+      rgba(52, 82, 102, .020) 72%,
+      transparent 96%
+    );
+
+  transform:
+    translate3d(1.45%, .15%, 0)
+    scaleX(1.045)
+    scaleY(.99);
+}
+
+
+/* ─────────────────────────────────────
+   07 / SEAL — TRACE
+
+   Institutional specificity recedes.
    What was established remains.
 ───────────────────────────────────── */
 
@@ -326,20 +567,41 @@
 }
 
 :global(body[data-layer="PRESENCE"]) .strataField {
-  opacity: 0.44;
+  opacity: 0.46;
 
   transform:
-    translate3d(0.25%, 0.8%, 0)
-    scale(1.018);
+    translate3d(0.3%, 0.9%, 0)
+    scale(1.019);
 }
 
 :global(body[data-layer="PRESENCE"]) .pressureField {
-  opacity: 0.30;
+  opacity: 0.24;
 
   transform:
-    translate3d(0, 1.2%, 0)
-    scaleX(1.02)
-    scaleY(0.98);
+    translate3d(0, 1.45%, 0)
+    scaleX(1.015)
+    scaleY(0.965);
+}
+
+:global(body[data-layer="PRESENCE"]) .chromaticField {
+  opacity: .48;
+
+  background:
+    radial-gradient(
+      ellipse 42% 30% at 52% 50%,
+      rgba(var(--axpt-mineral-cold), .026) 0%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 30% 24% at 34% 58%,
+      rgba(var(--axpt-bronze), .012) 0%,
+      transparent 78%
+    );
+
+  transform:
+    translate3d(0, .4%, 0)
+    scaleX(1.01)
+    scaleY(.99);
 }
 
 
@@ -351,7 +613,8 @@
 
   .materialBody,
   .strataField,
-  .pressureField {
+  .pressureField,
+  .chromaticField {
     transition: none;
   }
 

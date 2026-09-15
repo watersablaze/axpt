@@ -63,7 +63,223 @@ model User {
   createdCommunicationOperationalRooms CommunicationOperationalRoom[] @relation("CommunicationOperationalRoomCreator")
   createdCommunicationOperationalLinks CommunicationOperationalLink[] @relation("CommunicationOperationalLinkCreator")
 
+  institutionalInstrumentsCreated InstitutionalInstrument[] @relation("InstitutionalInstrumentCreator")
+  instrumentVersionsCreated       InstrumentVersion[]       @relation("InstrumentVersionCreator")
+  instrumentResponsesAuthored     InstrumentResponse[]      @relation("InstrumentResponseActor")
+  instrumentParties               InstrumentParty[]         @relation("InstrumentPartyUser")
+  instrumentAccessGrantsReceived  InstrumentAccessGrant[]   @relation("InstrumentAccessRecipient")
+  instrumentAccessGrantsIssued    InstrumentAccessGrant[]   @relation("InstrumentAccessIssuer")
+
   wallets Wallet?
+}
+
+// ============================================================================
+// INSTITUTIONAL INSTRUMENTS
+// Governed relationship, proposition, deliberation and access architecture.
+// Distinct from TransactionDossierInstrument, which represents transaction
+// execution/document artifacts.
+// ============================================================================
+
+model InstitutionalInstrument {
+  id              String                        @id @default(cuid())
+  reference       String                        @unique
+  kind            InstitutionalInstrumentKind
+  title           String
+  status          InstitutionalInstrumentStatus @default(DRAFT)
+  currentVersion  Int                           @default(1)
+  createdByUserId String
+
+  createdBy User @relation("InstitutionalInstrumentCreator", fields: [createdByUserId], references: [id])
+
+  versions     InstrumentVersion[]
+  parties      InstrumentParty[]
+  accessGrants InstrumentAccessGrant[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([kind])
+  @@index([status])
+  @@index([createdByUserId])
+  @@index([updatedAt])
+}
+
+model InstrumentVersion {
+  id              String                  @id @default(cuid())
+  instrumentId    String
+  number          Int
+  status          InstrumentVersionStatus @default(DRAFT)
+  createdByUserId String
+  issuedAt        DateTime?
+  supersededAt    DateTime?
+
+  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  createdBy  User                    @relation("InstrumentVersionCreator", fields: [createdByUserId], references: [id])
+
+  propositions InstrumentProposition[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([instrumentId, number])
+  @@index([instrumentId, status])
+  @@index([createdByUserId])
+  @@index([issuedAt])
+}
+
+model InstrumentProposition {
+  id        String                     @id @default(cuid())
+  versionId String
+  reference String
+  domain    String
+  title     String
+  body      String
+  state     InstrumentPropositionState
+  ordinal   Int
+
+  version InstrumentVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  responses InstrumentResponse[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([versionId, reference])
+  @@unique([versionId, ordinal])
+  @@index([versionId, state])
+  @@index([domain])
+}
+
+model InstrumentResponse {
+  id                   String                 @id @default(cuid())
+  propositionId        String
+  actorUserId          String
+  responseType         InstrumentResponseType
+  note                 String?
+  supersedesResponseId String?                @unique
+  supersededAt         DateTime?
+
+  proposition InstrumentProposition @relation(fields: [propositionId], references: [id], onDelete: Cascade)
+  actor       User                  @relation("InstrumentResponseActor", fields: [actorUserId], references: [id])
+
+  supersedes   InstrumentResponse? @relation("InstrumentResponseSupersession", fields: [supersedesResponseId], references: [id], onDelete: SetNull)
+  supersededBy InstrumentResponse? @relation("InstrumentResponseSupersession")
+
+  createdAt DateTime @default(now())
+
+  @@index([propositionId, actorUserId, createdAt])
+  @@index([actorUserId, createdAt])
+  @@index([responseType])
+}
+
+model InstrumentParty {
+  id             String              @id @default(cuid())
+  instrumentId   String
+  userId         String?
+  displayName    String
+  role           InstrumentPartyRole
+  authorityClass String?
+
+  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  user       User?                   @relation("InstrumentPartyUser", fields: [userId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([instrumentId, role])
+  @@index([userId])
+}
+
+model InstrumentAccessGrant {
+  id              String                @id @default(cuid())
+  instrumentId    String
+  recipientUserId String?
+  recipientName   String?
+  recipientRole   InstrumentPartyRole
+  accessLevel     InstrumentAccessLevel
+  codeHash        String?               @unique
+  issuedByUserId  String
+
+  issuedAt      DateTime  @default(now())
+  expiresAt     DateTime?
+  revokedAt     DateTime?
+  firstAccessAt DateTime?
+  lastAccessAt  DateTime?
+
+  instrument    InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  recipientUser User?                   @relation("InstrumentAccessRecipient", fields: [recipientUserId], references: [id], onDelete: SetNull)
+  issuedBy      User                    @relation("InstrumentAccessIssuer", fields: [issuedByUserId], references: [id])
+
+  @@index([instrumentId, accessLevel])
+  @@index([recipientUserId])
+  @@index([issuedByUserId])
+  @@index([expiresAt])
+  @@index([revokedAt])
+}
+
+enum InstitutionalInstrumentKind {
+  ROYAL_CUSTODIAL_FRAMEWORK
+  REPRESENTATIVE_MANDATE
+  LETTER_OF_INTENT
+  COOPERATION_FRAMEWORK
+  GENERAL
+}
+
+enum InstitutionalInstrumentStatus {
+  DRAFT
+  INTERNAL_REVIEW
+  ISSUED
+  ACCESSED
+  UNDER_DELIBERATION
+  CLARIFICATION_OPEN
+  REVISION_PENDING
+  PRINCIPLES_ALIGNED
+  DEFINITIVE_INSTRUMENT_PENDING
+  EXECUTION_PENDING
+  EXECUTED
+  ACTIVE
+  ARCHIVED
+}
+
+enum InstrumentVersionStatus {
+  DRAFT
+  ISSUED
+  SUPERSEDED
+  ARCHIVED
+}
+
+enum InstrumentPropositionState {
+  CONFIRMED
+  UNDERSTOOD
+  PROPOSED
+  OPEN
+  REVISED
+  DECLINED
+  SUPERSEDED
+}
+
+enum InstrumentResponseType {
+  ACKNOWLEDGE
+  AFFIRM
+  CLARIFY
+  REVISE
+  DECLINE
+}
+
+enum InstrumentPartyRole {
+  PRINCIPAL
+  CUSTODIAN
+  DELIBERATOR
+  REVIEWER
+  OBSERVER
+  COMMERCIAL_PARTICIPANT
+}
+
+enum InstrumentAccessLevel {
+  VIEW
+  RESPOND
+  DELIBERATE
+  ADMINISTER
 }
 
 model UserTrustEdge {

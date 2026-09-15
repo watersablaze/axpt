@@ -7,6 +7,7 @@ const FoundationSurface = dynamic(() => import("@/components/surfaces/Foundation
 const FrameworkSurface = dynamic(() => import("@/components/surfaces/FrameworkSurface"));
 const InterfacesSurface = dynamic(() => import("@/components/surfaces/InterfacesSurface"));
 const EthosSurface = dynamic(() => import("@/components/surfaces/EthosSurface"));
+const FrenchWardSurface = dynamic(() => import("@/components/surfaces/FrenchWardSurface"));
 const PresenceSurface = dynamic(() => import("@/components/surfaces/PresenceSurface"));
 
 export type SurfaceDefinition = {
@@ -21,7 +22,7 @@ export type SurfaceDefinition = {
 
 const SURFACE_REGISTRY = [
   {
-    id: "origin",
+    id: "threshold",
     layer: "ENTRY",
     title: "Origin",
     description: "Genesis of the AXPT architecture",
@@ -57,7 +58,7 @@ const SURFACE_REGISTRY = [
     component: InterfacesSurface,
   },
   {
-    id: "ethos",
+    id: "circulation",
     layer: "ETHOS",
     title: "Ethos",
     description: "Cultural and ethical architecture",
@@ -66,12 +67,21 @@ const SURFACE_REGISTRY = [
     component: EthosSurface,
   },
   {
-    id: "presence",
+    id: "french-ward",
+    layer: "FRENCH_WARD",
+    title: "French-Ward",
+    description: "Institutional trade and field intelligence",
+    ariaLabel: "French-Ward Institutional Field",
+    order: 6,
+    component: FrenchWardSurface,
+  },
+  {
+    id: "seal",
     layer: "PRESENCE",
     title: "Presence",
     description: "Living system presence",
     ariaLabel: "Presence Layer",
-    order: 6,
+    order: 7,
     component: PresenceSurface,
   },
 ] satisfies SurfaceDefinition[];

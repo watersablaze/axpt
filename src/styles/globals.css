@@ -81,7 +81,7 @@ body {
   color: rgba(245,242,235,0.92);
   position: relative;
   min-height: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* ──────────────────────────────
@@ -275,11 +275,13 @@ body[data-layer="PRESENCE"] .globalLayerIndicator {
 }
   */
 
-/* core section shell */
+/* core section shell
+
+   A surface establishes documentary territory.
+   Material response belongs to the substrate;
+   establishment belongs to the document.
+*/
 .surface {
-
-  --axis-depth: 0;
-
   position: relative;
 
   width: 100%;
@@ -287,51 +289,35 @@ body[data-layer="PRESENCE"] .globalLayerIndicator {
 
   box-sizing: border-box;
 
-  padding-top: clamp(40px, 5vh, 72px);
+  padding-top: clamp(18px, 2.5vh, 36px);
   padding-bottom: clamp(80px, 8vh, 120px);
 
+  scroll-margin-top: 76px;
+
   overflow: clip;
-
-  opacity: calc(.88 + ((1 - var(--axis-depth, 0)) * .12));
-
-  transition:
-    opacity 420ms ease;
-
 }
 
-/* atmospheric wash */
-
-.surface::before {
-  display:none;
+.surface[data-layer="ENTRY"] {
+  padding-top: clamp(40px, 5vh, 72px);
 }
 
-/* content container */
-
-.surfaceFrame {
-  width: min(
-    calc(100% - (var(--rail-inset) * 2)),
-    1100px
-  );
-
-  margin: 0 auto;
-
-  perspective: 1200px;
+/*
+   Framework → Interfaces requires a fractional
+   inter-surface breath. Keep the additional
+   territory at the shell boundary rather than
+   reopening Interfaces' internal geometry.
+*/
+.surface[data-layer="INTERFACES"] {
+  padding-top: clamp(30px, 3.8vh, 52px);
 }
 
-.surfaceFrame > * {
-  transform: translateZ(0);
+.surface[data-layer="PRESENCE"] {
+  padding-bottom: clamp(24px, 3vh, 40px);
 }
 
 .surface > * {
   position: relative;
   z-index: 1;
-  transform: translateZ(0);
-}
-
-/* ENTRY has no wash */
-
-[data-layer="ENTRY"]::before {
-  display:none;
 }
 
 
@@ -492,21 +478,127 @@ body[data-surface="PRESENCE"] .axisLine {
   }
 }
 
-/* =====================================
-   DOCUMENT CONTINUITY
-   Subsequent conditions continue the
-   established field rather than restart it.
-===================================== */
+/* ─────────────────────────────────────
+   AXPT CANONICAL SURFACE ANCHOR — MOBILE
+───────────────────────────────────── */
 
-.surface:not([data-layer="ENTRY"]) {
-  padding-top: clamp(18px, 2.5vh, 36px);
+@media (max-width: 680px) {
+
+  .surface {
+    scroll-margin-top: 64px;
+  }
+
 }
 
-/* =====================================
-   TERMINAL CONDITION
-   The final record closes the document.
-===================================== */
 
-.surface[data-layer="PRESENCE"] {
-  padding-bottom: clamp(24px, 3vh, 40px);
+/* ─────────────────────────────────────
+   AXPT V1 — MOBILE DOCUMENT CONSTITUTION
+
+   Mobile surfaces are content-led.
+   Full-viewport ceremony is reserved for
+   Threshold and the terminal Seal.
+
+   Desktop remains unchanged.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  :root {
+    --mobile-rail-inset: 20px;
+    --mobile-surface-top: 72px;
+    --mobile-surface-bottom: 64px;
+  }
+
+
+  /*
+   * Canonical mobile document shell.
+   *
+   * The phone is not seven stacked
+   * desktop canvases.
+   */
+
+  .surface {
+    min-height: auto;
+
+    padding-top:
+      var(--mobile-surface-top);
+
+    padding-bottom:
+      var(--mobile-surface-bottom);
+
+    scroll-margin-top: 60px;
+
+    overflow: clip;
+  }
+
+
+  /*
+   * ENTRY retains threshold ceremony.
+   */
+
+  .surface[data-layer="ENTRY"] {
+    min-height: 100svh;
+
+    padding-top: 78px;
+    padding-bottom: 54px;
+  }
+
+
+  /*
+   * FOUNDATION → FRENCH-WARD become
+   * content-governed document surfaces.
+   */
+
+  .surface[data-layer="FOUNDATION"],
+  .surface[data-layer="FRAMEWORK"],
+  .surface[data-layer="INTERFACES"],
+  .surface[data-layer="ETHOS"],
+  .surface[data-layer="FRENCH_WARD"] {
+    min-height: auto;
+
+    padding-top: 72px;
+    padding-bottom: 68px;
+  }
+
+
+  /*
+   * Terminal surface regains space and
+   * gravity without forcing unnecessary
+   * empty viewport height.
+   */
+
+  .surface[data-layer="PRESENCE"] {
+    min-height:
+      min(100svh, 760px);
+
+    padding-top: 82px;
+    padding-bottom: 42px;
+  }
+
+}
+
+/* AXPT V1 — FRENCH-WARD MOBILE SHELL COMPRESSION */
+
+@media (max-width: 680px) {
+
+  .surface[data-layer="FRENCH_WARD"] {
+    padding-top: 48px;
+    padding-bottom: 52px;
+  }
+
+}
+
+/* ─────────────────────────────────────
+   AXPT V1 — SEAL MOBILE SHELL M8A
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .surface[data-layer="PRESENCE"] {
+    min-height: auto;
+
+    padding-top: 58px;
+    padding-bottom: 28px;
+  }
+
 }

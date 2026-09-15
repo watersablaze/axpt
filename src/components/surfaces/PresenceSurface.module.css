@@ -1,17 +1,141 @@
 /* ─────────────────────────────────────
    AXPT — SEAL
-   Closing condition
+   Ceremonial closure / ratification
 ───────────────────────────────────── */
 
-.presenceSurface {
+/* ─────────────────────────────────────
+   SEAL — CEREMONIAL CLOSURE
+
+   The preceding surfaces move.
+   This surface ratifies.
+
+   Movement resolves into accountability.
+   Establishment resolves into record.
+───────────────────────────────────── */
+
+
+.sealSurface {
   position: relative;
 
   width: 100%;
 
   overflow: clip;
+  isolation: isolate;
 }
 
-.sealInner {
+
+/* ─────────────────────────────────────
+   CLOSURE FIELD
+
+   Symmetrical, residual, non-directional.
+───────────────────────────────────── */
+
+.sealSurface::before {
+  content: "";
+
+  position: absolute;
+  inset: 7% 3% 8% 3%;
+
+  pointer-events: none;
+  z-index: 0;
+
+  background:
+    radial-gradient(
+      ellipse 38% 24% at 31% 64%,
+      rgba(var(--axpt-mineral-cold), .026) 0%,
+      rgba(var(--axpt-mineral-cold), .010) 48%,
+      transparent 76%
+    ),
+    radial-gradient(
+      ellipse 42% 28% at 67% 61%,
+      rgba(var(--axpt-bronze), .018) 0%,
+      rgba(var(--axpt-bronze), .007) 48%,
+      transparent 76%
+    ),
+    linear-gradient(
+      104deg,
+      transparent 0%,
+      transparent 39%,
+      rgba(var(--axpt-mineral-cold), .016) 43%,
+      transparent 47%,
+      transparent 56%,
+      rgba(var(--axpt-bronze), .012) 60%,
+      transparent 64%,
+      transparent 100%
+    );
+
+  opacity: .24;
+
+  transform:
+    scaleX(.985)
+    scaleY(.992);
+
+  transition:
+    opacity 1700ms cubic-bezier(.22, 1, .36, 1),
+    transform 1800ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-presence="true"])
+.sealSurface::before {
+  opacity: .52;
+
+  transform:
+    scaleX(1)
+    scaleY(1);
+}
+
+
+/* low terminal horizon */
+
+.sealSurface::after {
+  content: "";
+
+  position: absolute;
+
+  left: 11%;
+  right: 11%;
+  bottom: 13%;
+
+  height: 1px;
+
+  pointer-events: none;
+  z-index: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(var(--axpt-mineral-cold), .020) 18%,
+      rgba(var(--axpt-silver), .045) 50%,
+      rgba(var(--axpt-bronze), .026) 82%,
+      transparent 100%
+    );
+
+  opacity: .18;
+
+  transform: scaleX(.88);
+  transform-origin: center;
+
+  transition:
+    opacity 1550ms cubic-bezier(.22, 1, .36, 1),
+    transform 1800ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-presence="true"])
+.sealSurface::after {
+  opacity: .62;
+  transform: scaleX(1);
+}
+
+
+/* ─────────────────────────────────────
+   CEREMONIAL FRAME
+───────────────────────────────────── */
+
+.inner {
+  position: relative;
+  z-index: 1;
+
   width: min(
     calc(100% - (var(--rail-inset) * 2)),
     1080px
@@ -19,323 +143,2792 @@
 
   min-height: calc(
     100svh -
-    clamp(18px, 2.5vh, 36px) -
     clamp(24px, 3vh, 40px)
   );
 
   margin: 0 auto;
 
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
 
-  grid-template-rows:
-    minmax(0, 1fr)
-    auto;
-
-  row-gap: clamp(28px, 4vh, 52px);
+  padding:
+    clamp(150px, 20vh, 240px)
+    0
+    clamp(34px, 4vh, 54px);
 }
 
 
 /* ─────────────────────────────────────
-   REGISTRATION
-───────────────────────────────────── */
-
-
-
-
-/* ─────────────────────────────────────
-   SEAL FIELD
+   RATIFICATION FIELD
 ───────────────────────────────────── */
 
 .sealField {
-  position: relative;
-
   display: grid;
 
   grid-template-columns:
-    minmax(240px, .78fr)
-    minmax(0, 1.22fr);
+    repeat(12, minmax(0, 1fr));
+
+  column-gap:
+    clamp(20px, 2.6vw, 36px);
 
   align-items: center;
 
-  column-gap: clamp(64px, 9vw, 140px);
+  padding-bottom:
+    clamp(74px, 9vh, 112px);
 }
 
 
 /* ─────────────────────────────────────
-   MARK
+   WITNESS / COUNTER-SEAL
 ───────────────────────────────────── */
 
-.sealMark {
+.sealWitness {
+  grid-column: 2 / 5;
+
   position: relative;
 
   justify-self: center;
 
-  width: clamp(210px, 23vw, 320px);
-  aspect-ratio: 1;
-
-  display: grid;
-  place-items: center;
-}
-
-/* ─────────────────────────────────────
-   CLOSING STATEMENT
-───────────────────────────────────── */
-
-.closingStatement {
-  position: relative;
-
-  max-width: 650px;
-
   display: flex;
   flex-direction: column;
+  align-items: center;
 
-  gap: clamp(24px, 3vh, 34px);
+  text-align: center;
+
+  opacity: .46;
+
+  transform:
+    translate3d(-2px, 3px, 0)
+    scale(.985);
+
+  filter:
+    contrast(.96)
+    brightness(.97);
+
+  transition:
+    opacity 1280ms cubic-bezier(.22, 1, .36, 1),
+    transform 1500ms cubic-bezier(.22, 1, .36, 1),
+    filter 1400ms cubic-bezier(.22, 1, .36, 1);
 }
 
-.closingStatement h2 {
-  margin: 0;
 
-  max-width: 13ch;
+/* halo stays centered and largely still */
 
-  font-size: clamp(2.8rem, 5.1vw, 4.9rem);
-  line-height: .98;
+.sealWitness::before {
+  content: "";
 
-  font-weight: 500;
+  position: absolute;
 
-  letter-spacing: -.052em;
+  left: 50%;
+  top: 43%;
 
-  color: rgba(var(--axpt-limestone), .9);
+  width:
+    clamp(168px, 18vw, 250px);
 
-  text-wrap: balance;
+  aspect-ratio: 1;
+
+  border-radius: 50%;
+
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(var(--axpt-bronze), .070) 0%,
+      rgba(var(--axpt-mineral-cold), .040) 27%,
+      rgba(var(--axpt-bronze), .018) 48%,
+      transparent 73%
+    );
+
+  opacity: .34;
+
+  transform:
+    translate3d(-50%, -50%, 0)
+    scale(.96);
+
+  filter:
+    blur(10px);
+
+  z-index: -1;
 }
 
-.closingStatement h2 span {
+:global(body[data-established-presence="true"])
+.sealWitness {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0)
+    scale(1);
+
+  filter:
+    contrast(1)
+    brightness(1);
+
+  animation:
+    sealWitnessSettle
+    1680ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+@keyframes sealWitnessSettle {
+
+  0%,
+  18% {
+    opacity: .42;
+
+    transform:
+      translate3d(-3px, 4px, 0)
+      scale(.982);
+  }
+
+  74% {
+    opacity: .94;
+
+    transform:
+      translate3d(.5px, -.5px, 0)
+      scale(1.005);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0)
+      scale(1);
+  }
+
+}
+
+:global(body[data-established-presence="true"])
+.sealWitness::before {
+  animation:
+    sealHaloHum
+    17200ms
+    ease-in-out
+    infinite;
+}
+
+@keyframes sealHaloHum {
+
+  0%,
+  100% {
+    opacity: .30;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(.98);
+  }
+
+  52% {
+    opacity: .45;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(1.025);
+  }
+
+}
+
+
+/* seal itself */
+
+.sealMark {
+  position: relative;
+
   display: block;
 
-  margin-top: .24em;
+  width:
+    clamp(104px, 10vw, 148px);
 
-  color: rgba(var(--axpt-ash), .52);
+  height: auto;
+
+  margin: 0 0 18px;
+
+  object-fit: contain;
+
+  opacity: .72;
+
+  filter:
+    grayscale(.12)
+    saturate(.90)
+    contrast(1.04)
+    brightness(.98)
+    drop-shadow(
+      0 0 12px
+      rgba(var(--axpt-mineral-cold), .055)
+    );
+
+  pointer-events: none;
+  user-select: none;
+
+  transition:
+    opacity 1400ms cubic-bezier(.22, 1, .36, 1),
+    filter 1500ms cubic-bezier(.22, 1, .36, 1);
 }
 
-.closingStatement p {
-  margin: 0;
+:global(body[data-established-presence="true"])
+.sealMark {
+  opacity: .94;
 
-  max-width: 40ch;
+  filter:
+    grayscale(.04)
+    saturate(1)
+    contrast(1.075)
+    brightness(1.04)
+    drop-shadow(
+      0 0 13px
+      rgba(var(--axpt-mineral-cold), .075)
+    )
+    drop-shadow(
+      0 0 30px
+      rgba(var(--axpt-bronze), .038)
+    );
+}
 
-  font-size: clamp(.92rem, 1.15vw, 1.02rem);
-  line-height: 1.75;
 
-  color: rgba(var(--axpt-silver), .5);
+.sealWitnessText {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 7px;
+}
+
+.sealLabel,
+.sealClassification,
+.fieldMarker,
+.attestationRail {
+  font-family: var(--axpt-mono);
+  text-transform: uppercase;
+}
+
+.sealLabel {
+  font-size: .58rem;
+  line-height: 1;
+
+  letter-spacing: .27em;
+
+  color:
+    rgba(var(--axpt-bronze), .84);
+
+  text-shadow:
+    0 0 10px
+    rgba(var(--axpt-bronze), .024);
+}
+
+.sealClassification {
+  font-size: .48rem;
+  line-height: 1.45;
+
+  letter-spacing: .20em;
+
+  color:
+    rgba(var(--axpt-iron-silver), .46);
 }
 
 
 /* ─────────────────────────────────────
-   FOOTER RECORD
+   ATTESTATION ARCHITECTURE
+
+   No hero headline.
+
+   The closing doctrine is deposited as
+   two ratified clauses, witnessed at left
+   and followed by institutional attestation.
 ───────────────────────────────────── */
 
-.footerBar {
+.declarationField {
+  grid-column: 5 / 11;
+
   width: 100%;
+  max-width: 650px;
+
+  min-width: 0;
+}
+
+
+/* 01 — REGISTRY */
+
+.fieldMarker {
+  margin:
+    0
+    0
+    clamp(28px, 3.6vh, 42px);
+
+  font-family: var(--axpt-mono);
+
+  font-size: .48rem;
+  line-height: 1.4;
+
+  letter-spacing: .255em;
+  text-transform: uppercase;
+
+  color:
+    rgba(var(--axpt-iron-silver), .42);
+
+  opacity: .46;
+
+  transform:
+    translate3d(-2px, 1px, 0);
+
+  transition:
+    opacity 1080ms cubic-bezier(.22, 1, .36, 1),
+    transform 1320ms cubic-bezier(.22, 1, .36, 1),
+    color 1200ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-presence="true"])
+.fieldMarker {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0);
+
+  color:
+    rgba(var(--axpt-mineral-cold), .58);
+}
+
+
+/* 02 — RATIFIED CLAUSES */
+
+.articles {
+  position: relative;
+
+  width: 100%;
+  max-width: 590px;
+
+  display: grid;
+
+  gap:
+    clamp(22px, 3vh, 34px);
+}
+
+
+/* ─────────────────────────────────────
+   ARTICLE
+
+   Each principle is entered as its own
+   constitutional record.
+───────────────────────────────────── */
+
+.article {
+  position: relative;
 
   display: grid;
 
   grid-template-columns:
-    1fr
+    minmax(118px, .30fr)
+    minmax(0, 1fr);
+
+  column-gap:
+    clamp(32px, 4vw, 54px);
+
+  align-items: stretch;
+
+  min-height:
+    clamp(150px, 18vh, 200px);
+
+  padding:
+    clamp(22px, 2.8vh, 30px)
+    0
+    clamp(26px, 3.2vh, 36px);
+
+  border-top:
+    1px solid
+    rgba(var(--axpt-silver), .065);
+
+  border-bottom:
+    1px solid
+    rgba(var(--axpt-silver), .035);
+
+  opacity: .42;
+
+  transform:
+    translate3d(0, 3px, 0);
+
+  filter:
+    contrast(.96)
+    brightness(.98);
+
+  transition:
+    opacity 1100ms cubic-bezier(.22, 1, .36, 1),
+    transform 1420ms cubic-bezier(.22, 1, .36, 1),
+    filter 1320ms cubic-bezier(.22, 1, .36, 1);
+}
+
+
+/*
+   Registry spine.
+
+   The number is intentionally oversized
+   relative to ordinary microcopy, but not
+   relative to the article statement.
+
+   This is one of the few places in the
+   entire document where numerals become
+   structural objects.
+*/
+
+.articleHead {
+  position: relative;
+
+  display: grid;
+
+  grid-template-rows:
     auto
     1fr;
 
-  align-items: end;
+  align-content: start;
 
-  gap: 32px;
+  min-height: 100%;
 
-  padding-top: 22px;
+  padding-right:
+    clamp(12px, 1.5vw, 20px);
 
-  border-top: 1px solid rgba(var(--axpt-silver), .055);
+  border-right:
+    1px solid
+    rgba(var(--axpt-bronze), .075);
 }
 
-.footerIdentity,
-.footerContact,
-.footerRecord {
-  min-width: 0;
+.articleNumber {
+  display: block;
 
   font-family: var(--axpt-mono);
 
-  font-size: .5rem;
-  line-height: 1.5;
+  font-size:
+    clamp(1.5rem, 2.1vw, 2.15rem);
+
+  line-height: .95;
+
+  font-weight: 400;
+
+  letter-spacing: -.045em;
+
+  color:
+    rgba(var(--axpt-bronze), .58);
+
+  opacity: .82;
+
+  text-shadow:
+    0 0 14px
+    rgba(var(--axpt-bronze), .025);
+}
+
+.articleLabel {
+  align-self: end;
+
+  display: block;
+
+  max-width: 12ch;
+
+  padding-bottom: 2px;
+
+  font-family: var(--axpt-mono);
+
+  font-size: .47rem;
+  line-height: 1.45;
 
   letter-spacing: .22em;
   text-transform: uppercase;
 
-  color: rgba(var(--axpt-iron-silver), .3);
+  color:
+    rgba(var(--axpt-iron-silver), .50);
 }
 
-.footerIdentity {
-  display: flex;
 
-  gap: 18px;
+/*
+   Entered statement.
+
+   Deliberately smaller and less cinematic
+   than preceding surface declarations.
+*/
+
+.articleStatement {
+  align-self: center;
+
+  margin: 0;
+
+  max-width: 15ch;
+
+  font-family: var(--axpt-body);
+
+  font-size:
+    clamp(1.78rem, 2.65vw, 2.72rem);
+
+  line-height: 1.10;
+
+  font-weight: 430;
+
+  letter-spacing: -.026em;
+
+  color:
+    rgba(var(--axpt-limestone), .86);
+
+  text-wrap: balance;
 }
 
-.footerIdentity span:first-child {
-  color: rgba(var(--axpt-bronze), .54);
+
+/* 01 / CONTINUITY — declared */
+
+.article:nth-child(1) {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--axpt-bronze), .012) 0%,
+      transparent 28%
+    );
 }
 
-.footerContact {
-  display: flex;
+.article:nth-child(1) .articleNumber {
+  color:
+    rgba(var(--axpt-bronze), .82);
+}
+
+.article:nth-child(1) .articleStatement {
+  color:
+    rgba(var(--axpt-limestone), .90);
+}
+
+
+/* 02 / ESTABLISHMENT — settled */
+
+.article:nth-child(2) {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--axpt-mineral-cold), .012) 0%,
+      transparent 30%
+    );
+}
+
+.article:nth-child(2) .articleNumber {
+  color:
+    rgba(var(--axpt-mineral-cold), .74);
+}
+
+.article:nth-child(2) .articleHead {
+  border-right-color:
+    rgba(var(--axpt-mineral-cold), .065);
+}
+
+.article:nth-child(2) .articleStatement {
+  color:
+    rgba(var(--axpt-silver), .76);
+}
+
+
+/* article settlement */
+
+:global(body[data-established-presence="true"])
+.article:nth-child(1) {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0);
+
+  filter:
+    contrast(1)
+    brightness(1);
+
+  animation:
+    sealArticle01Settle
+    1780ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+:global(body[data-established-presence="true"])
+.article:nth-child(2) {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0);
+
+  filter:
+    contrast(1)
+    brightness(1);
+
+  animation:
+    sealArticle02Settle
+    2020ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+@keyframes sealArticle01Settle {
+
+  0%,
+  18% {
+    opacity: .34;
+
+    transform:
+      translate3d(-3px, 4px, 0);
+
+    filter:
+      contrast(.95)
+      brightness(.97);
+  }
+
+  72% {
+    opacity: .94;
+
+    transform:
+      translate3d(.6px, 0, 0);
+
+    filter:
+      contrast(1.01)
+      brightness(1.01);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0);
+
+    filter:
+      contrast(1)
+      brightness(1);
+  }
+
+}
+
+@keyframes sealArticle02Settle {
+
+  0%,
+  30% {
+    opacity: .30;
+
+    transform:
+      translate3d(-4px, 4px, 0);
+
+    filter:
+      contrast(.95)
+      brightness(.97);
+  }
+
+  76% {
+    opacity: .92;
+
+    transform:
+      translate3d(.6px, 0, 0);
+
+    filter:
+      contrast(1.01)
+      brightness(1.01);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0);
+
+    filter:
+      contrast(1)
+      brightness(1);
+  }
+
+}
+
+
+/* 03 — ATTESTATION */
+
+.attestation {
+  position: relative;
+
+  width: min(100%, 480px);
+
+  margin:
+    clamp(34px, 4.5vh, 52px)
+    0
+    0
+    clamp(72px, 7vw, 112px);
+
+  padding-top:
+    clamp(18px, 2.2vh, 24px);
+
+  border-top:
+    1px solid
+    rgba(var(--axpt-bronze), .065);
+
+  opacity: .44;
+
+  transform:
+    translate3d(-2px, 3px, 0);
+
+  transition:
+    opacity 1200ms cubic-bezier(.22, 1, .36, 1),
+    transform 1500ms cubic-bezier(.22, 1, .36, 1);
+}
+
+
+/*
+   Small bronze registration point:
+   a mark of attestation, not decoration.
+*/
+
+.attestation::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: -1px;
+
+  width: 26px;
+  height: 1px;
+
+  background:
+    rgba(var(--axpt-bronze), .42);
+
+  opacity: .54;
+
+  transform:
+    scaleX(.72);
+
+  transform-origin:
+    0% 50%;
+
+  transition:
+    opacity 1100ms cubic-bezier(.22, 1, .36, 1),
+    transform 1450ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.attestationLabel {
+  margin:
+    0
+    0
+    12px;
+
+  font-family: var(--axpt-mono);
+
+  font-size: .47rem;
+  line-height: 1.35;
+
+  letter-spacing: .24em;
+  text-transform: uppercase;
+
+  color:
+    rgba(var(--axpt-bronze), .60);
+}
+
+.attestationStatement {
+  margin: 0;
+
+  max-width: 36ch;
+
+  font-family: var(--axpt-body);
+
+  font-size:
+    clamp(.94rem, 1.08vw, 1.02rem);
+
+  line-height: 1.70;
+
+  letter-spacing: -.012em;
+
+  color:
+    rgba(var(--axpt-silver), .58);
+}
+
+:global(body[data-established-presence="true"])
+.attestation {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0);
+
+  animation:
+    sealAttestationBodySettle
+    2180ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+:global(body[data-established-presence="true"])
+.attestation::before {
+  opacity: 1;
+
+  transform:
+    scaleX(1);
+}
+
+@keyframes sealAttestationBodySettle {
+
+  0%,
+  36% {
+    opacity: .34;
+    transform: translate3d(-3px, 4px, 0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+}
+
+
+/* 04 — WITNESS REGISTRY */
+
+.witnessMarker {
+  margin:
+    0
+    0
+    clamp(22px, 2.7vh, 30px);
+
+  font-family: var(--axpt-mono);
+
+  font-size: .47rem;
+  line-height: 1;
+
+  letter-spacing: .26em;
+  text-transform: uppercase;
+
+  color:
+    rgba(var(--axpt-iron-silver), .42);
+
+  opacity: .52;
+
+  transform:
+    translate3d(0, 1px, 0);
+
+  transition:
+    opacity 1100ms cubic-bezier(.22, 1, .36, 1),
+    transform 1320ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-presence="true"])
+.witnessMarker {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0);
+
+  color:
+    rgba(var(--axpt-bronze), .54);
+}
+
+
+/* ─────────────────────────────────────
+   ATTESTATION RAIL
+
+   This is the ceremonial footer internal
+   to the final surface. The global AXPT
+   rail may remain below it.
+───────────────────────────────────── */
+
+.attestationRail {
+  width: 100%;
+
+  min-height: 42px;
+
+  padding-top: 17px;
+
+  border-top:
+    1px solid
+    rgba(var(--axpt-silver), .065);
+
+  display: grid;
+
+  grid-template-columns:
+    auto
+    1fr
+    auto;
+
   align-items: center;
 
-  gap: 18px;
+  column-gap:
+    clamp(18px, 3vw, 38px);
+
+  opacity: .42;
+
+  transform:
+    translate3d(0, 2px, 0);
+
+  transition:
+    opacity 1250ms cubic-bezier(.22, 1, .36, 1),
+    transform 1500ms cubic-bezier(.22, 1, .36, 1);
 }
 
-.footerLabel {
-  color: rgba(var(--axpt-iron-silver), .3);
+.attestationLeft,
+.attestationCenter,
+.attestationRight {
+  font-size: .46rem;
+  line-height: 1.25;
+
+  letter-spacing: .22em;
 }
 
-.footerLink {
-  color: rgba(var(--axpt-silver), .5);
+.attestationLeft {
+  color:
+    rgba(var(--axpt-bronze), .72);
+}
+
+.attestationCenter {
+  justify-self: center;
+
+  color:
+    rgba(var(--axpt-iron-silver), .40);
+}
+
+.attestationRight {
+  color:
+    rgba(var(--axpt-iron-silver), .44);
+}
+
+:global(body[data-established-presence="true"])
+.attestationRail {
+  opacity: 1;
+
+  transform:
+    translate3d(0, 0, 0);
+
+  animation:
+    sealAttestationSettle
+    2300ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+@keyframes sealAttestationSettle {
+
+  0%,
+  38% {
+    opacity: .32;
+    transform: translate3d(0, 3px, 0);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   RESPONSIVE
+───────────────────────────────────── */
+
+@media (max-width: 820px) {
+
+  .inner {
+    padding-top:
+      clamp(110px, 15vh, 170px);
+  }
+
+  .sealField {
+    grid-template-columns: 1fr;
+
+    row-gap:
+      clamp(52px, 8vh, 80px);
+
+    padding-bottom:
+      clamp(60px, 8vh, 90px);
+  }
+
+  .sealWitness,
+  .declarationField {
+    grid-column: 1;
+  }
+
+  .sealWitness {
+    justify-self: start;
+    align-items: flex-start;
+
+    text-align: left;
+  }
+
+  .sealWitness::before {
+    left: 0;
+
+    transform:
+      translate3d(-28%, -50%, 0)
+      scale(.96);
+  }
+
+  :global(body[data-established-presence="true"])
+  .sealWitness::before {
+    animation: none;
+
+    transform:
+      translate3d(-28%, -50%, 0)
+      scale(1);
+  }
+
+  .sealWitnessText {
+    align-items: flex-start;
+  }
+
+
+  .attestationRail {
+    grid-template-columns:
+      auto
+      auto;
+
+    row-gap: 10px;
+  }
+
+  .attestationCenter {
+    display: none;
+  }
+
+}
+
+@media (max-width: 560px) {
+
+  .inner {
+    width: calc(100% - 32px);
+
+    padding-bottom: 32px;
+  }
+
+
+  .attestationRight {
+    text-align: right;
+  }
+
+}
+
+/* ─────────────────────────────────────
+   REDUCED MOTION
+
+   Preserve the ratified condition.
+   Remove settlement and continuous hum.
+───────────────────────────────────── */
+
+
+/* ─────────────────────────────────────
+   ATTESTATION RESPONSIVE
+───────────────────────────────────── */
+
+@media (max-width: 820px) {
+
+  .article {
+    grid-template-columns: 1fr;
+
+    row-gap: 12px;
+  }
+
+
+  .attestation {
+    margin-left: 0;
+
+    max-width: 38ch;
+  }
+
+}
+
+
+
+@media (prefers-reduced-motion: reduce) {
+
+  .sealSurface::before,
+  .sealSurface::after,
+  .sealWitness,
+  .sealWitness::before,
+  .sealMark,
+  .witnessMarker,
+  .fieldMarker,
+  .article,
+  .attestation,
+  .attestation::before,
+  .attestationRail,
+  :global(body[data-established-presence="true"]) .sealSurface::before,
+  :global(body[data-established-presence="true"]) .sealSurface::after,
+  :global(body[data-established-presence="true"]) .sealWitness,
+  :global(body[data-established-presence="true"]) .sealWitness::before,
+  :global(body[data-established-presence="true"]) .sealMark,
+  :global(body[data-established-presence="true"]) .witnessMarker,
+  :global(body[data-established-presence="true"]) .fieldMarker,
+  :global(body[data-established-presence="true"]) .article,
+  :global(body[data-established-presence="true"]) .attestation,
+  :global(body[data-established-presence="true"]) .attestation::before,
+  :global(body[data-established-presence="true"]) .attestationRail {
+    animation: none;
+    transition: none;
+  }
+
+  .sealSurface::before,
+  :global(body[data-established-presence="true"]) .sealSurface::before {
+    opacity: .52;
+    transform: none;
+  }
+
+  .sealSurface::after,
+  :global(body[data-established-presence="true"]) .sealSurface::after {
+    opacity: .62;
+    transform: scaleX(1);
+  }
+
+  .sealWitness,
+  :global(body[data-established-presence="true"]) .sealWitness {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  .sealWitness::before,
+  :global(body[data-established-presence="true"]) .sealWitness::before {
+    opacity: .36;
+
+    transform:
+      translate3d(-50%, -50%, 0)
+      scale(1);
+  }
+
+  .sealMark,
+  :global(body[data-established-presence="true"]) .sealMark {
+    opacity: .94;
+
+    filter:
+      grayscale(.04)
+      saturate(1)
+      contrast(1.075)
+      brightness(1.04);
+  }
+
+  .witnessMarker,
+  .fieldMarker,
+  .article,
+  .attestation,
+  .attestationRail,
+  :global(body[data-established-presence="true"]) .witnessMarker,
+  :global(body[data-established-presence="true"]) .fieldMarker,
+  :global(body[data-established-presence="true"]) .article,
+  :global(body[data-established-presence="true"]) .attestation,
+  :global(body[data-established-presence="true"]) .attestationRail {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  .attestation::before,
+  :global(body[data-established-presence="true"]) .attestation::before {
+    opacity: 1;
+    transform: scaleX(1);
+  }
+
+}
+
+/* ─────────────────────────────────────
+   PRESENCE — TERMINAL AUTHORITY RAIL / V1
+
+   Public contact remains available.
+   Final language closes in authority,
+   not merely traceability.
+───────────────────────────────────── */
+
+.attestationCenter {
+  display: inline;
+
+  justify-self: center;
+
+  color:
+    rgba(var(--axpt-iron-silver), .46);
 
   text-decoration: none;
 
-  transition: color 220ms ease;
+  transition:
+    color 240ms ease;
 }
 
-.footerLink:hover {
-  color: rgba(var(--axpt-limestone), .78);
+.attestationCenter:hover {
+  color:
+    rgba(var(--axpt-limestone), .68);
 }
 
-.footerRecord {
-  text-align: right;
+.attestationCenter:focus-visible {
+  outline:
+    1px solid
+    rgba(var(--axpt-limestone), .42);
+
+  outline-offset: 5px;
 }
 
 
-/* ─────────────────────────────────────
-   TABLET
-───────────────────────────────────── */
+/* Tablet / mobile terminal arrangement */
 
-@media (max-width: 900px) {
-  .sealField {
+@media (max-width: 820px) {
+
+  .attestationRail {
     grid-template-columns:
-      minmax(190px, .7fr)
-      minmax(0, 1.3fr);
+      auto
+      1fr;
 
-    column-gap: clamp(40px, 6vw, 72px);
+    row-gap: 12px;
   }
 
-  .sealMark {
-    width: clamp(190px, 28vw, 260px);
+  .attestationCenter {
+    display: inline;
+
+    justify-self: end;
+
+    text-align: right;
   }
+
+  .attestationRight {
+    grid-column: 1 / -1;
+
+    justify-self: end;
+
+    text-align: right;
+  }
+
+}
+
+
+/* Narrow handset refinement */
+
+@media (max-width: 560px) {
+
+  .attestationRail {
+    column-gap: 16px;
+    row-gap: 11px;
+  }
+
+  .attestationCenter {
+    max-width: 22ch;
+
+    letter-spacing: .17em;
+  }
+
+  .attestationRight {
+    max-width: 36ch;
+
+    line-height: 1.45;
+  }
+
+}
+
+
+/* Reduced motion retains the final record */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .attestationCenter {
+    transition: none;
+  }
+
+}
+
+/* HEADER ANCHOR OFFSET — sealSurface */
+
+.sealSurface {
+  scroll-margin-top: 76px;
+}
+
+@media (max-width: 680px) {
+
+  .sealSurface {
+    scroll-margin-top: 64px;
+  }
+
 }
 
 
 /* ─────────────────────────────────────
-   MOBILE
+   AXPT V1 — SEAL MOBILE CONSTITUTION
+
+   Mobile reads as a terminal instrument:
+
+   witness
+   → Article 01
+   → Article 02
+   → attestation
+   → authority rail.
 ───────────────────────────────────── */
 
 @media (max-width: 680px) {
-  .sealInner {
-    min-height: auto;
 
-    row-gap: 34px;
+  .sealSurface {
+    scroll-margin-top: 60px;
   }
+
+
+  .inner {
+    width:
+      calc(100% - 40px);
+
+    min-height: 0;
+
+    margin:
+      0
+      auto;
+
+    padding:
+      0
+      0
+      12px;
+  }
+
 
   .sealField {
-    display: flex;
-    flex-direction: column;
+    display: block;
 
-    align-items: flex-start;
+    min-height: 0;
 
-    gap: 44px;
+    padding: 0;
   }
+
+
+  /* ── WITNESS ── */
+
+  .sealWitness {
+    position: relative;
+
+    display: grid;
+
+    grid-template-columns:
+      54px
+      minmax(0, 1fr);
+
+    grid-template-areas:
+      "marker marker"
+      "mark text";
+
+    align-items: center;
+
+    column-gap: 15px;
+    row-gap: 13px;
+
+    width: 100%;
+
+    margin:
+      0
+      0
+      42px;
+
+    padding:
+      0
+      0
+      22px;
+
+    border-bottom:
+      1px solid
+      rgba(var(--axpt-silver), .07);
+  }
+
+
+  .witnessMarker {
+    grid-area: marker;
+
+    margin: 0;
+
+    font-size: .47rem;
+    line-height: 1;
+
+    letter-spacing: .22em;
+  }
+
 
   .sealMark {
-    align-self: center;
+    grid-area: mark;
 
-    width: min(230px, 64vw);
+    position: relative;
+
+    left: auto;
+    top: auto;
+
+    width: 54px;
+    height: auto;
+
+    transform: none;
   }
 
-  .closingStatement h2 {
-    max-width: 12ch;
 
-    font-size: clamp(2.65rem, 12.5vw, 4rem);
+  .sealWitnessText {
+    grid-area: text;
+
+    min-width: 0;
+
+    display: grid;
+
+    gap: 5px;
   }
 
-  .footerBar {
-    grid-template-columns: 1fr;
 
-    align-items: start;
+  .sealLabel {
+    font-size: .58rem;
+    line-height: 1;
 
-    gap: 16px;
+    letter-spacing: .22em;
   }
 
-  .footerIdentity {
-    justify-content: flex-start;
+
+  .sealClassification {
+    max-width: 26ch;
+
+    font-size: .46rem;
+    line-height: 1.45;
+
+    letter-spacing: .14em;
   }
 
-  .footerContact {
-    align-items: flex-start;
+
+  /* ── DECLARATION FIELD ── */
+
+  .declarationField {
+    width: 100%;
+    max-width: none;
+
+    margin: 0;
+    padding: 0;
   }
 
-  .footerRecord {
-    text-align: left;
+
+  .fieldMarker {
+    max-width: 30ch;
+
+    margin:
+      0
+      0
+      18px;
+
+    font-size: .47rem;
+    line-height: 1.45;
+
+    letter-spacing: .18em;
   }
+
+
+  /* ── ARTICLES ── */
+
+  .articles {
+    width: 100%;
+
+    display: block;
+
+    margin: 0;
+  }
+
+
+  .article {
+    min-height: 0;
+
+    display: block;
+
+    padding:
+      23px
+      0
+      26px;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-silver), .08);
+  }
+
+
+  .article:last-child {
+    border-bottom:
+      1px solid
+      rgba(var(--axpt-silver), .08);
+  }
+
+
+  .articleHead {
+    display: grid;
+
+    grid-template-columns:
+      28px
+      minmax(0, 1fr);
+
+    align-items: baseline;
+
+    column-gap: 10px;
+
+    margin-bottom: 14px;
+  }
+
+
+  .articleNumber {
+    font-size: .47rem;
+    line-height: 1;
+
+    letter-spacing: .15em;
+  }
+
+
+  .articleLabel {
+    font-size: .49rem;
+    line-height: 1;
+
+    letter-spacing: .19em;
+  }
+
+
+  .articleStatement {
+    max-width: 16ch;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        1.65rem,
+        7.5vw,
+        2rem
+      );
+
+    line-height: 1.08;
+
+    letter-spacing: -.026em;
+  }
+
+
+  /* ── ATTESTATION ── */
+
+  .attestation {
+    width: 100%;
+    max-width: none;
+
+    margin-top: 34px;
+    padding-top: 18px;
+  }
+
+
+  .attestationLabel {
+    margin:
+      0
+      0
+      13px;
+
+    font-size: .47rem;
+    line-height: 1;
+
+    letter-spacing: .21em;
+  }
+
+
+  .attestationStatement {
+    max-width: 34ch;
+
+    margin: 0;
+
+    font-size: .96rem;
+    line-height: 1.66;
+
+    letter-spacing: -.008em;
+  }
+
+
+  /* ── TERMINAL AUTHORITY RAIL ── */
+
+  .attestationRail {
+    width: 100%;
+
+    min-height: 0;
+
+    display: grid;
+
+    grid-template-columns:
+      auto
+      minmax(0, 1fr);
+
+    align-items: center;
+
+    column-gap: 16px;
+    row-gap: 16px;
+
+    margin-top: 44px;
+
+    padding:
+      17px
+      0
+      0;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-silver), .09);
+  }
+
+
+  .attestationLeft {
+    grid-column: 1;
+
+    font-size: .48rem;
+    letter-spacing: .22em;
+  }
+
+
+  .attestationCenter {
+    grid-column: 2;
+
+    justify-self: end;
+
+    display: inline;
+
+    font-size: .48rem;
+    letter-spacing: .14em;
+  }
+
+
+  .attestationRight {
+    grid-column:
+      1 / -1;
+
+    max-width: 34ch;
+
+    font-size: .46rem;
+    line-height: 1.5;
+
+    letter-spacing: .14em;
+  }
+
 }
 
+/* ─────────────────────────────────────
+   AXPT V1 — SEAL MOBILE M8A
 
-@media (prefers-reduced-motion: reduce) {
-  .footerLink {
-    transition: none;
+   TERMINAL COMPRESSION
+
+   Witness → clauses → attestation → rail.
+
+   No new architecture.
+   Ceremonial excess is removed so the
+   final surface closes as one instrument.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .inner {
+    width: calc(100% - 44px);
+
+    min-height: 0;
+
+    padding:
+      0
+      0
+      8px;
   }
+
+
+  .sealField {
+    min-height: 0;
+
+    padding: 0;
+  }
+
+
+  /* ── WITNESS / COUNTER-SEAL ── */
+
+  .sealWitness {
+    grid-template-columns:
+      44px
+      minmax(0, 1fr);
+
+    column-gap: 13px;
+    row-gap: 9px;
+
+    margin:
+      0
+      0
+      24px;
+
+    padding:
+      0
+      0
+      15px;
+  }
+
+
+  .witnessMarker {
+    font-size: .44rem;
+
+    letter-spacing: .20em;
+  }
+
+
+  .sealMark {
+    width: 44px;
+
+    margin: 0;
+  }
+
+
+  .sealWitnessText {
+    gap: 4px;
+  }
+
+
+  .sealLabel {
+    font-size: .55rem;
+
+    letter-spacing: .21em;
+  }
+
+
+  .sealClassification {
+    max-width: 25ch;
+
+    font-size: .42rem;
+    line-height: 1.35;
+
+    letter-spacing: .12em;
+  }
+
+
+  /* ── CONSTITUTIONAL REGISTER ── */
+
+  .fieldMarker {
+    margin:
+      0
+      0
+      12px;
+
+    font-size: .43rem;
+    line-height: 1.35;
+
+    letter-spacing: .16em;
+  }
+
+
+  /* ── RATIFIED CLAUSES ── */
+
+  .article {
+    padding:
+      18px
+      0
+      20px;
+  }
+
+
+  .articleHead {
+    grid-template-columns:
+      26px
+      minmax(0, 1fr);
+
+    column-gap: 8px;
+
+    margin-bottom: 10px;
+  }
+
+
+  .articleNumber {
+    font-size: .44rem;
+
+    letter-spacing: .13em;
+  }
+
+
+  .articleLabel {
+    font-size: .46rem;
+
+    letter-spacing: .17em;
+  }
+
+
+  .articleStatement {
+    max-width: 17ch;
+
+    font-size:
+      clamp(
+        1.48rem,
+        6.8vw,
+        1.82rem
+      );
+
+    line-height: 1.07;
+  }
+
+
+  /* ── FINAL ATTESTATION ── */
+
+  .attestation {
+    margin-top: 22px;
+
+    padding-top: 14px;
+  }
+
+
+  .attestationLabel {
+    margin:
+      0
+      0
+      9px;
+
+    font-size: .44rem;
+
+    letter-spacing: .19em;
+  }
+
+
+  .attestationStatement {
+    max-width: 33ch;
+
+    font-size: .90rem;
+    line-height: 1.56;
+  }
+
+
+  /* ── TERMINAL AUTHORITY RAIL ── */
+
+  .attestationRail {
+    column-gap: 14px;
+    row-gap: 9px;
+
+    margin-top: 26px;
+
+    padding:
+      13px
+      0
+      0;
+  }
+
+
+  .attestationLeft,
+  .attestationCenter {
+    font-size: .44rem;
+  }
+
+
+  .attestationRight {
+    max-width: 32ch;
+
+    font-size: .43rem;
+    line-height: 1.42;
+  }
+
 }
 
 
 /* ─────────────────────────────────────
-   LIVING DOCUMENT — INSCRIPTION
+   AXPT V1 — SEAL MOBILE M8B
+
+   CONTROLLED SEALING
+
+   Witness becomes registration.
+   Clauses become quiet constitutional entries.
+   The AXPT mark performs the final visual seal.
 ───────────────────────────────────── */
 
-.closingStatement h2 {
-  opacity: .56;
-  transform: translate3d(0, 10px, 0);
+@media (max-width: 680px) {
 
-  transition:
-    opacity 900ms cubic-bezier(.22, 1, .36, 1),
-    transform 1100ms cubic-bezier(.22, 1, .36, 1);
-}
+  /* ── WITNESS BECOMES REGISTRATION ── */
 
-:global(body[data-layer="PRESENCE"]) .closingStatement h2 {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-}
+  .sealWitness {
+    display: block;
 
-@media (prefers-reduced-motion: reduce) {
-  .closingStatement h2 {
-    transition: none;
+    margin:
+      0
+      0
+      20px;
+
+    padding:
+      0
+      0
+      13px;
   }
+
+
+  .sealWitness::before {
+    display: none;
+  }
+
+
+  .sealMark {
+    display: none;
+  }
+
+
+  .witnessMarker {
+    margin:
+      0
+      0
+      8px;
+
+    font-size: .42rem;
+
+    letter-spacing: .18em;
+  }
+
+
+  .sealWitnessText {
+    display: flex;
+
+    flex-direction: row;
+
+    align-items: baseline;
+
+    gap: 10px;
+  }
+
+
+  .sealLabel {
+    font-size: .52rem;
+
+    letter-spacing: .20em;
+  }
+
+
+  .sealClassification {
+    max-width: none;
+
+    font-size: .39rem;
+    line-height: 1.3;
+
+    letter-spacing: .10em;
+
+    opacity: .72;
+  }
+
+
+  /* ── QUIET CONSTITUTIONAL REGISTER ── */
+
+  .fieldMarker {
+    margin-bottom: 10px;
+
+    font-size: .40rem;
+
+    letter-spacing: .14em;
+
+    opacity: .76;
+  }
+
+
+  .article {
+    padding:
+      15px
+      0
+      17px;
+
+    background: none;
+  }
+
+
+  .articleHead {
+    grid-template-columns:
+      24px
+      minmax(0, 1fr);
+
+    column-gap: 7px;
+
+    margin-bottom: 8px;
+  }
+
+
+  .articleNumber {
+    font-size: .40rem;
+
+    letter-spacing: .11em;
+
+    opacity: .72;
+  }
+
+
+  .articleLabel {
+    font-size: .42rem;
+
+    letter-spacing: .15em;
+
+    opacity: .76;
+  }
+
+
+  .articleStatement {
+    max-width: 23ch;
+
+    font-size:
+      clamp(
+        1.18rem,
+        5.4vw,
+        1.42rem
+      );
+
+    line-height: 1.12;
+
+    letter-spacing: -.018em;
+  }
+
+
+  .article:nth-child(1),
+  .article:nth-child(2) {
+    background: none;
+  }
+
+
+  /* less visual fencing */
+
+  .article {
+    border-bottom: 0;
+  }
+
+
+  .article:last-child {
+    border-bottom:
+      1px solid
+      rgba(var(--axpt-silver), .065);
+  }
+
+
+  /* ── ATTESTATION / FINAL CLAUSE ── */
+
+  .attestation {
+    margin-top: 19px;
+
+    padding-top: 13px;
+  }
+
+
+  .attestationLabel {
+    margin-bottom: 8px;
+
+    font-size: .41rem;
+
+    letter-spacing: .17em;
+  }
+
+
+  .attestationStatement {
+    max-width: 35ch;
+
+    font-size: .86rem;
+    line-height: 1.52;
+
+    color:
+      rgba(var(--axpt-silver), .58);
+  }
+
+
+  /* ── TERMINAL SEAL ── */
+
+  .terminalSealField {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+
+    margin:
+      32px
+      0
+      22px;
+
+    padding:
+      22px
+      0
+      18px;
+  }
+
+
+  .terminalSealField::before {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 150px;
+    height: 150px;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    background:
+      radial-gradient(
+        circle,
+        rgba(var(--axpt-mineral-cold), .050) 0%,
+        rgba(var(--axpt-bronze), .026) 30%,
+        rgba(var(--axpt-mineral-cold), .012) 52%,
+        transparent 72%
+      );
+
+    opacity: .68;
+
+    transform:
+      translate(-50%, -50%);
+  }
+
+
+  .terminalSealField::after {
+    content: "";
+
+    position: absolute;
+
+    left: 18%;
+    right: 18%;
+    bottom: 0;
+
+    height: 1px;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--axpt-bronze), .12),
+        rgba(var(--axpt-mineral-cold), .10),
+        transparent
+      );
+  }
+
+
+  .terminalSeal {
+    position: relative;
+    z-index: 1;
+
+    display: block;
+
+    width:
+      clamp(
+        92px,
+        25vw,
+        116px
+      );
+
+    height: auto;
+
+    opacity: .90;
+
+    filter:
+      grayscale(.06)
+      saturate(.96)
+      contrast(1.04)
+      brightness(1.025)
+      drop-shadow(
+        0 0 15px
+        rgba(var(--axpt-mineral-cold), .055)
+      )
+      drop-shadow(
+        0 0 34px
+        rgba(var(--axpt-bronze), .028)
+      );
+  }
+
+
+  /* ── AUTHORITY RAIL / AFTER THE SEAL ── */
+
+  .attestationRail {
+    margin-top: 0;
+
+    padding-top: 14px;
+
+    row-gap: 8px;
+  }
+
+}
+
+
+/* Desktop does not need the additional terminal mark. */
+
+@media (min-width: 681px) {
+
+  .terminalSealField {
+    display: none;
+  }
+
 }
 
 /* ─────────────────────────────────────
-   LIVING DOCUMENT — TRACE
+   AXPT V1 — SEAL MOBILE M8C
 
-   Passage concludes as record.
-   The seal does not perform;
-   evidence becomes legible.
+   PURE SEAL
+
+   No decorative field geometry.
+   No competing constitutional headlines.
+
+   registration
+   → quiet clauses
+   → attestation
+   → seal
+   → authority.
 ───────────────────────────────────── */
 
-.footerRecord {
-  opacity: .48;
-  transform: translate3d(0, 5px, 0);
+@media (max-width: 680px) {
 
-  transition:
-    opacity 1000ms cubic-bezier(.22, 1, .36, 1),
-    transform 1200ms cubic-bezier(.22, 1, .36, 1);
-}
+  /* ── REMOVE RESIDUAL FIELD GRAPHICS ── */
 
-:global(body[data-layer="PRESENCE"]) .footerRecord {
-  opacity: 1;
-  transform: translate3d(0, 0, 0);
-}
+  .sealSurface::before,
+  .sealSurface::after,
+  :global(body[data-established-presence="true"])
+  .sealSurface::before,
+  :global(body[data-established-presence="true"])
+  .sealSurface::after {
+    display: none;
+  }
 
-@media (prefers-reduced-motion: reduce) {
-  .footerRecord {
+
+  /* ── SIMPLE WITNESS REGISTRATION ── */
+
+  .sealWitness {
+    display: block;
+
+    margin:
+      0
+      0
+      18px;
+
+    padding: 0;
+
+    border: 0;
+
     opacity: 1;
     transform: none;
-    transition: none;
+    filter: none;
   }
+
+
+  .sealWitness::before,
+  .sealMark {
+    display: none;
+  }
+
+
+  .witnessMarker {
+    margin:
+      0
+      0
+      6px;
+
+    font-size: .39rem;
+    line-height: 1;
+
+    letter-spacing: .17em;
+
+    opacity: .58;
+  }
+
+
+  .sealWitnessText {
+    display: block;
+  }
+
+
+  .sealLabel {
+    font-size: .48rem;
+    line-height: 1;
+
+    letter-spacing: .19em;
+  }
+
+
+  .sealClassification {
+    display: none;
+  }
+
+
+  /* ── QUIET REGISTER ── */
+
+  .fieldMarker {
+    margin:
+      0
+      0
+      13px;
+
+    font-size: .39rem;
+    line-height: 1.3;
+
+    letter-spacing: .13em;
+
+    opacity: .60;
+  }
+
+
+  .articles {
+    display: block;
+
+    width: 100%;
+
+    margin: 0;
+  }
+
+
+  .article,
+  .article:nth-child(1),
+  .article:nth-child(2),
+  .article:last-child {
+    min-height: 0;
+
+    display: block;
+
+    margin: 0;
+
+    padding:
+      12px
+      0
+      14px;
+
+    border: 0;
+
+    background: none;
+
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+
+  .articleHead {
+    display: flex;
+
+    align-items: baseline;
+
+    gap: 8px;
+
+    min-height: 0;
+
+    margin:
+      0
+      0
+      6px;
+
+    padding: 0;
+
+    border: 0;
+  }
+
+
+  .articleNumber {
+    font-size: .38rem;
+    line-height: 1;
+
+    letter-spacing: .10em;
+
+    opacity: .58;
+  }
+
+
+  .articleLabel {
+    align-self: auto;
+
+    max-width: none;
+
+    padding: 0;
+
+    font-size: .39rem;
+    line-height: 1;
+
+    letter-spacing: .14em;
+
+    opacity: .62;
+  }
+
+
+  .articleStatement,
+  .article:nth-child(1) .articleStatement,
+  .article:nth-child(2) .articleStatement {
+    max-width: 30ch;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        1.02rem,
+        4.5vw,
+        1.16rem
+      );
+
+    line-height: 1.26;
+
+    font-weight: 420;
+
+    letter-spacing: -.012em;
+
+    color:
+      rgba(var(--axpt-limestone), .72);
+  }
+
+
+  .article:nth-child(2) .articleStatement {
+    color:
+      rgba(var(--axpt-silver), .66);
+  }
+
+
+  /* ── ATTESTATION — ONE QUIET FINAL CLAUSE ── */
+
+  .attestation {
+    width: 100%;
+
+    margin:
+      18px
+      0
+      0;
+
+    padding: 0;
+
+    border: 0;
+
+    opacity: 1;
+    transform: none;
+  }
+
+
+  .attestation::before {
+    display: none;
+  }
+
+
+  .attestationLabel {
+    margin:
+      0
+      0
+      7px;
+
+    font-size: .39rem;
+    line-height: 1;
+
+    letter-spacing: .15em;
+
+    opacity: .70;
+  }
+
+
+  .attestationStatement {
+    max-width: 34ch;
+
+    font-size: .84rem;
+    line-height: 1.5;
+
+    letter-spacing: -.006em;
+
+    color:
+      rgba(var(--axpt-silver), .54);
+  }
+
+
+  /* ── THE ACTUAL SEAL ── */
+
+  .terminalSealField {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+
+    margin:
+      34px
+      0
+      25px;
+
+    padding: 0;
+  }
+
+
+  .terminalSealField::after {
+    display: none;
+  }
+
+
+  .terminalSealField::before {
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 176px;
+    height: 176px;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    background:
+      radial-gradient(
+        circle,
+        rgba(var(--axpt-mineral-cold), .050) 0%,
+        rgba(var(--axpt-bronze), .026) 27%,
+        rgba(var(--axpt-mineral-cold), .010) 51%,
+        transparent 72%
+      );
+
+    opacity: .62;
+
+    transform:
+      translate(-50%, -50%);
+  }
+
+
+  .terminalSeal {
+    position: relative;
+    z-index: 1;
+
+    display: block;
+
+    width:
+      clamp(
+        112px,
+        30vw,
+        138px
+      );
+
+    height: auto;
+
+    opacity: .94;
+
+    filter:
+      grayscale(.04)
+      saturate(.98)
+      contrast(1.055)
+      brightness(1.035)
+      drop-shadow(
+        0 0 17px
+        rgba(var(--axpt-mineral-cold), .060)
+      )
+      drop-shadow(
+        0 0 38px
+        rgba(var(--axpt-bronze), .030)
+      );
+  }
+
+
+  /* ── FINAL AUTHORITY ── */
+
+  .attestationRail {
+    margin: 0;
+
+    padding:
+      8px
+      0
+      0;
+
+    border: 0;
+
+    row-gap: 7px;
+  }
+
+}
+
+
+@media (min-width: 681px) {
+
+  .terminalSealField {
+    display: none;
+  }
+
+}
+
+/* ─────────────────────────────────────
+   AXPT V1 — SEAL MOBILE M8D
+
+   CENTERED RATIFICATION
+
+   Final surface departs from the upper
+   document grammar and resolves into
+   one centered closing instrument.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .sealField {
+    text-align: center;
+  }
+
+
+  /* ── REMOVE WITNESS LAYER ── */
+
+  .witnessMarker {
+    display: none;
+  }
+
+
+  .sealWitness {
+    margin:
+      0
+      0
+      18px;
+
+    padding: 0;
+
+    text-align: center;
+  }
+
+
+  .sealWitnessText {
+    display: block;
+  }
+
+
+  .sealLabel {
+    display: block;
+
+    font-size: .50rem;
+    line-height: 1;
+
+    letter-spacing: .22em;
+
+    text-align: center;
+  }
+
+
+  .sealClassification {
+    display: none;
+  }
+
+
+  /* ── SINGLE CONSTITUTIONAL LINE ── */
+
+  .fieldMarker {
+    max-width: none;
+
+    margin:
+      0
+      auto
+      18px;
+
+    white-space: nowrap;
+
+    text-align: center;
+
+    font-size: .38rem;
+    line-height: 1;
+
+    letter-spacing: .11em;
+
+    opacity: .64;
+  }
+
+
+  /* ── QUIET CLAUSES ── */
+
+  .article,
+  .article:nth-child(1),
+  .article:nth-child(2),
+  .article:last-child {
+    padding:
+      13px
+      0;
+
+    text-align: center;
+  }
+
+
+  .articleHead {
+    display: block;
+
+    margin:
+      0
+      0
+      6px;
+
+    text-align: center;
+  }
+
+
+  .articleNumber {
+    display: none;
+  }
+
+
+  .articleLabel {
+    display: block;
+
+    font-size: .38rem;
+    line-height: 1;
+
+    letter-spacing: .13em;
+
+    text-align: center;
+
+    opacity: .56;
+  }
+
+
+  .articleStatement,
+  .article:nth-child(1) .articleStatement,
+  .article:nth-child(2) .articleStatement {
+    max-width: 27ch;
+
+    margin:
+      0
+      auto;
+
+    text-align: center;
+
+    font-size:
+      clamp(
+        1.03rem,
+        4.55vw,
+        1.18rem
+      );
+
+    line-height: 1.28;
+
+    font-weight: 410;
+
+    letter-spacing: -.010em;
+  }
+
+
+  /* ── ATTESTATION ── */
+
+  .attestation {
+    margin:
+      22px
+      auto
+      0;
+
+    text-align: center;
+  }
+
+
+  .attestationLabel {
+    margin-bottom: 8px;
+
+    text-align: center;
+
+    font-size: .38rem;
+
+    letter-spacing: .14em;
+  }
+
+
+  .attestationStatement {
+    max-width: 32ch;
+
+    margin:
+      0
+      auto;
+
+    text-align: center;
+
+    font-size: .82rem;
+    line-height: 1.52;
+  }
+
+
+  /* ── TERMINAL SEAL ── */
+
+  .terminalSealField {
+    margin:
+      34px
+      0
+      24px;
+  }
+
+
+  .terminalSeal {
+    width:
+      clamp(
+        118px,
+        31vw,
+        142px
+      );
+  }
+
+
+  /* ── AUTHORITY RAIL ── */
+
+  .attestationRail {
+    text-align: center;
+  }
+
+
+  .attestationLeft,
+  .attestationCenter,
+  .attestationRight {
+    text-align: center;
+  }
+
 }

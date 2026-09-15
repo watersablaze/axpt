@@ -14,8 +14,13 @@ function isAddr(a?: string | null): a is `0x${string}` {
 export async function POST(req: Request) {
   try {
     // dev bypass allowed like other admin routes
-    const bypass = req.headers.get('x-dev-bypass') === '1';
-    if (!bypass) await requireElderServer();
+    const bypass =
+      process.env.NODE_ENV === 'development' &&
+      req.headers.get('x-dev-bypass') === '1';
+
+    if (!bypass) {
+      await requireElderServer();
+    }
 
     const rpcUrl = process.env.SEPOLIA_RPC_URL || process.env.RPC_URL;
     const pk = process.env.COUNCIL_SIGNER_PRIVATE_KEY || process.env.PRIVATE_KEY;

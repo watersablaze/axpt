@@ -43,184 +43,674 @@
 ───────────────────────────────────── */
 
 .declaration {
-  grid-column: 1 / 9;
+  grid-column: 2 / 10;
 }
 
 .declaration h2 {
   margin: 0;
 
-  max-width: 11ch;
+  max-width: 17ch;
 
   font-family: var(--axpt-declaration);
-  font-size: clamp(3.15rem, 5.35vw, 5.8rem);
-  line-height: 0.98;
+  font-size: clamp(2.3rem, 3.25vw, 3.55rem);
+  line-height: 1.03;
 
   font-weight: 500;
-  letter-spacing: -0.055em;
+  letter-spacing: -.045em;
 
-  color: rgba(var(--axpt-limestone), 0.96);
+  color: rgba(var(--axpt-limestone), .92);
 }
 
 .declaration h2 span {
-  display: block;
+  display: inline;
+}
+
+.declaration h2 span:first-child::after {
+  content: " ";
 }
 
 .declarationSecondary {
-  color: rgba(var(--axpt-ash), 0.72);
+  color: rgba(var(--axpt-ash), .65);
 }
 
 
 /* ─────────────────────────────────────
-   EXPLANATION
+   CONTINUITY FIELD
+
+   The surface establishes one proposition:
+
+   Continuity is most vulnerable between
+   one state and the next.
+
+   Left: the vulnerable interval.
+   Right: what must remain intelligible.
 ───────────────────────────────────── */
 
-.explanation {
-  grid-column: 2 / 9;
-
-  display: grid;
-  gap: 10px;
-
-  max-width: 650px;
-}
-
-.explanation p {
-  margin: 0;
-
-  font-family: var(--axpt-body);
-  font-size: clamp(0.94rem, 1.15vw, 1.08rem);
-  line-height: 1.55;
-
-  color: rgba(var(--axpt-silver), 0.56);
-}
-
-.explanation .explanationFocus {
-  color: rgba(var(--axpt-ash), 0.84);
-}
-
-
-/* ─────────────────────────────────────
-   TRANSITION FIELD
-───────────────────────────────────── */
-
-.transitionField {
+.continuityField {
   grid-column: 1 / -1;
 
-  display: grid;
-  grid-template-columns:
-    minmax(180px, 1fr)
-    minmax(130px, 0.5fr)
-    minmax(180px, 1fr);
-
-  column-gap: clamp(34px, 5vw, 72px);
-
-  align-items: stretch;
-
-  padding:
-    clamp(18px, 2.4vh, 30px)
-    0;
-
-  border-top: 1px solid rgba(var(--axpt-silver), 0.075);
-  border-bottom: 1px solid rgba(var(--axpt-silver), 0.055);
-}
-
-
-/* ─────────────────────────────────────
-   STATE BANKS
-───────────────────────────────────── */
-
-.stateBank {
-  display: grid;
-  grid-template-rows: repeat(4, minmax(54px, auto));
-
-  row-gap: clamp(20px, 3vh, 34px);
-}
-
-.state {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-  min-width: 0;
-}
-
-.stateName {
-  font-family: var(--axpt-mono);
-  font-size: 0.62rem;
-  line-height: 1;
-
-  font-weight: 500;
-  letter-spacing: 0.27em;
-
-  text-transform: uppercase;
-
-  color: rgba(var(--axpt-ash), 0.78);
-}
-
-.stateNote {
-  margin-top: 8px;
-
-  font-family: var(--axpt-body);
-  font-size: 0.72rem;
-  line-height: 1.3;
-
-  color: rgba(var(--axpt-iron-silver), 0.34);
-}
-
-.stateBankRight {
-  text-align: left;
-}
-
-
-/* ─────────────────────────────────────
-   TRANSITION
-───────────────────────────────────── */
-
-.transition {
   position: relative;
 
   display: grid;
-  grid-template-rows: 1fr auto 1fr;
+  grid-template-columns:
+    minmax(210px, .72fr)
+    minmax(420px, 1.28fr);
 
-  justify-items: center;
+  column-gap: clamp(70px, 9vw, 142px);
+
   align-items: center;
 
-  min-height: 100%;
+  margin-top: clamp(42px, 5.5vh, 70px);
+  padding:
+    clamp(22px, 3vh, 38px)
+    0
+    clamp(28px, 4vh, 48px);
 }
 
-.transitionRule {
-  display: block;
 
-  width: 1px;
-  height: 100%;
+/* ─────────────────────────────────────
+   VULNERABLE INTERVAL
+───────────────────────────────────── */
 
-  background: linear-gradient(
-    180deg,
-    transparent,
-    rgba(var(--axpt-silver), 0.12),
-    transparent
-  );
-}
+.transitionCondition {
+  position: relative;
 
-.transitionLabel {
-  padding: 18px 0;
+  min-height: clamp(260px, 32vh, 360px);
 
   display: flex;
   flex-direction: column;
-  align-items: center;
 
-  text-align: center;
+  justify-content: center;
+  align-items: flex-start;
 
-  font-family: var(--axpt-body);
-  font-size: clamp(0.82rem, 1vw, 0.96rem);
-  line-height: 1.4;
-
-  color: rgba(var(--axpt-silver), 0.52);
+  padding-left: clamp(26px, 3vw, 48px);
 }
 
-.transitionLabel strong {
+.transitionStatement {
+  margin: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  font-family: var(--axpt-body);
+  font-size: clamp(1rem, 1.24vw, 1.16rem);
+  line-height: 1.42;
+
+  letter-spacing: -.014em;
+
+  color: rgba(var(--axpt-silver), .5);
+}
+
+.transitionStatement strong {
   font-weight: 500;
 
-  color: rgba(var(--axpt-limestone), 0.86);
+  color: rgba(var(--axpt-limestone), .84);
+}
+
+.transitionStatement {
+  opacity: .54;
+
+  transform:
+    translate3d(0, 3px, 0)
+    scaleX(.985);
+
+  transform-origin: left center;
+
+  transition:
+    opacity 950ms cubic-bezier(.22, 1, .36, 1),
+    transform 1250ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-foundation="true"])
+.transitionStatement {
+  opacity: 1;
+
+  transform:
+    translate3d(-2px, 0, 0)
+    scaleX(1);
+}
+
+
+/* ─────────────────────────────────────
+   DISPLACEMENT
+
+   One condition does not occupy precisely
+   the same position as the next.
+
+   The relationship remains perceptible.
+───────────────────────────────────── */
+
+.displacement {
+  position: relative;
+
+  width: clamp(48px, 5vw, 70px);
+  height: clamp(92px, 11vh, 126px);
+
+  margin-top: clamp(28px, 4vh, 46px);
+  margin-left: clamp(24px, 3vw, 42px);
+}
+
+.displacement::before {
+  content: "";
+
+  position: absolute;
+
+  left: 48%;
+  top: 29%;
+
+  width: 1px;
+  height: 42%;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(var(--axpt-silver), .06),
+      rgba(var(--axpt-oxide), .26) 42%,
+      rgba(var(--axpt-bronze), .22) 58%,
+      rgba(var(--axpt-silver), .06)
+    );
+
+  opacity: .42;
+
+  transform:
+    translate3d(0, 0, 0)
+    scaleY(.94);
+
+  transform-origin: center;
+
+  box-shadow:
+    0 0 8px rgba(var(--axpt-oxide), .035);
+
+  transition:
+    opacity 1100ms cubic-bezier(.22, 1, .36, 1),
+    transform 1350ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.displacementBefore,
+.displacementAfter {
+  position: absolute;
+
+  width: 1px;
+  height: 46%;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(var(--axpt-silver), .08),
+      rgba(var(--axpt-oxide), .34) 42%,
+      rgba(var(--axpt-bronze), .28) 58%,
+      rgba(var(--axpt-silver), .08)
+    );
+
+  box-shadow:
+    0 0 10px rgba(var(--axpt-oxide), .045);
+
+  transition:
+    left 1350ms cubic-bezier(.22, 1, .36, 1),
+    opacity 1100ms cubic-bezier(.22, 1, .36, 1),
+    transform 1350ms cubic-bezier(.22, 1, .36, 1),
+    box-shadow 1250ms cubic-bezier(.22, 1, .36, 1);
+}
+
+.displacementBefore {
+  top: 0;
+  left: 34%;
+
+  transform-origin: 50% 100%;
+
+  opacity: .46;
+}
+
+.displacementAfter {
+  bottom: 0;
+  left: 34%;
+
+  transform-origin: 50% 0%;
+
+  opacity: .28;
+}
+
+
+/*
+   When Foundation becomes current,
+   the second condition establishes at
+   a different coordinate.
+*/
+
+:global(body[data-established-foundation="true"])
+.displacementBefore {
+  opacity: .88;
+
+  transform:
+    translate3d(-2px, 0, 0)
+    scaleY(.96);
+
+  box-shadow:
+    0 0 12px rgba(var(--axpt-oxide), .07);
+
+  animation:
+    foundationIntegrityDriftBefore
+    9200ms
+    ease-in-out
+    infinite;
+}
+
+:global(body[data-established-foundation="true"])
+.displacementAfter {
+  left: 62%;
+
+  opacity: .88;
+
+  transform:
+    translate3d(2px, 0, 0)
+    scaleY(.96);
+
+  animation:
+    foundationIntegrityDriftAfter
+    10700ms
+    ease-in-out
+    infinite;
+
+  box-shadow:
+    0 0 12px rgba(var(--axpt-bronze), .06);
+}
+
+
+:global(body[data-established-foundation="true"])
+.displacement::before {
+  opacity: .68;
+
+  animation:
+    foundationIntegrityDriftCenter
+    11400ms
+    ease-in-out
+    infinite;
+}
+
+
+/* Continuous structural tension.
+
+   The interval remains alive after
+   establishment without reading as
+   an animated indicator.
+*/
+@keyframes foundationIntegrityDriftBefore {
+
+  0%,
+  100% {
+    transform:
+      translate3d(-2px, 0, 0)
+      scaleY(.96);
+  }
+
+  38% {
+    transform:
+      translate3d(-1px, 1.5px, 0)
+      scaleY(.982);
+  }
+
+  71% {
+    transform:
+      translate3d(-2.5px, -.75px, 0)
+      scaleY(.968);
+  }
+
+}
+
+@keyframes foundationIntegrityDriftCenter {
+
+  0%,
+  100% {
+    transform:
+      translate3d(0, 0, 0)
+      scaleY(.96);
+  }
+
+  33% {
+    transform:
+      translate3d(.75px, -1.5px, 0)
+      scaleY(.985);
+  }
+
+  68% {
+    transform:
+      translate3d(-.5px, 1px, 0)
+      scaleY(.972);
+  }
+
+}
+
+@keyframes foundationIntegrityDriftAfter {
+
+  0%,
+  100% {
+    transform:
+      translate3d(2px, 0, 0)
+      scaleY(.96);
+  }
+
+  29% {
+    transform:
+      translate3d(1px, -1px, 0)
+      scaleY(.975);
+  }
+
+  67% {
+    transform:
+      translate3d(2.5px, 1.5px, 0)
+      scaleY(.982);
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   RELATION FIELD
+
+   Structure is calm because the transition
+   already carries the instability.
+───────────────────────────────────── */
+
+.relationField {
+  position: relative;
+
+  opacity: .58;
+
+  filter:
+    contrast(.91)
+    brightness(.88);
+
+  transform:
+    translate3d(5px, 0, 0)
+    scaleX(.987);
+
+  transform-origin: left center;
+
+  transition:
+    opacity 1050ms cubic-bezier(.22, 1, .36, 1),
+    filter 1200ms cubic-bezier(.22, 1, .36, 1),
+    transform 1350ms cubic-bezier(.22, 1, .36, 1);
+
+  display: flex;
+  flex-direction: column;
+
+  gap: clamp(24px, 3.2vh, 36px);
+
+  width: min(100%, 650px);
+}
+
+:global(body[data-established-foundation="true"])
+.relationField {
+  opacity: 1;
+
+  filter:
+    contrast(1)
+    brightness(1);
+
+  transform:
+    translate3d(0, 0, 0)
+    scaleX(1);
+}
+
+
+.relation {
+  position: relative;
+
+  display: grid;
+  grid-template-columns: 1fr;
+
+  row-gap: 5px;
+
+  margin: 0;
+
+  opacity: .44;
+
+  transform-origin: left center;
+
+  filter:
+    contrast(.95)
+    brightness(.965);
+}
+
+.relation:nth-child(1) {
+  transform:
+    translate3d(5px, -2px, 0)
+    scaleX(.992);
+}
+
+.relation:nth-child(2) {
+  transform:
+    translate3d(-5px, 1.5px, 0)
+    scaleX(.991);
+}
+
+.relation:nth-child(3) {
+  transform:
+    translate3d(5px, 2.5px, 0)
+    scaleX(.990);
+}
+
+.relation:nth-child(4) {
+  transform:
+    translate3d(-4px, 3.5px, 0)
+    scaleX(.989);
+}
+
+:global(body[data-established-foundation="true"])
+.relation:nth-child(1) {
+  animation:
+    foundationRelationSettle01
+    1380ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+:global(body[data-established-foundation="true"])
+.relation:nth-child(2) {
+  animation:
+    foundationRelationSettle02
+    1580ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+:global(body[data-established-foundation="true"])
+.relation:nth-child(3) {
+  animation:
+    foundationRelationSettle03
+    1780ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+:global(body[data-established-foundation="true"])
+.relation:nth-child(4) {
+  animation:
+    foundationRelationSettle04
+    1980ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+@keyframes foundationRelationSettle01 {
+  0% {
+    opacity: .48;
+    transform: translate3d(4px, -1px, 0) scaleX(.994);
+    filter: contrast(.95) brightness(.965);
+  }
+
+  42% {
+    opacity: .82;
+    transform: translate3d(1px, 0, 0) scaleX(.998);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleX(1);
+    filter: contrast(1) brightness(1);
+  }
+}
+
+@keyframes foundationRelationSettle02 {
+  0%,
+  10% {
+    opacity: .48;
+    transform: translate3d(-4px, 1px, 0) scaleX(.993);
+    filter: contrast(.95) brightness(.965);
+  }
+
+  54% {
+    opacity: .80;
+    transform: translate3d(-1px, 0, 0) scaleX(.998);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleX(1);
+    filter: contrast(1) brightness(1);
+  }
+}
+
+@keyframes foundationRelationSettle03 {
+  0%,
+  18% {
+    opacity: .48;
+    transform: translate3d(4px, 2px, 0) scaleX(.992);
+    filter: contrast(.95) brightness(.965);
+  }
+
+  62% {
+    opacity: .78;
+    transform: translate3d(1px, .5px, 0) scaleX(.998);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleX(1);
+    filter: contrast(1) brightness(1);
+  }
+}
+
+@keyframes foundationRelationSettle04 {
+  0%,
+  26% {
+    opacity: .48;
+    transform: translate3d(-3px, 3px, 0) scaleX(.991);
+    filter: contrast(.95) brightness(.965);
+  }
+
+  68% {
+    opacity: .76;
+    transform: translate3d(-1px, 1px, 0) scaleX(.997);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scaleX(1);
+    filter: contrast(1) brightness(1);
+  }
+}
+
+.relationPart {
+  margin: 0;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+
+  column-gap: .48em;
+
+  font-family: var(--axpt-body);
+  font-size: clamp(.96rem, 1.14vw, 1.08rem);
+  line-height: 1.48;
+
+  letter-spacing: -.012em;
+
+  color: rgba(var(--axpt-silver), .56);
+}
+
+.relationPart strong {
+  font-family: var(--axpt-mono);
+  font-size: .7em;
+  line-height: 1;
+
+  font-weight: 500;
+  letter-spacing: .19em;
+  text-transform: uppercase;
+
+  color: rgba(var(--axpt-ash), .82);
+}
+
+.relationPart span {
+  color: rgba(var(--axpt-silver), .56);
+}
+
+
+/*
+   The structured field settles together.
+   We do not choreograph eight separate terms.
+*/
+
+
+
+
+/* ─────────────────────────────────────
+   TABLET
+───────────────────────────────────── */
+
+@media (max-width: 980px) {
+
+  .continuityField {
+    grid-template-columns:
+      minmax(180px, .65fr)
+      minmax(340px, 1.35fr);
+
+    column-gap: clamp(42px, 6vw, 72px);
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   MOBILE
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .continuityField {
+    grid-template-columns: 1fr;
+
+    row-gap: 38px;
+
+    margin-top: 30px;
+    padding-top: 14px;
+  }
+
+  .transitionCondition {
+    min-height: 180px;
+
+    padding-left: 0;
+  }
+
+  .displacement {
+    height: 78px;
+
+    margin-top: 24px;
+    margin-left: 22px;
+  }
+
+  .relationField {
+    width: 100%;
+  }
+
+  .relation {
+    gap: 4px;
+  }
+
+  .relationPart {
+    font-size: .92rem;
+  }
+
 }
 
 
@@ -229,43 +719,344 @@
 ───────────────────────────────────── */
 
 .response {
-  grid-column: 5 / 12;
+  grid-column: 1 / -1;
 
   display: grid;
-  grid-template-columns: 70px minmax(0, 1fr);
+  grid-template-columns:
+    minmax(80px, 1.4fr)
+    minmax(120px, 1.15fr)
+    minmax(300px, 3.35fr);
 
-  column-gap: 30px;
+  column-gap: clamp(28px, 4vw, 58px);
   align-items: start;
 
-  padding-top: 18px;
+  width: 100%;
 
-  border-top: 1px solid rgba(var(--axpt-silver), 0.065);
+  margin-top: clamp(18px, 2.8vh, 34px);
+
+  padding-top: 17px;
+
+  border-top: 0;
+
+  position: relative;
+
+  opacity: .52;
+
+  transform:
+    translate3d(0, 4px, 0)
+    scaleX(.985);
+
+  transform-origin: center top;
 }
+
+.response::after {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 42%;
+
+  width: clamp(34px, 5vw, 62px);
+  height: 1px;
+
+  pointer-events: none;
+
+  opacity: 0;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(var(--axpt-oxide), .20) 34%,
+      rgba(var(--axpt-bronze), .26) 56%,
+      transparent
+    );
+
+  transform:
+    translate3d(-18px, 0, 0)
+    scaleX(.72);
+
+  transform-origin: center;
+}
+
+
+:global(body[data-established-foundation="true"])
+.response::after {
+  animation:
+    foundationResidualTrace
+    1380ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+
+@keyframes foundationResidualTrace {
+
+  0% {
+    opacity: 0;
+
+    transform:
+      translate3d(-18px, 0, 0)
+      scaleX(.72);
+  }
+
+  38% {
+    opacity: 0;
+  }
+
+  56% {
+    opacity: .30;
+
+    transform:
+      translate3d(-4px, 0, 0)
+      scaleX(.92);
+  }
+
+  72% {
+    opacity: .22;
+
+    transform:
+      translate3d(9px, 0, 0)
+      scaleX(1);
+  }
+
+  88% {
+    opacity: .08;
+
+    transform:
+      translate3d(18px, 0, 0)
+      scaleX(.86);
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      translate3d(24px, 0, 0)
+      scaleX(.72);
+  }
+
+}
+
+
+.response::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  right: 0;
+  top: 0;
+
+  height: 1px;
+
+  pointer-events: none;
+
+  opacity: .20;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(var(--axpt-silver), .035) 12%,
+      rgba(var(--axpt-oxide), .16) 42%,
+      rgba(var(--axpt-bronze), .14) 54%,
+      rgba(var(--axpt-silver), .035) 88%,
+      transparent 100%
+    );
+
+  transform:
+    scaleX(.34);
+
+  transform-origin: center center;
+}
+
+
+:global(body[data-established-foundation="true"])
+.response {
+  animation:
+    foundationResponseRelease
+    980ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+:global(body[data-established-foundation="true"])
+.response::before {
+  animation:
+    foundationRuleRelease
+    1150ms
+    cubic-bezier(.16, 1, .3, 1)
+    both;
+}
+
+
+@keyframes foundationResponseRelease {
+
+  0% {
+    opacity: .52;
+
+    transform:
+      translate3d(0, 4px, 0)
+      scaleX(.985);
+
+    filter:
+      contrast(.94)
+      brightness(.92);
+  }
+
+  28% {
+    opacity: .70;
+
+    transform:
+      translate3d(0, 2px, 0)
+      scaleX(.992);
+  }
+
+  62% {
+    opacity: .94;
+
+    transform:
+      translate3d(0, 0, 0)
+      scaleX(1.002);
+
+    filter:
+      contrast(1.01)
+      brightness(1.01);
+  }
+
+  100% {
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0)
+      scaleX(1);
+
+    filter:
+      contrast(1)
+      brightness(1);
+  }
+
+}
+
+
+@keyframes foundationRuleRelease {
+
+  0% {
+    opacity: .20;
+
+    transform:
+      scaleX(.34);
+
+    filter:
+      brightness(.82);
+  }
+
+  24% {
+    opacity: .52;
+
+    transform:
+      scaleX(.62);
+
+    filter:
+      brightness(1.08);
+  }
+
+  54% {
+    opacity: .72;
+
+    transform:
+      scaleX(1.015);
+
+    filter:
+      brightness(1.03);
+  }
+
+  76% {
+    opacity: .48;
+
+    transform:
+      scaleX(.998);
+
+    filter:
+      brightness(1);
+  }
+
+  100% {
+    opacity: .36;
+
+    transform:
+      scaleX(1);
+
+    filter:
+      brightness(1);
+  }
+
+}
+
 
 .responseMark {
-  padding-top: 0.25em;
+  grid-column: 1;
+
+  padding-top: .35em;
 
   font-family: var(--axpt-mono);
-  font-size: 0.52rem;
+  font-size: .48rem;
   line-height: 1;
 
-  letter-spacing: 0.3em;
+  letter-spacing: .3em;
 
-  color: rgba(var(--axpt-iron-silver), 0.32);
+  color: rgba(var(--axpt-iron-silver), .3);
 }
 
+:global(body[data-established-foundation="true"])
+.responseMark {
+  animation:
+    foundationResponseMark
+    900ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+
+@keyframes foundationResponseMark {
+
+  0% {
+    opacity: .32;
+    color: rgba(var(--axpt-oxide), .34);
+    letter-spacing: .34em;
+  }
+
+  48% {
+    opacity: .72;
+    color: rgba(var(--axpt-bronze), .48);
+    letter-spacing: .31em;
+  }
+
+  100% {
+    opacity: 1;
+    color: rgba(var(--axpt-iron-silver), .38);
+    letter-spacing: .3em;
+  }
+
+}
+
+
 .response p {
+  grid-column: 3;
+
   margin: 0;
 
-  max-width: 26ch;
+  max-width: 38ch;
 
   font-family: var(--axpt-body);
-  font-size: clamp(1rem, 1.35vw, 1.22rem);
-  line-height: 1.45;
+  font-size: clamp(.98rem, 1.18vw, 1.12rem);
+  line-height: 1.52;
 
-  letter-spacing: -0.02em;
+  letter-spacing: -.016em;
 
-  color: rgba(var(--axpt-ash), 0.82);
+  color: rgba(var(--axpt-ash), .78);
 }
 
 
@@ -279,21 +1070,22 @@
     grid-column: 1 / 11;
   }
 
-  .explanation {
-    grid-column: 1 / 10;
+  .conditionBody {
+    width: min(78%, 650px);
+    margin-left: clamp(24px, 5vw, 54px);
   }
 
-  .transitionField {
-    grid-template-columns:
-      minmax(150px, 1fr)
-      minmax(130px, 0.65fr)
-      minmax(150px, 1fr);
-
-    column-gap: 24px;
+  .conditionBodyAfter {
+    width: min(74%, 630px);
+    margin-right: clamp(24px, 5vw, 54px);
   }
 
   .response {
-    grid-column: 3 / -1;
+    grid-column: 1 / -1;
+
+    grid-template-columns:
+      72px
+      minmax(0, 1fr);
   }
 
 }
@@ -310,81 +1102,153 @@
   }
 
   .declaration,
-  .explanation,
-  .transitionField,
+  .continuityField,
   .response {
     grid-column: 1 / -1;
   }
 
-
-
   .declaration h2 {
-    max-width: 12ch;
+    max-width: 15ch;
 
-    font-size: clamp(2.75rem, 13vw, 4rem);
+    font-size: clamp(2.3rem, 10.5vw, 3.5rem);
   }
 
-  .transitionField {
-    grid-template-columns: 1fr auto 1fr;
+  .continuityField {
+    grid-template-rows:
+      auto
+      126px
+      auto;
 
-    column-gap: 18px;
-
-    padding: 22px 0;
+    row-gap: 24px;
   }
 
-  .stateBank {
-    grid-template-rows: repeat(4, minmax(66px, auto));
-    row-gap: 18px;
+  .conditionBody,
+  .conditionBodyAfter {
+    width: 92%;
+    max-width: 31ch;
+
+    margin-left: 0;
+    margin-right: 0;
+
+    font-size: .92rem;
+    line-height: 1.66;
   }
 
-  .stateName {
-    font-size: 0.54rem;
-    letter-spacing: 0.2em;
-  }
-
-  .stateNote {
-    font-size: 0.66rem;
+  .conditionBodyAfter {
+    margin-left: auto;
+    transform: none;
   }
 
   .transitionLabel {
-    writing-mode: vertical-rl;
-    transform: rotate(180deg);
-
-    flex-direction: row;
-
-    gap: 0.35em;
-
-    padding: 14px 7px;
-
-    font-size: 0.7rem;
+    font-size: .72rem;
   }
 
   .response {
-    grid-template-columns: 54px 1fr;
+    grid-template-columns: 44px 1fr;
 
-    column-gap: 18px;
+    column-gap: 16px;
+
+    margin-top: 18px;
+  }
+
+  .conditionClause {
+    white-space: normal;
+
+    margin-right: .45em;
   }
 
 }
 
 
 /* ─────────────────────────────────────
-   SMALL MOBILE
+   FOUNDATION — SYNTHESIS LANDING
+
+   The conclusion does not merely appear
+   with the response field. It assumes
+   greater documentary authority as the
+   surface resolves.
 ───────────────────────────────────── */
 
-@media (max-width: 440px) {
+.response p {
+  font-weight: 450;
 
-  .transitionField {
-    column-gap: 11px;
+  opacity: .58;
+
+  transform:
+    translate3d(-3px, 3px, 0)
+    scaleX(.994);
+
+  transform-origin: left center;
+
+  filter:
+    contrast(.96)
+    brightness(.96);
+
+  color: rgba(var(--axpt-ash), .68);
+
+  transition:
+    opacity 980ms cubic-bezier(.22, 1, .36, 1),
+    transform 1280ms cubic-bezier(.22, 1, .36, 1),
+    filter 1180ms cubic-bezier(.22, 1, .36, 1),
+    color 1180ms cubic-bezier(.22, 1, .36, 1);
+}
+
+:global(body[data-established-foundation="true"])
+.response p {
+  animation:
+    foundationSynthesisSettle
+    1880ms
+    cubic-bezier(.22, 1, .36, 1)
+    both;
+}
+
+@keyframes foundationSynthesisSettle {
+
+  0%,
+  28% {
+    opacity: .44;
+
+    transform:
+      translate3d(-4px, 5px, 0)
+      scaleX(.99);
+
+    filter:
+      contrast(.93)
+      brightness(.94);
+
+    color: rgba(var(--axpt-ash), .62);
   }
 
-  .stateName {
-    font-size: 0.5rem;
-    letter-spacing: 0.14em;
+  68% {
+    opacity: .92;
+
+    transform:
+      translate3d(1px, -.5px, 0)
+      scaleX(1.003);
+
+    filter:
+      contrast(1.02)
+      brightness(1.025);
+
+    color: rgba(var(--axpt-limestone), .84);
   }
 
-  .stateNote {
-    max-width: 14ch;
+  100% {
+    opacity: 1;
+
+    transform:
+      translate3d(0, 0, 0)
+      scaleX(1);
+
+    filter:
+      contrast(1)
+      brightness(1);
+
+    color: rgba(var(--axpt-limestone), .90);
+
+    text-shadow:
+      0 0 14px rgba(var(--axpt-bronze), .026),
+      0 0 26px rgba(var(--axpt-mineral-cold), .012);
   }
 
 }
@@ -395,60 +1259,1907 @@
 ───────────────────────────────────── */
 
 .declaration h2 {
-  opacity: .56;
-  transform: translate3d(0, 10px, 0);
+  opacity: .48;
+
+  transform:
+    translate3d(0, 7px, 0)
+    scaleY(.982);
+
+  transform-origin: left bottom;
+
+  filter:
+    contrast(.94)
+    brightness(.92);
 
   transition:
-    opacity 900ms cubic-bezier(.22, 1, .36, 1),
-    transform 1100ms cubic-bezier(.22, 1, .36, 1);
+    opacity 850ms cubic-bezier(.22, 1, .36, 1),
+    transform 1150ms cubic-bezier(.22, 1, .36, 1),
+    filter 1050ms cubic-bezier(.22, 1, .36, 1);
 }
 
-:global(body[data-layer="FOUNDATION"]) .declaration h2 {
+:global(body[data-established-foundation="true"]) .declaration h2 {
   opacity: 1;
-  transform: translate3d(0, 0, 0);
+
+  transform:
+    translate3d(0, 0, 0)
+    scaleY(1);
+
+  filter:
+    contrast(1)
+    brightness(1);
 }
+
+
+
+/* ─────────────────────────────────────
+   FOUNDATION — REDUCED MOTION
+───────────────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
-  .declaration h2 {
+
+  .declaration h2,
+  .transitionStatement,
+  .relationField,
+  .relation,
+  .response p,
+  .displacementBefore,
+  .displacementAfter {
+    opacity: 1;
     transition: none;
   }
+
+  .declaration h2,
+  .transitionStatement,
+  .relationField,
+  .relation,
+  .response p {
+    transform: none;
+    filter: none;
+  }
+
+  .response p {
+    color: rgba(var(--axpt-limestone), .90);
+
+    text-shadow:
+      0 0 14px rgba(var(--axpt-bronze), .026),
+      0 0 26px rgba(var(--axpt-mineral-cold), .012);
+  }
+
+  .relation,
+  .response p,
+  .displacement::before,
+  .displacementBefore,
+  .displacementAfter {
+    animation: none;
+  }
+
+  .displacement::before {
+    opacity: .68;
+
+    transform:
+      translate3d(0, 0, 0)
+      scaleY(.96);
+  }
+
+  .displacementBefore {
+    transform:
+      translate3d(-2px, 0, 0)
+      scaleY(.96);
+  }
+
+  .displacementAfter {
+    left: 62%;
+
+    transform:
+      translate3d(2px, 0, 0)
+      scaleY(.96);
+  }
+
+  :global(body[data-established-foundation="true"])
+  .response,
+  :global(body[data-established-foundation="true"])
+  .response::before,
+  :global(body[data-established-foundation="true"])
+  .response::after,
+  :global(body[data-established-foundation="true"])
+  .responseMark {
+    animation: none;
+  }
+
+  :global(body[data-established-foundation="true"])
+  .response::after {
+    opacity: 0;
+  }
+
+  :global(body[data-established-foundation="true"])
+  .response {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+
+  :global(body[data-established-foundation="true"])
+  .response::before {
+    opacity: .36;
+    filter: none;
+    transform: scaleX(1);
+  }
+
+  :global(body[data-established-foundation="true"])
+  .responseMark {
+    opacity: 1;
+    color: rgba(var(--axpt-iron-silver), .38);
+    letter-spacing: .3em;
+  }
+
+}
+
+/* HEADER ANCHOR OFFSET — foundationSurface */
+
+.foundationSurface {
+  scroll-margin-top: 76px;
+}
+
+@media (max-width: 680px) {
+
+  .foundationSurface {
+    scroll-margin-top: 64px;
+  }
+
 }
 
 
 /* ─────────────────────────────────────
-   LIVING DOCUMENT — CORRIDOR
+   AXPT V1 — FOUNDATION MOBILE M3
 
-   Pressure resolves into passage.
-   The transition is not introduced;
-   its existing axis becomes legible.
+   Mobile constitution:
+   proposition
+   → transition condition
+   → continuity relations
+   → institutional response.
 ───────────────────────────────────── */
 
-.transitionRule {
-  opacity: .34;
-  transform: scaleY(.56);
+@media (max-width: 680px) {
 
-  transition:
-    opacity 1000ms cubic-bezier(.22, 1, .36, 1),
-    transform 1300ms cubic-bezier(.22, 1, .36, 1);
-}
-
-.transitionRule:first-child {
-  transform-origin: 50% 100%;
-}
-
-.transitionRule:last-child {
-  transform-origin: 50% 0%;
-}
-
-:global(body[data-layer="FOUNDATION"]) .transitionRule {
-  opacity: 1;
-  transform: scaleY(1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .transitionRule {
-    opacity: 1;
-    transform: scaleY(1);
-    transition: none;
+  .foundationSurface {
+    scroll-margin-top: 60px;
   }
+
+
+  .foundationInner {
+    width:
+      calc(100% - 40px);
+
+    margin:
+      0
+      auto;
+
+    row-gap: 0;
+  }
+
+
+  /* ── DECLARATION ── */
+
+  .declaration {
+    margin: 0;
+  }
+
+
+  .declaration h2 {
+    max-width: 12.5ch;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        2.05rem,
+        9.2vw,
+        2.55rem
+      );
+
+    line-height: 1.02;
+
+    letter-spacing: -.045em;
+  }
+
+
+  .declarationSecondary {
+    display: block;
+
+    margin-top: .12em;
+
+    color:
+      rgba(var(--axpt-ash), .72);
+  }
+
+
+  /* ── TRANSITION FIELD ── */
+
+  .continuityField {
+    display: block;
+
+    margin-top: 36px;
+    padding-top: 0;
+  }
+
+
+  .transitionCondition {
+    min-height: 0;
+
+    margin: 0;
+    padding: 0;
+  }
+
+
+  .transitionStatement {
+    max-width: 15ch;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        1.05rem,
+        4.7vw,
+        1.18rem
+      );
+
+    line-height: 1.38;
+
+    color:
+      rgba(var(--axpt-silver), .66);
+  }
+
+
+  .transitionStatement strong {
+    display: block;
+
+    margin-top: .12em;
+
+    color:
+      rgba(var(--axpt-limestone), .90);
+  }
+
+
+  /* compressed rupture mark */
+
+  .displacement {
+    width: 46px;
+    height: 48px;
+
+    margin:
+      17px
+      0
+      22px
+      6px;
+  }
+
+
+  /* ── CONTINUITY RELATIONS ── */
+
+  .relationField {
+    width: 100%;
+
+    display: block;
+  }
+
+
+  .relation {
+    display: grid;
+
+    gap: 8px;
+
+    padding:
+      16px
+      0;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-silver), .055);
+  }
+
+
+  .relation:last-child {
+    border-bottom:
+      1px solid
+      rgba(var(--axpt-silver), .055);
+  }
+
+
+  .relationPart {
+    display: grid;
+
+    grid-template-columns:
+      108px
+      minmax(0, 1fr);
+
+    align-items: baseline;
+
+    column-gap: 12px;
+
+    margin: 0;
+
+    font-size: .88rem;
+    line-height: 1.42;
+  }
+
+
+  .relationPart strong {
+    font-family: var(--axpt-mono);
+
+    font-size: .47rem;
+    line-height: 1.2;
+
+    letter-spacing: .22em;
+
+    text-transform: uppercase;
+
+    color:
+      rgba(var(--axpt-limestone), .78);
+  }
+
+
+  .relationPart span {
+    color:
+      rgba(var(--axpt-silver), .66);
+  }
+
+
+  .relation:nth-child(2)
+  .relationPart strong,
+
+  .relation:nth-child(4)
+  .relationPart strong {
+    color:
+      rgba(var(--axpt-mineral-cold), .74);
+  }
+
+
+  .relation:nth-child(1)
+  .relationPart strong,
+
+  .relation:nth-child(3)
+  .relationPart strong {
+    color:
+      rgba(var(--axpt-bronze), .68);
+  }
+
+
+  /* ── RESPONSE ── */
+
+  .response {
+    display: grid;
+
+    grid-template-columns:
+      42px
+      minmax(0, 1fr);
+
+    column-gap: 14px;
+
+    width: 100%;
+
+    margin-top: 28px;
+
+    padding-top: 18px;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-bronze), .12);
+  }
+
+
+  .responseMark {
+    align-self: start;
+
+    padding-top: 3px;
+
+    font-size: .46rem;
+
+    letter-spacing: .24em;
+
+    color:
+      rgba(var(--axpt-bronze), .72);
+  }
+
+
+  .response p {
+    max-width: 28ch;
+
+    margin: 0;
+
+    font-size:
+      clamp(
+        .94rem,
+        4.05vw,
+        1.02rem
+      );
+
+    line-height: 1.62;
+
+    color:
+      rgba(var(--axpt-ash), .84);
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — FOUNDATION MOBILE M3B
+
+   Tighten the hinge and convert continuity
+   relations into paired institutional streams.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── TRANSITION HINGE ── */
+
+  .continuityField {
+    margin-top: 28px;
+  }
+
+
+  .transitionCondition {
+    display: grid;
+
+    justify-items: center;
+
+    text-align: center;
+
+    margin:
+      0
+      auto
+      6px;
+  }
+
+
+  .transitionStatement {
+    max-width: 18ch;
+
+    margin: 0 auto;
+
+    font-size:
+      clamp(
+        1.02rem,
+        4.4vw,
+        1.12rem
+      );
+
+    line-height: 1.34;
+
+    color:
+      rgba(var(--axpt-silver), .60);
+  }
+
+
+  .transitionStatement strong {
+    margin-top: .10em;
+
+    color:
+      rgba(var(--axpt-limestone), .92);
+  }
+
+
+  .displacement {
+    width: 28px;
+    height: 42px;
+
+    margin:
+      14px
+      auto
+      14px;
+  }
+
+
+  /* ── PAIRED CONTINUITY STREAM ── */
+
+  .relationField {
+    position: relative;
+
+    width: 100%;
+
+    margin-top: 2px;
+  }
+
+
+  .relation {
+    position: relative;
+
+    display: grid;
+
+    grid-template-columns:
+      1fr;
+
+    gap: 0;
+
+    padding:
+      13px
+      0
+      14px;
+
+    border-top:
+      1px solid
+      rgba(var(--axpt-silver), .045);
+  }
+
+
+  .relation:last-child {
+    border-bottom:
+      1px solid
+      rgba(var(--axpt-silver), .05);
+  }
+
+
+  .relationPart {
+    display: grid;
+
+    grid-template-columns:
+      minmax(96px, 108px)
+      minmax(0, 1fr);
+
+    align-items: baseline;
+
+    column-gap: 10px;
+
+    min-height: 26px;
+
+    margin: 0;
+
+    font-size: .84rem;
+    line-height: 1.34;
+  }
+
+
+  .relationPart + .relationPart {
+    margin-top: 2px;
+  }
+
+
+  .relationPart strong {
+    font-size: .46rem;
+
+    line-height: 1.2;
+
+    letter-spacing: .205em;
+
+    color:
+      rgba(var(--axpt-limestone), .72);
+  }
+
+
+  .relationPart span {
+    position: relative;
+
+    color:
+      rgba(var(--axpt-silver), .60);
+  }
+
+
+  /*
+   * First state in each pair has slightly
+   * greater authority; second state reads
+   * as continuation / consequence.
+   */
+
+  .relationPart:first-child strong {
+    color:
+      rgba(var(--axpt-bronze), .70);
+  }
+
+
+  .relationPart:last-child strong {
+    color:
+      rgba(var(--axpt-mineral-cold), .70);
+  }
+
+
+  .relationPart:first-child span {
+    color:
+      rgba(var(--axpt-ash), .70);
+  }
+
+
+  .relationPart:last-child span {
+    color:
+      rgba(var(--axpt-silver), .56);
+  }
+
+
+  /*
+   * Subtle connective trace between
+   * the paired states.
+   */
+
+  .relation::before {
+    content: "";
+
+    position: absolute;
+
+    left: 102px;
+    top: 33px;
+
+    width: 12px;
+    height: 1px;
+
+    background:
+      linear-gradient(
+        90deg,
+        rgba(var(--axpt-bronze), .18),
+        rgba(var(--axpt-mineral-cold), .14)
+      );
+
+    opacity: .72;
+  }
+
+
+  /* ── RESPONSE TIGHTENING ── */
+
+  .response {
+    margin-top: 22px;
+
+    padding-top: 16px;
+
+    grid-template-columns:
+      38px
+      minmax(0, 1fr);
+
+    column-gap: 12px;
+  }
+
+
+  .response p {
+    max-width: 27ch;
+
+    font-size:
+      clamp(
+        .92rem,
+        3.9vw,
+        1rem
+      );
+
+    line-height: 1.58;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — FOUNDATION MOBILE M3C
+
+   Transition becomes a centered kinetic hinge.
+   Continuity relations become a vertical,
+   borderless institutional stream.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── KINETIC TRANSITION HINGE ── */
+
+  .continuityField {
+    margin-top: 22px;
+  }
+
+
+  .transitionCondition {
+    margin-bottom: 2px;
+  }
+
+
+  .transitionStatement {
+    max-width: none;
+
+    display: grid;
+    justify-items: center;
+
+    margin:
+      0
+      auto;
+
+    text-align: center;
+
+    font-size:
+      clamp(
+        1rem,
+        4.25vw,
+        1.10rem
+      );
+
+    line-height: 1.28;
+  }
+
+
+  /*
+   * The first phrase and the emphatic phrase
+   * settle from slightly different coordinates.
+   */
+
+  .transitionStatement > span {
+    display: block;
+
+    animation:
+      foundationMobileIntegrityDrift
+      1960ms
+      cubic-bezier(.16, 1, .3, 1)
+      both;
+  }
+
+
+  .transitionStatement > strong {
+    display: block;
+
+    margin-top: .14em;
+
+    animation:
+      foundationMobileTransitionDrift
+      2140ms
+      cubic-bezier(.16, 1, .3, 1)
+      both;
+  }
+
+
+  .displacement {
+    width: 20px;
+    height: 30px;
+
+    margin:
+      10px
+      auto
+      8px;
+
+    opacity: .72;
+  }
+
+
+  /* ── BORDERLESS CONTINUITY STREAM ── */
+
+  .relationField {
+    width: 100%;
+
+    margin-top: 0;
+
+    display: grid;
+
+    gap: 19px;
+  }
+
+
+  .relation {
+    display: grid;
+
+    gap: 13px;
+
+    padding: 0;
+
+    border: 0;
+  }
+
+
+  .relation:last-child {
+    border: 0;
+  }
+
+
+  .relation::before {
+    display: none;
+  }
+
+
+  .relationPart {
+    display: block;
+
+    min-height: 0;
+
+    margin: 0;
+
+    text-align: center;
+
+    font-size: .82rem;
+    line-height: 1.32;
+  }
+
+
+  .relationPart + .relationPart {
+    margin-top: 0;
+  }
+
+
+  .relationPart strong {
+    display: block;
+
+    margin:
+      0
+      0
+      4px;
+
+    font-family: var(--axpt-mono);
+
+    font-size: .48rem;
+    line-height: 1;
+
+    letter-spacing: .24em;
+
+    text-transform: uppercase;
+
+    color:
+      rgba(var(--axpt-limestone), .74);
+  }
+
+
+  .relationPart span {
+    display: block;
+
+    max-width: 24ch;
+
+    margin:
+      0
+      auto;
+
+    color:
+      rgba(var(--axpt-silver), .60);
+  }
+
+
+  /*
+   * Source-side state / resulting state.
+   */
+
+  .relationPart:first-child strong {
+    color:
+      rgba(var(--axpt-bronze), .74);
+  }
+
+
+  .relationPart:last-child strong {
+    color:
+      rgba(var(--axpt-mineral-cold), .72);
+  }
+
+
+  .relationPart:first-child span {
+    color:
+      rgba(var(--axpt-ash), .70);
+  }
+
+
+  .relationPart:last-child span {
+    color:
+      rgba(var(--axpt-silver), .58);
+  }
+
+
+  /* ── AXPT RESPONSE RETURNS SOONER ── */
+
+  .response {
+    margin-top: 20px;
+
+    padding-top: 14px;
+
+    grid-template-columns:
+      36px
+      minmax(0, 1fr);
+
+    column-gap: 10px;
+  }
+
+
+  .response p {
+    max-width: 26ch;
+
+    font-size:
+      clamp(
+        .91rem,
+        3.8vw,
+        .98rem
+      );
+
+    line-height: 1.54;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   FOUNDATION MOBILE TRANSITION MOTION
+───────────────────────────────────── */
+
+@keyframes foundationMobileIntegrityDrift {
+
+  0%,
+  14% {
+    opacity: .18;
+
+    transform:
+      translate3d(-8px, 4px, 0);
+
+    filter:
+      blur(2px);
+  }
+
+  32% {
+    opacity: .52;
+
+    transform:
+      translate3d(5px, 1px, 0);
+
+    filter:
+      blur(.7px);
+  }
+
+  48% {
+    opacity: .78;
+
+    transform:
+      translate3d(-2px, 0, 0);
+
+    filter: none;
+  }
+
+  68%,
+  100% {
+    opacity: 1;
+
+    transform: none;
+    filter: none;
+  }
+
+}
+
+
+@keyframes foundationMobileTransitionDrift {
+
+  0%,
+  22% {
+    opacity: 0;
+
+    transform:
+      translate3d(7px, 5px, 0);
+
+    filter:
+      blur(2px);
+  }
+
+  38% {
+    opacity: .46;
+
+    transform:
+      translate3d(-4px, 2px, 0);
+
+    filter:
+      blur(.8px);
+  }
+
+  56% {
+    opacity: .84;
+
+    transform:
+      translate3d(2px, 0, 0);
+
+    filter: none;
+  }
+
+  74%,
+  100% {
+    opacity: 1;
+
+    transform: none;
+    filter: none;
+  }
+
+}
+
+
+@media
+  (max-width: 680px)
+  and (prefers-reduced-motion: reduce) {
+
+  .transitionStatement > span,
+  .transitionStatement > strong {
+    animation: none;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — FOUNDATION MOBILE M3D
+
+   Transition language remains composed.
+   The three displacement lines carry the
+   instability / vibration of transition.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .transitionStatement > span,
+  .transitionStatement > strong {
+    animation: none;
+  }
+
+
+  .displacement {
+    position: relative;
+
+    width: 34px;
+    height: 46px;
+
+    margin:
+      12px
+      auto
+      10px;
+  }
+
+
+  .displacement::before,
+  .displacementBefore,
+  .displacementAfter {
+    width: 1px;
+
+    transform-origin: center;
+  }
+
+
+  :global(body[data-established-foundation="true"])
+  .displacement::before {
+    animation:
+      foundationMobileCenterVibration
+      4200ms
+      ease-in-out
+      infinite;
+  }
+
+
+  :global(body[data-established-foundation="true"])
+  .displacementBefore {
+    animation:
+      foundationMobileLeftVibration
+      3600ms
+      ease-in-out
+      infinite;
+  }
+
+
+  :global(body[data-established-foundation="true"])
+  .displacementAfter {
+    animation:
+      foundationMobileRightVibration
+      4700ms
+      ease-in-out
+      infinite;
+  }
+
+}
+
+
+@keyframes foundationMobileCenterVibration {
+
+  0%,
+  100% {
+    opacity: .56;
+
+    transform:
+      translate3d(0, 0, 0)
+      scaleY(.82);
+  }
+
+  28% {
+    opacity: .80;
+
+    transform:
+      translate3d(-1px, -2px, 0)
+      scaleY(1.02);
+  }
+
+  54% {
+    opacity: .62;
+
+    transform:
+      translate3d(1px, 1px, 0)
+      scaleY(.90);
+  }
+
+  76% {
+    opacity: .88;
+
+    transform:
+      translate3d(0, -1px, 0)
+      scaleY(.98);
+  }
+
+}
+
+
+@keyframes foundationMobileLeftVibration {
+
+  0%,
+  100% {
+    opacity: .42;
+
+    transform:
+      translate3d(-3px, 2px, 0)
+      scaleY(.74);
+  }
+
+  24% {
+    opacity: .72;
+
+    transform:
+      translate3d(-5px, -1px, 0)
+      scaleY(.96);
+  }
+
+  49% {
+    opacity: .50;
+
+    transform:
+      translate3d(-2px, 1px, 0)
+      scaleY(.84);
+  }
+
+  73% {
+    opacity: .78;
+
+    transform:
+      translate3d(-4px, -2px, 0)
+      scaleY(1.04);
+  }
+
+}
+
+
+@keyframes foundationMobileRightVibration {
+
+  0%,
+  100% {
+    opacity: .38;
+
+    transform:
+      translate3d(3px, -1px, 0)
+      scaleY(.78);
+  }
+
+  31% {
+    opacity: .70;
+
+    transform:
+      translate3d(5px, 2px, 0)
+      scaleY(1.02);
+  }
+
+  58% {
+    opacity: .48;
+
+    transform:
+      translate3d(2px, -2px, 0)
+      scaleY(.86);
+  }
+
+  81% {
+    opacity: .76;
+
+    transform:
+      translate3d(4px, 1px, 0)
+      scaleY(.98);
+  }
+
+}
+
+
+@media
+  (max-width: 680px)
+  and (prefers-reduced-motion: reduce) {
+
+  .displacement::before,
+  .displacementBefore,
+  .displacementAfter {
+    animation: none !important;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — FOUNDATION MOBILE M3E
+
+   Mobile reads four transitions,
+   not eight independent statements.
+
+   The interval between states becomes
+   a visible documentary condition.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── FOUR TRANSITION UNITS ── */
+
+  .relationField {
+    width: 100%;
+    max-width: 320px;
+
+    margin:
+      2px
+      auto
+      0;
+
+    display: grid;
+
+    gap: 24px;
+  }
+
+
+  .relation {
+    position: relative;
+
+    display: grid;
+
+    grid-template-columns: 1fr;
+
+    gap: 0;
+
+    width: 100%;
+
+    padding: 0;
+
+    border: 0;
+  }
+
+
+  .relation:last-child {
+    border: 0;
+  }
+
+
+  .relation::before {
+    display: none;
+  }
+
+
+  /* ── EACH STATE ── */
+
+  .relationPart {
+    display: block;
+
+    min-height: 0;
+
+    margin: 0;
+
+    text-align: center;
+
+    font-size: .78rem;
+    line-height: 1.30;
+  }
+
+
+  .relationPart + .relationPart {
+    margin-top: 0;
+  }
+
+
+  .relationPart strong {
+    display: block;
+
+    margin:
+      0
+      0
+      4px;
+
+    font-family: var(--axpt-mono);
+
+    font-size: .46rem;
+    line-height: 1;
+
+    letter-spacing: .23em;
+
+    text-transform: uppercase;
+  }
+
+
+  .relationPart span {
+    display: block;
+
+    max-width: 26ch;
+
+    margin:
+      0
+      auto;
+
+    color:
+      rgba(var(--axpt-silver), .54);
+  }
+
+
+  /* first state */
+
+  .relationPart:first-child strong {
+    color:
+      rgba(var(--axpt-bronze), .76);
+  }
+
+
+  .relationPart:first-child span {
+    color:
+      rgba(var(--axpt-ash), .66);
+  }
+
+
+  /* resulting state */
+
+  .relationPart:last-child strong {
+    color:
+      rgba(var(--axpt-mineral-cold), .74);
+  }
+
+
+  .relationPart:last-child span {
+    color:
+      rgba(var(--axpt-silver), .58);
+  }
+
+
+  /* ── THE BETWEEN ── */
+
+  .relationPart:last-child::before {
+    content: "";
+
+    display: block;
+
+    width: 1px;
+    height: 13px;
+
+    margin:
+      8px
+      auto
+      8px;
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--axpt-bronze), .26),
+        rgba(var(--axpt-silver), .14) 48%,
+        rgba(var(--axpt-mineral-cold), .28)
+      );
+
+    transform-origin: top center;
+
+    opacity: .76;
+  }
+
+
+  :global(body[data-established-foundation="true"])
+  .relationPart:last-child::before {
+    animation:
+      foundationMobileBetweenResolve
+      1380ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  /* ── LONG LABEL CONTROL ── */
+
+  .relationPart strong {
+    white-space: normal;
+  }
+
+
+  /*
+   * Responsibility is intentionally allowed
+   * slightly greater width; do not shrink it
+   * merely to mimic the shorter state names.
+   */
+
+  .relation:nth-child(3)
+  .relationPart:last-child strong {
+    letter-spacing: .18em;
+  }
+
+
+  /* ── RESPONSE RETURNS INTO THE FIELD ── */
+
+  .response {
+    margin-top: 18px;
+
+    padding-top: 14px;
+
+    grid-template-columns:
+      34px
+      minmax(0, 1fr);
+
+    column-gap: 10px;
+  }
+
+
+  .responseMark {
+    font-size: .45rem;
+
+    letter-spacing: .22em;
+  }
+
+
+  .response p {
+    max-width: 27ch;
+
+    font-size:
+      clamp(
+        .90rem,
+        3.75vw,
+        .97rem
+      );
+
+    line-height: 1.52;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   FOUNDATION — BETWEEN RESOLUTION
+
+   A brief registration event.
+   It does not pulse indefinitely.
+───────────────────────────────────── */
+
+@keyframes foundationMobileBetweenResolve {
+
+  0%,
+  34% {
+    opacity: 0;
+
+    transform:
+      scaleY(.18);
+  }
+
+  62% {
+    opacity: .44;
+
+    transform:
+      scaleY(1.08);
+  }
+
+  82% {
+    opacity: .82;
+
+    transform:
+      scaleY(.94);
+  }
+
+  100% {
+    opacity: .76;
+
+    transform:
+      scaleY(1);
+  }
+
+}
+
+
+@media
+  (max-width: 680px)
+  and (prefers-reduced-motion: reduce) {
+
+  .relationPart:last-child::before {
+    animation: none !important;
+
+    opacity: .76;
+
+    transform: none;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — FOUNDATION MOBILE M3F
+
+   Continuity relations become four
+   typographic couplets rather than a
+   vertical ladder of eight states.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── CALMER TRANSITION FIELD ── */
+
+  :global(body[data-established-foundation="true"])
+  .displacement::before {
+    animation-duration: 6200ms;
+  }
+
+  :global(body[data-established-foundation="true"])
+  .displacementBefore {
+    animation-duration: 5600ms;
+  }
+
+  :global(body[data-established-foundation="true"])
+  .displacementAfter {
+    animation-duration: 6800ms;
+  }
+
+
+  /* ── CONTINUITY COUPLETS ── */
+
+  .relationField {
+    max-width: 330px;
+
+    margin:
+      4px
+      auto
+      0;
+
+    display: grid;
+
+    gap: 22px;
+  }
+
+
+  .relation {
+    display: block;
+
+    width: 100%;
+
+    padding: 0;
+
+    border: 0;
+  }
+
+
+  .relation::before {
+    display: none;
+  }
+
+
+  .relationPart {
+    display: block;
+
+    margin: 0;
+
+    text-align: left;
+
+    font-size: .84rem;
+    line-height: 1.48;
+  }
+
+
+  .relationPart + .relationPart {
+    margin-top: 3px;
+  }
+
+
+  .relationPart strong {
+    display: inline;
+
+    margin: 0 .62em 0 0;
+
+    font-family: var(--axpt-mono);
+
+    font-size: .45rem;
+    line-height: inherit;
+
+    letter-spacing: .20em;
+
+    text-transform: uppercase;
+
+    vertical-align: .08em;
+  }
+
+
+  .relationPart span {
+    display: inline;
+
+    max-width: none;
+
+    margin: 0;
+
+    font-size: .84rem;
+
+    letter-spacing: -.006em;
+
+    color:
+      rgba(var(--axpt-silver), .60);
+  }
+
+
+  /* Source condition */
+
+  .relationPart:first-child strong {
+    color:
+      rgba(var(--axpt-bronze), .76);
+  }
+
+
+  .relationPart:first-child span {
+    color:
+      rgba(var(--axpt-ash), .70);
+  }
+
+
+  /* Resulting condition */
+
+  .relationPart:last-child strong {
+    color:
+      rgba(var(--axpt-mineral-cold), .74);
+  }
+
+
+  .relationPart:last-child span {
+    color:
+      rgba(var(--axpt-silver), .60);
+  }
+
+
+  /*
+   * Remove the former vertical
+   * between-state connector.
+   *
+   * The semicolon / sentence relationship
+   * now performs that conceptual work.
+   */
+
+  .relationPart:last-child::before {
+    display: none;
+  }
+
+
+  /*
+   * The longer RESPONSIBILITY line receives
+   * slightly tighter registration rather than
+   * a smaller type size.
+   */
+
+  .relation:nth-child(3)
+  .relationPart:last-child strong {
+    letter-spacing: .155em;
+  }
+
+
+  /* ── RESPONSE APPROACHES THE STREAM ── */
+
+  .response {
+    margin-top: 24px;
+
+    padding-top: 15px;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — FOUNDATION MOBILE M3G
+
+   Four doctrinal couplets.
+   Labels belong to the sentence rather
+   than behaving as detached metadata.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* ── QUIETER TRANSITION VIBRATION ── */
+
+  :global(body[data-established-foundation="true"])
+  .displacement::before {
+    animation-duration: 7600ms;
+  }
+
+  :global(body[data-established-foundation="true"])
+  .displacementBefore {
+    animation-duration: 6900ms;
+  }
+
+  :global(body[data-established-foundation="true"])
+  .displacementAfter {
+    animation-duration: 8300ms;
+  }
+
+
+  /* ── DOCTRINAL COUPLETS ── */
+
+  .relationField {
+    width: auto;
+    max-width: 300px;
+
+    margin:
+      6px
+      auto
+      0;
+
+    gap: 24px;
+  }
+
+
+  .relation {
+    width: 100%;
+
+    display: block;
+  }
+
+
+  .relationPart {
+    display: block;
+
+    width: 100%;
+
+    margin: 0;
+
+    text-align: left;
+
+    font-size: .82rem;
+    line-height: 1.42;
+
+    color:
+      rgba(var(--axpt-silver), .62);
+  }
+
+
+  .relationPart + .relationPart {
+    margin-top: 2px;
+  }
+
+
+  .relationPart strong {
+    display: inline;
+
+    margin-right: .48em;
+
+    font-size: .48rem;
+    line-height: inherit;
+
+    letter-spacing: .16em;
+
+    vertical-align: .07em;
+  }
+
+
+  .relationPart span {
+    display: inline;
+
+    font-size: .82rem;
+    line-height: inherit;
+
+    letter-spacing: -.006em;
+  }
+
+
+  /* grammatical relation between states */
+
+  .relationPart:first-child span::after {
+    content: ";";
+  }
+
+
+  .relationPart:last-child span::after {
+    content: "";
+  }
+
+
+  /* restrained polarity */
+
+  .relationPart:first-child strong {
+    color:
+      rgba(var(--axpt-bronze), .74);
+  }
+
+
+  .relationPart:last-child strong {
+    color:
+      rgba(var(--axpt-mineral-cold), .70);
+  }
+
+
+  .relationPart:first-child span {
+    color:
+      rgba(var(--axpt-ash), .68);
+  }
+
+
+  .relationPart:last-child span {
+    color:
+      rgba(var(--axpt-silver), .60);
+  }
+
+
+  .relation:nth-child(3)
+  .relationPart:last-child strong {
+    letter-spacing: .12em;
+  }
+
+
+  /* ── SYNTHESIS ── */
+
+  .response {
+    margin-top: 22px;
+
+    padding-top: 14px;
+  }
+
+}
+
+
+/* ─────────────────────────────────────
+   AXPT V1 — FOUNDATION MOBILE M3H
+
+   Final couplet polish:
+   remove synthetic punctuation,
+   strengthen state names slightly,
+   tighten pair rhythm,
+   bring synthesis forward.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /* source copy already carries punctuation */
+
+  .relationPart:first-child span::after,
+  .relationPart:last-child span::after {
+    content: none;
+  }
+
+
+  /* slightly stronger state authority */
+
+  .relationPart strong {
+    font-size: .47rem;
+
+    letter-spacing: .145em;
+
+    opacity: .92;
+  }
+
+
+  .relationPart:first-child strong {
+    color:
+      rgba(var(--axpt-bronze), .82);
+  }
+
+
+  .relationPart:last-child strong {
+    color:
+      rgba(var(--axpt-mineral-cold), .78);
+  }
+
+
+  /* retain editorial sentence character */
+
+  .relationPart {
+    font-size: .82rem;
+    line-height: 1.40;
+  }
+
+
+  .relationPart span {
+    font-size: .82rem;
+
+    color:
+      rgba(var(--axpt-silver), .64);
+  }
+
+
+  /* four couplets, not four isolated blocks */
+
+  .relationField {
+    gap: 19px;
+  }
+
+
+  .relationPart + .relationPart {
+    margin-top: 1px;
+  }
+
+
+  /*
+   * Long RESPONSIBILITY label needs
+   * optical compression, not smaller type.
+   */
+
+  .relation:nth-child(3)
+  .relationPart:last-child strong {
+    letter-spacing: .09em;
+  }
+
+
+  /* synthesis should follow the doctrine closely */
+
+  .response {
+    margin-top: 17px;
+
+    padding-top: 13px;
+  }
+
 }

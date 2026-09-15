@@ -1,46 +1,53 @@
 import styles from './FoundationSurface.module.css'
 
-const LEFT_STATES = [
+const CONTINUITY_PAIRS = [
   {
-    name: 'Authority',
-    note: 'who could act',
+    before: {
+      name: 'Authority',
+      statement: 'establishes who could act.',
+    },
+    after: {
+      name: 'Action',
+      statement: 'establishes what occurred.',
+    },
   },
   {
-    name: 'Evidence',
-    note: 'what established it',
+    before: {
+      name: 'Evidence',
+      statement: 'establishes the basis.',
+    },
+    after: {
+      name: 'Decision',
+      statement: 'establishes what followed.',
+    },
   },
   {
-    name: 'Custody',
-    note: 'what was held',
+    before: {
+      name: 'Custody',
+      statement: 'establishes what was held.',
+    },
+    after: {
+      name: 'Responsibility',
+      statement: 'establishes who remained accountable.',
+    },
   },
   {
-    name: 'Execution',
-    note: 'what moved',
+    before: {
+      name: 'Execution',
+      statement: 'establishes what moved.',
+    },
+    after: {
+      name: 'Record',
+      statement: 'establishes what remained known.',
+    },
   },
-]
-
-const RIGHT_STATES = [
-  {
-    name: 'Action',
-    note: 'what occurred',
-  },
-  {
-    name: 'Decision',
-    note: 'what followed',
-  },
-  {
-    name: 'Responsibility',
-    note: 'who remained accountable',
-  },
-  {
-    name: 'Record',
-    note: 'what remained known',
-  },
-]
+] as const
 
 export default function FoundationSurface() {
   return (
-    <section className={styles.foundationSurface}>
+    <section
+      className={styles.foundationSurface}
+    >
       <div className={styles.foundationInner}>
 
         <header className={styles.declaration}>
@@ -52,47 +59,43 @@ export default function FoundationSurface() {
           </h2>
         </header>
 
-        <div className={styles.explanation}>
-          <p>
-            Authority may be clear. Evidence may exist.
-            Custody may be established. Records may remain.
-          </p>
-
-          <p className={styles.explanationFocus}>
-            The weakness often appears in the passage
-            between one condition and the next.
-          </p>
-        </div>
-
         <div
-          className={styles.transitionField}
-          aria-label="Institutional states across transition"
+          className={styles.continuityField}
+          aria-label="Continuity through transition"
         >
-          <div className={styles.stateBank}>
-            {LEFT_STATES.map((state) => (
-              <div className={styles.state} key={state.name}>
-                <span className={styles.stateName}>{state.name}</span>
-                <span className={styles.stateNote}>{state.note}</span>
-              </div>
-            ))}
-          </div>
-
-          <div className={styles.transition}>
-            <span className={styles.transitionRule} aria-hidden="true" />
-
-            <div className={styles.transitionLabel}>
+          <aside className={styles.transitionCondition}>
+            <p className={styles.transitionStatement}>
               <span>Integrity is tested</span>
               <strong>in transition.</strong>
+            </p>
+
+            <div
+              className={styles.displacement}
+              aria-hidden="true"
+            >
+              <span className={styles.displacementBefore} />
+              <span className={styles.displacementAfter} />
             </div>
+          </aside>
 
-            <span className={styles.transitionRule} aria-hidden="true" />
-          </div>
+          <div
+            className={styles.relationField}
+            aria-label="Conditions that continuity preserves"
+          >
+            {CONTINUITY_PAIRS.map((pair) => (
+              <div
+                className={styles.relation}
+                key={pair.before.name}
+              >
+                <p className={styles.relationPart}>
+                  <strong>{pair.before.name}</strong>
+                  <span>{pair.before.statement}</span>
+                </p>
 
-          <div className={`${styles.stateBank} ${styles.stateBankRight}`}>
-            {RIGHT_STATES.map((state) => (
-              <div className={styles.state} key={state.name}>
-                <span className={styles.stateName}>{state.name}</span>
-                <span className={styles.stateNote}>{state.note}</span>
+                <p className={styles.relationPart}>
+                  <strong>{pair.after.name}</strong>
+                  <span>{pair.after.statement}</span>
+                </p>
               </div>
             ))}
           </div>
