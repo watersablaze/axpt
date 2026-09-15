@@ -1,11 +1,17 @@
 /*
-  Warnings:
+  Canonical migration repair.
 
-  - A unique constraint covering the columns `[idempotencyKey]` on the table `Transaction` will be added. If there are existing duplicate values, this will fail.
+  Historical production lineage did not contain Transaction.idempotencyKey.
+  The former migration assumed the July 2026 squashed 0_baseline, where a
+  non-unique Transaction_idempotencyKey_idx already existed.
 
+  Canonical history establishes durable wallet transfer identity directly.
 */
--- DropIndex
-DROP INDEX "Transaction_idempotencyKey_idx";
+
+-- AlterTable
+ALTER TABLE "Transaction"
+ADD COLUMN "idempotencyKey" TEXT;
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Transaction_idempotencyKey_key" ON "Transaction"("idempotencyKey");
+CREATE UNIQUE INDEX "Transaction_idempotencyKey_key"
+ON "Transaction"("idempotencyKey");
