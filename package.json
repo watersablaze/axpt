@@ -4,7 +4,7 @@
   "private": true,
   "packageManager": "pnpm@8.15.5",
   "engines": {
-    "node": ">=20.11.1 <21",
+    "node": "24.x",
     "pnpm": ">=8.15.5 <9"
   },
   "scripts": {
@@ -19,7 +19,7 @@
     "dev:cf:mobile": "concurrently --raw \"pnpm dev:cf\" \"pnpm tunnel\"",
     "dev:cf": "next dev -H 0.0.0.0",
     "dev": "next dev --webpack",
-    "build": "prisma generate && pnpm next build --webpack",
+    "build": "prisma generate && next build --webpack",
     "start": "next start -p 3000",
     "lock:check": "tsx scripts/architecture.lockcheck.ts",
     "lint": "next lint",
