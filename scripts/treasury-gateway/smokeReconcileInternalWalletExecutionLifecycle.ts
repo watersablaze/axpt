@@ -28,6 +28,7 @@ import { TREASURY_EXECUTION_ADAPTER_KIND } from "../../src/domains/treasury/gate
 import { TREASURY_EXECUTION_STATUS } from "../../src/domains/treasury/gateway/executions/status";
 
 import { TREASURY_ACTION_STATUS } from "../../src/domains/treasury/stateMachine";
+import { compareDecimals } from "../../src/domains/treasury/gateway/shared/decimalAmount";
 
 const prisma = new PrismaClient();
 
@@ -725,7 +726,7 @@ async function main(): Promise<void> {
       },
     });
 
-    const catchupLedger = await writeLedgerEvidence({
+    await writeLedgerEvidence({
       treasuryActionId: catchupDispatch.dispatch.treasuryActionId,
 
       walletFixture: catchupWalletFixture,
@@ -739,22 +740,65 @@ async function main(): Promise<void> {
       suffix: "catchup",
     });
 
-    assert.equal(catchup.aggregate.status, TREASURY_EXECUTION_STATUS.CONFIRMED);
+    assert.equal(
+      catchup.aggregate.status,
+      TREASURY_EXECUTION_STATUS.CONFIRMED,
+    );
 
-    assert.equal(catchup.aggregate.metadata.version, 7);
+    assert.equal(
+      catchup.aggregate.metadata.version,
+      7,
+    );
 
     assert(catchup.initiated);
 
     assert(catchup.confirmed);
 
     assert.equal(
-      catchup.confirmed.event.payload.debitTransactionId,
-      catchupLedger.debitTransactionId,
+      catchup.confirmed.event.payload.executionId,
+      catchupExecutionId,
     );
 
     assert.equal(
-      catchup.confirmed.event.payload.creditTransactionId,
-      catchupLedger.creditTransactionId,
+      catchup.confirmed.event.payload.amount.currency,
+      catchup.aggregate.amount.currency,
+    );
+
+    assert.equal(
+      compareDecimals(
+        catchup.confirmed.event.payload.amount.amount,
+        catchup.aggregate.amount.amount,
+      ),
+      0,
+    );
+
+    assert(
+      catchup.confirmed.event.payload.verifiedAt instanceof Date,
+    );
+
+    assert(
+      catchup.confirmed.event.payload.confirmedAt instanceof Date,
+    );
+
+    assert.equal(
+      catchup.confirmed.event.payload.verifiedAt.getTime(),
+      catchup.confirmed.event.payload.confirmedAt.getTime(),
+    );
+
+    assert.equal(
+      Object.prototype.hasOwnProperty.call(
+        catchup.confirmed.event.payload,
+        "debitTransactionId",
+      ),
+      false,
+    );
+
+    assert.equal(
+      Object.prototype.hasOwnProperty.call(
+        catchup.confirmed.event.payload,
+        "creditTransactionId",
+      ),
+      false,
     );
 
     const catchupEvents = await loadEvents(catchupExecutionId);

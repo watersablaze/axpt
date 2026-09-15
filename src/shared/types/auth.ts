@@ -8,11 +8,16 @@ export type BusinessTier =
 
 export type SystemRole = string
 
+export type SessionTier =
+  | BusinessTier
+  | 'platform'
+  | 'operations'
+
 export type SessionDocument = 'whitepaper' | 'hemp' | 'chinje'
 
 export type SessionPayload = {
   userId: string
-  tier: BusinessTier
+  tier: SessionTier
   roles: SystemRole[]
   displayName: string
   docs: SessionDocument[]

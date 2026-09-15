@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 
 export default function LoginPage() {
   const router = useRouter()
-  const [email, setEmail] = useState('connect@axpt.io')
+  const [email, setEmail] = useState('')
   const [error, setError] = useState('')
 
   async function handleSubmit(
@@ -30,7 +30,30 @@ export default function LoginPage() {
       return
     }
 
-    router.push('/admin/control-center')
+    const searchParams =
+      new URLSearchParams(
+        window.location.search
+      )
+
+    const requestedNext =
+      searchParams.get(
+        "next"
+      )
+
+    const destination =
+      requestedNext &&
+      requestedNext.startsWith(
+        "/admin/"
+      ) &&
+      !requestedNext.startsWith(
+        "//"
+      )
+        ? requestedNext
+        : "/admin/control-center"
+
+    router.push(
+      destination
+    )
   }
 
   return (
