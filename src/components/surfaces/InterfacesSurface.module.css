@@ -3990,9 +3990,9 @@
   .consequenceField {
     min-height:
       clamp(
-        330px,
-        39vh,
-        420px
+        310px,
+        36vh,
+        390px
       );
   }
 
