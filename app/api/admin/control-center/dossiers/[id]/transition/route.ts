@@ -19,6 +19,7 @@ import { buildTransitionAuditRecord } from "@/domains/control-center/buildTransi
 
 import { getTransitionConsequences } from "@/domains/control-center/transitionConsequences";
 import { inferDossierExecutionProfile } from "@/domains/control-center/inferDossierExecutionProfile";
+import { isDossierExecutionLaneTarget } from "@/domains/control-center/dossiers/openDossierExecutionLane";
 
 type DossierTransitionBody = {
   toState?: string;
@@ -95,6 +96,26 @@ export async function PATCH(
 
   const fromState = dossier.state;
   const toState = body.toState as typeof dossier.state;
+
+  if (
+    fromState === "SPA_EXECUTED" &&
+    isDossierExecutionLaneTarget(toState)
+  ) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error:
+          "DOSSIER_EXECUTION_LANE_REQUIRES_CANONICAL_OPEN",
+        reason:
+          "Primary post-SPA execution lanes must be opened through the canonical execution-lane authority operation.",
+        fromState,
+        toState,
+      },
+      {
+        status: 409,
+      },
+    );
+  }
 
   if (!canTransitionDossier(fromState, toState)) {
     return NextResponse.json(
