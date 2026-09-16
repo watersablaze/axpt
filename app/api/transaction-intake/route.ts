@@ -32,6 +32,21 @@ export async function POST(req: Request) {
       );
     }
 
+    if (
+      body.declarationAccuracy !== true ||
+      body.declarationNoObligation !== true ||
+      body.declarationNoCommission !== true
+    ) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            "All required submission declarations must be confirmed.",
+        },
+        { status: 400 },
+      );
+    }
+
     const reference = createTransactionIntakeReference();
 
     const intake = await prisma.transactionIntake.create({
@@ -68,6 +83,144 @@ export async function POST(req: Request) {
         financialReadiness: asOptionalString(body.financialReadiness),
         documentsAvailable: asOptionalString(body.documentsAvailable),
         supportingNotes: asOptionalString(body.supportingNotes),
+
+        // LOI V4 — Counterparty Identity / Authority
+        buyerRegistrationNumber: asOptionalString(
+          body.buyerRegistrationNumber,
+        ),
+        buyerCountryOfIncorporation: asOptionalString(
+          body.buyerCountryOfIncorporation,
+        ),
+        buyerRegisteredAddress: asOptionalString(
+          body.buyerRegisteredAddress,
+        ),
+        buyerBusinessAddress: asOptionalString(
+          body.buyerBusinessAddress,
+        ),
+        buyerCorporateEmail: asOptionalString(
+          body.buyerCorporateEmail,
+        ),
+        buyerCorporatePhone: asOptionalString(
+          body.buyerCorporatePhone,
+        ),
+
+        buyerRepresentativeName: asOptionalString(
+          body.buyerRepresentativeName,
+        ),
+        buyerRepresentativeTitle: asOptionalString(
+          body.buyerRepresentativeTitle,
+        ),
+        buyerRepresentativeEntity: asOptionalString(
+          body.buyerRepresentativeEntity,
+        ),
+        buyerRepresentativeEmail: asOptionalString(
+          body.buyerRepresentativeEmail,
+        ),
+        buyerRepresentativePhone: asOptionalString(
+          body.buyerRepresentativePhone,
+        ),
+        buyerRepresentativeRelationship: asOptionalString(
+          body.buyerRepresentativeRelationship,
+        ),
+
+        authorityToRepresent: Boolean(body.authorityToRepresent),
+        authorityToNegotiate: Boolean(body.authorityToNegotiate),
+        authorityToSign: Boolean(body.authorityToSign),
+        authorityOther: asOptionalString(body.authorityOther),
+
+        externalParticipants: Array.isArray(body.externalParticipants)
+          ? body.externalParticipants
+          : undefined,
+
+        // LOI V4 — Transaction Profile
+        requestedPurity: asOptionalString(body.requestedPurity),
+        transactionPurpose: asOptionalString(body.transactionPurpose),
+        transactionWindow: asOptionalString(body.transactionWindow),
+        continuingSupplyIntent: asOptionalString(
+          body.continuingSupplyIntent,
+        ),
+        recurringQuantity: asOptionalString(body.recurringQuantity),
+        recurringFrequency: asOptionalString(body.recurringFrequency),
+        desiredTerm: asOptionalString(body.desiredTerm),
+        destinationStatus: asOptionalString(body.destinationStatus),
+        buyerRequirements: asOptionalString(body.buyerRequirements),
+
+        // LOI V4 — Delivery / Assay
+        deliveryPathway: asOptionalString(body.deliveryPathway),
+        deliveryPoint: asOptionalString(body.deliveryPoint),
+        buyerRepresentativesPresent: asOptionalString(
+          body.buyerRepresentativesPresent,
+        ),
+        buyerRepresentative1: asOptionalString(
+          body.buyerRepresentative1,
+        ),
+        buyerRepresentative2: asOptionalString(
+          body.buyerRepresentative2,
+        ),
+        refineryJurisdiction: asOptionalString(
+          body.refineryJurisdiction,
+        ),
+        assayPosture: asOptionalString(body.assayPosture),
+        additionalAssayRequirements: asOptionalString(
+          body.additionalAssayRequirements,
+        ),
+
+        // LOI V4 — Settlement
+        settlementPathway: asOptionalString(body.settlementPathway),
+        settlementRail: asOptionalString(body.settlementRail),
+        settlementCurrencyAsset: asOptionalString(
+          body.settlementCurrencyAsset,
+        ),
+        settlementTimingRequirement: asOptionalString(
+          body.settlementTimingRequirement,
+        ),
+        bankMessageFormat: asOptionalString(body.bankMessageFormat),
+        digitalAsset: asOptionalString(body.digitalAsset),
+        digitalAssetNetwork: asOptionalString(
+          body.digitalAssetNetwork,
+        ),
+        additionalSettlementAuthorityRequired: asOptionalString(
+          body.additionalSettlementAuthorityRequired,
+        ),
+        additionalSettlementAuthorityDetail: asOptionalString(
+          body.additionalSettlementAuthorityDetail,
+        ),
+        financialCapacityStatus: asOptionalString(
+          body.financialCapacityStatus,
+        ),
+
+        // LOI V4 — Readiness / Compliance
+        incorporationRecordAvailable: Boolean(
+          body.incorporationRecordAvailable,
+        ),
+        kybRecordAvailable: Boolean(body.kybRecordAvailable),
+        representativeIdAvailable: Boolean(
+          body.representativeIdAvailable,
+        ),
+        authorityDocumentAvailable: Boolean(
+          body.authorityDocumentAvailable,
+        ),
+
+        specialComplianceRequirements: asOptionalString(
+          body.specialComplianceRequirements,
+        ),
+        specialComplianceDetail: asOptionalString(
+          body.specialComplianceDetail,
+        ),
+
+        // LOI V4 — Authorized Submission
+        authorizedSubmitterEntity: asOptionalString(
+          body.authorizedSubmitterEntity,
+        ),
+        authorizedSubmitterRepresentative: asOptionalString(
+          body.authorizedSubmitterRepresentative,
+        ),
+        authorizedSubmitterPosition: asOptionalString(
+          body.authorizedSubmitterPosition,
+        ),
+        authorizedSubmissionDate: asOptionalString(
+          body.authorizedSubmissionDate,
+        ),
 
         referralCode: asOptionalString(body.referralCode),
         referredByName: asOptionalString(body.referredByName),

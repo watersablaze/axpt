@@ -501,6 +501,94 @@ model TransactionIntake {
   documentsAvailable String?
   supportingNotes    String?
 
+  // ─────────────────────────────────────
+  // LOI V4 — COUNTERPARTY IDENTITY
+  // ─────────────────────────────────────
+
+  buyerRegistrationNumber     String?
+  buyerCountryOfIncorporation String?
+  buyerRegisteredAddress      String?
+  buyerBusinessAddress        String?
+  buyerCorporateEmail         String?
+  buyerCorporatePhone         String?
+
+  buyerRepresentativeName         String?
+  buyerRepresentativeTitle        String?
+  buyerRepresentativeEntity       String?
+  buyerRepresentativeEmail        String?
+  buyerRepresentativePhone        String?
+  buyerRepresentativeRelationship String?
+
+  authorityToRepresent Boolean @default(false)
+  authorityToNegotiate Boolean @default(false)
+  authorityToSign      Boolean @default(false)
+  authorityOther       String?
+
+  externalParticipants Json?
+
+  // ─────────────────────────────────────
+  // LOI V4 — TRANSACTION PROFILE
+  // ─────────────────────────────────────
+
+  requestedPurity        String?
+  transactionPurpose     String?
+  transactionWindow      String?
+  continuingSupplyIntent String?
+  recurringQuantity      String?
+  recurringFrequency     String?
+  desiredTerm            String?
+  destinationStatus      String?
+  buyerRequirements      String?
+
+  // ─────────────────────────────────────
+  // LOI V4 — DELIVERY / ASSAY
+  // ─────────────────────────────────────
+
+  deliveryPathway             String?
+  deliveryPoint               String?
+  buyerRepresentativesPresent String?
+  buyerRepresentative1        String?
+  buyerRepresentative2        String?
+  refineryJurisdiction        String?
+  assayPosture                String?
+  additionalAssayRequirements String?
+
+  // ─────────────────────────────────────
+  // LOI V4 — SETTLEMENT
+  // ─────────────────────────────────────
+
+  settlementPathway                     String?
+  settlementRail                        String?
+  settlementCurrencyAsset               String?
+  settlementTimingRequirement           String?
+  bankMessageFormat                     String?
+  digitalAsset                          String?
+  digitalAssetNetwork                   String?
+  additionalSettlementAuthorityRequired String?
+  additionalSettlementAuthorityDetail   String?
+  financialCapacityStatus               String?
+
+  // ─────────────────────────────────────
+  // LOI V4 — READINESS / COMPLIANCE
+  // ─────────────────────────────────────
+
+  incorporationRecordAvailable Boolean @default(false)
+  kybRecordAvailable           Boolean @default(false)
+  representativeIdAvailable    Boolean @default(false)
+  authorityDocumentAvailable   Boolean @default(false)
+
+  specialComplianceRequirements String?
+  specialComplianceDetail       String?
+
+  // ─────────────────────────────────────
+  // LOI V4 — AUTHORIZED SUBMISSION
+  // ─────────────────────────────────────
+
+  authorizedSubmitterEntity         String?
+  authorizedSubmitterRepresentative String?
+  authorizedSubmitterPosition       String?
+  authorizedSubmissionDate          String?
+
   referralCode            String?
   referredByName          String?
   referredByCompany       String?

@@ -1,195 +1,1748 @@
 .page {
+  --fw-blue: #10242f;
+  --fw-blue-deep: #0c1b23;
+  --fw-blue-soft: #172f3b;
+
+  --bone: #e4dfd4;
+  --bone-light: #eeeae1;
+  --paper: #e9e5dc;
+  --field: #f0ede6;
+
+  --ink: #14262f;
+  --muted: rgba(20, 38, 47, 0.58);
+
+  --bronze: #9a7b43;
+  --bronze-bright: #ba9654;
+
+  --rule: rgba(20, 38, 47, 0.18);
+  --rule-dark: rgba(20, 38, 47, 0.32);
+  --blue-rule: rgba(238, 234, 225, 0.13);
+
   min-height: 100vh;
-  background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.98), #020617 42%, #000);
-  color: #fff;
-  padding: 3rem 1.25rem;
+
+  background: var(--bone);
+  color: var(--ink);
+
+  font-family:
+    "Roboto",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
 }
 
-.hero,
-.form,
-.successCard {
-  width: min(980px, 100%);
-  margin: 0 auto;
+/* ─────────────────────────────
+   ISSUER MASTHEAD
+───────────────────────────── */
+
+.instrumentMasthead {
+  background: var(--fw-blue-deep);
+  color: var(--bone-light);
+
+  border-bottom: 1px solid var(--blue-rule);
 }
+
+.mastheadInner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 3rem;
+
+  width: min(1120px, calc(100% - 64px));
+
+  margin: 0 auto;
+
+  padding: 1.4rem 0;
+}
+
+.issuer p,
+.issuer span,
+.documentMeta span,
+.documentMeta strong {
+  margin: 0;
+
+  text-transform: uppercase;
+}
+
+.issuer p {
+  font-size: 0.66rem;
+  font-weight: 600;
+
+  letter-spacing: 0.17em;
+
+  color: rgba(238, 234, 225, 0.92);
+}
+
+.issuer span {
+  display: block;
+
+  margin-top: 0.28rem;
+
+  font-size: 0.45rem;
+  font-weight: 500;
+
+  letter-spacing: 0.16em;
+
+  color: var(--bronze-bright);
+}
+
+.documentMeta {
+  display: flex;
+  align-items: center;
+
+  gap: 1.1rem;
+
+  text-align: right;
+}
+
+.documentMeta span {
+  font-size: 0.45rem;
+  font-weight: 500;
+
+  letter-spacing: 0.14em;
+
+  color: rgba(238, 234, 225, 0.48);
+}
+
+.documentMeta strong {
+  font-size: 0.5rem;
+  font-weight: 600;
+
+  letter-spacing: 0.14em;
+
+  color: rgba(238, 234, 225, 0.82);
+}
+
+/* ─────────────────────────────
+   TITLE CHAMBER
+───────────────────────────── */
 
 .hero {
-  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+
+  min-height: 430px;
+
+  padding:
+    clamp(5.5rem, 9vw, 8rem)
+    2rem;
+
+  background:
+    linear-gradient(
+      rgba(238, 234, 225, 0.024) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      180deg,
+      var(--fw-blue-soft),
+      var(--fw-blue)
+    );
+
+  background-size:
+    100% 38px,
+    100% 100%;
+
+  color: var(--bone-light);
 }
 
-.kicker {
-  color: #aab0bd;
-  font-size: 0.72rem;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  margin-bottom: 0.75rem;
+.heroInner {
+  width: min(900px, 100%);
+
+  margin: 0 auto;
+
+  text-align: center;
 }
 
-.hero h1,
-.successCard h2 {
-  font-size: clamp(2rem, 3vw, 3.25rem);
-  line-height: 1.05;
+.kicker,
+.stageCode {
   margin: 0;
+
+  font-size: 0.53rem;
+  line-height: 1.3;
+
+  font-weight: 600;
+
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  color: var(--bronze-bright);
 }
 
-.hero p,
-.successCard p {
-  max-width: 760px;
-  color: #d6d9e0;
-  line-height: 1.65;
+.hero h1 {
+  margin:
+    1.3rem
+    0
+    1.5rem;
+
+  font-size: clamp(2.8rem, 5.5vw, 5.5rem);
+  line-height: 0.96;
+
+  font-weight: 500;
+
+  letter-spacing: -0.055em;
 }
 
-.notice {
-  margin-top: 1.25rem;
-  max-width: 900px;
-  border: 1px solid rgba(245, 158, 11, 0.36);
-  background: rgba(245, 158, 11, 0.075);
-  color: #f8e2b4;
-  border-radius: 0.9rem;
-  padding: 0.95rem;
-  line-height: 1.55;
+.hero h1 span {
+  display: block;
+
+  margin-top: 0.3rem;
+
+  font-weight: 300;
+
+  color: rgba(238, 234, 225, 0.73);
 }
+
+.heroLead {
+  max-width: 660px;
+
+  margin: 0 auto;
+
+  font-size: clamp(1rem, 1.7vw, 1.25rem);
+  line-height: 1.6;
+
+  color: rgba(238, 234, 225, 0.65);
+}
+
+/* ─────────────────────────────
+   DOCUMENT NAVIGATION
+───────────────────────────── */
+
+.instrumentNav {
+  position: sticky;
+  top: 0;
+
+  z-index: 20;
+
+  background: rgba(12, 27, 35, 0.97);
+
+  border-top: 1px solid var(--blue-rule);
+  border-bottom: 1px solid var(--blue-rule);
+
+  backdrop-filter: blur(8px);
+}
+
+.instrumentNav > div {
+  display: flex;
+  justify-content: center;
+
+  gap: clamp(1rem, 3vw, 2.5rem);
+
+  width: min(1120px, calc(100% - 48px));
+
+  margin: 0 auto;
+
+  overflow-x: auto;
+}
+
+.instrumentNav a {
+  flex: 0 0 auto;
+
+  padding: 1rem 0;
+
+  font-size: 0.47rem;
+
+  font-weight: 500;
+
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+
+  color: rgba(238, 234, 225, 0.48);
+
+  text-decoration: none;
+
+  transition: color 140ms ease;
+}
+
+.instrumentNav a:hover {
+  color: rgba(238, 234, 225, 0.92);
+}
+
+/* ─────────────────────────────
+   FORM BODY
+───────────────────────────── */
 
 .form {
+  width: min(960px, calc(100% - 64px));
+
+  margin: 0 auto;
+
+  padding:
+    clamp(4rem, 7vw, 6.5rem)
+    0
+    clamp(6rem, 9vw, 8rem);
+}
+
+.section {
+  scroll-margin-top: 80px;
+
+  padding:
+    0
+    0
+    clamp(4.75rem, 7vw, 6rem);
+
+  margin-bottom: clamp(4.5rem, 7vw, 6rem);
+
+  border-bottom: 1px solid var(--rule-dark);
+}
+
+.section:last-of-type {
+  margin-bottom: 3rem;
+}
+
+.sectionHeader {
   display: grid;
-  gap: 0.9rem;
+
+  grid-template-columns: 3rem minmax(0, 1fr);
+
+  gap: 1rem;
+
+  align-items: start;
+
+  padding-bottom: 1.25rem;
+
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+
+  border-bottom: 1px solid var(--rule-dark);
 }
 
-.section,
-.successCard {
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  background: rgba(15, 23, 42, 0.72);
-  border-radius: 1rem;
-  padding: 1.1rem;
+.sectionHeader > span {
+  padding-top: 0.18rem;
+
+  font-size: 0.58rem;
+  font-weight: 600;
+
+  letter-spacing: 0.16em;
+
+  color: var(--bronze);
 }
 
-.section h2 {
-  margin: 0 0 0.85rem;
-  font-size: 1.1rem;
+.sectionHeader h2 {
+  margin: 0.4rem 0 0;
+
+  font-size: clamp(1.55rem, 2.4vw, 2.2rem);
+  line-height: 1.06;
+
+  font-weight: 450;
+
+  letter-spacing: -0.035em;
+}
+
+.sectionHeader .stageCode {
+  color: rgba(20, 38, 47, 0.48);
+}
+
+/* ─────────────────────────────
+   STATUS NOTICE
+───────────────────────────── */
+
+.instrumentNotice {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: clamp(2rem, 5vw, 5rem);
+
+  padding:
+    1.5rem
+    0;
+
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.instrumentNotice p {
+  margin: 0;
+
+  font-size: 0.79rem;
+  line-height: 1.65;
+
+  color: var(--muted);
+}
+
+.progression {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 0.7rem;
+
+  padding: 1.4rem 0;
+
+  margin-bottom: 2.75rem;
+
+  border-bottom: 1px solid var(--rule);
+}
+
+.progression span {
+  font-size: 0.5rem;
+  font-weight: 600;
+
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+
+  color: rgba(20, 38, 47, 0.58);
+}
+
+.progression i {
+  font-style: normal;
+
+  color: var(--bronze);
+}
+
+/* ─────────────────────────────
+   SUBSECTIONS
+───────────────────────────── */
+
+.subheading {
+  margin:
+    3rem
+    0
+    1.25rem;
+
+  padding-bottom: 0.65rem;
+
+  border-bottom: 1px solid var(--rule);
+
+  font-size: 0.65rem;
+  line-height: 1.3;
+
+  font-weight: 600;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  color: rgba(20, 38, 47, 0.72);
 }
 
 .helper {
-  margin: -0.35rem 0 1rem;
-  color: #94a3b8;
-  font-size: 0.9rem;
-  line-height: 1.55;
+  max-width: 720px;
+
+  margin:
+    -0.25rem
+    0
+    1.75rem;
+
+  font-size: 0.72rem;
+  line-height: 1.6;
+
+  color: var(--muted);
 }
+
+/* ─────────────────────────────
+   FIELD GRID
+───────────────────────────── */
 
 .grid {
   display: grid;
-  gap: 0.9rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
 
-.checkboxGrid {
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-bottom: 1rem;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap:
+    1.55rem
+    2.25rem;
 }
 
 .wide {
-  grid-column: span 3;
+  grid-column: 1 / -1;
 }
 
-.form label {
-  display: grid;
-  gap: 0.45rem;
-  color: #cfd5df;
-  font-size: 0.9rem;
+.grid label,
+.choiceBlock > label {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.48rem;
+
+  min-width: 0;
+
+  font-size: 0.57rem;
+  line-height: 1.35;
+
+  font-weight: 600;
+
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+
+  color: rgba(20, 38, 47, 0.62);
 }
 
-.form input,
-.form select,
-.form textarea {
+/* ─────────────────────────────
+   INPUT CONSTITUTION
+   intentionally NOT bubbly
+───────────────────────────── */
+
+.grid input,
+.grid select,
+.grid textarea,
+.choiceBlock input,
+.choiceBlock select,
+.choiceBlock textarea {
   width: 100%;
-  border: 1px solid rgba(148, 163, 184, 0.22);
-  border-radius: 0.72rem;
-  background: rgba(2, 6, 23, 0.94);
-  color: #fff;
-  padding: 0.78rem 0.9rem;
-  font: inherit;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    rgba(20, 38, 47, 0.24);
+
+  border-radius: 0;
+
+  outline: none;
+
+  background: rgba(240, 237, 230, 0.72);
+
+  color: var(--ink);
+
+  font-family:
+    "Roboto",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 0.86rem;
+
+  font-weight: 400;
+
+  letter-spacing: 0;
+
+  text-transform: none;
+
+  box-shadow: none;
+
+  appearance: none;
+
+  transition:
+    border-color 120ms ease,
+    background 120ms ease;
 }
 
-.form textarea {
+.grid input,
+.grid select,
+.choiceBlock input,
+.choiceBlock select {
+  min-height: 44px;
+
+  padding:
+    0
+    0.8rem;
+}
+
+.grid textarea,
+.choiceBlock textarea {
+  min-height: 110px;
+
+  padding: 0.75rem 0.8rem;
+
   resize: vertical;
 }
 
+.grid select,
+.choiceBlock select {
+  padding-right: 2.3rem;
+
+  background-image:
+    linear-gradient(
+      45deg,
+      transparent 50%,
+      rgba(20, 38, 47, 0.55) 50%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(20, 38, 47, 0.55) 50%,
+      transparent 50%
+    );
+
+  background-position:
+    calc(100% - 16px) 19px,
+    calc(100% - 11px) 19px;
+
+  background-size:
+    5px 5px,
+    5px 5px;
+
+  background-repeat: no-repeat;
+}
+
+.grid input:focus,
+.grid select:focus,
+.grid textarea:focus,
+.choiceBlock input:focus,
+.choiceBlock select:focus,
+.choiceBlock textarea:focus {
+  border-color: var(--bronze);
+
+  background: rgba(244, 241, 234, 0.98);
+
+  box-shadow:
+    inset 0 -2px 0
+    rgba(154, 123, 67, 0.72);
+}
+
+.grid input::placeholder,
+.grid textarea::placeholder {
+  color: rgba(20, 38, 47, 0.3);
+}
+
+/* ─────────────────────────────
+   CHOICE / AUTHORITY BLOCK
+───────────────────────────── */
+
+.choiceBlock {
+  margin-top: 2rem;
+
+  padding:
+    1.5rem
+    0;
+
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.choiceLabel {
+  margin:
+    0
+    0
+    1rem;
+
+  font-size: 0.57rem;
+
+  font-weight: 600;
+
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  color: rgba(20, 38, 47, 0.64);
+}
+
+/* ─────────────────────────────
+   CHECKBOXES
+───────────────────────────── */
+
+.checkboxGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 0;
+
+  margin-bottom: 1.6rem;
+
+  border-top: 1px solid var(--rule);
+}
+
 .checkbox {
-  display: flex !important;
-  grid-template-columns: auto 1fr;
-  align-items: flex-start;
-  gap: 0.7rem !important;
-  margin-top: 0.75rem;
+  display: grid;
+
+  grid-template-columns: 1rem 1fr;
+
+  gap: 0.8rem;
+
+  align-items: start;
+
+  padding:
+    0.9rem
+    1.2rem
+    0.9rem
+    0;
+
+  border-bottom: 1px solid var(--rule);
+
+  font-size: 0.75rem;
   line-height: 1.5;
+
+  color: rgba(20, 38, 47, 0.7);
+
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.checkbox:nth-child(odd) {
+  border-right: 1px solid var(--rule);
+
+  padding-right: 1.5rem;
+}
+
+.checkbox:nth-child(even) {
+  padding-left: 1.5rem;
 }
 
 .checkbox input {
-  width: auto;
-  margin-top: 0.2rem;
-}
+  width: 14px;
+  height: 14px;
 
-.submit {
-  justify-self: start;
-  border: 1px solid rgba(245, 158, 11, 0.7);
-  border-radius: 999px;
-  background: rgba(245, 158, 11, 0.13);
-  color: #f9d58b;
-  padding: 0.9rem 1.25rem;
-  font-weight: 700;
+  margin: 0.16rem 0 0;
+
+  border:
+    1px solid
+    rgba(20, 38, 47, 0.46);
+
+  border-radius: 0;
+
+  appearance: none;
+
+  background: transparent;
+
   cursor: pointer;
 }
 
+.checkbox input:checked {
+  border-color: var(--bronze);
+
+  background:
+    linear-gradient(
+      135deg,
+      transparent 35%,
+      var(--bronze) 35%,
+      var(--bronze) 58%,
+      transparent 58%
+    );
+}
+
+/* ─────────────────────────────
+   DECLARATIONS
+───────────────────────────── */
+
+.declarations {
+  margin-top: 2.5rem;
+
+  border-top: 1px solid var(--rule-dark);
+}
+
+.declarations .checkbox {
+  grid-template-columns: 1rem 1fr;
+
+  padding:
+    1.15rem
+    0;
+
+  border-right: 0;
+}
+
+/* ─────────────────────────────
+   SUBMISSION
+───────────────────────────── */
+
+.submitArea {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 3rem;
+
+  padding:
+    2rem
+    0;
+
+  border-top: 1px solid var(--rule-dark);
+  border-bottom: 1px solid var(--rule-dark);
+}
+
+.submitNote {
+  max-width: 520px;
+
+  margin:
+    0.5rem
+    0
+    0;
+
+  font-size: 0.7rem;
+  line-height: 1.5;
+
+  color: var(--muted);
+}
+
+.submit {
+  flex: 0 0 auto;
+
+  min-width: 190px;
+
+  min-height: 48px;
+
+  padding:
+    0
+    1.4rem;
+
+  border:
+    1px solid
+    var(--fw-blue);
+
+  border-radius: 0;
+
+  background: var(--fw-blue);
+
+  color: var(--bone-light);
+
+  font-family:
+    "Roboto",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 0.55rem;
+
+  font-weight: 600;
+
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+
+  cursor: pointer;
+
+  transition:
+    background 140ms ease,
+    color 140ms ease;
+}
+
+.submit:hover {
+  background: transparent;
+
+  color: var(--fw-blue);
+}
+
 .submit:disabled {
-  opacity: 0.65;
+  opacity: 0.42;
+
   cursor: wait;
 }
 
+/* ─────────────────────────────
+   ERROR / SUCCESS
+───────────────────────────── */
+
 .error {
-  border: 1px solid rgba(248, 113, 113, 0.5);
-  background: rgba(127, 29, 29, 0.28);
-  color: #fecaca;
-  border-radius: 1rem;
-  padding: 1rem;
+  margin:
+    1.5rem
+    0;
+
+  padding:
+    1rem
+    1.1rem;
+
+  border:
+    1px solid
+    rgba(128, 44, 38, 0.42);
+
+  border-radius: 0;
+
+  background:
+    rgba(128, 44, 38, 0.045);
+
+  font-size: 0.74rem;
+  line-height: 1.5;
+
+  color: #722f2a;
 }
 
 .successCard {
-  margin-top: 2rem;
+  width: min(760px, calc(100% - 48px));
+
+  margin:
+    clamp(5rem, 10vw, 9rem)
+    auto;
+
+  padding:
+    clamp(3rem, 6vw, 5rem);
+
+  border:
+    1px solid
+    var(--rule-dark);
+
+  border-radius: 0;
+
+  background: var(--paper);
+
+  text-align: center;
+}
+
+.successCard h2 {
+  margin:
+    1rem
+    0;
+
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+
+  font-weight: 450;
+
+  letter-spacing: -0.035em;
+}
+
+.successCard > p {
+  font-size: 0.85rem;
+  line-height: 1.6;
+
+  color: var(--muted);
 }
 
 .reference {
-  display: inline-block;
-  margin: 1rem 0;
-  border: 1px solid rgba(245, 158, 11, 0.5);
-  border-radius: 0.9rem;
-  background: rgba(245, 158, 11, 0.1);
-  color: #f9d58b;
-  font-family:
-    ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Monaco,
-    Consolas,
-    monospace;
-  font-size: 1.15rem;
-  padding: 0.85rem 1rem;
+  margin:
+    2rem
+    0;
+
+  padding:
+    1.2rem;
+
+  border-top:
+    1px solid
+    var(--bronze);
+
+  border-bottom:
+    1px solid
+    var(--bronze);
+
+  font-size: clamp(1rem, 2vw, 1.3rem);
+
+  font-weight: 600;
+
+  letter-spacing: 0.1em;
 }
 
 .muted {
-  color: #aab0bd !important;
+  max-width: 620px;
+
+  margin:
+    1.5rem
+    auto
+    0;
 }
 
-@media (max-width: 860px) {
-  .page {
-    padding: 2rem 1rem;
+/* ─────────────────────────────
+   RESPONSIVE
+───────────────────────────── */
+
+@media (max-width: 760px) {
+  .mastheadInner {
+    width: calc(100% - 32px);
+
+    align-items: flex-start;
   }
 
-  .grid,
-  .checkboxGrid {
+  .documentMeta {
+    display: block;
+  }
+
+  .documentMeta strong {
+    display: block;
+
+    margin-top: 0.3rem;
+  }
+
+  .form {
+    width: calc(100% - 32px);
+  }
+
+  .grid {
     grid-template-columns: 1fr;
   }
 
   .wide {
-    grid-column: span 1;
+    grid-column: auto;
+  }
+
+  .instrumentNotice {
+    grid-template-columns: 1fr;
+
+    gap: 1rem;
+  }
+
+  .checkboxGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkbox:nth-child(odd) {
+    border-right: 0;
+
+    padding-right: 0;
+  }
+
+  .checkbox:nth-child(even) {
+    padding-left: 0;
+  }
+
+  .progression {
+    justify-content: flex-start;
+
+    overflow-x: auto;
+  }
+
+  .submitArea {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .submit {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero {
+    min-height: 360px;
+
+    padding:
+      5rem
+      1rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 13vw, 4rem);
+  }
+
+  .mastheadInner {
+    flex-direction: column;
+
+    gap: 1rem;
+  }
+
+  .sectionHeader {
+    grid-template-columns: 2rem 1fr;
+  }
+}
+
+/* ─────────────────────────────
+   V4 FINAL SCALE / DENSITY PASS
+───────────────────────────── */
+
+.form {
+  width: min(1040px, calc(100% - 48px));
+}
+
+.section {
+  padding-bottom: clamp(3.5rem, 5vw, 4.75rem);
+  margin-bottom: clamp(3.5rem, 5vw, 4.75rem);
+}
+
+.sectionHeader {
+  margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.sectionHeader h2 {
+  font-size: clamp(1.8rem, 2.8vw, 2.5rem);
+  font-weight: 500;
+}
+
+.sectionHeader .stageCode {
+  font-size: 0.58rem;
+}
+
+.grid {
+  gap:
+    1.25rem
+    1.75rem;
+}
+
+.grid label,
+.choiceBlock > label {
+  font-size: 0.62rem;
+  letter-spacing: 0.055em;
+}
+
+.grid input,
+.grid select,
+.grid textarea,
+.choiceBlock input,
+.choiceBlock select,
+.choiceBlock textarea {
+  font-size: 0.92rem;
+}
+
+.grid input,
+.grid select,
+.choiceBlock input,
+.choiceBlock select {
+  min-height: 48px;
+}
+
+.grid textarea,
+.choiceBlock textarea {
+  min-height: 120px;
+}
+
+.helper {
+  font-size: 0.78rem;
+  line-height: 1.65;
+}
+
+.subheading {
+  font-size: 0.7rem;
+}
+
+.checkbox {
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.instrumentNotice p {
+  font-size: 0.84rem;
+}
+
+.practiceRow strong,
+.stage strong {
+  letter-spacing: 0.06em;
+}
+
+.progression {
+  margin-bottom: 2.25rem;
+}
+
+.submitNote {
+  font-size: 0.76rem;
+}
+
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wide {
+    grid-column: auto;
+  }
+
+  .checkboxGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkbox:nth-child(odd) {
+    border-right: 0;
+    padding-right: 0;
+  }
+
+  .checkbox:nth-child(even) {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .form {
+    width: calc(100% - 28px);
+  }
+
+  .section {
+    padding-bottom: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .sectionHeader {
+    grid-template-columns: 1.8rem 1fr;
+  }
+
+  .sectionHeader h2 {
+    font-size: 1.65rem;
+  }
+
+  .grid input,
+  .grid select,
+  .choiceBlock input,
+  .choiceBlock select {
+    min-height: 50px;
+  }
+
+  .heroLead {
+    font-size: 0.95rem;
+  }
+
+  .instrumentNav a {
+    font-size: 0.5rem;
+  }
+}
+
+/* ─────────────────────────────
+   V4 FINAL TONAL CALIBRATION
+───────────────────────────── */
+
+.page {
+  --bone: #ddd7ca;
+  --bone-light: #ece7dc;
+  --paper: #e4ded2;
+  --field: #ebe6db;
+}
+
+.grid label,
+.choiceBlock > label {
+  font-size: 0.66rem;
+}
+
+.grid input,
+.grid select,
+.grid textarea,
+.choiceBlock input,
+.choiceBlock select,
+.choiceBlock textarea {
+  font-size: 0.96rem;
+}
+
+.helper {
+  font-size: 0.82rem;
+}
+
+.instrumentNotice p {
+  font-size: 0.88rem;
+}
+
+.checkbox {
+  font-size: 0.84rem;
+}
+
+.profileCopy,
+.submitNote {
+  font-size: 0.8rem;
+}
+
+.sectionHeader .stageCode,
+.stageCode {
+  letter-spacing: 0.17em;
+}
+
+/* ─────────────────────────────
+   ISSUER AUTHORITY MARK
+───────────────────────────── */
+
+.issuer {
+  display: flex;
+  align-items: center;
+
+  gap: 0.85rem;
+}
+
+.issuerSeal {
+  width: 38px;
+  height: 38px;
+
+  object-fit: contain;
+
+  opacity: 0.72;
+
+  filter: grayscale(1) brightness(1.55);
+}
+
+/* ─────────────────────────────
+   V4 COMPLETER CONFIDENCE PASS
+───────────────────────────── */
+
+.progression {
+  padding:
+    1.15rem
+    1.25rem;
+
+  background:
+    rgba(20, 38, 47, 0.025);
+
+  border-top:
+    1px solid
+    rgba(154, 123, 67, 0.34);
+
+  border-bottom:
+    1px solid
+    rgba(154, 123, 67, 0.34);
+}
+
+.progression span {
+  font-size: 0.56rem;
+  font-weight: 700;
+
+  color: rgba(20, 38, 47, 0.72);
+}
+
+.progression i {
+  font-size: 0.8rem;
+
+  color: #a98545;
+}
+
+.fieldHelp,
+.choiceHelp {
+  display: block;
+
+  margin-top: 0.18rem;
+
+  font-size: 0.68rem;
+  line-height: 1.48;
+
+  font-weight: 400;
+
+  letter-spacing: 0;
+  text-transform: none;
+
+  color: rgba(20, 38, 47, 0.48);
+}
+
+.choiceHelp {
+  max-width: 720px;
+
+  margin:
+    -0.3rem
+    0
+    1.1rem;
+}
+
+.conditionalGroup {
+  grid-column: 1 / -1;
+
+  margin:
+    0.35rem
+    0
+    0.45rem;
+
+  padding:
+    1.2rem
+    0
+    0;
+
+  border-top:
+    1px solid
+    rgba(154, 123, 67, 0.36);
+}
+
+.conditionalLabel {
+  margin:
+    0
+    0
+    1rem;
+
+  font-size: 0.56rem;
+
+  font-weight: 700;
+
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+
+  color: #8f713d;
+}
+
+.conditionalGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap:
+    1.25rem
+    1.75rem;
+}
+
+.conditionalGrid label {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.48rem;
+
+  font-size: 0.66rem;
+
+  font-weight: 600;
+
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+
+  color: rgba(20, 38, 47, 0.62);
+}
+
+.conditionalGrid input,
+.conditionalGrid select {
+  width: 100%;
+
+  min-height: 48px;
+
+  box-sizing: border-box;
+
+  padding:
+    0
+    0.8rem;
+
+  border:
+    1px solid
+    rgba(20, 38, 47, 0.24);
+
+  border-radius: 0;
+
+  outline: none;
+
+  background:
+    rgba(240, 237, 230, 0.72);
+
+  color: var(--ink);
+
+  font: inherit;
+
+  font-size: 0.96rem;
+
+  font-weight: 400;
+
+  letter-spacing: 0;
+  text-transform: none;
+
+  box-shadow: none;
+}
+
+.conditionalGrid input:focus,
+.conditionalGrid select:focus {
+  border-color: var(--bronze);
+
+  background:
+    rgba(244, 241, 234, 0.98);
+
+  box-shadow:
+    inset 0 -2px 0
+    rgba(154, 123, 67, 0.72);
+}
+
+.grid input[readonly] {
+  background:
+    rgba(20, 38, 47, 0.035);
+
+  color:
+    rgba(20, 38, 47, 0.62);
+
+  cursor: default;
+}
+
+@media (max-width: 860px) {
+  .conditionalGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─────────────────────────────
+   V4 FINAL NAV + CHECKBOX POLISH
+───────────────────────────── */
+
+/* Masthead identity / meta */
+
+.issuer p {
+  font-size: 0.72rem;
+}
+
+.issuer span {
+  font-size: 0.5rem;
+}
+
+.documentMeta span {
+  font-size: 0.5rem;
+}
+
+.documentMeta strong {
+  font-size: 0.56rem;
+}
+
+/* Horizontal section navigation */
+
+.instrumentNav a {
+  font-size: 0.56rem;
+  font-weight: 600;
+
+  letter-spacing: 0.12em;
+}
+
+/* Slightly more room around nav */
+
+.instrumentNav > div {
+  gap: clamp(1.15rem, 3vw, 2.7rem);
+}
+
+.instrumentNav a {
+  padding: 1.05rem 0;
+}
+
+/* Checkbox geometry + alignment */
+
+.checkbox {
+  grid-template-columns: 18px minmax(0, 1fr);
+
+  align-items: start;
+
+  gap: 0.75rem;
+}
+
+.checkbox input {
+  width: 16px;
+  height: 16px;
+
+  min-width: 16px;
+  min-height: 16px;
+
+  margin: 0.05rem 0 0;
+
+  border:
+    1px solid
+    rgba(20, 38, 47, 0.5);
+
+  border-radius: 0;
+
+  aspect-ratio: 1 / 1;
+}
+
+/* Keep long checkbox labels visually connected */
+
+.checkbox {
+  line-height: 1.42;
+}
+
+/* Slightly firmer checked state */
+
+.checkbox input:checked {
+  border-color: var(--bronze);
+
+  background:
+    linear-gradient(
+      135deg,
+      transparent 31%,
+      var(--bronze) 31%,
+      var(--bronze) 59%,
+      transparent 59%
+    );
+}
+
+/* ─────────────────────────────
+   V4 FINAL NAV + CHECKBOX POLISH
+───────────────────────────── */
+
+/* Masthead identity / meta */
+
+.issuer p {
+  font-size: 0.72rem;
+}
+
+.issuer span {
+  font-size: 0.5rem;
+}
+
+.documentMeta span {
+  font-size: 0.5rem;
+}
+
+.documentMeta strong {
+  font-size: 0.56rem;
+}
+
+/* Horizontal section navigation */
+
+.instrumentNav a {
+  font-size: 0.56rem;
+  font-weight: 600;
+
+  letter-spacing: 0.12em;
+}
+
+/* Slightly more room around nav */
+
+.instrumentNav > div {
+  gap: clamp(1.15rem, 3vw, 2.7rem);
+}
+
+.instrumentNav a {
+  padding: 1.05rem 0;
+}
+
+/* Checkbox geometry + alignment */
+
+.checkbox {
+  grid-template-columns: 18px minmax(0, 1fr);
+
+  align-items: start;
+
+  gap: 0.75rem;
+}
+
+.checkbox input {
+  width: 16px;
+  height: 16px;
+
+  min-width: 16px;
+  min-height: 16px;
+
+  margin: 0.05rem 0 0;
+
+  border:
+    1px solid
+    rgba(20, 38, 47, 0.5);
+
+  border-radius: 0;
+
+  aspect-ratio: 1 / 1;
+}
+
+/* Keep long checkbox labels visually connected */
+
+.checkbox {
+  line-height: 1.42;
+}
+
+/* Slightly firmer checked state */
+
+.checkbox input:checked {
+  border-color: var(--bronze);
+
+  background:
+    linear-gradient(
+      135deg,
+      transparent 31%,
+      var(--bronze) 31%,
+      var(--bronze) 59%,
+      transparent 59%
+    );
+}
+
+/* ─────────────────────────────
+   FRENCH-WARD RETURN RAIL
+───────────────────────────── */
+
+.returnRail {
+  width: min(1040px, calc(100% - 64px));
+
+  margin: 0 auto;
+
+  padding:
+    1rem
+    0
+    0;
+}
+
+.returnRail a {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 0.55rem;
+
+  color: rgba(231, 225, 213, 0.58);
+
+  font-size: 0.54rem;
+  font-weight: 600;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  text-decoration: none;
+
+  transition:
+    color 150ms ease,
+    gap 150ms ease;
+}
+
+.returnRail a > span:first-child {
+  color: var(--bronze);
+}
+
+.returnRail a:hover {
+  gap: 0.72rem;
+
+  color: rgba(239, 234, 224, 0.9);
+}
+
+@media (max-width: 560px) {
+  .returnRail {
+    width: calc(100% - 32px);
+  }
+}
+
+/* ─────────────────────────────
+   FW RETURN — MASTHEAD INGRESS
+───────────────────────────── */
+
+.returnRail {
+  display: none;
+}
+
+.masthead {
+  position: relative;
+}
+
+.returnLink {
+  position: absolute;
+
+  left: max(
+    32px,
+    calc((100% - 1040px) / 2)
+  );
+
+  top: 0.85rem;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 0.48rem;
+
+  color: rgba(231, 225, 213, 0.42);
+
+  font-size: 0.5rem;
+  font-weight: 600;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  text-decoration: none;
+
+  transition:
+    color 150ms ease,
+    gap 150ms ease;
+}
+
+.returnLink span:first-child {
+  color: var(--bronze);
+}
+
+.returnLink:hover {
+  gap: 0.65rem;
+
+  color: rgba(239, 234, 224, 0.82);
+}
+
+@media (max-width: 560px) {
+  .returnLink {
+    left: 16px;
+  }
+}
+
+/* ─────────────────────────────
+   FW RETURN — INTEGRATED MASTHEAD
+───────────────────────────── */
+
+.returnRail {
+  display: none;
+}
+
+.mastheadInner {
+  position: relative;
+}
+
+.returnLink {
+  position: absolute;
+
+  left: 0;
+  top: -1.65rem;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 0.48rem;
+
+  color: rgba(231, 225, 213, 0.38);
+
+  font-size: 0.49rem;
+  font-weight: 600;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  text-decoration: none;
+
+  transition:
+    color 150ms ease,
+    gap 150ms ease;
+}
+
+.returnLink span:first-child {
+  color: var(--bronze);
+}
+
+.returnLink:hover {
+  gap: 0.65rem;
+  color: rgba(239, 234, 224, 0.78);
+}
+
+@media (max-width: 680px) {
+  .returnLink {
+    top: -1.45rem;
   }
 }
