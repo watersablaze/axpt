@@ -45,6 +45,11 @@ export async function POST(
       approvalRequirements: true,
       terms: true,
       parties: true,
+      events: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
       promotedOpportunities: {
         select: {
           id: true,
@@ -80,6 +85,7 @@ export async function POST(
         instruments: dossier.instruments,
         parties: dossier.parties,
         sourceOpportunities: dossier.promotedOpportunities,
+        events: dossier.events,
         origin: dossier.origin,
         settlement: dossier.settlement,
         executionProfile,

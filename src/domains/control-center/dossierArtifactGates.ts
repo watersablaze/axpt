@@ -1,3 +1,7 @@
+import {
+  getDossierKycConfirmationStatus,
+} from "./dossiers/dossierKycReview";
+
 type DossierInstrumentForGate = {
   type: string;
   status: string;
@@ -9,6 +13,13 @@ type DossierPartyForGate = {
   representative?: string | null;
   country?: string | null;
   notes?: string | null;
+  createdAt?: Date | string | null;
+  updatedAt?: Date | string | null;
+};
+
+type DossierEventForGate = {
+  eventType: string;
+  createdAt: Date | string;
 };
 
 type DossierSourceOpportunityForGate = {
@@ -36,6 +47,7 @@ type ArtifactGateInput = {
   instruments?: DossierInstrumentForGate[];
   parties?: DossierPartyForGate[];
   sourceOpportunities?: DossierSourceOpportunityForGate[];
+  events?: DossierEventForGate[];
   origin?: string | null;
   settlement?: string | null;
   executionProfile?: string | null;
@@ -68,6 +80,7 @@ export function checkDossierArtifactGate({
   instruments = [],
   parties = [],
   sourceOpportunities = [],
+  events = [],
   origin = null,
   settlement = null,
   executionProfile = null,
@@ -77,6 +90,12 @@ export function checkDossierArtifactGate({
     const seller = parties.find((party) => party.role === "SELLER");
     const hasSellerParty = Boolean(seller?.legalName?.trim());
     const hasSourceTrace = sourceOpportunities.length > 0;
+
+    const kycConfirmation =
+      getDossierKycConfirmationStatus({
+        parties,
+        events,
+      });
 
     const checks: ArtifactGateCheck[] = [
       {
@@ -106,7 +125,21 @@ export function checkDossierArtifactGate({
             Boolean(party.notes?.trim()),
         ),
         detail:
-          "Go to Brief → Party Identity Review. Add representative, country, notes, or an operator confirmation note to at least one party record.",
+          "Go to Brief → Party Identity Review. Add representative, jurisdiction, and authority context before confirming the review.",
+      },
+      {
+        id: "kyc-review-disposition",
+        label: "KYC review disposition current",
+        passed: kycConfirmation.current,
+        detail: kycConfirmation.current
+          ? `Operator KYC review disposition is current${
+              kycConfirmation.confirmedAt
+                ? ` as of ${kycConfirmation.confirmedAt}`
+                : ""
+            }.`
+          : kycConfirmation.stale
+            ? "A previous KYC review disposition exists, but party records changed afterward. Reconfirm the review before SPA drafting."
+            : "An operator must explicitly confirm the KYC, party identity, authority, and source-context review threshold before SPA drafting.",
       },
     ];
 
@@ -116,7 +149,7 @@ export function checkDossierArtifactGate({
       passed: failed.length === 0,
       blockingReason:
         failed.length > 0
-          ? "SPA drafting requires buyer identity, source trace, and party review context. Resolve in Brief → Party Identity Review."
+          ? "SPA drafting requires buyer identity, source trace, party review context, and a current operator KYC review disposition."
           : undefined,
       checks,
     };

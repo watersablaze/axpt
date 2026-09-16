@@ -13,6 +13,7 @@ import { DossierBankCoordinatesPanel } from "./DossierBankCoordinatesPanel";
 import { DossierReleaseConditionsPanel } from "./DossierReleaseConditionsPanel";
 import { DossierSourceContextPanel } from "./DossierSourceContextPanel";
 import { DossierSourceIntakePanel } from "./DossierSourceIntakePanel";
+import { DossierKycReviewPanel } from "./DossierKycReviewPanel";
 import { DossierIssuanceApprovalPanel } from "./DossierIssuanceApprovalPanel";
 import TransitionActionBar from "./TransitionActionBar";
 import DossierCommandPanel from "./DossierCommandPanel";
@@ -1217,6 +1218,16 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
                 sourceIntake={
                   dossier.sourceOpportunities[0]?.sourceIntake ??
                   null
+                }
+              />
+
+              <DossierKycReviewPanel
+                dossierId={dossier.id}
+                currentState={dossier.state}
+                onChanged={() =>
+                  setRefreshNonce(
+                    (value) => value + 1,
+                  )
                 }
               />
 
