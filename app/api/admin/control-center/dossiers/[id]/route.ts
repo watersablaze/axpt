@@ -13,28 +13,6 @@ type RouteContext = {
   }>;
 };
 
-const DOSSIER_TRANSITION_MAP: Record<string, string[]> = {
-  INTAKE_PENDING: ["KYC_REVIEW"],
-  KYC_REVIEW: ["SPA_DRAFTING", "BLOCKED", "CANCELLED"],
-  SPA_DRAFTING: ["SPA_EXECUTED", "BLOCKED", "CANCELLED"],
-  SPA_EXECUTED: ["ESCROW_PENDING"],
-  ESCROW_PENDING: ["ESCROW_FUNDED", "BLOCKED", "CANCELLED"],
-  ESCROW_FUNDED: ["TREASURY_PENDING"],
-  TREASURY_PENDING: ["EXPORT_RELEASED"],
-  EXPORT_RELEASED: ["EXPORT_ACTIVE"],
-  EXPORT_ACTIVE: ["IN_TRANSIT"],
-  IN_TRANSIT: ["REFINERY_INTAKE"],
-  REFINERY_INTAKE: ["REFINERY_ASSAY"],
-  REFINERY_ASSAY: ["ASSAY_PENDING"],
-  ASSAY_PENDING: ["SETTLEMENT_PENDING"],
-  SETTLEMENT_PENDING: ["SETTLED"],
-  SETTLED: ["CLOSED"],
-};
-
-function getNextDossierStates(state: string): string[] {
-  return DOSSIER_TRANSITION_MAP[state] ?? [];
-}
-
 export async function GET(_request: Request, context: RouteContext) {
   const principal = await getPrincipal();
 

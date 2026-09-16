@@ -31,6 +31,11 @@ type TransitionPreview = {
   stateMachine: {
     passed: boolean;
   };
+  profileGate: {
+    passed: boolean;
+    profile: string;
+    availableStates: string[];
+  };
   artifactGate: GateResult;
   approvalGate: GateResult;
   consequences: TransitionConsequence[];
@@ -485,6 +490,32 @@ export default function TransitionActionBar({
               >
                 {preview.executable ? "Executable" : "Blocked"}
               </div>
+            </div>
+          </div>
+
+          <div
+            className={`rounded border p-3 text-xs ${
+              preview.profileGate.passed
+                ? "border-emerald-900 bg-emerald-950/10 text-emerald-300"
+                : "border-red-900 bg-red-950/10 text-red-300"
+            }`}
+          >
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <div className="text-[10px] uppercase tracking-wide">
+                Execution Profile Authority
+              </div>
+
+              <div className="text-[10px] uppercase tracking-wide opacity-70">
+                {preview.profileGate.profile}
+              </div>
+            </div>
+
+            <div className="mt-1 text-[11px] opacity-70">
+              {preview.profileGate.passed
+                ? "Selected transition is authorized for the current execution profile."
+                : `Selected transition is not available for this profile. Available: ${
+                    preview.profileGate.availableStates.join(", ") || "none"
+                  }.`}
             </div>
           </div>
 
