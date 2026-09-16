@@ -2986,6 +2986,7 @@
 
 @media (min-width: 681px) {
 
+  .mobileInstitutionalHeader,
   .mobileSeal {
     display: none !important;
   }
