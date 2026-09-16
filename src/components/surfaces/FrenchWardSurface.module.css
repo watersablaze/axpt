@@ -2992,3 +2992,40 @@
   }
 
 }
+
+/* ─────────────────────────────────────
+   AXPT R9 — FRENCH-WARD MOBILE FINAL AUTHORITY
+
+   Mobile institutional reading:
+
+   identity
+   → proposition
+   → quiet attestation
+   → institutional definition
+   → record
+
+   The seal remains materially present but
+   functions as witness rather than logo.
+
+   Proposition, definition, and record geometry
+   remain canonical.
+
+   Desktop authority is byte-preserved.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .mobileSeal {
+    width: 38px;
+
+    opacity: .60;
+
+    filter:
+      grayscale(.38)
+      saturate(.60)
+      sepia(.05)
+      contrast(1.015)
+      brightness(.96);
+  }
+
+}
