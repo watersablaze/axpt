@@ -17,6 +17,8 @@ type InstrumentShellProps = {
   version: string;
   status: string;
   movements: Movement[];
+  classificationLabel?: string;
+  showStatusRail?: boolean;
   children: ReactNode;
 };
 
@@ -28,6 +30,8 @@ export function InstrumentShell({
   version,
   status,
   movements,
+  classificationLabel = "Private Institutional Instrument",
+  showStatusRail = true,
   children,
 }: InstrumentShellProps) {
   return (
@@ -37,7 +41,7 @@ export function InstrumentShell({
       <header className={styles.hero}>
         <div className={styles.utility}>
           <span>{eyebrow}</span>
-          <span>Private Institutional Instrument</span>
+          <span>{classificationLabel}</span>
         </div>
 
         <div className={styles.identity}>
@@ -64,7 +68,7 @@ export function InstrumentShell({
           </dl>
         </div>
 
-        <InstrumentStatusRail />
+        {showStatusRail ? <InstrumentStatusRail /> : null}
         <InstrumentMovementNav movements={movements} />
       </header>
 
