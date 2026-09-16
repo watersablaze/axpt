@@ -2707,3 +2707,84 @@
   }
 
 }
+
+/* ─────────────────────────────────────
+   AXPT R9 — FRAMEWORK MOBILE FINAL AUTHORITY
+
+   Mobile relational law:
+
+   three surrounding conditions
+   → one established coordinate
+   → one documentary definition
+
+   Geometry remains canonical.
+
+   Readability is strengthened without
+   turning the field into a literal diagram.
+
+   Traces remain subordinate but perceptible.
+
+   Desktop authority is byte-preserved.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /*
+    CONDITION LABELS
+  */
+
+  .mobileNode h3 {
+    font-size: .47rem;
+
+    letter-spacing: .135em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .80);
+  }
+
+
+  /*
+    CONDITION LANGUAGE
+  */
+
+  .mobileNode p {
+    font-size: .78rem;
+    line-height: 1.38;
+
+    color:
+      rgba(var(--axpt-silver), .64);
+  }
+
+
+  /*
+    RELATIONAL TRACES
+  */
+
+  .mobileTrace {
+    opacity: .46;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--axpt-mineral-green), .30),
+        rgba(var(--axpt-silver), .10),
+        transparent
+      );
+  }
+
+
+  /*
+    AXIS LABEL
+  */
+
+  .mobileAxisLabel {
+    font-size: .44rem;
+
+    letter-spacing: .18em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .78);
+  }
+
+}
