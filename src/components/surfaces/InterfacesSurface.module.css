@@ -4027,3 +4027,112 @@
   }
 
 }
+
+/* ─────────────────────────────────────
+   AXPT R9 — INTERFACES MOBILE FINAL AUTHORITY
+
+   Mobile causal law:
+
+   known condition
+   → point of action
+   → occurrence
+   → changed condition
+   → retained consequence
+
+   Geometry exists only at action.
+
+   Temporal labels register clearly without
+   becoming independent headings.
+
+   The aperture remains the sole geometric
+   rupture in the mobile field.
+
+   Condition language, occurrence language,
+   and Interface definition remain canonical.
+
+   Desktop authority is byte-preserved.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /*
+    DECLARATION
+  */
+
+  .declaration h2 {
+    max-width: 12.2ch;
+
+    font-size:
+      clamp(
+        2.02rem,
+        9.15vw,
+        2.86rem
+      );
+
+    line-height: 1.02;
+  }
+
+
+  /*
+    PASSAGE APPROACH
+  */
+
+  .mobilePassage {
+    margin-top: 26px;
+  }
+
+
+  /*
+    BEFORE / AFTER TEMPORAL REGISTER
+  */
+
+  .mobilePassageLabel {
+    font-size: .45rem;
+
+    letter-spacing: .165em;
+
+    color:
+      rgba(var(--axpt-mineral-cold), .68);
+  }
+
+
+  .mobilePassageState:last-child
+  .mobilePassageLabel {
+    color:
+      rgba(var(--axpt-bronze), .66);
+  }
+
+
+  /*
+    ACTION APERTURE
+  */
+
+  .mobileAperture {
+    margin:
+      24px
+      0
+      24px;
+  }
+
+
+  .mobileApertureLabel {
+    margin-bottom: 12px;
+
+    font-size: .42rem;
+
+    letter-spacing: .165em;
+
+    color:
+      rgba(var(--axpt-iron-silver), .60);
+  }
+
+
+  /*
+    DOCUMENTARY CONSEQUENCE
+  */
+
+  .interfaceDefinition {
+    margin-top: 24px;
+  }
+
+}
