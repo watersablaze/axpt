@@ -125,7 +125,7 @@ function buildPublicIntakeHref(rep: {
     params.set("program", rep.program);
   }
 
-  return `/transaction-intake?${params.toString()}`;
+  return `/french-ward/transaction-intake?${params.toString()}`;
 }
 
 function buildAdminFilterHref(code: string) {

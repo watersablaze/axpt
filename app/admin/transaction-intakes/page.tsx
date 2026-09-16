@@ -306,7 +306,7 @@ export default async function TransactionIntakesAdminPage({
             </Link>
 
             <Link
-              href="/transaction-intake"
+              href="/french-ward/transaction-intake"
               className="rounded border border-blue-500/40 bg-blue-500/10 px-3 py-2 text-sm font-semibold text-blue-200 hover:bg-blue-500/20"
             >
               Open Public Intake
