@@ -5,10 +5,11 @@ import { prisma } from "@/infrastructure/db/prisma";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { promoteTransactionIntakeToOpportunity } from "@/domains/control-center/transaction-intakes/promoteTransactionIntakeToOpportunity";
 import {
-  TRANSACTION_INTAKE_STATUSES,
+  canTransitionTransactionIntakeReviewStatus,
+  getAllowedTransactionIntakeReviewTransitions,
   getTransactionIntakeStatusLabel,
   getTransactionIntakeStatusTone,
-  isTransactionIntakeStatus,
+  isTransactionIntakeReviewStatus,
 } from "@/domains/control-center/transaction-intakes/intakeStatuses";
 
 async function updateIntakeReview(formData: FormData) {
@@ -27,7 +28,10 @@ async function updateIntakeReview(formData: FormData) {
     internalNotes?: string | null;
   } = {};
 
-  if (typeof status === "string" && isTransactionIntakeStatus(status)) {
+  if (
+    typeof status === "string" &&
+    isTransactionIntakeReviewStatus(status)
+  ) {
     data.status = status;
   }
 
@@ -52,6 +56,22 @@ async function updateIntakeReview(formData: FormData) {
     return;
   }
 
+  if (
+    data.status &&
+    data.status !== existing.status &&
+    !canTransitionTransactionIntakeReviewStatus(
+      existing.status,
+      data.status,
+    )
+  ) {
+    throw new Error(
+      `TRANSACTION_INTAKE_REVIEW_TRANSITION_NOT_ALLOWED:${existing.status}:${data.status}`,
+    );
+  }
+
+  const principal = await getPrincipal();
+  const actor = principal?.email ?? "ADMIN";
+
   const events = [];
 
   if (data.status && data.status !== existing.status) {
@@ -62,7 +82,7 @@ async function updateIntakeReview(formData: FormData) {
           eventType: "STATUS_CHANGED",
           fromStatus: existing.status,
           toStatus: data.status,
-          actor: "ADMIN",
+          actor,
           note:
             typeof internalNotes === "string"
               ? internalNotes.trim() || null
@@ -81,7 +101,7 @@ async function updateIntakeReview(formData: FormData) {
         data: {
           intakeId: id,
           eventType: "INTERNAL_NOTE_UPDATED",
-          actor: "ADMIN",
+          actor,
           note: data.internalNotes,
         },
       }),
@@ -199,6 +219,12 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
   const canPromoteToOpportunity =
     intake.status === "QUALIFIED" && !intake.promotedOpportunityId;
 
+  const allowedReviewStatuses =
+    getAllowedTransactionIntakeReviewTransitions(intake.status);
+
+  const reviewStatusIsOperatorControlled =
+    allowedReviewStatuses.length > 0;
+
   return (
     <main className="min-h-screen bg-black text-white p-8">
       <div className="mb-8">
@@ -236,22 +262,35 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
           <form action={updateIntakeReview} className="mt-5 grid gap-4">
             <input type="hidden" name="id" value={intake.id} />
 
-            <label className="grid gap-2">
+            <div className="grid gap-2">
               <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
                 Status
               </span>
-              <select
-                name="status"
-                defaultValue={intake.status}
-                className="max-w-md rounded border border-gray-700 bg-black px-3 py-2 text-white"
-              >
-                {TRANSACTION_INTAKE_STATUSES.map((status) => (
-                  <option key={status} value={status}>
-                    {getTransactionIntakeStatusLabel(status)}
-                  </option>
-                ))}
-              </select>
-            </label>
+
+              {reviewStatusIsOperatorControlled ? (
+                <select
+                  name="status"
+                  defaultValue={intake.status}
+                  className="max-w-md rounded border border-gray-700 bg-black px-3 py-2 text-white"
+                >
+                  {allowedReviewStatuses.map((status) => (
+                    <option key={status} value={status}>
+                      {getTransactionIntakeStatusLabel(status)}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <div className="max-w-md rounded border border-violet-500/30 bg-violet-500/10 px-3 py-3">
+                  <p className="text-sm font-semibold text-violet-200">
+                    {getTransactionIntakeStatusLabel(intake.status)}
+                  </p>
+                  <p className="mt-1 text-xs leading-5 text-violet-200/60">
+                    This lifecycle state is controlled by a system operation
+                    and cannot be assigned manually from intake review.
+                  </p>
+                </div>
+              )}
+            </div>
 
             <label className="grid gap-2">
               <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
@@ -380,21 +419,258 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
         )}
       </section>
 
-      <Section title="Buyer / Submitter">
-        <Field label="Submitter Name" value={intake.submitterName} />
-        <Field label="Submitter Email" value={intake.submitterEmail} />
-        <Field label="Phone / WhatsApp" value={intake.submitterPhone} />
-        <Field label="Submitter Company" value={intake.submitterCompany} />
-        <Field label="Country / Jurisdiction" value={intake.submitterCountry} />
-        <Field label="Submitter Role" value={intake.submitterRole} />
-        <Field label="Buyer Company / Party" value={intake.buyerName} />
+      <Section title="01 · Counterparty Identity">
+        <Field label="Buyer / Entity" value={intake.buyerName} />
         <Field
-          label="Authorization Status"
-          value={intake.authorizationStatus}
+          label="Registration Number"
+          value={intake.buyerRegistrationNumber}
+        />
+        <Field
+          label="Country of Incorporation"
+          value={intake.buyerCountryOfIncorporation}
+        />
+        <Field
+          label="Registered Address"
+          value={intake.buyerRegisteredAddress}
+        />
+        <Field
+          label="Business Address"
+          value={intake.buyerBusinessAddress}
+        />
+        <Field
+          label="Corporate Email"
+          value={intake.buyerCorporateEmail}
+        />
+        <Field
+          label="Corporate Telephone"
+          value={intake.buyerCorporatePhone}
         />
       </Section>
 
-      <Section title="Representation">
+      <Section title="02 · Representative Authority">
+        <Field
+          label="Representative Name"
+          value={intake.buyerRepresentativeName}
+        />
+        <Field
+          label="Position / Title"
+          value={intake.buyerRepresentativeTitle}
+        />
+        <Field
+          label="Representing Entity"
+          value={intake.buyerRepresentativeEntity}
+        />
+        <Field
+          label="Representative Email"
+          value={intake.buyerRepresentativeEmail}
+        />
+        <Field
+          label="Representative Phone"
+          value={intake.buyerRepresentativePhone}
+        />
+        <Field
+          label="Relationship to Transaction"
+          value={intake.buyerRepresentativeRelationship}
+        />
+        <Field
+          label="Authority to Represent"
+          value={intake.authorityToRepresent}
+        />
+        <Field
+          label="Authority to Negotiate"
+          value={intake.authorityToNegotiate}
+        />
+        <Field
+          label="Authority to Sign"
+          value={intake.authorityToSign}
+        />
+        <Field
+          label="Other Authority"
+          value={intake.authorityOther}
+        />
+      </Section>
+
+      <Section title="03 · Proposed Transaction Profile">
+        <Field label="Program" value={intake.program} />
+        <Field
+          label="Transaction Structure"
+          value={intake.transactionType}
+        />
+        <Field label="Commodity" value={intake.commodity} />
+        <Field label="Requested Purity" value={intake.requestedPurity} />
+        <Field label="Total Quantity" value={intake.quantity} />
+        <Field label="Trial Quantity" value={intake.trialQuantity} />
+        <Field label="Monthly Quantity" value={intake.monthlyQuantity} />
+        <Field
+          label="Transaction Purpose"
+          value={intake.transactionPurpose}
+        />
+        <Field
+          label="Transaction Window"
+          value={intake.transactionWindow}
+        />
+        <Field
+          label="Continuing Supply Intent"
+          value={intake.continuingSupplyIntent}
+        />
+        <Field
+          label="Recurring Quantity"
+          value={intake.recurringQuantity}
+        />
+        <Field
+          label="Recurring Frequency"
+          value={intake.recurringFrequency}
+        />
+        <Field label="Desired Term" value={intake.desiredTerm} />
+        <Field label="Origin" value={intake.origin} />
+        <Field label="Destination" value={intake.destination} />
+        <Field
+          label="Destination Status"
+          value={intake.destinationStatus}
+        />
+        <Field
+          label="Buyer Requirements"
+          value={intake.buyerRequirements}
+        />
+      </Section>
+
+      <Section title="04 · Delivery / Logistics & Assay">
+        <Field
+          label="Delivery Pathway"
+          value={intake.deliveryPathway}
+        />
+        <Field label="Delivery Point" value={intake.deliveryPoint} />
+        <Field
+          label="Buyer Representatives Present"
+          value={intake.buyerRepresentativesPresent}
+        />
+        <Field
+          label="Buyer Representative 1"
+          value={intake.buyerRepresentative1}
+        />
+        <Field
+          label="Buyer Representative 2"
+          value={intake.buyerRepresentative2}
+        />
+        <Field
+          label="Refinery Jurisdiction"
+          value={intake.refineryJurisdiction}
+        />
+        <Field label="Assay Posture" value={intake.assayPosture} />
+        <Field
+          label="Additional Assay Requirements"
+          value={intake.additionalAssayRequirements}
+        />
+      </Section>
+
+      <Section title="05 · Settlement & Financial Capacity">
+        <Field
+          label="Settlement Pathway"
+          value={intake.settlementPathway}
+        />
+        <Field label="Settlement Rail" value={intake.settlementRail} />
+        <Field
+          label="Currency / Asset"
+          value={intake.settlementCurrencyAsset}
+        />
+        <Field
+          label="Settlement Timing"
+          value={intake.settlementTimingRequirement}
+        />
+        <Field
+          label="Bank Message Format"
+          value={intake.bankMessageFormat}
+        />
+        <Field label="Digital Asset" value={intake.digitalAsset} />
+        <Field
+          label="Digital Asset Network"
+          value={intake.digitalAssetNetwork}
+        />
+        <Field
+          label="Additional Settlement Authority Required"
+          value={intake.additionalSettlementAuthorityRequired}
+        />
+        <Field
+          label="Additional Settlement Authority Detail"
+          value={intake.additionalSettlementAuthorityDetail}
+        />
+        <Field
+          label="Financial Capacity Status"
+          value={intake.financialCapacityStatus}
+        />
+      </Section>
+
+      <Section title="06 · Compliance & Documentary Readiness">
+        <Field
+          label="Incorporation Record Available"
+          value={intake.incorporationRecordAvailable}
+        />
+        <Field
+          label="KYB Record Available"
+          value={intake.kybRecordAvailable}
+        />
+        <Field
+          label="Representative ID Available"
+          value={intake.representativeIdAvailable}
+        />
+        <Field
+          label="Authority Document Available"
+          value={intake.authorityDocumentAvailable}
+        />
+        <Field
+          label="Special Compliance Requirements"
+          value={intake.specialComplianceRequirements}
+        />
+        <Field
+          label="Compliance Detail"
+          value={intake.specialComplianceDetail}
+        />
+      </Section>
+
+      <Section title="07 · Authorized Submission">
+        <Field
+          label="Authorized Submitter Entity"
+          value={intake.authorizedSubmitterEntity}
+        />
+        <Field
+          label="Authorized Representative"
+          value={intake.authorizedSubmitterRepresentative}
+        />
+        <Field
+          label="Authorized Position"
+          value={intake.authorizedSubmitterPosition}
+        />
+        <Field
+          label="Submission Date"
+          value={intake.authorizedSubmissionDate}
+        />
+        <Field
+          label="Accuracy Confirmed"
+          value={intake.declarationAccuracy}
+        />
+        <Field
+          label="No Obligation Confirmed"
+          value={intake.declarationNoObligation}
+        />
+        <Field
+          label="No Commission / Mandate Right Confirmed"
+          value={intake.declarationNoCommission}
+        />
+      </Section>
+
+      <Section title="Ingress / Submitter">
+        <Field label="Submitter Name" value={intake.submitterName} />
+        <Field label="Submitter Email" value={intake.submitterEmail} />
+        <Field label="Phone / WhatsApp" value={intake.submitterPhone} />
+        <Field
+          label="Submitter Company"
+          value={intake.submitterCompany}
+        />
+        <Field
+          label="Country / Jurisdiction"
+          value={intake.submitterCountry}
+        />
+        <Field label="Submitter Role" value={intake.submitterRole} />
         <Field
           label="Represented Party Type"
           value={intake.representedPartyType}
@@ -403,51 +679,41 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
           label="Represented Party Name"
           value={intake.representedPartyName}
         />
-      </Section>
-
-      <Section title="Transaction Structure">
-        <Field label="Program" value={intake.program} />
-        <Field label="Transaction Structure" value={intake.transactionType} />
-        <Field label="Delivery Terms" value={intake.deliveryTerms} />
-        <Field label="Settlement Method" value={intake.settlementMethod} />
-        <Field label="Expected Timeline" value={intake.expectedTimeline} />
-      </Section>
-
-      <Section title="Commodity Request">
-        <Field label="Commodity" value={intake.commodity} />
-        <Field label="Total Quantity" value={intake.quantity} />
-        <Field label="Trial Quantity" value={intake.trialQuantity} />
-        <Field label="Monthly Quantity" value={intake.monthlyQuantity} />
-        <Field label="Origin" value={intake.origin} />
-        <Field label="Destination" value={intake.destination} />
-      </Section>
-
-      <Section title="Readiness Status">
-        <Field label="Financial Readiness" value={intake.financialReadiness} />
-        <Field label="Readiness Materials" value={intake.documentsAvailable} />
-        <Field label="Additional Notes" value={intake.supportingNotes} />
+        <Field
+          label="Authorization Status"
+          value={intake.authorizationStatus}
+        />
       </Section>
 
       <Section title="Representative / Referral">
         <Field label="Referral Code" value={intake.referralCode} />
-        <Field label="Issuing Representative" value={intake.referredByName} />
+        <Field
+          label="Issuing Representative"
+          value={intake.referredByName}
+        />
         <Field
           label="Representative Company"
           value={intake.referredByCompany}
         />
-        <Field label="Representative Email" value={intake.referredByEmail} />
-        <Field label="Representative Role" value={intake.referredByRole} />
-      </Section>
-
-      <Section title="Submission Notices">
-        <Field label="Accuracy Confirmed" value={intake.declarationAccuracy} />
         <Field
-          label="No Obligation Confirmed"
-          value={intake.declarationNoObligation}
+          label="Representative Email"
+          value={intake.referredByEmail}
         />
         <Field
-          label="No Commission / Mandate Right Confirmed"
-          value={intake.declarationNoCommission}
+          label="Representative Phone"
+          value={intake.referredByPhone}
+        />
+        <Field
+          label="Representative Role"
+          value={intake.referredByRole}
+        />
+        <Field
+          label="Referral Confirmed"
+          value={intake.referralConfirmed}
+        />
+        <Field
+          label="Compensation Expectation"
+          value={intake.compensationExpectation}
         />
       </Section>
 

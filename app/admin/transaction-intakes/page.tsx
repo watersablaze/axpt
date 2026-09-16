@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { revalidatePath } from "next/cache";
 import { prisma } from "@/infrastructure/db/prisma";
 import RepresentativeLinkBuilder from "./RepresentativeLinkBuilder";
 import { RecentIntakeEmailLogPanel } from "./RecentIntakeEmailLogPanel";
@@ -26,55 +25,6 @@ type Props = {
     q?: string;
   }>;
 };
-
-async function updateIntakeStatus(formData: FormData) {
-  "use server";
-
-  const id = formData.get("id");
-  const status = formData.get("status");
-
-  if (typeof id !== "string" || typeof status !== "string") {
-    return;
-  }
-
-  if (!isTransactionIntakeStatus(status)) {
-    return;
-  }
-
-  const existing = await prisma.transactionIntake.findUnique({
-    where: { id },
-    select: {
-      status: true,
-    },
-  });
-
-  if (!existing) {
-    return;
-  }
-
-  if (existing.status === status) {
-    return;
-  }
-
-  await prisma.$transaction([
-    prisma.transactionIntake.update({
-      where: { id },
-      data: { status },
-    }),
-    prisma.transactionIntakeEvent.create({
-      data: {
-        intakeId: id,
-        eventType: "STATUS_CHANGED",
-        fromStatus: existing.status,
-        toStatus: status,
-        actor: "ADMIN",
-      },
-    }),
-  ]);
-
-  revalidatePath("/admin/transaction-intakes");
-  revalidatePath(`/admin/transaction-intakes/${id}`);
-}
 
 function buildStatusHref(status: string) {
   return `/admin/transaction-intakes?status=${encodeURIComponent(status)}`;
@@ -580,31 +530,10 @@ export default async function TransactionIntakesAdminPage({
                         Open Review
                       </Link>
 
-                      <form
-                        action={updateIntakeStatus}
-                        className="flex items-center gap-2"
-                      >
-                        <input type="hidden" name="id" value={intake.id} />
-                        <select
-                          key={intake.status}
-                          name="status"
-                          defaultValue={intake.status}
-                          className="max-w-[150px] rounded border border-gray-700 bg-black px-2 py-1 text-xs text-white"
-                        >
-                          {TRANSACTION_INTAKE_STATUSES.map((status) => (
-                            <option key={status} value={status}>
-                              {getTransactionIntakeStatusLabel(status)}
-                            </option>
-                          ))}
-                        </select>
-
-                        <button
-                          type="submit"
-                          className="rounded border border-amber-500/50 bg-amber-500/10 px-2 py-1 text-xs font-semibold text-amber-200 hover:bg-amber-500/20"
-                        >
-                          Update
-                        </button>
-                      </form>
+                      <p className="max-w-[210px] text-xs leading-5 text-gray-500">
+                        Review disposition is managed inside the intake record
+                        so status changes retain context and event history.
+                      </p>
                     </div>
                   </td>
                 </tr>
