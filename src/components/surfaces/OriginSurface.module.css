@@ -3286,3 +3286,278 @@
   }
 
 }
+
+/* ─────────────────────────────────────
+   AXPT R9 — THRESHOLD MOBILE FINAL AUTHORITY
+
+   Mobile constitutional order:
+
+   01 proposition establishes
+   02 proposition changes coordinate
+   03 observation resolves
+   04 institutional position follows
+
+   The proposition remains dominant without
+   becoming a splash screen.
+
+   Observation operates as evidence rather
+   than a secondary headline.
+
+   Mobile movement preserves the desktop
+   principle of coordinate transfer at a
+   shorter, device-appropriate distance.
+
+   Desktop authority is byte-preserved.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /*
+    DECLARATION FIELD
+  */
+
+  .declaration {
+    min-height: 23svh;
+  }
+
+
+  /*
+    01 / PROPOSITION
+
+    Restrained display scale.
+
+    First paint begins slightly upper-left
+    and settles slightly right and lower.
+  */
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement {
+    max-width: 8.6ch;
+
+    font-size:
+      clamp(
+        3rem,
+        14.6vw,
+        3.55rem
+      );
+
+    line-height: .94;
+
+    letter-spacing: -.048em;
+  }
+
+
+  :global(html[data-document-ready="true"])
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement {
+    visibility: visible;
+
+    animation:
+      thresholdMobileR9Proposition
+      3200ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  /*
+    02 / OBSERVATION
+
+    Evidentiary scale.
+  */
+
+  .currentText {
+    max-width: 27ch;
+
+    font-size:
+      clamp(
+        1rem,
+        4.4vw,
+        1.12rem
+      );
+
+    line-height: 1.42;
+
+    letter-spacing: -.006em;
+  }
+
+
+  :global(html[data-document-ready="true"])
+  .thresholdSurface[data-settled="true"]
+  .currentText {
+    visibility: hidden;
+
+    animation:
+      thresholdMobileR9Observation
+      3200ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  /*
+    03 / INSTITUTIONAL POSITION
+  */
+
+  :global(html[data-document-ready="true"])
+  .thresholdSurface[data-settled="true"]
+  .response {
+    visibility: hidden;
+
+    animation:
+      thresholdMobileR9Response
+      3200ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  /*
+    PROPOSITION COORDINATE TRANSFER
+  */
+
+  @keyframes thresholdMobileR9Proposition {
+
+    0%,
+    18% {
+      visibility: visible;
+      opacity: 1;
+
+      transform:
+        translate3d(-9px, -10px, 0);
+
+      filter: none;
+    }
+
+    28% {
+      opacity: .96;
+
+      transform:
+        translate3d(-5px, -7px, 0)
+        scale(.988);
+
+      filter:
+        blur(.25px);
+    }
+
+    43% {
+      opacity: .94;
+
+      transform:
+        translate3d(5px, 2px, 0)
+        scale(.992);
+
+      filter:
+        blur(.18px);
+    }
+
+    56%,
+    100% {
+      visibility: visible;
+      opacity: 1;
+
+      transform:
+        translate3d(9px, 6px, 0)
+        scale(1);
+
+      filter: none;
+    }
+
+  }
+
+
+  /*
+    OBSERVATION RESOLUTION
+  */
+
+  @keyframes thresholdMobileR9Observation {
+
+    0%,
+    48% {
+      visibility: hidden;
+      opacity: 0;
+
+      transform:
+        translate3d(0, 7px, 0);
+
+      filter:
+        blur(1px);
+    }
+
+    49% {
+      visibility: visible;
+      opacity: 0;
+    }
+
+    62% {
+      visibility: visible;
+      opacity: .46;
+
+      transform:
+        translate3d(0, 3px, 0);
+
+      filter:
+        blur(.30px);
+    }
+
+    74%,
+    100% {
+      visibility: visible;
+      opacity: 1;
+
+      transform:
+        translate3d(0, 0, 0);
+
+      filter: none;
+    }
+
+  }
+
+
+  /*
+    INSTITUTIONAL POSITION RESOLUTION
+  */
+
+  @keyframes thresholdMobileR9Response {
+
+    0%,
+    72% {
+      visibility: hidden;
+      opacity: 0;
+
+      transform:
+        translate3d(0, 7px, 0);
+
+      filter:
+        blur(.8px);
+    }
+
+    73% {
+      visibility: visible;
+      opacity: 0;
+    }
+
+    85% {
+      visibility: visible;
+      opacity: .48;
+
+      transform:
+        translate3d(0, 3px, 0);
+
+      filter: none;
+    }
+
+    96%,
+    100% {
+      visibility: visible;
+      opacity: 1;
+
+      transform:
+        translate3d(0, 0, 0);
+
+      filter: none;
+    }
+
+  }
+
+}

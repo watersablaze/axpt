@@ -602,3 +602,26 @@ body[data-surface="PRESENCE"] .axisLine {
   }
 
 }
+
+/* ─────────────────────────────────────
+   AXPT R9 — THRESHOLD MOBILE SHELL FINAL
+
+   ENTRY remains ceremonial without reserving
+   an unnecessary full viewport after its
+   content resolves.
+
+   Foundation retains deliberate breathing
+   space before entering the document.
+
+   Desktop authority is byte-preserved.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  .surface[data-layer="ENTRY"] {
+    min-height: 92svh;
+
+    padding-bottom: 42px;
+  }
+
+}
