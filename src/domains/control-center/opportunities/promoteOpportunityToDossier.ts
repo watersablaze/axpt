@@ -233,12 +233,8 @@ export async function promoteOpportunityToDossier({
     }
   }
 
-  if (
-    opportunity.status !== "APPROVED" &&
-    opportunity.status !== "UNDER_REVIEW" &&
-    opportunity.status !== "INTAKE"
-  ) {
-    throw new Error("OPPORTUNITY_NOT_PROMOTABLE");
+  if (opportunity.status !== "APPROVED") {
+    throw new Error("OPPORTUNITY_NOT_APPROVED");
   }
 
   const reference = buildDossierReference();
@@ -283,6 +279,10 @@ export async function promoteOpportunityToDossier({
         dossier: latestOpportunity.promotedDossier,
         alreadyPromoted: true,
       };
+    }
+
+    if (latestOpportunity.status !== "APPROVED") {
+      throw new Error("OPPORTUNITY_NOT_APPROVED");
     }
 
     const quantityKg = normalizeQuantityKg(latestOpportunity.quantityKg);

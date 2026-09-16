@@ -18,7 +18,6 @@ import type {
 type CreateOpportunityBody = {
   title?: string
   source?: OpportunitySource
-  status?: OpportunityStatus
   commodity?: string | null
   buyerName?: string | null
   sellerName?: string | null
@@ -80,7 +79,6 @@ export async function POST(request: Request) {
     await createOpportunity({
       title: body.title.trim(),
       source: body.source,
-      status: body.status,
       commodity: body.commodity,
       buyerName: body.buyerName,
       sellerName: body.sellerName,
