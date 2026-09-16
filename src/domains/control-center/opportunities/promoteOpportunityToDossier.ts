@@ -54,6 +54,45 @@ function clean(value: string | null | undefined): string | null {
   return trimmed ? trimmed : null;
 }
 
+function buildSettlementDescriptor(input: {
+  settlementMethod?: string | null;
+  settlementPathway?: string | null;
+  settlementRail?: string | null;
+  settlementCurrencyAsset?: string | null;
+  bankMessageFormat?: string | null;
+  digitalAsset?: string | null;
+  digitalAssetNetwork?: string | null;
+}) {
+  const modernParts = [
+    clean(input.settlementPathway),
+    clean(input.settlementRail),
+    clean(input.settlementCurrencyAsset),
+    clean(input.bankMessageFormat),
+    clean(input.digitalAsset),
+    clean(input.digitalAssetNetwork),
+  ].filter(
+    (value, index, values): value is string =>
+      Boolean(value) &&
+      values.indexOf(value) === index,
+  );
+
+  if (modernParts.length > 0) {
+    return modernParts.join(" | ");
+  }
+
+  return clean(input.settlementMethod);
+}
+
+function buildRefineryDescriptor(input: {
+  refineryJurisdiction?: string | null;
+  refineryPreference?: string | null;
+}) {
+  return (
+    clean(input.refineryJurisdiction) ??
+    clean(input.refineryPreference)
+  );
+}
+
 function inferFinancialInstrumentType(input: {
   settlementMethod: string | null;
   transactionType: string | null;
@@ -74,13 +113,20 @@ function inferFinancialInstrumentType(input: {
 
 function buildTermsSeed(input: {
   settlementMethod: string | null;
+  settlementPathway?: string | null;
+  settlementRail?: string | null;
+  settlementCurrencyAsset?: string | null;
+  bankMessageFormat?: string | null;
+  digitalAsset?: string | null;
+  digitalAssetNetwork?: string | null;
   transactionType: string | null;
   compensationExpectation: string | null;
   referralCode: string | null;
   referredByName: string | null;
   referredByCompany: string | null;
 }) {
-  const settlementMethod = clean(input.settlementMethod);
+  const settlementMethod =
+    buildSettlementDescriptor(input);
   const financialInstrumentType = inferFinancialInstrumentType({
     settlementMethod,
     transactionType: clean(input.transactionType),
@@ -127,6 +173,18 @@ function buildPartySeeds(input: {
     representedPartyType: string | null;
     representedPartyName: string | null;
     submitterCountry: string | null;
+
+    buyerCountryOfIncorporation: string | null;
+    buyerRepresentativeName: string | null;
+    buyerRepresentativeTitle: string | null;
+    buyerRepresentativeEntity: string | null;
+    buyerRepresentativeRelationship: string | null;
+
+    authorityToRepresent: boolean;
+    authorityToNegotiate: boolean;
+    authorityToSign: boolean;
+    authorityOther: string | null;
+
     referredByName: string | null;
     referredByCompany: string | null;
     referralCode: string | null;
@@ -150,21 +208,69 @@ function buildPartySeeds(input: {
       : clean(input.sellerName);
 
   if (buyerName) {
+    const buyerRepresentative =
+      clean(input.sourceIntake?.buyerRepresentativeName) ??
+      (
+        representedPartyType === "BUYER"
+          ? clean(input.sourceIntake?.submitterName)
+          : null
+      );
+
+    const buyerCountry =
+      clean(
+        input.sourceIntake?.buyerCountryOfIncorporation,
+      ) ??
+      (
+        representedPartyType === "BUYER"
+          ? clean(input.sourceIntake?.submitterCountry)
+          : null
+      );
+
+    const authoritySummary = input.sourceIntake
+      ? [
+          input.sourceIntake.authorityToRepresent
+            ? "represent"
+            : null,
+          input.sourceIntake.authorityToNegotiate
+            ? "negotiate"
+            : null,
+          input.sourceIntake.authorityToSign
+            ? "sign"
+            : null,
+          clean(input.sourceIntake.authorityOther),
+        ]
+          .filter(Boolean)
+          .join(", ")
+      : "";
+
+    const representativeContext = [
+      clean(input.sourceIntake?.buyerRepresentativeTitle),
+      clean(input.sourceIntake?.buyerRepresentativeEntity),
+      clean(
+        input.sourceIntake?.buyerRepresentativeRelationship,
+      ),
+    ]
+      .filter(Boolean)
+      .join(" | ");
+
     parties.push({
       role: "BUYER",
       legalName: buyerName,
-      representative:
-        representedPartyType === "BUYER"
-          ? clean(input.sourceIntake?.submitterName)
-          : null,
-      country:
-        representedPartyType === "BUYER"
-          ? clean(input.sourceIntake?.submitterCountry)
-          : null,
-      notes:
-        representedPartyType === "BUYER"
-          ? `Seeded from source intake. Submitter: ${input.sourceIntake?.submitterName} <${input.sourceIntake?.submitterEmail}>.`
-          : "Seeded from promoted opportunity buyer field.",
+      representative: buyerRepresentative,
+      country: buyerCountry,
+      notes: input.sourceIntake
+        ? [
+            "Seeded from source intake; operator review required.",
+            representativeContext
+              ? `Representative context: ${representativeContext}.`
+              : null,
+            authoritySummary
+              ? `Declared authority: ${authoritySummary}.`
+              : null,
+          ]
+            .filter(Boolean)
+            .join(" ")
+        : "Seeded from promoted opportunity buyer field; operator review required.",
     });
   }
 
@@ -250,18 +356,101 @@ export async function promoteOpportunityToDossier({
           select: {
             id: true,
             reference: true,
+
             submitterName: true,
             submitterEmail: true,
+            submitterPhone: true,
+            submitterCompany: true,
             submitterCountry: true,
+            submitterRole: true,
+
             representedPartyType: true,
             representedPartyName: true,
+            authorizationStatus: true,
+
             transactionType: true,
+            commodity: true,
+            origin: true,
+            destination: true,
+            deliveryTerms: true,
             settlementMethod: true,
+            expectedTimeline: true,
+            buyerName: true,
+            sellerName: true,
             refineryPreference: true,
-            compensationExpectation: true,
+            financialReadiness: true,
+            documentsAvailable: true,
+
+            buyerRegistrationNumber: true,
+            buyerCountryOfIncorporation: true,
+            buyerRegisteredAddress: true,
+            buyerBusinessAddress: true,
+            buyerCorporateEmail: true,
+            buyerCorporatePhone: true,
+
+            buyerRepresentativeName: true,
+            buyerRepresentativeTitle: true,
+            buyerRepresentativeEntity: true,
+            buyerRepresentativeEmail: true,
+            buyerRepresentativePhone: true,
+            buyerRepresentativeRelationship: true,
+
+            authorityToRepresent: true,
+            authorityToNegotiate: true,
+            authorityToSign: true,
+            authorityOther: true,
+            externalParticipants: true,
+
+            requestedPurity: true,
+            transactionPurpose: true,
+            transactionWindow: true,
+            continuingSupplyIntent: true,
+            recurringQuantity: true,
+            recurringFrequency: true,
+            desiredTerm: true,
+            destinationStatus: true,
+            buyerRequirements: true,
+
+            deliveryPathway: true,
+            deliveryPoint: true,
+            buyerRepresentativesPresent: true,
+            buyerRepresentative1: true,
+            buyerRepresentative2: true,
+            refineryJurisdiction: true,
+            assayPosture: true,
+            additionalAssayRequirements: true,
+
+            settlementPathway: true,
+            settlementRail: true,
+            settlementCurrencyAsset: true,
+            settlementTimingRequirement: true,
+            bankMessageFormat: true,
+            digitalAsset: true,
+            digitalAssetNetwork: true,
+            additionalSettlementAuthorityRequired: true,
+            additionalSettlementAuthorityDetail: true,
+            financialCapacityStatus: true,
+
+            incorporationRecordAvailable: true,
+            kybRecordAvailable: true,
+            representativeIdAvailable: true,
+            authorityDocumentAvailable: true,
+            specialComplianceRequirements: true,
+            specialComplianceDetail: true,
+
+            authorizedSubmitterEntity: true,
+            authorizedSubmitterRepresentative: true,
+            authorizedSubmitterPosition: true,
+            authorizedSubmissionDate: true,
+
             referralCode: true,
             referredByName: true,
             referredByCompany: true,
+            referredByEmail: true,
+            referredByPhone: true,
+            referredByRole: true,
+            referralConfirmed: true,
+            compensationExpectation: true,
           },
         },
       },
@@ -297,17 +486,45 @@ export async function promoteOpportunityToDossier({
       ? buildTermsSeed({
           settlementMethod:
             latestOpportunity.sourceTransactionIntake.settlementMethod,
+          settlementPathway:
+            latestOpportunity.sourceTransactionIntake.settlementPathway,
+          settlementRail:
+            latestOpportunity.sourceTransactionIntake.settlementRail,
+          settlementCurrencyAsset:
+            latestOpportunity.sourceTransactionIntake
+              .settlementCurrencyAsset,
+          bankMessageFormat:
+            latestOpportunity.sourceTransactionIntake.bankMessageFormat,
+          digitalAsset:
+            latestOpportunity.sourceTransactionIntake.digitalAsset,
+          digitalAssetNetwork:
+            latestOpportunity.sourceTransactionIntake.digitalAssetNetwork,
           transactionType:
             latestOpportunity.sourceTransactionIntake.transactionType,
           compensationExpectation:
             latestOpportunity.sourceTransactionIntake.compensationExpectation,
-          referralCode: latestOpportunity.sourceTransactionIntake.referralCode,
+          referralCode:
+            latestOpportunity.sourceTransactionIntake.referralCode,
           referredByName:
             latestOpportunity.sourceTransactionIntake.referredByName,
           referredByCompany:
             latestOpportunity.sourceTransactionIntake.referredByCompany,
         })
       : null;
+
+    const settlementSeed =
+      latestOpportunity.sourceTransactionIntake
+        ? buildSettlementDescriptor(
+            latestOpportunity.sourceTransactionIntake,
+          )
+        : null;
+
+    const refinerySeed =
+      latestOpportunity.sourceTransactionIntake
+        ? buildRefineryDescriptor(
+            latestOpportunity.sourceTransactionIntake,
+          )
+        : null;
 
     const dossier = await tx.transactionDossier.create({
       data: {
@@ -317,13 +534,8 @@ export async function promoteOpportunityToDossier({
         commodity: latestOpportunity.commodity,
         origin: latestOpportunity.origin,
         quantityKg,
-        settlement:
-          clean(latestOpportunity.sourceTransactionIntake?.settlementMethod) ??
-          null,
-        refinery:
-          clean(
-            latestOpportunity.sourceTransactionIntake?.refineryPreference,
-          ) ?? null,
+        settlement: settlementSeed,
+        refinery: refinerySeed,
         terms: termsSeed
           ? {
               create: termsSeed,
@@ -377,6 +589,178 @@ export async function promoteOpportunityToDossier({
         },
       },
     });
+
+    if (latestOpportunity.sourceTransactionIntake) {
+      const source =
+        latestOpportunity.sourceTransactionIntake;
+
+      await tx.transactionDossierEvent.create({
+        data: {
+          dossierId: dossier.id,
+          eventType:
+            "DOSSIER_SOURCE_CONTEXT_CAPTURED",
+          fromState: null,
+          toState: "INTAKE_PENDING",
+          message:
+            "Source intake context captured at dossier creation; seeded values remain subject to operator review.",
+          actor: operatorEmail,
+          metadata: {
+            source: "transaction-intake.v4",
+            sourceIntakeId: source.id,
+            sourceIntakeReference:
+              source.reference,
+
+            counterpartyIdentity: {
+              buyerName: source.buyerName,
+              buyerRegistrationNumber:
+                source.buyerRegistrationNumber,
+              buyerCountryOfIncorporation:
+                source.buyerCountryOfIncorporation,
+              buyerRegisteredAddress:
+                source.buyerRegisteredAddress,
+              buyerBusinessAddress:
+                source.buyerBusinessAddress,
+              buyerCorporateEmail:
+                source.buyerCorporateEmail,
+              buyerCorporatePhone:
+                source.buyerCorporatePhone,
+            },
+
+            representativeAuthority: {
+              buyerRepresentativeName:
+                source.buyerRepresentativeName,
+              buyerRepresentativeTitle:
+                source.buyerRepresentativeTitle,
+              buyerRepresentativeEntity:
+                source.buyerRepresentativeEntity,
+              buyerRepresentativeRelationship:
+                source.buyerRepresentativeRelationship,
+              authorityToRepresent:
+                source.authorityToRepresent,
+              authorityToNegotiate:
+                source.authorityToNegotiate,
+              authorityToSign:
+                source.authorityToSign,
+              authorityOther:
+                source.authorityOther,
+            },
+
+            transactionProfile: {
+              transactionType:
+                source.transactionType,
+              requestedPurity:
+                source.requestedPurity,
+              transactionPurpose:
+                source.transactionPurpose,
+              transactionWindow:
+                source.transactionWindow,
+              continuingSupplyIntent:
+                source.continuingSupplyIntent,
+              recurringQuantity:
+                source.recurringQuantity,
+              recurringFrequency:
+                source.recurringFrequency,
+              desiredTerm:
+                source.desiredTerm,
+              destinationStatus:
+                source.destinationStatus,
+              buyerRequirements:
+                source.buyerRequirements,
+            },
+
+            passage: {
+              origin: source.origin,
+              destination: source.destination,
+              deliveryPathway:
+                source.deliveryPathway,
+              deliveryPoint:
+                source.deliveryPoint,
+              buyerRepresentativesPresent:
+                source.buyerRepresentativesPresent,
+              refineryJurisdiction:
+                source.refineryJurisdiction,
+              assayPosture:
+                source.assayPosture,
+              additionalAssayRequirements:
+                source.additionalAssayRequirements,
+            },
+
+            settlement: {
+              legacySettlementMethod:
+                source.settlementMethod,
+              settlementPathway:
+                source.settlementPathway,
+              settlementRail:
+                source.settlementRail,
+              settlementCurrencyAsset:
+                source.settlementCurrencyAsset,
+              settlementTimingRequirement:
+                source.settlementTimingRequirement,
+              bankMessageFormat:
+                source.bankMessageFormat,
+              digitalAsset:
+                source.digitalAsset,
+              digitalAssetNetwork:
+                source.digitalAssetNetwork,
+              additionalSettlementAuthorityRequired:
+                source.additionalSettlementAuthorityRequired,
+              additionalSettlementAuthorityDetail:
+                source.additionalSettlementAuthorityDetail,
+              financialCapacityStatus:
+                source.financialCapacityStatus,
+            },
+
+            documentaryReadiness: {
+              incorporationRecordAvailable:
+                source.incorporationRecordAvailable,
+              kybRecordAvailable:
+                source.kybRecordAvailable,
+              representativeIdAvailable:
+                source.representativeIdAvailable,
+              authorityDocumentAvailable:
+                source.authorityDocumentAvailable,
+              specialComplianceRequirements:
+                source.specialComplianceRequirements,
+              specialComplianceDetail:
+                source.specialComplianceDetail,
+            },
+
+            authorizedSubmission: {
+              entity:
+                source.authorizedSubmitterEntity,
+              representative:
+                source.authorizedSubmitterRepresentative,
+              position:
+                source.authorizedSubmitterPosition,
+              submissionDate:
+                source.authorizedSubmissionDate,
+            },
+
+            derivation: {
+              dossierSettlement:
+                settlementSeed,
+              dossierRefinery:
+                refinerySeed,
+              seededPartyCount:
+                partySeeds.length,
+              seededTerms: termsSeed
+                ? Object.entries(termsSeed)
+                    .filter(
+                      ([, value]) =>
+                        value !== null,
+                    )
+                    .map(([key]) => key)
+                : [],
+            },
+
+            doctrine: {
+              declaredIsNotVerified: true,
+              seededIsNotConfirmed: true,
+            },
+          },
+        },
+      });
+    }
 
     if (partySeeds.length > 0) {
       await tx.transactionDossierEvent.create({

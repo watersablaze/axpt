@@ -12,6 +12,7 @@ import { DossierTermsPanel } from "./DossierTermsPanel";
 import { DossierBankCoordinatesPanel } from "./DossierBankCoordinatesPanel";
 import { DossierReleaseConditionsPanel } from "./DossierReleaseConditionsPanel";
 import { DossierSourceContextPanel } from "./DossierSourceContextPanel";
+import { DossierSourceIntakePanel } from "./DossierSourceIntakePanel";
 import { DossierIssuanceApprovalPanel } from "./DossierIssuanceApprovalPanel";
 import TransitionActionBar from "./TransitionActionBar";
 import DossierCommandPanel from "./DossierCommandPanel";
@@ -76,11 +77,97 @@ type DossierApprovalRequirement = {
 type DossierSourceIntake = {
   id: string;
   reference: string;
+
+  submitterName: string;
+  submitterEmail: string;
+  submitterPhone: string | null;
+  submitterCompany: string | null;
+  submitterCountry: string | null;
+  submitterRole: string;
+
+  representedPartyType: string | null;
+  representedPartyName: string | null;
+  authorizationStatus: string | null;
+
+  transactionType: string | null;
+  commodity: string | null;
+  quantity: string | null;
+  origin: string | null;
+  destination: string | null;
+  deliveryTerms: string | null;
+  settlementMethod: string | null;
+  expectedTimeline: string | null;
+  buyerName: string | null;
+  sellerName: string | null;
+  refineryPreference: string | null;
+  financialReadiness: string | null;
+  documentsAvailable: string | null;
+
+  buyerRegistrationNumber: string | null;
+  buyerCountryOfIncorporation: string | null;
+  buyerRegisteredAddress: string | null;
+  buyerBusinessAddress: string | null;
+  buyerCorporateEmail: string | null;
+  buyerCorporatePhone: string | null;
+
+  buyerRepresentativeName: string | null;
+  buyerRepresentativeTitle: string | null;
+  buyerRepresentativeEntity: string | null;
+  buyerRepresentativeEmail: string | null;
+  buyerRepresentativePhone: string | null;
+  buyerRepresentativeRelationship: string | null;
+
+  authorityToRepresent: boolean;
+  authorityToNegotiate: boolean;
+  authorityToSign: boolean;
+  authorityOther: string | null;
+
+  requestedPurity: string | null;
+  transactionPurpose: string | null;
+  transactionWindow: string | null;
+  continuingSupplyIntent: string | null;
+  recurringQuantity: string | null;
+  recurringFrequency: string | null;
+  desiredTerm: string | null;
+  destinationStatus: string | null;
+  buyerRequirements: string | null;
+
+  deliveryPathway: string | null;
+  deliveryPoint: string | null;
+  buyerRepresentativesPresent: string | null;
+  buyerRepresentative1: string | null;
+  buyerRepresentative2: string | null;
+  refineryJurisdiction: string | null;
+  assayPosture: string | null;
+  additionalAssayRequirements: string | null;
+
+  settlementPathway: string | null;
+  settlementRail: string | null;
+  settlementCurrencyAsset: string | null;
+  settlementTimingRequirement: string | null;
+  bankMessageFormat: string | null;
+  digitalAsset: string | null;
+  digitalAssetNetwork: string | null;
+  additionalSettlementAuthorityRequired: string | null;
+  additionalSettlementAuthorityDetail: string | null;
+  financialCapacityStatus: string | null;
+
+  incorporationRecordAvailable: boolean;
+  kybRecordAvailable: boolean;
+  representativeIdAvailable: boolean;
+  authorityDocumentAvailable: boolean;
+  specialComplianceRequirements: string | null;
+  specialComplianceDetail: string | null;
+
+  authorizedSubmitterEntity: string | null;
+  authorizedSubmitterRepresentative: string | null;
+  authorizedSubmitterPosition: string | null;
+  authorizedSubmissionDate: string | null;
+
   referralCode: string | null;
   referredByName: string | null;
   referredByCompany: string | null;
-  submitterName: string;
-  submitterEmail: string;
+
   promotedAt: string | null;
   promotedBy: string | null;
 };
@@ -1124,6 +1211,13 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
                 refinery={dossier.refinery}
                 settlement={dossier.settlement}
                 parties={dossier.parties}
+              />
+
+              <DossierSourceIntakePanel
+                sourceIntake={
+                  dossier.sourceOpportunities[0]?.sourceIntake ??
+                  null
+                }
               />
 
               <div id="party-identity-review" className="scroll-mt-4" />

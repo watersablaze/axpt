@@ -59,11 +59,97 @@ export async function GET(_request: Request, context: RouteContext) {
             select: {
               id: true,
               reference: true,
+
+              submitterName: true,
+              submitterEmail: true,
+              submitterPhone: true,
+              submitterCompany: true,
+              submitterCountry: true,
+              submitterRole: true,
+
+              representedPartyType: true,
+              representedPartyName: true,
+              authorizationStatus: true,
+
+              transactionType: true,
+              commodity: true,
+              quantity: true,
+              origin: true,
+              destination: true,
+              deliveryTerms: true,
+              settlementMethod: true,
+              expectedTimeline: true,
+              buyerName: true,
+              sellerName: true,
+              refineryPreference: true,
+              financialReadiness: true,
+              documentsAvailable: true,
+
+              buyerRegistrationNumber: true,
+              buyerCountryOfIncorporation: true,
+              buyerRegisteredAddress: true,
+              buyerBusinessAddress: true,
+              buyerCorporateEmail: true,
+              buyerCorporatePhone: true,
+
+              buyerRepresentativeName: true,
+              buyerRepresentativeTitle: true,
+              buyerRepresentativeEntity: true,
+              buyerRepresentativeEmail: true,
+              buyerRepresentativePhone: true,
+              buyerRepresentativeRelationship: true,
+
+              authorityToRepresent: true,
+              authorityToNegotiate: true,
+              authorityToSign: true,
+              authorityOther: true,
+
+              requestedPurity: true,
+              transactionPurpose: true,
+              transactionWindow: true,
+              continuingSupplyIntent: true,
+              recurringQuantity: true,
+              recurringFrequency: true,
+              desiredTerm: true,
+              destinationStatus: true,
+              buyerRequirements: true,
+
+              deliveryPathway: true,
+              deliveryPoint: true,
+              buyerRepresentativesPresent: true,
+              buyerRepresentative1: true,
+              buyerRepresentative2: true,
+              refineryJurisdiction: true,
+              assayPosture: true,
+              additionalAssayRequirements: true,
+
+              settlementPathway: true,
+              settlementRail: true,
+              settlementCurrencyAsset: true,
+              settlementTimingRequirement: true,
+              bankMessageFormat: true,
+              digitalAsset: true,
+              digitalAssetNetwork: true,
+              additionalSettlementAuthorityRequired: true,
+              additionalSettlementAuthorityDetail: true,
+              financialCapacityStatus: true,
+
+              incorporationRecordAvailable: true,
+              kybRecordAvailable: true,
+              representativeIdAvailable: true,
+              authorityDocumentAvailable: true,
+              specialComplianceRequirements: true,
+              specialComplianceDetail: true,
+
+              authorizedSubmitterEntity: true,
+              authorizedSubmitterRepresentative: true,
+              authorizedSubmitterPosition: true,
+              authorizedSubmissionDate: true,
+
               referralCode: true,
               referredByName: true,
               referredByCompany: true,
-              submitterName: true,
-              submitterEmail: true,
+
               promotedAt: true,
               promotedBy: true,
             },
@@ -187,10 +273,185 @@ export async function GET(_request: Request, context: RouteContext) {
                   opportunity.sourceTransactionIntake.submitterName,
                 submitterEmail:
                   opportunity.sourceTransactionIntake.submitterEmail,
+                submitterPhone:
+                  opportunity.sourceTransactionIntake.submitterPhone,
+                submitterCompany:
+                  opportunity.sourceTransactionIntake.submitterCompany,
+                submitterCountry:
+                  opportunity.sourceTransactionIntake.submitterCountry,
+                submitterRole:
+                  opportunity.sourceTransactionIntake.submitterRole,
+
+                representedPartyType:
+                  opportunity.sourceTransactionIntake.representedPartyType,
+                representedPartyName:
+                  opportunity.sourceTransactionIntake.representedPartyName,
+                authorizationStatus:
+                  opportunity.sourceTransactionIntake.authorizationStatus,
+
+                transactionType:
+                  opportunity.sourceTransactionIntake.transactionType,
+                commodity:
+                  opportunity.sourceTransactionIntake.commodity,
+                quantity:
+                  opportunity.sourceTransactionIntake.quantity,
+                origin:
+                  opportunity.sourceTransactionIntake.origin,
+                destination:
+                  opportunity.sourceTransactionIntake.destination,
+                deliveryTerms:
+                  opportunity.sourceTransactionIntake.deliveryTerms,
+                settlementMethod:
+                  opportunity.sourceTransactionIntake.settlementMethod,
+                expectedTimeline:
+                  opportunity.sourceTransactionIntake.expectedTimeline,
+                buyerName:
+                  opportunity.sourceTransactionIntake.buyerName,
+                sellerName:
+                  opportunity.sourceTransactionIntake.sellerName,
+                refineryPreference:
+                  opportunity.sourceTransactionIntake.refineryPreference,
+                financialReadiness:
+                  opportunity.sourceTransactionIntake.financialReadiness,
+                documentsAvailable:
+                  opportunity.sourceTransactionIntake.documentsAvailable,
+
+                buyerRegistrationNumber:
+                  opportunity.sourceTransactionIntake.buyerRegistrationNumber,
+                buyerCountryOfIncorporation:
+                  opportunity.sourceTransactionIntake
+                    .buyerCountryOfIncorporation,
+                buyerRegisteredAddress:
+                  opportunity.sourceTransactionIntake.buyerRegisteredAddress,
+                buyerBusinessAddress:
+                  opportunity.sourceTransactionIntake.buyerBusinessAddress,
+                buyerCorporateEmail:
+                  opportunity.sourceTransactionIntake.buyerCorporateEmail,
+                buyerCorporatePhone:
+                  opportunity.sourceTransactionIntake.buyerCorporatePhone,
+
+                buyerRepresentativeName:
+                  opportunity.sourceTransactionIntake.buyerRepresentativeName,
+                buyerRepresentativeTitle:
+                  opportunity.sourceTransactionIntake.buyerRepresentativeTitle,
+                buyerRepresentativeEntity:
+                  opportunity.sourceTransactionIntake
+                    .buyerRepresentativeEntity,
+                buyerRepresentativeEmail:
+                  opportunity.sourceTransactionIntake.buyerRepresentativeEmail,
+                buyerRepresentativePhone:
+                  opportunity.sourceTransactionIntake.buyerRepresentativePhone,
+                buyerRepresentativeRelationship:
+                  opportunity.sourceTransactionIntake
+                    .buyerRepresentativeRelationship,
+
+                authorityToRepresent:
+                  opportunity.sourceTransactionIntake.authorityToRepresent,
+                authorityToNegotiate:
+                  opportunity.sourceTransactionIntake.authorityToNegotiate,
+                authorityToSign:
+                  opportunity.sourceTransactionIntake.authorityToSign,
+                authorityOther:
+                  opportunity.sourceTransactionIntake.authorityOther,
+
+                requestedPurity:
+                  opportunity.sourceTransactionIntake.requestedPurity,
+                transactionPurpose:
+                  opportunity.sourceTransactionIntake.transactionPurpose,
+                transactionWindow:
+                  opportunity.sourceTransactionIntake.transactionWindow,
+                continuingSupplyIntent:
+                  opportunity.sourceTransactionIntake.continuingSupplyIntent,
+                recurringQuantity:
+                  opportunity.sourceTransactionIntake.recurringQuantity,
+                recurringFrequency:
+                  opportunity.sourceTransactionIntake.recurringFrequency,
+                desiredTerm:
+                  opportunity.sourceTransactionIntake.desiredTerm,
+                destinationStatus:
+                  opportunity.sourceTransactionIntake.destinationStatus,
+                buyerRequirements:
+                  opportunity.sourceTransactionIntake.buyerRequirements,
+
+                deliveryPathway:
+                  opportunity.sourceTransactionIntake.deliveryPathway,
+                deliveryPoint:
+                  opportunity.sourceTransactionIntake.deliveryPoint,
+                buyerRepresentativesPresent:
+                  opportunity.sourceTransactionIntake
+                    .buyerRepresentativesPresent,
+                buyerRepresentative1:
+                  opportunity.sourceTransactionIntake.buyerRepresentative1,
+                buyerRepresentative2:
+                  opportunity.sourceTransactionIntake.buyerRepresentative2,
+                refineryJurisdiction:
+                  opportunity.sourceTransactionIntake.refineryJurisdiction,
+                assayPosture:
+                  opportunity.sourceTransactionIntake.assayPosture,
+                additionalAssayRequirements:
+                  opportunity.sourceTransactionIntake
+                    .additionalAssayRequirements,
+
+                settlementPathway:
+                  opportunity.sourceTransactionIntake.settlementPathway,
+                settlementRail:
+                  opportunity.sourceTransactionIntake.settlementRail,
+                settlementCurrencyAsset:
+                  opportunity.sourceTransactionIntake
+                    .settlementCurrencyAsset,
+                settlementTimingRequirement:
+                  opportunity.sourceTransactionIntake
+                    .settlementTimingRequirement,
+                bankMessageFormat:
+                  opportunity.sourceTransactionIntake.bankMessageFormat,
+                digitalAsset:
+                  opportunity.sourceTransactionIntake.digitalAsset,
+                digitalAssetNetwork:
+                  opportunity.sourceTransactionIntake.digitalAssetNetwork,
+                additionalSettlementAuthorityRequired:
+                  opportunity.sourceTransactionIntake
+                    .additionalSettlementAuthorityRequired,
+                additionalSettlementAuthorityDetail:
+                  opportunity.sourceTransactionIntake
+                    .additionalSettlementAuthorityDetail,
+                financialCapacityStatus:
+                  opportunity.sourceTransactionIntake.financialCapacityStatus,
+
+                incorporationRecordAvailable:
+                  opportunity.sourceTransactionIntake
+                    .incorporationRecordAvailable,
+                kybRecordAvailable:
+                  opportunity.sourceTransactionIntake.kybRecordAvailable,
+                representativeIdAvailable:
+                  opportunity.sourceTransactionIntake
+                    .representativeIdAvailable,
+                authorityDocumentAvailable:
+                  opportunity.sourceTransactionIntake
+                    .authorityDocumentAvailable,
+                specialComplianceRequirements:
+                  opportunity.sourceTransactionIntake
+                    .specialComplianceRequirements,
+                specialComplianceDetail:
+                  opportunity.sourceTransactionIntake.specialComplianceDetail,
+
+                authorizedSubmitterEntity:
+                  opportunity.sourceTransactionIntake
+                    .authorizedSubmitterEntity,
+                authorizedSubmitterRepresentative:
+                  opportunity.sourceTransactionIntake
+                    .authorizedSubmitterRepresentative,
+                authorizedSubmitterPosition:
+                  opportunity.sourceTransactionIntake
+                    .authorizedSubmitterPosition,
+                authorizedSubmissionDate:
+                  opportunity.sourceTransactionIntake
+                    .authorizedSubmissionDate,
+
                 promotedAt:
                   opportunity.sourceTransactionIntake.promotedAt?.toISOString() ??
                   null,
-                promotedBy: opportunity.sourceTransactionIntake.promotedBy,
+                promotedBy:
+                  opportunity.sourceTransactionIntake.promotedBy,
               }
             : null,
         }),
