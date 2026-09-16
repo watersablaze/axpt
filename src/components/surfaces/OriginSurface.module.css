@@ -2688,6 +2688,56 @@
   */
 
 
+  /*
+    SETTLED COMPOSITION GEOMETRY
+
+    The declaration retains primary authority.
+
+    Movement evidence becomes quieter and
+    occupies a slightly narrower register.
+
+    The institutional response rises toward
+    the evidence so the three states read as
+    one causal document rather than isolated
+    fragments.
+
+    Timing remains entirely D5-owned below.
+  */
+
+  .current {
+    width:
+      min(68%, 720px);
+
+    margin-left:
+      clamp(-22px, -1.6vw, -12px);
+
+    padding:
+      clamp(12px, 1.5vh, 18px)
+      0;
+  }
+
+
+  .currentText {
+    max-width: 36ch;
+
+    font-size:
+      clamp(1.08rem, 1.45vw, 1.38rem);
+
+    line-height: 1.34;
+
+    color:
+      rgba(var(--axpt-silver), .60);
+  }
+
+
+  .response {
+    margin-top:
+      clamp(48px, 5.8vh, 68px);
+
+    padding-top: 16px;
+  }
+
+
   /* 01 / DECLARATION */
 
   .thresholdSurface[data-settled="true"]
