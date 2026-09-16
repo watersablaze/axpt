@@ -640,8 +640,8 @@ function ActiveDocumentTaskPanel({
 
           <p className="mt-1 max-w-3xl text-xs leading-relaxed text-neutral-500">
             Use Core Package to work the SPA record. The SPA must be created,
-            activated for review, then marked executed before the dossier can
-            advance to SPA_EXECUTED.
+            activated for review, then confirmed through executed-agreement
+            evidence before the dossier can advance to SPA_EXECUTED.
           </p>
         </div>
 
@@ -684,9 +684,282 @@ function ActiveDocumentTaskPanel({
               : "border-amber-900/60 bg-black/20 text-amber-300"
           }`}
         >
-          3. Mark executed
+          3. Confirm executed SPA
         </div>
       </div>
+    </section>
+  );
+}
+
+function SpaExecutionConfirmationPanel({
+  dossierId,
+  parties,
+  instruments,
+  onChanged,
+}: {
+  dossierId: string;
+  parties: DossierParty[];
+  instruments: Instrument[];
+  onChanged?: () => void;
+}) {
+  const spa =
+    instruments.find(
+      (instrument) => instrument.type === "SPA",
+    ) ?? null;
+
+  const buyer =
+    findParty(parties, "BUYER");
+
+  const seller =
+    findParty(parties, "SELLER");
+
+  const [executedAt, setExecutedAt] =
+    useState("");
+
+  const [buyerSignatory, setBuyerSignatory] =
+    useState(
+      buyer?.representative ?? "",
+    );
+
+  const [sellerSignatory, setSellerSignatory] =
+    useState(
+      seller?.representative ?? "",
+    );
+
+  const [evidenceReference, setEvidenceReference] =
+    useState("");
+
+  const [fileUrl, setFileUrl] =
+    useState("");
+
+  const [submitting, setSubmitting] =
+    useState(false);
+
+  const [error, setError] =
+    useState<string | null>(null);
+
+  if (!spa || spa.status !== "ACTIVE") {
+    return null;
+  }
+
+  const ready =
+    Boolean(executedAt) &&
+    Boolean(buyerSignatory.trim()) &&
+    Boolean(sellerSignatory.trim()) &&
+    Boolean(evidenceReference.trim());
+
+  async function confirmExecution() {
+    if (!ready || submitting) {
+      return;
+    }
+
+    const parsedExecutedAt =
+      new Date(executedAt);
+
+    if (
+      Number.isNaN(
+        parsedExecutedAt.getTime(),
+      )
+    ) {
+      setError(
+        "Execution date and time are invalid.",
+      );
+      return;
+    }
+
+    const confirmed =
+      window.confirm(
+        "Confirm that the executed SPA evidence has been reviewed and that the identified buyer and seller signatories executed this SPA? This records an institutional execution disposition. It does not authorize transaction settlement or execution.",
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setSubmitting(true);
+    setError(null);
+
+    try {
+      const response =
+        await fetch(
+          `/api/admin/control-center/dossiers/${dossierId}/spa-execution`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify({
+              executedAt:
+                parsedExecutedAt.toISOString(),
+              buyerSignatory:
+                buyerSignatory.trim(),
+              sellerSignatory:
+                sellerSignatory.trim(),
+              evidenceReference:
+                evidenceReference.trim(),
+              fileUrl:
+                fileUrl.trim() || null,
+            }),
+          },
+        );
+
+      const payload =
+        (await response.json()) as {
+          ok: boolean;
+          error?: string;
+        };
+
+      if (
+        !response.ok ||
+        !payload.ok
+      ) {
+        throw new Error(
+          payload.error ??
+            "SPA_EXECUTION_CONFIRMATION_FAILED",
+        );
+      }
+
+      onChanged?.();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "SPA_EXECUTION_CONFIRMATION_FAILED",
+      );
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  const fieldClass =
+    "mt-1 w-full rounded border border-neutral-800 bg-black/30 px-2 py-2 text-xs text-neutral-200 outline-none focus:border-cyan-800";
+
+  return (
+    <section className="mt-3 rounded-xl border border-cyan-950 bg-cyan-950/10 p-3">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-400">
+            SPA Execution Authority
+          </div>
+
+          <h3 className="mt-1 text-sm font-semibold text-white">
+            Confirm Executed SPA
+          </h3>
+
+          <p className="mt-1 max-w-3xl text-xs leading-relaxed text-neutral-500">
+            Record the executed-agreement evidence for this exact SPA
+            instrument and version. This confirmation establishes SPA
+            execution provenance only; it does not authorize settlement,
+            treasury movement, export release, or transaction execution.
+          </p>
+        </div>
+
+        <div className="rounded border border-cyan-900 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300">
+          {spa.version} · Active
+        </div>
+      </div>
+
+      {error ? (
+        <div className="mt-3 rounded border border-red-900 bg-red-950/20 p-2 text-xs text-red-300">
+          {error}
+        </div>
+      ) : null}
+
+      <div className="mt-3 grid gap-3 md:grid-cols-2">
+        <label className="text-[10px] uppercase tracking-wide text-neutral-500">
+          Execution Date & Time
+          <input
+            type="datetime-local"
+            value={executedAt}
+            onChange={(event) =>
+              setExecutedAt(
+                event.target.value,
+              )
+            }
+            className={fieldClass}
+          />
+        </label>
+
+        <label className="text-[10px] uppercase tracking-wide text-neutral-500">
+          Evidence Reference
+          <input
+            type="text"
+            value={evidenceReference}
+            onChange={(event) =>
+              setEvidenceReference(
+                event.target.value,
+              )
+            }
+            placeholder="Executed file name, envelope ID, document-control reference..."
+            className={fieldClass}
+          />
+        </label>
+
+        <label className="text-[10px] uppercase tracking-wide text-neutral-500">
+          Buyer Signatory
+          <input
+            type="text"
+            value={buyerSignatory}
+            onChange={(event) =>
+              setBuyerSignatory(
+                event.target.value,
+              )
+            }
+            placeholder="Name of buyer signatory"
+            className={fieldClass}
+          />
+        </label>
+
+        <label className="text-[10px] uppercase tracking-wide text-neutral-500">
+          Seller Signatory
+          <input
+            type="text"
+            value={sellerSignatory}
+            onChange={(event) =>
+              setSellerSignatory(
+                event.target.value,
+              )
+            }
+            placeholder="Name of seller signatory"
+            className={fieldClass}
+          />
+        </label>
+      </div>
+
+      <label className="mt-3 block text-[10px] uppercase tracking-wide text-neutral-500">
+        Evidence URL / File Reference
+        <input
+          type="text"
+          value={fileUrl}
+          onChange={(event) =>
+            setFileUrl(
+              event.target.value,
+            )
+          }
+          placeholder="Optional controlled URL or stored file reference"
+          className={fieldClass}
+        />
+      </label>
+
+      <div className="mt-3 rounded border border-neutral-800 bg-black/20 p-2 text-[11px] leading-relaxed text-neutral-500">
+        The SPA must already be ACTIVE. Confirmation records the operator,
+        signatories, execution time, evidence reference, and exact SPA
+        instrument/version before changing the SPA status to EXECUTED.
+      </div>
+
+      <button
+        type="button"
+        disabled={!ready || submitting}
+        onClick={() =>
+          void confirmExecution()
+        }
+        className="mt-3 w-full rounded border border-cyan-800 bg-cyan-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-600 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:bg-black/20 disabled:text-neutral-600"
+      >
+        {submitting
+          ? "Confirming..."
+          : "Confirm Executed SPA"}
+      </button>
     </section>
   );
 }
@@ -994,16 +1267,23 @@ function getStatusActions(instrument: Instrument) {
       ];
 
     case "ACTIVE":
-      return [
-        {
-          label: "Mark Executed",
-          status: "EXECUTED",
-        },
-        {
-          label: "Archive",
-          status: "ARCHIVED",
-        },
-      ];
+      return instrument.type === "SPA"
+        ? [
+            {
+              label: "Archive",
+              status: "ARCHIVED",
+            },
+          ]
+        : [
+            {
+              label: "Mark Executed",
+              status: "EXECUTED",
+            },
+            {
+              label: "Archive",
+              status: "ARCHIVED",
+            },
+          ];
 
     case "EXECUTED":
     case "ARCHIVED":
@@ -1388,6 +1668,13 @@ export default function DossierDocumentsPanel({
         instruments={instruments}
         updatingInstrumentId={updatingInstrumentId}
         onUpdateInstrumentStatus={updateInstrumentStatus}
+      />
+
+      <SpaExecutionConfirmationPanel
+        dossierId={dossierId}
+        parties={parties}
+        instruments={instruments}
+        onChanged={onInstrumentChanged}
       />
 
       <RouteKitPanel
