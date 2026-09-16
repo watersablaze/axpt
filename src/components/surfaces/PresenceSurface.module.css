@@ -3308,3 +3308,167 @@
   }
 
 }
+
+/* ─────────────────────────────────────
+   AXPT R9 — PRESENCE MOBILE FINAL AUTHORITY
+
+   Presence is the quietest surface.
+
+   Final mobile reading:
+
+   AXPT
+   → constitutional register
+   → attestation
+   → deposited seal
+   → authority coordinates
+
+   The fuller CONTINUITY and ESTABLISHMENT
+   clauses remain part of the desktop
+   documentary instrument, but are omitted
+   from the mobile close.
+
+   Nothing further is declared here.
+   The document records and seals.
+
+   Desktop authority is byte-preserved.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /*
+    TERMINAL REGISTRATION
+  */
+
+  .sealLabel {
+    font-size: .46rem;
+
+    letter-spacing: .20em;
+
+    color:
+      rgba(var(--axpt-bronze), .66);
+  }
+
+
+  .fieldMarker {
+    font-size: .36rem;
+
+    letter-spacing: .10em;
+
+    opacity: .48;
+  }
+
+
+  /*
+    MOBILE CLAUSE BODY
+
+    Desktop retains the documentary clauses.
+    Mobile resolves directly into attestation.
+  */
+
+  .articles {
+    display: none;
+  }
+
+
+  /*
+    ENGRAVED ATTESTATION
+  */
+
+  .attestation {
+    margin-top: 18px;
+  }
+
+
+  .attestationLabel {
+    margin-bottom: 7px;
+
+    font-size: .35rem;
+
+    letter-spacing: .13em;
+
+    opacity: .56;
+  }
+
+
+  .attestationStatement {
+    max-width: 34ch;
+
+    font-size: .78rem;
+    line-height: 1.52;
+
+    letter-spacing: .006em;
+
+    color:
+      rgba(var(--axpt-iron-silver), .50);
+  }
+
+
+  /*
+    DEPOSITED TERMINAL MARK
+  */
+
+  .terminalSealField {
+    margin:
+      22px
+      0
+      14px;
+  }
+
+
+  .terminalSealField::before {
+    width: 118px;
+    height: 118px;
+
+    opacity: .18;
+  }
+
+
+  .terminalSeal {
+    width:
+      clamp(
+        86px,
+        23vw,
+        104px
+      );
+
+    opacity: .58;
+
+    filter:
+      grayscale(.46)
+      saturate(.34)
+      sepia(.03)
+      contrast(1.005)
+      brightness(.86)
+      drop-shadow(
+        0 0 7px
+        rgba(var(--axpt-mineral-cold), .022)
+      );
+  }
+
+
+  /*
+    AUTHORITY COORDINATES
+  */
+
+  .attestationRail {
+    padding-top: 7px;
+
+    opacity: .64;
+  }
+
+
+  .attestationLeft,
+  .attestationCenter,
+  .attestationRight {
+    font-size: .40rem;
+
+    letter-spacing: .13em;
+  }
+
+
+  .attestationRight {
+    color:
+      rgba(var(--axpt-iron-silver), .42);
+  }
+
+}
