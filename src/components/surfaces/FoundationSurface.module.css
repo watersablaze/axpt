@@ -3163,3 +3163,117 @@
   }
 
 }
+
+/* ─────────────────────────────────────
+   AXPT R9 — FOUNDATION MOBILE FINAL AUTHORITY
+
+   Mobile hierarchy:
+
+   proposition
+   → transition
+   → governed relations
+   → synthesis
+
+   The declaration retains authority without
+   consuming disproportionate territory.
+
+   The transition interval remains perceptible
+   but compact.
+
+   The four continuity couplets remain the
+   structural center of the surface.
+
+   State labels receive improved registration
+   while relational sentence scale is preserved.
+
+   Synthesis geometry remains canonical.
+
+   Desktop authority is byte-preserved.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /*
+    DECLARATION
+  */
+
+  .declaration h2 {
+    max-width: 13.5ch;
+
+    font-size:
+      clamp(
+        1.95rem,
+        8.85vw,
+        2.78rem
+      );
+
+    line-height: 1.02;
+  }
+
+
+  /*
+    TRANSITION APPROACH
+  */
+
+  .continuityField {
+    margin-top: 14px;
+  }
+
+
+  /*
+    TRANSITION INTERVAL
+  */
+
+  .displacement {
+    height: 28px;
+  }
+
+
+  /*
+    CONTINUITY COUPLETS
+
+    Preserve sentence scale.
+    Tighten only the relation interval.
+  */
+
+  .relationField {
+    gap: 17px;
+  }
+
+
+  /*
+    STATE LABEL REGISTRATION
+  */
+
+  .relationPart strong {
+    font-size: .50rem;
+
+    letter-spacing: .125em;
+
+    opacity: .96;
+  }
+
+
+  /*
+    RESPONSIBILITY
+
+    Optical compression for the longest
+    state identifier.
+  */
+
+  .relation:nth-child(3)
+  .relationPart:last-child strong {
+    letter-spacing: .075em;
+  }
+
+
+  /*
+    RELATIONAL SENTENCE CONTRAST
+  */
+
+  .relationPart span {
+    color:
+      rgba(var(--axpt-silver), .68);
+  }
+
+}
