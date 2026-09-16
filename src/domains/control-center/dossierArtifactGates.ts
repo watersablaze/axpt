@@ -1,8 +1,13 @@
 import {
+  getSpaExecutionConfirmationStatus,
+} from "./dossiers/dossierSpaExecution";
+import {
   getDossierKycConfirmationStatus,
 } from "./dossiers/dossierKycReview";
 
 type DossierInstrumentForGate = {
+  id: string;
+  version: string;
   type: string;
   status: string;
 };
@@ -158,6 +163,13 @@ export function checkDossierArtifactGate({
   if (fromState === "SPA_DRAFTING" && toState === "SPA_EXECUTED") {
     const buyer = parties.find((party) => party.role === "BUYER");
     const seller = parties.find((party) => party.role === "SELLER");
+    const spa =
+      instruments.find((instrument) => instrument.type === "SPA") ?? null;
+    const spaExecutionConfirmation =
+      getSpaExecutionConfirmationStatus({
+        instrument: spa,
+        events,
+      });
 
     const checks: ArtifactGateCheck[] = [
       {
@@ -165,7 +177,19 @@ export function checkDossierArtifactGate({
         label: "SPA instrument executed",
         passed: hasExecutedInstrument(instruments, "SPA"),
         detail:
-          "Go to Readiness → Document Workbench. Create the SPA draft, activate it for review, then mark it executed before recording SPA_EXECUTED.",
+          "Go to Readiness → Document Workbench. Create the SPA draft, activate it for review, then confirm executed-agreement evidence before recording SPA_EXECUTED.",
+      },
+      {
+        id: "spa-execution-confirmation",
+        label: "Executed SPA evidence confirmed",
+        passed: spaExecutionConfirmation.current,
+        detail: spaExecutionConfirmation.current
+          ? `Canonical SPA execution confirmation is current${
+              spaExecutionConfirmation.confirmedAt
+                ? ` as of ${spaExecutionConfirmation.confirmedAt}`
+                : ""
+            }.`
+          : "SPA status alone is insufficient. Executed agreement evidence must be confirmed through the canonical SPA execution operation.",
       },
       {
         id: "buyer-party-present",
@@ -196,7 +220,7 @@ export function checkDossierArtifactGate({
       passed: failed.length === 0,
       blockingReason:
         failed.length > 0
-          ? "SPA execution requires an executed SPA, buyer party, seller party, and origin."
+          ? "SPA execution requires an executed SPA, current canonical execution confirmation, buyer party, seller party, and origin."
           : undefined,
       checks,
     };

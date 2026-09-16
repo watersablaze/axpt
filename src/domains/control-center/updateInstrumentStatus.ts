@@ -50,6 +50,15 @@ export async function updateInstrumentStatus({
 
   const previousStatus = instrument.status
 
+  if (
+    instrument.type === 'SPA' &&
+    status === 'EXECUTED'
+  ) {
+    throw new Error(
+      'SPA_EXECUTION_REQUIRES_CANONICAL_CONFIRMATION'
+    )
+  }
+
   if (previousStatus === status) {
     return {
       instrument,
