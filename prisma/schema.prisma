@@ -91,9 +91,10 @@ model InstitutionalInstrument {
 
   createdBy User @relation("InstitutionalInstrumentCreator", fields: [createdByUserId], references: [id])
 
-  versions     InstrumentVersion[]
-  parties      InstrumentParty[]
-  accessGrants InstrumentAccessGrant[]
+  versions                     InstrumentVersion[]
+  parties                      InstrumentParty[]
+  accessGrants                 InstrumentAccessGrant[]
+  digitalSettlementInstruction DigitalSettlementInstruction?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -102,6 +103,35 @@ model InstitutionalInstrument {
   @@index([status])
   @@index([createdByUserId])
   @@index([updatedAt])
+}
+
+model DigitalSettlementInstruction {
+  id                     String                   @id @default(cuid())
+  instrumentId           String                   @unique
+  publicId               String                   @unique
+  counterpartyName       String
+  transactionDescription String
+  settlementPurpose      String
+  quantityKg             Decimal                  @db.Decimal(18, 6)
+  pricePerKgUsd          Decimal                  @db.Decimal(20, 2)
+  transactionValueUsd    Decimal                  @db.Decimal(20, 2)
+  settlementPercentage   Decimal                  @db.Decimal(7, 4)
+  settlementAmountUsd    Decimal                  @db.Decimal(20, 2)
+  settlementAsset        DigitalSettlementAsset
+  settlementNetwork      DigitalSettlementNetwork
+  receivingEntity        String
+  receivingAddress       String?
+  settlementStatus       DigitalSettlementStatus  @default(PENDING_ISSUANCE)
+  settlementDetectedAt   DateTime?
+  settlementConfirmedAt  DateTime?
+
+  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([settlementStatus])
+  @@index([settlementAsset, settlementNetwork])
 }
 
 model InstrumentVersion {
@@ -222,7 +252,26 @@ enum InstitutionalInstrumentKind {
   REPRESENTATIVE_MANDATE
   LETTER_OF_INTENT
   COOPERATION_FRAMEWORK
+  DIGITAL_SETTLEMENT_INSTRUCTION
   GENERAL
+}
+
+enum DigitalSettlementAsset {
+  USDT
+}
+
+enum DigitalSettlementNetwork {
+  ETHEREUM_ERC20
+}
+
+enum DigitalSettlementStatus {
+  PENDING_ISSUANCE
+  AWAITING_TRANSFER
+  DETECTED
+  CONFIRMING
+  CONFIRMED
+  FAILED_REVIEW
+  CANCELLED
 }
 
 enum InstitutionalInstrumentStatus {
