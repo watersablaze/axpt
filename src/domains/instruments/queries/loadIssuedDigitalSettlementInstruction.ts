@@ -5,10 +5,9 @@ import {
   INSTITUTIONAL_INSTRUMENT_STATUS,
   INSTRUMENT_VERSION_STATUS,
 } from "../contracts";
+import { resolveAuthorizedSettlementIngress } from "../digital-settlement/resolveAuthorizedSettlementIngress";
 
-export async function loadIssuedDigitalSettlementInstruction(
-  publicId: string,
-) {
+export async function loadIssuedDigitalSettlementInstruction(publicId: string) {
   const settlement = await prisma.digitalSettlementInstruction.findUnique({
     where: { publicId },
     include: {
@@ -20,22 +19,39 @@ export async function loadIssuedDigitalSettlementInstruction(
     },
   });
 
-  if (!settlement || !settlement.receivingAddress) {
+  if (
+    !settlement ||
+    !settlement.receivingAddress ||
+    !settlement.receivingWalletId ||
+    !settlement.receivingWalletRole
+  ) {
+    return null;
+  }
+
+  let registeredWallet;
+
+  try {
+    registeredWallet = resolveAuthorizedSettlementIngress(
+      settlement.receivingAddress,
+    );
+  } catch {
+    return null;
+  }
+
+  if (
+    registeredWallet.id !== settlement.receivingWalletId ||
+    registeredWallet.role !== settlement.receivingWalletRole
+  ) {
     return null;
   }
 
   const version = settlement.instrument.versions.find(
-    (candidate: {
-      number: number;
-      status: string;
-      issuedAt: Date | null;
-    }) =>
+    (candidate: { number: number; status: string; issuedAt: Date | null }) =>
       candidate.number === settlement.instrument.currentVersion,
   );
 
   if (
-    settlement.instrument.status !==
-      INSTITUTIONAL_INSTRUMENT_STATUS.ISSUED ||
+    settlement.instrument.status !== INSTITUTIONAL_INSTRUMENT_STATUS.ISSUED ||
     version?.status !== INSTRUMENT_VERSION_STATUS.ISSUED ||
     !version.issuedAt
   ) {
@@ -60,6 +76,12 @@ export async function loadIssuedDigitalSettlementInstruction(
     settlementNetwork: settlement.settlementNetwork,
     receivingEntity: settlement.receivingEntity,
     receivingAddress: settlement.receivingAddress,
+    receivingWalletId: settlement.receivingWalletId,
+    receivingWalletRole: settlement.receivingWalletRole,
+    verificationAmountUsdt: settlement.verificationAmountUsdt.toString(),
+    verificationTxHash: settlement.verificationTxHash,
+    verificationConfirmedAt: settlement.verificationConfirmedAt,
+    principalAuthorizedAt: settlement.principalAuthorizedAt,
     settlementStatus: settlement.settlementStatus,
   } as const;
 }

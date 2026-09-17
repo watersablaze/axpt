@@ -47,6 +47,9 @@ export const hinesDigitalSettlementV1Definition = {
     settlementNetwork: DIGITAL_SETTLEMENT_NETWORK.ETHEREUM_ERC20,
     receivingEntity: "French-Ward, Inc.",
     receivingAddress: null,
+    receivingWalletId: null,
+    receivingWalletRole: null,
+    verificationAmountUsdt: "50",
     settlementStatus: DIGITAL_SETTLEMENT_STATUS.PENDING_ISSUANCE,
   },
 } as const;

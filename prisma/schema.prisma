@@ -106,24 +106,30 @@ model InstitutionalInstrument {
 }
 
 model DigitalSettlementInstruction {
-  id                     String                   @id @default(cuid())
-  instrumentId           String                   @unique
-  publicId               String                   @unique
-  counterpartyName       String
-  transactionDescription String
-  settlementPurpose      String
-  quantityKg             Decimal                  @db.Decimal(18, 6)
-  pricePerKgUsd          Decimal                  @db.Decimal(20, 2)
-  transactionValueUsd    Decimal                  @db.Decimal(20, 2)
-  settlementPercentage   Decimal                  @db.Decimal(7, 4)
-  settlementAmountUsd    Decimal                  @db.Decimal(20, 2)
-  settlementAsset        DigitalSettlementAsset
-  settlementNetwork      DigitalSettlementNetwork
-  receivingEntity        String
-  receivingAddress       String?
-  settlementStatus       DigitalSettlementStatus  @default(PENDING_ISSUANCE)
-  settlementDetectedAt   DateTime?
-  settlementConfirmedAt  DateTime?
+  id                      String                   @id @default(cuid())
+  instrumentId            String                   @unique
+  publicId                String                   @unique
+  counterpartyName        String
+  transactionDescription  String
+  settlementPurpose       String
+  quantityKg              Decimal                  @db.Decimal(18, 6)
+  pricePerKgUsd           Decimal                  @db.Decimal(20, 2)
+  transactionValueUsd     Decimal                  @db.Decimal(20, 2)
+  settlementPercentage    Decimal                  @db.Decimal(7, 4)
+  settlementAmountUsd     Decimal                  @db.Decimal(20, 2)
+  settlementAsset         DigitalSettlementAsset
+  settlementNetwork       DigitalSettlementNetwork
+  receivingEntity         String
+  receivingAddress        String?
+  receivingWalletId       String?
+  receivingWalletRole     String?
+  verificationAmountUsdt  Decimal                  @default(50) @db.Decimal(20, 6)
+  verificationTxHash      String?                  @unique
+  verificationConfirmedAt DateTime?
+  principalAuthorizedAt   DateTime?
+  settlementStatus        DigitalSettlementStatus  @default(PENDING_ISSUANCE)
+  settlementDetectedAt    DateTime?
+  settlementConfirmedAt   DateTime?
 
   instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
 
@@ -266,6 +272,8 @@ enum DigitalSettlementNetwork {
 
 enum DigitalSettlementStatus {
   PENDING_ISSUANCE
+  AWAITING_VERIFICATION_TRANSFER
+  VERIFICATION_CONFIRMED
   AWAITING_TRANSFER
   DETECTED
   CONFIRMING
