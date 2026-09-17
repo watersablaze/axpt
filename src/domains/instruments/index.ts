@@ -9,4 +9,7 @@ export * from "./bootstrap/bootstrapHinesDigitalSettlementV1WithClient";
 export * from "./commands/issueDigitalSettlementInstructionWithClient";
 export * from "./commands/confirmDigitalSettlementVerificationWithClient";
 export * from "./commands/authorizeDigitalSettlementPrincipalWithClient";
+export * from "./commands/issueInstrumentAccessGrantWithClient";
+export * from "./commands/revokeInstrumentAccessGrantWithClient";
+export * from "./access/accessToken";
 export * from "./invariants/digitalSettlementCommercialSnapshot";

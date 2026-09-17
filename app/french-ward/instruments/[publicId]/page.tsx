@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 
 import { InstrumentShell } from "@/components/instruments/InstrumentShell";
 import { CopySettlementAddress } from "@/components/instruments/digital-settlement/CopySettlementAddress";
+import { instrumentAccessCookieName } from "@/domains/instruments/access/accessToken";
 import { DIGITAL_SETTLEMENT_STATUS } from "@/domains/instruments/contracts";
 import { loadIssuedDigitalSettlementInstruction } from "@/domains/instruments/queries/loadIssuedDigitalSettlementInstruction";
+import { resolveInstrumentAccess } from "@/domains/instruments/queries/resolveInstrumentAccess";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: { publicId: string };
+  searchParams?: { previewState?: string };
 };
 
 const usd = new Intl.NumberFormat("en-US", {
@@ -28,31 +32,90 @@ function formatStatus(value: string) {
   return value.replaceAll("_", " ");
 }
 
-export async function generateMetadata({
-  params,
-}: PageProps): Promise<Metadata> {
-  const instruction = await loadIssuedDigitalSettlementInstruction(
-    params.publicId,
-  );
-
-  if (!instruction) {
-    return { title: "Settlement Instruction Not Available | AXPT" };
-  }
-
+export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: `${instruction.reference} | French-Ward Digital Settlement Instruction`,
+    title: "French-Ward Digital Settlement Instruction | AXPT",
     description:
       "Transaction-specific digital settlement coordinates issued by French-Ward, Inc.",
     robots: { index: false, follow: false },
+    referrer: "no-referrer",
   };
+}
+
+function createPreviewInstruction(state: string | undefined) {
+  const principalAuthorized = state === "principal-authorized";
+  const verificationConfirmed =
+    principalAuthorized || state === "verification-confirmed";
+
+  return {
+    publicId: "__preview__",
+    reference: "FW-DSI-2026-001",
+    title: "Digital Settlement Instruction",
+    versionNumber: 1,
+    issuedAt: new Date("2026-09-17T00:00:00.000Z"),
+    counterpartyName: "Visual Review Counterparty",
+    transactionDescription: "Illustrative Commercial Transaction",
+    settlementPurpose: "Illustrative settlement requirement for visual review",
+    quantityKg: "48",
+    pricePerKgUsd: "108500",
+    transactionValueUsd: "5208000",
+    settlementPercentage: "7.5",
+    settlementAmountUsd: "390600",
+    settlementAsset: "USDT",
+    settlementNetwork: "ETHEREUM_ERC20",
+    receivingEntity: "French-Ward, Inc.",
+    receivingAddress: "0x1111111111111111111111111111111111111111",
+    receivingWalletId: "axpt-operations",
+    receivingWalletRole: "operations",
+    verificationAmountUsdt: "50",
+    verificationTxHash: verificationConfirmed ? `0x${"ab".repeat(32)}` : null,
+    verificationConfirmedAt: verificationConfirmed
+      ? new Date("2026-09-17T00:05:00.000Z")
+      : null,
+    principalAuthorizedAt: principalAuthorized
+      ? new Date("2026-09-17T00:10:00.000Z")
+      : null,
+    settlementStatus: principalAuthorized
+      ? DIGITAL_SETTLEMENT_STATUS.AWAITING_TRANSFER
+      : verificationConfirmed
+        ? DIGITAL_SETTLEMENT_STATUS.VERIFICATION_CONFIRMED
+        : DIGITAL_SETTLEMENT_STATUS.AWAITING_VERIFICATION_TRANSFER,
+  } as const;
 }
 
 export default async function DigitalSettlementInstructionPage({
   params,
+  searchParams,
 }: PageProps) {
-  const instruction = await loadIssuedDigitalSettlementInstruction(
-    params.publicId,
-  );
+  const isVisualPreview =
+    params.publicId === "__preview__" &&
+    (process.env.NODE_ENV !== "production" ||
+      process.env.VERCEL_ENV === "preview");
+
+  let instruction;
+
+  if (isVisualPreview) {
+    instruction = createPreviewInstruction(searchParams?.previewState);
+  } else {
+    const token = (await cookies()).get(
+      instrumentAccessCookieName(params.publicId),
+    )?.value;
+
+    if (!token) {
+      notFound();
+    }
+
+    const access = await resolveInstrumentAccess({
+      publicId: params.publicId,
+      token,
+    });
+
+    if (!access) {
+      notFound();
+    }
+
+    instruction = await loadIssuedDigitalSettlementInstruction(params.publicId);
+  }
 
   if (!instruction) {
     notFound();
@@ -104,11 +167,22 @@ export default async function DigitalSettlementInstructionPage({
       subtitle="Transaction-Specific Receiving Coordinates"
       reference={instruction.reference}
       version={`V${instruction.versionNumber}`}
-      status="ISSUED"
+      status={isVisualPreview ? "VISUAL REVIEW" : "ISSUED"}
       movements={movements}
-      classificationLabel="Authorized Settlement Instrument"
+      classificationLabel={
+        isVisualPreview
+          ? "Synthetic Visual Review Fixture"
+          : "Authorized Settlement Instrument"
+      }
       showStatusRail={false}
     >
+      {isVisualPreview ? (
+        <section className={styles.previewNotice} aria-label="Preview notice">
+          Synthetic visual-review fixture. No displayed party, amount, QR code,
+          or address carries settlement authority. Do not transmit value.
+        </section>
+      ) : null}
+
       <section className={styles.intro} aria-labelledby="instruction-heading">
         <div>
           <p className={styles.kicker}>Authorized instruction</p>
@@ -129,7 +203,16 @@ export default async function DigitalSettlementInstructionPage({
       </section>
 
       <section className={styles.authorityBand} aria-label="Transfer authority">
-        {verificationOnly ? (
+        {isVisualPreview ? (
+          <>
+            <p>Simulated instrument state</p>
+            <h2>{formatStatus(instruction.settlementStatus)}</h2>
+            <p>
+              Layout and responsive behavior only. This fixture cannot authorize
+              a verification or principal transfer.
+            </p>
+          </>
+        ) : verificationOnly ? (
           <>
             <p>Current transfer authority</p>
             <h2>Verification transfer only — {verificationAmount} USDT</h2>
@@ -305,7 +388,11 @@ export default async function DigitalSettlementInstructionPage({
         </div>
 
         <footer className={styles.issuanceFooter}>
-          <span>Issued by French-Ward, Inc.</span>
+          <span>
+            {isVisualPreview
+              ? "Synthetic visual-review fixture"
+              : "Issued by French-Ward, Inc."}
+          </span>
           <span>
             {instruction.issuedAt.toLocaleString("en-US", {
               dateStyle: "long",
