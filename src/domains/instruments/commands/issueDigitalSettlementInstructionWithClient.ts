@@ -8,6 +8,7 @@ import {
 } from "../contracts";
 import { INSTRUMENT_EVENT_TYPE } from "../eventTypes";
 import { INSTITUTIONAL_INSTRUMENT_STREAM_TYPE } from "../stream";
+import { resolveAuthorizedSettlementIngress } from "../digital-settlement/resolveAuthorizedSettlementIngress";
 
 export type DigitalSettlementIssuanceClient = Pick<
   PrismaClient,
@@ -30,6 +31,7 @@ export async function issueDigitalSettlementInstructionWithClient(params: {
   }
 
   const checksumAddress = getAddress(receivingAddress);
+  const receivingWallet = resolveAuthorizedSettlementIngress(checksumAddress);
   const instrument = await params.client.institutionalInstrument.findUnique({
     where: { reference: params.instrumentReference },
     include: {
@@ -39,17 +41,12 @@ export async function issueDigitalSettlementInstructionWithClient(params: {
   });
 
   if (!instrument || !instrument.digitalSettlementInstruction) {
-    throw new Error(
-      `[DSI_ISSUANCE_NOT_FOUND] ${params.instrumentReference}`,
-    );
+    throw new Error(`[DSI_ISSUANCE_NOT_FOUND] ${params.instrumentReference}`);
   }
 
   const version = instrument.versions.find(
-    (candidate: {
-      id: string;
-      number: number;
-      status: string;
-    }) => candidate.number === instrument.currentVersion,
+    (candidate: { id: string; number: number; status: string }) =>
+      candidate.number === instrument.currentVersion,
   );
 
   if (!version) {
@@ -61,9 +58,13 @@ export async function issueDigitalSettlementInstructionWithClient(params: {
   if (instrument.status === INSTITUTIONAL_INSTRUMENT_STATUS.ISSUED) {
     if (
       instrument.digitalSettlementInstruction.receivingAddress !==
-      checksumAddress
+        checksumAddress ||
+      instrument.digitalSettlementInstruction.receivingWalletId !==
+        receivingWallet.id ||
+      instrument.digitalSettlementInstruction.receivingWalletRole !==
+        receivingWallet.role
     ) {
-      throw new Error("[DSI_ISSUANCE_ALREADY_ISSUED_ADDRESS_MISMATCH]");
+      throw new Error("[DSI_ISSUANCE_ALREADY_ISSUED_WALLET_BINDING_MISMATCH]");
     }
 
     return {
@@ -71,6 +72,7 @@ export async function issueDigitalSettlementInstructionWithClient(params: {
       versionId: version.id,
       publicId: instrument.digitalSettlementInstruction.publicId,
       receivingAddress: checksumAddress,
+      receivingWalletId: receivingWallet.id,
       issued: false,
     } as const;
   }
@@ -90,7 +92,10 @@ export async function issueDigitalSettlementInstructionWithClient(params: {
     where: { id: instrument.digitalSettlementInstruction.id },
     data: {
       receivingAddress: checksumAddress,
-      settlementStatus: DIGITAL_SETTLEMENT_STATUS.AWAITING_TRANSFER,
+      receivingWalletId: receivingWallet.id,
+      receivingWalletRole: receivingWallet.role,
+      settlementStatus:
+        DIGITAL_SETTLEMENT_STATUS.AWAITING_VERIFICATION_TRANSFER,
     },
   });
 
@@ -132,7 +137,10 @@ export async function issueDigitalSettlementInstructionWithClient(params: {
           settlementInstructionId: instrument.digitalSettlementInstruction.id,
           publicId: instrument.digitalSettlementInstruction.publicId,
           receivingAddress: checksumAddress,
-          settlementStatus: DIGITAL_SETTLEMENT_STATUS.AWAITING_TRANSFER,
+          receivingWalletId: receivingWallet.id,
+          receivingWalletRole: receivingWallet.role,
+          settlementStatus:
+            DIGITAL_SETTLEMENT_STATUS.AWAITING_VERIFICATION_TRANSFER,
         },
         metadata: {
           actorUserId: params.actorUserId,
@@ -162,6 +170,7 @@ export async function issueDigitalSettlementInstructionWithClient(params: {
     versionId: version.id,
     publicId: instrument.digitalSettlementInstruction.publicId,
     receivingAddress: checksumAddress,
+    receivingWalletId: receivingWallet.id,
     issued: true,
   } as const;
 }

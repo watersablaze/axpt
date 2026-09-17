@@ -4,6 +4,7 @@ import QRCode from "qrcode";
 
 import { InstrumentShell } from "@/components/instruments/InstrumentShell";
 import { CopySettlementAddress } from "@/components/instruments/digital-settlement/CopySettlementAddress";
+import { DIGITAL_SETTLEMENT_STATUS } from "@/domains/instruments/contracts";
 import { loadIssuedDigitalSettlementInstruction } from "@/domains/instruments/queries/loadIssuedDigitalSettlementInstruction";
 import styles from "./page.module.css";
 
@@ -27,7 +28,9 @@ function formatStatus(value: string) {
   return value.replaceAll("_", " ");
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const instruction = await loadIssuedDigitalSettlementInstruction(
     params.publicId,
   );
@@ -64,6 +67,29 @@ export default async function DigitalSettlementInstructionPage({
       light: "#e8e0cc",
     },
   });
+
+  const verificationOnly =
+    instruction.settlementStatus ===
+    DIGITAL_SETTLEMENT_STATUS.AWAITING_VERIFICATION_TRANSFER;
+  const verificationConfirmed =
+    instruction.settlementStatus ===
+    DIGITAL_SETTLEMENT_STATUS.VERIFICATION_CONFIRMED;
+  const principalAuthorized = instruction.principalAuthorizedAt !== null;
+  const principalTransferActive =
+    principalAuthorized &&
+    [
+      DIGITAL_SETTLEMENT_STATUS.AWAITING_TRANSFER,
+      DIGITAL_SETTLEMENT_STATUS.DETECTED,
+      DIGITAL_SETTLEMENT_STATUS.CONFIRMING,
+      DIGITAL_SETTLEMENT_STATUS.CONFIRMED,
+    ].includes(instruction.settlementStatus);
+  const verificationAmount = Number(instruction.verificationAmountUsdt);
+  const remainingSettlementAmount =
+    Number(instruction.settlementAmountUsd) - verificationAmount;
+  const remainingSettlementUsdt = `${remainingSettlementAmount.toLocaleString(
+    "en-US",
+    { minimumFractionDigits: 2, maximumFractionDigits: 2 },
+  )} USDT`;
 
   const movements = [
     { index: "01", label: "Commercial Basis", active: true },
@@ -102,12 +128,57 @@ export default async function DigitalSettlementInstructionPage({
         </dl>
       </section>
 
+      <section className={styles.authorityBand} aria-label="Transfer authority">
+        {verificationOnly ? (
+          <>
+            <p>Current transfer authority</p>
+            <h2>Verification transfer only — {verificationAmount} USDT</h2>
+            <p>
+              Do not transmit the principal settlement amount. The verification
+              transfer will be credited toward the total settlement obligation.
+              French-Ward must confirm receipt and separately authorize the
+              remaining {remainingSettlementUsdt}.
+            </p>
+          </>
+        ) : verificationConfirmed && !principalAuthorized ? (
+          <>
+            <p>Current transfer authority</p>
+            <h2>Verification confirmed — principal transfer paused</h2>
+            <p>
+              Do not transmit the remaining settlement amount until French-Ward
+              records a separate principal-transfer authorization.
+            </p>
+          </>
+        ) : principalTransferActive ? (
+          <>
+            <p>Current transfer authority</p>
+            <h2>Principal transfer authorized</h2>
+            <p>
+              The verified {verificationAmount} USDT is credited toward the
+              obligation. The remaining authorized settlement amount is{" "}
+              {remainingSettlementUsdt}.
+            </p>
+          </>
+        ) : (
+          <>
+            <p>Current transfer authority</p>
+            <h2>No transfer presently authorized</h2>
+            <p>
+              Pause transmission and request a current instruction from
+              French-Ward before sending any value.
+            </p>
+          </>
+        )}
+      </section>
+
       <section className={styles.panel} aria-labelledby="commercial-heading">
         <div className={styles.sectionHeading}>
           <span>01</span>
           <div>
             <p>Commercial basis</p>
-            <h2 id="commercial-heading">The obligation captured at issuance.</h2>
+            <h2 id="commercial-heading">
+              The obligation captured at issuance.
+            </h2>
           </div>
         </div>
 
@@ -168,6 +239,10 @@ export default async function DigitalSettlementInstructionPage({
                 <dt>Receiving authority</dt>
                 <dd>{instruction.receivingEntity}</dd>
               </div>
+              <div>
+                <dt>Wallet function</dt>
+                <dd>Controlled settlement ingress</dd>
+              </div>
             </dl>
 
             <div className={styles.addressBlock}>
@@ -175,7 +250,9 @@ export default async function DigitalSettlementInstructionPage({
               <code>{instruction.receivingAddress}</code>
               <div className={styles.addressActions}>
                 <CopySettlementAddress address={instruction.receivingAddress} />
-                <span>Fingerprint {addressFingerprint(instruction.receivingAddress)}</span>
+                <span>
+                  Fingerprint {addressFingerprint(instruction.receivingAddress)}
+                </span>
               </div>
             </div>
           </div>
@@ -183,8 +260,14 @@ export default async function DigitalSettlementInstructionPage({
           <figure className={styles.qr}>
             {/* The generated data URL contains only the issued public address. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={qrCode} alt="QR code for the authorized receiving address" />
-            <figcaption>Scan only after independently verifying the network and fingerprint.</figcaption>
+            <img
+              src={qrCode}
+              alt="QR code for the authorized receiving address"
+            />
+            <figcaption>
+              Scan only after independently verifying the network and
+              fingerprint.
+            </figcaption>
           </figure>
         </div>
       </section>
@@ -205,13 +288,19 @@ export default async function DigitalSettlementInstructionPage({
             the underlying transaction.
           </p>
           <p>
-            French-Ward recognizes settlement only after verified receipt on
-            the designated network. A screenshot or transaction promise does
-            not constitute confirmed receipt.
+            French-Ward recognizes settlement only after verified receipt on the
+            designated network. A screenshot or transaction promise does not
+            constitute confirmed receipt.
           </p>
           <p>
-            No representative, intermediary, or mandate holder is authorized
-            to substitute, modify, or provide an alternative receiving address.
+            No representative, intermediary, or mandate holder is authorized to
+            substitute, modify, or provide an alternative receiving address.
+          </p>
+          <p>
+            Receipt into the operational ingress wallet does not authorize
+            onward movement, allocation, distribution, or long-term custody. Any
+            subsequent movement requires a separately documented French-Ward
+            approval.
           </p>
         </div>
 

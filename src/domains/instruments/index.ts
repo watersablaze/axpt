@@ -7,4 +7,6 @@ export * from "./bootstrap/bootstrapGreatMotherV1";
 export * from "./bootstrap/bootstrapGreatMotherV1WithClient";
 export * from "./bootstrap/bootstrapHinesDigitalSettlementV1WithClient";
 export * from "./commands/issueDigitalSettlementInstructionWithClient";
+export * from "./commands/confirmDigitalSettlementVerificationWithClient";
+export * from "./commands/authorizeDigitalSettlementPrincipalWithClient";
 export * from "./invariants/digitalSettlementCommercialSnapshot";
