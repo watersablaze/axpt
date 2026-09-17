@@ -205,16 +205,7 @@ export default async function DigitalSettlementInstructionPage({
       </section>
 
       <section className={styles.authorityBand} aria-label="Transfer authority">
-        {isVisualPreview ? (
-          <>
-            <p>Simulated instrument state</p>
-            <h2>{formatStatus(instruction.settlementStatus)}</h2>
-            <p>
-              Layout and responsive behavior only. This fixture cannot authorize
-              a verification or principal transfer.
-            </p>
-          </>
-        ) : verificationOnly ? (
+        {verificationOnly ? (
           <>
             <p>Current transfer authority</p>
             <h2>Verification transfer only — {verificationAmount} USDT</h2>
