@@ -17,6 +17,7 @@ export type SessionDocument = 'whitepaper' | 'hemp' | 'chinje'
 
 export type SessionPayload = {
   userId: string
+  tokenId?: string
   tier: SessionTier
   roles: SystemRole[]
   displayName: string

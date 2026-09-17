@@ -23,7 +23,7 @@ function getCookieConfig() {
     httpOnly: true,
     secure: isProd,
     path: '/',
-    sameSite: isProd ? ('none' as const) : ('lax' as const),
+    sameSite: 'lax' as const,
     maxAge: SESSION_MAX_AGE,
   }
 }
@@ -46,6 +46,10 @@ function normalizePayload(payload: any): SessionPayload | null {
 
   return {
     userId: payload.userId,
+    tokenId:
+      typeof payload.tokenId === 'string'
+        ? payload.tokenId
+        : undefined,
     tier: payload.tier,
     roles: Array.isArray(payload.roles)
       ? payload.roles.filter(
