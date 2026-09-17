@@ -1,34 +1,66 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { COOKIE_NAME } from '@/shared/constants/cookies'
+import { NextResponse } from 'next/server'
 
-export async function POST(_req: NextRequest) {
+import { prisma } from '@/infrastructure/db/prisma'
+import {
+  clearSessionCookie,
+  decodeSessionToken,
+  getTokenFromCookie,
+} from '@/lib/auth/session'
+
+export async function POST() {
   try {
-    const response = NextResponse.json({
+    const token =
+      await getTokenFromCookie()
+
+    if (token) {
+      const payload =
+        await decodeSessionToken(token)
+
+      if (payload?.tokenId) {
+        const now = new Date()
+
+        await prisma.session.updateMany({
+          where: {
+            tokenId:
+              payload.tokenId,
+          },
+          data: {
+            status: 'invalidated',
+            invalidatedAt: now,
+            endedAt: now,
+          },
+        })
+      }
+    }
+
+    await clearSessionCookie()
+
+    return NextResponse.json({
       success: true,
-      message: '[AXPT] Session cleared.',
+      message:
+        '[AXPT] Session cleared.',
     })
-
-    response.cookies.set(COOKIE_NAME, '', {
-      httpOnly: true,
-      secure: false,
-      sameSite: 'lax',
-      path: '/',
-      expires: new Date(0),
-    })
-
-    return response
-  } catch (err) {
+  } catch (error) {
     console.error(
-      '[AXPT] ❌ Failed to clear session:',
-      err
+      '[auth/logout] failed',
+      error
     )
+
+    /*
+     * Always clear the browser credential even
+     * if persistent-session invalidation fails.
+     */
+    await clearSessionCookie()
 
     return NextResponse.json(
       {
         success: false,
-        error: 'Failed to clear session.',
+        error:
+          'Session invalidation was incomplete.',
       },
-      { status: 500 }
+      {
+        status: 500,
+      }
     )
   }
 }
