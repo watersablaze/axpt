@@ -2,7 +2,7 @@ import type { PrismaClient } from "@prisma/client";
 
 import { INSTITUTIONAL_INSTRUMENT_STREAM_TYPE } from "../stream";
 import { INSTRUMENT_EVENT_TYPE } from "../eventTypes";
-import { hinesDigitalSettlementV1Definition } from "../definitions/hinesDigitalSettlementV1Definition";
+import { createHinesDigitalSettlementV1Definition } from "../definitions/hinesDigitalSettlementV1Definition";
 import { assertDigitalSettlementCommercialSnapshot } from "../invariants/digitalSettlementCommercialSnapshot";
 
 export type DigitalSettlementBootstrapClient = Pick<
@@ -21,9 +21,12 @@ export type DigitalSettlementBootstrapResult = Readonly<{
 export async function bootstrapHinesDigitalSettlementV1WithClient(params: {
   client: DigitalSettlementBootstrapClient;
   actorUserId: string;
+  counterpartyLegalName: string;
 }): Promise<DigitalSettlementBootstrapResult> {
   const { client, actorUserId } = params;
-  const definition = hinesDigitalSettlementV1Definition;
+  const definition = createHinesDigitalSettlementV1Definition(
+    params.counterpartyLegalName,
+  );
 
   assertDigitalSettlementCommercialSnapshot(definition.settlement);
 
@@ -50,6 +53,22 @@ export async function bootstrapHinesDigitalSettlementV1WithClient(params: {
     if (settlement.publicId !== definition.settlement.publicId) {
       throw new Error(
         `[DSI_V1_BOOTSTRAP_PUBLIC_ID_MISMATCH] expected=${definition.settlement.publicId} actual=${settlement.publicId}`,
+      );
+    }
+
+    if (
+      settlement.counterpartyName !== definition.settlement.counterpartyName
+    ) {
+      throw new Error(
+        `[DSI_V1_BOOTSTRAP_COUNTERPARTY_MISMATCH] expected=${definition.settlement.counterpartyName} actual=${settlement.counterpartyName}`,
+      );
+    }
+
+    if (
+      settlement.settlementPurpose !== definition.settlement.settlementPurpose
+    ) {
+      throw new Error(
+        `[DSI_V1_BOOTSTRAP_PURPOSE_MISMATCH] expected=${definition.settlement.settlementPurpose} actual=${settlement.settlementPurpose}`,
       );
     }
 
