@@ -1,23 +1,20 @@
 import type { Metadata } from 'next'
 
 import FWThreshold from '@/components/french-ward/FWThreshold'
-import FWInstitutionalRail from '@/components/french-ward/FWInstitutionalRail'
-import FWField from '@/components/french-ward/FWField'
-import FWArchive from '@/components/french-ward/FWArchive'
-import FWDoctrine from '@/components/french-ward/FWDoctrine'
+import FWLaunchBody from '@/components/french-ward/FWLaunchBody'
 import FWFooter from '@/components/french-ward/FWFooter'
 
 import styles from './FrenchWardPage.module.css'
 
 export const metadata: Metadata = {
-  title: 'French-Ward Field Notes — Trade, Authority & Passage',
+  title: 'French-Ward — Trade, Authority & Passage',
   description:
-    'French-Ward Field Notes examines the structures beneath trade: source authority, documentary readiness, lawful passage, settlement, and institutional continuity.',
+    'French-Ward coordinates source-side relationships, commercial documentation, institutional readiness, and responsible cross-border trade.',
   openGraph: {
-    title: 'French-Ward Field Notes',
+    title: 'French-Ward',
     description:
-      'When Gold Exists but Passage Is Not Yet Governed — Field Note 001 from French-Ward.',
-    type: 'article',
+      'Trade, authority, documentation, passage, and institutional coordination.',
+    type: 'website',
   },
 }
 
@@ -26,19 +23,7 @@ export default function FrenchWardPage() {
     <main className={styles.page} id="french-ward">
       <FWThreshold />
 
-      <section className={styles.body}>
-        <aside className={styles.railColumn}>
-          <FWInstitutionalRail />
-        </aside>
-
-        <div className={styles.fieldColumn}>
-          <FWField />
-        </div>
-      </section>
-
-      <FWArchive />
-
-      <FWDoctrine />
+      <FWLaunchBody />
 
       <FWFooter />
     </main>
