@@ -15,9 +15,15 @@ const prisma = new PrismaClient();
 async function main() {
   const actorEmail = process.env.INSTRUMENT_BOOTSTRAP_ACTOR_EMAIL?.trim();
   const receivingAddress = process.env.FW_DSI_RECEIVING_ADDRESS?.trim();
+  const counterpartyLegalName =
+    process.env.FW_DSI_COUNTERPARTY_LEGAL_NAME?.trim();
 
   if (!actorEmail) {
     throw new Error("INSTRUMENT_BOOTSTRAP_ACTOR_EMAIL is required");
+  }
+
+  if (!counterpartyLegalName) {
+    throw new Error("FW_DSI_COUNTERPARTY_LEGAL_NAME is required");
   }
 
   const actor = await prisma.user.findUnique({
@@ -33,25 +39,28 @@ async function main() {
     throw new Error(`[INSTRUMENT_BOOTSTRAP_ACTOR_NOT_ADMIN] ${actorEmail}`);
   }
 
-  const result = await prisma.$transaction(async (
-    tx: DigitalSettlementBootstrapClient & DigitalSettlementIssuanceClient,
-  ) => {
-    const bootstrap = await bootstrapHinesDigitalSettlementV1WithClient({
-      client: tx as DigitalSettlementBootstrapClient,
-      actorUserId: actor.id,
-    });
+  const result = await prisma.$transaction(
+    async (
+      tx: DigitalSettlementBootstrapClient & DigitalSettlementIssuanceClient,
+    ) => {
+      const bootstrap = await bootstrapHinesDigitalSettlementV1WithClient({
+        client: tx as DigitalSettlementBootstrapClient,
+        actorUserId: actor.id,
+        counterpartyLegalName,
+      });
 
-    const issuance = receivingAddress
-      ? await issueDigitalSettlementInstructionWithClient({
-          client: tx as DigitalSettlementIssuanceClient,
-          instrumentReference: HINES_DSI_REFERENCE,
-          receivingAddress,
-          actorUserId: actor.id,
-        })
-      : null;
+      const issuance = receivingAddress
+        ? await issueDigitalSettlementInstructionWithClient({
+            client: tx as DigitalSettlementIssuanceClient,
+            instrumentReference: HINES_DSI_REFERENCE,
+            receivingAddress,
+            actorUserId: actor.id,
+          })
+        : null;
 
-    return { bootstrap, issuance };
-  });
+      return { bootstrap, issuance };
+    },
+  );
 
   console.log(
     JSON.stringify(

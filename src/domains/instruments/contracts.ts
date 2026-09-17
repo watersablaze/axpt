@@ -168,6 +168,8 @@ export type InstrumentAccessGrant = Readonly<{
   revokedAt: Date | null;
 }>;
 
+export const INSTRUMENT_ACCESS_TOKEN_BYTES = 32 as const;
+
 export type InstrumentCommandContext = Readonly<{
   actorUserId: string;
   accessGrantId?: InstrumentAccessGrantId;
