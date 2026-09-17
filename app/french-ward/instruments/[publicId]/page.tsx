@@ -14,8 +14,8 @@ import styles from "./page.module.css";
 export const dynamic = "force-dynamic";
 
 type PageProps = {
-  params: { publicId: string };
-  searchParams?: { previewState?: string };
+  params: Promise<{ publicId: string }>;
+  searchParams?: Promise<{ previewState?: string }>;
 };
 
 const usd = new Intl.NumberFormat("en-US", {
@@ -87,18 +87,20 @@ export default async function DigitalSettlementInstructionPage({
   params,
   searchParams,
 }: PageProps) {
+  const { publicId } = await params;
+  const { previewState } = (await searchParams) ?? {};
   const isVisualPreview =
-    params.publicId === "__preview__" &&
+    publicId === "__preview__" &&
     (process.env.NODE_ENV !== "production" ||
       process.env.VERCEL_ENV === "preview");
 
   let instruction;
 
   if (isVisualPreview) {
-    instruction = createPreviewInstruction(searchParams?.previewState);
+    instruction = createPreviewInstruction(previewState);
   } else {
     const token = (await cookies()).get(
-      instrumentAccessCookieName(params.publicId),
+      instrumentAccessCookieName(publicId),
     )?.value;
 
     if (!token) {
@@ -106,7 +108,7 @@ export default async function DigitalSettlementInstructionPage({
     }
 
     const access = await resolveInstrumentAccess({
-      publicId: params.publicId,
+      publicId,
       token,
     });
 
@@ -114,7 +116,7 @@ export default async function DigitalSettlementInstructionPage({
       notFound();
     }
 
-    instruction = await loadIssuedDigitalSettlementInstruction(params.publicId);
+    instruction = await loadIssuedDigitalSettlementInstruction(publicId);
   }
 
   if (!instruction) {
