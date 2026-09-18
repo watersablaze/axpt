@@ -54,13 +54,25 @@ function createPreviewInstruction(state: string | undefined) {
     versionNumber: 1,
     issuedAt: new Date("2026-09-17T00:00:00.000Z"),
     counterpartyName: "Visual Review Counterparty",
-    transactionDescription: "Illustrative Commercial Transaction",
-    settlementPurpose: "Illustrative settlement requirement for visual review",
-    quantityKg: "48",
-    pricePerKgUsd: "108500",
-    transactionValueUsd: "5208000",
+    counterpartyRepresentative: "Visual Review Representative",
+    commodity: "Au Dore Bars",
+    transactionDescription: "Illustrative 50 KG Shipment",
+    settlementPurpose: "Illustrative good-faith transaction activation",
+    proceduralBasis:
+      "Illustrative pre-agreement procedural exception for visual review only.",
+    quantityKg: "50",
+    pricingStatus: principalAuthorized ? "FIXED" : "PENDING_FIXING",
+    pricingBasis: "Gold spot price less 10%",
+    spotDiscountPercentage: "10",
+    spotBenchmark: principalAuthorized ? "Illustrative benchmark" : null,
+    spotPricePerKgUsd: principalAuthorized ? "120000" : null,
+    pricePerKgUsd: principalAuthorized ? "108000" : null,
+    transactionValueUsd: principalAuthorized ? "5400000" : null,
     settlementPercentage: "7.5",
-    settlementAmountUsd: "390600",
+    settlementAmountUsd: principalAuthorized ? "405000" : null,
+    priceFixedAt: principalAuthorized
+      ? new Date("2026-09-17T00:08:00.000Z")
+      : null,
     settlementAsset: "USDT",
     settlementNetwork: "ETHEREUM_ERC20",
     receivingEntity: "French-Ward, Inc.",
@@ -149,12 +161,15 @@ export default async function DigitalSettlementInstructionPage({
       DIGITAL_SETTLEMENT_STATUS.CONFIRMED,
     ].includes(instruction.settlementStatus);
   const verificationAmount = Number(instruction.verificationAmountUsdt);
-  const remainingSettlementAmount =
-    Number(instruction.settlementAmountUsd) - verificationAmount;
-  const remainingSettlementUsdt = `${remainingSettlementAmount.toLocaleString(
-    "en-US",
-    { minimumFractionDigits: 2, maximumFractionDigits: 2 },
-  )} USDT`;
+  const pricingFixed = instruction.pricingStatus === "FIXED";
+  const remainingSettlementUsdt = instruction.settlementAmountUsd
+    ? `${(
+        Number(instruction.settlementAmountUsd) - verificationAmount
+      ).toLocaleString("en-US", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })} USDT`
+    : null;
 
   const movements = [
     { index: "01", label: "Commercial Basis", active: true },
@@ -212,8 +227,9 @@ export default async function DigitalSettlementInstructionPage({
             <p>
               Do not transmit the principal settlement amount. The verification
               transfer will be credited toward the total settlement obligation.
-              French-Ward must confirm receipt and separately authorize the
-              remaining {remainingSettlementUsdt}.
+              French-Ward must confirm receipt, fix the price against an
+              approved spot benchmark, and separately authorize the principal
+              transfer.
             </p>
           </>
         ) : verificationConfirmed && !principalAuthorized ? (
@@ -222,7 +238,8 @@ export default async function DigitalSettlementInstructionPage({
             <h2>Verification confirmed — principal transfer paused</h2>
             <p>
               Do not transmit the remaining settlement amount until French-Ward
-              records a separate principal-transfer authorization.
+              records the price fixing and a separate principal-transfer
+              authorization.
             </p>
           </>
         ) : principalTransferActive ? (
@@ -232,7 +249,7 @@ export default async function DigitalSettlementInstructionPage({
             <p>
               The verified {verificationAmount} USDT is credited toward the
               obligation. The remaining authorized settlement amount is{" "}
-              {remainingSettlementUsdt}.
+              {remainingSettlementUsdt ?? "not available"}.
             </p>
           </>
         ) : (
@@ -263,6 +280,16 @@ export default async function DigitalSettlementInstructionPage({
             <dt>Counterparty</dt>
             <dd>{instruction.counterpartyName}</dd>
           </div>
+          {instruction.counterpartyRepresentative ? (
+            <div>
+              <dt>Represented by</dt>
+              <dd>{instruction.counterpartyRepresentative}</dd>
+            </div>
+          ) : null}
+          <div>
+            <dt>Commodity</dt>
+            <dd>{instruction.commodity}</dd>
+          </div>
           <div>
             <dt>Transaction</dt>
             <dd>{instruction.transactionDescription}</dd>
@@ -272,23 +299,46 @@ export default async function DigitalSettlementInstructionPage({
             <dd>{Number(instruction.quantityKg).toLocaleString()} KG</dd>
           </div>
           <div>
-            <dt>Price per KG</dt>
-            <dd>{usd.format(Number(instruction.pricePerKgUsd))}</dd>
+            <dt>Purchase price basis</dt>
+            <dd>{instruction.pricingBasis}</dd>
+          </div>
+          <div>
+            <dt>Price fixing</dt>
+            <dd>
+              {pricingFixed && instruction.spotBenchmark
+                ? instruction.spotBenchmark
+                : "Pending approved spot benchmark"}
+            </dd>
+          </div>
+          <div>
+            <dt>Purchase price per KG</dt>
+            <dd>
+              {instruction.pricePerKgUsd
+                ? usd.format(Number(instruction.pricePerKgUsd))
+                : "Pending price fixing"}
+            </dd>
           </div>
           <div>
             <dt>Transaction value</dt>
-            <dd>{usd.format(Number(instruction.transactionValueUsd))}</dd>
+            <dd>
+              {instruction.transactionValueUsd
+                ? usd.format(Number(instruction.transactionValueUsd))
+                : "Pending price fixing"}
+            </dd>
           </div>
           <div className={styles.emphasis}>
-            <dt>Required settlement</dt>
+            <dt>Good-faith activation</dt>
             <dd>
               {instruction.settlementPercentage}% ·{" "}
-              {usd.format(Number(instruction.settlementAmountUsd))}
+              {instruction.settlementAmountUsd
+                ? usd.format(Number(instruction.settlementAmountUsd))
+                : "Amount pending price fixing"}
             </dd>
           </div>
         </dl>
 
         <p className={styles.purpose}>{instruction.settlementPurpose}</p>
+        <p className={styles.purpose}>{instruction.proceduralBasis}</p>
       </section>
 
       <section className={styles.panel} aria-labelledby="coordinates-heading">

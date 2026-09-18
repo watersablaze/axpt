@@ -59,6 +59,18 @@ export async function authorizeDigitalSettlementPrincipalWithClient(params: {
     );
   }
 
+  if (
+    settlement.pricingStatus !== "FIXED" ||
+    !settlement.spotBenchmark ||
+    !settlement.spotPricePerKgUsd ||
+    !settlement.pricePerKgUsd ||
+    !settlement.transactionValueUsd ||
+    !settlement.settlementAmountUsd ||
+    !settlement.priceFixedAt
+  ) {
+    throw new Error("[DSI_PRINCIPAL_AUTHORIZATION_PRICE_FIXING_REQUIRED]");
+  }
+
   const authorizedAt = params.authorizedAt ?? new Date();
   const updated = await params.client.digitalSettlementInstruction.updateMany({
     where: {

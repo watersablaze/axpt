@@ -8,22 +8,31 @@ import {
   issueDigitalSettlementInstructionWithClient,
   type DigitalSettlementIssuanceClient,
 } from "../../src/domains/instruments/commands/issueDigitalSettlementInstructionWithClient";
-import { HINES_DSI_REFERENCE } from "../../src/domains/instruments/definitions/hinesDigitalSettlementV1Definition";
+import {
+  HINES_DSI_REFERENCE,
+  INDERAKSH_LEGAL_NAME,
+} from "../../src/domains/instruments/definitions/hinesDigitalSettlementV1Definition";
 
 const prisma = new PrismaClient();
 
 async function main() {
   const actorEmail = process.env.INSTRUMENT_BOOTSTRAP_ACTOR_EMAIL?.trim();
   const receivingAddress = process.env.FW_DSI_RECEIVING_ADDRESS?.trim();
-  const counterpartyLegalName =
+  const configuredCounterpartyLegalName =
     process.env.FW_DSI_COUNTERPARTY_LEGAL_NAME?.trim();
+  const counterpartyLegalName = INDERAKSH_LEGAL_NAME;
 
   if (!actorEmail) {
     throw new Error("INSTRUMENT_BOOTSTRAP_ACTOR_EMAIL is required");
   }
 
-  if (!counterpartyLegalName) {
-    throw new Error("FW_DSI_COUNTERPARTY_LEGAL_NAME is required");
+  if (
+    configuredCounterpartyLegalName &&
+    configuredCounterpartyLegalName !== INDERAKSH_LEGAL_NAME
+  ) {
+    throw new Error(
+      `[FW_DSI_COUNTERPARTY_LEGAL_NAME_MISMATCH] expected=${INDERAKSH_LEGAL_NAME} actual=${configuredCounterpartyLegalName}`,
+    );
   }
 
   const actor = await prisma.user.findUnique({

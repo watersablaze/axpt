@@ -1,6 +1,7 @@
 import {
   DIGITAL_SETTLEMENT_ASSET,
   DIGITAL_SETTLEMENT_NETWORK,
+  DIGITAL_SETTLEMENT_PRICING_STATUS,
   DIGITAL_SETTLEMENT_STATUS,
   INSTITUTIONAL_INSTRUMENT_KIND,
   INSTITUTIONAL_INSTRUMENT_STATUS,
@@ -10,6 +11,8 @@ import {
 
 export const HINES_DSI_REFERENCE = "FW-DSI-2026-001" as const;
 export const HINES_DSI_PUBLIC_ID = "fw-dsi-2026-001" as const;
+export const INDERAKSH_LEGAL_NAME = "Inderaksh Gold Refinery FZ-LLC" as const;
+export const INDERAKSH_REPRESENTATIVE = "Corey Keller" as const;
 
 export function createHinesDigitalSettlementV1Definition(
   counterpartyLegalName: string,
@@ -45,14 +48,24 @@ export function createHinesDigitalSettlementV1Definition(
     settlement: {
       publicId: HINES_DSI_PUBLIC_ID,
       counterpartyName: legalName,
-      transactionDescription: "Initial 50 KG Gold Transaction",
+      counterpartyRepresentative: INDERAKSH_REPRESENTATIVE,
+      commodity: "Au Dore Bars",
+      transactionDescription: "Initial 50 KG Au Dore Bars Shipment",
       settlementPurpose:
-        "7.5% transaction activation for the initial 50 KG transaction",
+        "7.5% good-faith transaction activation for the initial 50 KG shipment, calculated from the purchase price",
+      proceduralBasis:
+        "Authorized as a good-faith pre-SPA procedure relating to the buyer's willingness to fund Mali export-tax requirements. Receipt does not replace, execute, or amend the SPA.",
       quantityKg: "50",
-      pricePerKgUsd: "110000",
-      transactionValueUsd: "5500000",
+      pricingStatus: DIGITAL_SETTLEMENT_PRICING_STATUS.PENDING_FIXING,
+      pricingBasis: "Gold spot price less 10%",
+      spotDiscountPercentage: "10",
+      spotBenchmark: null,
+      spotPricePerKgUsd: null,
+      pricePerKgUsd: null,
+      transactionValueUsd: null,
       settlementPercentage: "7.5",
-      settlementAmountUsd: "412500",
+      settlementAmountUsd: null,
+      priceFixedAt: null,
       settlementAsset: DIGITAL_SETTLEMENT_ASSET.USDT,
       settlementNetwork: DIGITAL_SETTLEMENT_NETWORK.ETHEREUM_ERC20,
       receivingEntity: "French-Ward, Inc.",

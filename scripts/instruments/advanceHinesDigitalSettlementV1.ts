@@ -8,11 +8,16 @@ import {
   confirmDigitalSettlementVerificationWithClient,
   type DigitalSettlementVerificationClient,
 } from "../../src/domains/instruments/commands/confirmDigitalSettlementVerificationWithClient";
+import {
+  fixDigitalSettlementPricingWithClient,
+  type DigitalSettlementPriceFixingClient,
+} from "../../src/domains/instruments/commands/fixDigitalSettlementPricingWithClient";
 import { HINES_DSI_REFERENCE } from "../../src/domains/instruments/definitions/hinesDigitalSettlementV1Definition";
 
 const prisma = new PrismaClient();
 
 const ACTION = {
+  FIX_PRICING: "FIX_PRICING",
   CONFIRM_VERIFICATION: "CONFIRM_VERIFICATION",
   AUTHORIZE_PRINCIPAL: "AUTHORIZE_PRINCIPAL",
 } as const;
@@ -26,11 +31,12 @@ async function main() {
   }
 
   if (
+    action !== ACTION.FIX_PRICING &&
     action !== ACTION.CONFIRM_VERIFICATION &&
     action !== ACTION.AUTHORIZE_PRINCIPAL
   ) {
     throw new Error(
-      `FW_DSI_ACTION must be ${ACTION.CONFIRM_VERIFICATION} or ${ACTION.AUTHORIZE_PRINCIPAL}`,
+      `FW_DSI_ACTION must be ${ACTION.FIX_PRICING}, ${ACTION.CONFIRM_VERIFICATION}, or ${ACTION.AUTHORIZE_PRINCIPAL}`,
     );
   }
 
@@ -50,8 +56,29 @@ async function main() {
   const result = await prisma.$transaction(
     async (
       tx: DigitalSettlementVerificationClient &
-        DigitalSettlementPrincipalAuthorizationClient,
+        DigitalSettlementPrincipalAuthorizationClient &
+        DigitalSettlementPriceFixingClient,
     ) => {
+      if (action === ACTION.FIX_PRICING) {
+        const spotPricePerKgUsd =
+          process.env.FW_DSI_SPOT_PRICE_PER_KG_USD?.trim();
+        const spotBenchmark = process.env.FW_DSI_SPOT_BENCHMARK?.trim();
+
+        if (!spotPricePerKgUsd || !spotBenchmark) {
+          throw new Error(
+            "Price fixing requires FW_DSI_SPOT_PRICE_PER_KG_USD and FW_DSI_SPOT_BENCHMARK",
+          );
+        }
+
+        return fixDigitalSettlementPricingWithClient({
+          client: tx as DigitalSettlementPriceFixingClient,
+          instrumentReference: HINES_DSI_REFERENCE,
+          spotPricePerKgUsd,
+          spotBenchmark,
+          actorUserId: actor.id,
+        });
+      }
+
       if (action === ACTION.CONFIRM_VERIFICATION) {
         const transactionHash = process.env.FW_DSI_VERIFICATION_TX_HASH?.trim();
         const observedAmountUsdt =

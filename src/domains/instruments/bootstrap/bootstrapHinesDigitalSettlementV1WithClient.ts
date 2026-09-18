@@ -154,8 +154,12 @@ export async function bootstrapHinesDigitalSettlementV1WithClient(params: {
         payload: {
           settlementInstructionId: settlement.id,
           publicId: settlement.publicId,
-          transactionValueUsd: settlement.transactionValueUsd.toString(),
-          settlementAmountUsd: settlement.settlementAmountUsd.toString(),
+          pricingStatus: settlement.pricingStatus,
+          pricingBasis: settlement.pricingBasis,
+          transactionValueUsd:
+            settlement.transactionValueUsd?.toString() ?? null,
+          settlementAmountUsd:
+            settlement.settlementAmountUsd?.toString() ?? null,
           settlementAsset: settlement.settlementAsset,
           settlementNetwork: settlement.settlementNetwork,
         },

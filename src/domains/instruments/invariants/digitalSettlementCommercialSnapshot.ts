@@ -1,9 +1,14 @@
 type CommercialSnapshot = Readonly<{
   quantityKg: string;
-  pricePerKgUsd: string;
-  transactionValueUsd: string;
+  pricingStatus: string;
+  spotDiscountPercentage: string;
+  spotPricePerKgUsd: string | null;
+  pricePerKgUsd: string | null;
+  transactionValueUsd: string | null;
   settlementPercentage: string;
-  settlementAmountUsd: string;
+  settlementAmountUsd: string | null;
+  spotBenchmark: string | null;
+  priceFixedAt: Date | null;
 }>;
 
 function parseScaledDecimal(value: string, decimals: number): bigint {
@@ -24,10 +29,46 @@ function parseScaledDecimal(value: string, decimals: number): bigint {
   return BigInt(`${match[1]}${fraction.padEnd(decimals, "0")}`);
 }
 
+function divideRoundHalfUp(numerator: bigint, denominator: bigint): bigint {
+  return (numerator + denominator / 2n) / denominator;
+}
+
 export function assertDigitalSettlementCommercialSnapshot(
   snapshot: CommercialSnapshot,
 ): void {
+  if (snapshot.pricingStatus === "PENDING_FIXING") {
+    if (
+      snapshot.spotPricePerKgUsd !== null ||
+      snapshot.pricePerKgUsd !== null ||
+      snapshot.transactionValueUsd !== null ||
+      snapshot.settlementAmountUsd !== null ||
+      snapshot.spotBenchmark !== null ||
+      snapshot.priceFixedAt !== null
+    ) {
+      throw new Error("[DSI_PENDING_FIXING_HAS_FIXED_VALUES]");
+    }
+
+    return;
+  }
+
+  if (snapshot.pricingStatus !== "FIXED") {
+    throw new Error(`[DSI_PRICING_STATUS_INVALID] ${snapshot.pricingStatus}`);
+  }
+
+  if (
+    !snapshot.spotPricePerKgUsd ||
+    !snapshot.pricePerKgUsd ||
+    !snapshot.transactionValueUsd ||
+    !snapshot.settlementAmountUsd ||
+    !snapshot.spotBenchmark?.trim() ||
+    !snapshot.priceFixedAt
+  ) {
+    throw new Error("[DSI_FIXED_PRICING_INCOMPLETE]");
+  }
+
   const quantityMicros = parseScaledDecimal(snapshot.quantityKg, 6);
+  const spotPriceCents = parseScaledDecimal(snapshot.spotPricePerKgUsd, 2);
+  const discountUnits = parseScaledDecimal(snapshot.spotDiscountPercentage, 4);
   const priceCents = parseScaledDecimal(snapshot.pricePerKgUsd, 2);
   const transactionValueCents = parseScaledDecimal(
     snapshot.transactionValueUsd,
@@ -42,8 +83,21 @@ export function assertDigitalSettlementCommercialSnapshot(
     2,
   );
 
-  const expectedTransactionValueCents =
-    (quantityMicros * priceCents) / 1_000_000n;
+  const expectedPriceCents = divideRoundHalfUp(
+    spotPriceCents * (1_000_000n - discountUnits),
+    1_000_000n,
+  );
+
+  if (expectedPriceCents !== priceCents) {
+    throw new Error(
+      `[DSI_PURCHASE_PRICE_MISMATCH] expected=${expectedPriceCents} actual=${priceCents}`,
+    );
+  }
+
+  const expectedTransactionValueCents = divideRoundHalfUp(
+    quantityMicros * priceCents,
+    1_000_000n,
+  );
 
   if (expectedTransactionValueCents !== transactionValueCents) {
     throw new Error(
@@ -51,8 +105,10 @@ export function assertDigitalSettlementCommercialSnapshot(
     );
   }
 
-  const expectedSettlementAmountCents =
-    (transactionValueCents * settlementPercentageUnits) / 1_000_000n;
+  const expectedSettlementAmountCents = divideRoundHalfUp(
+    transactionValueCents * settlementPercentageUnits,
+    1_000_000n,
+  );
 
   if (expectedSettlementAmountCents !== settlementAmountCents) {
     throw new Error(

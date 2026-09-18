@@ -26,16 +26,38 @@ expectFailure(
   () =>
     assertDigitalSettlementCommercialSnapshot({
       ...snapshot,
-      transactionValueUsd: "5500001",
+      spotPricePerKgUsd: "120000.00",
     }),
-  "DSI_TRANSACTION_VALUE_MISMATCH",
+  "DSI_PENDING_FIXING_HAS_FIXED_VALUES",
+);
+
+const fixedSnapshot = {
+  ...snapshot,
+  pricingStatus: "FIXED",
+  spotBenchmark: "Illustrative benchmark at 2026-09-18T00:00:00Z",
+  spotPricePerKgUsd: "120000.00",
+  pricePerKgUsd: "108000.00",
+  transactionValueUsd: "5400000.00",
+  settlementAmountUsd: "405000.00",
+  priceFixedAt: new Date("2026-09-18T00:00:00.000Z"),
+};
+
+assertDigitalSettlementCommercialSnapshot(fixedSnapshot);
+
+expectFailure(
+  () =>
+    assertDigitalSettlementCommercialSnapshot({
+      ...fixedSnapshot,
+      pricePerKgUsd: "108000.01",
+    }),
+  "DSI_PURCHASE_PRICE_MISMATCH",
 );
 
 expectFailure(
   () =>
     assertDigitalSettlementCommercialSnapshot({
-      ...snapshot,
-      settlementAmountUsd: "412501",
+      ...fixedSnapshot,
+      settlementAmountUsd: "405000.01",
     }),
   "DSI_SETTLEMENT_AMOUNT_MISMATCH",
 );
@@ -45,8 +67,8 @@ console.log(
     {
       ok: true,
       reference: definition.instrument.reference,
-      transactionValueUsd: snapshot.transactionValueUsd,
-      settlementAmountUsd: snapshot.settlementAmountUsd,
+      pricingStatus: snapshot.pricingStatus,
+      pricingBasis: snapshot.pricingBasis,
     },
     null,
     2,

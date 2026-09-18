@@ -88,6 +88,7 @@ async function main() {
   );
 
   let authorizationUpdate: Record<string, unknown> | null = null;
+  let pricingFixed = false;
   const authorizationClient = {
     institutionalInstrument: {
       findUnique: async () => ({
@@ -99,6 +100,15 @@ async function main() {
           verificationTxHash: TRANSACTION_HASH,
           verificationConfirmedAt: new Date("2026-09-17T01:00:00.000Z"),
           principalAuthorizedAt: null,
+          pricingStatus: pricingFixed ? "FIXED" : "PENDING_FIXING",
+          spotBenchmark: pricingFixed ? "Approved benchmark" : null,
+          spotPricePerKgUsd: pricingFixed ? "120000.00" : null,
+          pricePerKgUsd: pricingFixed ? "108000.00" : null,
+          transactionValueUsd: pricingFixed ? "5400000.00" : null,
+          settlementAmountUsd: pricingFixed ? "405000.00" : null,
+          priceFixedAt: pricingFixed
+            ? new Date("2026-09-17T01:03:00.000Z")
+            : null,
         },
       }),
     },
@@ -112,6 +122,18 @@ async function main() {
       create: async () => ({}),
     },
   } as unknown as DigitalSettlementPrincipalAuthorizationClient;
+
+  await assert.rejects(
+    () =>
+      authorizeDigitalSettlementPrincipalWithClient({
+        client: authorizationClient,
+        instrumentReference: "FW-DSI-2026-001",
+        actorUserId: "operator-1",
+      }),
+    /DSI_PRINCIPAL_AUTHORIZATION_PRICE_FIXING_REQUIRED/,
+  );
+
+  pricingFixed = true;
 
   const authorization = await authorizeDigitalSettlementPrincipalWithClient({
     client: authorizationClient,
