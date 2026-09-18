@@ -29,12 +29,23 @@ export type InternalWalletCapability = Readonly<{
   assetCode: string;
 }>;
 
+export const TREASURY_EXTERNAL_SETTLEMENT_RAIL_CODE = {
+  EVM_ERC20: "EVM_ERC20",
+} as const;
+
+export type TreasuryExternalSettlementRailCode =
+  (typeof TREASURY_EXTERNAL_SETTLEMENT_RAIL_CODE)[keyof typeof TREASURY_EXTERNAL_SETTLEMENT_RAIL_CODE];
+
+declare const externalSettlementRailCapabilityBrand: unique symbol;
+
 export type ExternalSettlementRailCapability = Readonly<{
   kind: typeof TREASURY_EXECUTION_ADAPTER_KIND.EXTERNAL_SETTLEMENT_RAIL;
 
   settlementEndpointId: SettlementEndpointId;
 
-  railCode: string;
+  railCode: TreasuryExternalSettlementRailCode;
+
+  readonly [externalSettlementRailCapabilityBrand]: true;
 }>;
 
 export type ManualTreasuryOperationCapability = Readonly<{

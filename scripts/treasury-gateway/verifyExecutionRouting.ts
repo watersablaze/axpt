@@ -2,7 +2,20 @@ import assert from "node:assert/strict";
 
 import { resolveTreasuryExecutionRoute } from "../../src/domains/treasury/gateway/executions/routing/resolveTreasuryExecutionRoute";
 
-import { TREASURY_EXECUTION_ADAPTER_KIND } from "../../src/domains/treasury/gateway/executions/routing/contracts";
+import {
+  TREASURY_EXECUTION_ADAPTER_KIND,
+  TREASURY_EXTERNAL_SETTLEMENT_RAIL_CODE,
+  type ExternalSettlementRailCapability,
+} from "../../src/domains/treasury/gateway/executions/routing/contracts";
+
+import { deriveExternalSettlementRailCapability } from "../../src/domains/treasury/gateway/executions/routing/deriveExternalSettlementRailCapability";
+
+import {
+  SETTLEMENT_ENDPOINT_KIND,
+  type SettlementEndpoint,
+} from "../../src/domains/treasury/gateway/settlement-endpoints/contracts";
+
+import { SETTLEMENT_ENDPOINT_STATUS } from "../../src/domains/treasury/gateway/settlement-endpoints/status";
 
 import type { TreasuryExecutionHandoff } from "../../src/domains/treasury/gateway/executions/handoff/contracts";
 
@@ -115,16 +128,60 @@ if (internalWallet.status === "RESOLVED") {
   );
 }
 
+const externalSettlementEndpoint: SettlementEndpoint = {
+  id: "endpoint-1",
+
+  reference: "Ethereum Mainnet USDT endpoint",
+
+  kind: SETTLEMENT_ENDPOINT_KIND.EVM_ERC20,
+
+  coordinates: {
+    kind: SETTLEMENT_ENDPOINT_KIND.EVM_ERC20,
+
+    chainId: 1,
+
+    network: "ethereum-mainnet",
+
+    address:
+      "0x40143ECEF96EC52365c6E3164dE891C62c9A012E",
+
+    assetCode: "USDT",
+
+    tokenContractAddress:
+      "0xdAC17F958D2ee523a2206206994597C13D831ec7",
+
+    tokenDecimals: 6,
+  },
+
+  status: SETTLEMENT_ENDPOINT_STATUS.ACTIVE,
+
+  metadata: {
+    createdAt: new Date("2026-07-04T03:00:00.000Z"),
+
+    updatedAt: new Date("2026-07-04T03:00:00.000Z"),
+
+    createdByActorId: "actor-1",
+
+    lastModifiedByActorId: "actor-1",
+
+    version: 1,
+  },
+};
+
+const externalCapability =
+  deriveExternalSettlementRailCapability(
+    externalSettlementEndpoint,
+  );
+
+assert.equal(
+  externalCapability.railCode,
+  TREASURY_EXTERNAL_SETTLEMENT_RAIL_CODE.EVM_ERC20,
+);
+
 const externalRail = resolveTreasuryExecutionRoute({
   handoff,
 
-  capability: {
-    kind: TREASURY_EXECUTION_ADAPTER_KIND.EXTERNAL_SETTLEMENT_RAIL,
-
-    settlementEndpointId: "endpoint-1",
-
-    railCode: "SWIFT",
-  },
+  capability: externalCapability,
 });
 
 assert.equal(externalRail.status, "RESOLVED");
@@ -134,7 +191,42 @@ if (externalRail.status === "RESOLVED") {
     externalRail.adapterKind,
     TREASURY_EXECUTION_ADAPTER_KIND.EXTERNAL_SETTLEMENT_RAIL,
   );
+
+  assert.equal(
+    externalRail.capability.settlementEndpointId,
+    "endpoint-1",
+  );
 }
+
+/*
+ * Nominal containment:
+ * ordinary callers must not be able to manufacture
+ * external rail authority structurally.
+ */
+// @ts-expect-error External rail capability must be derived.
+const structurallyManufacturedExternalCapability:
+  ExternalSettlementRailCapability = {
+    kind:
+      TREASURY_EXECUTION_ADAPTER_KIND.EXTERNAL_SETTLEMENT_RAIL,
+
+    settlementEndpointId: "endpoint-1",
+
+    railCode:
+      TREASURY_EXTERNAL_SETTLEMENT_RAIL_CODE.EVM_ERC20,
+  };
+
+void structurallyManufacturedExternalCapability;
+
+assert.throws(
+  () =>
+    deriveExternalSettlementRailCapability({
+      ...externalSettlementEndpoint,
+
+      status: SETTLEMENT_ENDPOINT_STATUS.SUSPENDED,
+    }),
+
+  /TREASURY_GATEWAY_SETTLEMENT_ENDPOINT_NOT_ACTIVE/,
+);
 
 const manualOperation = resolveTreasuryExecutionRoute({
   handoff,
