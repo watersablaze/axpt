@@ -36,15 +36,9 @@ export async function confirmTreasuryExecutionDurablyWithClient(params: {
 
     apply: (aggregate) =>
       confirmTreasuryExecution(aggregate, {
+        settlement,
+
         context,
-
-        payload: {
-          executionId: settlement.executionId,
-
-          amount: settlement.amount,
-
-          verifiedAt: settlement.verifiedAt,
-        },
       }),
 
     client,

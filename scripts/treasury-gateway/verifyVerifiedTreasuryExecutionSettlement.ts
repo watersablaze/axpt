@@ -59,7 +59,13 @@ const execution: TreasuryExecution = {
   },
 };
 
-const validSettlement: VerifiedTreasuryExecutionSettlement = {
+/*
+ * Verification scripts deliberately cross the nominal boundary so they
+ * can exercise the matcher independently of a concrete rail adapter.
+ *
+ * Production application code must not manufacture settlements this way.
+ */
+const validSettlement = {
   executionId: execution.id,
 
   amount: {
@@ -69,7 +75,29 @@ const validSettlement: VerifiedTreasuryExecutionSettlement = {
   },
 
   verifiedAt: new Date("2026-09-14T05:30:00.000Z"),
-};
+} as VerifiedTreasuryExecutionSettlement;
+
+/*
+ * Compile-time regression proof:
+ *
+ * a structurally equivalent ordinary object must not satisfy the verified
+ * settlement contract without an explicit authority assertion.
+ */
+if (false) {
+  const structurallySimilarSettlement = {
+    executionId: execution.id,
+
+    amount: execution.amount,
+
+    verifiedAt: new Date(),
+  };
+
+  // @ts-expect-error Verified settlement authority is nominally branded.
+  const forgedSettlement: VerifiedTreasuryExecutionSettlement =
+    structurallySimilarSettlement;
+
+  void forgedSettlement;
+}
 
 /*
  * Representation-equivalent decimal strings must be accepted.

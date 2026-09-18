@@ -46,6 +46,16 @@ export function toVerifiedTreasuryExecutionSettlement(
     );
   }
 
+  /*
+   * This assertion is the explicit compile-time authority handoff.
+   *
+   * The input is not arbitrary application data. It is the result of the
+   * internal-wallet evidence verifier, and this translator has normalized
+   * the rail-native observation into TreasuryMoney.
+   *
+   * Future rails must establish their own verified proof and perform the
+   * same deliberate admission only after rail-specific verification.
+   */
   return {
     executionId: proof.executionId,
 
@@ -59,5 +69,5 @@ export function toVerifiedTreasuryExecutionSettlement(
     },
 
     verifiedAt: proof.verifiedAt,
-  };
+  } as VerifiedTreasuryExecutionSettlement;
 }

@@ -6,33 +6,36 @@ import { assertTreasuryExecutionTransition } from "./assertTransition";
 
 import { TREASURY_EXECUTION_STATUS } from "./status";
 
-import type { ConfirmTreasuryExecution } from "./commands";
-
 import type { TreasuryExecution } from "./contracts";
 
 import type { TreasuryExecutionConfirmedPayload } from "./events";
+
+import type { VerifiedTreasuryExecutionSettlement } from "./verifiedSettlementContracts";
+
+import type { TreasuryCommandContext } from "../shared/commandContext";
 
 import type { TreasuryDomainResult } from "../shared/domainResult";
 
 export function confirmTreasuryExecution(
   aggregate: TreasuryExecution,
 
-  command: ConfirmTreasuryExecution,
+  params: Readonly<{
+    settlement: VerifiedTreasuryExecutionSettlement;
+
+    context: TreasuryCommandContext;
+  }>,
 ): TreasuryDomainResult<TreasuryExecution, TreasuryExecutionConfirmedPayload> {
+  const { settlement, context } = params;
+
   /*
-   * Confirmation may only admit a verified settlement observation that
-   * exactly agrees with the already-governed Treasury Execution.
+   * Confirmation receives an already-admitted verified settlement
+   * observation. It does not reconstruct verification authority from a
+   * generic command payload.
    *
    * The rail proves reality. It does not redefine Treasury intent.
    */
   assertVerifiedTreasuryExecutionSettlementMatchesExecution({
-    settlement: {
-      executionId: command.payload.executionId,
-
-      amount: command.payload.amount,
-
-      verifiedAt: command.payload.verifiedAt,
-    },
+    settlement,
 
     execution: aggregate,
   });
@@ -48,7 +51,7 @@ export function confirmTreasuryExecution(
    * evidence. confirmedAt records when Treasury admitted that verified
    * fact and changed canonical state.
    */
-  const confirmedAt = command.context.requestedAt;
+  const confirmedAt = context.requestedAt;
 
   return {
     aggregate: {
@@ -61,7 +64,7 @@ export function confirmTreasuryExecution(
 
         updatedAt: confirmedAt,
 
-        lastModifiedByActorId: command.context.actorId,
+        lastModifiedByActorId: context.actorId,
 
         version: aggregate.metadata.version + 1,
       },
@@ -73,9 +76,9 @@ export function confirmTreasuryExecution(
       payload: {
         executionId: aggregate.id,
 
-        amount: command.payload.amount,
+        amount: settlement.amount,
 
-        verifiedAt: command.payload.verifiedAt,
+        verifiedAt: settlement.verifiedAt,
 
         confirmedAt,
       },

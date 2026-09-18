@@ -82,13 +82,3 @@ export type MarkTreasuryExecutionInitiated = TreasuryCommand<
     initiatedAt: Date;
   }>
 >;
-
-export type ConfirmTreasuryExecution = TreasuryCommand<
-  Readonly<{
-    executionId: TreasuryExecutionId;
-
-    amount: TreasuryMoney;
-
-    verifiedAt: Date;
-  }>
->;

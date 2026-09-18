@@ -2,6 +2,19 @@ import type { TreasuryExecutionId } from "../shared/identifiers";
 
 import type { TreasuryMoney } from "../shared/money";
 
+/*
+ * Compile-time evidence-authority marker.
+ *
+ * This symbol is intentionally not exported. Ordinary application code
+ * therefore cannot structurally construct a
+ * VerifiedTreasuryExecutionSettlement from executionId + amount +
+ * verifiedAt alone.
+ *
+ * A trusted rail verifier / translator must deliberately admit the
+ * normalized observation across this boundary.
+ */
+declare const verifiedTreasuryExecutionSettlementBrand: unique symbol;
+
 export type VerifiedTreasuryExecutionSettlement = Readonly<{
   /*
    * Treasury subject identity.
@@ -30,4 +43,13 @@ export type VerifiedTreasuryExecutionSettlement = Readonly<{
    * inclusion time, or finality time.
    */
   verifiedAt: Date;
+
+  /*
+   * Nominal authority boundary.
+   *
+   * This property has no runtime representation. Its purpose is to make
+   * verified settlement authority explicit at compile time rather than
+   * structurally reproducible by arbitrary callers.
+   */
+  readonly [verifiedTreasuryExecutionSettlementBrand]: true;
 }>;

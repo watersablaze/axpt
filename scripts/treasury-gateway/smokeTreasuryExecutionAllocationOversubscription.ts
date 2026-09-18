@@ -16,6 +16,8 @@ import { TREASURY_EXECUTION_ADAPTER_KIND } from "../../src/domains/treasury/gate
 import { dispatchAuthorizedInternalWalletExecutionDurablyWithClient } from "../../src/domains/treasury/gateway/executions/application/dispatchAuthorizedInternalWalletExecutionDurablyWithClient";
 import { reconcileInternalWalletExecutionDurablyWithClient } from "../../src/domains/treasury/gateway/executions/application/reconcileInternalWalletExecutionDurablyWithClient";
 import { confirmTreasuryExecutionWithAllocationSettlementDurablyWithClient } from "../../src/domains/treasury/gateway/executions/application/confirmTreasuryExecutionWithAllocationSettlementDurablyWithClient";
+
+import type { VerifiedTreasuryExecutionSettlement } from "../../src/domains/treasury/gateway/executions/verifiedSettlementContracts";
 import { loadTreasuryExecutionWithClient } from "../../src/domains/treasury/gateway/executions/persistence/loadTreasuryExecutionWithClient";
 
 import { establishGovernedAuthorizedTreasuryExecutionFixture } from "./support/establishGovernedAuthorizedTreasuryExecutionFixture";
@@ -226,7 +228,7 @@ async function settleExecution(params: {
         amount: loadedExecution.aggregate.amount,
 
         verifiedAt: new Date(),
-      },
+      } as VerifiedTreasuryExecutionSettlement,
 
       allocationConsumedEventId:
         `event-allocation-consumed-oversubscription-${label}-${fixtureId}`,
