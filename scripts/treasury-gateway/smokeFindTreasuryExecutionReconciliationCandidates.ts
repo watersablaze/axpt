@@ -563,19 +563,18 @@ async function main(): Promise<void> {
       }),
     );
 
-    const limitedFixtureCandidates = limited.filter(
-      (candidate: LoadedTreasuryExecution) =>
-        executionIds.includes(candidate.aggregate.id),
-    );
-
-    assert.equal(limitedFixtureCandidates.length, 2);
+    assert.equal(limited.length, 2);
 
     assert.deepEqual(
-      limitedFixtureCandidates.map(
+      limited.map(
         (candidate: LoadedTreasuryExecution) => candidate.aggregate.id,
       ),
 
-      [executionIds[1], executionIds[3]],
+      candidates
+        .slice(0, 2)
+        .map(
+          (candidate: LoadedTreasuryExecution) => candidate.aggregate.id,
+        ),
     );
 
     await assert.rejects(
@@ -659,7 +658,7 @@ async function main(): Promise<void> {
         (candidate: LoadedTreasuryExecution) => candidate.aggregate.id,
       ),
 
-      limitedIds: limitedFixtureCandidates.map(
+      limitedIds: limited.map(
         (candidate: LoadedTreasuryExecution) => candidate.aggregate.id,
       ),
     });
