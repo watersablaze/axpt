@@ -96,6 +96,7 @@
 }
 
 .statusPair dt,
+.submissionGrid dt,
 .commercialGrid dt,
 .coordinateData dt {
   color: var(--muted);
@@ -105,6 +106,7 @@
 }
 
 .statusPair dd,
+.submissionGrid dd,
 .commercialGrid dd,
 .coordinateData dd {
   margin: 0.45rem 0 0;
@@ -131,6 +133,40 @@
 
 .sectionHeading h2 {
   font-size: clamp(1.75rem, 3.2vw, 3.4rem);
+}
+
+.submissionGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+}
+
+.submissionGrid > div {
+  min-height: 7.5rem;
+  padding: 1.25rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+
+.submissionGrid > div:last-child {
+  grid-column: 1 / -1;
+}
+
+.submissionGrid dd {
+  font-size: clamp(0.9rem, 1.4vw, 1.15rem);
+  line-height: 1.5;
+}
+
+.evidenceBoundary {
+  margin: 1.2rem 0 0;
+  padding: 1.2rem 1.3rem;
+  border-left: 2px solid rgba(199, 183, 132, 0.55);
+  background: rgba(199, 183, 132, 0.045);
+  color: rgba(232, 224, 204, 0.72);
+  font-size: 0.78rem;
+  line-height: 1.75;
 }
 
 .commercialGrid {
@@ -267,11 +303,20 @@
   }
 
   .commercialGrid,
+  .submissionGrid,
   .noticeGrid {
     grid-template-columns: 1fr;
   }
 
+  .submissionGrid > div:last-child {
+    grid-column: auto;
+  }
+
   .commercialGrid > div {
+    min-height: auto;
+  }
+
+  .submissionGrid > div {
     min-height: auto;
   }
 }

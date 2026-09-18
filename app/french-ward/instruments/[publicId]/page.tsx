@@ -7,6 +7,10 @@ import { InstrumentShell } from "@/components/instruments/InstrumentShell";
 import { CopySettlementAddress } from "@/components/instruments/digital-settlement/CopySettlementAddress";
 import { instrumentAccessCookieName } from "@/domains/instruments/access/accessToken";
 import { DIGITAL_SETTLEMENT_STATUS } from "@/domains/instruments/contracts";
+import {
+  HINES_DSI_REFERENCE,
+  INDERAKSH_BUYER_SUBMISSION,
+} from "@/domains/instruments/definitions/hinesDigitalSettlementV1Definition";
 import { loadIssuedDigitalSettlementInstruction } from "@/domains/instruments/queries/loadIssuedDigitalSettlementInstruction";
 import { resolveInstrumentAccess } from "@/domains/instruments/queries/resolveInstrumentAccess";
 import styles from "./page.module.css";
@@ -53,30 +57,30 @@ function createPreviewInstruction(state: string | undefined) {
     title: "Digital Settlement Instruction",
     versionNumber: 1,
     issuedAt: new Date("2026-09-17T00:00:00.000Z"),
-    counterpartyName: "Visual Review Counterparty",
-    counterpartyRepresentative: "Visual Review Representative",
+    counterpartyName: "Inderaksh Gold Refinery FZ-LLC",
+    counterpartyRepresentative: "Corey Keller, Vice President",
     commodity: "Au Dore Bars",
-    transactionDescription: "Illustrative 50 KG Shipment",
-    settlementPurpose: "Illustrative good-faith transaction activation",
+    transactionDescription: "Initial 50 KG Au Dore Bars Shipment",
+    settlementPurpose:
+      "7.5% good-faith transaction activation for the initial 50 KG shipment, calculated from the purchase price",
     proceduralBasis:
-      "Illustrative pre-agreement procedural exception for visual review only.",
+      "French-Ward has authorized this transaction-specific good-faith pre-SPA procedure based on the buyer submission and supplemental commercial direction. The signed LOI supports buyer identity and the proposed transaction profile but does not itself establish the pricing calculation or settlement obligation shown here. Receipt does not replace, execute, or amend the SPA and does not constitute commodity allocation.",
     quantityKg: "50",
-    pricingStatus: principalAuthorized ? "FIXED" : "PENDING_FIXING",
-    pricingBasis: "Gold spot price less 10%",
+    pricingStatus: "FIXED",
+    pricingBasis: "LBMA Gold Price PM less 10%",
     spotDiscountPercentage: "10",
-    spotBenchmark: principalAuthorized ? "Illustrative benchmark" : null,
-    spotPricePerKgUsd: principalAuthorized ? "120000" : null,
-    pricePerKgUsd: principalAuthorized ? "108000" : null,
-    transactionValueUsd: principalAuthorized ? "5400000" : null,
+    spotBenchmark:
+      "LBMA Gold Price PM — 2026-09-17 — USD 4,368.10 per troy ounce",
+    spotPricePerKgUsd: "140437.68",
+    pricePerKgUsd: "126393.91",
+    transactionValueUsd: "6319695.50",
     settlementPercentage: "7.5",
-    settlementAmountUsd: principalAuthorized ? "405000" : null,
-    priceFixedAt: principalAuthorized
-      ? new Date("2026-09-17T00:08:00.000Z")
-      : null,
+    settlementAmountUsd: "473977.16",
+    priceFixedAt: new Date("2026-09-17T00:08:00.000Z"),
     settlementAsset: "USDT",
     settlementNetwork: "ETHEREUM_ERC20",
     receivingEntity: "French-Ward, Inc.",
-    receivingAddress: "0x1111111111111111111111111111111111111111",
+    receivingAddress: "0x40143ECEF96EC52365c6E3164dE891C62c9A012E",
     receivingWalletId: "axpt-operations",
     receivingWalletRole: "operations",
     verificationAmountUsdt: "50",
@@ -162,6 +166,10 @@ export default async function DigitalSettlementInstructionPage({
     ].includes(instruction.settlementStatus);
   const verificationAmount = Number(instruction.verificationAmountUsdt);
   const pricingFixed = instruction.pricingStatus === "FIXED";
+  const buyerSubmission =
+    instruction.reference === HINES_DSI_REFERENCE
+      ? INDERAKSH_BUYER_SUBMISSION
+      : null;
   const remainingSettlementUsdt = instruction.settlementAmountUsd
     ? `${(
         Number(instruction.settlementAmountUsd) - verificationAmount
@@ -172,9 +180,10 @@ export default async function DigitalSettlementInstructionPage({
     : null;
 
   const movements = [
-    { index: "01", label: "Commercial Basis", active: true },
-    { index: "02", label: "Settlement Coordinates" },
-    { index: "03", label: "Recognition Standard" },
+    { index: "01", label: "Buyer Submission", active: true },
+    { index: "02", label: "Commercial Basis" },
+    { index: "03", label: "Settlement Coordinates" },
+    { index: "04", label: "Recognition Standard" },
   ];
 
   return (
@@ -227,9 +236,8 @@ export default async function DigitalSettlementInstructionPage({
             <p>
               Do not transmit the principal settlement amount. The verification
               transfer will be credited toward the total settlement obligation.
-              French-Ward must confirm receipt, fix the price against an
-              approved spot benchmark, and separately authorize the principal
-              transfer.
+              French-Ward must confirm receipt and separately authorize the
+              principal transfer.
             </p>
           </>
         ) : verificationConfirmed && !principalAuthorized ? (
@@ -264,9 +272,55 @@ export default async function DigitalSettlementInstructionPage({
         )}
       </section>
 
+      {buyerSubmission ? (
+        <section className={styles.panel} aria-labelledby="submission-heading">
+          <div className={styles.sectionHeading}>
+            <span>01</span>
+            <div>
+              <p>Buyer submission</p>
+              <h2 id="submission-heading">
+                Identity received. Authority kept in scope.
+              </h2>
+            </div>
+          </div>
+
+          <dl className={styles.submissionGrid}>
+            <div>
+              <dt>Submission</dt>
+              <dd>{buyerSubmission.documentTitle}</dd>
+            </div>
+            <div>
+              <dt>Submitted</dt>
+              <dd>
+                {buyerSubmission.submittedAt.toLocaleDateString("en-US", {
+                  dateStyle: "long",
+                  timeZone: "UTC",
+                })}
+              </dd>
+            </div>
+            <div>
+              <dt>Representative authority</dt>
+              <dd>{buyerSubmission.authorityScope}</dd>
+            </div>
+            <div>
+              <dt>Proposed transaction profile</dt>
+              <dd>{buyerSubmission.transactionProfile}</dd>
+            </div>
+            <div>
+              <dt>Supporting records</dt>
+              <dd>{buyerSubmission.recordsOnFile}</dd>
+            </div>
+          </dl>
+
+          <p className={styles.evidenceBoundary}>
+            {buyerSubmission.evidenceBoundary}
+          </p>
+        </section>
+      ) : null}
+
       <section className={styles.panel} aria-labelledby="commercial-heading">
         <div className={styles.sectionHeading}>
-          <span>01</span>
+          <span>02</span>
           <div>
             <p>Commercial basis</p>
             <h2 id="commercial-heading">
@@ -343,7 +397,7 @@ export default async function DigitalSettlementInstructionPage({
 
       <section className={styles.panel} aria-labelledby="coordinates-heading">
         <div className={styles.sectionHeading}>
-          <span>02</span>
+          <span>03</span>
           <div>
             <p>Settlement coordinates</p>
             <h2 id="coordinates-heading">One authorized destination.</h2>
@@ -400,7 +454,7 @@ export default async function DigitalSettlementInstructionPage({
 
       <section className={styles.standard} aria-labelledby="standard-heading">
         <div className={styles.sectionHeading}>
-          <span>03</span>
+          <span>04</span>
           <div>
             <p>Recognition standard</p>
             <h2 id="standard-heading">Instruction is not settlement.</h2>

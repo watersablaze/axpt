@@ -12,8 +12,20 @@ import {
 export const HINES_DSI_REFERENCE = "FW-DSI-2026-001" as const;
 export const HINES_DSI_PUBLIC_ID = "fw-dsi-2026-001" as const;
 export const INDERAKSH_LEGAL_NAME = "Inderaksh Gold Refinery FZ-LLC" as const;
-export const INDERAKSH_REPRESENTATIVE =
-  "Corey Keller, Vice President" as const;
+export const INDERAKSH_REPRESENTATIVE = "Corey Keller, Vice President" as const;
+
+export const INDERAKSH_BUYER_SUBMISSION = {
+  documentTitle: "Signed Letter of Intent & Transaction Intake",
+  submittedAt: new Date("2026-09-17T00:00:00.000Z"),
+  authorityScope:
+    "Authorized to represent the buyer for preliminary transaction intake",
+  transactionProfile:
+    "50 KG trial · 96%+ Gold Doré · CIF / seller-coordinated delivery · Dubai · final settlement following refinery assay",
+  recordsOnFile:
+    "Signed intake, Dubai Development Authority commercial license, and representative identification",
+  evidenceBoundary:
+    "The buyer submission supports counterparty identity, representative capacity, and the proposed transaction profile. It does not itself establish the LBMA pricing calculation, 7.5% good-faith activation, USDT rail, or transfer sequence; those terms are established separately by this French-Ward instruction and supplemental commercial direction.",
+} as const;
 
 export function createHinesDigitalSettlementV1Definition(
   counterpartyLegalName: string,
@@ -55,10 +67,10 @@ export function createHinesDigitalSettlementV1Definition(
       settlementPurpose:
         "7.5% good-faith transaction activation for the initial 50 KG shipment, calculated from the purchase price",
       proceduralBasis:
-        "Authorized as a good-faith pre-SPA procedure relating to the buyer's willingness to fund Mali export-tax requirements. Receipt does not replace, execute, or amend the SPA.",
+        "French-Ward has authorized this transaction-specific good-faith pre-SPA procedure based on the buyer submission and supplemental commercial direction. The signed LOI supports buyer identity and the proposed transaction profile but does not itself establish the pricing calculation or settlement obligation shown here. Receipt does not replace, execute, or amend the SPA and does not constitute commodity allocation.",
       quantityKg: "50",
       pricingStatus: DIGITAL_SETTLEMENT_PRICING_STATUS.PENDING_FIXING,
-      pricingBasis: "Gold spot price less 10%",
+      pricingBasis: "LBMA Gold Price PM less 10%",
       spotDiscountPercentage: "10",
       spotBenchmark: null,
       spotPricePerKgUsd: null,
