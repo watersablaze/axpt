@@ -56,6 +56,7 @@ model User {
   tokenIssuanceRequests TokenIssuanceRequest[]   @relation("RequestsByUser")
   transactions          Transaction[]
   userRoles             UserRole[]
+  institutionalProfile  InstitutionalProfile?
 
   createdCommunicationConversations    CommunicationConversation[]    @relation("CommunicationConversationCreator")
   communicationMemberships             CommunicationMember[]          @relation("CommunicationMembership")
@@ -71,6 +72,87 @@ model User {
   instrumentAccessGrantsIssued    InstrumentAccessGrant[]   @relation("InstrumentAccessIssuer")
 
   wallets Wallet?
+}
+
+// ============================================================================
+// INTERNAL INSTITUTIONAL IDENTITY
+// Canonical organizational identity for internal operators.
+// Role/permission remains application capability; scoped authority is added
+// separately in IA-2.
+// ============================================================================
+
+model InstitutionalProfile {
+  id     String @id @default(cuid())
+  userId String @unique
+
+  displayName        String
+  institutionalTitle String
+  roleClass          InstitutionalRoleClass
+  organizationalUnit InstitutionalOrganizationalUnit
+  standing           InstitutionalStanding @default(ACTIVE)
+
+  operatorCode String @unique
+
+  reportsToProfileId   String?
+  fiduciaryIndependent Boolean @default(false)
+
+  summary          String?
+  responsibilities Json?
+  metadata         Json?
+
+  activatedAt DateTime?
+  suspendedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  reportsTo InstitutionalProfile? @relation(
+    "InstitutionalProfileReporting",
+    fields: [reportsToProfileId],
+    references: [id],
+    onDelete: SetNull
+  )
+
+  directReports InstitutionalProfile[] @relation("InstitutionalProfileReporting")
+
+  @@index([roleClass])
+  @@index([organizationalUnit])
+  @@index([standing])
+  @@index([reportsToProfileId])
+}
+
+enum InstitutionalRoleClass {
+  EXECUTIVE_AUTHORITY
+  SENIOR_OPERATING_AUTHORITY
+  FIELD_OPERATOR
+  FIDUCIARY_AUTHORITY
+  STRATEGIC_OPERATOR
+  TREASURY_OPERATOR
+  LEGAL_OPERATOR
+  ADMINISTRATOR
+  REPRESENTATIVE
+  OBSERVER
+}
+
+enum InstitutionalOrganizationalUnit {
+  EXECUTIVE
+  STRATEGY
+  OPERATIONS
+  LOGISTICS
+  LEGAL
+  FIDUCIARY
+  TREASURY
+  INSTITUTIONAL_RELATIONS
+  PLATFORM
+}
+
+enum InstitutionalStanding {
+  PROVISIONAL
+  ACTIVE
+  RESTRICTED
+  SUSPENDED
+  INACTIVE
 }
 
 // ============================================================================
