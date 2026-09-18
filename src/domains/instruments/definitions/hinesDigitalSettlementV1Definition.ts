@@ -12,7 +12,8 @@ import {
 export const HINES_DSI_REFERENCE = "FW-DSI-2026-001" as const;
 export const HINES_DSI_PUBLIC_ID = "fw-dsi-2026-001" as const;
 export const INDERAKSH_LEGAL_NAME = "Inderaksh Gold Refinery FZ-LLC" as const;
-export const INDERAKSH_REPRESENTATIVE = "Corey Keller" as const;
+export const INDERAKSH_REPRESENTATIVE =
+  "Corey Keller, Vice President" as const;
 
 export function createHinesDigitalSettlementV1Definition(
   counterpartyLegalName: string,
