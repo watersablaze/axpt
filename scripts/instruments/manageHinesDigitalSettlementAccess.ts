@@ -9,6 +9,10 @@ import {
   type InstrumentAccessGrantRevocationClient,
 } from "../../src/domains/instruments/commands/revokeInstrumentAccessGrantWithClient";
 import {
+  INSTRUMENT_PARTY_ROLE,
+  type InstrumentPartyRole,
+} from "../../src/domains/instruments/contracts";
+import {
   HINES_DSI_PUBLIC_ID,
   HINES_DSI_REFERENCE,
 } from "../../src/domains/instruments/definitions/hinesDigitalSettlementV1Definition";
@@ -70,6 +74,9 @@ async function main() {
 
       const recipientName =
         process.env.INSTRUMENT_ACCESS_RECIPIENT_NAME?.trim();
+      const recipientRole =
+        process.env.INSTRUMENT_ACCESS_RECIPIENT_ROLE?.trim() ??
+        INSTRUMENT_PARTY_ROLE.COMMERCIAL_PARTICIPANT;
       const expiryHours = Number(
         process.env.INSTRUMENT_ACCESS_EXPIRES_HOURS?.trim() ?? "72",
       );
@@ -82,10 +89,21 @@ async function main() {
         throw new Error("INSTRUMENT_ACCESS_EXPIRES_HOURS must be positive");
       }
 
+      if (
+        !Object.values(INSTRUMENT_PARTY_ROLE).includes(
+          recipientRole as InstrumentPartyRole,
+        )
+      ) {
+        throw new Error(
+          `INSTRUMENT_ACCESS_RECIPIENT_ROLE must be one of ${Object.values(INSTRUMENT_PARTY_ROLE).join(", ")}`,
+        );
+      }
+
       const issuance = await issueInstrumentAccessGrantWithClient({
         client: tx,
         instrumentReference: HINES_DSI_REFERENCE,
         recipientName,
+        recipientRole: recipientRole as InstrumentPartyRole,
         issuedByUserId: actor.id,
         expiresAt: new Date(Date.now() + expiryHours * 60 * 60 * 1000),
       });
