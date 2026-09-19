@@ -80,6 +80,8 @@ function toCandidate(
     blockNumber: bigint;
     blockHash: string | null;
 
+    chainTimestamp: Date | null;
+
     fromAddress: string;
     toAddress: string;
 
@@ -91,6 +93,12 @@ function toCandidate(
     requiredConfirmations: number;
   },
 ): DigitalSettlementVerificationObservationCandidate {
+  if (!observation.chainTimestamp) {
+    throw new Error(
+      `[DSI_VERIFICATION_MATCH_CHAIN_TIMESTAMP_MISSING] ${observation.id}`,
+    );
+  }
+
   return {
     observationId:
       observation.id,
@@ -106,6 +114,9 @@ function toCandidate(
 
     blockHash:
       observation.blockHash,
+
+    chainTimestamp:
+      observation.chainTimestamp,
 
     fromAddress:
       observation.fromAddress,

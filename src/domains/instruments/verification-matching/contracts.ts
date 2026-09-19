@@ -61,6 +61,9 @@ export type DigitalSettlementVerificationObservationCandidate =
     blockHash:
       string | null;
 
+    chainTimestamp:
+      Date;
+
     fromAddress:
       string;
 

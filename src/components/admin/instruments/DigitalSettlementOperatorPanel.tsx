@@ -3,6 +3,34 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+type VerificationEvidence = Readonly<{
+  disposition:
+    | "NO_MATCH"
+    | "MATCHED"
+    | "AMBIGUOUS_OBSERVATIONS"
+    | "AMBIGUOUS_INSTRUCTIONS";
+
+  amountUsdt: string;
+  receivingAddress: string;
+  network: "Ethereum Mainnet";
+
+  candidate:
+    | Readonly<{
+        transactionHash: string;
+        blockNumber: string;
+        chainTimestamp: string;
+        senderAddress: string;
+        confirmationCount: number;
+        requiredConfirmations: number;
+      }>
+    | null;
+
+  candidateCount: number | null;
+
+  conflictingInstrumentReferences:
+    readonly string[];
+}>;
+
 type Props = {
   instantiated: boolean;
   reference: string;
@@ -18,6 +46,7 @@ type Props = {
   settlementAmountUsd: string | null;
   authorizedOperationsAddress: string;
   authorizedOperationsName: string;
+  verificationEvidence: VerificationEvidence | null;
 };
 
 function formatStatus(value: string) {
@@ -39,18 +68,10 @@ export default function DigitalSettlementOperatorPanel({
   settlementAmountUsd,
   authorizedOperationsAddress,
   authorizedOperationsName,
+  verificationEvidence,
 }: Props) {
   const router = useRouter();
 
-  const [transactionHash, setTransactionHash] = useState(
-    verificationTxHash ?? "",
-  );
-  const [observedAmountUsdt, setObservedAmountUsdt] = useState(
-    verificationAmountUsdt,
-  );
-  const [observedReceivingAddress, setObservedReceivingAddress] = useState(
-    receivingAddress ?? "",
-  );
   const [busy, setBusy] = useState<
     "issuance" | "verification" | "principal" | null
   >(null);
@@ -58,7 +79,9 @@ export default function DigitalSettlementOperatorPanel({
   const [error, setError] = useState<string | null>(null);
 
   const canConfirmVerification =
-    settlementStatus === "AWAITING_VERIFICATION_TRANSFER";
+    settlementStatus === "AWAITING_VERIFICATION_TRANSFER" &&
+    verificationEvidence?.disposition === "MATCHED" &&
+    verificationEvidence.candidate !== null;
 
   const canAuthorizePrincipal =
     settlementStatus === "VERIFICATION_CONFIRMED" &&
@@ -153,8 +176,15 @@ export default function DigitalSettlementOperatorPanel({
       return;
     }
 
+    const candidate =
+      verificationEvidence?.candidate;
+
+    if (!candidate) {
+      return;
+    }
+
     const confirmed = window.confirm(
-      `Confirm the ${verificationAmountUsdt} USDT verification transfer for ${reference}?`,
+      `Recognize the ${verificationAmountUsdt} USDT verification transfer ${candidate.transactionHash} for ${reference}?`,
     );
 
     if (!confirmed) {
@@ -177,9 +207,14 @@ export default function DigitalSettlementOperatorPanel({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            transactionHash,
-            observedAmountUsdt,
-            observedReceivingAddress,
+            transactionHash:
+              candidate.transactionHash,
+
+            observedAmountUsdt:
+              verificationEvidence.amountUsdt,
+
+            observedReceivingAddress:
+              verificationEvidence.receivingAddress,
           }),
         },
       );
@@ -376,85 +411,192 @@ export default function DigitalSettlementOperatorPanel({
 
       <section className="rounded-xl border border-neutral-800 bg-black/20 p-4">
         <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
-          Verification Transfer
+          Canonical Chain Evidence
         </div>
 
         <h2 className="mt-1 text-sm font-medium text-white">
-          Confirm 50 USDT Verification
+          Verification Transfer
         </h2>
 
         <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500">
-          Record only verified on-chain evidence. This transition confirms
-          receipt of the verification transfer. It does not authorize the
+          AXPT derives this evidence from the canonical Ethereum observation
+          path. The operator may recognize an eligible transfer, but cannot
+          alter its transaction hash, amount, receiving address, block, sender,
+          or finality evidence here. Recognition does not authorize the
           remaining Good-Faith TAP.
         </p>
 
-        <div className="mt-4 grid gap-3">
-          <label className="grid gap-1">
-            <span className="text-[10px] uppercase tracking-wide text-neutral-500">
-              Transaction Hash
-            </span>
-            <input
-              value={transactionHash}
-              onChange={(event) =>
-                setTransactionHash(event.target.value)
-              }
-              disabled={!canConfirmVerification || Boolean(busy)}
-              className="rounded border border-neutral-800 bg-black/40 px-3 py-2 font-mono text-xs text-white disabled:opacity-50"
-              placeholder="0x..."
-            />
-          </label>
+        {settlementStatus === "AWAITING_VERIFICATION_TRANSFER" ? (
+          <div className="mt-4">
+            {verificationEvidence?.disposition === "MATCHED" &&
+            verificationEvidence.candidate ? (
+              <div className="space-y-3">
+                <div className="rounded border border-emerald-900/70 bg-emerald-950/10 p-3">
+                  <div className="text-[10px] uppercase tracking-wide text-emerald-400">
+                    Eligible Finalized Transfer Matched
+                  </div>
 
-          <label className="grid gap-1">
-            <span className="text-[10px] uppercase tracking-wide text-neutral-500">
-              Observed Amount
-            </span>
-            <input
-              value={observedAmountUsdt}
-              onChange={(event) =>
-                setObservedAmountUsdt(event.target.value)
-              }
-              disabled={!canConfirmVerification || Boolean(busy)}
-              className="rounded border border-neutral-800 bg-black/40 px-3 py-2 text-xs text-white disabled:opacity-50"
-            />
-          </label>
+                  <div className="mt-3 grid gap-3 text-xs md:grid-cols-2">
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+                        Amount
+                      </div>
+                      <div className="mt-1 text-white">
+                        {verificationEvidence.amountUsdt} USDT
+                      </div>
+                    </div>
 
-          <label className="grid gap-1">
-            <span className="text-[10px] uppercase tracking-wide text-neutral-500">
-              Observed Receiving Address
-            </span>
-            <input
-              value={observedReceivingAddress}
-              onChange={(event) =>
-                setObservedReceivingAddress(event.target.value)
-              }
-              disabled={!canConfirmVerification || Boolean(busy)}
-              className="rounded border border-neutral-800 bg-black/40 px-3 py-2 font-mono text-xs text-white disabled:opacity-50"
-              placeholder="0x..."
-            />
-          </label>
-        </div>
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+                        Network
+                      </div>
+                      <div className="mt-1 text-white">
+                        {verificationEvidence.network}
+                      </div>
+                    </div>
 
-        <div className="mt-4">
-          <button
-            type="button"
-            onClick={confirmVerification}
-            disabled={
-              !canConfirmVerification ||
-              Boolean(busy) ||
-              !transactionHash.trim() ||
-              !observedAmountUsdt.trim() ||
-              !observedReceivingAddress.trim()
-            }
-            className="rounded border border-emerald-900 bg-emerald-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-emerald-300 hover:border-emerald-600 disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            {busy === "verification"
-              ? "Confirming..."
-              : verificationConfirmedAt
-                ? "Verification Confirmed"
-                : "Confirm Verification"}
-          </button>
-        </div>
+                    <div className="md:col-span-2">
+                      <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+                        Receiving Address
+                      </div>
+                      <div className="mt-1 break-all font-mono text-[11px] text-cyan-300">
+                        {verificationEvidence.receivingAddress}
+                      </div>
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+                        Transaction Hash
+                      </div>
+                      <div className="mt-1 break-all font-mono text-[11px] text-cyan-300">
+                        {verificationEvidence.candidate.transactionHash}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+                        Block
+                      </div>
+                      <div className="mt-1 font-mono text-white">
+                        {verificationEvidence.candidate.blockNumber}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+                        Finality
+                      </div>
+                      <div className="mt-1 text-white">
+                        {verificationEvidence.candidate.confirmationCount}
+                        {" / "}
+                        {verificationEvidence.candidate.requiredConfirmations}
+                        {" confirmations · finalized"}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+                        Chain Time
+                      </div>
+                      <div className="mt-1 text-white">
+                        {verificationEvidence.candidate.chainTimestamp}
+                      </div>
+                    </div>
+
+                    <div>
+                      <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+                        Sender
+                      </div>
+                      <div className="mt-1 break-all font-mono text-[11px] text-white">
+                        {verificationEvidence.candidate.senderAddress}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={confirmVerification}
+                  disabled={!canConfirmVerification || Boolean(busy)}
+                  className="rounded border border-emerald-900 bg-emerald-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-emerald-300 hover:border-emerald-600 disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  {busy === "verification"
+                    ? "Recognizing..."
+                    : "Recognize Verification"}
+                </button>
+              </div>
+            ) : verificationEvidence?.disposition ===
+              "AMBIGUOUS_OBSERVATIONS" ? (
+              <div className="rounded border border-amber-900/70 bg-amber-950/10 p-3">
+                <div className="text-xs font-medium text-amber-300">
+                  Review required
+                </div>
+                <p className="mt-1 text-xs leading-5 text-neutral-500">
+                  {verificationEvidence.candidateCount ?? "Multiple"} eligible
+                  finalized chain observations match this instruction. AXPT
+                  will not choose between them automatically.
+                </p>
+              </div>
+            ) : verificationEvidence?.disposition ===
+              "AMBIGUOUS_INSTRUCTIONS" ? (
+              <div className="rounded border border-amber-900/70 bg-amber-950/10 p-3">
+                <div className="text-xs font-medium text-amber-300">
+                  Recognition blocked
+                </div>
+                <p className="mt-1 text-xs leading-5 text-neutral-500">
+                  Another live issued settlement instruction has the same
+                  verification signature. Operator recognition remains blocked
+                  until the instruction ambiguity is resolved.
+                </p>
+
+                {verificationEvidence.conflictingInstrumentReferences.length >
+                0 ? (
+                  <div className="mt-2 font-mono text-[11px] text-neutral-400">
+                    {verificationEvidence.conflictingInstrumentReferences.join(
+                      ", ",
+                    )}
+                  </div>
+                ) : null}
+              </div>
+            ) : (
+              <div className="rounded border border-neutral-800 bg-black/30 p-3">
+                <div className="text-xs font-medium text-white">
+                  Waiting for eligible finalized transfer
+                </div>
+                <p className="mt-1 text-xs leading-5 text-neutral-500">
+                  No post-issuance, unconsumed, finalized {verificationAmountUsdt}
+                  {" USDT "}verification transfer currently satisfies the
+                  canonical settlement matcher.
+                </p>
+              </div>
+            )}
+          </div>
+        ) : verificationConfirmedAt ? (
+          <div className="mt-4 rounded border border-emerald-900/70 bg-emerald-950/10 p-3">
+            <div className="text-[10px] uppercase tracking-wide text-emerald-400">
+              Verification Recognized
+            </div>
+
+            <div className="mt-2 text-xs text-white">
+              {verificationAmountUsdt} USDT
+            </div>
+
+            {verificationTxHash ? (
+              <div className="mt-1 break-all font-mono text-[11px] text-cyan-300">
+                {verificationTxHash}
+              </div>
+            ) : null}
+
+            <div className="mt-1 text-[11px] text-neutral-500">
+              {verificationConfirmedAt}
+            </div>
+          </div>
+        ) : (
+          <div className="mt-4 rounded border border-neutral-800 bg-black/30 p-3 text-xs text-neutral-500">
+            Canonical verification evidence becomes available after the
+            instruction is issued and enters the verification-transfer state.
+          </div>
+        )}
       </section>
 
       <section className="rounded-xl border border-neutral-800 bg-black/20 p-4">

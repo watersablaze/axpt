@@ -7,6 +7,10 @@ import {
   INDERAKSH_LEGAL_NAME,
   INDERAKSH_REPRESENTATIVE,
 } from "@/domains/instruments/definitions/digitalSettlementV1Definition";
+import {
+  findDigitalSettlementVerificationCandidateWithClient,
+  type DigitalSettlementVerificationMatchingClient,
+} from "@/domains/instruments/verification-matching";
 import { prisma } from "@/infrastructure/db/prisma";
 import { TREASURY_WALLETS } from "@/lib/treasury/config";
 
@@ -54,6 +58,77 @@ export default async function DigitalSettlementOperatorPage({
     createDigitalSettlementV1Definition(
       INDERAKSH_LEGAL_NAME,
     );
+
+  /*
+   * The operator surface may display chain evidence, but it does not
+   * become an authority boundary.
+   *
+   * The confirmation route re-runs this matcher inside its transaction
+   * immediately before the canonical recognition command.
+   */
+  const verificationMatch =
+    instrument &&
+    settlement?.settlementStatus ===
+      "AWAITING_VERIFICATION_TRANSFER"
+      ? await findDigitalSettlementVerificationCandidateWithClient({
+          client:
+            prisma as DigitalSettlementVerificationMatchingClient,
+
+          instrumentReference:
+            reference,
+        })
+      : null;
+
+  const verificationEvidence =
+    verificationMatch === null
+      ? null
+      : {
+          disposition:
+            verificationMatch.disposition,
+
+          amountUsdt:
+            verificationMatch.expectation.amountUsdt,
+
+          receivingAddress:
+            verificationMatch.expectation.receivingAddress,
+
+          network:
+            "Ethereum Mainnet" as const,
+
+          candidate:
+            verificationMatch.disposition === "MATCHED" ||
+            verificationMatch.disposition === "AMBIGUOUS_INSTRUCTIONS"
+              ? {
+                  transactionHash:
+                    verificationMatch.candidate.txHash,
+
+                  blockNumber:
+                    verificationMatch.candidate.blockNumber.toString(),
+
+                  chainTimestamp:
+                    verificationMatch.candidate.chainTimestamp.toISOString(),
+
+                  senderAddress:
+                    verificationMatch.candidate.fromAddress,
+
+                  confirmationCount:
+                    verificationMatch.candidate.confirmationCount,
+
+                  requiredConfirmations:
+                    verificationMatch.candidate.requiredConfirmations,
+                }
+              : null,
+
+          candidateCount:
+            verificationMatch.disposition === "AMBIGUOUS_OBSERVATIONS"
+              ? verificationMatch.candidates.length
+              : null,
+
+          conflictingInstrumentReferences:
+            verificationMatch.disposition === "AMBIGUOUS_INSTRUCTIONS"
+              ? [...verificationMatch.conflictingInstrumentReferences]
+              : [],
+        };
 
   return (
     <div className="mx-auto w-full max-w-6xl">
@@ -103,6 +178,9 @@ export default async function DigitalSettlementOperatorPage({
         }
         authorizedOperationsName={
           operationsWallet.name
+        }
+        verificationEvidence={
+          verificationEvidence
         }
       />
     </div>
