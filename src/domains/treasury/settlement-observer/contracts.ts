@@ -47,6 +47,7 @@ export type SettlementObservationRecord = Readonly<{
   status: TreasurySettlementObservationStatus;
 
   detectedAt: Date;
+  chainTimestamp: Date | null;
   validatedAt: Date | null;
   confirmedAt: Date | null;
 

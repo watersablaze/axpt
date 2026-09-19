@@ -2867,9 +2867,10 @@ model TreasurySettlementObservation {
   direction TreasurySettlementObservationDirection
   status    TreasurySettlementObservationStatus    @default(DETECTED)
 
-  detectedAt  DateTime
-  validatedAt DateTime?
-  confirmedAt DateTime?
+  detectedAt     DateTime
+  chainTimestamp DateTime?
+  validatedAt    DateTime?
+  confirmedAt    DateTime?
 
   confirmationCount     Int @default(0)
   requiredConfirmations Int

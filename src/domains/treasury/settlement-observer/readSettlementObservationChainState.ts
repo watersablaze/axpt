@@ -235,10 +235,42 @@ export async function readSettlementObservationChainState(
   }
 
   try {
-    const heads =
-      await readFinalityHeads(
-        client,
-      );
+    const [
+      heads,
+      receiptBlock,
+    ] =
+      await Promise.all([
+        readFinalityHeads(
+          client,
+        ),
+
+        client.getBlock({
+          blockNumber:
+            receipt.blockNumber,
+        }),
+      ]);
+
+    /*
+     * The receipt and block lookup must describe the same canonical
+     * block before chain time is admitted as institutional evidence.
+     *
+     * A transiently inconsistent provider view is treated as
+     * unavailable rather than manufacturing chain truth.
+     */
+    if (
+      receiptBlock.hash
+        .toLowerCase() !==
+      receipt.blockHash
+        .toLowerCase()
+    ) {
+      return {
+        disposition:
+          "UNAVAILABLE",
+
+        errorCode:
+          "RECEIPT_BLOCK_HASH_INCONSISTENT",
+      };
+    }
 
     return {
       disposition:
@@ -253,6 +285,13 @@ export async function readSettlementObservationChainState(
 
         blockHash:
           receipt.blockHash,
+
+        blockTimestamp:
+          new Date(
+            Number(
+              receiptBlock.timestamp,
+            ) * 1000,
+          ),
 
         transferLogs:
           decodeTransferLogs(

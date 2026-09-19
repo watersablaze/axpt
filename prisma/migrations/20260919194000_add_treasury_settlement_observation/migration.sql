@@ -38,6 +38,7 @@ CREATE TABLE "TreasurySettlementObservation" (
   "status" "TreasurySettlementObservationStatus" NOT NULL DEFAULT 'DETECTED',
 
   "detectedAt" TIMESTAMP(3) NOT NULL,
+  "chainTimestamp" TIMESTAMP(3),
   "validatedAt" TIMESTAMP(3),
   "confirmedAt" TIMESTAMP(3),
 

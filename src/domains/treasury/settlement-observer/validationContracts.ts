@@ -45,6 +45,7 @@ export type SettlementObservationChainReceipt =
 
     blockNumber: bigint;
     blockHash: string;
+    blockTimestamp: Date;
 
     transferLogs:
       readonly SettlementObservationObservedTransferLog[];
@@ -79,6 +80,7 @@ export type SettlementObservationValidationResult =
 
     receiptBlockNumber: bigint | null;
     receiptBlockHash: string | null;
+    chainTimestamp: Date | null;
 
     finalizedBlockNumber: bigint | null;
 

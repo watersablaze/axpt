@@ -47,6 +47,7 @@ export function classifySettlementObservationValidation(params: {
 
       receiptBlockNumber: null,
       receiptBlockHash: null,
+      chainTimestamp: null,
 
       finalizedBlockNumber,
 
@@ -73,6 +74,7 @@ export function classifySettlementObservationValidation(params: {
 
       receiptBlockHash:
         receipt.blockHash,
+      chainTimestamp: null,
 
       finalizedBlockNumber,
 
@@ -115,6 +117,7 @@ export function classifySettlementObservationValidation(params: {
         receipt.blockNumber,
 
       receiptBlockHash,
+      chainTimestamp: null,
 
       finalizedBlockNumber,
 
@@ -144,6 +147,7 @@ export function classifySettlementObservationValidation(params: {
         receipt.blockNumber,
 
       receiptBlockHash,
+      chainTimestamp: null,
 
       finalizedBlockNumber,
 
@@ -188,6 +192,7 @@ export function classifySettlementObservationValidation(params: {
         receipt.blockNumber,
 
       receiptBlockHash,
+      chainTimestamp: null,
 
       finalizedBlockNumber,
 
@@ -231,6 +236,8 @@ export function classifySettlementObservationValidation(params: {
         receipt.blockNumber,
 
       receiptBlockHash,
+      chainTimestamp:
+        receipt.blockTimestamp,
 
       finalizedBlockNumber,
 
@@ -257,6 +264,8 @@ export function classifySettlementObservationValidation(params: {
         receipt.blockNumber,
 
       receiptBlockHash,
+      chainTimestamp:
+        receipt.blockTimestamp,
 
       finalizedBlockNumber,
 
@@ -281,6 +290,8 @@ export function classifySettlementObservationValidation(params: {
       receipt.blockNumber,
 
     receiptBlockHash,
+    chainTimestamp:
+      receipt.blockTimestamp,
 
     finalizedBlockNumber,
 

@@ -198,6 +198,9 @@ export async function validateSettlementObservationWithClient(
           confirmationCount:
             result.confirmationCount,
 
+          chainTimestamp:
+            result.chainTimestamp,
+
           validatedAt:
             result.validatedAt,
 
