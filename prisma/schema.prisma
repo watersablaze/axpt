@@ -2830,3 +2830,74 @@ model TreasuryGatewayEvent {
   @@index([correlationId])
   @@index([eventType, recordedAt])
 }
+
+enum TreasurySettlementObservationDirection {
+  IN
+  OUT
+}
+
+enum TreasurySettlementObservationStatus {
+  DETECTED
+  VALIDATED
+  CONFIRMING
+  CONFIRMED
+  FAILED
+  ORPHANED
+}
+
+model TreasurySettlementObservation {
+  id String @id @default(cuid())
+
+  chainId Int
+  network String
+
+  tokenContractAddress String
+
+  txHash   String
+  logIndex Int
+
+  blockNumber BigInt
+  blockHash   String?
+
+  fromAddress String
+  toAddress   String
+
+  amountBaseUnits Decimal @db.Decimal(78, 0)
+
+  direction TreasurySettlementObservationDirection
+  status    TreasurySettlementObservationStatus    @default(DETECTED)
+
+  detectedAt  DateTime
+  validatedAt DateTime?
+  confirmedAt DateTime?
+
+  confirmationCount     Int @default(0)
+  requiredConfirmations Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([chainId, txHash, logIndex])
+  @@index([chainId, tokenContractAddress, toAddress, status])
+  @@index([status, blockNumber])
+  @@index([txHash])
+}
+
+model TreasurySettlementObservationCursor {
+  id String @id @default(cuid())
+
+  chainId Int
+  network String
+
+  tokenContractAddress String
+  watchedAddress       String
+
+  lastScannedBlock     BigInt
+  lastScannedBlockHash String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([chainId, tokenContractAddress, watchedAddress])
+  @@index([chainId, updatedAt])
+}
