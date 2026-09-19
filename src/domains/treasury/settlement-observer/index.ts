@@ -8,3 +8,4 @@ export * from "./validationContracts";
 export * from "./classifySettlementObservationValidation";
 export * from "./readSettlementObservationChainState";
 export * from "./validateSettlementObservationWithClient";
+export * from "./runSettlementObserverCycleWithClient";
