@@ -13,7 +13,7 @@ export const DIGITAL_SETTLEMENT_EMAIL_EVENT = {
 export type DigitalSettlementEmailEvent =
   (typeof DIGITAL_SETTLEMENT_EMAIL_EVENT)[keyof typeof DIGITAL_SETTLEMENT_EMAIL_EVENT];
 
-type SendDigitalSettlementStateEmailInput = {
+export type SendDigitalSettlementStateEmailInput = {
   event: DigitalSettlementEmailEvent;
   reference: string;
   accessUrl?: string | null;
@@ -70,7 +70,8 @@ function buyerMessage(input: SendDigitalSettlementStateEmailInput) {
         body: [
           `Mr. Keller,`,
           `French-Ward has issued Digital Settlement Instruction ${input.reference} for the Inderaksh transaction.`,
-          `At this stage, only the ${verificationAmount} USDT verification transfer is authorized. Do not transmit the remaining Transaction Authorization Payment until French-Ward separately records that authorization.`,
+          `At this stage, only the ${verificationAmount} USDT verification transfer is authorized. Do not transmit the remaining Good-Faith Transaction Authorization Payment (TAP) until French-Ward separately records that authorization.`,
+          `This ${verificationAmount} USDT transfer serves only as the verification step for the digital settlement channel and does not constitute the remaining TAP.`,
           input.accessUrl
             ? `Your private instrument link is: ${input.accessUrl}`
             : "Your private instrument link remains the authoritative transaction instruction.",
@@ -152,6 +153,47 @@ function toHtml(heading: string, lines: string[]) {
       <p>French-Ward, Inc.</p>
     </div>
   `;
+}
+
+export function buildDigitalSettlementEmailPreview(
+  input: SendDigitalSettlementStateEmailInput,
+) {
+  const buyer = buyerMessage(input);
+  const internal = internalMessage(input);
+
+  const internalHeading =
+    "Digital Settlement Operator Notice";
+
+  return {
+    buyer: {
+      subject: buyer.subject,
+      heading: buyer.heading,
+      lines: buyer.body,
+      text: [
+        ...buyer.body,
+        "",
+        "French-Ward, Inc.",
+      ].join("\n"),
+      html: toHtml(
+        buyer.heading,
+        buyer.body,
+      ),
+    },
+    internal: {
+      subject: internal.subject,
+      heading: internalHeading,
+      lines: internal.body,
+      text: [
+        ...internal.body,
+        "",
+        "French-Ward, Inc.",
+      ].join("\n"),
+      html: toHtml(
+        internalHeading,
+        internal.body,
+      ),
+    },
+  } as const;
 }
 
 async function deliver(params: {
