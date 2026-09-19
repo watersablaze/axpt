@@ -37,6 +37,18 @@ if (
   throw new Error("[DSI_BUYER_SUBMISSION_BOUNDARY_MISSING]");
 }
 
+if (!snapshot.settlementPurpose.includes("Transaction Authorization Payment")) {
+  throw new Error("[DSI_TAP_PURPOSE_MISSING]");
+}
+
+if (
+  !snapshot.proceduralBasis.includes("documented export fees") ||
+  !snapshot.proceduralBasis.includes("competent authorities") ||
+  !snapshot.proceduralBasis.includes("does not substitute")
+) {
+  throw new Error("[DSI_TAP_EXPORT_AUTHORITY_BOUNDARY_MISSING]");
+}
+
 expectFailure(
   () =>
     assertDigitalSettlementCommercialSnapshot({

@@ -24,7 +24,7 @@ export const INDERAKSH_BUYER_SUBMISSION = {
   recordsOnFile:
     "Signed intake, Dubai Development Authority commercial license, and representative identification",
   evidenceBoundary:
-    "The buyer submission supports counterparty identity, representative capacity, and the proposed transaction profile. It does not itself establish the LBMA pricing calculation, 7.5% good-faith activation, USDT rail, or transfer sequence; those terms are established separately by this French-Ward instruction and supplemental commercial direction.",
+    "The buyer submission supports counterparty identity, representative capacity, and the proposed transaction profile. It does not itself establish the LBMA pricing calculation, 7.5% Good-Faith Transaction Authorization Payment (TAP), USDT rail, or transfer sequence; those terms are established separately by this French-Ward instruction and supplemental commercial direction.",
 } as const;
 
 export function createHinesDigitalSettlementV1Definition(
@@ -65,9 +65,9 @@ export function createHinesDigitalSettlementV1Definition(
       commodity: "Au Dore Bars",
       transactionDescription: "Initial 50 KG Au Dore Bars Shipment",
       settlementPurpose:
-        "7.5% good-faith transaction activation for the initial 50 KG shipment, calculated from the purchase price",
+        "7.5% Good-Faith Transaction Authorization Payment (TAP) for the initial 50 KG shipment, calculated from the purchase price and designated to fund the documented export-fee process",
       proceduralBasis:
-        "French-Ward has authorized this transaction-specific good-faith pre-SPA procedure based on the buyer submission and supplemental commercial direction. The signed LOI supports buyer identity and the proposed transaction profile but does not itself establish the pricing calculation or settlement obligation shown here. Receipt does not replace, execute, or amend the SPA and does not constitute commodity allocation.",
+        "French-Ward has authorized this transaction-specific Good-Faith Transaction Authorization Payment (TAP) as a pre-SPA procedure based on the buyer submission and supplemental commercial direction. The TAP is designated specifically to fund documented export fees required to obtain the applicable export documentation and place the gold before the competent authorities for authorization to lawfully leave Mali. The signed LOI supports buyer identity and the proposed transaction profile but does not itself establish the pricing calculation or TAP obligation shown here. Receipt of the TAP does not replace, execute, or amend the SPA; does not itself constitute commodity allocation; and does not substitute for governmental issuance of export documentation or export authorization.",
       quantityKg: "50",
       pricingStatus: DIGITAL_SETTLEMENT_PRICING_STATUS.PENDING_FIXING,
       pricingBasis: "LBMA Gold Price PM less 10%",

@@ -62,9 +62,9 @@ function createPreviewInstruction(state: string | undefined) {
     commodity: "Au Dore Bars",
     transactionDescription: "Initial 50 KG Au Dore Bars Shipment",
     settlementPurpose:
-      "7.5% good-faith transaction activation for the initial 50 KG shipment, calculated from the purchase price",
+      "7.5% Good-Faith Transaction Authorization Payment (TAP) for the initial 50 KG shipment, calculated from the purchase price and designated to fund the documented export-fee process",
     proceduralBasis:
-      "French-Ward has authorized this transaction-specific good-faith pre-SPA procedure based on the buyer submission and supplemental commercial direction. The signed LOI supports buyer identity and the proposed transaction profile but does not itself establish the pricing calculation or settlement obligation shown here. Receipt does not replace, execute, or amend the SPA and does not constitute commodity allocation.",
+      "French-Ward has authorized this transaction-specific Good-Faith Transaction Authorization Payment (TAP) as a pre-SPA procedure based on the buyer submission and supplemental commercial direction. The TAP is designated specifically to fund documented export fees required to obtain the applicable export documentation and place the gold before the competent authorities for authorization to lawfully leave Mali. The signed LOI supports buyer identity and the proposed transaction profile but does not itself establish the pricing calculation or TAP obligation shown here. Receipt of the TAP does not replace, execute, or amend the SPA; does not itself constitute commodity allocation; and does not substitute for governmental issuance of export documentation or export authorization.",
     quantityKg: "50",
     pricingStatus: "FIXED",
     pricingBasis: "LBMA Gold Price PM less 10%",
@@ -190,7 +190,7 @@ export default async function DigitalSettlementInstructionPage({
     <InstrumentShell
       eyebrow="French-Ward / Controlled Settlement Instrument"
       title="Digital Settlement Instruction"
-      subtitle="Transaction-Specific Receiving Coordinates"
+      subtitle="Good-Faith TAP / Transaction-Specific Receiving Coordinates"
       reference={instruction.reference}
       version={`V${instruction.versionNumber}`}
       status={isVisualPreview ? "VISUAL REVIEW" : "ISSUED"}
@@ -201,6 +201,7 @@ export default async function DigitalSettlementInstructionPage({
           : "Authorized Settlement Instrument"
       }
       showStatusRail={false}
+      density="compact"
     >
       {isVisualPreview ? (
         <section className={styles.previewNotice} aria-label="Preview notice">
@@ -234,29 +235,28 @@ export default async function DigitalSettlementInstructionPage({
             <p>Current transfer authority</p>
             <h2>Verification transfer only — {verificationAmount} USDT</h2>
             <p>
-              Do not transmit the principal settlement amount. The verification
-              transfer will be credited toward the total settlement obligation.
-              French-Ward must confirm receipt and separately authorize the
-              principal transfer.
+              Do not transmit the remaining TAP amount. The verification
+              transfer will be credited toward the total TAP obligation.
+              French-Ward must confirm receipt and separately authorize the TAP
+              balance.
             </p>
           </>
         ) : verificationConfirmed && !principalAuthorized ? (
           <>
             <p>Current transfer authority</p>
-            <h2>Verification confirmed — principal transfer paused</h2>
+            <h2>Verification confirmed — TAP balance paused</h2>
             <p>
-              Do not transmit the remaining settlement amount until French-Ward
-              records the price fixing and a separate principal-transfer
-              authorization.
+              Do not transmit the remaining TAP amount until French-Ward issues
+              a separate TAP-balance authorization.
             </p>
           </>
         ) : principalTransferActive ? (
           <>
             <p>Current transfer authority</p>
-            <h2>Principal transfer authorized</h2>
+            <h2>TAP balance authorized</h2>
             <p>
-              The verified {verificationAmount} USDT is credited toward the
-              obligation. The remaining authorized settlement amount is{" "}
+              The verified {verificationAmount} USDT is credited toward the TAP.
+              The remaining authorized TAP amount is{" "}
               {remainingSettlementUsdt ?? "not available"}.
             </p>
           </>
@@ -381,7 +381,7 @@ export default async function DigitalSettlementInstructionPage({
             </dd>
           </div>
           <div className={styles.emphasis}>
-            <dt>Good-faith activation</dt>
+            <dt>Good-Faith TAP</dt>
             <dd>
               {instruction.settlementPercentage}% ·{" "}
               {instruction.settlementAmountUsd
@@ -435,6 +435,13 @@ export default async function DigitalSettlementInstructionPage({
                 </span>
               </div>
             </div>
+
+            <p className={styles.axptBoundary}>
+              AXPT governs this authorization instruction and its recorded
+              transaction state. The buyer initiates the USDT transfer from its
+              own wallet or provider to the address shown; AXPT does not execute
+              the blockchain transfer on the buyer&apos;s behalf.
+            </p>
           </div>
 
           <figure className={styles.qr}>
@@ -453,36 +460,21 @@ export default async function DigitalSettlementInstructionPage({
       </section>
 
       <section className={styles.standard} aria-labelledby="standard-heading">
-        <div className={styles.sectionHeading}>
+        <div className={`${styles.sectionHeading} ${styles.standardHeading}`}>
           <span>04</span>
           <div>
             <p>Recognition standard</p>
-            <h2 id="standard-heading">Instruction is not settlement.</h2>
+            <h2 id="standard-heading">One controlled receiving standard.</h2>
           </div>
         </div>
 
-        <div className={styles.noticeGrid}>
-          <p>
-            This instruction identifies an authorized destination only for the
-            transaction stated above. It does not alter the commercial terms of
-            the underlying transaction.
-          </p>
-          <p>
-            French-Ward recognizes settlement only after verified receipt on the
-            designated network. A screenshot or transaction promise does not
-            constitute confirmed receipt.
-          </p>
-          <p>
-            No representative, intermediary, or mandate holder is authorized to
-            substitute, modify, or provide an alternative receiving address.
-          </p>
-          <p>
-            Receipt into the operational ingress wallet does not authorize
-            onward movement, allocation, distribution, or long-term custody. Any
-            subsequent movement requires a separately documented French-Ward
-            approval.
-          </p>
-        </div>
+        <p className={styles.recognitionStatement}>
+          This instruction identifies the sole authorized receiving destination
+          for the transaction stated above and does not alter its commercial
+          terms. No representative, intermediary, or mandate holder is
+          authorized to substitute, modify, or provide an alternative receiving
+          address.
+        </p>
 
         <footer className={styles.issuanceFooter}>
           <span>
