@@ -25,7 +25,10 @@ export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ publicId: string }>;
-  searchParams?: Promise<{ previewState?: string }>;
+  searchParams?: Promise<{
+    previewState?: string;
+    previewMode?: string;
+  }>;
 };
 
 const usd = new Intl.NumberFormat("en-US", {
@@ -134,12 +137,13 @@ export default async function DigitalSettlementInstructionPage({
   searchParams,
 }: PageProps) {
   const { publicId } = await params;
-  await searchParams;
+  const previewParams = await searchParams;
 
   const previewRequested =
     publicId === "__preview__";
 
   let isVisualPreview = false;
+  let isBuyerViewPreview = false;
 
   if (previewRequested) {
     const principal = await getPrincipal();
@@ -149,6 +153,7 @@ export default async function DigitalSettlementInstructionPage({
     }
 
     isVisualPreview = true;
+    isBuyerViewPreview = previewParams?.previewMode === "buyer";
   }
 
   let instruction;
@@ -234,17 +239,19 @@ export default async function DigitalSettlementInstructionPage({
       subtitle="Good-Faith TAP / Transaction-Specific Receiving Coordinates"
       reference={instruction.reference}
       version={`V${instruction.versionNumber}`}
-      status={isVisualPreview ? "VISUAL REVIEW" : "ISSUED"}
+      status={
+        isVisualPreview && !isBuyerViewPreview ? "VISUAL REVIEW" : "ISSUED"
+      }
       movements={movements}
       classificationLabel={
-        isVisualPreview
+        isVisualPreview && !isBuyerViewPreview
           ? "Synthetic Visual Review Fixture"
           : "Authorized Settlement Instrument"
       }
       showStatusRail={false}
       density="compact"
     >
-      {isVisualPreview ? (
+      {isVisualPreview && !isBuyerViewPreview ? (
         <section className={styles.previewNotice} aria-label="Preview notice">
           Operator-only buyer-view preview. This renders the canonical initial
           issuance state but carries no settlement authority. No instrument,
@@ -521,7 +528,7 @@ export default async function DigitalSettlementInstructionPage({
 
         <footer className={styles.issuanceFooter}>
           <span>
-            {isVisualPreview
+            {isVisualPreview && !isBuyerViewPreview
               ? "Synthetic visual-review fixture"
               : "Issued by French-Ward, Inc."}
           </span>
