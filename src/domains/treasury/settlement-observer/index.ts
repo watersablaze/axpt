@@ -3,3 +3,8 @@ export * from "./persistSettlementObservationWithClient";
 export * from "./loadSettlementObservationCursorWithClient";
 export * from "./advanceSettlementObservationCursorWithClient";
 export * from "./ingestSettlementObservationRangeWithClient";
+export * from "./finalityPolicy";
+export * from "./validationContracts";
+export * from "./classifySettlementObservationValidation";
+export * from "./readSettlementObservationChainState";
+export * from "./validateSettlementObservationWithClient";

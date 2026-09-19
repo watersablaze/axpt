@@ -10,6 +10,10 @@ import {
 
 import type { UsdtTransferEvent } from "@/lib/treasury/transfers";
 
+import {
+  requireEthereumMainnetSettlementConfirmations,
+} from "./finalityPolicy";
+
 export type SettlementObservationPersistenceClient = Pick<
   PrismaClient,
   "treasurySettlementObservation"
@@ -27,14 +31,9 @@ export async function persistSettlementObservationWithClient(params: {
     requiredConfirmations,
   } = params;
 
-  if (
-    !Number.isInteger(requiredConfirmations) ||
-    requiredConfirmations <= 0
-  ) {
-    throw new Error(
-      `[TREASURY_SETTLEMENT_OBSERVATION_CONFIRMATIONS_INVALID] ${requiredConfirmations}`,
-    );
-  }
+  requireEthereumMainnetSettlementConfirmations(
+    requiredConfirmations,
+  );
 
   const direction =
     transfer.direction === "in"
