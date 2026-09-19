@@ -43,7 +43,8 @@ export default async function DigitalSettlementEmailPreviewPage({
     });
 
   const sender =
-    "AXPT <connect@axpt.io>";
+    process.env.DSI_FROM_EMAIL ||
+    "French-Ward <french-ward@axpt.io>";
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6">

@@ -145,13 +145,271 @@ function internalMessage(input: SendDigitalSettlementStateEmailInput) {
   }
 }
 
-function toHtml(heading: string, lines: string[]) {
+function authorityLabel(
+  input: SendDigitalSettlementStateEmailInput,
+) {
+  switch (input.event) {
+    case DIGITAL_SETTLEMENT_EMAIL_EVENT.ISSUED:
+      return `${input.verificationAmountUsdt ?? "50"} USDT · VERIFICATION TRANSFER ONLY`;
+
+    case DIGITAL_SETTLEMENT_EMAIL_EVENT.VERIFICATION_CONFIRMED:
+      return "VERIFICATION CONFIRMED · TAP BALANCE PAUSED";
+
+    case DIGITAL_SETTLEMENT_EMAIL_EVENT.PRINCIPAL_AUTHORIZED:
+      return "GOOD-FAITH TAP · AUTHORIZED";
+  }
+}
+
+function renderBrandedEmail(params: {
+  eyebrow: string;
+  reference: string;
+  heading: string;
+  authority: string;
+  lines: string[];
+  accessUrl?: string | null;
+  ctaLabel?: string | null;
+}) {
+  const accessUrl = params.accessUrl
+    ? escapeHtml(params.accessUrl)
+    : null;
+
+  const paragraphs = params.lines
+    .map(
+      (line) => `
+        <p
+          style="
+            margin:0 0 18px;
+            color:#c7c2b8;
+            font-size:15px;
+            line-height:1.7;
+          "
+        >
+          ${escapeHtml(line)}
+        </p>
+      `,
+    )
+    .join("");
+
+  const cta =
+    accessUrl && params.ctaLabel
+      ? `
+        <table
+          role="presentation"
+          width="100%"
+          cellspacing="0"
+          cellpadding="0"
+          border="0"
+          style="margin:30px 0 12px;"
+        >
+          <tr>
+            <td>
+              <a
+                href="${accessUrl}"
+                style="
+                  display:inline-block;
+                  background:#b99657;
+                  color:#07151c;
+                  text-decoration:none;
+                  font-size:12px;
+                  font-weight:700;
+                  letter-spacing:.12em;
+                  text-transform:uppercase;
+                  padding:15px 22px;
+                  border-radius:2px;
+                "
+              >
+                ${escapeHtml(params.ctaLabel)}
+              </a>
+            </td>
+          </tr>
+        </table>
+
+        <p
+          style="
+            margin:12px 0 0;
+            color:#707b80;
+            font-size:11px;
+            line-height:1.6;
+            word-break:break-all;
+          "
+        >
+          Private instrument:
+          <a
+            href="${accessUrl}"
+            style="color:#8f9b9f;text-decoration:underline;"
+          >
+            ${accessUrl}
+          </a>
+        </p>
+      `
+      : "";
+
   return `
-    <div style="font-family: Arial, sans-serif; color: #111827; line-height: 1.6;">
-      <h2>${escapeHtml(heading)}</h2>
-      ${lines.map((line) => `<p>${escapeHtml(line)}</p>`).join("")}
-      <p>French-Ward, Inc.</p>
-    </div>
+    <!doctype html>
+    <html>
+      <body
+        style="
+          margin:0;
+          padding:0;
+          background:#07151c;
+          color:#ebe7dd;
+          font-family:Arial,Helvetica,sans-serif;
+        "
+      >
+        <table
+          role="presentation"
+          width="100%"
+          cellspacing="0"
+          cellpadding="0"
+          border="0"
+          style="background:#07151c;"
+        >
+          <tr>
+            <td
+              align="center"
+              style="padding:42px 20px;"
+            >
+              <table
+                role="presentation"
+                width="100%"
+                cellspacing="0"
+                cellpadding="0"
+                border="0"
+                style="
+                  max-width:640px;
+                  border:1px solid #33434c;
+                  background:#0a1a22;
+                "
+              >
+                <tr>
+                  <td style="padding:34px 34px 18px;">
+                    <p
+                      style="
+                        margin:0 0 24px;
+                        color:#b99657;
+                        font-size:10px;
+                        font-weight:700;
+                        letter-spacing:.2em;
+                        text-transform:uppercase;
+                      "
+                    >
+                      ${escapeHtml(params.eyebrow)}
+                    </p>
+
+                    <p
+                      style="
+                        margin:0 0 8px;
+                        color:#738188;
+                        font-size:11px;
+                        letter-spacing:.12em;
+                        text-transform:uppercase;
+                      "
+                    >
+                      ${escapeHtml(params.reference)}
+                    </p>
+
+                    <h1
+                      style="
+                        margin:0;
+                        color:#f0ece2;
+                        font-size:28px;
+                        line-height:1.2;
+                        font-weight:500;
+                      "
+                    >
+                      ${escapeHtml(params.heading)}
+                    </h1>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding:12px 34px 0;">
+                    <table
+                      role="presentation"
+                      width="100%"
+                      cellspacing="0"
+                      cellpadding="0"
+                      border="0"
+                      style="
+                        border-top:1px solid #41515a;
+                        border-bottom:1px solid #41515a;
+                      "
+                    >
+                      <tr>
+                        <td style="padding:20px 0;">
+                          <p
+                            style="
+                              margin:0 0 7px;
+                              color:#758188;
+                              font-size:10px;
+                              letter-spacing:.16em;
+                              text-transform:uppercase;
+                            "
+                          >
+                            Current Authority
+                          </p>
+
+                          <p
+                            style="
+                              margin:0;
+                              color:#d7b76e;
+                              font-size:17px;
+                              font-weight:600;
+                              letter-spacing:.025em;
+                            "
+                          >
+                            ${escapeHtml(params.authority)}
+                          </p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+
+                <tr>
+                  <td style="padding:30px 34px 34px;">
+                    ${paragraphs}
+                    ${cta}
+                  </td>
+                </tr>
+
+                <tr>
+                  <td
+                    style="
+                      border-top:1px solid #33434c;
+                      padding:22px 34px 28px;
+                    "
+                  >
+                    <p
+                      style="
+                        margin:0 0 5px;
+                        color:#ebe7dd;
+                        font-size:12px;
+                        font-weight:600;
+                      "
+                    >
+                      French-Ward, Inc.
+                    </p>
+
+                    <p
+                      style="
+                        margin:0;
+                        color:#66757b;
+                        font-size:10px;
+                        letter-spacing:.12em;
+                        text-transform:uppercase;
+                      "
+                    >
+                      Governed through AXPT
+                    </p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+      </body>
+    </html>
   `;
 }
 
@@ -160,9 +418,34 @@ export function buildDigitalSettlementEmailPreview(
 ) {
   const buyer = buyerMessage(input);
   const internal = internalMessage(input);
+  const authority = authorityLabel(input);
+
+  const buyerHtml = renderBrandedEmail({
+    eyebrow: "French-Ward / AXPT",
+    reference: input.reference,
+    heading: buyer.heading,
+    authority,
+    lines: buyer.body.filter(
+      (line) =>
+        !line.startsWith("Your private instrument link is:"),
+    ),
+    accessUrl: input.accessUrl,
+    ctaLabel:
+      input.event === DIGITAL_SETTLEMENT_EMAIL_EVENT.ISSUED
+        ? "View Private Instrument"
+        : null,
+  });
 
   const internalHeading =
     "Digital Settlement Operator Notice";
+
+  const internalHtml = renderBrandedEmail({
+    eyebrow: "AXPT / French-Ward",
+    reference: input.reference,
+    heading: internalHeading,
+    authority,
+    lines: internal.body,
+  });
 
   return {
     buyer: {
@@ -173,11 +456,9 @@ export function buildDigitalSettlementEmailPreview(
         ...buyer.body,
         "",
         "French-Ward, Inc.",
+        "Governed through AXPT",
       ].join("\n"),
-      html: toHtml(
-        buyer.heading,
-        buyer.body,
-      ),
+      html: buyerHtml,
     },
     internal: {
       subject: internal.subject,
@@ -187,11 +468,9 @@ export function buildDigitalSettlementEmailPreview(
         ...internal.body,
         "",
         "French-Ward, Inc.",
+        "Governed through AXPT",
       ].join("\n"),
-      html: toHtml(
-        internalHeading,
-        internal.body,
-      ),
+      html: internalHtml,
     },
   } as const;
 }
@@ -202,6 +481,7 @@ async function deliver(params: {
   subject: string;
   heading: string;
   lines: string[];
+  html?: string;
   rawPayload: Record<string, unknown>;
 }) {
   const from =
@@ -212,8 +492,25 @@ async function deliver(params: {
 
   const recipients = Array.isArray(params.to) ? params.to : [params.to];
   const toLog = recipients.join(",");
-  const text = [...params.lines, "", "French-Ward, Inc."].join("\n");
-  const html = toHtml(params.heading, params.lines);
+  const text = [
+    ...params.lines,
+    "",
+    "French-Ward, Inc.",
+    "Governed through AXPT",
+  ].join("\n");
+
+  const html =
+    params.html ??
+    renderBrandedEmail({
+      eyebrow: "French-Ward / AXPT",
+      reference: String(
+        params.rawPayload.reference ?? "",
+      ),
+      heading: params.heading,
+      authority: "",
+      lines: params.lines,
+    });
+
   const mode = getDigitalSettlementEmailMode();
 
   const successfulStatus =
@@ -268,6 +565,9 @@ async function deliver(params: {
   const response = await resend.emails.send({
     from,
     to: recipients,
+    replyTo:
+      process.env.DSI_REPLY_TO_EMAIL ||
+      "french-ward@axpt.io",
     subject: params.subject,
     text,
     html,
@@ -304,6 +604,8 @@ export async function sendDigitalSettlementStateEmail(
 ) {
   const buyer = buyerMessage(input);
   const internal = internalMessage(input);
+  const rendered =
+    buildDigitalSettlementEmailPreview(input);
 
   const buyerResult = await deliver({
     type: `DSI_${input.event}_BUYER`,
@@ -311,6 +613,7 @@ export async function sendDigitalSettlementStateEmail(
     subject: buyer.subject,
     heading: buyer.heading,
     lines: buyer.body,
+    html: rendered.buyer.html,
     rawPayload: {
       reference: input.reference,
       event: input.event,
@@ -326,6 +629,7 @@ export async function sendDigitalSettlementStateEmail(
     subject: internal.subject,
     heading: "Digital Settlement Operator Notice",
     lines: internal.body,
+    html: rendered.internal.html,
     rawPayload: {
       reference: input.reference,
       event: input.event,
