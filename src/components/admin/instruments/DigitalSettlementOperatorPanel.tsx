@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 type Props = {
+  instantiated: boolean;
   reference: string;
   counterpartyName: string;
   counterpartyRepresentative: string | null;
@@ -15,6 +16,8 @@ type Props = {
   principalAuthorizedAt: string | null;
   receivingAddress: string | null;
   settlementAmountUsd: string | null;
+  authorizedOperationsAddress: string;
+  authorizedOperationsName: string;
 };
 
 function formatStatus(value: string) {
@@ -22,6 +25,7 @@ function formatStatus(value: string) {
 }
 
 export default function DigitalSettlementOperatorPanel({
+  instantiated,
   reference,
   counterpartyName,
   counterpartyRepresentative,
@@ -33,6 +37,8 @@ export default function DigitalSettlementOperatorPanel({
   principalAuthorizedAt,
   receivingAddress,
   settlementAmountUsd,
+  authorizedOperationsAddress,
+  authorizedOperationsName,
 }: Props) {
   const router = useRouter();
 
@@ -46,7 +52,7 @@ export default function DigitalSettlementOperatorPanel({
     receivingAddress ?? "",
   );
   const [busy, setBusy] = useState<
-    "verification" | "principal" | null
+    "issuance" | "verification" | "principal" | null
   >(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -70,6 +76,77 @@ export default function DigitalSettlementOperatorPanel({
           0,
         ).toFixed(2)
       : null;
+
+  async function issueInstrument() {
+    if (instantiated || busy) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Issue ${reference} to Corey Keller using ${authorizedOperationsName} (${authorizedOperationsAddress}) as the receiving wallet?`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setBusy("issuance");
+    setMessage(null);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `/api/admin/instruments/digital-settlement/${encodeURIComponent(
+          reference,
+        )}/issue`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            receivingAddress:
+              authorizedOperationsAddress,
+            accessExpiresHours: 168,
+          }),
+        },
+      );
+
+      const payload = await response.json();
+
+      if (!response.ok || !payload.ok) {
+        throw new Error(
+          payload.detail ??
+            payload.error ??
+            "DSI_INITIAL_ISSUANCE_FAILED",
+        );
+      }
+
+      const accessUrl =
+        payload.result?.accessUrl ?? null;
+
+      const emailOk =
+        payload.result?.email?.ok !== false;
+
+      setMessage(
+        emailOk
+          ? `DSI issued. Private access created and issuance communication processed. ${accessUrl ?? ""}`.trim()
+          : `DSI issued and private access created, but email delivery failed. Preserve this private URL: ${accessUrl ?? "URL unavailable"}`,
+      );
+
+      router.refresh();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "DSI_INITIAL_ISSUANCE_FAILED",
+      );
+    } finally {
+      setBusy(null);
+    }
+  }
+
 
   async function confirmVerification() {
     if (!canConfirmVerification || busy) {
@@ -215,6 +292,52 @@ export default function DigitalSettlementOperatorPanel({
           </div>
         </div>
       </section>
+
+      {!instantiated ? (
+        <section className="rounded-xl border border-amber-900/70 bg-amber-950/10 p-4">
+          <div className="text-[10px] uppercase tracking-[0.18em] text-amber-400">
+            Initial Issuance
+          </div>
+
+          <h2 className="mt-1 text-sm font-medium text-white">
+            Issue Digital Settlement Instruction to Corey Keller
+          </h2>
+
+          <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500">
+            This action will instantiate the canonical DSI, bind the registered
+            AXPT Operations wallet, authorize only the 50 USDT verification
+            transfer, create Corey Keller&apos;s private access grant, and
+            process the issuance communication.
+          </p>
+
+          <div className="mt-4 rounded border border-neutral-800 bg-black/30 p-3">
+            <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+              Authorized Receiving Wallet
+            </div>
+
+            <div className="mt-1 text-xs text-white">
+              {authorizedOperationsName}
+            </div>
+
+            <div className="mt-1 break-all font-mono text-[11px] text-cyan-300">
+              {authorizedOperationsAddress}
+            </div>
+          </div>
+
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={issueInstrument}
+              disabled={Boolean(busy)}
+              className="rounded border border-amber-800 bg-amber-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-amber-300 hover:border-amber-600 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {busy === "issuance"
+                ? "Issuing..."
+                : "Issue to Corey Keller"}
+            </button>
+          </div>
+        </section>
+      ) : null}
 
       <section className="grid gap-3 md:grid-cols-3">
         <div className="rounded-lg border border-neutral-800 bg-black/20 p-3">
