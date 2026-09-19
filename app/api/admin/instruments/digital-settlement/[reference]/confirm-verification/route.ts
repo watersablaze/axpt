@@ -1,11 +1,17 @@
 import { NextResponse } from "next/server";
-
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { prisma } from "@/infrastructure/db/prisma";
 import {
   confirmDigitalSettlementVerificationWithClient,
   type DigitalSettlementVerificationClient,
 } from "@/domains/instruments/commands/confirmDigitalSettlementVerificationWithClient";
+import {
+  findDigitalSettlementVerificationCandidateWithClient,
+  type DigitalSettlementVerificationMatchingClient,
+} from "@/domains/instruments/verification-matching";
+import {
+  assertDigitalSettlementVerificationRecognition,
+} from "@/domains/instruments/verification-recognition";
 import {
   DIGITAL_SETTLEMENT_EMAIL_EVENT,
   sendDigitalSettlementStateEmail,
@@ -65,22 +71,74 @@ export async function POST(
     }
 
     const result = await prisma.$transaction(
-      async (tx: DigitalSettlementVerificationClient) =>
-        confirmDigitalSettlementVerificationWithClient({
-          client: tx,
-          instrumentReference: reference,
-          transactionHash: body.transactionHash!,
-          observedAmountUsdt: body.observedAmountUsdt!,
-          observedReceivingAddress: body.observedReceivingAddress!,
-          actorUserId: actor.id,
-        }),
+      async (
+        tx:
+          DigitalSettlementVerificationClient &
+          DigitalSettlementVerificationMatchingClient,
+      ) => {
+        /*
+         * Recognition authority remains this existing route +
+         * confirmation command.
+         *
+         * AO-1E is re-evaluated immediately before recognition so
+         * stale or manually substituted client evidence cannot cross
+         * the institutional boundary.
+         */
+        const match =
+          await findDigitalSettlementVerificationCandidateWithClient({
+            client:
+              tx as DigitalSettlementVerificationMatchingClient,
+            instrumentReference:
+              reference,
+          });
+
+        const recognition =
+          assertDigitalSettlementVerificationRecognition({
+            match,
+
+            submitted: {
+              transactionHash:
+                body.transactionHash!,
+
+              observedAmountUsdt:
+                body.observedAmountUsdt!,
+
+              observedReceivingAddress:
+                body.observedReceivingAddress!,
+            },
+          });
+
+        const confirmation =
+          await confirmDigitalSettlementVerificationWithClient({
+            client:
+              tx as DigitalSettlementVerificationClient,
+            instrumentReference:
+              reference,
+            transactionHash:
+              recognition.transactionHash,
+            observedAmountUsdt:
+              recognition.amountUsdt,
+            observedReceivingAddress:
+              recognition.receivingAddress,
+            actorUserId:
+              actor.id,
+          });
+
+        return {
+          confirmation,
+          recognition,
+        };
+
+      },
     );
 
     const email = await sendDigitalSettlementStateEmail({
       event: DIGITAL_SETTLEMENT_EMAIL_EVENT.VERIFICATION_CONFIRMED,
       reference,
-      verificationAmountUsdt: body.observedAmountUsdt,
-      verificationTxHash: body.transactionHash,
+      verificationAmountUsdt:
+        result.recognition.amountUsdt,
+      verificationTxHash:
+        result.recognition.transactionHash,
     });
 
     return NextResponse.json({
