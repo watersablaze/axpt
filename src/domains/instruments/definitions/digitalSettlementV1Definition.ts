@@ -9,8 +9,8 @@ import {
   INSTRUMENT_VERSION_STATUS,
 } from "../contracts";
 
-export const HINES_DSI_REFERENCE = "FW-DSI-2026-001" as const;
-export const HINES_DSI_PUBLIC_ID = "fw-dsi-2026-001" as const;
+export const DSI_REFERENCE = "FW-DSI-2026-001" as const;
+export const DSI_PUBLIC_ID = "fw-dsi-2026-001" as const;
 export const INDERAKSH_LEGAL_NAME = "Inderaksh Gold Refinery FZ-LLC" as const;
 export const INDERAKSH_REPRESENTATIVE = "Corey Keller, Vice President" as const;
 
@@ -27,7 +27,7 @@ export const INDERAKSH_BUYER_SUBMISSION = {
     "The buyer submission supports counterparty identity, representative capacity, and the proposed transaction profile. It does not itself establish the LBMA pricing calculation, 7.5% Good-Faith Transaction Authorization Payment (TAP), USDT rail, or transfer sequence; those terms are established separately by this French-Ward instruction and supplemental commercial direction.",
 } as const;
 
-export function createHinesDigitalSettlementV1Definition(
+export function createDigitalSettlementV1Definition(
   counterpartyLegalName: string,
 ) {
   const legalName = counterpartyLegalName.trim();
@@ -38,7 +38,7 @@ export function createHinesDigitalSettlementV1Definition(
 
   return {
     instrument: {
-      reference: HINES_DSI_REFERENCE,
+      reference: DSI_REFERENCE,
       kind: INSTITUTIONAL_INSTRUMENT_KIND.DIGITAL_SETTLEMENT_INSTRUCTION,
       title: "Digital Settlement Instruction",
       status: INSTITUTIONAL_INSTRUMENT_STATUS.DRAFT,
@@ -59,7 +59,7 @@ export function createHinesDigitalSettlementV1Definition(
       },
     ],
     settlement: {
-      publicId: HINES_DSI_PUBLIC_ID,
+      publicId: DSI_PUBLIC_ID,
       counterpartyName: legalName,
       counterpartyRepresentative: INDERAKSH_REPRESENTATIVE,
       commodity: "Au Dore Bars",

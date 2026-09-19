@@ -12,7 +12,7 @@ import {
   fixDigitalSettlementPricingWithClient,
   type DigitalSettlementPriceFixingClient,
 } from "../../src/domains/instruments/commands/fixDigitalSettlementPricingWithClient";
-import { HINES_DSI_REFERENCE } from "../../src/domains/instruments/definitions/hinesDigitalSettlementV1Definition";
+import { DSI_REFERENCE } from "../../src/domains/instruments/definitions/digitalSettlementV1Definition";
 
 const prisma = new PrismaClient();
 
@@ -72,7 +72,7 @@ async function main() {
 
         return fixDigitalSettlementPricingWithClient({
           client: tx as DigitalSettlementPriceFixingClient,
-          instrumentReference: HINES_DSI_REFERENCE,
+          instrumentReference: DSI_REFERENCE,
           spotPricePerKgUsd,
           spotBenchmark,
           actorUserId: actor.id,
@@ -98,7 +98,7 @@ async function main() {
 
         return confirmDigitalSettlementVerificationWithClient({
           client: tx as DigitalSettlementVerificationClient,
-          instrumentReference: HINES_DSI_REFERENCE,
+          instrumentReference: DSI_REFERENCE,
           transactionHash,
           observedAmountUsdt,
           observedReceivingAddress,
@@ -108,7 +108,7 @@ async function main() {
 
       return authorizeDigitalSettlementPrincipalWithClient({
         client: tx as DigitalSettlementPrincipalAuthorizationClient,
-        instrumentReference: HINES_DSI_REFERENCE,
+        instrumentReference: DSI_REFERENCE,
         actorUserId: actor.id,
       });
     },

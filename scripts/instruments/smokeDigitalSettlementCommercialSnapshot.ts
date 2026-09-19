@@ -1,7 +1,7 @@
 import {
-  createHinesDigitalSettlementV1Definition,
+  createDigitalSettlementV1Definition,
   INDERAKSH_BUYER_SUBMISSION,
-} from "../../src/domains/instruments/definitions/hinesDigitalSettlementV1Definition";
+} from "../../src/domains/instruments/definitions/digitalSettlementV1Definition";
 import { assertDigitalSettlementCommercialSnapshot } from "../../src/domains/instruments/invariants/digitalSettlementCommercialSnapshot";
 
 function expectFailure(run: () => void, code: string) {
@@ -18,7 +18,7 @@ function expectFailure(run: () => void, code: string) {
   throw new Error(`[DSI_SMOKE_EXPECTED_FAILURE_MISSING] ${code}`);
 }
 
-const definition = createHinesDigitalSettlementV1Definition(
+const definition = createDigitalSettlementV1Definition(
   "Verified Legal Counterparty, Ltd.",
 );
 const snapshot = definition.settlement;

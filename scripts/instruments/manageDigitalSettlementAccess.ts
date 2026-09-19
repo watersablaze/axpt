@@ -13,9 +13,9 @@ import {
   type InstrumentPartyRole,
 } from "../../src/domains/instruments/contracts";
 import {
-  HINES_DSI_PUBLIC_ID,
-  HINES_DSI_REFERENCE,
-} from "../../src/domains/instruments/definitions/hinesDigitalSettlementV1Definition";
+  DSI_PUBLIC_ID,
+  DSI_REFERENCE,
+} from "../../src/domains/instruments/definitions/digitalSettlementV1Definition";
 
 const prisma = new PrismaClient();
 
@@ -101,7 +101,7 @@ async function main() {
 
       const issuance = await issueInstrumentAccessGrantWithClient({
         client: tx,
-        instrumentReference: HINES_DSI_REFERENCE,
+        instrumentReference: DSI_REFERENCE,
         recipientName,
         recipientRole: recipientRole as InstrumentPartyRole,
         issuedByUserId: actor.id,
@@ -110,7 +110,7 @@ async function main() {
 
       return {
         ...issuance,
-        accessPath: `/french-ward/instruments/${HINES_DSI_PUBLIC_ID}/access/${issuance.token}`,
+        accessPath: `/french-ward/instruments/${DSI_PUBLIC_ID}/access/${issuance.token}`,
       };
     },
   );

@@ -2,7 +2,7 @@ import type { PrismaClient } from "@prisma/client";
 
 import { INSTITUTIONAL_INSTRUMENT_STREAM_TYPE } from "../stream";
 import { INSTRUMENT_EVENT_TYPE } from "../eventTypes";
-import { createHinesDigitalSettlementV1Definition } from "../definitions/hinesDigitalSettlementV1Definition";
+import { createDigitalSettlementV1Definition } from "../definitions/digitalSettlementV1Definition";
 import { assertDigitalSettlementCommercialSnapshot } from "../invariants/digitalSettlementCommercialSnapshot";
 
 export type DigitalSettlementBootstrapClient = Pick<
@@ -18,13 +18,13 @@ export type DigitalSettlementBootstrapResult = Readonly<{
   created: boolean;
 }>;
 
-export async function bootstrapHinesDigitalSettlementV1WithClient(params: {
+export async function bootstrapDigitalSettlementV1WithClient(params: {
   client: DigitalSettlementBootstrapClient;
   actorUserId: string;
   counterpartyLegalName: string;
 }): Promise<DigitalSettlementBootstrapResult> {
   const { client, actorUserId } = params;
-  const definition = createHinesDigitalSettlementV1Definition(
+  const definition = createDigitalSettlementV1Definition(
     params.counterpartyLegalName,
   );
 

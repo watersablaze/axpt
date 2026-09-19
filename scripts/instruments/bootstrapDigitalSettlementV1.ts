@@ -1,17 +1,17 @@
 import { PrismaClient } from "@prisma/client";
 
 import {
-  bootstrapHinesDigitalSettlementV1WithClient,
+  bootstrapDigitalSettlementV1WithClient,
   type DigitalSettlementBootstrapClient,
-} from "../../src/domains/instruments/bootstrap/bootstrapHinesDigitalSettlementV1WithClient";
+} from "../../src/domains/instruments/bootstrap/bootstrapDigitalSettlementV1WithClient";
 import {
   issueDigitalSettlementInstructionWithClient,
   type DigitalSettlementIssuanceClient,
 } from "../../src/domains/instruments/commands/issueDigitalSettlementInstructionWithClient";
 import {
-  HINES_DSI_REFERENCE,
+  DSI_REFERENCE,
   INDERAKSH_LEGAL_NAME,
-} from "../../src/domains/instruments/definitions/hinesDigitalSettlementV1Definition";
+} from "../../src/domains/instruments/definitions/digitalSettlementV1Definition";
 
 const prisma = new PrismaClient();
 
@@ -52,7 +52,7 @@ async function main() {
     async (
       tx: DigitalSettlementBootstrapClient & DigitalSettlementIssuanceClient,
     ) => {
-      const bootstrap = await bootstrapHinesDigitalSettlementV1WithClient({
+      const bootstrap = await bootstrapDigitalSettlementV1WithClient({
         client: tx as DigitalSettlementBootstrapClient,
         actorUserId: actor.id,
         counterpartyLegalName,
@@ -61,7 +61,7 @@ async function main() {
       const issuance = receivingAddress
         ? await issueDigitalSettlementInstructionWithClient({
             client: tx as DigitalSettlementIssuanceClient,
-            instrumentReference: HINES_DSI_REFERENCE,
+            instrumentReference: DSI_REFERENCE,
             receivingAddress,
             actorUserId: actor.id,
           })

@@ -8,9 +8,9 @@ import { CopySettlementAddress } from "@/components/instruments/digital-settleme
 import { instrumentAccessCookieName } from "@/domains/instruments/access/accessToken";
 import { DIGITAL_SETTLEMENT_STATUS } from "@/domains/instruments/contracts";
 import {
-  HINES_DSI_REFERENCE,
+  DSI_REFERENCE,
   INDERAKSH_BUYER_SUBMISSION,
-} from "@/domains/instruments/definitions/hinesDigitalSettlementV1Definition";
+} from "@/domains/instruments/definitions/digitalSettlementV1Definition";
 import { loadIssuedDigitalSettlementInstruction } from "@/domains/instruments/queries/loadIssuedDigitalSettlementInstruction";
 import { resolveInstrumentAccess } from "@/domains/instruments/queries/resolveInstrumentAccess";
 import styles from "./page.module.css";
@@ -167,7 +167,7 @@ export default async function DigitalSettlementInstructionPage({
   const verificationAmount = Number(instruction.verificationAmountUsdt);
   const pricingFixed = instruction.pricingStatus === "FIXED";
   const buyerSubmission =
-    instruction.reference === HINES_DSI_REFERENCE
+    instruction.reference === DSI_REFERENCE
       ? INDERAKSH_BUYER_SUBMISSION
       : null;
   const remainingSettlementUsdt = instruction.settlementAmountUsd
