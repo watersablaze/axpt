@@ -1,6 +1,7 @@
 import "dotenv/config"
 
 import {
+  Prisma,
   PrismaClient,
   type InstitutionalAuthority,
 } from "@prisma/client"
@@ -254,9 +255,7 @@ async function ensureGlobalAuthorityGrant({
   issuedByProfileId,
   authority,
 }: {
-  tx: Parameters<
-    Parameters<typeof prisma.$transaction>[0]
-  >[0]
+  tx: Prisma.TransactionClient
   recipientProfileId: string
   issuedByProfileId: string
   authority: InstitutionalAuthority
