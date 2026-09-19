@@ -4,13 +4,18 @@ import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 
 import { InstrumentShell } from "@/components/instruments/InstrumentShell";
+import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { isAdmin as hasAdminAccess } from "@/domains/auth/isAdmin";
 import { CopySettlementAddress } from "@/components/instruments/digital-settlement/CopySettlementAddress";
 import { instrumentAccessCookieName } from "@/domains/instruments/access/accessToken";
 import { DIGITAL_SETTLEMENT_STATUS } from "@/domains/instruments/contracts";
 import {
+  createDigitalSettlementV1Definition,
   DSI_REFERENCE,
   INDERAKSH_BUYER_SUBMISSION,
+  INDERAKSH_LEGAL_NAME,
 } from "@/domains/instruments/definitions/digitalSettlementV1Definition";
+import { TREASURY_WALLETS } from "@/lib/treasury/config";
 import { loadIssuedDigitalSettlementInstruction } from "@/domains/instruments/queries/loadIssuedDigitalSettlementInstruction";
 import { resolveInstrumentAccess } from "@/domains/instruments/queries/resolveInstrumentAccess";
 import styles from "./page.module.css";
@@ -46,56 +51,76 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-function createPreviewInstruction(state: string | undefined) {
-  const principalAuthorized = state === "principal-authorized";
-  const verificationConfirmed =
-    principalAuthorized || state === "verification-confirmed";
+function createPreviewInstruction() {
+  const definition =
+    createDigitalSettlementV1Definition(
+      INDERAKSH_LEGAL_NAME,
+    );
+
+  const operationsWallet =
+    TREASURY_WALLETS.find(
+      (wallet) => wallet.role === "operations",
+    );
+
+  if (!operationsWallet) {
+    throw new Error(
+      "[DSI_PREVIEW_OPERATIONS_WALLET_NOT_CONFIGURED]",
+    );
+  }
 
   return {
     publicId: "__preview__",
-    reference: "FW-DSI-2026-001",
-    title: "Digital Settlement Instruction",
-    versionNumber: 1,
-    issuedAt: new Date("2026-09-17T00:00:00.000Z"),
-    counterpartyName: "Inderaksh Gold Refinery FZ-LLC",
-    counterpartyRepresentative: "Corey Keller, Vice President",
-    commodity: "Au Dore Bars",
-    transactionDescription: "Initial 50 KG Au Dore Bars Shipment",
+    reference: definition.instrument.reference,
+    title: definition.instrument.title,
+    versionNumber: definition.version.number,
+    issuedAt: new Date(),
+    counterpartyName:
+      definition.settlement.counterpartyName,
+    counterpartyRepresentative:
+      definition.settlement.counterpartyRepresentative,
+    commodity:
+      definition.settlement.commodity,
+    transactionDescription:
+      definition.settlement.transactionDescription,
     settlementPurpose:
-      "7.5% Good-Faith Transaction Authorization Payment (TAP) for the initial 50 KG shipment, calculated from the purchase price and designated to fund the documented export-fee process",
+      definition.settlement.settlementPurpose,
     proceduralBasis:
-      "French-Ward has authorized this transaction-specific Good-Faith Transaction Authorization Payment (TAP) as a pre-SPA procedure based on the buyer submission and supplemental commercial direction. The TAP is designated specifically to fund documented export fees required to obtain the applicable export documentation and place the gold before the competent authorities for authorization to lawfully leave Mali. The signed LOI supports buyer identity and the proposed transaction profile but does not itself establish the pricing calculation or TAP obligation shown here. Receipt of the TAP does not replace, execute, or amend the SPA; does not itself constitute commodity allocation; and does not substitute for governmental issuance of export documentation or export authorization.",
-    quantityKg: "50",
-    pricingStatus: "FIXED",
-    pricingBasis: "LBMA Gold Price PM less 10%",
-    spotDiscountPercentage: "10",
-    spotBenchmark:
-      "LBMA Gold Price PM — 2026-09-17 — USD 4,368.10 per troy ounce",
-    spotPricePerKgUsd: "140437.68",
-    pricePerKgUsd: "126393.91",
-    transactionValueUsd: "6319695.50",
-    settlementPercentage: "7.5",
-    settlementAmountUsd: "473977.16",
-    priceFixedAt: new Date("2026-09-17T00:08:00.000Z"),
-    settlementAsset: "USDT",
-    settlementNetwork: "ETHEREUM_ERC20",
-    receivingEntity: "French-Ward, Inc.",
-    receivingAddress: "0x40143ECEF96EC52365c6E3164dE891C62c9A012E",
-    receivingWalletId: "axpt-operations",
-    receivingWalletRole: "operations",
-    verificationAmountUsdt: "50",
-    verificationTxHash: verificationConfirmed ? `0x${"ab".repeat(32)}` : null,
-    verificationConfirmedAt: verificationConfirmed
-      ? new Date("2026-09-17T00:05:00.000Z")
-      : null,
-    principalAuthorizedAt: principalAuthorized
-      ? new Date("2026-09-17T00:10:00.000Z")
-      : null,
-    settlementStatus: principalAuthorized
-      ? DIGITAL_SETTLEMENT_STATUS.AWAITING_TRANSFER
-      : verificationConfirmed
-        ? DIGITAL_SETTLEMENT_STATUS.VERIFICATION_CONFIRMED
-        : DIGITAL_SETTLEMENT_STATUS.AWAITING_VERIFICATION_TRANSFER,
+      definition.settlement.proceduralBasis,
+    quantityKg:
+      definition.settlement.quantityKg,
+    pricingStatus:
+      definition.settlement.pricingStatus,
+    pricingBasis:
+      definition.settlement.pricingBasis,
+    spotDiscountPercentage:
+      definition.settlement.spotDiscountPercentage,
+    spotBenchmark: null,
+    spotPricePerKgUsd: null,
+    pricePerKgUsd: null,
+    transactionValueUsd: null,
+    settlementPercentage:
+      definition.settlement.settlementPercentage,
+    settlementAmountUsd: null,
+    priceFixedAt: null,
+    settlementAsset:
+      definition.settlement.settlementAsset,
+    settlementNetwork:
+      definition.settlement.settlementNetwork,
+    receivingEntity:
+      definition.settlement.receivingEntity,
+    receivingAddress:
+      operationsWallet.address,
+    receivingWalletId:
+      operationsWallet.id,
+    receivingWalletRole:
+      operationsWallet.role,
+    verificationAmountUsdt:
+      definition.settlement.verificationAmountUsdt,
+    verificationTxHash: null,
+    verificationConfirmedAt: null,
+    principalAuthorizedAt: null,
+    settlementStatus:
+      DIGITAL_SETTLEMENT_STATUS.AWAITING_VERIFICATION_TRANSFER,
   } as const;
 }
 
@@ -104,16 +129,27 @@ export default async function DigitalSettlementInstructionPage({
   searchParams,
 }: PageProps) {
   const { publicId } = await params;
-  const { previewState } = (await searchParams) ?? {};
-  const isVisualPreview =
-    publicId === "__preview__" &&
-    (process.env.NODE_ENV !== "production" ||
-      process.env.VERCEL_ENV === "preview");
+  await searchParams;
+
+  const previewRequested =
+    publicId === "__preview__";
+
+  let isVisualPreview = false;
+
+  if (previewRequested) {
+    const principal = await getPrincipal();
+
+    if (!principal || !hasAdminAccess(principal)) {
+      notFound();
+    }
+
+    isVisualPreview = true;
+  }
 
   let instruction;
 
   if (isVisualPreview) {
-    instruction = createPreviewInstruction(previewState);
+    instruction = createPreviewInstruction();
   } else {
     const token = (await cookies()).get(
       instrumentAccessCookieName(publicId),
@@ -205,8 +241,10 @@ export default async function DigitalSettlementInstructionPage({
     >
       {isVisualPreview ? (
         <section className={styles.previewNotice} aria-label="Preview notice">
-          Synthetic visual-review fixture. No displayed party, amount, QR code,
-          or address carries settlement authority. Do not transmit value.
+          Operator-only buyer-view preview. This renders the canonical initial
+          issuance state but carries no settlement authority. No instrument,
+          private access grant, or buyer authorization has been created. Do not
+          transmit value.
         </section>
       ) : null}
 
