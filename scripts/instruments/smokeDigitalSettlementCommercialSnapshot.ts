@@ -1,4 +1,7 @@
-import { createHinesDigitalSettlementV1Definition } from "../../src/domains/instruments/definitions/hinesDigitalSettlementV1Definition";
+import {
+  createHinesDigitalSettlementV1Definition,
+  INDERAKSH_BUYER_SUBMISSION,
+} from "../../src/domains/instruments/definitions/hinesDigitalSettlementV1Definition";
 import { assertDigitalSettlementCommercialSnapshot } from "../../src/domains/instruments/invariants/digitalSettlementCommercialSnapshot";
 
 function expectFailure(run: () => void, code: string) {
@@ -21,6 +24,30 @@ const definition = createHinesDigitalSettlementV1Definition(
 const snapshot = definition.settlement;
 
 assertDigitalSettlementCommercialSnapshot(snapshot);
+
+if (snapshot.pricingBasis !== "LBMA Gold Price PM less 10%") {
+  throw new Error("[DSI_LBMA_PRICING_BASIS_MISMATCH]");
+}
+
+if (
+  !INDERAKSH_BUYER_SUBMISSION.evidenceBoundary.includes(
+    "does not itself establish",
+  )
+) {
+  throw new Error("[DSI_BUYER_SUBMISSION_BOUNDARY_MISSING]");
+}
+
+if (!snapshot.settlementPurpose.includes("Transaction Authorization Payment")) {
+  throw new Error("[DSI_TAP_PURPOSE_MISSING]");
+}
+
+if (
+  !snapshot.proceduralBasis.includes("documented export fees") ||
+  !snapshot.proceduralBasis.includes("competent authorities") ||
+  !snapshot.proceduralBasis.includes("does not substitute")
+) {
+  throw new Error("[DSI_TAP_EXPORT_AUTHORITY_BOUNDARY_MISSING]");
+}
 
 expectFailure(
   () =>

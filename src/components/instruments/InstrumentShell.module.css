@@ -112,8 +112,53 @@
   padding: clamp(4rem, 8vw, 8rem) 0 clamp(7rem, 12vw, 13rem);
 }
 
+.compact .hero,
+.compact .content {
+  width: min(1240px, calc(100% - clamp(1.5rem, 5vw, 5rem)));
+}
+
+.compact .hero {
+  padding-top: clamp(1.25rem, 2.5vw, 2.5rem);
+}
+
+.compact .identity {
+  grid-template-columns: minmax(105px, 0.55fr) minmax(0, 3fr) minmax(
+      220px,
+      0.9fr
+    );
+  gap: clamp(1rem, 2.5vw, 3rem);
+  padding: clamp(1.5rem, 3vw, 2.75rem) 0 clamp(1.4rem, 2.5vw, 2.4rem);
+}
+
+.compact .titleGroup h1 {
+  max-width: 720px;
+  font-size: clamp(2.2rem, 4.6vw, 4.9rem);
+  line-height: 0.94;
+}
+
+.compact .titleGroup p {
+  margin-top: 0.8rem;
+  font-size: clamp(0.78rem, 1.1vw, 0.92rem);
+}
+
+.compact .meta {
+  gap: 0.55rem;
+}
+
+.compact .meta div {
+  padding-top: 0.55rem;
+}
+
+.compact .content {
+  padding: clamp(2rem, 4vw, 4rem) 0 clamp(4rem, 8vw, 7rem);
+}
+
 @media (max-width: 900px) {
   .identity {
+    grid-template-columns: 1fr;
+  }
+
+  .compact .identity {
     grid-template-columns: 1fr;
   }
 

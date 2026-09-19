@@ -19,6 +19,7 @@ type InstrumentShellProps = {
   movements: Movement[];
   classificationLabel?: string;
   showStatusRail?: boolean;
+  density?: "standard" | "compact";
   children: ReactNode;
 };
 
@@ -32,10 +33,13 @@ export function InstrumentShell({
   movements,
   classificationLabel = "Private Institutional Instrument",
   showStatusRail = true,
+  density = "standard",
   children,
 }: InstrumentShellProps) {
   return (
-    <main className={styles.shell}>
+    <main
+      className={`${styles.shell} ${density === "compact" ? styles.compact : ""}`}
+    >
       <div className={styles.field} aria-hidden="true" />
 
       <header className={styles.hero}>
