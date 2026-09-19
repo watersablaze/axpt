@@ -95,6 +95,22 @@ async function main() {
     )
   }
 
+  const existingProfiles =
+    await prisma.institutionalProfile.findMany({
+      where: {
+        userId: {
+          in: resolved.map(({ user }) => user.id),
+        },
+      },
+      select: {
+        userId: true,
+      },
+    })
+
+  const existingProfileUserIds = new Set(
+    existingProfiles.map(({ userId }) => userId)
+  )
+
   const result = await prisma.$transaction(
     async (tx) => {
       const profiles =
@@ -118,20 +134,10 @@ async function main() {
                 definition.displayName,
               institutionalTitle:
                 definition.institutionalTitle,
-              roleClass:
-                definition.roleClass,
-              organizationalUnit:
-                definition.organizationalUnit,
-              standing:
-                definition.standing,
               operatorCode:
                 definition.operatorCode,
-              fiduciaryIndependent:
-                definition.fiduciaryIndependent,
               summary:
                 definition.summary,
-              activatedAt: new Date(),
-              suspendedAt: null,
             },
             create: {
               userId: user.id,
@@ -192,14 +198,21 @@ async function main() {
           )
         }
 
-        await tx.institutionalProfile.update({
-          where: {
-            id: profile.id,
-          },
-          data: {
-            reportsToProfileId,
-          },
-        })
+        if (
+          !existingProfileUserIds.has(
+            profile.userId
+          ) &&
+          reportsToProfileId
+        ) {
+          await tx.institutionalProfile.update({
+            where: {
+              id: profile.id,
+            },
+            data: {
+              reportsToProfileId,
+            },
+          })
+        }
       }
 
       const mayaProfile = profiles.get("MAYA")
@@ -267,27 +280,16 @@ async function ensureGlobalAuthorityGrant({
         authority,
         scopeType: "GLOBAL",
         scopeId: null,
-        status: "ACTIVE",
       },
       orderBy: {
-        issuedAt: "asc",
+        issuedAt: "desc",
       },
     })
 
+  // Bootstrap may establish missing founding authority.
+  // It must never reverse later governance by reactivating
+  // a suspended, revoked, or expired grant.
   if (existing) {
-    await tx.institutionalAuthorityGrant.update({
-      where: {
-        id: existing.id,
-      },
-      data: {
-        issuedByProfileId,
-        effectiveAt:
-          existing.effectiveAt,
-        expiresAt: null,
-        revokedAt: null,
-      },
-    })
-
     return
   }
 
