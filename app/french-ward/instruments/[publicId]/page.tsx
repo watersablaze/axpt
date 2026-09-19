@@ -11,6 +11,7 @@ import { instrumentAccessCookieName } from "@/domains/instruments/access/accessT
 import { DIGITAL_SETTLEMENT_STATUS } from "@/domains/instruments/contracts";
 import {
   createDigitalSettlementV1Definition,
+  DSI_APPROVED_ISSUANCE_PRICING,
   DSI_REFERENCE,
   INDERAKSH_BUYER_SUBMISSION,
   INDERAKSH_LEGAL_NAME,
@@ -88,20 +89,24 @@ function createPreviewInstruction() {
       definition.settlement.proceduralBasis,
     quantityKg:
       definition.settlement.quantityKg,
-    pricingStatus:
-      definition.settlement.pricingStatus,
+    pricingStatus: "FIXED",
     pricingBasis:
       definition.settlement.pricingBasis,
     spotDiscountPercentage:
       definition.settlement.spotDiscountPercentage,
-    spotBenchmark: null,
-    spotPricePerKgUsd: null,
-    pricePerKgUsd: null,
-    transactionValueUsd: null,
+    spotBenchmark:
+      DSI_APPROVED_ISSUANCE_PRICING.spotBenchmark,
+    spotPricePerKgUsd:
+      DSI_APPROVED_ISSUANCE_PRICING.spotPricePerKgUsd,
+    pricePerKgUsd:
+      DSI_APPROVED_ISSUANCE_PRICING.pricePerKgUsd,
+    transactionValueUsd:
+      DSI_APPROVED_ISSUANCE_PRICING.transactionValueUsd,
     settlementPercentage:
       definition.settlement.settlementPercentage,
-    settlementAmountUsd: null,
-    priceFixedAt: null,
+    settlementAmountUsd:
+      DSI_APPROVED_ISSUANCE_PRICING.settlementAmountUsd,
+    priceFixedAt: new Date("2026-09-17T15:00:00.000Z"),
     settlementAsset:
       definition.settlement.settlementAsset,
     settlementNetwork:

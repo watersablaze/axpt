@@ -22,6 +22,13 @@ export type SendDigitalSettlementStateEmailInput = {
   verificationTxHash?: string | null;
 };
 
+export function getDigitalSettlementSender() {
+  return (
+    process.env.DSI_FROM_EMAIL ||
+    "French-Ward <french-ward@axpt.io>"
+  );
+}
+
 function escapeHtml(value: string) {
   return value
     .replaceAll("&", "&amp;")
@@ -484,11 +491,7 @@ async function deliver(params: {
   html?: string;
   rawPayload: Record<string, unknown>;
 }) {
-  const from =
-    process.env.DSI_FROM_EMAIL ||
-    process.env.NOTIFY_FROM_EMAIL ||
-    process.env.RESEND_FROM_EMAIL ||
-    "no-reply@axpt.io";
+  const from = getDigitalSettlementSender();
 
   const recipients = Array.isArray(params.to) ? params.to : [params.to];
   const toLog = recipients.join(",");

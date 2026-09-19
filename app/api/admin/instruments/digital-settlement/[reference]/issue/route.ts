@@ -6,6 +6,10 @@ import {
   type DigitalSettlementBootstrapClient,
 } from "@/domains/instruments/bootstrap/bootstrapDigitalSettlementV1WithClient";
 import {
+  fixDigitalSettlementPricingWithClient,
+  type DigitalSettlementPriceFixingClient,
+} from "@/domains/instruments/commands/fixDigitalSettlementPricingWithClient";
+import {
   issueDigitalSettlementInstructionWithClient,
   type DigitalSettlementIssuanceClient,
 } from "@/domains/instruments/commands/issueDigitalSettlementInstructionWithClient";
@@ -39,6 +43,8 @@ type RouteContext = {
 type IssueBody = {
   receivingAddress?: string;
   accessExpiresHours?: number;
+  spotBenchmark?: string;
+  spotPricePerKgUsd?: string;
 };
 
 export async function POST(
@@ -110,12 +116,26 @@ export async function POST(
 
     const receivingAddress =
       body.receivingAddress?.trim();
+    const spotBenchmark = body.spotBenchmark?.trim();
+    const spotPricePerKgUsd = body.spotPricePerKgUsd?.trim();
 
     if (!receivingAddress) {
       return NextResponse.json(
         {
           ok: false,
           error: "DSI_RECEIVING_ADDRESS_REQUIRED",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (!spotBenchmark || !spotPricePerKgUsd) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: "DSI_ISSUANCE_PRICING_REQUIRED",
+          detail:
+            "An approved spot benchmark and USD spot price per KG are required before issuance.",
         },
         { status: 400 },
       );
@@ -143,6 +163,7 @@ export async function POST(
     const result = await prisma.$transaction(
       async (
         tx: DigitalSettlementBootstrapClient &
+          DigitalSettlementPriceFixingClient &
           DigitalSettlementIssuanceClient &
           InstrumentAccessGrantIssuanceClient,
       ) => {
@@ -156,6 +177,16 @@ export async function POST(
           });
 
         const issuance =
+          await fixDigitalSettlementPricingWithClient({
+            client:
+              tx as DigitalSettlementPriceFixingClient,
+            instrumentReference: DSI_REFERENCE,
+            spotPricePerKgUsd,
+            spotBenchmark,
+            actorUserId: actor.id,
+          });
+
+        const settlementIssuance =
           await issueDigitalSettlementInstructionWithClient({
             client:
               tx as DigitalSettlementIssuanceClient,
@@ -216,7 +247,8 @@ export async function POST(
 
         return {
           bootstrap,
-          issuance,
+          pricing: issuance,
+          issuance: settlementIssuance,
           access,
           existingActiveGrantId:
             existingActiveGrant?.id ?? null,

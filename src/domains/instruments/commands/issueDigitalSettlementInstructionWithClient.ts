@@ -55,6 +55,20 @@ export async function issueDigitalSettlementInstructionWithClient(params: {
     );
   }
 
+  const pricing = instrument.digitalSettlementInstruction;
+
+  if (
+    pricing.pricingStatus !== "FIXED" ||
+    !pricing.spotBenchmark ||
+    !pricing.spotPricePerKgUsd ||
+    !pricing.pricePerKgUsd ||
+    !pricing.transactionValueUsd ||
+    !pricing.settlementAmountUsd ||
+    !pricing.priceFixedAt
+  ) {
+    throw new Error("[DSI_ISSUANCE_PRICE_FIXING_REQUIRED]");
+  }
+
   if (instrument.status === INSTITUTIONAL_INSTRUMENT_STATUS.ISSUED) {
     if (
       instrument.digitalSettlementInstruction.receivingAddress !==

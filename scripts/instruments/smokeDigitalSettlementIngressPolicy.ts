@@ -40,6 +40,13 @@ async function main() {
         digitalSettlementInstruction: {
           id: "settlement-1",
           publicId: "fw-dsi-2026-001",
+          pricingStatus: "FIXED",
+          spotBenchmark: "Approved benchmark",
+          spotPricePerKgUsd: "140437.68",
+          pricePerKgUsd: "126393.91",
+          transactionValueUsd: "6319695.50",
+          settlementAmountUsd: "473977.16",
+          priceFixedAt: new Date("2026-09-17T15:00:00.000Z"),
           receivingAddress: null,
         },
       }),
@@ -65,6 +72,41 @@ async function main() {
       },
     },
   } as unknown as DigitalSettlementIssuanceClient;
+
+  const unpricedClient = {
+    ...client,
+    institutionalInstrument: {
+      findUnique: async () => ({
+        id: "instrument-unpriced",
+        status: "DRAFT",
+        currentVersion: 1,
+        versions: [{ id: "version-unpriced", number: 1, status: "DRAFT" }],
+        digitalSettlementInstruction: {
+          id: "settlement-unpriced",
+          publicId: "fw-dsi-unpriced",
+          pricingStatus: "PENDING_FIXING",
+          spotBenchmark: null,
+          spotPricePerKgUsd: null,
+          pricePerKgUsd: null,
+          transactionValueUsd: null,
+          settlementAmountUsd: null,
+          priceFixedAt: null,
+          receivingAddress: null,
+        },
+      }),
+    },
+  } as unknown as DigitalSettlementIssuanceClient;
+
+  await assert.rejects(
+    () =>
+      issueDigitalSettlementInstructionWithClient({
+        client: unpricedClient,
+        instrumentReference: "FW-DSI-UNPRICED",
+        receivingAddress: OPERATIONS_ADDRESS,
+        actorUserId: "operator-1",
+      }),
+    /DSI_ISSUANCE_PRICE_FIXING_REQUIRED/,
+  );
 
   const result = await issueDigitalSettlementInstructionWithClient({
     client,

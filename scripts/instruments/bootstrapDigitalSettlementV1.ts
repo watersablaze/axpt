@@ -5,6 +5,10 @@ import {
   type DigitalSettlementBootstrapClient,
 } from "../../src/domains/instruments/bootstrap/bootstrapDigitalSettlementV1WithClient";
 import {
+  fixDigitalSettlementPricingWithClient,
+  type DigitalSettlementPriceFixingClient,
+} from "../../src/domains/instruments/commands/fixDigitalSettlementPricingWithClient";
+import {
   issueDigitalSettlementInstructionWithClient,
   type DigitalSettlementIssuanceClient,
 } from "../../src/domains/instruments/commands/issueDigitalSettlementInstructionWithClient";
@@ -18,6 +22,8 @@ const prisma = new PrismaClient();
 async function main() {
   const actorEmail = process.env.INSTRUMENT_BOOTSTRAP_ACTOR_EMAIL?.trim();
   const receivingAddress = process.env.FW_DSI_RECEIVING_ADDRESS?.trim();
+  const spotPricePerKgUsd = process.env.FW_DSI_SPOT_PRICE_PER_KG_USD?.trim();
+  const spotBenchmark = process.env.FW_DSI_SPOT_BENCHMARK?.trim();
   const configuredCounterpartyLegalName =
     process.env.FW_DSI_COUNTERPARTY_LEGAL_NAME?.trim();
   const counterpartyLegalName = INDERAKSH_LEGAL_NAME;
@@ -32,6 +38,12 @@ async function main() {
   ) {
     throw new Error(
       `[FW_DSI_COUNTERPARTY_LEGAL_NAME_MISMATCH] expected=${INDERAKSH_LEGAL_NAME} actual=${configuredCounterpartyLegalName}`,
+    );
+  }
+
+  if (receivingAddress && (!spotPricePerKgUsd || !spotBenchmark)) {
+    throw new Error(
+      "Issuance requires FW_DSI_SPOT_PRICE_PER_KG_USD and FW_DSI_SPOT_BENCHMARK",
     );
   }
 
@@ -50,13 +62,25 @@ async function main() {
 
   const result = await prisma.$transaction(
     async (
-      tx: DigitalSettlementBootstrapClient & DigitalSettlementIssuanceClient,
+      tx: DigitalSettlementBootstrapClient &
+        DigitalSettlementPriceFixingClient &
+        DigitalSettlementIssuanceClient,
     ) => {
       const bootstrap = await bootstrapDigitalSettlementV1WithClient({
         client: tx as DigitalSettlementBootstrapClient,
         actorUserId: actor.id,
         counterpartyLegalName,
       });
+
+      const pricing = receivingAddress
+        ? await fixDigitalSettlementPricingWithClient({
+            client: tx as DigitalSettlementPriceFixingClient,
+            instrumentReference: DSI_REFERENCE,
+            spotPricePerKgUsd: spotPricePerKgUsd!,
+            spotBenchmark: spotBenchmark!,
+            actorUserId: actor.id,
+          })
+        : null;
 
       const issuance = receivingAddress
         ? await issueDigitalSettlementInstructionWithClient({
@@ -67,7 +91,7 @@ async function main() {
           })
         : null;
 
-      return { bootstrap, issuance };
+      return { bootstrap, pricing, issuance };
     },
   );
 

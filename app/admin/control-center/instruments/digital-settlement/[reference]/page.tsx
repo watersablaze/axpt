@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import DigitalSettlementOperatorPanel from "@/components/admin/instruments/DigitalSettlementOperatorPanel";
 import {
   createDigitalSettlementV1Definition,
+  DSI_APPROVED_ISSUANCE_PRICING,
   DSI_REFERENCE,
   INDERAKSH_LEGAL_NAME,
   INDERAKSH_REPRESENTATIVE,
@@ -178,6 +179,12 @@ export default async function DigitalSettlementOperatorPage({
         }
         authorizedOperationsName={
           operationsWallet.name
+        }
+        defaultSpotBenchmark={
+          DSI_APPROVED_ISSUANCE_PRICING.spotBenchmark
+        }
+        defaultSpotPricePerKgUsd={
+          DSI_APPROVED_ISSUANCE_PRICING.spotPricePerKgUsd
         }
         verificationEvidence={
           verificationEvidence

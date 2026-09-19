@@ -46,6 +46,8 @@ type Props = {
   settlementAmountUsd: string | null;
   authorizedOperationsAddress: string;
   authorizedOperationsName: string;
+  defaultSpotBenchmark: string;
+  defaultSpotPricePerKgUsd: string;
   verificationEvidence: VerificationEvidence | null;
 };
 
@@ -68,6 +70,8 @@ export default function DigitalSettlementOperatorPanel({
   settlementAmountUsd,
   authorizedOperationsAddress,
   authorizedOperationsName,
+  defaultSpotBenchmark,
+  defaultSpotPricePerKgUsd,
   verificationEvidence,
 }: Props) {
   const router = useRouter();
@@ -77,6 +81,21 @@ export default function DigitalSettlementOperatorPanel({
   >(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [spotBenchmark, setSpotBenchmark] = useState(defaultSpotBenchmark);
+  const [spotPricePerKgUsd, setSpotPricePerKgUsd] = useState(
+    defaultSpotPricePerKgUsd,
+  );
+
+  const spotPrice = Number(spotPricePerKgUsd);
+  const purchasePricePerKg = Number.isFinite(spotPrice)
+    ? Math.round(spotPrice * 0.9 * 100) / 100
+    : null;
+  const transactionValue = purchasePricePerKg !== null
+    ? Math.round(purchasePricePerKg * 50 * 100) / 100
+    : null;
+  const tapAmount = transactionValue !== null
+    ? Math.round(transactionValue * 0.075 * 100) / 100
+    : null;
 
   const canConfirmVerification =
     settlementStatus === "AWAITING_VERIFICATION_TRANSFER" &&
@@ -105,8 +124,15 @@ export default function DigitalSettlementOperatorPanel({
       return;
     }
 
+    if (!spotBenchmark.trim() || !Number.isFinite(spotPrice) || spotPrice <= 0) {
+      setError(
+        "An approved benchmark and positive spot price per KG are required.",
+      );
+      return;
+    }
+
     const confirmed = window.confirm(
-      `Issue ${reference} to Corey Keller using ${authorizedOperationsName} (${authorizedOperationsAddress}) as the receiving wallet?`,
+      `Fix the Good-Faith TAP at ${tapAmount?.toFixed(2)} USDT and issue ${reference} to Corey Keller using ${authorizedOperationsName} (${authorizedOperationsAddress}) as the receiving wallet?`,
     );
 
     if (!confirmed) {
@@ -132,6 +158,8 @@ export default function DigitalSettlementOperatorPanel({
             receivingAddress:
               authorizedOperationsAddress,
             accessExpiresHours: 168,
+            spotBenchmark,
+            spotPricePerKgUsd,
           }),
         },
       );
@@ -357,6 +385,50 @@ export default function DigitalSettlementOperatorPanel({
             <div className="mt-1 break-all font-mono text-[11px] text-cyan-300">
               {authorizedOperationsAddress}
             </div>
+          </div>
+
+          <div className="mt-4 grid gap-3 rounded border border-neutral-800 bg-black/30 p-3 md:grid-cols-2">
+            <label className="text-[10px] uppercase tracking-wide text-neutral-500 md:col-span-2">
+              Approved benchmark
+              <input
+                value={spotBenchmark}
+                onChange={(event) => setSpotBenchmark(event.target.value)}
+                className="mt-2 w-full rounded border border-neutral-700 bg-black px-3 py-2 text-xs normal-case tracking-normal text-white"
+              />
+            </label>
+            <label className="text-[10px] uppercase tracking-wide text-neutral-500">
+              Spot price per KG (USD)
+              <input
+                inputMode="decimal"
+                value={spotPricePerKgUsd}
+                onChange={(event) => setSpotPricePerKgUsd(event.target.value)}
+                className="mt-2 w-full rounded border border-neutral-700 bg-black px-3 py-2 text-xs normal-case tracking-normal text-white"
+              />
+            </label>
+            <div className="rounded border border-neutral-800 p-3 text-xs text-neutral-400">
+              <div>
+                Purchase price / KG: {" "}
+                <span className="text-white">
+                  {purchasePricePerKg?.toFixed(2) ?? "—"}
+                </span>
+              </div>
+              <div className="mt-1">
+                50 KG value: {" "}
+                <span className="text-white">
+                  {transactionValue?.toFixed(2) ?? "—"}
+                </span>
+              </div>
+              <div className="mt-1">
+                7.5% TAP: {" "}
+                <span className="text-amber-300">
+                  {tapAmount?.toFixed(2) ?? "—"} USDT
+                </span>
+              </div>
+            </div>
+            <p className="text-[11px] leading-5 text-neutral-500 md:col-span-2">
+              Issuance fixes this approved benchmark and calculated TAP as the
+              immutable commercial snapshot shown to the buyer.
+            </p>
           </div>
 
           <div className="mt-4">

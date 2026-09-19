@@ -14,6 +14,15 @@ export const DSI_PUBLIC_ID = "fw-dsi-2026-001" as const;
 export const INDERAKSH_LEGAL_NAME = "Inderaksh Gold Refinery FZ-LLC" as const;
 export const INDERAKSH_REPRESENTATIVE = "Corey Keller, Vice President" as const;
 
+export const DSI_APPROVED_ISSUANCE_PRICING = {
+  spotBenchmark:
+    "LBMA Gold Price PM · 2026-09-17 · USD 4,368.10 per troy ounce",
+  spotPricePerKgUsd: "140437.68",
+  pricePerKgUsd: "126393.91",
+  transactionValueUsd: "6319695.50",
+  settlementAmountUsd: "473977.16",
+} as const;
+
 export const INDERAKSH_BUYER_SUBMISSION = {
   documentTitle: "Signed Letter of Intent & Transaction Intake",
   submittedAt: new Date("2026-09-17T00:00:00.000Z"),

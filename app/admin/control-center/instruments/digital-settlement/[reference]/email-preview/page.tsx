@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import {
   buildDigitalSettlementEmailPreview,
   DIGITAL_SETTLEMENT_EMAIL_EVENT,
+  getDigitalSettlementSender,
 } from "@/domains/instruments/communications/sendDigitalSettlementStateEmail";
 import {
   DIGITAL_SETTLEMENT_RECIPIENTS,
@@ -42,9 +43,7 @@ export default async function DigitalSettlementEmailPreviewPage({
       verificationAmountUsdt: "50",
     });
 
-  const sender =
-    process.env.DSI_FROM_EMAIL ||
-    "French-Ward <french-ward@axpt.io>";
+  const sender = getDigitalSettlementSender();
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6">
