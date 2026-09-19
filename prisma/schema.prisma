@@ -116,6 +116,9 @@ model InstitutionalProfile {
 
   directReports InstitutionalProfile[] @relation("InstitutionalProfileReporting")
 
+  authorityGrantsReceived InstitutionalAuthorityGrant[] @relation("InstitutionalAuthorityRecipient")
+  authorityGrantsIssued   InstitutionalAuthorityGrant[] @relation("InstitutionalAuthorityIssuer")
+
   @@index([roleClass])
   @@index([organizationalUnit])
   @@index([standing])
@@ -153,6 +156,96 @@ enum InstitutionalStanding {
   RESTRICTED
   SUSPENDED
   INACTIVE
+}
+
+model InstitutionalAuthorityGrant {
+  id String @id @default(cuid())
+
+  recipientProfileId String
+  issuedByProfileId  String
+
+  authority InstitutionalAuthority
+
+  scopeType InstitutionalAuthorityScopeType @default(GLOBAL)
+  scopeId   String?
+
+  status InstitutionalAuthorityGrantStatus @default(ACTIVE)
+
+  conditions Json?
+  rationale  String?
+
+  issuedAt    DateTime @default(now())
+  effectiveAt DateTime @default(now())
+  expiresAt   DateTime?
+  revokedAt   DateTime?
+
+  recipient InstitutionalProfile @relation(
+    "InstitutionalAuthorityRecipient",
+    fields: [recipientProfileId],
+    references: [id],
+    onDelete: Cascade
+  )
+
+  issuedBy InstitutionalProfile @relation(
+    "InstitutionalAuthorityIssuer",
+    fields: [issuedByProfileId],
+    references: [id],
+    onDelete: Restrict
+  )
+
+  @@index([recipientProfileId, status])
+  @@index([authority, status])
+  @@index([scopeType, scopeId])
+  @@index([issuedByProfileId])
+  @@index([expiresAt])
+}
+
+enum InstitutionalAuthority {
+  ACCESS
+  INTRODUCTION
+  COMMUNICATION
+  PRESENTATION
+  COORDINATION
+  NEGOTIATION
+  DOCUMENT_PREPARATION
+  DOCUMENT_REVIEW
+  DOCUMENT_APPROVAL
+  COMMERCIAL_REVIEW
+  COMMERCIAL_APPROVAL
+  LEGAL_REVIEW
+  FIDUCIARY_REVIEW
+  FIDUCIARY_APPROVAL
+  OPERATION_ASSIGNMENT
+  OPERATION_SUSPENSION
+  TRANSACTION_INITIATION
+  TRANSACTION_REVIEW
+  TRANSACTION_APPROVAL
+  TREASURY_REQUEST
+  TREASURY_REVIEW
+  TREASURY_APPROVAL
+  TREASURY_EXECUTION
+  INSTRUMENT_CREATION
+  INSTRUMENT_ISSUANCE
+  GOVERNANCE_ADMINISTRATION
+  SYSTEM_ADMINISTRATION
+}
+
+enum InstitutionalAuthorityScopeType {
+  GLOBAL
+  ORGANIZATIONAL_UNIT
+  TRANSACTION
+  TRANSACTION_DOSSIER
+  CASE
+  INSTITUTIONAL_INSTRUMENT
+  COUNTERPARTY
+  TREASURY_AGGREGATE
+}
+
+enum InstitutionalAuthorityGrantStatus {
+  ACTIVE
+  SUSPENDED
+  REVOKED
+  EXPIRED
 }
 
 // ============================================================================
