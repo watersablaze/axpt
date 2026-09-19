@@ -37,6 +37,8 @@ type DigitalSettlementVerificationConflictInstrumentRow =
   Readonly<{
     reference: string;
 
+    status: string;
+
     digitalSettlementInstruction:
       | Readonly<{
           settlementAsset: string;
@@ -50,9 +52,22 @@ type DigitalSettlementVerificationConflictInstrumentRow =
             toString(): string;
           };
 
+          verificationTxHash:
+            string | null;
+
           settlementStatus: string;
         }>
       | null;
+  }>;
+
+type DigitalSettlementVerificationVersionRow =
+  Readonly<{
+    number: number;
+
+    status: string;
+
+    issuedAt:
+      Date | null;
   }>;
 
 function toCandidate(
@@ -153,6 +168,9 @@ export async function findDigitalSettlementVerificationCandidateWithClient(
         include: {
           digitalSettlementInstruction:
             true,
+
+          versions:
+            true,
         },
       });
 
@@ -176,7 +194,85 @@ export async function findDigitalSettlementVerificationCandidateWithClient(
     });
 
   /*
-   * Query at most two.
+   * Verification authority begins when the current DSI version is
+   * actually issued.
+   *
+   * Instrument creation time is not sufficient: the settlement
+   * instruction may exist in DRAFT before the buyer is authorized
+   * to transmit the verification transfer.
+   */
+  const currentVersion =
+    (
+      instrument.versions as
+        readonly DigitalSettlementVerificationVersionRow[]
+    ).find(
+      (version) =>
+        version.number ===
+        instrument.currentVersion,
+    );
+
+  if (
+    !currentVersion ||
+    currentVersion.status !==
+      "ISSUED" ||
+    !currentVersion.issuedAt
+  ) {
+    throw new Error(
+      `[DSI_VERIFICATION_MATCH_CURRENT_VERSION_NOT_ISSUED] ${instrumentReference}`,
+    );
+  }
+
+  const issuedAt =
+    currentVersion.issuedAt;
+
+  /*
+   * A chain transfer can support at most one institutional
+   * verification recognition.
+   *
+   * Build the consumed transaction set before selecting observation
+   * candidates so previously recognized transfers do not create
+   * false ambiguity or hide a later eligible transfer.
+   */
+  const otherInstruments =
+    (
+      await client
+        .institutionalInstrument
+        .findMany({
+          where: {
+            id: {
+              not:
+                instrument.id,
+            },
+          },
+
+          include: {
+            digitalSettlementInstruction:
+              true,
+          },
+        })
+    ) as readonly DigitalSettlementVerificationConflictInstrumentRow[];
+
+  const consumedTransactionHashes =
+    otherInstruments
+      .map(
+        (other) =>
+          other
+            .digitalSettlementInstruction
+            ?.verificationTxHash
+            ?.trim()
+            .toLowerCase() ??
+          null,
+      )
+      .filter(
+        (transactionHash):
+          transactionHash is string =>
+            Boolean(
+              transactionHash,
+            ),
+      );
+
+  /*
+   * Query at most two eligible observations.
    *
    * AO-1E never chooses between multiple matching chain facts.
    * Two is sufficient to prove ambiguity.
@@ -212,6 +308,27 @@ export async function findDigitalSettlementVerificationCandidateWithClient(
 
           status:
             "CONFIRMED",
+
+          /*
+           * Only canonical Ethereum time can establish whether the
+           * transfer occurred after DSI issuance.
+           *
+           * detectedAt / validatedAt / confirmedAt are AXPT process
+           * times and are deliberately not used here.
+           */
+          chainTimestamp: {
+            gte:
+              issuedAt,
+          },
+
+          ...(consumedTransactionHashes.length > 0
+            ? {
+                txHash: {
+                  notIn:
+                    consumedTransactionHashes,
+                },
+              }
+            : {}),
         },
 
         orderBy: [
@@ -277,32 +394,18 @@ export async function findDigitalSettlementVerificationCandidateWithClient(
    * single candidate, prove that no other issued DSI is waiting on the
    * same network / asset / receiving address / amount signature.
    */
-  const otherIssuedInstruments =
-    (
-      await client
-        .institutionalInstrument
-        .findMany({
-          where: {
-            id: {
-              not:
-                instrument.id,
-            },
-
-            status:
-              INSTITUTIONAL_INSTRUMENT_STATUS.ISSUED,
-          },
-
-          include: {
-            digitalSettlementInstruction:
-              true,
-          },
-        })
-    ) as readonly DigitalSettlementVerificationConflictInstrumentRow[];
-
   const conflictingInstrumentReferences =
-    otherIssuedInstruments
+    otherInstruments
       .filter(
         (other) => {
+          /*
+           * Only simultaneously live issued instructions can create
+           * instruction-signature ambiguity.
+           *
+           * Consumed transaction exclusion above is broader: a tx
+           * remains consumed even if its prior instrument later leaves
+           * ISSUED state.
+           */
           const otherSettlement =
             other
               .digitalSettlementInstruction;
@@ -314,10 +417,12 @@ export async function findDigitalSettlementVerificationCandidateWithClient(
           }
 
           if (
+            other.status !==
+              INSTITUTIONAL_INSTRUMENT_STATUS.ISSUED ||
             otherSettlement
               .settlementStatus !==
-            DIGITAL_SETTLEMENT_STATUS
-              .AWAITING_VERIFICATION_TRANSFER
+              DIGITAL_SETTLEMENT_STATUS
+                .AWAITING_VERIFICATION_TRANSFER
           ) {
             return false;
           }
