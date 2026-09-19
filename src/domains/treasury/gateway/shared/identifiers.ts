@@ -12,6 +12,8 @@ export type BeneficiaryProfileId = string;
 
 export type SettlementEndpointId = string;
 
+export type SettlementSourceId = string;
+
 export type ProgramCapitalReceiptId = string;
 
 export type TreasuryInstructionId = string;
