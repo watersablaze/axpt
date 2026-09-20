@@ -15,11 +15,18 @@ import {
   type SettlementObserverCycleClient,
 } from "@/domains/treasury/settlement-observer/runSettlementObserverCycleWithClient";
 
+import {
+  resolveFinalizedSettlementBootstrapBlock,
+} from "@/domains/treasury/settlement-observer/resolveFinalizedSettlementBootstrapBlock";
+
 const ENABLE_TOKEN =
   "ENABLED";
 
-const COMMAND =
+const RUN_COMMAND =
   "RUN_ONE_BLOCK";
+
+const RESOLVE_BOOTSTRAP_COMMAND =
+  "RESOLVE_BOOTSTRAP_BLOCK";
 
 type Body = Readonly<{
   command?: string;
@@ -254,20 +261,61 @@ export async function POST(
 
     if (
       body.command !==
-      COMMAND
+        RUN_COMMAND &&
+      body.command !==
+        RESOLVE_BOOTSTRAP_COMMAND
     ) {
       return NextResponse.json(
         {
           ok: false,
           error:
             "SETTLEMENT_OBSERVER_COMMAND_REQUIRED",
-          expectedCommand:
-            COMMAND,
+          expectedCommands: [
+            RESOLVE_BOOTSTRAP_COMMAND,
+            RUN_COMMAND,
+          ],
         },
         {
           status: 400,
         },
       );
+    }
+
+    if (
+      body.command ===
+      RESOLVE_BOOTSTRAP_COMMAND
+    ) {
+      const bootstrap =
+        await resolveFinalizedSettlementBootstrapBlock();
+
+      return NextResponse.json({
+        ok: true,
+
+        operator: {
+          userId:
+            actor.id,
+
+          email:
+            actor.email,
+        },
+
+        bootstrap: {
+          chainId:
+            bootstrap.chainId,
+
+          network:
+            bootstrap.network,
+
+          blockNumber:
+            bootstrap.blockNumber.toString(),
+
+          blockHash:
+            bootstrap.blockHash,
+
+          blockTimestamp:
+            bootstrap.blockTimestamp.toISOString(),
+        },
+      });
     }
 
     const bootstrapFromBlock =
