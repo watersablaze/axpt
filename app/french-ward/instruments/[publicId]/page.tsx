@@ -109,7 +109,7 @@ function createPreviewInstruction() {
       definition.settlement.settlementPercentage,
     settlementAmountUsd:
       DSI_APPROVED_ISSUANCE_PRICING.settlementAmountUsd,
-    priceFixedAt: new Date("2026-09-17T15:00:00.000Z"),
+    priceFixedAt: new Date("2026-09-18T15:00:00.000Z"),
     settlementAsset:
       definition.settlement.settlementAsset,
     settlementNetwork:

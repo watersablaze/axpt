@@ -16,11 +16,11 @@ export const INDERAKSH_REPRESENTATIVE = "Corey Keller, Vice President" as const;
 
 export const DSI_APPROVED_ISSUANCE_PRICING = {
   spotBenchmark:
-    "LBMA Gold Price PM · 2026-09-17 · USD 4,368.10 per troy ounce",
-  spotPricePerKgUsd: "140437.68",
-  pricePerKgUsd: "126393.91",
-  transactionValueUsd: "6319695.50",
-  settlementAmountUsd: "473977.16",
+    "LBMA Gold Price PM · 2026-09-18 · USD 4,348.15 per troy ounce",
+  spotPricePerKgUsd: "139796.27",
+  pricePerKgUsd: "125816.64",
+  transactionValueUsd: "6290832.00",
+  settlementAmountUsd: "471812.40",
 } as const;
 
 export const INDERAKSH_BUYER_SUBMISSION = {
