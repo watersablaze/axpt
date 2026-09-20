@@ -147,14 +147,16 @@ async function main() {
           action:
             "Present current French-Ward commercial materials without alteration.",
           actorUserId: actor.id,
-          effectiveAt: new Date("2026-09-20T12:02:00.000Z"),
+          effectiveAt: now,
         });
 
         assert.equal(duplicate.created, false);
 
         assert.equal(duplicate.authority.id, presentation.authority.id);
 
-        console.log("✓ exact active authority disposition is idempotent");
+        console.log(
+          "✓ exact authority disposition and effective time are idempotent",
+        );
 
         await assert.rejects(
           () =>

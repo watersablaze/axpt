@@ -2,8 +2,6 @@ import type { PrismaClient } from "@prisma/client";
 
 import {
   INSTITUTIONAL_INSTRUMENT_KIND,
-  INSTRUMENT_AUTHORITY_CLASS,
-  isInstrumentAuthorityActive,
   type InstrumentAuthority,
   type InstrumentAuthorityClass,
 } from "../../contracts";
@@ -16,6 +14,13 @@ import {
   type RepresentativeAuthorityConditions,
   type RepresentativeAuthorityKey,
 } from "../contracts";
+
+import {
+  assertRepresentativeAuthorityConditions,
+  assertRepresentativeAuthorityInterval,
+  expectedRepresentativeAuthorityHolderPartyId,
+  representativeAuthorityIntervalsOverlap,
+} from "../authorityIntegrity";
 
 export type RepresentativeProgramAuthorityRecordingClient = Pick<
   PrismaClient,
@@ -113,6 +118,13 @@ export async function recordRepresentativeProgramAuthorityWithClient(params: {
 
   const expiresAt = params.expiresAt ?? null;
 
+  assertRepresentativeAuthorityConditions(params.conditions);
+
+  assertRepresentativeAuthorityInterval({
+    effectiveAt,
+    expiresAt,
+  });
+
   if (
     appointment.effectiveAt &&
     effectiveAt.getTime() < appointment.effectiveAt.getTime()
@@ -135,10 +147,10 @@ export async function recordRepresentativeProgramAuthorityWithClient(params: {
     throw new Error("[ARP_AUTHORITY_EXCEEDS_APPOINTMENT_TERM]");
   }
 
-  const holderPartyId =
-    params.authorityClass === INSTRUMENT_AUTHORITY_CLASS.RESERVED
-      ? null
-      : appointment.instrumentPartyId;
+  const holderPartyId = expectedRepresentativeAuthorityHolderPartyId({
+    authorityClass: params.authorityClass,
+    appointmentInstrumentPartyId: appointment.instrumentPartyId,
+  });
 
   const candidates = await params.client.instrumentAuthority.findMany({
     where: {
@@ -165,17 +177,32 @@ export async function recordRepresentativeProgramAuthorityWithClient(params: {
     },
   });
 
-  const operative = candidates.filter((candidate: InstrumentAuthority) =>
-    isInstrumentAuthorityActive(candidate, effectiveAt),
-  );
+  const proposedInterval = {
+    effectiveAt,
+    expiresAt,
+  };
 
-  if (operative.length > 1) {
+  const overlapping = candidates.filter((candidate: InstrumentAuthority) => {
+    const candidateInterval = {
+      effectiveAt: candidate.effectiveAt,
+      expiresAt: candidate.expiresAt,
+    };
+
+    assertRepresentativeAuthorityInterval(candidateInterval);
+
+    return representativeAuthorityIntervalsOverlap(
+      proposedInterval,
+      candidateInterval,
+    );
+  });
+
+  if (overlapping.length > 1) {
     throw new Error(
-      `[ARP_AUTHORITY_SLOT_CONTRADICTION] key=${params.authorityKey} count=${operative.length}`,
+      `[ARP_AUTHORITY_SLOT_CONTRADICTION] key=${params.authorityKey} count=${overlapping.length}`,
     );
   }
 
-  const existing = operative[0];
+  const existing = overlapping[0];
 
   if (existing) {
     const sameDisposition =
@@ -183,6 +210,7 @@ export async function recordRepresentativeProgramAuthorityWithClient(params: {
       existing.holderPartyId === holderPartyId &&
       existing.action === action &&
       equalJson(existing.conditions, params.conditions ?? null) &&
+      existing.effectiveAt.getTime() === effectiveAt.getTime() &&
       (existing.expiresAt?.getTime() ?? null) ===
         (expiresAt?.getTime() ?? null);
 
