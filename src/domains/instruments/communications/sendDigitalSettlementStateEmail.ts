@@ -9,6 +9,7 @@ export { getDigitalSettlementSender } from "./digitalSettlementSender";
 
 export const DIGITAL_SETTLEMENT_EMAIL_EVENT = {
   ISSUED: "ISSUED",
+  ACCESS_REISSUED: "ACCESS_REISSUED",
   VERIFICATION_CONFIRMED: "VERIFICATION_CONFIRMED",
   PRINCIPAL_AUTHORIZED: "PRINCIPAL_AUTHORIZED",
 } as const;
@@ -23,6 +24,7 @@ export type SendDigitalSettlementStateEmailInput = {
   verificationAmountUsdt?: string | null;
   remainingAmountUsdt?: string | null;
   verificationTxHash?: string | null;
+  deliveryKey?: string | null;
 };
 
 function escapeHtml(value: string) {
@@ -82,6 +84,19 @@ function buyerMessage(input: SendDigitalSettlementStateEmailInput) {
         ],
       };
 
+    case DIGITAL_SETTLEMENT_EMAIL_EVENT.ACCESS_REISSUED:
+      return {
+        subject: `Private Instrument Access Updated — ${input.reference}`,
+        heading: "Private Instrument Access Updated",
+        body: [
+          `Mr. Keller,`,
+          `Your private access credential for Digital Settlement Instruction ${input.reference} has been refreshed.`,
+          "Please use the updated private instrument access below. The prior access link is no longer valid.",
+          `The Digital Settlement Instruction itself is unchanged. At this stage, only the ${verificationAmount} USDT verification transfer is authorized.`,
+          "The remaining Good-Faith Transaction Authorization Payment remains paused pending separate French-Ward authorization.",
+        ],
+      };
+
     case DIGITAL_SETTLEMENT_EMAIL_EVENT.VERIFICATION_CONFIRMED:
       return {
         subject: `Verification Confirmed — ${input.reference}`,
@@ -122,6 +137,17 @@ function internalMessage(input: SendDigitalSettlementStateEmailInput) {
         ],
       };
 
+    case DIGITAL_SETTLEMENT_EMAIL_EVENT.ACCESS_REISSUED:
+      return {
+        subject: `DSI Access Updated — ${input.reference}`,
+        body: [
+          `Private access for ${input.reference} has been refreshed for Corey Keller.`,
+          "The prior buyer access credential is no longer valid.",
+          `Authorized buyer action remains ${input.verificationAmountUsdt ?? "50"} USDT verification transfer only.`,
+          "The remaining TAP is not authorized.",
+        ],
+      };
+
     case DIGITAL_SETTLEMENT_EMAIL_EVENT.VERIFICATION_CONFIRMED:
       return {
         subject: `DSI Verification Confirmed — ${input.reference}`,
@@ -153,6 +179,9 @@ function authorityLabel(
 ) {
   switch (input.event) {
     case DIGITAL_SETTLEMENT_EMAIL_EVENT.ISSUED:
+      return `${input.verificationAmountUsdt ?? "50"} USDT · VERIFICATION TRANSFER ONLY`;
+
+    case DIGITAL_SETTLEMENT_EMAIL_EVENT.ACCESS_REISSUED:
       return `${input.verificationAmountUsdt ?? "50"} USDT · VERIFICATION TRANSFER ONLY`;
 
     case DIGITAL_SETTLEMENT_EMAIL_EVENT.VERIFICATION_CONFIRMED:
@@ -434,7 +463,8 @@ export function buildDigitalSettlementEmailPreview(
     ),
     accessUrl: input.accessUrl,
     ctaLabel:
-      input.event === DIGITAL_SETTLEMENT_EMAIL_EVENT.ISSUED
+      input.event === DIGITAL_SETTLEMENT_EMAIL_EVENT.ISSUED ||
+      input.event === DIGITAL_SETTLEMENT_EMAIL_EVENT.ACCESS_REISSUED
         ? "View Private Instrument"
         : null,
   });
@@ -607,7 +637,7 @@ export async function sendDigitalSettlementStateEmail(
     buildDigitalSettlementEmailPreview(input);
 
   const buyerResult = await deliver({
-    type: `DSI_${input.event}_BUYER`,
+    type: `DSI_${input.event}${input.deliveryKey ? `_${input.deliveryKey}` : ""}_BUYER`,
     to: DIGITAL_SETTLEMENT_RECIPIENTS.buyer.email,
     subject: buyer.subject,
     heading: buyer.heading,
@@ -621,7 +651,7 @@ export async function sendDigitalSettlementStateEmail(
   });
 
   const internalResult = await deliver({
-    type: `DSI_${input.event}_INTERNAL`,
+    type: `DSI_${input.event}${input.deliveryKey ? `_${input.deliveryKey}` : ""}_INTERNAL`,
     to: DIGITAL_SETTLEMENT_RECIPIENTS.internal.map(
       (recipient) => recipient.email,
     ),

@@ -77,10 +77,11 @@ export default function DigitalSettlementOperatorPanel({
   const router = useRouter();
 
   const [busy, setBusy] = useState<
-    "issuance" | "verification" | "principal" | null
+    "issuance" | "access" | "verification" | "principal" | null
   >(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [replacementAccessUrl, setReplacementAccessUrl] = useState("");
   const [spotBenchmark, setSpotBenchmark] = useState(defaultSpotBenchmark);
   const [spotPricePerKgUsd, setSpotPricePerKgUsd] = useState(
     defaultSpotPricePerKgUsd,
@@ -192,6 +193,75 @@ export default function DigitalSettlementOperatorPanel({
         err instanceof Error
           ? err.message
           : "DSI_INITIAL_ISSUANCE_FAILED",
+      );
+    } finally {
+      setBusy(null);
+    }
+  }
+
+
+  async function sendAccessReissued() {
+    if (!instantiated || busy) {
+      return;
+    }
+
+    const accessUrl = replacementAccessUrl.trim();
+
+    if (!accessUrl) {
+      setError("The replacement private access URL is required.");
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Send Corey Keller the updated private access communication for ${reference}?`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setBusy("access");
+    setMessage(null);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `/api/admin/instruments/digital-settlement/${encodeURIComponent(
+          reference,
+        )}/access-reissued`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            accessUrl,
+          }),
+        },
+      );
+
+      const payload = await response.json();
+
+      if (!response.ok || !payload.ok) {
+        throw new Error(
+          payload.detail ??
+            payload.error ??
+            "DSI_ACCESS_REISSUED_FAILED",
+        );
+      }
+
+      setReplacementAccessUrl("");
+      setMessage(
+        "Updated private access communication sent to Corey Keller and internal recipients.",
+      );
+
+      router.refresh();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "DSI_ACCESS_REISSUED_FAILED",
       );
     } finally {
       setBusy(null);
@@ -480,6 +550,63 @@ export default function DigitalSettlementOperatorPanel({
           </div>
         </div>
       </section>
+
+      {instantiated ? (
+        <section className="rounded-xl border border-neutral-800 bg-black/20 p-4">
+          <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
+            Private Instrument Access
+          </div>
+
+          <h2 className="mt-1 text-sm font-medium text-white">
+            Send Updated Access
+          </h2>
+
+          <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500">
+            Send Corey Keller a branded French-Ward / AXPT access-update
+            communication. AXPT will verify that the supplied private URL
+            belongs to his current active VIEW grant before sending. This
+            action does not alter settlement state, pricing, verification, or
+            TAP authority.
+          </p>
+
+          <label className="mt-4 block text-[10px] uppercase tracking-wide text-neutral-500">
+            Replacement private instrument URL
+            <input
+              type="password"
+              autoComplete="off"
+              spellCheck={false}
+              value={replacementAccessUrl}
+              onChange={(event) =>
+                setReplacementAccessUrl(event.target.value)
+              }
+              placeholder="Paste current private access URL"
+              className="mt-2 w-full rounded border border-neutral-700 bg-black px-3 py-2 font-mono text-xs normal-case tracking-normal text-white"
+            />
+          </label>
+
+          <p className="mt-2 text-[11px] leading-5 text-neutral-600">
+            The credential is submitted only for validation and communication
+            delivery. Do not copy it into logs, screenshots, or operator notes.
+          </p>
+
+          <div className="mt-4">
+            <button
+              type="button"
+              onClick={sendAccessReissued}
+              disabled={
+                !replacementAccessUrl.trim() ||
+                Boolean(busy)
+              }
+              className="rounded border border-amber-800 bg-amber-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-amber-300 hover:border-amber-600 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              {busy === "access"
+                ? "Sending..."
+                : "Send Updated Access"}
+            </button>
+          </div>
+        </section>
+      ) : null}
+
 
       <section className="rounded-xl border border-neutral-800 bg-black/20 p-4">
         <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
