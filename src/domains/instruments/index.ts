@@ -13,3 +13,4 @@ export * from "./commands/issueInstrumentAccessGrantWithClient";
 export * from "./commands/revokeInstrumentAccessGrantWithClient";
 export * from "./access/accessToken";
 export * from "./invariants/digitalSettlementCommercialSnapshot";
+export * from "./representative-program";
