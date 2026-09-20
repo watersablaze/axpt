@@ -3,6 +3,9 @@ import { resend } from "@/infrastructure/email/client";
 
 import { getDigitalSettlementEmailMode } from "./emailMode";
 import { DIGITAL_SETTLEMENT_RECIPIENTS } from "./digitalSettlementRecipients";
+import { getDigitalSettlementSender } from "./digitalSettlementSender";
+
+export { getDigitalSettlementSender } from "./digitalSettlementSender";
 
 export const DIGITAL_SETTLEMENT_EMAIL_EVENT = {
   ISSUED: "ISSUED",
@@ -21,13 +24,6 @@ export type SendDigitalSettlementStateEmailInput = {
   remainingAmountUsdt?: string | null;
   verificationTxHash?: string | null;
 };
-
-export function getDigitalSettlementSender() {
-  return (
-    process.env.DSI_FROM_EMAIL ||
-    "French-Ward <french-ward@axpt.io>"
-  );
-}
 
 function escapeHtml(value: string) {
   return value
