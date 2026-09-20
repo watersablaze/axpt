@@ -70,6 +70,11 @@ model User {
   instrumentAccessGrantsReceived  InstrumentAccessGrant[]   @relation("InstrumentAccessRecipient")
   instrumentAccessGrantsIssued    InstrumentAccessGrant[]   @relation("InstrumentAccessIssuer")
 
+  representativeProgramParticipants        RepresentativeProgramParticipant[]        @relation("RepresentativeProgramParticipantUser")
+  representativeProgramParticipantsCreated RepresentativeProgramParticipant[]        @relation("RepresentativeProgramParticipantCreator")
+  representativeProgramAppointmentsCreated RepresentativeProgramAppointment[]        @relation("RepresentativeProgramAppointmentCreator")
+  representativeProgramStandingActed       RepresentativeProgramStandingTransition[] @relation("RepresentativeProgramStandingActor")
+
   wallets Wallet?
 }
 
@@ -91,10 +96,11 @@ model InstitutionalInstrument {
 
   createdBy User @relation("InstitutionalInstrumentCreator", fields: [createdByUserId], references: [id])
 
-  versions                     InstrumentVersion[]
-  parties                      InstrumentParty[]
-  accessGrants                 InstrumentAccessGrant[]
-  digitalSettlementInstruction DigitalSettlementInstruction?
+  versions                         InstrumentVersion[]
+  parties                          InstrumentParty[]
+  accessGrants                     InstrumentAccessGrant[]
+  digitalSettlementInstruction     DigitalSettlementInstruction?
+  representativeProgramAppointment RepresentativeProgramAppointment?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -229,6 +235,8 @@ model InstrumentParty {
   instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
   user       User?                   @relation("InstrumentPartyUser", fields: [userId], references: [id], onDelete: SetNull)
 
+  representativeProgramAppointment RepresentativeProgramAppointment?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -266,9 +274,111 @@ model InstrumentAccessGrant {
   @@index([revokedAt])
 }
 
+// ============================================================================
+// AUTHORIZED REPRESENTATION PROGRAM
+// Program participant identity, docket, appointment and standing spine.
+// Program Standing is intentionally distinct from InstitutionalInstrumentStatus.
+// Appointment Class is intentionally distinct from InstrumentAuthority.
+// ============================================================================
+
+model RepresentativeProgramDocketSequence {
+  year       Int      @id
+  nextNumber Int      @default(1)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model RepresentativeProgramParticipant {
+  id              String                        @id @default(cuid())
+  docketReference String                        @unique
+  userId          String?
+  displayName     String
+  standing        RepresentativeProgramStanding
+  admittedAt      DateTime?
+  createdByUserId String
+
+  user      User? @relation("RepresentativeProgramParticipantUser", fields: [userId], references: [id], onDelete: SetNull)
+  createdBy User  @relation("RepresentativeProgramParticipantCreator", fields: [createdByUserId], references: [id])
+
+  appointments        RepresentativeProgramAppointment[]
+  standingTransitions RepresentativeProgramStandingTransition[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([standing])
+  @@index([createdByUserId])
+}
+
+model RepresentativeProgramAppointment {
+  id                String                         @id @default(cuid())
+  participantId     String
+  instrumentId      String                         @unique
+  instrumentPartyId String                         @unique
+  appointmentClass  RepresentativeAppointmentClass
+  scope             Json?
+  effectiveAt       DateTime?
+  expiresAt         DateTime?
+  endedAt           DateTime?
+  createdByUserId   String
+
+  participant     RepresentativeProgramParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  instrument      InstitutionalInstrument          @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+  instrumentParty InstrumentParty                  @relation(fields: [instrumentPartyId], references: [id], onDelete: Restrict)
+  createdBy       User                             @relation("RepresentativeProgramAppointmentCreator", fields: [createdByUserId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([participantId])
+  @@index([appointmentClass])
+  @@index([effectiveAt])
+  @@index([expiresAt])
+  @@index([endedAt])
+}
+
+model RepresentativeProgramStandingTransition {
+  id            String                         @id @default(cuid())
+  participantId String
+  fromStanding  RepresentativeProgramStanding?
+  toStanding    RepresentativeProgramStanding
+  actorUserId   String
+  reason        String?
+  metadata      Json?
+  occurredAt    DateTime                       @default(now())
+
+  participant RepresentativeProgramParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  actor       User                             @relation("RepresentativeProgramStandingActor", fields: [actorUserId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([participantId, occurredAt])
+  @@index([participantId, toStanding])
+  @@index([actorUserId])
+}
+
+enum RepresentativeAppointmentClass {
+  REGISTERED_COMMERCIAL_INTRODUCER
+  AUTHORIZED_COMMERCIAL_REPRESENTATIVE
+  TRANSACTION_REPRESENTATIVE
+  COMMERCIAL_MANDATE
+}
+
+enum RepresentativeProgramStanding {
+  PROVISIONAL
+  ACTIVE
+  RESTRICTED
+  SUSPENDED
+  EXPIRED
+  WITHDRAWN
+  REVOKED
+}
+
 enum InstitutionalInstrumentKind {
   ROYAL_CUSTODIAL_FRAMEWORK
   REPRESENTATIVE_MANDATE
+  REPRESENTATIVE_APPOINTMENT
   LETTER_OF_INTENT
   COOPERATION_FRAMEWORK
   DIGITAL_SETTLEMENT_INSTRUCTION
