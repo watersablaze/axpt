@@ -4,3 +4,8 @@ export * from "./commands/createRepresentativeProgramParticipantWithClient";
 export * from "./commands/createRepresentativeProgramAppointmentWithClient";
 export * from "./commands/transitionRepresentativeProgramStandingWithClient";
 export * from "./queries/loadRepresentativeProgramParticipantWithClient";
+export * from "./commands/recordRepresentativeProgramAuthorityWithClient";
+export * from "./queries/resolveRepresentativeProgramAuthorityExercisabilityWithClient";
+export * from "./commands/revokeRepresentativeProgramAuthorityWithClient";
+export * from "./commands/replaceRepresentativeProgramAuthority";
+export * from "./governance/runRepresentativeProgramGovernanceTransaction";
