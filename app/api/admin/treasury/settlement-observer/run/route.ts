@@ -25,6 +25,9 @@ const ENABLE_TOKEN =
 const RUN_COMMAND =
   "RUN_ONE_BLOCK";
 
+const CATCH_UP_COMMAND =
+  "RUN_BOUNDED_CATCH_UP";
+
 const RESOLVE_BOOTSTRAP_COMMAND =
   "RESOLVE_BOOTSTRAP_BLOCK";
 
@@ -263,6 +266,8 @@ export async function POST(
       body.command !==
         RUN_COMMAND &&
       body.command !==
+        CATCH_UP_COMMAND &&
+      body.command !==
         RESOLVE_BOOTSTRAP_COMMAND
     ) {
       return NextResponse.json(
@@ -273,6 +278,7 @@ export async function POST(
           expectedCommands: [
             RESOLVE_BOOTSTRAP_COMMAND,
             RUN_COMMAND,
+            CATCH_UP_COMMAND,
           ],
         },
         {
@@ -323,6 +329,30 @@ export async function POST(
         body.bootstrapFromBlock,
       );
 
+    if (
+      body.command ===
+        CATCH_UP_COMMAND &&
+      bootstrapFromBlock !==
+        undefined
+    ) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            "SETTLEMENT_OBSERVER_CATCH_UP_BOOTSTRAP_NOT_ALLOWED",
+        },
+        {
+          status: 400,
+        },
+      );
+    }
+
+    const maxNewBlocksPerCycle =
+      body.command ===
+        CATCH_UP_COMMAND
+        ? 25n
+        : 1n;
+
     const result =
       await runSettlementObserverCycleWithClient({
         client:
@@ -332,13 +362,18 @@ export async function POST(
         bootstrapFromBlock,
 
         /*
-         * Runtime invocation is deliberately narrower
-         * than the general domain runner.
+         * Runtime invocation remains deliberately bounded.
          *
-         * One invocation may admit at most one new block.
+         * RUN_ONE_BLOCK:
+         *   at most 1 new block.
+         *
+         * RUN_BOUNDED_CATCH_UP:
+         *   at most 25 new blocks and only from the
+         *   already-established durable cursor.
+         *
+         * Neither command carries recognition authority.
          */
-        maxNewBlocksPerCycle:
-          1n,
+        maxNewBlocksPerCycle,
 
         validationBatchSize:
           25,
