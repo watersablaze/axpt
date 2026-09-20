@@ -2,7 +2,6 @@ import type { PrismaClient } from "@prisma/client";
 
 import {
   INSTITUTIONAL_INSTRUMENT_KIND,
-  INSTRUMENT_AUTHORITY_CLASS,
   isInstrumentAuthorityActive,
   type InstrumentAuthority,
 } from "../../contracts";
@@ -10,6 +9,12 @@ import {
 import { revokeInstrumentAuthorityWithClient } from "../../commands/revokeInstrumentAuthorityWithClient";
 
 import type { RepresentativeAuthorityKey } from "../contracts";
+
+import {
+  assertRepresentativeAuthorityHolderIntegrity,
+  assertRepresentativeAuthorityInterval,
+  assertRepresentativeAuthorityRevocationNotFuture,
+} from "../authorityIntegrity";
 
 export type RepresentativeProgramAuthorityRevocationClient = Pick<
   PrismaClient,
@@ -24,6 +29,10 @@ export async function revokeRepresentativeProgramAuthorityWithClient(params: {
   revokedAt?: Date;
 }) {
   const revokedAt = params.revokedAt ?? new Date();
+
+  assertRepresentativeAuthorityRevocationNotFuture({
+    revokedAt,
+  });
 
   const appointment =
     await params.client.representativeProgramAppointment.findUnique({
@@ -48,6 +57,12 @@ export async function revokeRepresentativeProgramAuthorityWithClient(params: {
   ) {
     throw new Error(
       `[ARP_AUTHORITY_REVOCATION_WRONG_INSTRUMENT_KIND] ${appointment.instrument.kind}`,
+    );
+  }
+
+  if (appointment.instrumentParty.instrumentId !== appointment.instrumentId) {
+    throw new Error(
+      "[ARP_AUTHORITY_REVOCATION_APPOINTMENT_PARTY_INSTRUMENT_MISMATCH]",
     );
   }
 
@@ -76,9 +91,14 @@ export async function revokeRepresentativeProgramAuthorityWithClient(params: {
     },
   });
 
-  const operative = candidates.filter((candidate: InstrumentAuthority) =>
-    isInstrumentAuthorityActive(candidate, revokedAt),
-  );
+  const operative = candidates.filter((candidate: InstrumentAuthority) => {
+    assertRepresentativeAuthorityInterval({
+      effectiveAt: candidate.effectiveAt,
+      expiresAt: candidate.expiresAt,
+    });
+
+    return isInstrumentAuthorityActive(candidate, revokedAt);
+  });
 
   if (operative.length > 1) {
     throw new Error(
@@ -96,16 +116,12 @@ export async function revokeRepresentativeProgramAuthorityWithClient(params: {
     } as const;
   }
 
-  const expectedHolderPartyId =
-    authority.authorityClass === INSTRUMENT_AUTHORITY_CLASS.RESERVED
-      ? null
-      : appointment.instrumentPartyId;
-
-  if (authority.holderPartyId !== expectedHolderPartyId) {
-    throw new Error(
-      `[ARP_AUTHORITY_REVOCATION_FOREIGN_HOLDER] authorityId=${authority.id}`,
-    );
-  }
+  assertRepresentativeAuthorityHolderIntegrity({
+    authorityId: authority.id,
+    authorityClass: authority.authorityClass,
+    holderPartyId: authority.holderPartyId,
+    appointmentInstrumentPartyId: appointment.instrumentPartyId,
+  });
 
   if (revokedAt.getTime() < authority.effectiveAt.getTime()) {
     throw new Error("[ARP_AUTHORITY_REVOCATION_PRECEDES_EFFECTIVE_AT]");

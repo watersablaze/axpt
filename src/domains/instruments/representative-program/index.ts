@@ -9,3 +9,4 @@ export * from "./queries/resolveRepresentativeProgramAuthorityExercisabilityWith
 export * from "./commands/revokeRepresentativeProgramAuthorityWithClient";
 export * from "./commands/replaceRepresentativeProgramAuthority";
 export * from "./governance/runRepresentativeProgramGovernanceTransaction";
+export * from "./authorityIntegrity";

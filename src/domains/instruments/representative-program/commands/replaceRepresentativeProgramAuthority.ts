@@ -15,6 +15,8 @@ import type {
   RepresentativeAuthorityKey,
 } from "../contracts";
 
+import { assertRepresentativeAuthorityReplacementNotFuture } from "../authorityIntegrity";
+
 export type ReplaceRepresentativeProgramAuthorityParams = Readonly<{
   appointmentId: string;
   authorityKey: RepresentativeAuthorityKey;
@@ -44,7 +46,14 @@ export async function replaceRepresentativeProgramAuthorityWithClient(
     client: RepresentativeProgramGovernanceTransactionClient;
   },
 ) {
-  const replacedAt = params.replacedAt ?? new Date();
+  const operationStartedAt = new Date();
+
+  const replacedAt = params.replacedAt ?? operationStartedAt;
+
+  assertRepresentativeAuthorityReplacementNotFuture({
+    replacedAt,
+    now: operationStartedAt,
+  });
 
   const revoked = await revokeRepresentativeProgramAuthorityWithClient({
     client: params.client,
@@ -100,9 +109,10 @@ export async function replaceRepresentativeProgramAuthority(
 
   const replacedAt = params.replacedAt ?? operationStartedAt;
 
-  if (replacedAt.getTime() > operationStartedAt.getTime()) {
-    throw new Error("[ARP_AUTHORITY_FUTURE_REPLACEMENT_NOT_SUPPORTED]");
-  }
+  assertRepresentativeAuthorityReplacementNotFuture({
+    replacedAt,
+    now: operationStartedAt,
+  });
 
   return runRepresentativeProgramGovernanceTransaction(
     params.client,

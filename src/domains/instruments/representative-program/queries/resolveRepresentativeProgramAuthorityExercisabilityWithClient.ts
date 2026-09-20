@@ -14,6 +14,12 @@ import {
   type RepresentativeAuthorityKey,
 } from "../contracts";
 
+import {
+  assertRepresentativeAuthorityConditions,
+  assertRepresentativeAuthorityHolderIntegrity,
+  assertRepresentativeAuthorityInterval,
+} from "../authorityIntegrity";
+
 export type RepresentativeProgramAuthorityResolutionClient = Pick<
   PrismaClient,
   "representativeProgramAppointment" | "instrumentAuthority"
@@ -54,6 +60,12 @@ export async function resolveRepresentativeProgramAuthorityExercisabilityWithCli
     );
   }
 
+  if (appointment.instrumentParty.instrumentId !== appointment.instrumentId) {
+    throw new Error(
+      "[ARP_AUTHORITY_RESOLUTION_APPOINTMENT_PARTY_INSTRUMENT_MISMATCH]",
+    );
+  }
+
   const candidates = await params.client.instrumentAuthority.findMany({
     where: {
       instrumentId: appointment.instrumentId,
@@ -79,9 +91,14 @@ export async function resolveRepresentativeProgramAuthorityExercisabilityWithCli
     },
   });
 
-  const operative = candidates.filter((candidate: InstrumentAuthority) =>
-    isInstrumentAuthorityActive(candidate, at),
-  );
+  const operative = candidates.filter((candidate: InstrumentAuthority) => {
+    assertRepresentativeAuthorityInterval({
+      effectiveAt: candidate.effectiveAt,
+      expiresAt: candidate.expiresAt,
+    });
+
+    return isInstrumentAuthorityActive(candidate, at);
+  });
 
   if (operative.length > 1) {
     throw new Error(
@@ -114,6 +131,15 @@ export async function resolveRepresentativeProgramAuthorityExercisabilityWithCli
       REPRESENTATIVE_AUTHORITY_EXERCISABILITY_REASON.AUTHORITY_NOT_RECORDED,
     );
   }
+
+  assertRepresentativeAuthorityConditions(authority.conditions);
+
+  assertRepresentativeAuthorityHolderIntegrity({
+    authorityId: authority.id,
+    authorityClass: authority.authorityClass,
+    holderPartyId: authority.holderPartyId,
+    appointmentInstrumentPartyId: appointment.instrumentPartyId,
+  });
 
   if (
     appointment.effectiveAt &&
