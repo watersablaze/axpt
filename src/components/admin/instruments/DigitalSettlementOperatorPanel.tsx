@@ -31,6 +31,24 @@ type VerificationEvidence = Readonly<{
     readonly string[];
 }>;
 
+type ObserverRunResult = Readonly<{
+  disposition: "BOOTSTRAP_REQUIRED" | "IDLE" | "ADVANCED";
+  chainId: number;
+  network: string;
+  watchedAddress: string;
+  tokenContractAddress: string;
+  headBlock: string;
+  cursorBefore: string | null;
+  scannedFrom: string | null;
+  scannedTo: string | null;
+  cursorAfter: string | null;
+  observed: number;
+  persisted: number;
+  validationCandidates: number;
+  validated: number;
+  chainUnavailable: number;
+}>;
+
 type Props = {
   instantiated: boolean;
   reference: string;
@@ -77,10 +95,17 @@ export default function DigitalSettlementOperatorPanel({
   const router = useRouter();
 
   const [busy, setBusy] = useState<
-    "issuance" | "access" | "verification" | "principal" | null
+    | "issuance"
+    | "access"
+    | "observer"
+    | "verification"
+    | "principal"
+    | null
   >(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [observerResult, setObserverResult] =
+    useState<ObserverRunResult | null>(null);
   const [replacementAccessUrl, setReplacementAccessUrl] = useState("");
   const [spotBenchmark, setSpotBenchmark] = useState(defaultSpotBenchmark);
   const [spotPricePerKgUsd, setSpotPricePerKgUsd] = useState(
@@ -337,6 +362,74 @@ export default function DigitalSettlementOperatorPanel({
         err instanceof Error
           ? err.message
           : "DSI_CONFIRM_VERIFICATION_FAILED",
+      );
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function runObserverCatchUp() {
+    if (
+      settlementStatus !== "AWAITING_VERIFICATION_TRANSFER" ||
+      busy
+    ) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Run one bounded Ethereum observer catch-up for ${reference}? This may record chain observations and advance the observer cursor, but it cannot recognize verification or authorize TAP.`,
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setBusy("observer");
+    setMessage(null);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        "/api/admin/treasury/settlement-observer/run",
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            command: "RUN_BOUNDED_CATCH_UP",
+          }),
+        },
+      );
+
+      const payload = await response.json();
+
+      if (!response.ok || !payload.ok) {
+        throw new Error(
+          payload.detail ??
+            payload.error ??
+            "SETTLEMENT_OBSERVER_CATCH_UP_FAILED",
+        );
+      }
+
+      const result = payload.result as ObserverRunResult;
+
+      setObserverResult(result);
+      setMessage(
+        result.disposition === "ADVANCED"
+          ? `Observer advanced through block ${result.cursorAfter ?? result.scannedTo ?? "unknown"}. Recognition remains operator-controlled.`
+          : result.disposition === "IDLE"
+            ? "Observer is at the current chain head. Recognition remains operator-controlled."
+            : "Observer cursor requires a separately governed bootstrap boundary.",
+      );
+
+      router.refresh();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "SETTLEMENT_OBSERVER_CATCH_UP_FAILED",
       );
     } finally {
       setBusy(null);
@@ -607,6 +700,97 @@ export default function DigitalSettlementOperatorPanel({
         </section>
       ) : null}
 
+
+      <section className="rounded-xl border border-neutral-800 bg-black/20 p-4">
+        <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
+          Supervised Chain Observer
+        </div>
+
+        <h2 className="mt-1 text-sm font-medium text-white">
+          Observe Ethereum Settlement Rail
+        </h2>
+
+        <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500">
+          Run one bounded catch-up from the durable Production cursor. This
+          action may record canonical USDT transfer evidence and advance the
+          cursor. It cannot recognize verification, authorize the remaining
+          TAP, send recognition communications, or change the DSI lifecycle.
+        </p>
+
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={runObserverCatchUp}
+            disabled={
+              settlementStatus !== "AWAITING_VERIFICATION_TRANSFER" ||
+              Boolean(busy)
+            }
+            className="rounded border border-cyan-900 bg-cyan-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-600 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {busy === "observer"
+              ? "Observing..."
+              : "Run Bounded Observer Catch-Up"}
+          </button>
+        </div>
+
+        {observerResult ? (
+          <div className="mt-4 rounded border border-neutral-800 bg-black/30 p-3">
+            <div className="text-[10px] uppercase tracking-wide text-cyan-400">
+              Observer Result · {formatStatus(observerResult.disposition)}
+            </div>
+
+            <div className="mt-3 grid gap-3 text-xs md:grid-cols-2 lg:grid-cols-4">
+              <div>
+                <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+                  Scanned Range
+                </div>
+                <div className="mt-1 font-mono text-white">
+                  {observerResult.scannedFrom ?? "—"}
+                  {" → "}
+                  {observerResult.scannedTo ?? "—"}
+                </div>
+              </div>
+
+              <div>
+                <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+                  Cursor / Head
+                </div>
+                <div className="mt-1 font-mono text-white">
+                  {observerResult.cursorAfter ??
+                    observerResult.cursorBefore ??
+                    "—"}
+                  {" / "}
+                  {observerResult.headBlock}
+                </div>
+              </div>
+
+              <div>
+                <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+                  Observed / Persisted
+                </div>
+                <div className="mt-1 text-white">
+                  {observerResult.observed} / {observerResult.persisted}
+                </div>
+              </div>
+
+              <div>
+                <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+                  Validated / Unavailable
+                </div>
+                <div className="mt-1 text-white">
+                  {observerResult.validated} / {observerResult.chainUnavailable}
+                </div>
+              </div>
+            </div>
+
+            <p className="mt-3 text-[11px] leading-5 text-neutral-600">
+              Machine observation is evidence only. Refreshing chain evidence
+              does not perform operator recognition or authorize the remaining
+              {remainingAmount ? ` ${remainingAmount} USDT` : ""} TAP.
+            </p>
+          </div>
+        ) : null}
+      </section>
 
       <section className="rounded-xl border border-neutral-800 bg-black/20 p-4">
         <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">

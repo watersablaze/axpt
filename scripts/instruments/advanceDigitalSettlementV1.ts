@@ -5,9 +5,9 @@ import {
   type DigitalSettlementPrincipalAuthorizationClient,
 } from "../../src/domains/instruments/commands/authorizeDigitalSettlementPrincipalWithClient";
 import {
-  confirmDigitalSettlementVerificationWithClient,
-  type DigitalSettlementVerificationClient,
-} from "../../src/domains/instruments/commands/confirmDigitalSettlementVerificationWithClient";
+  recognizeDigitalSettlementVerificationWithClient,
+  type DigitalSettlementVerificationRecognitionClient,
+} from "../../src/domains/instruments/verification-recognition";
 import {
   fixDigitalSettlementPricingWithClient,
   type DigitalSettlementPriceFixingClient,
@@ -55,7 +55,7 @@ async function main() {
 
   const result = await prisma.$transaction(
     async (
-      tx: DigitalSettlementVerificationClient &
+      tx: DigitalSettlementVerificationRecognitionClient &
         DigitalSettlementPrincipalAuthorizationClient &
         DigitalSettlementPriceFixingClient,
     ) => {
@@ -96,13 +96,21 @@ async function main() {
           );
         }
 
-        return confirmDigitalSettlementVerificationWithClient({
-          client: tx as DigitalSettlementVerificationClient,
-          instrumentReference: DSI_REFERENCE,
-          transactionHash,
-          observedAmountUsdt,
-          observedReceivingAddress,
-          actorUserId: actor.id,
+        return recognizeDigitalSettlementVerificationWithClient({
+          client:
+            tx as DigitalSettlementVerificationRecognitionClient,
+
+          instrumentReference:
+            DSI_REFERENCE,
+
+          submitted: {
+            transactionHash,
+            observedAmountUsdt,
+            observedReceivingAddress,
+          },
+
+          actorUserId:
+            actor.id,
         });
       }
 

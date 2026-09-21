@@ -2,15 +2,8 @@ import { NextResponse } from "next/server";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { prisma } from "@/infrastructure/db/prisma";
 import {
-  confirmDigitalSettlementVerificationWithClient,
-  type DigitalSettlementVerificationClient,
-} from "@/domains/instruments/commands/confirmDigitalSettlementVerificationWithClient";
-import {
-  findDigitalSettlementVerificationCandidateWithClient,
-  type DigitalSettlementVerificationMatchingClient,
-} from "@/domains/instruments/verification-matching";
-import {
-  assertDigitalSettlementVerificationRecognition,
+  recognizeDigitalSettlementVerificationWithClient,
+  type DigitalSettlementVerificationRecognitionClient,
 } from "@/domains/instruments/verification-recognition";
 import {
   DIGITAL_SETTLEMENT_EMAIL_EVENT,
@@ -73,8 +66,7 @@ export async function POST(
     const result = await prisma.$transaction(
       async (
         tx:
-          DigitalSettlementVerificationClient &
-          DigitalSettlementVerificationMatchingClient,
+          DigitalSettlementVerificationRecognitionClient,
       ) => {
         /*
          * Recognition authority remains this existing route +
@@ -84,62 +76,43 @@ export async function POST(
          * stale or manually substituted client evidence cannot cross
          * the institutional boundary.
          */
-        const match =
-          await findDigitalSettlementVerificationCandidateWithClient({
-            client:
-              tx as DigitalSettlementVerificationMatchingClient,
-            instrumentReference:
-              reference,
-          });
+        return recognizeDigitalSettlementVerificationWithClient({
+          client:
+            tx as DigitalSettlementVerificationRecognitionClient,
 
-        const recognition =
-          assertDigitalSettlementVerificationRecognition({
-            match,
+          instrumentReference:
+            reference,
 
-            submitted: {
-              transactionHash:
-                body.transactionHash!,
-
-              observedAmountUsdt:
-                body.observedAmountUsdt!,
-
-              observedReceivingAddress:
-                body.observedReceivingAddress!,
-            },
-          });
-
-        const confirmation =
-          await confirmDigitalSettlementVerificationWithClient({
-            client:
-              tx as DigitalSettlementVerificationClient,
-            instrumentReference:
-              reference,
+          submitted: {
             transactionHash:
-              recognition.transactionHash,
-            observedAmountUsdt:
-              recognition.amountUsdt,
-            observedReceivingAddress:
-              recognition.receivingAddress,
-            actorUserId:
-              actor.id,
-          });
+              body.transactionHash!,
 
-        return {
-          confirmation,
-          recognition,
-        };
+            observedAmountUsdt:
+              body.observedAmountUsdt!,
+
+            observedReceivingAddress:
+              body.observedReceivingAddress!,
+          },
+
+          actorUserId:
+            actor.id,
+        });
 
       },
     );
 
-    const email = await sendDigitalSettlementStateEmail({
-      event: DIGITAL_SETTLEMENT_EMAIL_EVENT.VERIFICATION_CONFIRMED,
-      reference,
-      verificationAmountUsdt:
-        result.recognition.amountUsdt,
-      verificationTxHash:
-        result.recognition.transactionHash,
-    });
+    const email =
+      result.confirmation.confirmed
+        ? await sendDigitalSettlementStateEmail({
+            event:
+              DIGITAL_SETTLEMENT_EMAIL_EVENT.VERIFICATION_CONFIRMED,
+            reference,
+            verificationAmountUsdt:
+              result.recognition.amountUsdt,
+            verificationTxHash:
+              result.recognition.transactionHash,
+          })
+        : null;
 
     return NextResponse.json({
       ok: true,
