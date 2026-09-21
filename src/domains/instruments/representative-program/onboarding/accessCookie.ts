@@ -3,3 +3,5 @@ export const REPRESENTATIVE_ONBOARDING_ACCESS_COOKIE =
 
 export const REPRESENTATIVE_ONBOARDING_PATH =
   "/french-ward/representative-program/onboarding";
+
+export const REPRESENTATIVE_ONBOARDING_SUBMIT_PATH = `${REPRESENTATIVE_ONBOARDING_PATH}/submit`;

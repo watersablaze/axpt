@@ -1,5 +1,7 @@
 "use client";
 
+import { REPRESENTATIVE_ONBOARDING_SUBMIT_PATH } from "@/domains/instruments/representative-program/onboarding/accessCookie";
+
 import { type FormEvent, useState } from "react";
 
 import type { RepresentativeCandidateSubmissionInput } from "@/domains/instruments/representative-program/onboarding/http/candidateSubmissionSchema";
@@ -155,17 +157,14 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
     setError(null);
 
     try {
-      const response = await fetch(
-        "/api/french-ward/representative-program/onboarding",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          cache: "no-store",
-          body: JSON.stringify(payload),
+      const response = await fetch(REPRESENTATIVE_ONBOARDING_SUBMIT_PATH, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        cache: "no-store",
+        body: JSON.stringify(payload),
+      });
 
       const result = await response.json();
 
