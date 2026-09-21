@@ -115,7 +115,7 @@ export default async function DigitalSettlementOperatorPage({
         };
 
   return (
-    <div className="mx-auto w-full max-w-5xl space-y-5 px-4 pb-12 sm:px-6 lg:px-8">
+    <div className="mx-auto w-full max-w-5xl space-y-4 px-3 pb-10 sm:space-y-5 sm:px-6 sm:pb-12 lg:px-8">
       <DigitalSettlementOperatorPanel
         instantiated={Boolean(instrument && settlement)}
         currentVersion={instrument?.currentVersion ?? 0}

@@ -600,7 +600,7 @@ export default function DigitalSettlementOperatorPanel({
           Digital Settlement Instrument
         </div>
 
-        <div className="mt-2 flex flex-wrap items-start justify-between gap-4">
+        <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between sm:gap-4">
           <div>
             <h1 className="text-xl font-medium text-white">
               {reference}
@@ -614,7 +614,7 @@ export default function DigitalSettlementOperatorPanel({
             </p>
           </div>
 
-          <div className="rounded border border-cyan-900/70 bg-cyan-950/20 px-3 py-2 text-xs text-cyan-300">
+          <div className="w-full rounded border border-cyan-900/70 bg-cyan-950/20 px-3 py-2 text-xs text-cyan-300 sm:w-auto">
             {formatStatus(settlementStatus)}
           </div>
         </div>
@@ -630,7 +630,7 @@ export default function DigitalSettlementOperatorPanel({
             Issue Digital Settlement Instruction to Corey Keller
           </h2>
 
-          <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500">
+          <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500 sm:leading-5">
             This action will instantiate the canonical DSI, bind the registered
             AXPT Operations wallet, authorize only the 50 USDT verification
             transfer, create Corey Keller&apos;s private access grant, and
@@ -700,7 +700,7 @@ export default function DigitalSettlementOperatorPanel({
               type="button"
               onClick={issueInstrument}
               disabled={Boolean(busy)}
-              className="rounded border border-amber-800 bg-amber-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-amber-300 hover:border-amber-600 disabled:cursor-not-allowed disabled:opacity-40"
+              className="w-full rounded border border-amber-800 bg-amber-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-amber-300 hover:border-amber-600 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
             >
               {busy === "issuance"
                 ? "Issuing..."
@@ -710,7 +710,7 @@ export default function DigitalSettlementOperatorPanel({
         </section>
       ) : null}
 
-      <section className="grid gap-3 md:grid-cols-3">
+      <section className="grid gap-2 sm:gap-3 md:grid-cols-3">
         <div className="rounded-lg border border-neutral-800 bg-black/20 p-3">
           <div className="text-[10px] uppercase tracking-wide text-neutral-500">
             Pricing
@@ -746,7 +746,7 @@ export default function DigitalSettlementOperatorPanel({
       </section>
 
       {instantiated ? (
-        <section className="rounded-xl border border-neutral-800 bg-black/20 p-5 sm:p-6">
+        <section className="rounded-xl border border-neutral-800 bg-black/20 p-4 sm:p-6">
           <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
             Private Instrument Access
           </div>
@@ -755,7 +755,7 @@ export default function DigitalSettlementOperatorPanel({
             Send Updated Access
           </h2>
 
-          <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500">
+          <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500 sm:leading-5">
             Send Corey Keller a branded French-Ward / AXPT access-update
             communication. AXPT will verify that the supplied private URL
             belongs to his current active VIEW grant before sending. This
@@ -791,7 +791,7 @@ export default function DigitalSettlementOperatorPanel({
                 !replacementAccessUrl.trim() ||
                 Boolean(busy)
               }
-              className="rounded border border-amber-800 bg-amber-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-amber-300 hover:border-amber-600 disabled:cursor-not-allowed disabled:opacity-40"
+              className="w-full rounded border border-amber-800 bg-amber-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-amber-300 hover:border-amber-600 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
             >
               {busy === "access"
                 ? "Sending..."
@@ -802,7 +802,7 @@ export default function DigitalSettlementOperatorPanel({
       ) : null}
 
 
-      <section className="rounded-xl border border-neutral-800 bg-black/20 p-5 sm:p-6">
+      <section className="rounded-xl border border-neutral-800 bg-black/20 p-4 sm:p-6">
         <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
           Supervised Chain Observer
         </div>
@@ -811,7 +811,7 @@ export default function DigitalSettlementOperatorPanel({
           Observe Ethereum Settlement Rail
         </h2>
 
-        <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500">
+        <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500 sm:leading-5">
           Run one bounded catch-up from the durable Production cursor. This
           action may record canonical USDT transfer evidence and advance the
           cursor. It cannot recognize verification, authorize the remaining
@@ -826,7 +826,7 @@ export default function DigitalSettlementOperatorPanel({
               settlementStatus !== "AWAITING_VERIFICATION_TRANSFER" ||
               Boolean(busy)
             }
-            className="rounded border border-cyan-900 bg-cyan-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-600 disabled:cursor-not-allowed disabled:opacity-40"
+            className="w-full rounded border border-cyan-900 bg-cyan-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-600 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
           >
             {busy === "observer"
               ? "Observing..."
@@ -845,7 +845,7 @@ export default function DigitalSettlementOperatorPanel({
                 <div className="text-[10px] uppercase tracking-wide text-neutral-500">
                   Scanned Range
                 </div>
-                <div className="mt-1 font-mono text-white">
+                <div className="mt-1 break-all font-mono text-white">
                   {observerResult.scannedFrom ?? "—"}
                   {" → "}
                   {observerResult.scannedTo ?? "—"}
@@ -856,7 +856,7 @@ export default function DigitalSettlementOperatorPanel({
                 <div className="text-[10px] uppercase tracking-wide text-neutral-500">
                   Cursor / Head
                 </div>
-                <div className="mt-1 font-mono text-white">
+                <div className="mt-1 break-all font-mono text-white">
                   {observerResult.cursorAfter ??
                     observerResult.cursorBefore ??
                     "—"}
@@ -869,7 +869,7 @@ export default function DigitalSettlementOperatorPanel({
                 <div className="text-[10px] uppercase tracking-wide text-neutral-500">
                   Observed / Persisted
                 </div>
-                <div className="mt-1 text-white">
+                <div className="mt-1 break-words text-white">
                   {observerResult.observed} / {observerResult.persisted}
                 </div>
               </div>
@@ -878,7 +878,7 @@ export default function DigitalSettlementOperatorPanel({
                 <div className="text-[10px] uppercase tracking-wide text-neutral-500">
                   Validated / Unavailable
                 </div>
-                <div className="mt-1 text-white">
+                <div className="mt-1 break-words text-white">
                   {observerResult.validated} / {observerResult.chainUnavailable}
                 </div>
               </div>
@@ -893,7 +893,7 @@ export default function DigitalSettlementOperatorPanel({
         ) : null}
       </section>
 
-      <section className="rounded-xl border border-amber-900/60 bg-amber-950/10 p-5 sm:p-6">
+      <section className="rounded-xl border border-amber-900/60 bg-amber-950/10 p-4 sm:p-6">
         <div className="text-[10px] uppercase tracking-[0.18em] text-amber-500">
           Institutional Revision
         </div>
@@ -919,7 +919,7 @@ export default function DigitalSettlementOperatorPanel({
             <div className="text-[10px] uppercase tracking-wide text-neutral-500">
               Active Authority
             </div>
-            <div className="mt-1 text-white">
+            <div className="mt-1 break-words text-white">
               TAP Financier
             </div>
             <div className="mt-1 text-amber-300">
@@ -931,7 +931,7 @@ export default function DigitalSettlementOperatorPanel({
             <div className="text-[10px] uppercase tracking-wide text-neutral-500">
               Remaining TAP
             </div>
-            <div className="mt-1 text-white">
+            <div className="mt-1 break-words text-white">
               {remainingAmount
                 ? `${remainingAmount} USDT`
                 : "Awaiting amount"}
@@ -948,19 +948,19 @@ export default function DigitalSettlementOperatorPanel({
           review. No grant authorizes the remaining TAP.
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-2 border-t border-neutral-800 pt-4">
+        <div className="mt-4 flex flex-col gap-2 border-t border-neutral-800 pt-4 sm:flex-row sm:flex-wrap">
           <a
             href={`/admin/control-center/instruments/digital-settlement/${encodeURIComponent(
               reference,
             )}/email-preview?version=2`}
-            className="rounded border border-neutral-700 px-3 py-2 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-neutral-500 hover:text-white"
+            className="w-full rounded border border-neutral-700 px-3 py-2 text-center text-[10px] uppercase tracking-wide text-neutral-300 hover:border-neutral-500 hover:text-white sm:w-auto"
           >
             Review Five V2 Emails
           </a>
 
           <a
             href="/french-ward/instruments/__preview__?previewMode=buyer&version=2"
-            className="rounded border border-neutral-700 px-3 py-2 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-neutral-500 hover:text-white"
+            className="w-full rounded border border-neutral-700 px-3 py-2 text-center text-[10px] uppercase tracking-wide text-neutral-300 hover:border-neutral-500 hover:text-white sm:w-auto"
           >
             Review V2 Instrument
           </a>
@@ -971,7 +971,7 @@ export default function DigitalSettlementOperatorPanel({
             type="button"
             onClick={issueV2FinancierRevision}
             disabled={!canIssueV2 || Boolean(busy)}
-            className="rounded border border-amber-800 bg-amber-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-amber-300 hover:border-amber-600 disabled:cursor-not-allowed disabled:opacity-40"
+            className="w-full rounded border border-amber-800 bg-amber-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-amber-300 hover:border-amber-600 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
           >
             {busy === "v2"
               ? "Issuing V2..."
@@ -989,7 +989,7 @@ export default function DigitalSettlementOperatorPanel({
         ) : null}
       </section>
 
-      <section className="rounded-xl border border-neutral-800 bg-black/20 p-5 sm:p-6">
+      <section className="rounded-xl border border-neutral-800 bg-black/20 p-4 sm:p-6">
         <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
           Canonical Chain Evidence
         </div>
@@ -998,7 +998,7 @@ export default function DigitalSettlementOperatorPanel({
           Verification Transfer
         </h2>
 
-        <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500">
+        <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500 sm:leading-5">
           AXPT derives this evidence from the canonical Ethereum observation
           path. The operator may recognize an eligible transfer, but cannot
           alter its transaction hash, amount, receiving address, block, sender,
@@ -1021,7 +1021,7 @@ export default function DigitalSettlementOperatorPanel({
                       <div className="text-[10px] uppercase tracking-wide text-neutral-500">
                         Amount
                       </div>
-                      <div className="mt-1 text-white">
+                      <div className="mt-1 break-words text-white">
                         {verificationEvidence.amountUsdt} USDT
                       </div>
                     </div>
@@ -1030,7 +1030,7 @@ export default function DigitalSettlementOperatorPanel({
                       <div className="text-[10px] uppercase tracking-wide text-neutral-500">
                         Network
                       </div>
-                      <div className="mt-1 text-white">
+                      <div className="mt-1 break-words text-white">
                         {verificationEvidence.network}
                       </div>
                     </div>
@@ -1057,7 +1057,7 @@ export default function DigitalSettlementOperatorPanel({
                       <div className="text-[10px] uppercase tracking-wide text-neutral-500">
                         Block
                       </div>
-                      <div className="mt-1 font-mono text-white">
+                      <div className="mt-1 break-all font-mono text-white">
                         {verificationEvidence.candidate.blockNumber}
                       </div>
                     </div>
@@ -1066,7 +1066,7 @@ export default function DigitalSettlementOperatorPanel({
                       <div className="text-[10px] uppercase tracking-wide text-neutral-500">
                         Finality
                       </div>
-                      <div className="mt-1 text-white">
+                      <div className="mt-1 break-words text-white">
                         {verificationEvidence.candidate.confirmationCount}
                         {" / "}
                         {verificationEvidence.candidate.requiredConfirmations}
@@ -1078,7 +1078,7 @@ export default function DigitalSettlementOperatorPanel({
                       <div className="text-[10px] uppercase tracking-wide text-neutral-500">
                         Chain Time
                       </div>
-                      <div className="mt-1 text-white">
+                      <div className="mt-1 break-words text-white">
                         {verificationEvidence.candidate.chainTimestamp}
                       </div>
                     </div>
@@ -1098,7 +1098,7 @@ export default function DigitalSettlementOperatorPanel({
                   type="button"
                   onClick={confirmVerification}
                   disabled={!canConfirmVerification || Boolean(busy)}
-                  className="rounded border border-emerald-900 bg-emerald-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-emerald-300 hover:border-emerald-600 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="w-full rounded border border-emerald-900 bg-emerald-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-emerald-300 hover:border-emerald-600 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
                 >
                   {busy === "verification"
                     ? "Recognizing..."
@@ -1111,7 +1111,7 @@ export default function DigitalSettlementOperatorPanel({
                 <div className="text-xs font-medium text-amber-300">
                   Review required
                 </div>
-                <p className="mt-1 text-xs leading-5 text-neutral-500">
+                <p className="mt-1 text-xs leading-5 text-neutral-500 sm:leading-5">
                   {verificationEvidence.candidateCount ?? "Multiple"} eligible
                   finalized chain observations match this instruction. AXPT
                   will not choose between them automatically.
@@ -1123,7 +1123,7 @@ export default function DigitalSettlementOperatorPanel({
                 <div className="text-xs font-medium text-amber-300">
                   Recognition blocked
                 </div>
-                <p className="mt-1 text-xs leading-5 text-neutral-500">
+                <p className="mt-1 text-xs leading-5 text-neutral-500 sm:leading-5">
                   Another live issued settlement instruction has the same
                   verification signature. Operator recognition remains blocked
                   until the instruction ambiguity is resolved.
@@ -1143,7 +1143,7 @@ export default function DigitalSettlementOperatorPanel({
                 <div className="text-xs font-medium text-white">
                   Waiting for eligible finalized transfer
                 </div>
-                <p className="mt-1 text-xs leading-5 text-neutral-500">
+                <p className="mt-1 text-xs leading-5 text-neutral-500 sm:leading-5">
                   No post-issuance, unconsumed, finalized {verificationAmountUsdt}
                   {" USDT "}verification transfer currently satisfies the
                   canonical settlement matcher.
@@ -1179,7 +1179,7 @@ export default function DigitalSettlementOperatorPanel({
         )}
       </section>
 
-      <section className="rounded-xl border border-neutral-800 bg-black/20 p-5 sm:p-6">
+      <section className="rounded-xl border border-neutral-800 bg-black/20 p-4 sm:p-6">
         <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
           Good-Faith TAP Authority
         </div>
@@ -1188,7 +1188,7 @@ export default function DigitalSettlementOperatorPanel({
           Authorize Remaining TAP
         </h2>
 
-        <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500">
+        <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500 sm:leading-5">
           Principal authorization is available only after verification is
           confirmed and pricing is fixed. The domain command re-checks those
           conditions server-side before advancing the instrument.
@@ -1223,7 +1223,7 @@ export default function DigitalSettlementOperatorPanel({
             type="button"
             onClick={authorizePrincipal}
             disabled={!canAuthorizePrincipal || Boolean(busy)}
-            className="rounded border border-cyan-900 bg-cyan-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-600 disabled:cursor-not-allowed disabled:opacity-40"
+            className="w-full rounded border border-cyan-900 bg-cyan-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-600 disabled:cursor-not-allowed disabled:opacity-40 sm:w-auto"
           >
             {busy === "principal"
               ? "Authorizing..."
