@@ -3,15 +3,15 @@
 .panel,
 .standard {
   border-top: 1px solid var(--line);
-  padding: clamp(1.75rem, 3.5vw, 3.4rem) 0;
+  padding: clamp(1.45rem, 2.5vw, 2.3rem) 0;
 }
 
 .authorityBand {
-  border-right: 1px solid rgba(199, 183, 132, 0.3);
-  border-bottom: 1px solid rgba(199, 183, 132, 0.3);
-  border-left: 1px solid rgba(199, 183, 132, 0.3);
-  padding: clamp(1.4rem, 3vw, 2.25rem);
-  background: rgba(199, 183, 132, 0.065);
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  padding: clamp(1.2rem, 2vw, 1.65rem);
+  background: rgba(255, 255, 255, 0.018);
 }
 
 .previewNotice {
@@ -36,10 +36,11 @@
 .authorityBand h2 {
   margin: 0;
   color: #d8c68d;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.2rem, 1.8vw, 1.65rem);
-  line-height: 1.2;
-  font-weight: 400;
+  font-family: inherit;
+  font-size: clamp(1rem, 1.2vw, 1.15rem);
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .authorityBand > p:last-child {
@@ -70,16 +71,16 @@
 .intro h2,
 .sectionHeading h2 {
   margin: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: 400;
-  letter-spacing: -0.025em;
+  font-family: inherit;
+  font-weight: 500;
+  letter-spacing: 0;
 }
 
 .intro h2 {
   max-width: 620px;
-  font-size: clamp(1.45rem, 2vw, 2rem);
-  line-height: 1.12;
-  letter-spacing: -0.015em;
+  font-size: clamp(1.05rem, 1.3vw, 1.25rem);
+  line-height: 1.35;
+  letter-spacing: 0.01em;
 }
 
 .statusPair {
@@ -102,8 +103,8 @@
 .commercialGrid dt,
 .coordinateData dt {
   color: var(--muted);
-  font-size: 0.62rem;
-  letter-spacing: 0.12em;
+  font-size: 0.61rem;
+  letter-spacing: 0.075em;
   text-transform: uppercase;
 }
 
@@ -122,21 +123,23 @@
 
 .sectionHeading {
   display: grid;
-  grid-template-columns: minmax(55px, 0.35fr) 3fr;
-  gap: clamp(1.25rem, 2.5vw, 3rem);
-  margin-bottom: clamp(1.35rem, 2.7vw, 2.5rem);
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  align-items: start;
 }
 
 .sectionHeading > span {
-  color: rgba(232, 224, 204, 0.32);
-  font-size: 0.68rem;
-  letter-spacing: 0.14em;
+  color: rgba(232, 224, 204, 0.38);
+  font-size: 0.62rem;
+  line-height: 1.5;
+  letter-spacing: 0.08em;
 }
 
 .sectionHeading h2 {
-  font-size: clamp(1.2rem, 1.65vw, 1.7rem);
-  line-height: 1.18;
-  letter-spacing: -0.01em;
+  font-size: clamp(1rem, 1.25vw, 1.18rem);
+  line-height: 1.4;
+  letter-spacing: 0.01em;
 }
 
 .standardHeading {
@@ -158,8 +161,8 @@
 }
 
 .submissionGrid > div {
-  min-height: 6rem;
-  padding: 1rem;
+  min-height: 0;
+  padding: 0.85rem 0.9rem;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
@@ -174,13 +177,13 @@
 }
 
 .evidenceBoundary {
-  margin: 0.9rem 0 0;
-  padding: 0.95rem 1.1rem;
-  border-left: 2px solid rgba(199, 183, 132, 0.55);
-  background: rgba(199, 183, 132, 0.045);
-  color: rgba(232, 224, 204, 0.72);
-  font-size: 0.78rem;
-  line-height: 1.75;
+  margin: 0.85rem 0 0;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.012);
+  color: rgba(232, 224, 204, 0.7);
+  font-size: 0.74rem;
+  line-height: 1.65;
 }
 
 .commercialGrid {
@@ -192,8 +195,8 @@
 }
 
 .commercialGrid > div {
-  min-height: 6rem;
-  padding: 1rem;
+  min-height: 0;
+  padding: 0.85rem 0.9rem;
   border-right: 1px solid var(--line);
   border-bottom: 1px solid var(--line);
 }
@@ -204,7 +207,7 @@
 }
 
 .commercialGrid .emphasis {
-  background: rgba(199, 183, 132, 0.08);
+  background: rgba(199, 183, 132, 0.045);
 }
 
 .commercialGrid .emphasis dd {

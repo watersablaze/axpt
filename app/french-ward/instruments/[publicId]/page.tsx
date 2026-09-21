@@ -207,9 +207,9 @@ export default async function DigitalSettlementInstructionPage({
 
   return (
     <InstrumentShell
-      eyebrow="French-Ward / Controlled Settlement Instrument"
+      eyebrow="French-Ward, Inc. / Controlled Settlement Instrument"
       title="Digital Settlement Instruction"
-      subtitle="Good-Faith TAP / Transaction-Specific Receiving Coordinates"
+      subtitle="Good-Faith Transaction Authorization Payment / Settlement Coordinates"
       reference={instruction.reference}
       version={`V${instruction.versionNumber}`}
       status={
@@ -241,9 +241,9 @@ export default async function DigitalSettlementInstructionPage({
           <div className={styles.sectionHeading}>
             <span>V2</span>
             <div>
-              <p>Governed financier revision</p>
+              <p>Institutional revision</p>
               <h2 id="revision-heading">
-                One active financier. Distinct review capacities.
+                Version 2 — Financier Revision
               </h2>
             </div>
           </div>
@@ -289,9 +289,9 @@ export default async function DigitalSettlementInstructionPage({
 
       <section className={styles.intro} aria-labelledby="instruction-heading">
         <div>
-          <p className={styles.kicker}>Authorized instruction</p>
+          <p className={styles.kicker}>Verification requirement</p>
           <h2 id="instruction-heading">
-            Verify the obligation before transmitting value.
+            Verification Requirement
           </h2>
         </div>
         <dl className={styles.statusPair}>
@@ -354,9 +354,9 @@ export default async function DigitalSettlementInstructionPage({
           <div className={styles.sectionHeading}>
             <span>01</span>
             <div>
-              <p>Buyer submission</p>
+              <p>Buyer submission and authority</p>
               <h2 id="submission-heading">
-                Identity received. Authority kept in scope.
+                Buyer Submission and Authority
               </h2>
             </div>
           </div>
@@ -399,9 +399,9 @@ export default async function DigitalSettlementInstructionPage({
         <div className={styles.sectionHeading}>
           <span>02</span>
           <div>
-            <p>Commercial basis</p>
+            <p>Commercial terms</p>
             <h2 id="commercial-heading">
-              The obligation captured at issuance.
+              Commercial Terms at Issuance
             </h2>
           </div>
         </div>
@@ -477,7 +477,7 @@ export default async function DigitalSettlementInstructionPage({
           <span>03</span>
           <div>
             <p>Settlement coordinates</p>
-            <h2 id="coordinates-heading">One authorized destination.</h2>
+            <h2 id="coordinates-heading">Authorized Settlement Coordinates</h2>
           </div>
         </div>
 
@@ -541,7 +541,7 @@ export default async function DigitalSettlementInstructionPage({
           <span>04</span>
           <div>
             <p>Recognition standard</p>
-            <h2 id="standard-heading">One controlled receiving standard.</h2>
+            <h2 id="standard-heading">Recognition Standard</h2>
           </div>
         </div>
 

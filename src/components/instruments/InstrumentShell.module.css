@@ -172,10 +172,10 @@
 }
 
 .document .titleGroup h1 {
-  max-width: 620px;
-  font-size: clamp(2rem, 3.2vw, 3.25rem);
-  line-height: 1.02;
-  letter-spacing: -0.025em;
+  max-width: 580px;
+  font-size: clamp(1.85rem, 2.7vw, 2.7rem);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
 }
 
 .document .titleGroup p {
