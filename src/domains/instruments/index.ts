@@ -17,3 +17,5 @@ export * from "./commands/supersedeDigitalSettlementWithV2FinancierRevisionWithC
 export * from "./commands/issueDigitalSettlementV2AccessGrantsWithClient";
 export * from "./communications/digitalSettlementV2DeliveryAssembly";
 export * from "./communications/deliverDigitalSettlementEmail";
+export * from "./communications/digitalSettlementV2DeliveryRequests";
+export * from "./communications/sendDigitalSettlementV2Deliveries";
