@@ -182,6 +182,7 @@ export default async function DigitalSettlementOperatorPage({
 
       <DigitalSettlementOperatorPanel
         instantiated={Boolean(instrument && settlement)}
+        currentVersion={instrument?.currentVersion ?? 0}
         reference={DSI_REFERENCE}
         counterpartyName={settlement?.counterpartyName ?? INDERAKSH_LEGAL_NAME}
         counterpartyRepresentative={

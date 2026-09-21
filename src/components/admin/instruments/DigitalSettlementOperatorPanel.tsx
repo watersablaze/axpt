@@ -51,6 +51,7 @@ type ObserverRunResult = Readonly<{
 
 type Props = {
   instantiated: boolean;
+  currentVersion: number;
   reference: string;
   counterpartyName: string;
   counterpartyRepresentative: string | null;
@@ -75,6 +76,7 @@ function formatStatus(value: string) {
 
 export default function DigitalSettlementOperatorPanel({
   instantiated,
+  currentVersion,
   reference,
   counterpartyName,
   counterpartyRepresentative,
@@ -96,6 +98,7 @@ export default function DigitalSettlementOperatorPanel({
 
   const [busy, setBusy] = useState<
     | "issuance"
+    | "v2"
     | "access"
     | "observer"
     | "verification"
@@ -122,6 +125,15 @@ export default function DigitalSettlementOperatorPanel({
   const tapAmount = transactionValue !== null
     ? Math.round(transactionValue * 0.075 * 100) / 100
     : null;
+
+  const canIssueV2 =
+    instantiated &&
+    currentVersion === 1 &&
+    settlementStatus === "AWAITING_VERIFICATION_TRANSFER" &&
+    pricingStatus === "FIXED" &&
+    verificationTxHash === null &&
+    verificationConfirmedAt === null &&
+    principalAuthorizedAt === null;
 
   const canConfirmVerification =
     settlementStatus === "AWAITING_VERIFICATION_TRANSFER" &&
@@ -218,6 +230,95 @@ export default function DigitalSettlementOperatorPanel({
         err instanceof Error
           ? err.message
           : "DSI_INITIAL_ISSUANCE_FAILED",
+      );
+    } finally {
+      setBusy(null);
+    }
+  }
+
+
+  async function issueV2FinancierRevision() {
+    if (!canIssueV2 || busy) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      [
+        `Issue Version 2 of ${reference}?`,
+        "",
+        "This institutional revision will:",
+        "• supersede V1 with V2",
+        "• preserve the fixed commercial snapshot",
+        "• preserve the current settlement state",
+        "• create five V2-bound VIEW grants",
+        "• send five separate private communications after commit",
+        "",
+        `Verification authority remains exactly ${verificationAmountUsdt} USDT.`,
+        `Remaining TAP remains ${remainingAmount ?? "unresolved"} USDT — NOT AUTHORIZED.`,
+        "",
+        "This action does NOT recognize verification and does NOT authorize the remaining TAP.",
+      ].join("\n"),
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setBusy("v2");
+    setMessage(null);
+    setError(null);
+
+    try {
+      const response = await fetch(
+        `/api/admin/instruments/digital-settlement/${encodeURIComponent(
+          reference,
+        )}/issue-v2`,
+        {
+          method: "POST",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            accessExpiresHours: 168,
+          }),
+        },
+      );
+
+      const payload = await response.json();
+
+      if (!response.ok || !payload.ok) {
+        throw new Error(
+          payload.detail ??
+            payload.error ??
+            "DSI_V2_ISSUANCE_FAILED",
+        );
+      }
+
+      const delivery =
+        payload.result?.delivery ?? null;
+
+      if (delivery?.ok) {
+        setMessage(
+          `V2 committed. Five version-bound private access grants were created and all ${delivery.succeeded ?? 5} communications were delivered.`,
+        );
+      } else {
+        const succeeded =
+          delivery?.succeeded ?? 0;
+        const failed =
+          delivery?.failed ?? 5;
+
+        setMessage(
+          `V2 committed, but delivery is incomplete: ${succeeded} succeeded, ${failed} failed. Do not issue V2 again; use the governed delivery-recovery path.`,
+        );
+      }
+
+      router.refresh();
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : "DSI_V2_ISSUANCE_FAILED",
       );
     } finally {
       setBusy(null);
@@ -789,6 +890,84 @@ export default function DigitalSettlementOperatorPanel({
               {remainingAmount ? ` ${remainingAmount} USDT` : ""} TAP.
             </p>
           </div>
+        ) : null}
+      </section>
+
+      <section className="rounded-xl border border-amber-900/60 bg-amber-950/10 p-4">
+        <div className="text-[10px] uppercase tracking-[0.18em] text-amber-500">
+          Institutional Revision
+        </div>
+
+        <div className="mt-1 flex flex-wrap items-center gap-2">
+          <h2 className="text-sm font-medium text-white">
+            V2 — TAP Financier Revision
+          </h2>
+
+          <span className="rounded border border-neutral-700 px-2 py-0.5 font-mono text-[10px] text-neutral-400">
+            CURRENT V{currentVersion}
+          </span>
+        </div>
+
+        <p className="mt-2 max-w-3xl text-xs leading-5 text-neutral-400">
+          Version 2 changes participant authority and private access routing
+          without changing the fixed commercial snapshot or the existing
+          settlement state.
+        </p>
+
+        <div className="mt-4 grid gap-2 text-xs md:grid-cols-2">
+          <div className="rounded border border-neutral-800 bg-black/30 p-3">
+            <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+              Active Authority
+            </div>
+            <div className="mt-1 text-white">
+              TAP Financier
+            </div>
+            <div className="mt-1 text-amber-300">
+              {verificationAmountUsdt} USDT — verification transfer only
+            </div>
+          </div>
+
+          <div className="rounded border border-neutral-800 bg-black/30 p-3">
+            <div className="text-[10px] uppercase tracking-wide text-neutral-500">
+              Remaining TAP
+            </div>
+            <div className="mt-1 text-white">
+              {remainingAmount
+                ? `${remainingAmount} USDT`
+                : "Awaiting amount"}
+            </div>
+            <div className="mt-1 text-red-300">
+              NOT AUTHORIZED
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-3 rounded border border-neutral-800 bg-black/30 p-3 text-xs leading-5 text-neutral-400">
+          Five V2-bound VIEW grants will be created: TAP financier, Buyer
+          representative review, external review, internal review, and fiduciary
+          review. No grant authorizes the remaining TAP.
+        </div>
+
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={issueV2FinancierRevision}
+            disabled={!canIssueV2 || Boolean(busy)}
+            className="rounded border border-amber-800 bg-amber-950/20 px-3 py-2 text-[10px] uppercase tracking-wide text-amber-300 hover:border-amber-600 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {busy === "v2"
+              ? "Issuing V2..."
+              : currentVersion >= 2
+                ? "V2 Issued"
+                : "Issue V2 Financier Revision"}
+          </button>
+        </div>
+
+        {!canIssueV2 && currentVersion === 1 ? (
+          <p className="mt-2 text-[11px] leading-5 text-neutral-500">
+            V2 issuance is available only while V1 remains issued with fixed
+            pricing and the settlement is still awaiting verification transfer.
+          </p>
         ) : null}
       </section>
 
