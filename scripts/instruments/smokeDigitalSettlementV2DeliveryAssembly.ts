@@ -178,44 +178,41 @@ const financier = deliveries.find(
 
 assert.ok(financier);
 assert.equal(financier.audience, "ACTIVE");
-assert.match(
+assert.equal(
   financier.authority,
-  /50 USDT.*VERIFICATION TRANSFER ONLY/,
+  "50 USDT VERIFICATION TRANSFER",
 );
+assert.match(financier.text, /exactly 50 USDT/);
 assert.match(
   financier.text,
-  /exactly 50 USDT/,
+  /remaining 471,762\.40 USDT TAP balance will be addressed separately/,
 );
-assert.match(
-  financier.text,
-  /Do not transmit the remaining 471,762\.40 USDT TAP balance unless French-Ward separately records and communicates that authorization/,
-);
+assert.match(financier.text, /Mali export-fee stage/);
 
 const corey = deliveries.find(
-  (delivery) =>
-    delivery.key === "buyerRepresentative",
+  (delivery) => delivery.key === "buyerRepresentative",
 );
 
 assert.ok(corey);
 assert.equal(corey.audience, "REVIEW");
 assert.equal(
   corey.authority,
-  "REVIEW ACCESS - NO TRANSFER AUTHORITY",
+  "REVIEW ACCESS · BUYER REPRESENTATIVE",
 );
-assert.match(
-  corey.text,
-  /does not authorize a transfer from you/,
-);
+assert.match(corey.text, /Mali export-fee stage/);
 
 const hinds = deliveries.find(
-  (delivery) =>
-    delivery.key === "externalReviewer",
+  (delivery) => delivery.key === "externalReviewer",
 );
 
 assert.ok(hinds);
 assert.equal(
   hinds.authority,
-  "REVIEW ACCESS - NO TRANSFER AUTHORITY",
+  "REVIEW ACCESS · PARTICIPANT RECORD",
+);
+assert.match(
+  hinds.text,
+  /Seller Consultant capacity remains part of the transaction record/,
 );
 
 const bobby = deliveries.find(
@@ -224,6 +221,10 @@ const bobby = deliveries.find(
 
 assert.ok(bobby);
 assert.equal(bobby.audience, "INTERNAL");
+assert.equal(
+  bobby.authority,
+  "INTERNAL REVIEW · V1 PRESERVED",
+);
 
 const lawrence = deliveries.find(
   (delivery) => delivery.key === "lawrence",
@@ -231,9 +232,9 @@ const lawrence = deliveries.find(
 
 assert.ok(lawrence);
 assert.equal(lawrence.audience, "INTERNAL");
-assert.match(
+assert.equal(
   lawrence.authority,
-  /TAP BALANCE PAUSED/,
+  "FIDUCIARY REVIEW · VERIFICATION STAGE",
 );
 
 const urls = new Set(

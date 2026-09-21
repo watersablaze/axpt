@@ -55,14 +55,37 @@ assert.equal(
 
 for (const preview of previews) {
   assert.match(preview.html, /Governed through AXPT/);
+  assert.match(preview.html, /Current Stage/);
   assert.match(preview.html, /Private instrument:/);
   assert.ok(!preview.html.includes("471812.40 USDT TAP balance"));
+  assert.ok(!preview.text.includes("Blockchain observer:"));
+  assert.ok(!preview.text.includes("AXPT position:"));
 }
 
-for (const key of ["buyerRepresentative", "externalReviewer"] as const) {
-  const preview = previews.find((candidate) => candidate.recipientKey === key);
-  assert.match(preview?.authority ?? "", /NO TRANSFER AUTHORITY/);
-}
+assert.equal(
+  previews.find(
+    (preview) => preview.recipientKey === "buyerRepresentative",
+  )?.authority,
+  "REVIEW ACCESS · BUYER REPRESENTATIVE",
+);
+assert.equal(
+  previews.find(
+    (preview) => preview.recipientKey === "externalReviewer",
+  )?.authority,
+  "REVIEW ACCESS · PARTICIPANT RECORD",
+);
+assert.equal(
+  previews.find(
+    (preview) => preview.recipientKey === "bobby",
+  )?.authority,
+  "INTERNAL REVIEW · V1 PRESERVED",
+);
+assert.equal(
+  previews.find(
+    (preview) => preview.recipientKey === "lawrence",
+  )?.authority,
+  "FIDUCIARY REVIEW · VERIFICATION STAGE",
+);
 
 const financierPreview = previews.find(
   (preview) => preview.recipientKey === "financier",
@@ -71,7 +94,23 @@ assert.match(financierPreview?.html ?? "", /exactly 50 USDT/);
 assert.match(financierPreview?.html ?? "", /471,762.40 USDT/);
 assert.match(
   financierPreview?.html ?? "",
-  /operator must inspect and recognize/,
+  /Mali export-fee stage/,
+);
+
+const coreyPreview = previews.find(
+  (preview) => preview.recipientKey === "buyerRepresentative",
+);
+assert.match(
+  coreyPreview?.text ?? "",
+  /Carl Albert Meisterlin as the financier handling/,
+);
+
+const hindsPreview = previews.find(
+  (preview) => preview.recipientKey === "externalReviewer",
+);
+assert.match(
+  hindsPreview?.text ?? "",
+  /Seller Consultant capacity remains part of the transaction record/,
 );
 
 console.log("DIGITAL_SETTLEMENT_V2_FINANCIER_REVISION_PREVIEW_OK");
