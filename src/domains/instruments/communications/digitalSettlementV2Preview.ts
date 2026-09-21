@@ -169,3 +169,33 @@ export function buildDigitalSettlementV2EmailPreviews(input: PreviewInput) {
     text: [...message.lines, "", observerNote].join("\n"),
   }));
 }
+
+export function buildDigitalSettlementV2EmailForRecipient(input: {
+  recipientKey: DigitalSettlementV2RecipientKey;
+  accessUrl: string;
+}) {
+  const accessUrls: Record<DigitalSettlementV2RecipientKey, string> = {
+    financier: input.accessUrl,
+    buyerRepresentative: input.accessUrl,
+    externalReviewer: input.accessUrl,
+    bobby: input.accessUrl,
+    lawrence: input.accessUrl,
+  };
+
+  const rendered = buildDigitalSettlementV2EmailPreviews({
+    accessUrls,
+  });
+
+  const selected = rendered.find(
+    (message) =>
+      message.recipientKey === input.recipientKey,
+  );
+
+  if (!selected) {
+    throw new Error(
+      `[DSI_V2_EMAIL_RECIPIENT_NOT_FOUND] ${input.recipientKey}`,
+    );
+  }
+
+  return selected;
+}
