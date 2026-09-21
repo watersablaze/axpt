@@ -121,3 +121,33 @@ export function isRepresentativeOnboardingTerminal(
     status === REPRESENTATIVE_ONBOARDING_STATUS.ADMITTED
   );
 }
+
+export function assertRepresentativeOnboardingStatusTransition(params: {
+  from: RepresentativeOnboardingStatus;
+  to: RepresentativeOnboardingStatus;
+}): void {
+  if (params.from === params.to) {
+    throw new Error(`[ARP_ONBOARDING_STATUS_NOOP] status=${params.from}`);
+  }
+
+  const allowed =
+    (params.from === REPRESENTATIVE_ONBOARDING_STATUS.DRAFT &&
+      params.to === REPRESENTATIVE_ONBOARDING_STATUS.SUBMITTED) ||
+    (params.from === REPRESENTATIVE_ONBOARDING_STATUS.SUBMITTED &&
+      params.to === REPRESENTATIVE_ONBOARDING_STATUS.UNDER_REVIEW) ||
+    (params.from === REPRESENTATIVE_ONBOARDING_STATUS.UNDER_REVIEW &&
+      (params.to === REPRESENTATIVE_ONBOARDING_STATUS.QUALIFIED ||
+        params.to ===
+          REPRESENTATIVE_ONBOARDING_STATUS.RETURNED_FOR_COMPLETION ||
+        params.to === REPRESENTATIVE_ONBOARDING_STATUS.DECLINED)) ||
+    (params.from === REPRESENTATIVE_ONBOARDING_STATUS.RETURNED_FOR_COMPLETION &&
+      params.to === REPRESENTATIVE_ONBOARDING_STATUS.SUBMITTED) ||
+    (params.from === REPRESENTATIVE_ONBOARDING_STATUS.QUALIFIED &&
+      params.to === REPRESENTATIVE_ONBOARDING_STATUS.ADMITTED);
+
+  if (!allowed) {
+    throw new Error(
+      `[ARP_ONBOARDING_STATUS_TRANSITION_INVALID] from=${params.from} to=${params.to}`,
+    );
+  }
+}
