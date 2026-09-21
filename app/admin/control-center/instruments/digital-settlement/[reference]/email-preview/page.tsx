@@ -64,16 +64,18 @@ export default async function DigitalSettlementEmailPreviewPage({
       <div className="mx-auto w-full max-w-6xl space-y-6">
         <section className="rounded-xl border border-amber-900/70 bg-amber-950/10 p-5">
           <div className="text-[10px] uppercase tracking-[0.18em] text-amber-400">
-            Preview Only / No Execution Path
+            Preview Only / Simulated Post-Issuance Copy
           </div>
           <h1 className="mt-2 text-xl font-medium text-white">
             DSI Version 2 - Financier Revision Communications
           </h1>
           <p className="mt-2 max-w-4xl text-sm leading-6 text-neutral-400">
-            V1 remains preserved. These five individualized messages render
-            proposed V2 roles and access purposes only. This page cannot send
-            email, create or revoke access, supersede a version, or modify the
-            DSI lifecycle.
+            V1 remains preserved. These five individualized messages simulate
+            the exact post-issuance communications that would be rendered only
+            after an authorized V2 supersession has committed successfully.
+            Their wording intentionally reflects the post-commit state. This
+            preview page cannot send email, create or revoke access, supersede
+            a version, or modify the DSI lifecycle.
           </p>
           <div className="mt-4 grid gap-3 text-xs md:grid-cols-2">
             <div className="rounded border border-neutral-800 bg-black/20 p-3">
