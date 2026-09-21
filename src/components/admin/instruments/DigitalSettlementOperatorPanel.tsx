@@ -746,7 +746,7 @@ export default function DigitalSettlementOperatorPanel({
       </section>
 
       {instantiated ? (
-        <section className="rounded-xl border border-neutral-800 bg-black/20 p-4">
+        <section className="rounded-xl border border-neutral-800 bg-black/20 p-5 sm:p-6">
           <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
             Private Instrument Access
           </div>
@@ -802,7 +802,7 @@ export default function DigitalSettlementOperatorPanel({
       ) : null}
 
 
-      <section className="rounded-xl border border-neutral-800 bg-black/20 p-4">
+      <section className="rounded-xl border border-neutral-800 bg-black/20 p-5 sm:p-6">
         <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
           Supervised Chain Observer
         </div>
@@ -893,7 +893,7 @@ export default function DigitalSettlementOperatorPanel({
         ) : null}
       </section>
 
-      <section className="rounded-xl border border-amber-900/60 bg-amber-950/10 p-4">
+      <section className="rounded-xl border border-amber-900/60 bg-amber-950/10 p-5 sm:p-6">
         <div className="text-[10px] uppercase tracking-[0.18em] text-amber-500">
           Institutional Revision
         </div>
@@ -948,7 +948,25 @@ export default function DigitalSettlementOperatorPanel({
           review. No grant authorizes the remaining TAP.
         </div>
 
-        <div className="mt-4">
+        <div className="mt-4 flex flex-wrap gap-2 border-t border-neutral-800 pt-4">
+          <a
+            href={`/admin/control-center/instruments/digital-settlement/${encodeURIComponent(
+              reference,
+            )}/email-preview?version=2`}
+            className="rounded border border-neutral-700 px-3 py-2 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-neutral-500 hover:text-white"
+          >
+            Review Five V2 Emails
+          </a>
+
+          <a
+            href="/french-ward/instruments/__preview__?previewMode=buyer&version=2"
+            className="rounded border border-neutral-700 px-3 py-2 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-neutral-500 hover:text-white"
+          >
+            Review V2 Instrument
+          </a>
+        </div>
+
+        <div className="mt-3">
           <button
             type="button"
             onClick={issueV2FinancierRevision}
@@ -971,7 +989,7 @@ export default function DigitalSettlementOperatorPanel({
         ) : null}
       </section>
 
-      <section className="rounded-xl border border-neutral-800 bg-black/20 p-4">
+      <section className="rounded-xl border border-neutral-800 bg-black/20 p-5 sm:p-6">
         <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
           Canonical Chain Evidence
         </div>
@@ -1161,7 +1179,7 @@ export default function DigitalSettlementOperatorPanel({
         )}
       </section>
 
-      <section className="rounded-xl border border-neutral-800 bg-black/20 p-4">
+      <section className="rounded-xl border border-neutral-800 bg-black/20 p-5 sm:p-6">
         <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
           Good-Faith TAP Authority
         </div>

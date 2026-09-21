@@ -1,6 +1,4 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
-
 import DigitalSettlementOperatorPanel from "@/components/admin/instruments/DigitalSettlementOperatorPanel";
 import {
   createDigitalSettlementV1Definition,
@@ -9,7 +7,6 @@ import {
   INDERAKSH_LEGAL_NAME,
   INDERAKSH_REPRESENTATIVE,
 } from "@/domains/instruments/definitions/digitalSettlementV1Definition";
-import { DSI_V2_FINANCIER_REVISION } from "@/domains/instruments/definitions/digitalSettlementV2FinancierRevision";
 import {
   findDigitalSettlementVerificationCandidateWithClient,
   type DigitalSettlementVerificationMatchingClient,
@@ -118,68 +115,7 @@ export default async function DigitalSettlementOperatorPage({
         };
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-4">
-      <section className="rounded-xl border border-amber-900/70 bg-amber-950/10 p-4">
-        <div className="text-[10px] uppercase tracking-[0.18em] text-amber-400">
-          V2 Financier Revision / Preview Only
-        </div>
-        <h2 className="mt-2 text-base font-medium text-white">
-          Buyer-informed participant correction
-        </h2>
-        <p className="mt-2 max-w-4xl text-xs leading-5 text-neutral-400">
-          {DSI_V2_FINANCIER_REVISION.revisionBasis} V1 remains the preserved
-          issued record. This branch exposes no control to supersede V1, create
-          access grants, or send V2 communications.
-        </p>
-
-        <div className="mt-4 grid gap-3 text-xs md:grid-cols-3">
-          <div className="rounded border border-neutral-800 bg-black/20 p-3">
-            <div className="text-[10px] uppercase tracking-wide text-neutral-500">
-              Active Participant
-            </div>
-            <div className="mt-1 text-white">
-              {DSI_V2_FINANCIER_REVISION.tapFinancier.name}
-            </div>
-            <div className="mt-1 text-amber-300">Appointed TAP Financier</div>
-          </div>
-          <div className="rounded border border-neutral-800 bg-black/20 p-3">
-            <div className="text-[10px] uppercase tracking-wide text-neutral-500">
-              Buyer Review
-            </div>
-            <div className="mt-1 text-white">
-              {DSI_V2_FINANCIER_REVISION.buyerRepresentative.name}
-            </div>
-            <div className="mt-1 text-cyan-300">
-              Authorized Buyer Representative
-            </div>
-          </div>
-          <div className="rounded border border-neutral-800 bg-black/20 p-3">
-            <div className="text-[10px] uppercase tracking-wide text-neutral-500">
-              External Review
-            </div>
-            <div className="mt-1 text-white">
-              {DSI_V2_FINANCIER_REVISION.externalReviewer.name}
-            </div>
-            <div className="mt-1 text-cyan-300">Seller Consultant</div>
-          </div>
-        </div>
-
-        <div className="mt-4 flex flex-wrap gap-2">
-          <Link
-            href={`/admin/control-center/instruments/digital-settlement/${DSI_REFERENCE}/email-preview?version=2`}
-            className="rounded border border-amber-800 px-3 py-2 text-[10px] uppercase tracking-wide text-amber-300 hover:border-amber-600"
-          >
-            Review Five V2 Emails
-          </Link>
-          <Link
-            href="/french-ward/instruments/__preview__?previewMode=buyer&version=2"
-            className="rounded border border-cyan-900 px-3 py-2 text-[10px] uppercase tracking-wide text-cyan-300 hover:border-cyan-600"
-          >
-            Review V2 Instrument
-          </Link>
-        </div>
-      </section>
-
+    <div className="mx-auto w-full max-w-5xl space-y-5 px-4 pb-12 sm:px-6 lg:px-8">
       <DigitalSettlementOperatorPanel
         instantiated={Boolean(instrument && settlement)}
         currentVersion={instrument?.currentVersion ?? 0}
