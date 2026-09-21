@@ -16,6 +16,7 @@ import {
   INDERAKSH_BUYER_SUBMISSION,
   INDERAKSH_LEGAL_NAME,
 } from "@/domains/instruments/definitions/digitalSettlementV1Definition";
+import { DSI_V2_FINANCIER_REVISION } from "@/domains/instruments/definitions/digitalSettlementV2FinancierRevision";
 import { TREASURY_WALLETS } from "@/lib/treasury/config";
 import { loadIssuedDigitalSettlementInstruction } from "@/domains/instruments/queries/loadIssuedDigitalSettlementInstruction";
 import { resolveInstrumentAccess } from "@/domains/instruments/queries/resolveInstrumentAccess";
@@ -28,6 +29,7 @@ type PageProps = {
   searchParams?: Promise<{
     previewState?: string;
     previewMode?: string;
+    version?: string;
   }>;
 };
 
@@ -55,80 +57,52 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-function createPreviewInstruction() {
-  const definition =
-    createDigitalSettlementV1Definition(
-      INDERAKSH_LEGAL_NAME,
-    );
+function createPreviewInstruction(version: 1 | 2) {
+  const definition = createDigitalSettlementV1Definition(INDERAKSH_LEGAL_NAME);
 
-  const operationsWallet =
-    TREASURY_WALLETS.find(
-      (wallet) => wallet.role === "operations",
-    );
+  const operationsWallet = TREASURY_WALLETS.find(
+    (wallet) => wallet.role === "operations",
+  );
 
   if (!operationsWallet) {
-    throw new Error(
-      "[DSI_PREVIEW_OPERATIONS_WALLET_NOT_CONFIGURED]",
-    );
+    throw new Error("[DSI_PREVIEW_OPERATIONS_WALLET_NOT_CONFIGURED]");
   }
 
   return {
     publicId: "__preview__",
     reference: definition.instrument.reference,
     title: definition.instrument.title,
-    versionNumber: definition.version.number,
+    versionNumber: version,
     issuedAt: new Date(),
-    counterpartyName:
-      definition.settlement.counterpartyName,
+    counterpartyName: definition.settlement.counterpartyName,
     counterpartyRepresentative:
       definition.settlement.counterpartyRepresentative,
-    commodity:
-      definition.settlement.commodity,
-    transactionDescription:
-      definition.settlement.transactionDescription,
-    settlementPurpose:
-      definition.settlement.settlementPurpose,
-    proceduralBasis:
-      definition.settlement.proceduralBasis,
-    quantityKg:
-      definition.settlement.quantityKg,
+    commodity: definition.settlement.commodity,
+    transactionDescription: definition.settlement.transactionDescription,
+    settlementPurpose: definition.settlement.settlementPurpose,
+    proceduralBasis: definition.settlement.proceduralBasis,
+    quantityKg: definition.settlement.quantityKg,
     pricingStatus: "FIXED",
-    pricingBasis:
-      definition.settlement.pricingBasis,
-    spotDiscountPercentage:
-      definition.settlement.spotDiscountPercentage,
-    spotBenchmark:
-      DSI_APPROVED_ISSUANCE_PRICING.spotBenchmark,
-    spotPricePerKgUsd:
-      DSI_APPROVED_ISSUANCE_PRICING.spotPricePerKgUsd,
-    pricePerKgUsd:
-      DSI_APPROVED_ISSUANCE_PRICING.pricePerKgUsd,
-    transactionValueUsd:
-      DSI_APPROVED_ISSUANCE_PRICING.transactionValueUsd,
-    settlementPercentage:
-      definition.settlement.settlementPercentage,
-    settlementAmountUsd:
-      DSI_APPROVED_ISSUANCE_PRICING.settlementAmountUsd,
+    pricingBasis: definition.settlement.pricingBasis,
+    spotDiscountPercentage: definition.settlement.spotDiscountPercentage,
+    spotBenchmark: DSI_APPROVED_ISSUANCE_PRICING.spotBenchmark,
+    spotPricePerKgUsd: DSI_APPROVED_ISSUANCE_PRICING.spotPricePerKgUsd,
+    pricePerKgUsd: DSI_APPROVED_ISSUANCE_PRICING.pricePerKgUsd,
+    transactionValueUsd: DSI_APPROVED_ISSUANCE_PRICING.transactionValueUsd,
+    settlementPercentage: definition.settlement.settlementPercentage,
+    settlementAmountUsd: DSI_APPROVED_ISSUANCE_PRICING.settlementAmountUsd,
     priceFixedAt: new Date("2026-09-18T15:00:00.000Z"),
-    settlementAsset:
-      definition.settlement.settlementAsset,
-    settlementNetwork:
-      definition.settlement.settlementNetwork,
-    receivingEntity:
-      definition.settlement.receivingEntity,
-    receivingAddress:
-      operationsWallet.address,
-    receivingWalletId:
-      operationsWallet.id,
-    receivingWalletRole:
-      operationsWallet.role,
-    verificationAmountUsdt:
-      definition.settlement.verificationAmountUsdt,
+    settlementAsset: definition.settlement.settlementAsset,
+    settlementNetwork: definition.settlement.settlementNetwork,
+    receivingEntity: definition.settlement.receivingEntity,
+    receivingAddress: operationsWallet.address,
+    receivingWalletId: operationsWallet.id,
+    receivingWalletRole: operationsWallet.role,
+    verificationAmountUsdt: definition.settlement.verificationAmountUsdt,
     verificationTxHash: null,
     verificationConfirmedAt: null,
     principalAuthorizedAt: null,
-    settlementStatus:
-      DIGITAL_SETTLEMENT_STATUS.AWAITING_VERIFICATION_TRANSFER,
+    settlementStatus: DIGITAL_SETTLEMENT_STATUS.AWAITING_VERIFICATION_TRANSFER,
   } as const;
 }
 
@@ -139,11 +113,11 @@ export default async function DigitalSettlementInstructionPage({
   const { publicId } = await params;
   const previewParams = await searchParams;
 
-  const previewRequested =
-    publicId === "__preview__";
+  const previewRequested = publicId === "__preview__";
 
   let isVisualPreview = false;
   let isBuyerViewPreview = false;
+  let isV2Preview = false;
 
   if (previewRequested) {
     const principal = await getPrincipal();
@@ -154,12 +128,13 @@ export default async function DigitalSettlementInstructionPage({
 
     isVisualPreview = true;
     isBuyerViewPreview = previewParams?.previewMode === "buyer";
+    isV2Preview = previewParams?.version === "2";
   }
 
   let instruction;
 
   if (isVisualPreview) {
-    instruction = createPreviewInstruction();
+    instruction = createPreviewInstruction(isV2Preview ? 2 : 1);
   } else {
     const token = (await cookies()).get(
       instrumentAccessCookieName(publicId),
@@ -213,9 +188,7 @@ export default async function DigitalSettlementInstructionPage({
   const verificationAmount = Number(instruction.verificationAmountUsdt);
   const pricingFixed = instruction.pricingStatus === "FIXED";
   const buyerSubmission =
-    instruction.reference === DSI_REFERENCE
-      ? INDERAKSH_BUYER_SUBMISSION
-      : null;
+    instruction.reference === DSI_REFERENCE ? INDERAKSH_BUYER_SUBMISSION : null;
   const remainingSettlementUsdt = instruction.settlementAmountUsd
     ? `${(
         Number(instruction.settlementAmountUsd) - verificationAmount
@@ -253,10 +226,64 @@ export default async function DigitalSettlementInstructionPage({
     >
       {isVisualPreview && !isBuyerViewPreview ? (
         <section className={styles.previewNotice} aria-label="Preview notice">
-          Operator-only buyer-view preview. This renders the canonical initial
-          issuance state but carries no settlement authority. No instrument,
-          private access grant, or buyer authorization has been created. Do not
+          Operator-only buyer-view preview. This renders the proposed
+          {isV2Preview
+            ? " V2 financier revision"
+            : " canonical initial issuance state"}{" "}
+          but carries no settlement authority. No instrument version, private
+          access grant, email, or buyer authorization has been created. Do not
           transmit value.
+        </section>
+      ) : null}
+
+      {isV2Preview ? (
+        <section className={styles.panel} aria-labelledby="revision-heading">
+          <div className={styles.sectionHeading}>
+            <span>V2</span>
+            <div>
+              <p>Governed financier revision</p>
+              <h2 id="revision-heading">
+                One active financier. Distinct review capacities.
+              </h2>
+            </div>
+          </div>
+
+          <dl className={styles.commercialGrid}>
+            <div>
+              <dt>Buyer representative</dt>
+              <dd>
+                {DSI_V2_FINANCIER_REVISION.buyerRepresentative.name} -{" "}
+                {DSI_V2_FINANCIER_REVISION.buyerRepresentative.v2Capacity}
+              </dd>
+            </div>
+            <div className={styles.emphasis}>
+              <dt>Appointed TAP financier</dt>
+              <dd>
+                {DSI_V2_FINANCIER_REVISION.tapFinancier.name} -{" "}
+                {DSI_V2_FINANCIER_REVISION.tapFinancier.v2Capacity}
+              </dd>
+            </div>
+            <div>
+              <dt>External review participant</dt>
+              <dd>
+                {DSI_V2_FINANCIER_REVISION.externalReviewer.name} -{" "}
+                {DSI_V2_FINANCIER_REVISION.externalReviewer.loiCapacity}
+              </dd>
+            </div>
+            <div>
+              <dt>Revision source</dt>
+              <dd>
+                {DSI_V2_FINANCIER_REVISION.tapFinancier.appointmentSource}
+              </dd>
+            </div>
+          </dl>
+
+          <p className={styles.purpose}>
+            {DSI_V2_FINANCIER_REVISION.revisionBasis}
+          </p>
+          <p className={styles.evidenceBoundary}>
+            {DSI_V2_FINANCIER_REVISION.preservationBoundary}
+          </p>
         </section>
       ) : null}
 
