@@ -80,7 +80,9 @@ model User {
   representativeProgramAppointmentsCreated RepresentativeProgramAppointment[]        @relation("RepresentativeProgramAppointmentCreator")
   representativeProgramStandingActed       RepresentativeProgramStandingTransition[] @relation("RepresentativeProgramStandingActor")
 
-  wallets Wallet?
+  representativeOnboardingIntakesCreated   RepresentativeOnboardingIntake[]     @relation("RepresentativeOnboardingIntakeCreator")
+  representativeOnboardingTransitionsActed RepresentativeOnboardingTransition[] @relation("RepresentativeOnboardingTransitionActor")
+  wallets                                  Wallet?
 }
 
 // ============================================================================
@@ -301,6 +303,7 @@ model RepresentativeProgramParticipant {
 
   appointments        RepresentativeProgramAppointment[]
   standingTransitions RepresentativeProgramStandingTransition[]
+  onboardingIntake    RepresentativeOnboardingIntake?           @relation("RepresentativeOnboardingAdmission")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -357,6 +360,73 @@ model RepresentativeProgramStandingTransition {
   @@index([actorUserId])
 }
 
+model RepresentativeOnboardingIntake {
+  id        String @id @default(cuid())
+  reference String @unique
+
+  status                RepresentativeOnboardingStatus      @default(DRAFT)
+  qualificationDecision RepresentativeQualificationDecision @default(PENDING)
+
+  candidateDisplayName String
+  candidateEmail       String
+  submission           Json?
+
+  internalNotes String?
+
+  // Candidate-facing private access.
+  // Raw access tokens must never be persisted.
+  accessTokenHash String?   @unique
+  accessIssuedAt  DateTime?
+  accessExpiresAt DateTime?
+  accessRevokedAt DateTime?
+
+  submittedAt     DateTime?
+  reviewStartedAt DateTime?
+  qualifiedAt     DateTime?
+  admittedAt      DateTime?
+
+  admittedParticipantId String? @unique
+  createdByUserId       String?
+
+  admittedParticipant RepresentativeProgramParticipant? @relation("RepresentativeOnboardingAdmission", fields: [admittedParticipantId], references: [id], onDelete: Restrict)
+
+  createdBy User? @relation("RepresentativeOnboardingIntakeCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  transitions RepresentativeOnboardingTransition[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([qualificationDecision])
+  @@index([candidateEmail])
+  @@index([createdByUserId])
+  @@index([createdAt])
+}
+
+model RepresentativeOnboardingTransition {
+  id       String @id @default(cuid())
+  intakeId String
+
+  fromStatus RepresentativeOnboardingStatus?
+  toStatus   RepresentativeOnboardingStatus
+
+  actorUserId String?
+  reason      String?
+  metadata    Json?
+  occurredAt  DateTime @default(now())
+
+  intake RepresentativeOnboardingIntake @relation(fields: [intakeId], references: [id], onDelete: Cascade)
+
+  actor User? @relation("RepresentativeOnboardingTransitionActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([intakeId, occurredAt])
+  @@index([intakeId, toStatus])
+  @@index([actorUserId])
+}
+
 enum RepresentativeAppointmentClass {
   REGISTERED_COMMERCIAL_INTRODUCER
   AUTHORIZED_COMMERCIAL_REPRESENTATIVE
@@ -372,6 +442,23 @@ enum RepresentativeProgramStanding {
   EXPIRED
   WITHDRAWN
   REVOKED
+}
+
+enum RepresentativeOnboardingStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  QUALIFIED
+  RETURNED_FOR_COMPLETION
+  DECLINED
+  ADMITTED
+}
+
+enum RepresentativeQualificationDecision {
+  PENDING
+  QUALIFIED
+  RETURN_FOR_COMPLETION
+  DECLINED
 }
 
 enum InstitutionalInstrumentKind {
