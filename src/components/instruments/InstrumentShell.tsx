@@ -19,7 +19,7 @@ type InstrumentShellProps = {
   movements: Movement[];
   classificationLabel?: string;
   showStatusRail?: boolean;
-  density?: "standard" | "compact";
+  density?: "standard" | "compact" | "document";
   children: ReactNode;
 };
 
@@ -38,7 +38,13 @@ export function InstrumentShell({
 }: InstrumentShellProps) {
   return (
     <main
-      className={`${styles.shell} ${density === "compact" ? styles.compact : ""}`}
+      className={`${styles.shell} ${
+        density === "compact"
+          ? styles.compact
+          : density === "document"
+            ? styles.document
+            : ""
+      }`}
     >
       <div className={styles.field} aria-hidden="true" />
 

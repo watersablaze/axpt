@@ -153,12 +153,47 @@
   padding: clamp(2rem, 4vw, 4rem) 0 clamp(4rem, 8vw, 7rem);
 }
 
+.document .hero,
+.document .content {
+  width: min(1020px, calc(100% - clamp(2rem, 9vw, 8rem)));
+}
+
+.document .hero {
+  padding-top: clamp(1.5rem, 3vw, 3rem);
+}
+
+.document .identity {
+  grid-template-columns: minmax(100px, 0.5fr) minmax(0, 2.5fr) minmax(
+      210px,
+      0.85fr
+    );
+  gap: clamp(1.25rem, 3vw, 3.25rem);
+  padding: clamp(1.8rem, 3.5vw, 3.25rem) 0 clamp(1.6rem, 3vw, 2.75rem);
+}
+
+.document .titleGroup h1 {
+  max-width: 660px;
+  font-size: clamp(2.25rem, 4.3vw, 4.6rem);
+  line-height: 0.95;
+}
+
+.document .titleGroup p {
+  margin-top: 0.9rem;
+  max-width: 620px;
+  font-size: clamp(0.8rem, 1vw, 0.94rem);
+}
+
+.document .content {
+  padding: clamp(2.4rem, 4.5vw, 4.75rem) 0 clamp(5rem, 9vw, 8rem);
+}
+
 @media (max-width: 900px) {
   .identity {
     grid-template-columns: 1fr;
   }
 
-  .compact .identity {
+  .compact .identity,
+  .document .identity {
     grid-template-columns: 1fr;
   }
 

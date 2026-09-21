@@ -222,7 +222,7 @@ export default async function DigitalSettlementInstructionPage({
           : "Authorized Settlement Instrument"
       }
       showStatusRail={false}
-      density="compact"
+      density="document"
     >
       {isVisualPreview && !isBuyerViewPreview ? (
         <section className={styles.previewNotice} aria-label="Preview notice">
