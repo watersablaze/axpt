@@ -16,3 +16,4 @@ export * from "./invariants/digitalSettlementCommercialSnapshot";
 export * from "./commands/supersedeDigitalSettlementWithV2FinancierRevisionWithClient";
 export * from "./commands/issueDigitalSettlementV2AccessGrantsWithClient";
 export * from "./communications/digitalSettlementV2DeliveryAssembly";
+export * from "./communications/deliverDigitalSettlementEmail";
