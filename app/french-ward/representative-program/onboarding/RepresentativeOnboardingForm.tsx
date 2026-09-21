@@ -183,18 +183,18 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
 
   if (!editable || submitted) {
     return (
-      <section className="border-t border-black/20 px-6 py-12 md:px-12">
+      <section className="border-t border-black/20 px-5 py-10 md:px-12 md:py-12">
         <p className="text-xs uppercase tracking-[0.24em] text-black/50">
           Current State
         </p>
 
-        <h2 className="mt-3 font-serif text-3xl text-[#181714]">
+        <h2 className="mt-3 font-serif text-[1.75rem] leading-tight text-[#181714] md:text-3xl">
           {submitted
             ? "Submission received."
             : candidate.status.replaceAll("_", " ")}
         </h2>
 
-        <p className="mt-4 max-w-2xl text-sm leading-7 text-black/65">
+        <p className="mt-4 max-w-2xl text-[13px] leading-6 text-black/65 md:text-sm md:leading-7">
           Your candidate record remains under French-Ward governance. Submission
           does not constitute qualification, Program admission, appointment,
           mandate, or delegated authority.
@@ -405,22 +405,22 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
           {acknowledgementFields.map(({ key, title, body }) => (
             <label
               key={key}
-              className="flex gap-4 border border-black/20 bg-white/20 p-4"
+              className="flex gap-3 border border-black/20 bg-white/20 p-4 md:gap-4"
             >
               <input
                 type="checkbox"
                 name={key}
                 required
                 defaultChecked={existing?.acknowledgements[key] ?? false}
-                className="mt-1 h-4 w-4 accent-black"
+                className="mt-0.5 h-[18px] w-[18px] shrink-0 accent-black md:mt-1 md:h-4 md:w-4"
               />
 
               <span>
-                <strong className="block text-sm font-semibold text-[#181714]">
+                <strong className="block text-[13px] font-semibold leading-5 text-[#181714] md:text-sm md:leading-normal">
                   {title}
                 </strong>
 
-                <span className="mt-1 block text-xs leading-6 text-black/65">
+                <span className="mt-1.5 block text-[12px] leading-5 text-black/65 md:mt-1 md:text-xs md:leading-6">
                   {body}
                 </span>
               </span>
@@ -429,8 +429,8 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
         </div>
       </Section>
 
-      <section className="border-t border-black/20 px-6 py-10 md:px-12">
-        <p className="max-w-3xl text-xs leading-6 text-black/55">
+      <section className="border-t border-black/30 px-5 py-9 md:border-black/20 md:px-12 md:py-10">
+        <p className="max-w-3xl text-[12px] leading-5 text-black/55 md:text-xs md:leading-6">
           Submission places this candidate intake into French-Ward review. It
           does not itself constitute qualification, admission, appointment,
           mandate, authority, transaction attachment, or compensation
@@ -446,7 +446,7 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
         <button
           type="submit"
           disabled={submitting}
-          className="mt-6 border border-black bg-[#181714] px-6 py-3 text-xs font-semibold uppercase tracking-[0.18em] text-[#F4EFE3] disabled:opacity-50"
+          className="mt-7 w-full border border-black bg-[#181714] px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#F4EFE3] disabled:opacity-50 md:mt-6 md:w-auto md:py-3 md:text-xs"
         >
           {submitting ? "Submitting…" : "Submit Candidate Intake"}
         </button>
@@ -467,26 +467,30 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="border-t border-black/20 px-6 py-10 md:px-12">
-      <div className="mb-7 flex gap-5">
-        <span className="font-mono text-xs text-black/35">{index}</span>
+    <section className="border-t border-black/20 px-5 py-8 md:px-12 md:py-10">
+      <div className="mb-6 flex gap-3 md:mb-7 md:gap-5">
+        <span className="font-mono text-[11px] leading-4 text-black/35 md:text-xs">
+          {index}
+        </span>
 
         <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-black/45">
+          <p className="text-[11px] uppercase leading-4 tracking-[0.16em] text-black/45 md:text-xs md:tracking-[0.2em]">
             {eyebrow}
           </p>
 
-          <h2 className="mt-2 font-serif text-2xl text-[#181714]">{title}</h2>
+          <h2 className="mt-2 max-w-[18rem] font-serif text-[1.35rem] leading-[1.15] text-[#181714] md:max-w-none md:text-2xl md:leading-normal">
+            {title}
+          </h2>
         </div>
       </div>
 
-      <div className="grid gap-5">{children}</div>
+      <div className="grid gap-4 md:gap-5">{children}</div>
     </section>
   );
 }
 
 function Grid({ children }: { children: React.ReactNode }) {
-  return <div className="grid gap-5 md:grid-cols-2">{children}</div>;
+  return <div className="grid gap-4 md:grid-cols-2 md:gap-5">{children}</div>;
 }
 
 function Field({
@@ -504,7 +508,7 @@ function Field({
 }) {
   return (
     <label className="grid gap-2">
-      <span className="text-xs uppercase tracking-[0.15em] text-black/50">
+      <span className="text-[11px] uppercase leading-4 tracking-[0.12em] text-black/50 md:text-xs md:tracking-[0.15em]">
         {label}
       </span>
 
@@ -513,7 +517,7 @@ function Field({
         type={type}
         required={required}
         defaultValue={defaultValue ?? ""}
-        className="border-b border-black/30 bg-transparent px-0 py-2 text-sm text-[#181714] outline-none focus:border-black"
+        className="border-b border-black/30 bg-transparent px-0 py-2.5 text-[15px] leading-6 text-[#181714] outline-none focus:border-black md:py-2 md:text-sm md:leading-normal"
       />
     </label>
   );
@@ -532,18 +536,22 @@ function TextArea({
 }) {
   return (
     <label className="grid gap-2">
-      <span className="text-xs uppercase tracking-[0.15em] text-black/50">
+      <span className="text-[11px] uppercase leading-4 tracking-[0.12em] text-black/50 md:text-xs md:tracking-[0.15em]">
         {label}
       </span>
 
       <textarea
         name={name}
-        rows={4}
+        rows={3}
         defaultValue={defaultValue ?? ""}
-        className="resize-y border border-black/20 bg-white/15 p-3 text-sm leading-6 text-[#181714] outline-none focus:border-black/50"
+        className="min-h-[6.25rem] resize-y border border-black/20 bg-white/15 p-3 text-[15px] leading-6 text-[#181714] outline-none focus:border-black/50 md:min-h-[7.5rem] md:text-sm"
       />
 
-      {hint ? <span className="text-xs text-black/40">{hint}</span> : null}
+      {hint ? (
+        <span className="text-[11px] leading-4 text-black/40 md:text-xs">
+          {hint}
+        </span>
+      ) : null}
     </label>
   );
 }
