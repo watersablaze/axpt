@@ -19,3 +19,4 @@ export * from "./communications/digitalSettlementV2DeliveryAssembly";
 export * from "./communications/deliverDigitalSettlementEmail";
 export * from "./communications/digitalSettlementV2DeliveryRequests";
 export * from "./communications/sendDigitalSettlementV2Deliveries";
+export * from "./commands/issueDigitalSettlementV2FinancierRevisionWithClient";
