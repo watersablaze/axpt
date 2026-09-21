@@ -16,7 +16,10 @@ import {
   INDERAKSH_BUYER_SUBMISSION,
   INDERAKSH_LEGAL_NAME,
 } from "@/domains/instruments/definitions/digitalSettlementV1Definition";
-import { DSI_V2_FINANCIER_REVISION } from "@/domains/instruments/definitions/digitalSettlementV2FinancierRevision";
+import {
+  DSI_V2_FINANCIER_REVISION,
+  DSI_V2_VERSION,
+} from "@/domains/instruments/definitions/digitalSettlementV2FinancierRevision";
 import { TREASURY_WALLETS } from "@/lib/treasury/config";
 import { loadIssuedDigitalSettlementInstruction } from "@/domains/instruments/queries/loadIssuedDigitalSettlementInstruction";
 import { resolveInstrumentAccess } from "@/domains/instruments/queries/resolveInstrumentAccess";
@@ -170,6 +173,9 @@ export default async function DigitalSettlementInstructionPage({
     },
   });
 
+  const displaysV2Revision =
+    instruction.versionNumber >= DSI_V2_VERSION;
+
   const verificationOnly =
     instruction.settlementStatus ===
     DIGITAL_SETTLEMENT_STATUS.AWAITING_VERIFICATION_TRANSFER;
@@ -236,7 +242,7 @@ export default async function DigitalSettlementInstructionPage({
         </section>
       ) : null}
 
-      {isV2Preview ? (
+      {displaysV2Revision ? (
         <section className={styles.panel} aria-labelledby="revision-heading">
           <div className={styles.sectionHeading}>
             <span>V2</span>

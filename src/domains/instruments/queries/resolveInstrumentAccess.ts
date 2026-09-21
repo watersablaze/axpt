@@ -24,7 +24,14 @@ export async function resolveInstrumentAccess(params: {
 
   const settlement = await prisma.digitalSettlementInstruction.findUnique({
     where: { publicId: params.publicId },
-    select: { instrumentId: true },
+    select: {
+      instrumentId: true,
+      instrument: {
+        select: {
+          currentVersion: true,
+        },
+      },
+    },
   });
 
   if (!settlement) {
@@ -37,6 +44,7 @@ export async function resolveInstrumentAccess(params: {
     select: {
       id: true,
       instrumentId: true,
+      instrumentVersionId: true,
       accessLevel: true,
       recipientName: true,
       expiresAt: true,
@@ -51,6 +59,46 @@ export async function resolveInstrumentAccess(params: {
     grant.revokedAt ||
     (grant.expiresAt && grant.expiresAt.getTime() <= now.getTime())
   ) {
+    return null;
+  }
+
+  const currentVersion =
+    await prisma.instrumentVersion.findUnique({
+      where: {
+        instrumentId_number: {
+          instrumentId: settlement.instrumentId,
+          number: settlement.instrument.currentVersion,
+        },
+      },
+      select: {
+        id: true,
+        number: true,
+        status: true,
+      },
+    });
+
+  if (!currentVersion) {
+    return null;
+  }
+
+  /*
+   * Version access boundary:
+   *
+   * Legacy V1 grants predate version binding and may therefore have a null
+   * instrumentVersionId. Preserve those credentials only while V1 remains
+   * current.
+   *
+   * Once the instrument advances beyond V1, access must be explicitly bound
+   * to the current version. A bearer credential for a superseded version
+   * cannot silently follow the instrument forward.
+   */
+  const versionAccessValid =
+    currentVersion.number === 1
+      ? grant.instrumentVersionId === null ||
+        grant.instrumentVersionId === currentVersion.id
+      : grant.instrumentVersionId === currentVersion.id;
+
+  if (!versionAccessValid) {
     return null;
   }
 
