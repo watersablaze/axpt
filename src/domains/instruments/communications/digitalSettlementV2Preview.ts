@@ -166,6 +166,6 @@ export function buildDigitalSettlementV2EmailPreviews(input: PreviewInput) {
   return messages(input).map((message) => ({
     ...message,
     html: render(message),
-    text: [...message.lines, "", observerNote, "", axptFootnote].join("\n"),
+    text: [...message.lines, "", observerNote].join("\n"),
   }));
 }
