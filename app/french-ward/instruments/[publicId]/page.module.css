@@ -341,22 +341,179 @@
 }
 
 @media (max-width: 560px) {
-  .sectionHeading,
-  .coordinateData > dl {
-    grid-template-columns: 1fr;
+  .intro,
+  .authorityBand,
+  .panel,
+  .standard {
+    padding: 1.25rem 0;
+  }
+
+  .intro {
+    gap: 1rem;
+  }
+
+  .sectionHeading {
+    grid-template-columns: 30px minmax(0, 1fr);
+    gap: 0.65rem;
+    margin-bottom: 0.9rem;
+  }
+
+  .sectionHeading > span {
+    padding-top: 0.08rem;
+    font-size: 0.54rem;
+  }
+
+  .sectionHeading p,
+  .kicker,
+  .addressBlock > p {
+    margin-bottom: 0.4rem;
+    font-size: 0.56rem;
+    letter-spacing: 0.07em;
+  }
+
+  .sectionHeading h2,
+  .intro h2 {
+    font-size: 0.98rem;
+    line-height: 1.35;
+  }
+
+  .statusPair {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .statusPair div {
+    padding: 0.7rem;
+  }
+
+  .statusPair dt {
+    font-size: 0.54rem;
+  }
+
+  .statusPair dd {
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+  }
+
+  .authorityBand {
+    padding: 0.95rem;
+  }
+
+  .authorityBand > p:first-child {
+    margin-bottom: 0.45rem;
+    font-size: 0.55rem;
+    letter-spacing: 0.08em;
+  }
+
+  .authorityBand h2 {
+    font-size: 0.92rem;
+  }
+
+  .authorityBand > p:last-child {
+    margin-top: 0.7rem;
+    font-size: 0.71rem;
+    line-height: 1.6;
+  }
+
+  .submissionGrid,
+  .commercialGrid {
+    border-left: 0;
+  }
+
+  .submissionGrid > div,
+  .commercialGrid > div {
+    padding: 0.7rem 0;
+    border-right: 0;
+  }
+
+  .submissionGrid dt,
+  .commercialGrid dt,
+  .coordinateData dt {
+    font-size: 0.54rem;
+    letter-spacing: 0.065em;
+  }
+
+  .submissionGrid dd,
+  .commercialGrid dd,
+  .coordinateData dd {
+    margin-top: 0.3rem;
+    font-size: 0.78rem;
+    line-height: 1.5;
+  }
+
+  .evidenceBoundary {
+    padding: 0.7rem;
+    font-size: 0.69rem;
+    line-height: 1.58;
+  }
+
+  .purpose {
+    font-size: 0.69rem;
+    line-height: 1.6;
   }
 
   .coordinateData > dl {
-    gap: 1.25rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    margin-bottom: 1rem;
+    border-top: 1px solid var(--line);
   }
 
-  .addressActions,
-  .issuanceFooter {
+  .coordinateData > dl > div {
+    padding: 0.7rem 0.6rem 0.7rem 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .addressBlock {
+    padding: 0.85rem;
+  }
+
+  .addressBlock code {
+    font-size: 0.74rem;
+    line-height: 1.55;
+  }
+
+  .addressActions {
     align-items: flex-start;
     flex-direction: column;
+    gap: 0.55rem;
+    margin-top: 0.75rem;
+  }
+
+  .addressActions span {
+    font-size: 0.58rem;
+  }
+
+  .qr {
+    margin-top: 1rem;
+  }
+
+  .qr img {
+    width: min(170px, 58vw);
+  }
+
+  .qr figcaption {
+    max-width: 190px;
+    font-size: 0.62rem;
+  }
+
+  .axptBoundary {
+    font-size: 0.66rem;
+    line-height: 1.55;
   }
 
   .recognitionStatement {
     margin-left: 0;
+    padding-left: 0.75rem;
+    font-size: 0.69rem;
+    line-height: 1.6;
+  }
+
+  .issuanceFooter {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.45rem;
+    margin-top: 1.25rem;
+    font-size: 0.54rem;
+    letter-spacing: 0.06em;
   }
 }
