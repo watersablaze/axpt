@@ -14,12 +14,16 @@ import { INSTITUTIONAL_INSTRUMENT_STREAM_TYPE } from "../stream";
 
 export type InstrumentAccessGrantIssuanceClient = Pick<
   PrismaClient,
-  "institutionalInstrument" | "instrumentAccessGrant" | "domainEvent"
+  | "institutionalInstrument"
+  | "instrumentVersion"
+  | "instrumentAccessGrant"
+  | "domainEvent"
 >;
 
 export async function issueInstrumentAccessGrantWithClient(params: {
   client: InstrumentAccessGrantIssuanceClient;
   instrumentReference: string;
+  instrumentVersionNumber?: number;
   recipientName: string;
   recipientRole?: InstrumentPartyRole;
   accessLevel?: InstrumentAccessLevel;
@@ -36,6 +40,14 @@ export async function issueInstrumentAccessGrantWithClient(params: {
     throw new Error("[INSTRUMENT_ACCESS_EXPIRY_MUST_BE_FUTURE]");
   }
 
+  if (
+    params.instrumentVersionNumber !== undefined &&
+    (!Number.isInteger(params.instrumentVersionNumber) ||
+      params.instrumentVersionNumber <= 0)
+  ) {
+    throw new Error("[INSTRUMENT_ACCESS_VERSION_NUMBER_INVALID]");
+  }
+
   const instrument = await params.client.institutionalInstrument.findUnique({
     where: { reference: params.instrumentReference },
     select: { id: true, reference: true },
@@ -44,6 +56,32 @@ export async function issueInstrumentAccessGrantWithClient(params: {
   if (!instrument) {
     throw new Error(
       `[INSTRUMENT_ACCESS_INSTRUMENT_NOT_FOUND] ${params.instrumentReference}`,
+    );
+  }
+
+  const instrumentVersion =
+    params.instrumentVersionNumber === undefined
+      ? null
+      : await params.client.instrumentVersion.findUnique({
+          where: {
+            instrumentId_number: {
+              instrumentId: instrument.id,
+              number: params.instrumentVersionNumber,
+            },
+          },
+          select: {
+            id: true,
+            number: true,
+            status: true,
+          },
+        });
+
+  if (
+    params.instrumentVersionNumber !== undefined &&
+    !instrumentVersion
+  ) {
+    throw new Error(
+      `[INSTRUMENT_ACCESS_VERSION_NOT_FOUND] reference=${params.instrumentReference} version=${params.instrumentVersionNumber}`,
     );
   }
 
@@ -59,6 +97,7 @@ export async function issueInstrumentAccessGrantWithClient(params: {
   const grant = await params.client.instrumentAccessGrant.create({
     data: {
       instrumentId: instrument.id,
+      instrumentVersionId: instrumentVersion?.id ?? null,
       recipientName,
       recipientRole,
       accessLevel,
@@ -69,6 +108,7 @@ export async function issueInstrumentAccessGrantWithClient(params: {
     },
     select: {
       id: true,
+      instrumentVersionId: true,
       recipientName: true,
       accessLevel: true,
       expiresAt: true,
@@ -82,6 +122,8 @@ export async function issueInstrumentAccessGrantWithClient(params: {
       eventType: INSTRUMENT_EVENT_TYPE.INSTRUMENT_ACCESS_GRANTED,
       payload: {
         accessGrantId: grant.id,
+        instrumentVersionId: grant.instrumentVersionId,
+        instrumentVersionNumber: instrumentVersion?.number ?? null,
         recipientName: grant.recipientName,
         accessLevel: grant.accessLevel,
         expiresAt: grant.expiresAt?.toISOString() ?? null,
@@ -94,5 +136,15 @@ export async function issueInstrumentAccessGrantWithClient(params: {
     },
   });
 
-  return { grant, token } as const;
+  return {
+    grant,
+    token,
+    instrumentVersion: instrumentVersion
+      ? {
+          id: instrumentVersion.id,
+          number: instrumentVersion.number,
+          status: instrumentVersion.status,
+        }
+      : null,
+  } as const;
 }

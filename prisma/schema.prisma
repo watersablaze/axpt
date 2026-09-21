@@ -162,6 +162,7 @@ model InstrumentVersion {
   createdBy  User                    @relation("InstrumentVersionCreator", fields: [createdByUserId], references: [id])
 
   propositions InstrumentProposition[]
+  accessGrants InstrumentAccessGrant[] @relation("InstrumentVersionAccessGrants")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -236,14 +237,15 @@ model InstrumentParty {
 }
 
 model InstrumentAccessGrant {
-  id              String                @id @default(cuid())
-  instrumentId    String
-  recipientUserId String?
-  recipientName   String?
-  recipientRole   InstrumentPartyRole
-  accessLevel     InstrumentAccessLevel
-  codeHash        String?               @unique
-  issuedByUserId  String
+  id                  String                @id @default(cuid())
+  instrumentId        String
+  instrumentVersionId String?
+  recipientUserId     String?
+  recipientName       String?
+  recipientRole       InstrumentPartyRole
+  accessLevel         InstrumentAccessLevel
+  codeHash            String?               @unique
+  issuedByUserId      String
 
   issuedAt      DateTime  @default(now())
   expiresAt     DateTime?
@@ -251,11 +253,13 @@ model InstrumentAccessGrant {
   firstAccessAt DateTime?
   lastAccessAt  DateTime?
 
-  instrument    InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
-  recipientUser User?                   @relation("InstrumentAccessRecipient", fields: [recipientUserId], references: [id], onDelete: SetNull)
-  issuedBy      User                    @relation("InstrumentAccessIssuer", fields: [issuedByUserId], references: [id])
+  instrument        InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  instrumentVersion InstrumentVersion?      @relation("InstrumentVersionAccessGrants", fields: [instrumentVersionId], references: [id], onDelete: SetNull)
+  recipientUser     User?                   @relation("InstrumentAccessRecipient", fields: [recipientUserId], references: [id], onDelete: SetNull)
+  issuedBy          User                    @relation("InstrumentAccessIssuer", fields: [issuedByUserId], references: [id])
 
   @@index([instrumentId, accessLevel])
+  @@index([instrumentVersionId])
   @@index([recipientUserId])
   @@index([issuedByUserId])
   @@index([expiresAt])
