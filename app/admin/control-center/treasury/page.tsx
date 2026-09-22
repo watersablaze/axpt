@@ -1,3 +1,5 @@
+import DigitalSettlementReceiptAdmissionPanel from "@/components/admin/control-center/treasury/DigitalSettlementReceiptAdmissionPanel";
+
 import OriginateTreasuryTransferPanel from "@/components/admin/control-center/treasury/OriginateTreasuryTransferPanel";
 
 import TransferExecutionSummaryPanel from "@/components/admin/control-center/treasury/TransferExecutionSummaryPanel";
@@ -21,6 +23,8 @@ export default function TreasuryPage() {
             activity, while Treasury law remains within the Gateway.
           </p>
         </header>
+
+        <DigitalSettlementReceiptAdmissionPanel />
 
         <OriginateTreasuryTransferPanel />
 
