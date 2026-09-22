@@ -256,6 +256,18 @@ export function assertDigitalSettlementRecognitionTreasuryIntake(
   }
 }
 
+export function deriveDigitalSettlementRecognitionTreasuryReceiptId(
+  source:
+    DigitalSettlementRecognitionTreasurySource,
+): ProgramCapitalReceiptId {
+  assertRequired(
+    source.observationId,
+    "[DSI_TREASURY_INTAKE_OBSERVATION_ID_REQUIRED]",
+  );
+
+  return `dsi-recognition-receipt:${source.observationId.trim()}`;
+}
+
 export function deriveDigitalSettlementRecognitionTreasuryReceiptIdentity(
   intake:
     DigitalSettlementRecognitionTreasuryIntake,
@@ -275,7 +287,9 @@ export function deriveDigitalSettlementRecognitionTreasuryReceiptIdentity(
 
   return {
     receiptId:
-      `dsi-recognition-receipt:${observationId}`,
+      deriveDigitalSettlementRecognitionTreasuryReceiptId(
+        intake.source,
+      ),
 
     reference:
       `DSI-RECOGNITION:${instrumentId}:${observationId}`,
