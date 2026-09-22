@@ -15,6 +15,10 @@ import {
 } from "@/domains/control-center/treasury/getDigitalSettlementRecognitionReceiptCandidateHttp";
 
 import {
+  DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE,
+} from "@/domains/control-center/treasury/digitalSettlementReceiptAdmissionState";
+
+import {
   prisma,
 } from "@/infrastructure/db/prisma";
 
@@ -34,9 +38,64 @@ export async function GET(
   context:
     RouteContext,
 ) {
-  await requirePermission(
-    PERMISSIONS.TREASURY_READ,
-  );
+  try {
+    await requirePermission(
+      PERMISSIONS.TREASURY_READ,
+    );
+  } catch (
+    error:
+      unknown
+  ) {
+    if (
+      error instanceof Error &&
+      error.message ===
+        "Authentication required"
+    ) {
+      return NextResponse.json(
+        {
+          ok:
+            false,
+
+          state:
+            DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.UNAUTHENTICATED,
+
+          error:
+            "UNAUTHORIZED",
+        },
+
+        {
+          status:
+            401,
+        },
+      );
+    }
+
+    if (
+      error instanceof Error &&
+      error.message ===
+        `MISSING_PERMISSION:${PERMISSIONS.TREASURY_READ}`
+    ) {
+      return NextResponse.json(
+        {
+          ok:
+            false,
+
+          state:
+            DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.PERMISSION_DENIED,
+
+          error:
+            "FORBIDDEN",
+        },
+
+        {
+          status:
+            403,
+        },
+      );
+    }
+
+    throw error;
+  }
 
   const {
     reference,
