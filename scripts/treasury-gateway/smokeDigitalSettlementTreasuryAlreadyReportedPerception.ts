@@ -16,6 +16,10 @@ import {
   getDigitalSettlementRecognitionReceiptCandidateHttp,
 } from "../../src/domains/control-center/treasury/getDigitalSettlementRecognitionReceiptCandidateHttp";
 
+import {
+  DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE,
+} from "../../src/domains/control-center/treasury/digitalSettlementReceiptAdmissionState";
+
 const INSTRUMENT_REFERENCE =
   "FW-DSI-RB1C7B-001";
 
@@ -348,6 +352,11 @@ async function main():
   }
 
   assert.equal(
+    available.body.state,
+    DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.REPORTABLE,
+  );
+
+  assert.equal(
     available.body.treasuryReceipt,
     null,
   );
@@ -388,6 +397,11 @@ async function main():
   }
 
   assert.equal(
+    reported.body.state,
+    DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.ALREADY_REPORTED,
+  );
+
+  assert.equal(
     reported.body.treasuryReceipt?.id,
     RECEIPT_ID,
   );
@@ -418,23 +432,47 @@ async function main():
    * Existing Treasury state may not silently
    * diverge from the durable DSI source fact.
    */
-  await assert.rejects(
-    () =>
-      getDigitalSettlementRecognitionReceiptCandidateHttp({
-        rawInstrumentReference:
-          INSTRUMENT_REFERENCE,
+  const divergent =
+    await getDigitalSettlementRecognitionReceiptCandidateHttp({
+      rawInstrumentReference:
+        INSTRUMENT_REFERENCE,
 
-        prisma:
-          createPrisma({
-            includeReceipt:
-              true,
+      prisma:
+        createPrisma({
+          includeReceipt:
+            true,
 
-            receiptTransactionHash:
-              `0x${"ff".repeat(32)}`,
-          }),
-      }),
+          receiptTransactionHash:
+            `0x${"ff".repeat(32)}`,
+        }),
+    });
 
-    /DSI_TREASURY_PERCEPTION_RECEIPT_TRANSACTION_MISMATCH/,
+  assert.equal(
+    divergent.status,
+    500,
+  );
+
+  assert.equal(
+    divergent.body.ok,
+    false,
+  );
+
+  if (
+    divergent.body.ok
+  ) {
+    throw new Error(
+      "RB1C8B_DIVERGENT_RECEIPT_UNEXPECTEDLY_ACCEPTED",
+    );
+  }
+
+  assert.equal(
+    divergent.body.state,
+    DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.INTEGRITY_FAILURE,
+  );
+
+  assert.equal(
+    divergent.body.error,
+    "DSI_TREASURY_INTEGRITY_FAILURE",
   );
 
   console.log(
@@ -455,6 +493,18 @@ async function main():
 
   console.log(
     "DSI_TREASURY_PERCEPTION_NO_REPORT_REPLAY_OK",
+  );
+
+  console.log(
+    "DSI_TREASURY_ADMISSION_STATE_REPORTABLE_OK",
+  );
+
+  console.log(
+    "DSI_TREASURY_ADMISSION_STATE_ALREADY_REPORTED_OK",
+  );
+
+  console.log(
+    "DSI_TREASURY_ADMISSION_INTEGRITY_FAILS_CLOSED_OK",
   );
 }
 

@@ -4,6 +4,12 @@ import type {
 } from "@prisma/client";
 
 import {
+  DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE,
+  isDigitalSettlementTreasuryAdmissionIntegrityError,
+  type DigitalSettlementTreasuryAdmissionState,
+} from "./digitalSettlementReceiptAdmissionState";
+
+import {
   CAPITAL_RECEIPT_METHOD,
 } from "../../treasury/gateway/capital-receipts/contracts";
 
@@ -69,6 +75,9 @@ export type GetDigitalSettlementRecognitionReceiptCandidateHttpResult =
           ok:
             true;
 
+          state:
+            DigitalSettlementTreasuryAdmissionState;
+
           candidate:
             Readonly<{
               recognitionEventId:
@@ -123,12 +132,15 @@ export type GetDigitalSettlementRecognitionReceiptCandidateHttpResult =
     }>
   | Readonly<{
       status:
-        400 | 404 | 409;
+        400 | 404 | 409 | 500;
 
       body:
         Readonly<{
           ok:
             false;
+
+          state:
+            DigitalSettlementTreasuryAdmissionState;
 
           error:
             string;
@@ -288,6 +300,9 @@ export async function getDigitalSettlementRecognitionReceiptCandidateHttp(
         ok:
           false,
 
+        state:
+          DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.INVALID_REQUEST,
+
         error:
           "DSI_REFERENCE_REQUIRED",
       },
@@ -323,6 +338,9 @@ export async function getDigitalSettlementRecognitionReceiptCandidateHttp(
           ok:
             false,
 
+          state:
+            DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.NOT_FOUND,
+
           error:
             "DSI_TREASURY_CANDIDATE_NOT_FOUND",
         },
@@ -343,8 +361,33 @@ export async function getDigitalSettlementRecognitionReceiptCandidateHttp(
           ok:
             false,
 
+          state:
+            DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.RECOGNITION_NOT_READY,
+
           error:
             "DSI_TREASURY_RECOGNITION_NOT_READY",
+        },
+      };
+    }
+
+    if (
+      isDigitalSettlementTreasuryAdmissionIntegrityError(
+        error,
+      )
+    ) {
+      return {
+        status:
+          500,
+
+        body: {
+          ok:
+            false,
+
+          state:
+            DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.INTEGRITY_FAILURE,
+
+          error:
+            "DSI_TREASURY_INTEGRITY_FAILURE",
         },
       };
     }
@@ -357,29 +400,65 @@ export async function getDigitalSettlementRecognitionReceiptCandidateHttp(
       source,
     );
 
-  const loadedReceipt =
-    await loadProgramCapitalReceiptWithClient({
-      receiptId,
+  let loadedReceipt:
+    Awaited<
+      ReturnType<
+        typeof loadProgramCapitalReceiptWithClient
+      >
+    >;
 
-      client:
-        params.prisma as unknown as
-          TransactionClient,
-    });
+  try {
+    loadedReceipt =
+      await loadProgramCapitalReceiptWithClient({
+        receiptId,
+
+        client:
+          params.prisma as unknown as
+            TransactionClient,
+      });
+
+    if (
+      loadedReceipt?.aggregate
+    ) {
+      assertExistingReceiptMatchesSource({
+        receipt:
+          loadedReceipt.aggregate,
+
+        source,
+      });
+    }
+  } catch (
+    error:
+      unknown
+  ) {
+    if (
+      isDigitalSettlementTreasuryAdmissionIntegrityError(
+        error,
+      )
+    ) {
+      return {
+        status:
+          500,
+
+        body: {
+          ok:
+            false,
+
+          state:
+            DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.INTEGRITY_FAILURE,
+
+          error:
+            "DSI_TREASURY_INTEGRITY_FAILURE",
+        },
+      };
+    }
+
+    throw error;
+  }
 
   const treasuryReceipt =
     loadedReceipt?.aggregate ??
     null;
-
-  if (
-    treasuryReceipt
-  ) {
-    assertExistingReceiptMatchesSource({
-      receipt:
-        treasuryReceipt,
-
-      source,
-    });
-  }
 
   return {
     status:
@@ -388,6 +467,11 @@ export async function getDigitalSettlementRecognitionReceiptCandidateHttp(
     body: {
       ok:
         true,
+
+      state:
+        treasuryReceipt
+          ? DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.ALREADY_REPORTED
+          : DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.REPORTABLE,
 
       candidate: {
         recognitionEventId:
