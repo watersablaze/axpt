@@ -63,6 +63,9 @@ type CandidateResponse =
 
       candidate:
         Candidate;
+
+      treasuryReceipt:
+        ReportedReceipt | null;
     }>
   | Readonly<{
       ok:
@@ -220,6 +223,14 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
     );
 
   const [
+    treasuryReceipt,
+    setTreasuryReceipt,
+  ] =
+    useState<ReportedReceipt | null>(
+      null,
+    );
+
+  const [
     routing,
     setRouting,
   ] =
@@ -288,6 +299,10 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
      * the presently perceived source fact.
      */
     setCandidate(
+      null,
+    );
+
+    setTreasuryReceipt(
       null,
     );
 
@@ -400,6 +415,10 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
           null,
         );
 
+        setTreasuryReceipt(
+          null,
+        );
+
         setLoadError(
           payload.ok
             ? "Treasury receipt candidate could not be loaded."
@@ -414,6 +433,10 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
       setCandidate(
         payload.candidate,
       );
+
+      setTreasuryReceipt(
+        payload.treasuryReceipt,
+      );
     } catch (
       cause:
         unknown
@@ -424,6 +447,10 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
       );
 
       setCandidate(
+        null,
+      );
+
+      setTreasuryReceipt(
         null,
       );
 
@@ -547,6 +574,10 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
       setResult(
         payload,
       );
+
+      setTreasuryReceipt(
+        payload.receipt,
+      );
     } catch (
       cause:
         unknown
@@ -652,7 +683,9 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
                 </div>
 
                 <div className="text-[10px] uppercase tracking-wide text-cyan-700">
-                  Reportable
+                  {treasuryReceipt
+                    ? "Treasury Receipt Present"
+                    : "Reportable"}
                 </div>
               </div>
 
@@ -743,119 +776,22 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
               </div>
             </div>
 
-            <form
-              onSubmit={
-                reportReceipt
-              }
-              className="space-y-4"
-            >
-              <fieldset className="rounded-lg border border-neutral-800 bg-black/20 p-4">
-                <legend className="px-1 text-[10px] uppercase tracking-[0.16em] text-neutral-500">
-                  Treasury Routing
-                </legend>
-
-                <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-600">
-                  Routing identifiers are supplied explicitly by the Treasury
-                  operator. They are not inferred from the DSI, wallet address,
-                  blockchain observation, or recognizing operator.
-                </p>
-
-                <div className="mt-4 grid gap-3 md:grid-cols-2">
-                  <label className="space-y-1.5">
-                    <span className="text-[10px] uppercase tracking-wide text-neutral-600">
-                      Commercial Program ID
-                    </span>
-
-                    <input
-                      value={
-                        routing.programId
-                      }
-                      onChange={(
-                        event,
-                      ) =>
-                        updateRouting(
-                          "programId",
-
-                          event.target.value,
-                        )
-                      }
-                      placeholder="Program identity"
-                      className="w-full rounded border border-neutral-800 bg-neutral-950 px-3 py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-700 focus:border-cyan-900"
-                    />
-                  </label>
-
-                  <label className="space-y-1.5">
-                    <span className="text-[10px] uppercase tracking-wide text-neutral-600">
-                      Destination Program Account ID
-                    </span>
-
-                    <input
-                      value={
-                        routing.destinationProgramAccountId
-                      }
-                      onChange={(
-                        event,
-                      ) =>
-                        updateRouting(
-                          "destinationProgramAccountId",
-
-                          event.target.value,
-                        )
-                      }
-                      placeholder="Program account identity"
-                      className="w-full rounded border border-neutral-800 bg-neutral-950 px-3 py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-700 focus:border-cyan-900"
-                    />
-                  </label>
-                </div>
-
-                <label className="mt-3 block space-y-1.5">
-                  <span className="text-[10px] uppercase tracking-wide text-neutral-600">
-                    Authority Grant ID
-                    <span className="ml-2 normal-case tracking-normal text-neutral-700">
-                      optional
-                    </span>
-                  </span>
-
-                  <input
-                    value={
-                      routing.authorityGrantId
-                    }
-                    onChange={(
-                      event,
-                    ) =>
-                      updateRouting(
-                        "authorityGrantId",
-
-                        event.target.value,
-                      )
-                    }
-                    placeholder="Treasury authority evidence, if applicable"
-                    className="w-full rounded border border-neutral-800 bg-neutral-950 px-3 py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-700 focus:border-cyan-900"
-                  />
-                </label>
-              </fieldset>
-
-              {reportError ? (
-                <div className="rounded border border-orange-950 bg-orange-950/10 p-3 text-xs leading-5 text-orange-300">
-                  {reportError}
-                </div>
-              ) : null}
-
-              {result ? (
+            {treasuryReceipt ? (
+              <div className="space-y-4">
                 <div className="rounded-lg border border-cyan-950 bg-cyan-950/10 p-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-700">
-                        Treasury Response
+                        Existing Treasury Receipt
                       </div>
 
                       <div className="mt-1 text-sm font-medium text-cyan-300">
-                        {result.disposition}
+                        {treasuryReceipt.status}
                       </div>
                     </div>
 
                     <div className="text-[10px] uppercase tracking-wide text-neutral-600">
-                      Version {result.receipt.version}
+                      Version {treasuryReceipt.version}
                     </div>
                   </div>
 
@@ -866,17 +802,17 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
                       </dt>
 
                       <dd className="mt-1 break-all text-neutral-200">
-                        {result.receipt.id}
+                        {treasuryReceipt.id}
                       </dd>
                     </div>
 
                     <div>
                       <dt className="text-neutral-600">
-                        Status
+                        Receipt Reference
                       </dt>
 
-                      <dd className="mt-1 text-cyan-300">
-                        {result.receipt.status}
+                      <dd className="mt-1 break-all text-neutral-300">
+                        {treasuryReceipt.reference}
                       </dd>
                     </div>
 
@@ -886,7 +822,7 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
                       </dt>
 
                       <dd className="mt-1 break-all text-neutral-200">
-                        {result.receipt.programId}
+                        {treasuryReceipt.programId}
                       </dd>
                     </div>
 
@@ -896,7 +832,7 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
                       </dt>
 
                       <dd className="mt-1 break-all text-neutral-200">
-                        {result.receipt.destinationProgramAccountId}
+                        {treasuryReceipt.destinationProgramAccountId}
                       </dd>
                     </div>
 
@@ -907,7 +843,7 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
 
                       <dd className="mt-1 text-neutral-200">
                         {formatMoney(
-                          result.receipt.declaredAmount,
+                          treasuryReceipt.declaredAmount,
                         )}
                       </dd>
                     </div>
@@ -918,34 +854,178 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
                       </dt>
 
                       <dd className="mt-1 text-neutral-300">
-                        {formatDate(
-                          result.receipt.receivedAt,
-                        )}
+                        {treasuryReceipt.receivedAt
+                          ? formatDate(
+                              treasuryReceipt.receivedAt,
+                            )
+                          : "Not recorded"}
+                      </dd>
+                    </div>
+
+                    <div className="md:col-span-2">
+                      <dt className="text-neutral-600">
+                        External Reference
+                      </dt>
+
+                      <dd className="mt-1 break-all font-mono text-[11px] text-neutral-300">
+                        {treasuryReceipt.externalReference ??
+                          "Not recorded"}
                       </dd>
                     </div>
                   </dl>
                 </div>
-              ) : null}
 
-              <div className="flex flex-col gap-3 border-t border-neutral-800 pt-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="max-w-2xl text-[10px] uppercase leading-5 tracking-wide text-neutral-700">
-                  REPORTED ≠ VERIFIED · REPORTED ≠ RECOGNIZED CAPITAL ·
-                  REPORTED ≠ AVAILABLE CAPITAL · REPORTED ≠ EXECUTABLE CAPACITY
+                <div className="flex flex-col gap-3 border-t border-neutral-800 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="max-w-2xl text-[10px] uppercase leading-5 tracking-wide text-neutral-700">
+                    RECEIPT ALREADY ADMITTED · REPORTED ≠ VERIFIED · REPORTED ≠
+                    RECOGNIZED CAPITAL · REPORTED ≠ AVAILABLE CAPITAL · REPORTED
+                    ≠ EXECUTABLE CAPACITY
+                  </div>
+
+                  <div className="text-[10px] uppercase tracking-[0.16em] text-cyan-700">
+                    Read Only Treasury State
+                  </div>
                 </div>
-
-                <button
-                  type="submit"
-                  disabled={
-                    reporting
-                  }
-                  className="shrink-0 rounded border border-cyan-950 bg-cyan-950/20 px-4 py-2.5 text-[10px] uppercase tracking-[0.16em] text-cyan-300 hover:border-cyan-800 hover:bg-cyan-950/30 disabled:cursor-wait disabled:opacity-50"
-                >
-                  {reporting
-                    ? "Reporting Receipt"
-                    : "Report Receipt to Treasury"}
-                </button>
               </div>
-            </form>
+            ) : (
+              <form
+                onSubmit={
+                  reportReceipt
+                }
+                className="space-y-4"
+              >
+                <fieldset className="rounded-lg border border-neutral-800 bg-black/20 p-4">
+                  <legend className="px-1 text-[10px] uppercase tracking-[0.16em] text-neutral-500">
+                    Treasury Routing
+                  </legend>
+
+                  <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-600">
+                    Routing identifiers are supplied explicitly by the Treasury
+                    operator. They are not inferred from the DSI, wallet address,
+                    blockchain observation, or recognizing operator.
+                  </p>
+
+                  <div className="mt-4 grid gap-3 md:grid-cols-2">
+                    <label className="space-y-1.5">
+                      <span className="text-[10px] uppercase tracking-wide text-neutral-600">
+                        Commercial Program ID
+                      </span>
+
+                      <input
+                        value={
+                          routing.programId
+                        }
+                        onChange={(
+                          event,
+                        ) =>
+                          updateRouting(
+                            "programId",
+
+                            event.target.value,
+                          )
+                        }
+                        placeholder="Program identity"
+                        className="w-full rounded border border-neutral-800 bg-neutral-950 px-3 py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-700 focus:border-cyan-900"
+                      />
+                    </label>
+
+                    <label className="space-y-1.5">
+                      <span className="text-[10px] uppercase tracking-wide text-neutral-600">
+                        Destination Program Account ID
+                      </span>
+
+                      <input
+                        value={
+                          routing.destinationProgramAccountId
+                        }
+                        onChange={(
+                          event,
+                        ) =>
+                          updateRouting(
+                            "destinationProgramAccountId",
+
+                            event.target.value,
+                          )
+                        }
+                        placeholder="Program account identity"
+                        className="w-full rounded border border-neutral-800 bg-neutral-950 px-3 py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-700 focus:border-cyan-900"
+                      />
+                    </label>
+                  </div>
+
+                  <label className="mt-3 block space-y-1.5">
+                    <span className="text-[10px] uppercase tracking-wide text-neutral-600">
+                      Authority Grant ID
+                      <span className="ml-2 normal-case tracking-normal text-neutral-700">
+                        optional
+                      </span>
+                    </span>
+
+                    <input
+                      value={
+                        routing.authorityGrantId
+                      }
+                      onChange={(
+                        event,
+                      ) =>
+                        updateRouting(
+                          "authorityGrantId",
+
+                          event.target.value,
+                        )
+                      }
+                      placeholder="Treasury authority evidence, if applicable"
+                      className="w-full rounded border border-neutral-800 bg-neutral-950 px-3 py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-700 focus:border-cyan-900"
+                    />
+                  </label>
+                </fieldset>
+
+                {reportError ? (
+                  <div className="rounded border border-orange-950 bg-orange-950/10 p-3 text-xs leading-5 text-orange-300">
+                    {reportError}
+                  </div>
+                ) : null}
+
+                {result ? (
+                  <div className="rounded-lg border border-cyan-950 bg-cyan-950/10 p-4">
+                    <div className="flex flex-wrap items-center justify-between gap-3">
+                      <div>
+                        <div className="text-[10px] uppercase tracking-[0.18em] text-cyan-700">
+                          Treasury Response
+                        </div>
+
+                        <div className="mt-1 text-sm font-medium text-cyan-300">
+                          {result.disposition}
+                        </div>
+                      </div>
+
+                      <div className="text-[10px] uppercase tracking-wide text-neutral-600">
+                        Version {result.receipt.version}
+                      </div>
+                    </div>
+                  </div>
+                ) : null}
+
+                <div className="flex flex-col gap-3 border-t border-neutral-800 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="max-w-2xl text-[10px] uppercase leading-5 tracking-wide text-neutral-700">
+                    REPORTED ≠ VERIFIED · REPORTED ≠ RECOGNIZED CAPITAL ·
+                    REPORTED ≠ AVAILABLE CAPITAL · REPORTED ≠ EXECUTABLE CAPACITY
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={
+                      reporting
+                    }
+                    className="shrink-0 rounded border border-cyan-950 bg-cyan-950/20 px-4 py-2.5 text-[10px] uppercase tracking-[0.16em] text-cyan-300 hover:border-cyan-800 hover:bg-cyan-950/30 disabled:cursor-wait disabled:opacity-50"
+                  >
+                    {reporting
+                      ? "Reporting Receipt"
+                      : "Report Receipt to Treasury"}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         ) : (
           <div className="rounded-lg border border-neutral-900 bg-black/10 p-4">
