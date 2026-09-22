@@ -8,6 +8,12 @@ import type {
 } from "../../auth/types";
 
 import {
+  DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE,
+  isDigitalSettlementTreasuryAdmissionIntegrityError,
+  type DigitalSettlementTreasuryAdmissionState,
+} from "./digitalSettlementReceiptAdmissionState";
+
+import {
   prepareDigitalSettlementTreasuryReceiptCandidateWithClient,
   type DigitalSettlementTreasuryReceiptCandidateClient,
 } from "../../treasury/gateway/capital-receipts/intake/prepareDigitalSettlementTreasuryReceiptCandidateWithClient";
@@ -37,6 +43,9 @@ export type ReportDigitalSettlementRecognitionReceiptHttpResult =
         Readonly<{
           ok:
             true;
+
+          state:
+            DigitalSettlementTreasuryAdmissionState;
 
           disposition:
             "REPORTED" | "REPLAYED";
@@ -83,12 +92,15 @@ export type ReportDigitalSettlementRecognitionReceiptHttpResult =
     }>
   | Readonly<{
       status:
-        400 | 404 | 409;
+        400 | 404 | 409 | 500;
 
       body:
         Readonly<{
           ok:
             false;
+
+          state:
+            DigitalSettlementTreasuryAdmissionState;
 
           error:
             string;
@@ -276,6 +288,9 @@ export async function reportDigitalSettlementRecognitionReceiptHttp(
         ok:
           false,
 
+        state:
+          DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.INVALID_REQUEST,
+
         error:
           "DSI_REFERENCE_REQUIRED",
       },
@@ -296,6 +311,9 @@ export async function reportDigitalSettlementRecognitionReceiptHttp(
       body: {
         ok:
           false,
+
+        state:
+          DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.INVALID_REQUEST,
 
         error:
           "INVALID_JSON_BODY",
@@ -327,6 +345,9 @@ export async function reportDigitalSettlementRecognitionReceiptHttp(
         body: {
           ok:
             false,
+
+          state:
+            DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.INVALID_REQUEST,
 
           error:
             error instanceof Error
@@ -421,6 +442,9 @@ export async function reportDigitalSettlementRecognitionReceiptHttp(
           ok:
             false,
 
+          state:
+            DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.NOT_FOUND,
+
           error:
             "DSI_TREASURY_CANDIDATE_NOT_FOUND",
         },
@@ -441,8 +465,33 @@ export async function reportDigitalSettlementRecognitionReceiptHttp(
           ok:
             false,
 
+          state:
+            DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.RECOGNITION_NOT_READY,
+
           error:
             "DSI_TREASURY_RECOGNITION_NOT_READY",
+        },
+      };
+    }
+
+    if (
+      isDigitalSettlementTreasuryAdmissionIntegrityError(
+        error,
+      )
+    ) {
+      return {
+        status:
+          500,
+
+        body: {
+          ok:
+            false,
+
+          state:
+            DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.INTEGRITY_FAILURE,
+
+          error:
+            "DSI_TREASURY_INTEGRITY_FAILURE",
         },
       };
     }
@@ -464,6 +513,9 @@ export async function reportDigitalSettlementRecognitionReceiptHttp(
         body: {
           ok:
             false,
+
+          state:
+            DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.ROUTING_COLLISION,
 
           error:
             "DSI_TREASURY_RECEIPT_IDEMPOTENCY_COLLISION",
@@ -502,8 +554,33 @@ export async function reportDigitalSettlementRecognitionReceiptHttp(
               ok:
                 false,
 
+              state:
+                DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.ROUTING_COLLISION,
+
               error:
                 "DSI_TREASURY_RECEIPT_IDEMPOTENCY_COLLISION",
+            },
+          };
+        }
+
+        if (
+          isDigitalSettlementTreasuryAdmissionIntegrityError(
+            retryError,
+          )
+        ) {
+          return {
+            status:
+              500,
+
+            body: {
+              ok:
+                false,
+
+              state:
+                DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.INTEGRITY_FAILURE,
+
+              error:
+                "DSI_TREASURY_INTEGRITY_FAILURE",
             },
           };
         }
@@ -528,6 +605,9 @@ export async function reportDigitalSettlementRecognitionReceiptHttp(
     body: {
       ok:
         true,
+
+      state:
+        DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.ALREADY_REPORTED,
 
       disposition:
         result.report.disposition,

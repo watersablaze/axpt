@@ -20,6 +20,10 @@ import {
   reportDigitalSettlementRecognitionReceiptHttp,
 } from "../../src/domains/control-center/treasury/reportDigitalSettlementRecognitionReceiptHttp";
 
+import {
+  DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE,
+} from "../../src/domains/control-center/treasury/digitalSettlementReceiptAdmissionState";
+
 const INSTRUMENT_REFERENCE =
   "FW-DSI-RB1C5B-001";
 
@@ -648,6 +652,11 @@ async function main():
   }
 
   assert.equal(
+    first.body.state,
+    DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.ALREADY_REPORTED,
+  );
+
+  assert.equal(
     first.body.disposition,
     "REPORTED",
   );
@@ -807,6 +816,11 @@ async function main():
   }
 
   assert.equal(
+    replay.body.state,
+    DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.ALREADY_REPORTED,
+  );
+
+  assert.equal(
     replay.body.disposition,
     "REPLAYED",
   );
@@ -879,8 +893,78 @@ async function main():
   }
 
   assert.equal(
+    reroute.body.state,
+    DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.ROUTING_COLLISION,
+  );
+
+  assert.equal(
     reroute.body.error,
     "DSI_TREASURY_RECEIPT_IDEMPOTENCY_COLLISION",
+  );
+
+  assert.equal(
+    aggregateRows.length,
+    1,
+  );
+
+  assert.equal(
+    treasuryEventRows.length,
+    1,
+  );
+
+  assert.equal(
+    commandReceiptRows.length,
+    1,
+  );
+
+  recognitionEvent.payload.transactionHash =
+    `0x${"ff".repeat(32)}`;
+
+  const integrityFailure =
+    await reportDigitalSettlementRecognitionReceiptHttp({
+      rawInstrumentReference:
+        INSTRUMENT_REFERENCE,
+
+      request:
+        createRequest(),
+
+      principal,
+
+      prisma,
+
+      now:
+        () =>
+          new Date(
+            "2026-09-22T12:05:00.000Z",
+          ),
+    });
+
+  assert.equal(
+    integrityFailure.status,
+    500,
+  );
+
+  assert.equal(
+    integrityFailure.body.ok,
+    false,
+  );
+
+  if (
+    integrityFailure.body.ok
+  ) {
+    throw new Error(
+      "RB1C8C_INTEGRITY_FAILURE_UNEXPECTEDLY_ACCEPTED",
+    );
+  }
+
+  assert.equal(
+    integrityFailure.body.state,
+    DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.INTEGRITY_FAILURE,
+  );
+
+  assert.equal(
+    integrityFailure.body.error,
+    "DSI_TREASURY_INTEGRITY_FAILURE",
   );
 
   assert.equal(
@@ -928,6 +1012,18 @@ async function main():
 
   console.log(
     "DSI_TREASURY_HTTP_STOPS_AT_REPORTED_OK",
+  );
+
+  console.log(
+    "DSI_TREASURY_HTTP_STATE_ALREADY_REPORTED_OK",
+  );
+
+  console.log(
+    "DSI_TREASURY_HTTP_STATE_ROUTING_COLLISION_OK",
+  );
+
+  console.log(
+    "DSI_TREASURY_HTTP_INTEGRITY_FAILS_CLOSED_OK",
   );
 }
 
