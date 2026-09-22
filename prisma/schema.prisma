@@ -106,47 +106,53 @@ model InstitutionalInstrument {
 }
 
 model DigitalSettlementInstruction {
-  id                         String                         @id @default(cuid())
-  instrumentId               String                         @unique
-  publicId                   String                         @unique
-  counterpartyName           String
-  counterpartyRepresentative String?
-  commodity                  String                         @default("Au Dore Bars")
-  transactionDescription     String
-  settlementPurpose          String
-  proceduralBasis            String
-  quantityKg                 Decimal                        @db.Decimal(18, 6)
-  pricingStatus              DigitalSettlementPricingStatus @default(PENDING_FIXING)
-  pricingBasis               String
-  spotDiscountPercentage     Decimal                        @default(10) @db.Decimal(7, 4)
-  spotBenchmark              String?
-  spotPricePerKgUsd          Decimal?                       @db.Decimal(20, 2)
-  pricePerKgUsd              Decimal?                       @db.Decimal(20, 2)
-  transactionValueUsd        Decimal?                       @db.Decimal(20, 2)
-  settlementPercentage       Decimal                        @db.Decimal(7, 4)
-  settlementAmountUsd        Decimal?                       @db.Decimal(20, 2)
-  priceFixedAt               DateTime?
-  settlementAsset            DigitalSettlementAsset
-  settlementNetwork          DigitalSettlementNetwork
-  receivingEntity            String
-  receivingAddress           String?
-  receivingWalletId          String?
-  receivingWalletRole        String?
-  verificationAmountUsdt     Decimal                        @default(50) @db.Decimal(20, 6)
-  verificationTxHash         String?                        @unique
-  verificationConfirmedAt    DateTime?
-  principalAuthorizedAt      DateTime?
-  settlementStatus           DigitalSettlementStatus        @default(PENDING_ISSUANCE)
-  settlementDetectedAt       DateTime?
-  settlementConfirmedAt      DateTime?
+  id                              String                         @id @default(cuid())
+  instrumentId                    String                         @unique
+  publicId                        String                         @unique
+  counterpartyName                String
+  counterpartyRepresentative      String?
+  commodity                       String                         @default("Au Dore Bars")
+  transactionDescription          String
+  settlementPurpose               String
+  proceduralBasis                 String
+  quantityKg                      Decimal                        @db.Decimal(18, 6)
+  pricingStatus                   DigitalSettlementPricingStatus @default(PENDING_FIXING)
+  pricingBasis                    String
+  spotDiscountPercentage          Decimal                        @default(10) @db.Decimal(7, 4)
+  spotBenchmark                   String?
+  spotPricePerKgUsd               Decimal?                       @db.Decimal(20, 2)
+  pricePerKgUsd                   Decimal?                       @db.Decimal(20, 2)
+  transactionValueUsd             Decimal?                       @db.Decimal(20, 2)
+  settlementPercentage            Decimal                        @db.Decimal(7, 4)
+  settlementAmountUsd             Decimal?                       @db.Decimal(20, 2)
+  priceFixedAt                    DateTime?
+  settlementAsset                 DigitalSettlementAsset
+  settlementNetwork               DigitalSettlementNetwork
+  receivingEntity                 String
+  receivingAddress                String?
+  receivingWalletId               String?
+  receivingWalletRole             String?
+  verificationAmountUsdt          Decimal                        @default(50) @db.Decimal(20, 6)
+  verificationTxHash              String?                        @unique
+  verificationObservationId       String?                        @unique
+  verificationInstrumentVersionId String?
+  verificationConfirmedAt         DateTime?
+  principalAuthorizedAt           DateTime?
+  settlementStatus                DigitalSettlementStatus        @default(PENDING_ISSUANCE)
+  settlementDetectedAt            DateTime?
+  settlementConfirmedAt           DateTime?
 
   instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+
+  verificationObservation       TreasurySettlementObservation? @relation("DigitalSettlementVerificationObservation", fields: [verificationObservationId], references: [id], onDelete: SetNull)
+  verificationInstrumentVersion InstrumentVersion?             @relation("DigitalSettlementVerificationInstrumentVersion", fields: [verificationInstrumentVersionId], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([settlementStatus])
   @@index([settlementAsset, settlementNetwork])
+  @@index([verificationInstrumentVersionId])
 }
 
 model InstrumentVersion {
@@ -163,6 +169,8 @@ model InstrumentVersion {
 
   propositions InstrumentProposition[]
   accessGrants InstrumentAccessGrant[] @relation("InstrumentVersionAccessGrants")
+
+  digitalSettlementVerifications DigitalSettlementInstruction[] @relation("DigitalSettlementVerificationInstrumentVersion")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -2878,6 +2886,8 @@ model TreasurySettlementObservation {
 
   confirmationCount     Int @default(0)
   requiredConfirmations Int
+
+  digitalSettlementVerification DigitalSettlementInstruction? @relation("DigitalSettlementVerificationObservation")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
