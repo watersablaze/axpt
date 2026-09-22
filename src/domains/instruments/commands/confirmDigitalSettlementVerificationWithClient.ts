@@ -22,6 +22,8 @@ export async function confirmDigitalSettlementVerificationWithClient(params: {
   transactionHash: string;
   observedAmountUsdt: string;
   observedReceivingAddress: string;
+  verificationObservationId: string;
+  verificationInstrumentVersionId: string;
   actorUserId: string;
   verifiedAt?: Date;
 }) {
@@ -50,7 +52,10 @@ export async function confirmDigitalSettlementVerificationWithClient(params: {
 
   const instrument = await params.client.institutionalInstrument.findUnique({
     where: { reference: params.instrumentReference },
-    include: { digitalSettlementInstruction: true },
+    include: {
+      digitalSettlementInstruction: true,
+      versions: true,
+    },
   });
 
   const settlement = instrument?.digitalSettlementInstruction;
@@ -65,6 +70,19 @@ export async function confirmDigitalSettlementVerificationWithClient(params: {
     throw new Error(
       `[DSI_VERIFICATION_INSTRUMENT_NOT_ISSUED] ${instrument.status}`,
     );
+  }
+
+  const currentVersion = instrument.versions.find(
+    (version: { id: string; number: number; status: string }) =>
+      version.number === instrument.currentVersion,
+  );
+
+  if (
+    !currentVersion ||
+    currentVersion.status !== "ISSUED" ||
+    currentVersion.id !== params.verificationInstrumentVersionId
+  ) {
+    throw new Error("[DSI_VERIFICATION_INSTRUMENT_VERSION_MISMATCH]");
   }
 
   if (
@@ -111,6 +129,8 @@ export async function confirmDigitalSettlementVerificationWithClient(params: {
     },
     data: {
       verificationTxHash: transactionHash,
+      verificationObservationId: params.verificationObservationId,
+      verificationInstrumentVersionId: params.verificationInstrumentVersionId,
       verificationConfirmedAt: verifiedAt,
       settlementStatus: DIGITAL_SETTLEMENT_STATUS.VERIFICATION_CONFIRMED,
     },
@@ -127,6 +147,8 @@ export async function confirmDigitalSettlementVerificationWithClient(params: {
       eventType: INSTRUMENT_EVENT_TYPE.SETTLEMENT_VERIFICATION_CONFIRMED,
       payload: {
         settlementInstructionId: settlement.id,
+        instrumentVersionId: params.verificationInstrumentVersionId,
+        observationId: params.verificationObservationId,
         transactionHash,
         verificationAmountUsdt: settlement.verificationAmountUsdt.toString(),
         observedAmountUsdt: params.observedAmountUsdt.trim(),

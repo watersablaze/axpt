@@ -21,7 +21,11 @@ export type DigitalSettlementVerificationRecognitionEvidence =
 
 export type CanonicalDigitalSettlementVerificationRecognition =
   Readonly<{
+    observationId: string;
+    instrumentVersionId: string;
+    chainId: 1;
     transactionHash: string;
+    logIndex: number;
     amountUsdt: string;
     receivingAddress: string;
   }>;
@@ -124,8 +128,20 @@ export function assertDigitalSettlementVerificationRecognition(
   }
 
   return {
+    observationId:
+      match.candidate.observationId,
+
+    instrumentVersionId:
+      match.instrumentVersionId,
+
+    chainId:
+      match.expectation.chainId,
+
     transactionHash:
       canonicalTransactionHash,
+
+    logIndex:
+      match.candidate.logIndex,
 
     amountUsdt:
       match.expectation.amountUsdt,

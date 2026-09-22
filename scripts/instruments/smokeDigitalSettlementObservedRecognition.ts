@@ -46,6 +46,12 @@ async function main() {
     verificationTxHash:
       null as string | null,
 
+    verificationObservationId:
+      null as string | null,
+
+    verificationInstrumentVersionId:
+      null as string | null,
+
     verificationConfirmedAt:
       null as Date | null,
 
@@ -79,6 +85,9 @@ async function main() {
 
     versions: [
       {
+        id:
+          "version-1",
+
         number:
           1,
 
@@ -106,6 +115,26 @@ async function main() {
     },
 
     treasurySettlementObservation: {
+      async findUnique(args: any) {
+        if (
+          args.where.id !==
+          "observation-1"
+        ) {
+          return null;
+        }
+
+        return {
+          id:
+            "observation-1",
+
+          txHash:
+            TRANSACTION_HASH,
+
+          logIndex:
+            4,
+        };
+      },
+
       async findMany() {
         return [
           {
@@ -228,6 +257,16 @@ async function main() {
     settlement.verificationTxHash,
     TRANSACTION_HASH,
   );
+
+  assert.equal(
+    settlement.verificationObservationId,
+    "observation-1",
+  );
+
+  assert.equal(
+    settlement.verificationInstrumentVersionId,
+    "version-1",
+  );
   assert.equal(
     settlement.principalAuthorizedAt,
     null,
@@ -244,6 +283,20 @@ async function main() {
     domainEvents[0]
       .eventType,
     "SETTLEMENT_VERIFICATION_CONFIRMED",
+  );
+
+  assert.equal(
+    domainEvents[0]
+      .payload
+      .observationId,
+    "observation-1",
+  );
+
+  assert.equal(
+    domainEvents[0]
+      .payload
+      .instrumentVersionId,
+    "version-1",
   );
 
   const replay =
@@ -286,6 +339,23 @@ async function main() {
     /DSI_VERIFICATION_AMOUNT_MISMATCH/,
   );
 
+  await assert.rejects(
+    () =>
+      recognizeDigitalSettlementVerificationWithClient({
+        client,
+        instrumentReference:
+          REFERENCE,
+        submitted: {
+          ...submitted,
+          observedReceivingAddress:
+            "0x82563D9c59055A44D2633C76F08c1E1F7BfE021F",
+        },
+        actorUserId:
+          "operator-1",
+      }),
+    /DSI_VERIFICATION_RECEIVING_ADDRESS_MISMATCH/,
+  );
+
   assert.equal(
     settlement.principalAuthorizedAt,
     null,
@@ -297,6 +367,12 @@ async function main() {
 
   console.log(
     "DIGITAL_SETTLEMENT_OBSERVED_RECOGNITION_OK",
+  );
+  console.log(
+    "DSI_RECOGNITION_CANONICAL_OBSERVATION_BOUND_OK",
+  );
+  console.log(
+    "DSI_RECOGNITION_EXACT_VERSION_BOUND_OK",
   );
   console.log(
     "TAP_AUTHORITY_REMAINS_SEPARATE_OK",

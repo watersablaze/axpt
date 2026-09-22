@@ -1,6 +1,12 @@
 import {
   getAddress,
+  isAddress,
+  parseUnits,
 } from "viem";
+
+import {
+  TOKENS,
+} from "@/lib/treasury/config";
 
 import {
   confirmDigitalSettlementVerificationWithClient,
@@ -84,43 +90,125 @@ export async function recognizeDigitalSettlementVerificationWithClient(
         submittedTransactionHash
   ) {
     if (
-      !currentSettlement
-        .receivingAddress
+      !currentSettlement.receivingAddress ||
+      !currentSettlement.verificationObservationId ||
+      !currentSettlement.verificationInstrumentVersionId
     ) {
       throw new Error(
-        "[DSI_VERIFICATION_RECOGNITION_RECEIVING_ADDRESS_REQUIRED]",
+        "[DSI_VERIFICATION_RECOGNITION_CANONICAL_BINDING_MISSING]",
       );
     }
 
-    const confirmation =
-      await confirmDigitalSettlementVerificationWithClient({
-        client:
-          params.client,
+    const observation =
+      await params.client
+        .treasurySettlementObservation
+        .findUnique({
+          where: {
+            id:
+              currentSettlement.verificationObservationId,
+          },
+        });
 
-        instrumentReference,
+    if (
+      !observation ||
+      observation.txHash
+        .trim()
+        .toLowerCase() !==
+        submittedTransactionHash
+    ) {
+      throw new Error(
+        "[DSI_VERIFICATION_RECOGNITION_PERSISTED_OBSERVATION_MISMATCH]",
+      );
+    }
 
-        transactionHash:
-          params.submitted.transactionHash,
+    const submittedReceivingAddress =
+      params.submitted
+        .observedReceivingAddress
+        .trim();
 
-        observedAmountUsdt:
-          params.submitted.observedAmountUsdt,
+    if (
+      !isAddress(
+        submittedReceivingAddress,
+      )
+    ) {
+      throw new Error(
+        "[DSI_VERIFICATION_INVALID_RECEIVING_ADDRESS]",
+      );
+    }
 
-        observedReceivingAddress:
-          params.submitted.observedReceivingAddress,
+    if (
+      getAddress(
+        submittedReceivingAddress,
+      ) !==
+      getAddress(
+        currentSettlement.receivingAddress,
+      )
+    ) {
+      throw new Error(
+        "[DSI_VERIFICATION_RECEIVING_ADDRESS_MISMATCH]",
+      );
+    }
 
-        actorUserId:
-          params.actorUserId,
+    let submittedAmountBaseUnits:
+      bigint;
 
-        verifiedAt:
-          params.recognizedAt,
-      });
+    try {
+      submittedAmountBaseUnits =
+        parseUnits(
+          params.submitted
+            .observedAmountUsdt
+            .trim(),
+          TOKENS.USDT.decimals,
+        );
+    } catch {
+      throw new Error(
+        "[DSI_VERIFICATION_INVALID_OBSERVED_AMOUNT]",
+      );
+    }
+
+    const recognizedAmountBaseUnits =
+      parseUnits(
+        currentSettlement
+          .verificationAmountUsdt
+          .toString(),
+        TOKENS.USDT.decimals,
+      );
+
+    if (
+      submittedAmountBaseUnits !==
+      recognizedAmountBaseUnits
+    ) {
+      throw new Error(
+        `[DSI_VERIFICATION_AMOUNT_MISMATCH] expected=${currentSettlement.verificationAmountUsdt.toString()} actual=${params.submitted.observedAmountUsdt.trim()}`,
+      );
+    }
 
     return {
-      confirmation,
+      confirmation: {
+        confirmed:
+          false as const,
 
-      recognition: {
         transactionHash:
           submittedTransactionHash,
+      },
+
+      recognition: {
+        observationId:
+          currentSettlement
+            .verificationObservationId,
+
+        instrumentVersionId:
+          currentSettlement
+            .verificationInstrumentVersionId,
+
+        chainId:
+          1 as const,
+
+        transactionHash:
+          submittedTransactionHash,
+
+        logIndex:
+          observation.logIndex,
 
         amountUsdt:
           currentSettlement
@@ -169,6 +257,12 @@ export async function recognizeDigitalSettlementVerificationWithClient(
 
       observedReceivingAddress:
         recognition.receivingAddress,
+
+      verificationObservationId:
+        recognition.observationId,
+
+      verificationInstrumentVersionId:
+        recognition.instrumentVersionId,
 
       actorUserId:
         params.actorUserId,

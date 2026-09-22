@@ -62,6 +62,8 @@ type DigitalSettlementVerificationConflictInstrumentRow =
 
 type DigitalSettlementVerificationVersionRow =
   Readonly<{
+    id: string;
+
     number: number;
 
     status: string;
@@ -236,6 +238,9 @@ export async function findDigitalSettlementVerificationCandidateWithClient(
   const issuedAt =
     currentVersion.issuedAt;
 
+  const instrumentVersionId =
+    currentVersion.id;
+
   /*
    * A chain transfer can support at most one institutional
    * verification recognition.
@@ -379,6 +384,8 @@ export async function findDigitalSettlementVerificationCandidateWithClient(
 
       expectation,
 
+      instrumentVersionId,
+
       candidates:
         [],
     };
@@ -392,6 +399,8 @@ export async function findDigitalSettlementVerificationCandidateWithClient(
         DIGITAL_SETTLEMENT_VERIFICATION_MATCH_DISPOSITION.AMBIGUOUS_OBSERVATIONS,
 
       expectation,
+
+      instrumentVersionId,
 
       candidates,
     };
@@ -463,6 +472,8 @@ export async function findDigitalSettlementVerificationCandidateWithClient(
 
       expectation,
 
+      instrumentVersionId,
+
       candidate,
 
       conflictingInstrumentReferences,
@@ -474,6 +485,8 @@ export async function findDigitalSettlementVerificationCandidateWithClient(
       DIGITAL_SETTLEMENT_VERIFICATION_MATCH_DISPOSITION.MATCHED,
 
     expectation,
+
+    instrumentVersionId,
 
     candidate,
 

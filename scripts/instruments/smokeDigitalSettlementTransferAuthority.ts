@@ -19,6 +19,14 @@ async function main() {
       findUnique: async () => ({
         id: "instrument-1",
         status: "ISSUED",
+        currentVersion: 1,
+        versions: [
+          {
+            id: "version-1",
+            number: 1,
+            status: "ISSUED",
+          },
+        ],
         digitalSettlementInstruction: {
           id: "settlement-1",
           settlementStatus:
@@ -48,6 +56,8 @@ async function main() {
         transactionHash: TRANSACTION_HASH,
         observedAmountUsdt: "49",
         observedReceivingAddress: "0x40143ECEF96EC52365c6E3164dE891C62c9A012E",
+        verificationObservationId: "observation-1",
+        verificationInstrumentVersionId: "version-1",
         actorUserId: "operator-1",
       }),
     /DSI_VERIFICATION_AMOUNT_MISMATCH/,
@@ -61,6 +71,8 @@ async function main() {
         transactionHash: TRANSACTION_HASH,
         observedAmountUsdt: "50",
         observedReceivingAddress: "0x82563D9c59055A44D2633C76F08c1E1F7BfE021F",
+        verificationObservationId: "observation-1",
+        verificationInstrumentVersionId: "version-1",
         actorUserId: "operator-1",
       }),
     /DSI_VERIFICATION_RECEIVING_ADDRESS_MISMATCH/,
@@ -72,6 +84,8 @@ async function main() {
     transactionHash: TRANSACTION_HASH,
     observedAmountUsdt: "50",
     observedReceivingAddress: "0x40143ECEF96EC52365c6E3164dE891C62c9A012E",
+    verificationObservationId: "observation-1",
+    verificationInstrumentVersionId: "version-1",
     actorUserId: "operator-1",
     verifiedAt: new Date("2026-09-17T01:00:00.000Z"),
   });

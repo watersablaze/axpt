@@ -91,6 +91,9 @@ export type DigitalSettlementVerificationMatchResult =
       expectation:
         DigitalSettlementVerificationExpectation;
 
+      instrumentVersionId:
+        string;
+
       candidates:
         readonly [];
     }>
@@ -100,6 +103,9 @@ export type DigitalSettlementVerificationMatchResult =
 
       expectation:
         DigitalSettlementVerificationExpectation;
+
+      instrumentVersionId:
+        string;
 
       candidate:
         DigitalSettlementVerificationObservationCandidate;
@@ -114,6 +120,9 @@ export type DigitalSettlementVerificationMatchResult =
       expectation:
         DigitalSettlementVerificationExpectation;
 
+      instrumentVersionId:
+        string;
+
       candidates:
         readonly DigitalSettlementVerificationObservationCandidate[];
     }>
@@ -123,6 +132,9 @@ export type DigitalSettlementVerificationMatchResult =
 
       expectation:
         DigitalSettlementVerificationExpectation;
+
+      instrumentVersionId:
+        string;
 
       candidate:
         DigitalSettlementVerificationObservationCandidate;
