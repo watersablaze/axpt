@@ -1,151 +1,97 @@
-import { PrismaClient } from "@prisma/client";
+import { spawnSync } from "node:child_process";
 
 const environment = process.env.VERCEL_ENV;
 
 if (environment === "preview") {
   console.log(
-    "DSI_PRODUCTION_SCHEMA_AUDIT_SKIPPED_IN_PREVIEW",
+    "DSI_PRODUCTION_MIGRATION_RECONCILIATION_SKIPPED_IN_PREVIEW",
   );
   process.exit(0);
 }
 
 if (environment !== "production") {
   throw new Error(
-    "DSI_SCHEMA_AUDIT_REQUIRES_VERCEL_PRODUCTION",
+    "DSI_MIGRATION_RECONCILIATION_REQUIRES_PRODUCTION",
   );
 }
 
-const prisma = new PrismaClient();
+const pooledValue = process.env.DATABASE_URL;
 
-const stringify = (value) =>
-  JSON.stringify(
-    value,
-    (_key, item) =>
-      typeof item === "bigint"
-        ? item.toString()
-        : item,
-    2,
-  );
+if (!pooledValue || pooledValue === "[SENSITIVE]") {
+  throw new Error("PRODUCTION_DATABASE_URL_UNAVAILABLE");
+}
 
-const printSection = (name, value) => {
-  console.log("AUDIT_SECTION_START:" + name);
-  console.log(stringify(value));
-  console.log("AUDIT_SECTION_END:" + name);
+const pooledUrl = new URL(pooledValue);
+
+if (
+  !pooledUrl.hostname.includes("-pooler.") ||
+  !pooledUrl.hostname.endsWith(".neon.tech")
+) {
+  throw new Error("EXPECTED_NEON_POOLER_URL_NOT_FOUND");
+}
+
+const directUrl = new URL(pooledUrl.toString());
+
+directUrl.hostname = directUrl.hostname.replace(
+  "-pooler.",
+  ".",
+);
+
+const migrationEnvironment = {
+  ...process.env,
+  DIRECT_URL: directUrl.toString(),
 };
 
-try {
-  console.log(
-    "DSI_PRODUCTION_SCHEMA_AUDIT_START",
+const runPrisma = (arguments_) => {
+  const result = spawnSync(
+    "node_modules/.bin/prisma",
+    arguments_,
+    {
+      stdio: "inherit",
+      env: migrationEnvironment,
+    },
   );
 
-  const migrations = await prisma.$queryRawUnsafe(
-    "SELECT " +
-      "migration_name, " +
-      "checksum, " +
-      "started_at::text AS started_at, " +
-      "finished_at::text AS finished_at, " +
-      "rolled_back_at::text AS rolled_back_at, " +
-      "applied_steps_count, " +
-      "(logs IS NOT NULL) AS has_logs " +
-    "FROM \"_prisma_migrations\" " +
-    "WHERE migration_name IN (" +
-      "'20260919194000_add_treasury_settlement_observation'," +
-      "'20260921163000_bind_access_grants_to_instrument_versions'" +
-    ") " +
-    "ORDER BY migration_name, started_at"
-  );
+  if (result.error) {
+    throw result.error;
+  }
 
-  printSection("MIGRATION_HISTORY", migrations);
+  if (result.status !== 0) {
+    process.exit(result.status ?? 1);
+  }
+};
 
-  const enums = await prisma.$queryRawUnsafe(
-    "SELECT " +
-      "t.typname AS enum_name, " +
-      "e.enumsortorder::text AS enum_order, " +
-      "e.enumlabel AS enum_value " +
-    "FROM pg_type t " +
-    "JOIN pg_enum e ON e.enumtypid = t.oid " +
-    "JOIN pg_namespace n ON n.oid = t.typnamespace " +
-    "WHERE n.nspname = 'public' " +
-    "AND t.typname IN (" +
-      "'TreasurySettlementObservationDirection'," +
-      "'TreasurySettlementObservationStatus'" +
-    ") " +
-    "ORDER BY t.typname, e.enumsortorder"
-  );
+console.log(
+  "DSI_PRODUCTION_MIGRATION_RECONCILIATION_START",
+);
 
-  printSection("ENUMS", enums);
+runPrisma([
+  "migrate",
+  "resolve",
+  "--applied",
+  "20260919194000_add_treasury_settlement_observation",
+]);
 
-  const columns = await prisma.$queryRawUnsafe(
-    "SELECT " +
-      "c.relname AS table_name, " +
-      "a.attnum AS ordinal_position, " +
-      "a.attname AS column_name, " +
-      "format_type(a.atttypid, a.atttypmod) AS data_type, " +
-      "a.attnotnull AS not_null, " +
-      "pg_get_expr(ad.adbin, ad.adrelid) AS default_expression " +
-    "FROM pg_attribute a " +
-    "JOIN pg_class c ON c.oid = a.attrelid " +
-    "JOIN pg_namespace n ON n.oid = c.relnamespace " +
-    "LEFT JOIN pg_attrdef ad " +
-      "ON ad.adrelid = a.attrelid " +
-      "AND ad.adnum = a.attnum " +
-    "WHERE n.nspname = 'public' " +
-    "AND c.relname IN (" +
-      "'TreasurySettlementObservation'," +
-      "'TreasurySettlementObservationCursor'," +
-      "'InstrumentAccessGrant'" +
-    ") " +
-    "AND a.attnum > 0 " +
-    "AND NOT a.attisdropped " +
-    "ORDER BY c.relname, a.attnum"
-  );
+console.log(
+  "DSI_OBSERVATION_MIGRATION_HISTORY_RECONCILED",
+);
 
-  printSection("COLUMNS", columns);
+runPrisma([
+  "migrate",
+  "resolve",
+  "--applied",
+  "20260921163000_bind_access_grants_to_instrument_versions",
+]);
 
-  const constraints = await prisma.$queryRawUnsafe(
-    "SELECT " +
-      "c.relname AS table_name, " +
-      "con.conname AS constraint_name, " +
-      "con.contype AS constraint_type, " +
-      "pg_get_constraintdef(con.oid, true) AS definition " +
-    "FROM pg_constraint con " +
-    "JOIN pg_class c ON c.oid = con.conrelid " +
-    "JOIN pg_namespace n ON n.oid = c.relnamespace " +
-    "WHERE n.nspname = 'public' " +
-    "AND c.relname IN (" +
-      "'TreasurySettlementObservation'," +
-      "'TreasurySettlementObservationCursor'," +
-      "'InstrumentAccessGrant'" +
-    ") " +
-    "ORDER BY c.relname, con.conname"
-  );
+console.log(
+  "DSI_VERSION_BINDING_MIGRATION_HISTORY_RECONCILED",
+);
 
-  printSection("CONSTRAINTS", constraints);
+runPrisma([
+  "migrate",
+  "status",
+]);
 
-  const indexes = await prisma.$queryRawUnsafe(
-    "SELECT " +
-      "tablename AS table_name, " +
-      "indexname AS index_name, " +
-      "indexdef AS definition " +
-    "FROM pg_indexes " +
-    "WHERE schemaname = 'public' " +
-    "AND tablename IN (" +
-      "'TreasurySettlementObservation'," +
-      "'TreasurySettlementObservationCursor'," +
-      "'InstrumentAccessGrant'" +
-    ") " +
-    "ORDER BY tablename, indexname"
-  );
-
-  printSection("INDEXES", indexes);
-
-  console.log(
-    "DSI_PRODUCTION_SCHEMA_AUDIT_COMPLETE",
-  );
-} finally {
-  await prisma.$disconnect();
-}
-
-throw new Error(
-  "INTENTIONAL_STOP_AFTER_READ_ONLY_PRODUCTION_SCHEMA_AUDIT",
+console.log(
+  "DSI_PRODUCTION_MIGRATION_RECONCILIATION_COMPLETE",
 );
