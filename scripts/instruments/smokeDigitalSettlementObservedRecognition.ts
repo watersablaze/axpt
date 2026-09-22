@@ -282,7 +282,14 @@ async function main() {
   assert.equal(
     domainEvents[0]
       .eventType,
-    "SETTLEMENT_VERIFICATION_CONFIRMED",
+    "SETTLEMENT_VERIFICATION_RECOGNIZED",
+  );
+
+  assert.equal(
+    domainEvents[0]
+      .payload
+      .instrumentId,
+    "instrument-1",
   );
 
   assert.equal(

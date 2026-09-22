@@ -144,8 +144,9 @@ export async function confirmDigitalSettlementVerificationWithClient(params: {
     data: {
       streamType: INSTITUTIONAL_INSTRUMENT_STREAM_TYPE,
       streamId: instrument.id,
-      eventType: INSTRUMENT_EVENT_TYPE.SETTLEMENT_VERIFICATION_CONFIRMED,
+      eventType: INSTRUMENT_EVENT_TYPE.SETTLEMENT_VERIFICATION_RECOGNIZED,
       payload: {
+        instrumentId: instrument.id,
         settlementInstructionId: settlement.id,
         instrumentVersionId: params.verificationInstrumentVersionId,
         observationId: params.verificationObservationId,
@@ -157,7 +158,7 @@ export async function confirmDigitalSettlementVerificationWithClient(params: {
         chainId: 1,
         from: settlement.settlementStatus,
         to: DIGITAL_SETTLEMENT_STATUS.VERIFICATION_CONFIRMED,
-        verifiedAt: verifiedAt.toISOString(),
+        recognizedAt: verifiedAt.toISOString(),
       },
       metadata: {
         actorUserId: params.actorUserId,
