@@ -5,6 +5,11 @@ import {
   useState,
 } from "react";
 
+import {
+  DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE,
+  type DigitalSettlementTreasuryAdmissionState,
+} from "@/domains/control-center/treasury/digitalSettlementReceiptAdmissionState";
+
 type Money =
   Readonly<{
     amount:
@@ -61,6 +66,9 @@ type CandidateResponse =
       ok:
         true;
 
+      state:
+        DigitalSettlementTreasuryAdmissionState;
+
       candidate:
         Candidate;
 
@@ -70,6 +78,9 @@ type CandidateResponse =
   | Readonly<{
       ok:
         false;
+
+      state:
+        DigitalSettlementTreasuryAdmissionState;
 
       error:
         string;
@@ -113,6 +124,9 @@ type ReportResponse =
       ok:
         true;
 
+      state:
+        DigitalSettlementTreasuryAdmissionState;
+
       disposition:
         "REPORTED" | "REPLAYED";
 
@@ -122,6 +136,9 @@ type ReportResponse =
   | Readonly<{
       ok:
         false;
+
+      state:
+        DigitalSettlementTreasuryAdmissionState;
 
       error:
         string;
@@ -151,14 +168,40 @@ const INITIAL_ROUTING:
     "",
 };
 
-function formatError(
-  error:
-    string,
+function describeAdmissionState(
+  state:
+    DigitalSettlementTreasuryAdmissionState,
 ): string {
-  return error
-    .replace(/^\[/, "")
-    .replace(/\]$/, "")
-    .replaceAll("_", " ");
+  switch (
+    state
+  ) {
+    case DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.INVALID_REQUEST:
+      return "The admission request is incomplete or invalid.";
+
+    case DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.NOT_FOUND:
+      return "No recognized DSI Treasury receipt candidate was found for this reference.";
+
+    case DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.RECOGNITION_NOT_READY:
+      return "The DSI exists, but its recognized settlement fact is not yet ready for Treasury admission.";
+
+    case DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.REPORTABLE:
+      return "The recognized DSI receipt fact is ready for explicit Treasury routing.";
+
+    case DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.ALREADY_REPORTED:
+      return "The recognized DSI receipt fact is already admitted as a Treasury Program Capital Receipt.";
+
+    case DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.ROUTING_COLLISION:
+      return "The recognized receipt fact is already bound to a different Treasury routing proposition. Do not create a second receipt.";
+
+    case DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.INTEGRITY_FAILURE:
+      return "Treasury admission is blocked because durable institutional state failed an integrity check.";
+
+    case DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.UNAUTHENTICATED:
+      return "An authenticated AXPT session is required to access this Treasury admission surface.";
+
+    case DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.PERMISSION_DENIED:
+      return "The current operator does not hold the Treasury authority required for this action.";
+  }
 }
 
 function formatMoney(
@@ -255,6 +298,14 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
     );
 
   const [
+    admissionState,
+    setAdmissionState,
+  ] =
+    useState<DigitalSettlementTreasuryAdmissionState | null>(
+      null,
+    );
+
+  const [
     loadError,
     setLoadError,
   ] =
@@ -307,6 +358,10 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
     );
 
     setResult(
+      null,
+    );
+
+    setAdmissionState(
       null,
     );
 
@@ -373,6 +428,10 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
       true,
     );
 
+    setAdmissionState(
+      null,
+    );
+
     setLoadError(
       null,
     );
@@ -419,16 +478,32 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
           null,
         );
 
-        setLoadError(
+        if (
           payload.ok
-            ? "Treasury receipt candidate could not be loaded."
-            : formatError(
-                payload.error,
-              ),
-        );
+        ) {
+          setAdmissionState(
+            null,
+          );
+
+          setLoadError(
+            "Treasury receipt candidate could not be loaded.",
+          );
+        } else {
+          setAdmissionState(
+            payload.state,
+          );
+
+          setLoadError(
+            null,
+          );
+        }
 
         return;
       }
+
+      setAdmissionState(
+        payload.state,
+      );
 
       setCandidate(
         payload.candidate,
@@ -444,6 +519,10 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
       console.error(
         "[CONTROL_CENTER_DSI_RECEIPT_CANDIDATE_LOAD_FAILED]",
         cause,
+      );
+
+      setAdmissionState(
+        null,
       );
 
       setCandidate(
@@ -560,16 +639,32 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
           null,
         );
 
-        setReportError(
+        if (
           payload.ok
-            ? "Treasury receipt reporting failed."
-            : formatError(
-                payload.error,
-              ),
-        );
+        ) {
+          setAdmissionState(
+            null,
+          );
+
+          setReportError(
+            "Treasury receipt reporting failed.",
+          );
+        } else {
+          setAdmissionState(
+            payload.state,
+          );
+
+          setReportError(
+            null,
+          );
+        }
 
         return;
       }
+
+      setAdmissionState(
+        payload.state,
+      );
 
       setResult(
         payload,
@@ -594,6 +689,10 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
        * Retrying unchanged routing is therefore safe:
        * Treasury will resolve to REPORTED or REPLAYED.
        */
+      setAdmissionState(
+        null,
+      );
+
       setReportError(
         "The Treasury response could not be confirmed. Retry the unchanged routing to safely resolve the receipt outcome.",
       );
@@ -660,6 +759,24 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
           </button>
         </div>
 
+        {admissionState ? (
+          <div className="rounded border border-neutral-800 bg-black/20 p-3">
+            <div className="text-[10px] uppercase tracking-[0.16em] text-neutral-600">
+              Admission State
+            </div>
+
+            <div className="mt-1 text-xs font-medium text-neutral-200">
+              {admissionState}
+            </div>
+
+            <p className="mt-1 text-xs leading-5 text-neutral-500">
+              {describeAdmissionState(
+                admissionState,
+              )}
+            </p>
+          </div>
+        ) : null}
+
         {loadError ? (
           <div className="rounded border border-orange-950 bg-orange-950/10 p-3 text-xs leading-5 text-orange-300">
             {loadError}
@@ -683,9 +800,13 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
                 </div>
 
                 <div className="text-[10px] uppercase tracking-wide text-cyan-700">
-                  {treasuryReceipt
+                  {admissionState ===
+                  DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.ALREADY_REPORTED
                     ? "Treasury Receipt Present"
-                    : "Reportable"}
+                    : admissionState ===
+                        DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.REPORTABLE
+                      ? "Reportable"
+                      : admissionState ?? "State Unresolved"}
                 </div>
               </div>
 
@@ -887,7 +1008,8 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
                   </div>
                 </div>
               </div>
-            ) : (
+            ) : admissionState ===
+              DIGITAL_SETTLEMENT_TREASURY_ADMISSION_STATE.REPORTABLE ? (
               <form
                 onSubmit={
                   reportReceipt
@@ -1025,6 +1147,24 @@ export default function DigitalSettlementReceiptAdmissionPanel() {
                   </button>
                 </div>
               </form>
+            ) : (
+              <div className="rounded-lg border border-neutral-800 bg-black/20 p-4">
+                <div className="text-[10px] uppercase tracking-[0.16em] text-neutral-600">
+                  Treasury Admission Not Actionable
+                </div>
+
+                <p className="mt-2 max-w-3xl text-xs leading-5 text-neutral-500">
+                  {admissionState
+                    ? describeAdmissionState(
+                        admissionState,
+                      )
+                    : "Treasury admission state is unresolved. Reload the DSI reference before attempting any routing action."}
+                </p>
+
+                <div className="mt-3 text-[10px] uppercase leading-5 tracking-wide text-neutral-700">
+                  NO RECEIPT ACTION AVAILABLE · STATE MUST BE REPORTABLE
+                </div>
+              </div>
             )}
           </div>
         ) : (
