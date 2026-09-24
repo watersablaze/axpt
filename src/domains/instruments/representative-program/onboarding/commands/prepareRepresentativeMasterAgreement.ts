@@ -97,7 +97,7 @@ export async function prepareRepresentativeMasterAgreementWithClient(params: {
         (
           existing.status === INSTITUTIONAL_INSTRUMENT_STATUS.DRAFT &&
           existing.versions.some(
-            (version) =>
+            (version: { number: number; status: string | null }) =>
               version.number === 1 &&
               version.status === INSTRUMENT_VERSION_STATUS.DRAFT,
           )
@@ -108,18 +108,18 @@ export async function prepareRepresentativeMasterAgreementWithClient(params: {
             existing.status === INSTITUTIONAL_INSTRUMENT_STATUS.EXECUTED
           ) &&
           existing.versions.some(
-            (version) =>
+            (version: { number: number; status: string | null }) =>
               version.number === 1 &&
               version.status === INSTRUMENT_VERSION_STATUS.ISSUED,
           )
         )
       ) &&
       existing.parties.some(
-        (party) =>
+        (party: { displayName: string | null; role: string | null }) =>
           party.displayName === candidateDisplayName &&
           party.role === INSTRUMENT_PARTY_ROLE.PRINCIPAL,
       ) &&
-      existing.evidence.some((item) =>
+      existing.evidence.some((item: { metadata: unknown }) =>
         matchesCandidate(item.metadata, candidateEmail),
       );
 
@@ -213,7 +213,7 @@ export async function prepareRepresentativeMasterAgreement(
     "client"
   > & { client: Runner },
 ) {
-  return params.client.$transaction((tx) =>
+  return params.client.$transaction((tx: Client) =>
     prepareRepresentativeMasterAgreementWithClient({
       ...params,
       client: tx,

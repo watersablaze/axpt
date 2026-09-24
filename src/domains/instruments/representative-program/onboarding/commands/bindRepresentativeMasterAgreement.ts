@@ -152,7 +152,7 @@ export async function bindRepresentativeMasterAgreementWithClient(params: {
     throw new Error("[ARP_MASTER_AGREEMENT_EXECUTION_REQUIRED]");
   }
 
-  const signedDocuments = agreement.evidence.filter((item) =>
+  const signedDocuments = agreement.evidence.filter((item: ExecutionEvidence) =>
     hasCandidateSignature(item, intake.candidateEmail),
   );
 
@@ -161,7 +161,7 @@ export async function bindRepresentativeMasterAgreementWithClient(params: {
   }
 
   const matchedPair = signedDocuments
-    .map((proof) => {
+    .map((proof: ExecutionEvidence) => {
       const agreementId = metadataField(proof.metadata, "adobeAgreementId");
       if (
         typeof agreementId !== "string" ||
@@ -172,7 +172,7 @@ export async function bindRepresentativeMasterAgreementWithClient(params: {
       }
 
       const audit = agreement.evidence.find(
-        (item) =>
+        (item: ExecutionEvidence) =>
           item.evidenceType === INSTRUMENT_EVIDENCE_TYPE.EXTERNAL_RECORD &&
           item.subjectType === INSTRUMENT_EVIDENCE_SUBJECT.EXECUTION &&
           validEvidenceLocation(item) &&
@@ -186,7 +186,13 @@ export async function bindRepresentativeMasterAgreementWithClient(params: {
 
       return audit ? { proof, audit, agreementId } : null;
     })
-    .find((pair) => pair !== null);
+    .find(
+      (pair: {
+        proof: ExecutionEvidence;
+        audit: ExecutionEvidence;
+        agreementId: string;
+      } | null) => pair !== null,
+    );
 
   if (!matchedPair) {
     throw new Error("[ARP_MASTER_AGREEMENT_AUDIT_EVIDENCE_REQUIRED]");
@@ -262,7 +268,7 @@ export async function bindRepresentativeMasterAgreement(params: {
   actorUserId: string;
   occurredAt?: Date;
 }) {
-  return params.client.$transaction((tx) =>
+  return params.client.$transaction((tx: RepresentativeMasterAgreementBindingClient) =>
     bindRepresentativeMasterAgreementWithClient({
       ...params,
       client: tx,

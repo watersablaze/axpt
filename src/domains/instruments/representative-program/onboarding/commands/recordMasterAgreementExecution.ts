@@ -27,6 +27,14 @@ type Client = Pick<
   | "domainEvent"
 >;
 
+type EvidenceView = Readonly<{
+  evidenceType: string;
+  subjectType: string;
+  metadata: unknown;
+  uri: string | null;
+  contentHash: string | null;
+}>;
+
 type Runner = Pick<PrismaClient, "$transaction">;
 
 function field(metadata: unknown, key: string): string | null {
@@ -89,7 +97,7 @@ export async function recordMasterAgreementExecutionWithClient(params: {
   }
 
   const candidateDesignation = agreement.evidence.some(
-    (item) =>
+    (item: EvidenceView) =>
       item.evidenceType === INSTRUMENT_EVIDENCE_TYPE.ATTESTATION &&
       item.subjectType === INSTRUMENT_EVIDENCE_SUBJECT.INSTRUMENT &&
       field(item.metadata, "candidateEmail") === receipt.signerEmail,
@@ -105,7 +113,7 @@ export async function recordMasterAgreementExecutionWithClient(params: {
   }
 
   const matches = (
-    item: (typeof agreement.evidence)[number],
+    item: EvidenceView,
     evidenceType: string,
     uri: string,
     hash: string,
@@ -118,7 +126,7 @@ export async function recordMasterAgreementExecutionWithClient(params: {
     field(item.metadata, "signerEmail") === receipt.signerEmail;
 
   if (agreement.status === INSTITUTIONAL_INSTRUMENT_STATUS.EXECUTED) {
-    const documentPresent = agreement.evidence.some((item) =>
+    const documentPresent = agreement.evidence.some((item: EvidenceView) =>
       matches(
         item,
         INSTRUMENT_EVIDENCE_TYPE.DOCUMENT,
@@ -126,7 +134,7 @@ export async function recordMasterAgreementExecutionWithClient(params: {
         receipt.signedDocument.contentHash,
       ),
     );
-    const auditPresent = agreement.evidence.some((item) =>
+    const auditPresent = agreement.evidence.some((item: EvidenceView) =>
       matches(
         item,
         INSTRUMENT_EVIDENCE_TYPE.EXTERNAL_RECORD,
@@ -258,7 +266,7 @@ export async function recordMasterAgreementExecution(params: {
   client: Runner;
   receipt: MasterAgreementEvidenceReceipt;
 }) {
-  return params.client.$transaction((tx) =>
+  return params.client.$transaction((tx: Client) =>
     recordMasterAgreementExecutionWithClient({
       client: tx,
       receipt: params.receipt,
