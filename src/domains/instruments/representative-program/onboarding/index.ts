@@ -17,3 +17,7 @@ export { bindRepresentativeMasterAgreement, bindRepresentativeMasterAgreementWit
 export * from "./queries/resolveRepresentativeOnboardingAccessWithClient";
 
 export { prepareRepresentativeMasterAgreement, prepareRepresentativeMasterAgreementWithClient } from "./commands/prepareRepresentativeMasterAgreement";
+
+export { assembleMasterAgreementEvidence, isMasterAgreementEvidenceReceipt } from "./commands/assembleMasterAgreementEvidence";
+export type { MasterAgreementEvidenceReceipt, PrivateAgreementEvidenceStore } from "./commands/assembleMasterAgreementEvidence";
+export { recordMasterAgreementExecution, recordMasterAgreementExecutionWithClient } from "./commands/recordMasterAgreementExecution";
