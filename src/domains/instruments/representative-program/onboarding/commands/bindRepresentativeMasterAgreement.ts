@@ -18,13 +18,29 @@ type ExecutionEvidence = Readonly<{
 
 export type RepresentativeMasterAgreementBindingClient = Pick<
   PrismaClient,
-  "representativeOnboardingIntake" | "institutionalInstrument" | "domainEvent"
+  "user" | "representativeOnboardingIntake" | "institutionalInstrument" | "domainEvent"
 >;
 
 export type RepresentativeMasterAgreementBindingRunner = Pick<
   PrismaClient,
   "$transaction"
 >;
+
+function metadataField(metadata: unknown, key: string): unknown {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+    return null;
+  }
+  return (metadata as Record<string, unknown>)[key];
+}
+
+function validEvidenceLocation(
+  evidence: ExecutionEvidence,
+): boolean {
+  return (
+    Boolean(evidence.uri?.trim()) &&
+    /^(sha256:)?[a-f0-9]{64}$/i.test(evidence.contentHash ?? "")
+  );
+}
 
 function hasCandidateSignature(
   evidence: ExecutionEvidence,
@@ -71,6 +87,15 @@ export async function bindRepresentativeMasterAgreementWithClient(params: {
     throw new Error("[ARP_MASTER_AGREEMENT_BINDING_INPUT_REQUIRED]");
   }
 
+  const actor = await params.client.user.findUnique({
+    where: { id: actorUserId },
+    select: { isAdmin: true },
+  });
+
+  if (!actor?.isAdmin) {
+    throw new Error("[ARP_MASTER_AGREEMENT_ADMIN_REQUIRED]");
+  }
+
   const intake = await params.client.representativeOnboardingIntake.findUnique({
     where: { id: intakeId },
     select: {
@@ -101,7 +126,6 @@ export async function bindRepresentativeMasterAgreementWithClient(params: {
       status: true,
       evidence: {
         where: {
-          evidenceType: INSTRUMENT_EVIDENCE_TYPE.DOCUMENT,
           subjectType: INSTRUMENT_EVIDENCE_SUBJECT.EXECUTION,
         },
         select: {
@@ -128,13 +152,47 @@ export async function bindRepresentativeMasterAgreementWithClient(params: {
     throw new Error("[ARP_MASTER_AGREEMENT_EXECUTION_REQUIRED]");
   }
 
-  const proof = agreement.evidence.find((item) =>
+  const signedDocuments = agreement.evidence.filter((item) =>
     hasCandidateSignature(item, intake.candidateEmail),
   );
 
-  if (!proof) {
+  if (signedDocuments.length === 0) {
     throw new Error("[ARP_MASTER_AGREEMENT_SIGNED_EVIDENCE_REQUIRED]");
   }
+
+  const matchedPair = signedDocuments
+    .map((proof) => {
+      const agreementId = metadataField(proof.metadata, "adobeAgreementId");
+      if (
+        typeof agreementId !== "string" ||
+        !agreementId.trim() ||
+        metadataField(proof.metadata, "operatorConfirmedAllSignatures") !== true
+      ) {
+        return null;
+      }
+
+      const audit = agreement.evidence.find(
+        (item) =>
+          item.evidenceType === INSTRUMENT_EVIDENCE_TYPE.EXTERNAL_RECORD &&
+          item.subjectType === INSTRUMENT_EVIDENCE_SUBJECT.EXECUTION &&
+          validEvidenceLocation(item) &&
+          metadataField(item.metadata, "adobeAgreementId") === agreementId &&
+          typeof metadataField(item.metadata, "signerEmail") === "string" &&
+          (metadataField(item.metadata, "signerEmail") as string)
+            .trim()
+            .toLowerCase() === intake.candidateEmail.trim().toLowerCase() &&
+          metadataField(item.metadata, "operatorConfirmedAllSignatures") === true,
+      );
+
+      return audit ? { proof, audit, agreementId } : null;
+    })
+    .find((pair) => pair !== null);
+
+  if (!matchedPair) {
+    throw new Error("[ARP_MASTER_AGREEMENT_AUDIT_EVIDENCE_REQUIRED]");
+  }
+
+  const { proof, audit, agreementId } = matchedPair;
 
   if (intake.masterAgreementInstrumentId === agreement.id) {
     return {
@@ -178,6 +236,8 @@ export async function bindRepresentativeMasterAgreementWithClient(params: {
         participantId: intake.admittedParticipantId,
         instrumentId: agreement.id,
         executionEvidenceId: proof.id,
+        auditEvidenceId: audit.id,
+        adobeAgreementId: agreementId,
       },
       metadata: {
         actorUserId,

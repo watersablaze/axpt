@@ -23,15 +23,37 @@ function fixture() {
         subjectType: "EXECUTION",
         uri: "private://signed-agreement.pdf",
         contentHash: "a".repeat(64),
-        metadata: { signerEmail: "jens@example.test" },
+        metadata: {
+          signerEmail: "jens@example.test",
+          adobeAgreementId: "acrobat-1",
+          operatorConfirmedAllSignatures: true,
+        },
+      }, {
+        id: "audit-1",
+        evidenceType: "EXTERNAL_RECORD",
+        subjectType: "EXECUTION",
+        uri: "private://acrobat-audit.pdf",
+        contentHash: "b".repeat(64),
+        metadata: {
+          signerEmail: "jens@example.test",
+          adobeAgreementId: "acrobat-1",
+          operatorConfirmedAllSignatures: true,
+        },
       }],
     },
     events: [],
     concurrentChange: false,
     eventFailure: false,
+    actorIsAdmin: true,
   };
 
   const tx: any = {
+    user: {
+      findUnique: async ({ where }: any) =>
+        where.id === "operator-1"
+          ? { isAdmin: state.actorIsAdmin }
+          : null,
+    },
     representativeOnboardingIntake: {
       findUnique: async ({ where }: any) =>
         where.id === state.intake.id ? state.intake : null,
@@ -108,6 +130,10 @@ async function mustReject(
 }
 
 async function main() {
+  const nonAdmin = fixture();
+  nonAdmin.state.actorIsAdmin = false;
+  await mustReject(nonAdmin, "ADMIN_REQUIRED");
+
   const unadmitted = fixture();
   unadmitted.state.intake.status = "QUALIFIED";
   unadmitted.state.intake.admittedParticipantId = null;
@@ -121,6 +147,29 @@ async function main() {
   const missingHash = fixture();
   missingHash.state.agreement.evidence[0].contentHash = null;
   await mustReject(missingHash, "SIGNED_EVIDENCE_REQUIRED");
+
+  const missingAudit = fixture();
+  missingAudit.state.agreement.evidence.pop();
+  await mustReject(missingAudit, "AUDIT_EVIDENCE_REQUIRED");
+
+  const wrongAuditAgreement = fixture();
+  wrongAuditAgreement.state.agreement.evidence[1].metadata.adobeAgreementId =
+    "another-acrobat-agreement";
+  await mustReject(wrongAuditAgreement, "AUDIT_EVIDENCE_REQUIRED");
+
+  const wrongAuditSigner = fixture();
+  wrongAuditSigner.state.agreement.evidence[1].metadata.signerEmail =
+    "someone-else@example.test";
+  await mustReject(wrongAuditSigner, "AUDIT_EVIDENCE_REQUIRED");
+
+  const missingAuditHash = fixture();
+  missingAuditHash.state.agreement.evidence[1].contentHash = null;
+  await mustReject(missingAuditHash, "AUDIT_EVIDENCE_REQUIRED");
+
+  const unconfirmedSignatures = fixture();
+  unconfirmedSignatures.state.agreement.evidence[0]
+    .metadata.operatorConfirmedAllSignatures = false;
+  await mustReject(unconfirmedSignatures, "AUDIT_EVIDENCE_REQUIRED");
 
   const concurrent = fixture();
   concurrent.state.concurrentChange = true;
@@ -140,6 +189,21 @@ async function main() {
     "REPRESENTATIVE_MASTER_AGREEMENT_BOUND",
   );
 
+  assert.equal(
+    valid.state.events[0].payload.executionEvidenceId,
+    "signed-pdf-1",
+  );
+  assert.equal(valid.state.events[0].payload.auditEvidenceId, "audit-1");
+  assert.equal(valid.state.events[0].payload.adobeAgreementId, "acrobat-1");
+
+  valid.state.actorIsAdmin = false;
+  await assert.rejects(
+    () => bind(valid),
+    /ARP_MASTER_AGREEMENT_ADMIN_REQUIRED/,
+  );
+  assert.equal(valid.state.events.length, 1);
+
+  valid.state.actorIsAdmin = true;
   const repeat = await bind(valid);
   assert.equal(repeat.bound, false);
   assert.equal(valid.state.events.length, 1);
