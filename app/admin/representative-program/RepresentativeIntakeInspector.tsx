@@ -2,6 +2,8 @@
 
 import { useState, type FormEvent } from "react";
 
+import RepresentativeIntakeDecisionControls from "./RepresentativeIntakeDecisionControls";
+
 type Intake = {
   id: string;
   reference: string;
@@ -277,6 +279,13 @@ export default function RepresentativeIntakeInspector() {
                 : JSON.stringify(intake.submission, null, 2)}
             </pre>
           </details>
+
+          <RepresentativeIntakeDecisionControls
+            key={intake.id}
+            intakeId={intake.id}
+            status={intake.status}
+            onChanged={() => loadIntakeById(intake.id)}
+          />
         </div>
       ) : null}
     </section>
