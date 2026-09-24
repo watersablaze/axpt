@@ -1,3 +1,4 @@
+import type { PrismaClient } from "@prisma/client";
 import {
   INSTITUTIONAL_INSTRUMENT_KIND,
   INSTITUTIONAL_INSTRUMENT_STATUS,
@@ -5,14 +6,6 @@ import {
   INSTRUMENT_EVIDENCE_TYPE,
 } from "../../../contracts";
 import { REPRESENTATIVE_ONBOARDING_STATUS } from "../contracts";
-
-type Intake = Readonly<{
-  id: string;
-  status: string;
-  candidateEmail: string;
-  admittedParticipantId: string | null;
-  masterAgreementInstrumentId: string | null;
-}>;
 
 type ExecutionEvidence = Readonly<{
   id: string;
@@ -23,33 +16,15 @@ type ExecutionEvidence = Readonly<{
   metadata: unknown;
 }>;
 
-type Agreement = Readonly<{
-  id: string;
-  kind: string;
-  status: string;
-  evidence: readonly ExecutionEvidence[];
-}>;
+export type RepresentativeMasterAgreementBindingClient = Pick<
+  PrismaClient,
+  "representativeOnboardingIntake" | "institutionalInstrument" | "domainEvent"
+>;
 
-export type RepresentativeMasterAgreementBindingClient = Readonly<{
-  representativeOnboardingIntake: {
-    findUnique(args: unknown): Promise<Intake | null>;
-    updateMany(args: unknown): Promise<Readonly<{ count: number }>>;
-  };
-  institutionalInstrument: {
-    findUnique(args: unknown): Promise<Agreement | null>;
-  };
-  domainEvent: {
-    create(args: unknown): Promise<unknown>;
-  };
-}>;
-
-export type RepresentativeMasterAgreementBindingRunner = Readonly<{
-  $transaction<T>(
-    operation: (
-      tx: RepresentativeMasterAgreementBindingClient,
-    ) => Promise<T>,
-  ): Promise<T>;
-}>;
+export type RepresentativeMasterAgreementBindingRunner = Pick<
+  PrismaClient,
+  "$transaction"
+>;
 
 function hasCandidateSignature(
   evidence: ExecutionEvidence,
