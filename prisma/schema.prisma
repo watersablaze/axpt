@@ -113,6 +113,7 @@ model InstitutionalInstrument {
   inboundRelations                 InstrumentRelation[]              @relation("InstrumentRelationTarget")
   digitalSettlementInstruction     DigitalSettlementInstruction?
   representativeProgramAppointment RepresentativeProgramAppointment?
+  representativeOnboardingMasterAgreement RepresentativeOnboardingIntake? @relation("RepresentativeOnboardingMasterAgreement")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -399,9 +400,11 @@ model RepresentativeOnboardingIntake {
   admittedAt      DateTime?
 
   admittedParticipantId String? @unique
+  masterAgreementInstrumentId String? @unique
   createdByUserId       String?
 
   admittedParticipant RepresentativeProgramParticipant? @relation("RepresentativeOnboardingAdmission", fields: [admittedParticipantId], references: [id], onDelete: Restrict)
+  masterAgreementInstrument InstitutionalInstrument? @relation("RepresentativeOnboardingMasterAgreement", fields: [masterAgreementInstrumentId], references: [id], onDelete: Restrict)
 
   createdBy User? @relation("RepresentativeOnboardingIntakeCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
 
@@ -477,6 +480,7 @@ enum RepresentativeQualificationDecision {
 enum InstitutionalInstrumentKind {
   ROYAL_CUSTODIAL_FRAMEWORK
   REPRESENTATIVE_MANDATE
+  REPRESENTATIVE_PROGRAM_AGREEMENT
   REPRESENTATIVE_APPOINTMENT
   LETTER_OF_INTENT
   COOPERATION_FRAMEWORK

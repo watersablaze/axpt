@@ -1,0 +1,236 @@
+import {
+  INSTITUTIONAL_INSTRUMENT_KIND,
+  INSTITUTIONAL_INSTRUMENT_STATUS,
+  INSTRUMENT_EVIDENCE_SUBJECT,
+  INSTRUMENT_EVIDENCE_TYPE,
+} from "../../../contracts";
+import { REPRESENTATIVE_ONBOARDING_STATUS } from "../contracts";
+
+type Intake = Readonly<{
+  id: string;
+  status: string;
+  candidateEmail: string;
+  admittedParticipantId: string | null;
+  masterAgreementInstrumentId: string | null;
+}>;
+
+type ExecutionEvidence = Readonly<{
+  id: string;
+  evidenceType: string;
+  subjectType: string;
+  uri: string | null;
+  contentHash: string | null;
+  metadata: unknown;
+}>;
+
+type Agreement = Readonly<{
+  id: string;
+  kind: string;
+  status: string;
+  evidence: readonly ExecutionEvidence[];
+}>;
+
+export type RepresentativeMasterAgreementBindingClient = Readonly<{
+  representativeOnboardingIntake: {
+    findUnique(args: unknown): Promise<Intake | null>;
+    updateMany(args: unknown): Promise<Readonly<{ count: number }>>;
+  };
+  institutionalInstrument: {
+    findUnique(args: unknown): Promise<Agreement | null>;
+  };
+  domainEvent: {
+    create(args: unknown): Promise<unknown>;
+  };
+}>;
+
+export type RepresentativeMasterAgreementBindingRunner = Readonly<{
+  $transaction<T>(
+    operation: (
+      tx: RepresentativeMasterAgreementBindingClient,
+    ) => Promise<T>,
+  ): Promise<T>;
+}>;
+
+function hasCandidateSignature(
+  evidence: ExecutionEvidence,
+  candidateEmail: string,
+): boolean {
+  const metadata = evidence.metadata;
+  if (
+    metadata === null ||
+    typeof metadata !== "object" ||
+    Array.isArray(metadata)
+  ) {
+    return false;
+  }
+
+  const signerEmail = (metadata as Record<string, unknown>).signerEmail;
+
+  return (
+    evidence.evidenceType === INSTRUMENT_EVIDENCE_TYPE.DOCUMENT &&
+    evidence.subjectType === INSTRUMENT_EVIDENCE_SUBJECT.EXECUTION &&
+    Boolean(evidence.uri?.trim()) &&
+    /^(sha256:)?[a-f0-9]{64}$/i.test(evidence.contentHash ?? "") &&
+    typeof signerEmail === "string" &&
+    signerEmail.trim().toLowerCase() === candidateEmail.trim().toLowerCase()
+  );
+}
+
+/**
+ * Bind an externally executed Master Agreement after Program admission.
+ * The operation neither creates a Participant nor changes standing,
+ * appointment, or authority.
+ */
+export async function bindRepresentativeMasterAgreementWithClient(params: {
+  client: RepresentativeMasterAgreementBindingClient;
+  intakeId: string;
+  instrumentReference: string;
+  actorUserId: string;
+  occurredAt?: Date;
+}) {
+  const intakeId = params.intakeId.trim();
+  const reference = params.instrumentReference.trim();
+  const actorUserId = params.actorUserId.trim();
+
+  if (!intakeId || !reference || !actorUserId) {
+    throw new Error("[ARP_MASTER_AGREEMENT_BINDING_INPUT_REQUIRED]");
+  }
+
+  const intake = await params.client.representativeOnboardingIntake.findUnique({
+    where: { id: intakeId },
+    select: {
+      id: true,
+      status: true,
+      candidateEmail: true,
+      admittedParticipantId: true,
+      masterAgreementInstrumentId: true,
+    },
+  });
+
+  if (!intake) {
+    throw new Error("[ARP_MASTER_AGREEMENT_INTAKE_NOT_FOUND]");
+  }
+
+  if (
+    intake.status !== REPRESENTATIVE_ONBOARDING_STATUS.ADMITTED ||
+    !intake.admittedParticipantId
+  ) {
+    throw new Error("[ARP_MASTER_AGREEMENT_ADMISSION_REQUIRED]");
+  }
+
+  const agreement = await params.client.institutionalInstrument.findUnique({
+    where: { reference },
+    select: {
+      id: true,
+      kind: true,
+      status: true,
+      evidence: {
+        where: {
+          evidenceType: INSTRUMENT_EVIDENCE_TYPE.DOCUMENT,
+          subjectType: INSTRUMENT_EVIDENCE_SUBJECT.EXECUTION,
+        },
+        select: {
+          id: true,
+          evidenceType: true,
+          subjectType: true,
+          uri: true,
+          contentHash: true,
+          metadata: true,
+        },
+      },
+    },
+  });
+
+  if (
+    !agreement ||
+    agreement.kind !==
+      INSTITUTIONAL_INSTRUMENT_KIND.REPRESENTATIVE_PROGRAM_AGREEMENT
+  ) {
+    throw new Error("[ARP_MASTER_AGREEMENT_INSTRUMENT_REQUIRED]");
+  }
+
+  if (agreement.status !== INSTITUTIONAL_INSTRUMENT_STATUS.EXECUTED) {
+    throw new Error("[ARP_MASTER_AGREEMENT_EXECUTION_REQUIRED]");
+  }
+
+  const proof = agreement.evidence.find((item) =>
+    hasCandidateSignature(item, intake.candidateEmail),
+  );
+
+  if (!proof) {
+    throw new Error("[ARP_MASTER_AGREEMENT_SIGNED_EVIDENCE_REQUIRED]");
+  }
+
+  if (intake.masterAgreementInstrumentId === agreement.id) {
+    return {
+      intakeId,
+      participantId: intake.admittedParticipantId,
+      instrumentId: agreement.id,
+      bound: false,
+    } as const;
+  }
+
+  if (intake.masterAgreementInstrumentId) {
+    throw new Error("[ARP_MASTER_AGREEMENT_ALREADY_BOUND]");
+  }
+
+  const occurredAt = params.occurredAt ?? new Date();
+  if (!Number.isFinite(occurredAt.getTime())) {
+    throw new Error("[ARP_MASTER_AGREEMENT_BINDING_TIME_INVALID]");
+  }
+
+  const updated = await params.client.representativeOnboardingIntake.updateMany({
+    where: {
+      id: intakeId,
+      status: REPRESENTATIVE_ONBOARDING_STATUS.ADMITTED,
+      admittedParticipantId: intake.admittedParticipantId,
+      masterAgreementInstrumentId: null,
+    },
+    data: { masterAgreementInstrumentId: agreement.id },
+  });
+
+  if (updated.count !== 1) {
+    throw new Error("[ARP_MASTER_AGREEMENT_BINDING_CONCURRENT_CHANGE]");
+  }
+
+  await params.client.domainEvent.create({
+    data: {
+      streamType: "REPRESENTATIVE_PROGRAM_PARTICIPANT",
+      streamId: intake.admittedParticipantId,
+      eventType: "REPRESENTATIVE_MASTER_AGREEMENT_BOUND",
+      payload: {
+        intakeId,
+        participantId: intake.admittedParticipantId,
+        instrumentId: agreement.id,
+        executionEvidenceId: proof.id,
+      },
+      metadata: {
+        actorUserId,
+        source: "representative-program.master-agreement-binding",
+      },
+      occurredAt,
+    },
+  });
+
+  return {
+    intakeId,
+    participantId: intake.admittedParticipantId,
+    instrumentId: agreement.id,
+    bound: true,
+  } as const;
+}
+
+export async function bindRepresentativeMasterAgreement(params: {
+  client: RepresentativeMasterAgreementBindingRunner;
+  intakeId: string;
+  instrumentReference: string;
+  actorUserId: string;
+  occurredAt?: Date;
+}) {
+  return params.client.$transaction((tx) =>
+    bindRepresentativeMasterAgreementWithClient({
+      ...params,
+      client: tx,
+    }),
+  );
+}
