@@ -19,6 +19,15 @@ type Intake = {
   masterAgreementInstrumentId: string | null;
 };
 
+type IntakeLookup = Pick<
+  Intake,
+  "id" | "reference" | "candidateDisplayName" | "candidateEmail" | "status"
+>;
+
+type SearchResponse =
+  | { ok: true; intakes: IntakeLookup[] }
+  | { ok: false; error: string };
+
 type IntakeResponse =
   | { ok: true; intake: Intake }
   | { ok: false; error: string };
@@ -34,10 +43,46 @@ export default function RepresentativeIntakeInspector() {
   const [intake, setIntake] = useState<Intake | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [matches, setMatches] = useState<IntakeLookup[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [searched, setSearched] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
 
-  async function loadIntake(event: FormEvent<HTMLFormElement>) {
+  async function searchIntakes(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const id = intakeId.trim();
+    const query = search.trim();
+    if (query.length < 2) return;
+
+    setSearching(true);
+    setSearched(false);
+    setSearchError(null);
+    setMatches([]);
+
+    try {
+      const response = await fetch(
+        `/api/admin/representative-program/intakes?q=${encodeURIComponent(query)}`,
+        { cache: "no-store" },
+      );
+      const payload = (await response.json()) as SearchResponse;
+      if (!response.ok || !payload.ok) {
+        setSearchError(
+          payload.ok
+            ? `Unable to search intakes (${response.status}).`
+            : payload.error,
+        );
+        return;
+      }
+      setMatches(payload.intakes);
+      setSearched(true);
+    } catch {
+      setSearchError("Unable to reach the intake search service.");
+    } finally {
+      setSearching(false);
+    }
+  }
+
+  async function loadIntakeById(id: string) {
     if (!id) return;
 
     setLoading(true);
@@ -68,6 +113,11 @@ export default function RepresentativeIntakeInspector() {
     }
   }
 
+  async function loadIntake(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    await loadIntakeById(intakeId.trim());
+  }
+
   return (
     <section
       aria-busy={loading}
@@ -83,6 +133,69 @@ export default function RepresentativeIntakeInspector() {
         Load an intake by its ID to inspect the submission and recorded
         decisions. Viewing this record makes no status change.
       </p>
+
+      <form
+        onSubmit={searchIntakes}
+        className="mt-5 flex flex-wrap items-end gap-3"
+      >
+        <label className="grid min-w-64 flex-1 gap-2">
+          <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
+            Find Candidate
+          </span>
+          <input
+            required
+            minLength={2}
+            maxLength={100}
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
+            placeholder="Name, email, or reference"
+            className="rounded border border-gray-700 bg-black px-3 py-2 text-white outline-none focus:border-gray-500"
+          />
+        </label>
+        <button
+          type="submit"
+          disabled={searching}
+          className="rounded border border-gray-700 bg-gray-900 px-4 py-2 text-sm text-gray-200 hover:bg-gray-800 disabled:opacity-50"
+        >
+          {searching ? "Searching…" : "Search"}
+        </button>
+      </form>
+
+      {searchError ? (
+        <p role="alert" className="mt-3 text-sm text-red-300">
+          {searchError}
+        </p>
+      ) : null}
+
+      {searched && matches.length === 0 ? (
+        <p role="status" className="mt-3 text-sm text-gray-400">
+          No matching intakes.
+        </p>
+      ) : null}
+
+      {matches.length > 0 ? (
+        <ul aria-label="Matching intakes" className="mt-3 space-y-2">
+          {matches.map((match) => (
+            <li key={match.id}>
+              <button
+                type="button"
+                onClick={() => {
+                  setIntakeId(match.id);
+                  void loadIntakeById(match.id);
+                }}
+                className="w-full rounded border border-gray-800 bg-black p-3 text-left hover:border-gray-600"
+              >
+                <span className="block text-sm font-semibold text-white">
+                  {match.candidateDisplayName}
+                </span>
+                <span className="mt-1 block text-xs text-gray-400">
+                  {match.candidateEmail} · {match.reference} · {match.status}
+                </span>
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
 
       <form onSubmit={loadIntake} className="mt-5 flex flex-wrap items-end gap-3">
         <label className="grid min-w-64 flex-1 gap-2">
