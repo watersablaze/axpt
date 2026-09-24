@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import RepresentativeInvitationForm from "./RepresentativeInvitationForm";
+import RepresentativeIntakeInspector from "./RepresentativeIntakeInspector";
 
 export const dynamic = "force-dynamic";
 
@@ -52,6 +53,7 @@ export default function RepresentativeProgramAdminPage() {
         </section>
 
         <RepresentativeInvitationForm />
+        <RepresentativeIntakeInspector />
       </div>
     </main>
   );
