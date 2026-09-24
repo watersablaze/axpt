@@ -150,6 +150,7 @@
     "@react-email/tailwind": "^1.2.2",
     "@react-email/text": "^0.1.5",
     "@supabase/supabase-js": "^2.52.0",
+    "@vercel/blob": "^2.3.0",
     "archiver": "^7.0.1",
     "base64url": "^3.0.1",
     "bcryptjs": "^3.0.2",
