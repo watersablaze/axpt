@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 
 import RepresentativeIntakeDecisionControls from "./RepresentativeIntakeDecisionControls";
+import RepresentativeMasterAgreementPanel from "./RepresentativeMasterAgreementPanel";
 
 type Intake = {
   id: string;
@@ -285,6 +286,11 @@ export default function RepresentativeIntakeInspector() {
             intakeId={intake.id}
             status={intake.status}
             onChanged={() => loadIntakeById(intake.id)}
+          />
+
+          <RepresentativeMasterAgreementPanel
+            key={`${intake.id}-agreement`}
+            intake={intake}
           />
         </div>
       ) : null}
