@@ -15,3 +15,5 @@ export { admitRepresentativeOnboarding } from "./commands/admitRepresentativeOnb
 export { bindRepresentativeMasterAgreement, bindRepresentativeMasterAgreementWithClient } from "./commands/bindRepresentativeMasterAgreement";
 
 export * from "./queries/resolveRepresentativeOnboardingAccessWithClient";
+
+export { prepareRepresentativeMasterAgreement, prepareRepresentativeMasterAgreementWithClient } from "./commands/prepareRepresentativeMasterAgreement";
