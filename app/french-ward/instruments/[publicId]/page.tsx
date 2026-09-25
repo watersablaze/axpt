@@ -230,8 +230,9 @@ export default async function DigitalSettlementInstructionPage({
     : null;
 
   const isInderakshTransaction = instruction.reference === DSI_REFERENCE;
-  const transactionDocuments = isInderakshTransaction
-    ? {
+  const transactionDocuments =
+    isInderakshTransaction && !isVisualPreview
+      ? {
         SPA: await loadIssuedTransactionDocument(
           INDERAKSH_TRANSACTION_CONTINUITY.transactionReference,
           "SPA",
