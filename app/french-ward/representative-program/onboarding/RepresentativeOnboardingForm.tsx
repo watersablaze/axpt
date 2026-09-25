@@ -28,7 +28,7 @@ const acknowledgementFields = [
   {
     key: "noUnauthorizedCommercialTermChanges",
     title: "Commercial terms remain controlled",
-    body: "I will not invent, alter, extend, or communicate commercial terms beyond those expressly authorized by French-Ward.",
+    body: "I will not invent, alter, extend, negotiate, or communicate commercial terms beyond those expressly authorized by French-Ward.",
   },
   {
     key: "noImpersonationOfFrenchWard",
@@ -53,7 +53,7 @@ const acknowledgementFields = [
   {
     key: "informationAccurateToBestKnowledge",
     title: "Accuracy of information",
-    body: "I confirm that the information submitted is accurate and complete to the best of my knowledge.",
+    body: "I confirm that the information submitted is accurate and materially complete to the best of my knowledge, and that I have not knowingly omitted information material to French-Ward’s review.",
   },
 ] as const;
 
@@ -369,9 +369,15 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
         eyebrow="Disclosures"
         title="Surface conditions that French-Ward should know."
       >
+        <p className="max-w-3xl text-[12px] leading-5 text-black/50 md:text-xs md:leading-6">
+          Disclose any applicable condition below. If none applies, state
+          “None.”
+        </p>
+
         <TextArea
           label="Existing Mandates / Representative Relationships"
           name="existingMandatesOrRepresentativeRelationships"
+          required
           defaultValue={
             existing?.disclosures.existingMandatesOrRepresentativeRelationships
           }
@@ -380,18 +386,22 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
         <TextArea
           label="Potential Conflicts"
           name="potentialConflicts"
+          required
           defaultValue={existing?.disclosures.potentialConflicts}
         />
 
         <TextArea
-          label="Regulated Activities"
+          label="Regulated / Licensed Activities"
           name="regulatedActivities"
+          required
           defaultValue={existing?.disclosures.regulatedActivities}
         />
 
         <TextArea
           label="Material Affiliations"
           name="materialAffiliations"
+          hint="Organizations, commercial interests, fiduciary roles, or other affiliations potentially relevant to representation."
+          required
           defaultValue={existing?.disclosures.materialAffiliations}
         />
       </Section>
@@ -399,7 +409,7 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
       <Section
         index="05"
         eyebrow="Candidate Assertions"
-        title="Confirm the conditions of entry."
+        title="Confirm the conditions of candidacy."
       >
         <div className="grid gap-3">
           {acknowledgementFields.map(({ key, title, body }) => (
@@ -527,11 +537,13 @@ function TextArea({
   label,
   name,
   hint,
+  required = false,
   defaultValue,
 }: {
   label: string;
   name: string;
   hint?: string;
+  required?: boolean;
   defaultValue?: string;
 }) {
   return (
@@ -543,6 +555,7 @@ function TextArea({
       <textarea
         name={name}
         rows={3}
+        required={required}
         defaultValue={defaultValue ?? ""}
         className="min-h-[6.25rem] resize-y border border-black/20 bg-white/15 p-3 text-[15px] leading-6 text-[#181714] outline-none focus:border-black/50 md:min-h-[7.5rem] md:text-sm"
       />
