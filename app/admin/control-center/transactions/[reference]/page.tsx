@@ -45,13 +45,34 @@ export default async function TransactionOperatorPage({
       (item) => item.kind !== "DSI",
     );
 
-  const issuedDocuments = {
-    SPA: await loadIssuedTransactionDocument(reference, "SPA"),
-    COMMERCIAL_SCHEDULE: await loadIssuedTransactionDocument(
-      reference,
-      "COMMERCIAL_SCHEDULE",
-    ),
+  let documentStoreError: string | null = null;
+  let issuedDocuments: {
+    SPA: Awaited<ReturnType<typeof loadIssuedTransactionDocument>>;
+    COMMERCIAL_SCHEDULE: Awaited<ReturnType<typeof loadIssuedTransactionDocument>>;
+  } = {
+    SPA: null,
+    COMMERCIAL_SCHEDULE: null,
   };
+
+  if (view === "documents") {
+    try {
+      const [spa, commercialSchedule] = await Promise.all([
+        loadIssuedTransactionDocument(reference, "SPA"),
+        loadIssuedTransactionDocument(reference, "COMMERCIAL_SCHEDULE"),
+      ]);
+
+      issuedDocuments = {
+        SPA: spa,
+        COMMERCIAL_SCHEDULE: commercialSchedule,
+      };
+    } catch (error) {
+      console.error("[TRANSACTION_DOCUMENT_STORE_READ_FAILED]", error);
+      documentStoreError =
+        error instanceof Error
+          ? error.message
+          : "Private document store is presently unavailable.";
+    }
+  }
 
   return (
     <div className="min-h-screen bg-[#090d0c] text-stone-100">
@@ -265,9 +286,11 @@ export default async function TransactionOperatorPage({
               </div>
 
               <div className="rounded border border-amber-900/40 bg-amber-950/10 p-3 text-xs leading-5 text-stone-400">
-                {issuedDocuments.SPA && issuedDocuments.COMMERCIAL_SCHEDULE
-                  ? "Both governed review PDFs are bound to the private transaction store and protected by recorded SHA-256 integrity hashes."
-                  : "Publish each canonical REVIEW COPY once. The review release is preserved by hash and version; a later execution copy advances the document state rather than overwriting review history."}
+                {documentStoreError
+                  ? `Private document store check failed closed: ${documentStoreError}`
+                  : issuedDocuments.SPA && issuedDocuments.COMMERCIAL_SCHEDULE
+                    ? "Both governed review PDFs are bound to the private transaction store and protected by recorded SHA-256 integrity hashes."
+                    : "Publish each canonical REVIEW COPY once. The review release is preserved by hash and version; a later execution copy advances the document state rather than overwriting review history."}
               </div>
             </section>
           ) : null}
