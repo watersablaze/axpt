@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { cookies, headers } from "next/headers";
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
@@ -22,7 +23,6 @@ import {
 } from "@/domains/instruments/definitions/digitalSettlementV2FinancierRevision";
 import {
   INDERAKSH_TRANSACTION_CONTINUITY,
-  resolveInderakshLifecycleStage,
 } from "@/domains/instruments/definitions/inderakshTransactionContinuity";
 import { loadIssuedDigitalSettlementInstruction } from "@/domains/instruments/queries/loadIssuedDigitalSettlementInstruction";
 import { resolveInstrumentAccess } from "@/domains/instruments/queries/resolveInstrumentAccess";
@@ -36,6 +36,7 @@ type PageProps = {
     previewState?: string;
     previewMode?: string;
     version?: string;
+    view?: string;
   }>;
 };
 
@@ -128,6 +129,10 @@ export default async function DigitalSettlementInstructionPage({
 }: PageProps) {
   const { publicId } = await params;
   const previewParams = await searchParams;
+  const availableViews = ["overview", "documents", "settlement", "evidence", "history"] as const;
+  const requestedView = previewParams?.view;
+  const selectedView = availableViews.find((view) => view === requestedView) ?? "overview";
+  const consolePath = `/french-ward/instruments/${encodeURIComponent(publicId)}`;
 
   const previewRequested = publicId === "__preview__";
 
@@ -204,12 +209,12 @@ export default async function DigitalSettlementInstructionPage({
   const principalAuthorized = instruction.principalAuthorizedAt !== null;
   const principalTransferActive =
     principalAuthorized &&
-    [
+    new Set<string>([
       DIGITAL_SETTLEMENT_STATUS.AWAITING_TRANSFER,
       DIGITAL_SETTLEMENT_STATUS.DETECTED,
       DIGITAL_SETTLEMENT_STATUS.CONFIRMING,
       DIGITAL_SETTLEMENT_STATUS.CONFIRMED,
-    ].includes(instruction.settlementStatus);
+    ]).has(instruction.settlementStatus);
   const verificationAmount = Number(instruction.verificationAmountUsdt);
   const pricingFixed = instruction.pricingStatus === "FIXED";
   const buyerSubmission =
@@ -224,195 +229,15 @@ export default async function DigitalSettlementInstructionPage({
     : null;
 
   const isInderakshTransaction = instruction.reference === DSI_REFERENCE;
-  const lifecycleStage = isInderakshTransaction
-    ? resolveInderakshLifecycleStage(instruction.settlementStatus)
-    : null;
+  const movements = [
+    { index: "01", label: "Buyer Submission", active: true },
+    { index: "02", label: "Commercial Basis" },
+    { index: "03", label: "Settlement Coordinates" },
+    { index: "04", label: "Recognition Standard" },
+  ];
 
-  const movements = isInderakshTransaction
-    ? INDERAKSH_TRANSACTION_CONTINUITY.lifecycle.map((stage) => ({
-        index: stage.index,
-        label: stage.label,
-        active: stage.id === lifecycleStage,
-      }))
-    : [
-        { index: "01", label: "Buyer Submission", active: true },
-        { index: "02", label: "Commercial Basis" },
-        { index: "03", label: "Settlement Coordinates" },
-        { index: "04", label: "Recognition Standard" },
-      ];
-
-  return (
-    <InstrumentShell
-      eyebrow="French-Ward, Inc. / Controlled Transaction Environment"
-      title={isInderakshTransaction ? "Transaction Record" : "Digital Settlement Instruction"}
-      subtitle={
-        isInderakshTransaction
-          ? "Initial 50 KG Gold Doré / Governing Documents, Settlement Authority + Transaction Continuity"
-          : "Good-Faith Transaction Authorization Payment / Settlement Coordinates"
-      }
-      reference={
-        isInderakshTransaction
-          ? INDERAKSH_TRANSACTION_CONTINUITY.transactionReference
-          : instruction.reference
-      }
-      version={isInderakshTransaction ? "V1" : `V${instruction.versionNumber}`}
-      status={
-        isVisualPreview && !isBuyerViewPreview
-          ? "VISUAL REVIEW"
-          : isInderakshTransaction
-            ? INDERAKSH_TRANSACTION_CONTINUITY.currentState.transaction
-            : "ISSUED"
-      }
-      movements={movements}
-      classificationLabel={
-        isVisualPreview && !isBuyerViewPreview
-          ? "Synthetic Visual Review Fixture"
-          : isInderakshTransaction
-            ? "Private Governed Transaction Record"
-            : "Authorized Settlement Instrument"
-      }
-      showStatusRail={false}
-      density="document"
-    >
-      {isVisualPreview && !isBuyerViewPreview ? (
-        <section className={styles.previewNotice} aria-label="Preview notice">
-          Operator-only buyer-view preview. This renders the proposed
-          {isV2Preview
-            ? " V2 financier revision"
-            : " canonical initial issuance state"}{" "}
-          but carries no settlement authority. Preview deployments use a
-          synthetic receiving address and do not expose live settlement
-          coordinates. No instrument version, private access grant, email, or
-          buyer authorization has been created. Do not transmit value.
-        </section>
-      ) : null}
-
-      {isInderakshTransaction ? (
-        <>
-          <section className={styles.transactionAuthority} aria-labelledby="transaction-authority-heading">
-            <div>
-              <p className={styles.kicker}>Transaction authority</p>
-              <h2 id="transaction-authority-heading">
-                One governed record for agreement, settlement and performance
-              </h2>
-              <p>
-                This environment is the authoritative transaction home for{" "}
-                {INDERAKSH_TRANSACTION_CONTINUITY.transactionLabel}. The SPA
-                governs the legal relationship, the Commercial Schedule fixes the
-                transaction-specific commercial configuration, and the DSI operates
-                as the continuing settlement and recognition layer.
-              </p>
-            </div>
-            <dl className={styles.transactionStateGrid}>
-              <div>
-                <dt>Transaction reference</dt>
-                <dd>{INDERAKSH_TRANSACTION_CONTINUITY.transactionReference}</dd>
-              </div>
-              <div>
-                <dt>Document state</dt>
-                <dd>{INDERAKSH_TRANSACTION_CONTINUITY.currentState.documents}</dd>
-              </div>
-              <div>
-                <dt>Execution state</dt>
-                <dd>{INDERAKSH_TRANSACTION_CONTINUITY.currentState.transaction}</dd>
-              </div>
-              <div>
-                <dt>Settlement layer</dt>
-                <dd>{INDERAKSH_TRANSACTION_CONTINUITY.currentState.settlement}</dd>
-              </div>
-            </dl>
-          </section>
-
-          <section className={styles.panel} aria-labelledby="governing-documents-heading">
-            <div className={styles.sectionHeading}>
-              <span>00</span>
-              <div>
-                <p>Governing documents</p>
-                <h2 id="governing-documents-heading">
-                  Transaction instruments and document authority
-                </h2>
-              </div>
-            </div>
-
-            <div className={styles.documentRegister}>
-              {INDERAKSH_TRANSACTION_CONTINUITY.governingDocuments.map((document) => (
-                <article key={document.reference} className={styles.documentRecord}>
-                  <div>
-                    <p>{document.role}</p>
-                    <h3>{document.title}</h3>
-                    <code>{document.reference}</code>
-                    {"fileName" in document && document.fileName ? (
-                      <small className={styles.documentFileName}>{document.fileName}</small>
-                    ) : null}
-                  </div>
-                  <div className={styles.documentState}>
-                    <span>{document.status}</span>
-                    <small>{document.publicationState}</small>
-                  </div>
-                </article>
-              ))}
-            </div>
-
-            <p className={styles.evidenceBoundary}>
-              The SPA and Commercial Schedule establish the governing and commercial
-              baseline and are issued for execution. The DSI does not replace either
-              document; it carries the authenticated settlement, recognition,
-              reconciliation, and closure state of the same governed Transaction.
-            </p>
-          </section>
-
-          <section className={styles.panel} aria-labelledby="transaction-notices-heading">
-            <div className={styles.sectionHeading}>
-              <span>!</span>
-              <div>
-                <p>Transaction notices</p>
-                <h2 id="transaction-notices-heading">
-                  Execution and delivery clarifications
-                </h2>
-              </div>
-            </div>
-
-            <div className={styles.noticeRegister}>
-              {INDERAKSH_TRANSACTION_CONTINUITY.transactionNotices.map((notice) => (
-                <article key={notice.label} className={styles.noticeRecord}>
-                  <div>
-                    <h3>{notice.label}</h3>
-                    <p>{notice.body}</p>
-                  </div>
-                  <span>{notice.status}</span>
-                </article>
-              ))}
-            </div>
-          </section>
-
-          <section className={styles.panel} aria-labelledby="continuity-heading">
-            <div className={styles.sectionHeading}>
-              <span>↳</span>
-              <div>
-                <p>Transaction continuity</p>
-                <h2 id="continuity-heading">
-                  One transaction record from agreement through closure
-                </h2>
-              </div>
-            </div>
-
-            <ol className={styles.lifecycleRail}>
-              {INDERAKSH_TRANSACTION_CONTINUITY.lifecycle.map((stage) => (
-                <li
-                  key={stage.id}
-                  className={stage.id === lifecycleStage ? styles.lifecycleActive : undefined}
-                >
-                  <span>{stage.index}</span>
-                  <div>
-                    <strong>{stage.label}</strong>
-                    <p>{stage.description}</p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-          </section>
-        </>
-      ) : null}
+  const settlementContent = (
+    <>
 
       {displaysV2Revision ? (
         <section className={styles.panel} aria-labelledby="revision-heading">
@@ -476,7 +301,7 @@ export default async function DigitalSettlementInstructionPage({
             </p>
           </div>
           <div className={styles.settlementLayerBadge}>
-            <span>DSI</span>
+            <span>{instruction.reference} · ACTIVE</span>
             <strong>{formatStatus(instruction.settlementStatus)}</strong>
           </div>
         </div>
@@ -765,6 +590,148 @@ export default async function DigitalSettlementInstructionPage({
           <span>{instruction.reference}</span>
         </footer>
       </section>
+    </>
+  );
+
+  return (
+    <InstrumentShell
+      eyebrow="French-Ward, Inc. / Controlled Transaction Environment"
+      title={isInderakshTransaction ? "Transaction Console" : "Digital Settlement Instruction"}
+      subtitle={
+        isInderakshTransaction
+          ? INDERAKSH_LEGAL_NAME
+          : "Good-Faith Transaction Authorization Payment / Settlement Coordinates"
+      }
+      reference={
+        isInderakshTransaction
+          ? INDERAKSH_TRANSACTION_CONTINUITY.transactionReference
+          : instruction.reference
+      }
+      version={isInderakshTransaction ? "V1" : `V${instruction.versionNumber}`}
+      status={
+        isVisualPreview && !isBuyerViewPreview
+          ? "VISUAL REVIEW"
+          : isInderakshTransaction
+            ? INDERAKSH_TRANSACTION_CONTINUITY.currentState.transaction
+            : "ISSUED"
+      }
+      movements={isInderakshTransaction ? [] : movements}
+      classificationLabel={
+        isVisualPreview && !isBuyerViewPreview
+          ? "Synthetic Visual Review Fixture"
+          : isInderakshTransaction
+            ? "Private Governed Transaction Record"
+            : "Authorized Settlement Instrument"
+      }
+      showStatusRail={false}
+      density="document"
+    >
+      {isVisualPreview && !isBuyerViewPreview ? (
+        <section className={styles.previewNotice} aria-label="Preview notice">
+          Operator-only buyer-view preview. This renders the proposed
+          {isV2Preview
+            ? " V2 financier revision"
+            : " canonical initial issuance state"}{" "}
+          but carries no settlement authority. Preview deployments use a
+          synthetic receiving address and do not expose live settlement
+          coordinates. No instrument version, private access grant, email, or
+          buyer authorization has been created. Do not transmit value.
+        </section>
+      ) : null}
+
+      {isInderakshTransaction ? (
+        <div className={styles.consoleLayout}>
+          <nav className={styles.consoleNavigation} aria-label="Transaction workspaces">
+            <p>FRENCH-WARD · TRANSACTION CONSOLE</p>
+            {availableViews.map((view) => (
+              <Link
+                key={view}
+                href={`${consolePath}?view=${view}${isVisualPreview ? `&previewMode=${isBuyerViewPreview ? "buyer" : "operator"}&version=${isV2Preview ? "2" : "1"}` : ""}`}
+                aria-current={selectedView === view ? "page" : undefined}
+              >
+                {view[0].toUpperCase() + view.slice(1)}
+              </Link>
+            ))}
+          </nav>
+          <div className={styles.consoleContent}>
+            <header className={styles.consoleHeader}>
+              <div className={styles.consoleStates} aria-label="Independent transaction states">
+                <span>DOCUMENTS · ISSUED</span>
+                <span>EXECUTION · AWAITING</span>
+                <span>SETTLEMENT · ACTIVE</span>
+              </div>
+            </header>
+            {selectedView === "overview" ? (
+              <section className={styles.consolePanel} aria-label="Transaction overview">
+                <p className={styles.kicker}>Current action required</p>
+                <h2>Confirm the Buyer signatory and execute the SPA and Commercial Schedule.</h2>
+                <p>Corey Keller is named as Buyer representative. Confirm his execution authority or provide an authorized alternate before signing.</p>
+                <dl className={styles.overviewGrid}>
+                  <div><dt>Transaction stage</dt><dd>Agreement · awaiting execution</dd></div>
+                  <div><dt>Buyer / Seller</dt><dd>{INDERAKSH_LEGAL_NAME} / French-Ward, Inc.</dd></div>
+                  <div><dt>Quantity / corridor</dt><dd>50 KG · Mali → Dubai</dd></div>
+                  <div><dt>Pricing reference</dt><dd>{instruction.pricingBasis}</dd></div>
+                  <div><dt>SPA / Commercial Schedule</dt><dd>Issued · awaiting execution</dd></div>
+                  <div><dt>DSI</dt><dd>{formatStatus(instruction.settlementStatus)}</dd></div>
+                </dl>
+                <h3>Most recent recorded milestones</h3>
+                <p>DSI issued {instruction.issuedAt.toLocaleDateString("en-US", { dateStyle: "medium", timeZone: "UTC" })} · Current settlement state: {formatStatus(instruction.settlementStatus)}.</p>
+              </section>
+            ) : null}
+            {selectedView === "documents" ? (
+              <section className={styles.consolePanel} aria-label="Governing documents">
+                <p className={styles.kicker}>Governing documents</p>
+                <h2>SPA and Commercial Schedule</h2>
+                <div className={styles.documentRegister}>
+                  {INDERAKSH_TRANSACTION_CONTINUITY.governingDocuments.filter((document) => document.kind !== "DSI").map((document) => (
+                    <article key={document.reference} className={styles.documentRecord}>
+                      <div><h3>{document.title}</h3><code>{document.reference}</code></div>
+                      <div className={styles.documentState}>
+                        <span>{document.status}</span>
+                        <div className={styles.documentActions}>
+                          <button type="button" disabled title="Document not yet available">View</button>
+                          <button type="button" disabled title="Document not yet available">Download</button>
+                        </div>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+                <p className={styles.evidenceBoundary}>Secure document access is pending. Contact French-Ward for the execution copies.</p>
+                <details><summary>Execution and delivery clarifications</summary>
+                  {INDERAKSH_TRANSACTION_CONTINUITY.transactionNotices.map((notice) => (
+                    <article key={notice.label} className={styles.noticeRecord}><div><h3>{notice.label}</h3><p>{notice.body}</p></div></article>
+                  ))}
+                </details>
+              </section>
+            ) : null}
+            {selectedView === "evidence" ? (
+              <section className={styles.consolePanel} aria-label="Transaction evidence">
+                <p className={styles.kicker}>Evidence and reconciliation</p>
+                <h2>Evidence enters the governed record after operator review.</h2>
+                <p>Chain observation, verification, and operator recognition are separate steps. A detected transfer does not itself authorize the TAP balance.</p>
+                <dl className={styles.overviewGrid}>
+                  <div><dt>Verification</dt><dd>{instruction.verificationConfirmedAt ? "Confirmed" : "Awaiting operator confirmation"}</dd></div>
+                  <div><dt>TAP balance</dt><dd>{principalAuthorized ? "Authorized" : "Not authorized"}</dd></div>
+                </dl>
+              </section>
+            ) : null}
+            {selectedView === "history" ? (
+              <section className={styles.consolePanel} aria-label="Transaction history">
+                <p className={styles.kicker}>Transaction history</p>
+                <h2>Recorded milestones</h2>
+                <ol><li>DSI issued · {instruction.issuedAt.toLocaleString("en-US", { dateStyle: "medium", timeStyle: "short", timeZone: "UTC" })} UTC</li>
+                  {instruction.verificationConfirmedAt ? <li>Verification confirmed · {instruction.verificationConfirmedAt.toLocaleString("en-US", { dateStyle: "medium", timeZone: "UTC" })} UTC</li> : null}
+                  {instruction.principalAuthorizedAt ? <li>TAP balance authorized · {instruction.principalAuthorizedAt.toLocaleString("en-US", { dateStyle: "medium", timeZone: "UTC" })} UTC</li> : null}
+                </ol>
+                <p>Document execution and subsequent transaction events will appear when recorded.</p>
+              </section>
+            ) : null}
+            {selectedView === "settlement" ? settlementContent : null}
+          </div>
+        </div>
+      ) : null}
+
+      {!isInderakshTransaction ? settlementContent : null}
     </InstrumentShell>
   );
 }

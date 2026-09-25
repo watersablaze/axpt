@@ -851,3 +851,67 @@
     text-align: left;
   }
 }
+
+/* Transaction console: keep one workspace in the main reading area. */
+.consoleLayout {
+  display: grid;
+  grid-template-columns: minmax(155px, 205px) minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 2rem);
+  padding: 1rem 0;
+}
+.consoleNavigation {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-self: start;
+  position: sticky;
+  top: 1rem;
+}
+.consoleNavigation p,
+.consoleHeader > p {
+  color: var(--muted);
+  font-size: 0.62rem;
+  letter-spacing: 0.13em;
+}
+.consoleNavigation a {
+  padding: 0.72rem 0.85rem;
+  border-left: 2px solid transparent;
+  color: rgba(232, 224, 204, 0.75);
+  text-decoration: none;
+  font-size: 0.82rem;
+}
+.consoleNavigation a[aria-current="page"] {
+  border-color: #d8c68d;
+  background: rgba(199, 183, 132, 0.1);
+  color: #e8e0cc;
+}
+.consoleContent { min-width: 0; }
+.consoleHeader {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 1rem;
+}
+.consoleHeader h2 {
+  margin: 0.35rem 0;
+  color: #e8e0cc;
+  font-size: clamp(1.25rem, 2vw, 1.7rem);
+}
+.consoleHeader strong { color: #d8c68d; font-size: 0.7rem; letter-spacing: 0.1em; }
+.consoleStates { display: flex; flex-wrap: wrap; gap: 0.4rem 1.3rem; margin-top: 1rem; color: var(--muted); font-size: 0.64rem; }
+.consolePanel { padding: 1.3rem 0; }
+.consolePanel h2 { margin: 0 0 0.8rem; font-size: clamp(1rem, 1.6vw, 1.3rem); font-weight: 500; }
+.consolePanel > p { max-width: 780px; line-height: 1.6; }
+.consolePanel h3 { font-size: 0.8rem; font-weight: 500; }
+.overviewGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; margin: 1.25rem 0; border-top: 1px solid var(--line); }
+.overviewGrid > div { padding: 0.75rem 0.8rem 0.75rem 0; border-bottom: 1px solid var(--line); }
+.overviewGrid dt { color: var(--muted); font-size: 0.62rem; }
+.overviewGrid dd { margin: 0.35rem 0 0; font-size: 0.78rem; overflow-wrap: anywhere; }
+.documentActions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+.documentActions button { border: 1px solid var(--line); background: transparent; color: var(--muted); padding: 0.35rem 0.65rem; cursor: not-allowed; }
+@media (max-width: 720px) {
+  .consoleLayout { display: block; }
+  .consoleNavigation { position: static; flex-direction: row; overflow-x: auto; margin-bottom: 1rem; border-bottom: 1px solid var(--line); }
+  .consoleNavigation p { display: none; }
+  .consoleNavigation a { flex: 0 0 auto; border-left: 0; border-bottom: 2px solid transparent; }
+  .consoleNavigation a[aria-current="page"] { border-color: #d8c68d; }
+  .overviewGrid { grid-template-columns: 1fr; }
+}

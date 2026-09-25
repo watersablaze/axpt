@@ -79,7 +79,7 @@ export function InstrumentShell({
         </div>
 
         {showStatusRail ? <InstrumentStatusRail /> : null}
-        <InstrumentMovementNav movements={movements} />
+        {movements.length > 0 ? <InstrumentMovementNav movements={movements} /> : null}
       </header>
 
       <div className={styles.content}>{children}</div>
