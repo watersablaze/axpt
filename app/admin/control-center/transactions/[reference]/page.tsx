@@ -78,8 +78,8 @@ export default async function TransactionOperatorPage({
           </div>
 
           <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 border-t border-stone-800/80 pt-2 text-[9px] uppercase tracking-[0.12em]">
-            <span className="text-amber-300">Documents · Issued</span>
-            <span className="text-stone-300">Execution · Awaiting</span>
+            <span className="text-amber-300">Documents · Review</span>
+            <span className="text-stone-300">Execution · Not Released</span>
             <span className="text-cyan-300">Settlement · Active</span>
             <span className="text-rose-300">Authority · Verification only</span>
           </div>
@@ -126,7 +126,7 @@ export default async function TransactionOperatorPage({
                   Current action
                 </p>
                 <h2 className="mt-1 text-base font-medium text-white">
-                  Confirm Buyer signing authority and obtain executed SPA + Commercial Schedule.
+                  Provide SPA + Commercial Schedule for counterparty review; confirm Buyer signing authority before execution release.
                 </h2>
                 <p className="mt-1 max-w-3xl text-xs leading-5 text-stone-500">
                   The DSI settlement layer remains independently active. Agreement execution and
@@ -142,8 +142,8 @@ export default async function TransactionOperatorPage({
                 </div>
                 <div className="bg-[#0d1210] p-4">
                   <p className="text-[10px] uppercase tracking-wide text-stone-500">Documents</p>
-                  <p className="mt-1 text-sm text-white">SPA + CP issued</p>
-                  <p className="mt-1 text-[11px] text-stone-500">Private file authority pending</p>
+                  <p className="mt-1 text-sm text-white">SPA + CP review copies</p>
+                  <p className="mt-1 text-[11px] text-stone-500">Review publication pending</p>
                 </div>
                 <div className="bg-[#0d1210] p-4">
                   <p className="text-[10px] uppercase tracking-wide text-stone-500">Settlement</p>
@@ -203,7 +203,7 @@ export default async function TransactionOperatorPage({
                   Governing documents
                 </p>
                 <h2 className="mt-1 text-base font-medium text-white">
-                  Issued transaction instruments
+                  Review transaction documents
                 </h2>
               </div>
 
@@ -256,7 +256,7 @@ export default async function TransactionOperatorPage({
                         <TransactionDocumentUploadControl
                           transactionReference={reference}
                           documentKind={item.kind as "SPA" | "COMMERCIAL_SCHEDULE"}
-                          label="Publish Issued PDF"
+                          label="Publish Review PDF"
                         />
                       )}
                     </div>
@@ -266,8 +266,8 @@ export default async function TransactionOperatorPage({
 
               <div className="rounded border border-amber-900/40 bg-amber-950/10 p-3 text-xs leading-5 text-stone-400">
                 {issuedDocuments.SPA && issuedDocuments.COMMERCIAL_SCHEDULE
-                  ? "Both issued governing PDFs are bound to the private transaction store and protected by recorded SHA-256 integrity hashes."
-                  : "Publish each canonical issued PDF once. Publication writes the private object first and the governed manifest second; replacement is blocked once an issued copy exists."}
+                  ? "Both governed review PDFs are bound to the private transaction store and protected by recorded SHA-256 integrity hashes."
+                  : "Publish each canonical REVIEW COPY once. The review release is preserved by hash and version; a later execution copy advances the document state rather than overwriting review history."}
               </div>
             </section>
           ) : null}
