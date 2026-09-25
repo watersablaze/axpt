@@ -353,7 +353,8 @@ export default async function TransactionOperatorPage({
                 className="inline-flex rounded border border-stone-700 px-3 py-2 text-[10px] uppercase tracking-wide text-stone-300"
               >
                 Open DSI operator surface
-              </Link>\n              <BuyerAccessReissueControl reference={DSI_REFERENCE} />
+              </Link>
+              <BuyerAccessReissueControl reference={DSI_REFERENCE} />
             </section>
           ) : null}
 
