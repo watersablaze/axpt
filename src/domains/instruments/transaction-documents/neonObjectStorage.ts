@@ -156,7 +156,14 @@ export class NeonObjectStorage {
     try {
       return await this.read(key);
     } catch (error) {
-      if (error instanceof NeonObjectStorageError && error.status === 404) {
+      if (
+        error instanceof NeonObjectStorageError &&
+        (error.status === 403 || error.status === 404)
+      ) {
+        // Private S3-compatible stores can return 403 for a missing object
+        // when the credential has object read/write authority but no bucket-list
+        // authority. This branch is used only for existence probing; actual
+        // reads and writes still fail closed on 403.
         return null;
       }
 
