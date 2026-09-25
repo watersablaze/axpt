@@ -26,6 +26,7 @@ import {
 } from "@/domains/instruments/definitions/inderakshTransactionContinuity";
 import { loadIssuedDigitalSettlementInstruction } from "@/domains/instruments/queries/loadIssuedDigitalSettlementInstruction";
 import { resolveInstrumentAccess } from "@/domains/instruments/queries/resolveInstrumentAccess";
+import { loadIssuedTransactionDocument } from "@/domains/instruments/transaction-documents/contracts";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -229,6 +230,18 @@ export default async function DigitalSettlementInstructionPage({
     : null;
 
   const isInderakshTransaction = instruction.reference === DSI_REFERENCE;
+  const transactionDocuments = isInderakshTransaction
+    ? {
+        SPA: await loadIssuedTransactionDocument(
+          INDERAKSH_TRANSACTION_CONTINUITY.transactionReference,
+          "SPA",
+        ),
+        COMMERCIAL_SCHEDULE: await loadIssuedTransactionDocument(
+          INDERAKSH_TRANSACTION_CONTINUITY.transactionReference,
+          "COMMERCIAL_SCHEDULE",
+        ),
+      }
+    : null;
   const movements = [
     { index: "01", label: "Buyer Submission", active: true },
     { index: "02", label: "Commercial Basis" },
@@ -686,14 +699,37 @@ export default async function DigitalSettlementInstructionPage({
                       <div className={styles.documentState}>
                         <span>{document.status}</span>
                         <div className={styles.documentActions}>
-                          <button type="button" disabled title="Document not yet available">View</button>
-                          <button type="button" disabled title="Document not yet available">Download</button>
+                          {transactionDocuments?.[document.kind as "SPA" | "COMMERCIAL_SCHEDULE"] ? (
+                            <>
+                              <Link
+                                href={`/french-ward/instruments/${encodeURIComponent(publicId)}/documents/${document.kind}`}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                View
+                              </Link>
+                              <Link
+                                href={`/french-ward/instruments/${encodeURIComponent(publicId)}/documents/${document.kind}?mode=download`}
+                              >
+                                Download
+                              </Link>
+                            </>
+                          ) : (
+                            <>
+                              <button type="button" disabled title="Document not yet available">View</button>
+                              <button type="button" disabled title="Document not yet available">Download</button>
+                            </>
+                          )}
                         </div>
                       </div>
                     </article>
                   ))}
                 </div>
-                <p className={styles.evidenceBoundary}>Secure document access is pending. Contact French-Ward for the execution copies.</p>
+                <p className={styles.evidenceBoundary}>
+                  {transactionDocuments?.SPA && transactionDocuments.COMMERCIAL_SCHEDULE
+                    ? "Issued governing documents are available through authenticated transaction access."
+                    : "Secure document access is pending. Contact French-Ward for the execution copies."}
+                </p>
                 <details><summary>Execution and delivery clarifications</summary>
                   {INDERAKSH_TRANSACTION_CONTINUITY.transactionNotices.map((notice) => (
                     <article key={notice.label} className={styles.noticeRecord}><div><h3>{notice.label}</h3><p>{notice.body}</p></div></article>
