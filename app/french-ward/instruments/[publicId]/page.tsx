@@ -646,7 +646,7 @@ export default async function DigitalSettlementInstructionPage({
       {isInderakshTransaction ? (
         <div className={styles.consoleLayout}>
           <nav className={styles.consoleNavigation} aria-label="Transaction workspaces">
-            <p>FRENCH-WARD · TRANSACTION CONSOLE</p>
+            <p>TRANSACTION WORKSPACES</p>
             {availableViews.map((view) => (
               <Link
                 key={view}
@@ -658,13 +658,21 @@ export default async function DigitalSettlementInstructionPage({
             ))}
           </nav>
           <div className={styles.consoleContent}>
-            <header className={styles.consoleHeader}>
-              <div className={styles.consoleStates} aria-label="Independent transaction states">
-                <span>DOCUMENTS · ISSUED</span>
-                <span>EXECUTION · AWAITING</span>
-                <span>SETTLEMENT · ACTIVE</span>
+            <header className={styles.consoleTopbar}>
+              <div className={styles.consoleIdentity}>
+                <p>FRENCH-WARD · CONTROLLED TRANSACTION ENVIRONMENT</p>
+                <strong>{INDERAKSH_TRANSACTION_CONTINUITY.transactionReference}</strong>
+                <span>{INDERAKSH_LEGAL_NAME} · Initial 50 KG Gold Doré</span>
               </div>
+              <div className={styles.consoleStatePill}>AWAITING EXECUTION</div>
             </header>
+
+            <div className={styles.consoleStates} aria-label="Independent transaction states">
+              <span><small>DOCUMENTS</small><strong>ISSUED</strong></span>
+              <span><small>EXECUTION</small><strong>AWAITING</strong></span>
+              <span><small>SETTLEMENT</small><strong>ACTIVE</strong></span>
+              <span><small>CURRENT ACTION</small><strong>EXECUTE AGREEMENT</strong></span>
+            </div>
             {selectedView === "overview" ? (
               <section className={styles.consolePanel} aria-label="Transaction overview">
                 <p className={styles.kicker}>Current action required</p>
