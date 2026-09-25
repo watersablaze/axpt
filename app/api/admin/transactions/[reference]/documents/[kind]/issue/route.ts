@@ -5,7 +5,7 @@ import {
   INDERAKSH_TRANSACTION_REFERENCE,
 } from "@/domains/instruments/definitions/inderakshTransactionContinuity";
 import {
-  publishIssuedTransactionDocument,
+  publishReviewTransactionDocument,
   type TransactionDocumentRecord,
 } from "@/domains/instruments/transaction-documents/contracts";
 
@@ -93,7 +93,7 @@ export async function POST(
       );
     }
 
-    const record = await publishIssuedTransactionDocument({
+    const record = await publishReviewTransactionDocument({
       transactionReference: reference,
       documentKind: kind,
       pdf,
