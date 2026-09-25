@@ -12,10 +12,18 @@ import {
   loadNeonObjectStorageConfig,
 } from "./neonObjectStorage";
 
-/** A versioned private attachment. Metadata is not proof of publication. */
+export type TransactionDocumentKind = "SPA" | "COMMERCIAL_SCHEDULE";
+export type TransactionDocumentStatus =
+  | "DRAFT"
+  | "REVIEW"
+  | "EXECUTION"
+  | "EXECUTED"
+  | "SUPERSEDED";
+
+/** A versioned private attachment. Metadata is the governed release authority. */
 export type TransactionDocumentRecord = Readonly<{
   transactionReference: string;
-  documentKind: "SPA" | "COMMERCIAL_SCHEDULE";
+  documentKind: TransactionDocumentKind;
   documentReference: string;
   version: number;
   fileName: string;
@@ -23,7 +31,7 @@ export type TransactionDocumentRecord = Readonly<{
   storageAuthority: string;
   storageKey: string;
   sha256: string;
-  status: "DRAFT" | "ISSUED" | "EXECUTED" | "SUPERSEDED";
+  status: TransactionDocumentStatus;
   issuedAt: Date | null;
   executedAt: Date | null;
   uploadedBy: string;
@@ -33,12 +41,11 @@ type StoredTransactionDocumentRecord = Omit<
   TransactionDocumentRecord,
   "issuedAt" | "executedAt"
 > & {
-  schemaVersion: 1;
+  schemaVersion: 2;
   issuedAt: string | null;
   executedAt: string | null;
 };
 
-/** Only a durable private provider may implement this contract in production. */
 export interface PrivateTransactionDocumentStore {
   read(storageKey: string): Promise<Uint8Array>;
   write(storageKey: string, pdf: Uint8Array): Promise<void>;
@@ -47,11 +54,11 @@ export interface PrivateTransactionDocumentStore {
 const DOCUMENTS = {
   SPA: {
     reference: INDERAKSH_SPA_REFERENCE,
-    fileName: "SPA-FWI-IGR-AU-2026-017.pdf",
+    baseFileName: "SPA-FWI-IGR-AU-2026-017",
   },
   COMMERCIAL_SCHEDULE: {
     reference: INDERAKSH_COMMERCIAL_SCHEDULE_REFERENCE,
-    fileName: "CP-FWI-IGR-AU-2026-017.pdf",
+    baseFileName: "CP-FWI-IGR-AU-2026-017",
   },
 } as const;
 
@@ -61,29 +68,62 @@ function assertSupportedTransaction(transactionReference: string) {
   }
 }
 
-function recordKey(
+function currentRecordKey(
   transactionReference: string,
-  kind: TransactionDocumentRecord["documentKind"],
+  kind: TransactionDocumentKind,
 ) {
   return `transactions/${transactionReference}/documents/${kind}/current.json`;
 }
 
-function issuedPdfKey(
+function versionRecordKey(
   transactionReference: string,
-  kind: TransactionDocumentRecord["documentKind"],
+  kind: TransactionDocumentKind,
+  version: number,
 ) {
-  const document = DOCUMENTS[kind];
+  return `transactions/${transactionReference}/documents/${kind}/versions/${version}.json`;
+}
 
-  return `transactions/${transactionReference}/issued/${document.fileName}`;
+function fileNameFor(
+  kind: TransactionDocumentKind,
+  status: "REVIEW" | "EXECUTION" | "EXECUTED",
+) {
+  const base = DOCUMENTS[kind].baseFileName;
+
+  if (status === "REVIEW") {
+    return `${base}-REVIEW.pdf`;
+  }
+
+  if (status === "EXECUTED") {
+    return `${base}-EXECUTED.pdf`;
+  }
+
+  return `${base}.pdf`;
+}
+
+function pdfStorageKey(
+  transactionReference: string,
+  status: "REVIEW" | "EXECUTION" | "EXECUTED",
+  fileName: string,
+) {
+  const folder =
+    status === "REVIEW"
+      ? "review"
+      : status === "EXECUTION"
+        ? "execution"
+        : "executed";
+
+  return `transactions/${transactionReference}/${folder}/${fileName}`;
 }
 
 function parseStoredRecord(
   bytes: Uint8Array,
 ): TransactionDocumentRecord {
-  const raw = JSON.parse(new TextDecoder().decode(bytes)) as StoredTransactionDocumentRecord;
+  const raw = JSON.parse(
+    new TextDecoder().decode(bytes),
+  ) as StoredTransactionDocumentRecord;
 
   if (
-    raw.schemaVersion !== 1 ||
+    raw.schemaVersion !== 2 ||
     raw.mimeType !== "application/pdf" ||
     (raw.documentKind !== "SPA" &&
       raw.documentKind !== "COMMERCIAL_SCHEDULE")
@@ -124,7 +164,7 @@ export function privateTransactionDocumentStore(): PrivateTransactionDocumentSto
 
 export async function loadIssuedTransactionDocument(
   transactionReference: string,
-  kind: TransactionDocumentRecord["documentKind"],
+  kind: TransactionDocumentKind,
 ): Promise<TransactionDocumentRecord | null> {
   assertSupportedTransaction(transactionReference);
 
@@ -134,7 +174,9 @@ export async function loadIssuedTransactionDocument(
     return null;
   }
 
-  const bytes = await storage.readIfExists(recordKey(transactionReference, kind));
+  const bytes = await storage.readIfExists(
+    currentRecordKey(transactionReference, kind),
+  );
 
   if (!bytes) {
     return null;
@@ -145,8 +187,7 @@ export async function loadIssuedTransactionDocument(
   if (
     record.transactionReference !== transactionReference ||
     record.documentKind !== kind ||
-    record.documentReference !== DOCUMENTS[kind].reference ||
-    record.fileName !== DOCUMENTS[kind].fileName
+    record.documentReference !== DOCUMENTS[kind].reference
   ) {
     throw new Error("TRANSACTION_DOCUMENT_RECORD_AUTHORITY_MISMATCH");
   }
@@ -154,11 +195,12 @@ export async function loadIssuedTransactionDocument(
   return record;
 }
 
-export async function publishIssuedTransactionDocument(input: {
+async function publishTransactionDocument(input: {
   transactionReference: string;
-  documentKind: TransactionDocumentRecord["documentKind"];
+  documentKind: TransactionDocumentKind;
   pdf: Uint8Array;
   uploadedBy: string;
+  status: "REVIEW" | "EXECUTION" | "EXECUTED";
 }): Promise<TransactionDocumentRecord> {
   assertSupportedTransaction(input.transactionReference);
 
@@ -176,53 +218,96 @@ export async function publishIssuedTransactionDocument(input: {
 
   const sha256 = createHash("sha256").update(input.pdf).digest("hex");
 
-  if (existing) {
-    if (existing.sha256 === sha256 && existing.status === "ISSUED") {
+  if (existing?.status === input.status) {
+    if (existing.sha256 === sha256) {
       return existing;
     }
 
-    throw new Error("TRANSACTION_DOCUMENT_ISSUED_COPY_ALREADY_EXISTS");
+    throw new Error("TRANSACTION_DOCUMENT_RELEASE_ALREADY_EXISTS");
   }
 
+  if (
+    existing &&
+    (existing.status === "EXECUTION" ||
+      existing.status === "EXECUTED") &&
+    input.status === "REVIEW"
+  ) {
+    throw new Error("TRANSACTION_DOCUMENT_CANNOT_REVERT_TO_REVIEW");
+  }
+
+  const version = (existing?.version ?? 0) + 1;
   const document = DOCUMENTS[input.documentKind];
-  const storageKey = issuedPdfKey(
+  const fileName = fileNameFor(input.documentKind, input.status);
+  const storageKey = pdfStorageKey(
     input.transactionReference,
-    input.documentKind,
+    input.status,
+    fileName,
   );
   const issuedAt = new Date();
+  const executedAt =
+    input.status === "EXECUTED" ? issuedAt : null;
 
   const record: TransactionDocumentRecord = {
     transactionReference: input.transactionReference,
     documentKind: input.documentKind,
     documentReference: document.reference,
-    version: 1,
-    fileName: document.fileName,
+    version,
+    fileName,
     mimeType: "application/pdf",
     storageAuthority: `neon-object-storage:${config.bucket}`,
     storageKey,
     sha256,
-    status: "ISSUED",
+    status: input.status,
     issuedAt,
-    executedAt: null,
+    executedAt,
     uploadedBy: input.uploadedBy,
   };
 
-  // Object bytes are written first. The manifest is the publication boundary:
-  // an orphaned object is not an issued transaction document.
+  // Bytes first; immutable version manifest second; current pointer last.
+  // A partial write never silently replaces the current governed authority.
   await storage.write(storageKey, input.pdf, "application/pdf");
 
   const stored: StoredTransactionDocumentRecord = {
     ...record,
-    schemaVersion: 1,
+    schemaVersion: 2,
     issuedAt: issuedAt.toISOString(),
-    executedAt: null,
+    executedAt: executedAt?.toISOString() ?? null,
   };
 
+  const manifest = new TextEncoder().encode(
+    JSON.stringify(stored, null, 2),
+  );
+
   await storage.write(
-    recordKey(input.transactionReference, input.documentKind),
-    new TextEncoder().encode(JSON.stringify(stored, null, 2)),
+    versionRecordKey(
+      input.transactionReference,
+      input.documentKind,
+      version,
+    ),
+    manifest,
+    "application/json",
+  );
+
+  await storage.write(
+    currentRecordKey(
+      input.transactionReference,
+      input.documentKind,
+    ),
+    manifest,
     "application/json",
   );
 
   return record;
+}
+
+export async function publishReviewTransactionDocument(input: {
+  transactionReference: string;
+  documentKind: TransactionDocumentKind;
+  pdf: Uint8Array;
+  uploadedBy: string;
+}) {
+  return publishTransactionDocument({
+    ...input,
+    status: "REVIEW",
+  });
 }
