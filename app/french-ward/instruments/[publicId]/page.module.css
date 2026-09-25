@@ -852,12 +852,18 @@
   }
 }
 
-/* Transaction console: keep one workspace in the main reading area. */
+/* Transaction console: the crown spans the full transaction workspace,
+   while navigation and workspace content resume their two-column structure below. */
+.consoleCrown {
+  width: 100%;
+  margin: 0;
+}
+
 .consoleLayout {
   display: grid;
   grid-template-columns: minmax(155px, 205px) minmax(0, 1fr);
   gap: clamp(1rem, 3vw, 2rem);
-  padding: 1rem 0;
+  padding: 1.15rem 0 1rem;
 }
 .consoleNavigation {
   display: flex;
@@ -947,7 +953,7 @@
   gap: 1rem;
   align-items: center;
   margin: 0 0 0;
-  padding: 1rem 1.1rem 0.95rem;
+  padding: 1.3rem 1.25rem 1.25rem;
   border: 1px solid var(--line);
   border-top: 2px solid rgba(216, 198, 141, 0.52);
   background:
