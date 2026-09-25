@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 
@@ -59,10 +59,15 @@ const SYNTHETIC_PREVIEW_RECEIVING_ADDRESS =
 const SYNTHETIC_PREVIEW_WALLET_ID =
   "__synthetic_preview_wallet__" as const;
 
-function canRenderSyntheticPreviewWithoutSession() {
+function canRenderSyntheticPreviewWithoutSession(hostname: string) {
+  const normalizedHost = hostname.toLowerCase();
+
   return (
-    process.env.VERCEL_ENV === "preview" ||
-    process.env.NODE_ENV === "development"
+    process.env.NODE_ENV === "development" ||
+    (
+      normalizedHost.endsWith(".vercel.app") &&
+      normalizedHost.includes("-git-")
+    )
   );
 }
 
@@ -131,8 +136,9 @@ export default async function DigitalSettlementInstructionPage({
   let isV2Preview = false;
 
   if (previewRequested) {
+    const requestHost = (await headers()).get("host") ?? "";
     const sessionlessPreviewAllowed =
-      canRenderSyntheticPreviewWithoutSession();
+      canRenderSyntheticPreviewWithoutSession(requestHost);
 
     if (!sessionlessPreviewAllowed) {
       const principal = await getPrincipal();
