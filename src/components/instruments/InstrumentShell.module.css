@@ -286,6 +286,15 @@
 }
 
 
+.withoutHero {
+  /*
+   * Keep the transaction shell from becoming a scroll container.
+   * The buyer workspace navigation relies on viewport-relative sticky
+   * positioning while the crown and content scroll normally.
+   */
+  overflow: clip;
+}
+
 .withoutHero .content {
   width: min(1240px, calc(100% - clamp(1.5rem, 5vw, 5rem)));
   padding: 1rem 0 4rem;
