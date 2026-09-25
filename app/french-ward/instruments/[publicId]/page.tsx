@@ -660,20 +660,8 @@ export default async function DigitalSettlementInstructionPage({
       ) : null}
 
       {isInderakshTransaction ? (
-        <div className={styles.consoleLayout}>
-          <nav className={styles.consoleNavigation} aria-label="Transaction workspaces">
-            <p>TRANSACTION WORKSPACES</p>
-            {availableViews.map((view) => (
-              <Link
-                key={view}
-                href={`${consolePath}?view=${view}${isVisualPreview ? `&previewMode=${isBuyerViewPreview ? "buyer" : "operator"}&version=${isV2Preview ? "2" : "1"}` : ""}`}
-                aria-current={selectedView === view ? "page" : undefined}
-              >
-                {view[0].toUpperCase() + view.slice(1)}
-              </Link>
-            ))}
-          </nav>
-          <div className={styles.consoleContent}>
+        <>
+          <div className={styles.consoleCrown}>
             <header className={styles.consoleTopbar}>
               <div className={styles.consoleIdentity}>
                 <p>FRENCH-WARD · TRANSACTION CONSOLE</p>
@@ -689,6 +677,22 @@ export default async function DigitalSettlementInstructionPage({
               <span><small>SETTLEMENT</small><strong>ACTIVE</strong></span>
               <span><small>CURRENT ACTION</small><strong>REVIEW DOCUMENTS</strong></span>
             </div>
+          </div>
+
+          <div className={styles.consoleLayout}>
+            <nav className={styles.consoleNavigation} aria-label="Transaction workspaces">
+              <p>TRANSACTION WORKSPACES</p>
+              {availableViews.map((view) => (
+                <Link
+                  key={view}
+                  href={`${consolePath}?view=${view}${isVisualPreview ? `&previewMode=${isBuyerViewPreview ? "buyer" : "operator"}&version=${isV2Preview ? "2" : "1"}` : ""}`}
+                  aria-current={selectedView === view ? "page" : undefined}
+                >
+                  {view[0].toUpperCase() + view.slice(1)}
+                </Link>
+              ))}
+            </nav>
+            <div className={styles.consoleContent}>
             {selectedView === "overview" ? (
               <section className={styles.consolePanel} aria-label="Transaction overview">
                 <p className={styles.kicker}>Current action required</p>
@@ -778,8 +782,9 @@ export default async function DigitalSettlementInstructionPage({
               </section>
             ) : null}
             {selectedView === "settlement" ? settlementContent : null}
+            </div>
           </div>
-        </div>
+        </>
       ) : null}
 
       {!isInderakshTransaction ? settlementContent : null}
