@@ -2,7 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import DigitalSettlementOperatorPage from "../../instruments/digital-settlement/[reference]/page";
-import { TransactionDocumentUploadControl } from "@/components/admin/transactions/TransactionDocumentUploadControl";\nimport { BuyerAccessReissueControl } from "@/components/admin/transactions/BuyerAccessReissueControl";
+import { TransactionDocumentUploadControl } from "@/components/admin/transactions/TransactionDocumentUploadControl";
+import { BuyerAccessReissueControl } from "@/components/admin/transactions/BuyerAccessReissueControl";
 import {
   INDERAKSH_TRANSACTION_CONTINUITY,
   INDERAKSH_TRANSACTION_REFERENCE,
