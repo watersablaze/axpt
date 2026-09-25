@@ -645,7 +645,7 @@ export default async function DigitalSettlementInstructionPage({
           <div className={styles.consoleContent}>
             <header className={styles.consoleTopbar}>
               <div className={styles.consoleIdentity}>
-                <p>FRENCH-WARD · CONTROLLED TRANSACTION ENVIRONMENT</p>
+                <p>FRENCH-WARD · TRANSACTION CONSOLE</p>
                 <strong>{INDERAKSH_TRANSACTION_CONTINUITY.transactionReference}</strong>
                 <span>{INDERAKSH_LEGAL_NAME} · Initial 50 KG Gold Doré</span>
               </div>
