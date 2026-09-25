@@ -75,9 +75,9 @@ function canRenderSyntheticPreviewWithoutSession(hostname: string) {
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: "French-Ward Digital Settlement Instruction | AXPT",
+    title: "French-Ward Transaction Console | AXPT",
     description:
-      "Transaction-specific digital settlement coordinates issued by French-Ward, Inc.",
+      "Controlled transaction record and settlement environment issued by French-Ward, Inc.",
     robots: { index: false, follow: false },
     referrer: "no-referrer",
   };
@@ -230,19 +230,36 @@ export default async function DigitalSettlementInstructionPage({
     : null;
 
   const isInderakshTransaction = instruction.reference === DSI_REFERENCE;
-  const transactionDocuments =
-    isInderakshTransaction && !isVisualPreview
-      ? {
-        SPA: await loadIssuedTransactionDocument(
+  let transactionDocuments: {
+    SPA: Awaited<ReturnType<typeof loadIssuedTransactionDocument>>;
+    COMMERCIAL_SCHEDULE: Awaited<ReturnType<typeof loadIssuedTransactionDocument>>;
+  } | null = null;
+
+  if (isInderakshTransaction && !isVisualPreview) {
+    try {
+      const [spa, commercialSchedule] = await Promise.all([
+        loadIssuedTransactionDocument(
           INDERAKSH_TRANSACTION_CONTINUITY.transactionReference,
           "SPA",
         ),
-        COMMERCIAL_SCHEDULE: await loadIssuedTransactionDocument(
+        loadIssuedTransactionDocument(
           INDERAKSH_TRANSACTION_CONTINUITY.transactionReference,
           "COMMERCIAL_SCHEDULE",
         ),
-      }
-    : null;
+      ]);
+
+      transactionDocuments = {
+        SPA: spa,
+        COMMERCIAL_SCHEDULE: commercialSchedule,
+      };
+    } catch (error) {
+      console.error("[BUYER_TRANSACTION_DOCUMENT_STORE_READ_FAILED]", error);
+      transactionDocuments = {
+        SPA: null,
+        COMMERCIAL_SCHEDULE: null,
+      };
+    }
+  }
   const movements = [
     { index: "01", label: "Buyer Submission", active: true },
     { index: "02", label: "Commercial Basis" },
