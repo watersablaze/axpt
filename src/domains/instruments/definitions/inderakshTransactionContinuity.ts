@@ -63,7 +63,7 @@ export const INDERAKSH_TRANSACTION_CONTINUITY = {
       label: "Execution process",
       status: "EXTERNAL EXECUTION",
       body:
-        "The SPA and Commercial Schedule are first released through this controlled transaction environment as review copies marked NOT FOR EXECUTION. Following counterparty review and signatory confirmation, French-Ward separately releases execution copies for signature. Executed counterparts are then returned to French-Ward and incorporated into the governed transaction record.",
+        "The SPA and Commercial Schedule are first released through this controlled transaction environment as review copies marked NOT FOR EXECUTION. Following counterparty review and signatory confirmation, French-Ward separately releases execution copies for signature.",
     },
   ],
   lifecycle: [
