@@ -517,3 +517,132 @@
     letter-spacing: 0.06em;
   }
 }
+
+
+.documentRegister {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.documentRecord {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.documentRecord:last-child {
+  border-bottom: 1px solid var(--line);
+}
+
+.documentRecord p,
+.documentState small {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.documentRecord h3 {
+  margin: 0.3rem 0 0.4rem;
+  color: rgba(232, 224, 204, 0.92);
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.documentRecord code {
+  color: rgba(232, 224, 204, 0.58);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.68rem;
+}
+
+.documentState {
+  display: grid;
+  gap: 0.35rem;
+  min-width: 155px;
+  text-align: right;
+}
+
+.documentState span {
+  color: #d8c68d;
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+}
+
+.lifecycleRail {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--line);
+  border-left: 1px solid var(--line);
+  list-style: none;
+}
+
+.lifecycleRail li {
+  min-height: 135px;
+  padding: 0.9rem;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: rgba(255, 255, 255, 0.008);
+}
+
+.lifecycleRail li > span {
+  color: rgba(232, 224, 204, 0.34);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+}
+
+.lifecycleRail strong {
+  display: block;
+  margin-top: 0.65rem;
+  color: rgba(232, 224, 204, 0.82);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.lifecycleRail p {
+  margin: 0.6rem 0 0;
+  color: var(--muted);
+  font-size: 0.67rem;
+  line-height: 1.55;
+}
+
+.lifecycleRail .lifecycleActive {
+  background: rgba(199, 183, 132, 0.055);
+  box-shadow: inset 0 2px 0 rgba(199, 183, 132, 0.55);
+}
+
+.lifecycleRail .lifecycleActive strong,
+.lifecycleRail .lifecycleActive > span {
+  color: #d8c68d;
+}
+
+@media (max-width: 980px) {
+  .lifecycleRail {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 560px) {
+  .documentRecord {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .documentState {
+    min-width: 0;
+    text-align: left;
+  }
+
+  .lifecycleRail {
+    grid-template-columns: 1fr;
+  }
+
+  .lifecycleRail li {
+    min-height: 0;
+  }
+}
