@@ -244,22 +244,32 @@ export default async function DigitalSettlementInstructionPage({
   return (
     <InstrumentShell
       eyebrow="French-Ward, Inc. / Controlled Transaction Environment"
-      title={isInderakshTransaction ? "Transaction Settlement Record" : "Digital Settlement Instruction"}
+      title={isInderakshTransaction ? "Transaction Record" : "Digital Settlement Instruction"}
       subtitle={
         isInderakshTransaction
-          ? "Initial 50 KG Gold Doré / Governing Documents + Settlement Continuity"
+          ? "Initial 50 KG Gold Doré / Governing Documents, Settlement Authority + Transaction Continuity"
           : "Good-Faith Transaction Authorization Payment / Settlement Coordinates"
       }
-      reference={instruction.reference}
-      version={`V${instruction.versionNumber}`}
+      reference={
+        isInderakshTransaction
+          ? INDERAKSH_TRANSACTION_CONTINUITY.transactionReference
+          : instruction.reference
+      }
+      version={isInderakshTransaction ? "V1" : `V${instruction.versionNumber}`}
       status={
-        isVisualPreview && !isBuyerViewPreview ? "VISUAL REVIEW" : "ISSUED"
+        isVisualPreview && !isBuyerViewPreview
+          ? "VISUAL REVIEW"
+          : isInderakshTransaction
+            ? INDERAKSH_TRANSACTION_CONTINUITY.currentState.transaction
+            : "ISSUED"
       }
       movements={movements}
       classificationLabel={
         isVisualPreview && !isBuyerViewPreview
           ? "Synthetic Visual Review Fixture"
-          : "Authorized Settlement Instrument"
+          : isInderakshTransaction
+            ? "Private Governed Transaction Record"
+            : "Authorized Settlement Instrument"
       }
       showStatusRail={false}
       density="document"
@@ -279,6 +289,40 @@ export default async function DigitalSettlementInstructionPage({
 
       {isInderakshTransaction ? (
         <>
+          <section className={styles.transactionAuthority} aria-labelledby="transaction-authority-heading">
+            <div>
+              <p className={styles.kicker}>Transaction authority</p>
+              <h2 id="transaction-authority-heading">
+                One governed record for agreement, settlement and performance
+              </h2>
+              <p>
+                This environment is the authoritative transaction home for{" "}
+                {INDERAKSH_TRANSACTION_CONTINUITY.transactionLabel}. The SPA
+                governs the legal relationship, the Commercial Schedule fixes the
+                transaction-specific commercial configuration, and the DSI operates
+                as the continuing settlement and recognition layer.
+              </p>
+            </div>
+            <dl className={styles.transactionStateGrid}>
+              <div>
+                <dt>Transaction reference</dt>
+                <dd>{INDERAKSH_TRANSACTION_CONTINUITY.transactionReference}</dd>
+              </div>
+              <div>
+                <dt>Document state</dt>
+                <dd>{INDERAKSH_TRANSACTION_CONTINUITY.currentState.documents}</dd>
+              </div>
+              <div>
+                <dt>Execution state</dt>
+                <dd>{INDERAKSH_TRANSACTION_CONTINUITY.currentState.transaction}</dd>
+              </div>
+              <div>
+                <dt>Settlement layer</dt>
+                <dd>{INDERAKSH_TRANSACTION_CONTINUITY.currentState.settlement}</dd>
+              </div>
+            </dl>
+          </section>
+
           <section className={styles.panel} aria-labelledby="governing-documents-heading">
             <div className={styles.sectionHeading}>
               <span>00</span>
@@ -311,10 +355,9 @@ export default async function DigitalSettlementInstructionPage({
 
             <p className={styles.evidenceBoundary}>
               The SPA and Commercial Schedule establish the governing and commercial
-              baseline. The DSI continues through the transaction as the controlled
-              settlement, recognition, reconciliation, and closure record. Source
-              documents received for final review remain non-issued until French-Ward
-              publishes the finalized PDF instruments through this environment.
+              baseline and are issued for execution. The DSI does not replace either
+              document; it carries the authenticated settlement, recognition,
+              reconciliation, and closure state of the same governed Transaction.
             </p>
           </section>
 
@@ -422,9 +465,26 @@ export default async function DigitalSettlementInstructionPage({
         </section>
       ) : null}
 
+      <section className={styles.settlementLayer} aria-labelledby="settlement-layer-heading">
+        <div className={styles.settlementLayerHeader}>
+          <div>
+            <p className={styles.kicker}>Settlement layer</p>
+            <h2 id="settlement-layer-heading">Digital Settlement Instrument</h2>
+            <p>
+              {instruction.reference} · continuing settlement, payment-routing,
+              recognition and reconciliation authority for this Transaction.
+            </p>
+          </div>
+          <div className={styles.settlementLayerBadge}>
+            <span>DSI</span>
+            <strong>{formatStatus(instruction.settlementStatus)}</strong>
+          </div>
+        </div>
+      </section>
+
       <section className={styles.intro} aria-labelledby="instruction-heading">
         <div>
-          <p className={styles.kicker}>Verification requirement</p>
+          <p className={styles.kicker}>Current settlement requirement</p>
           <h2 id="instruction-heading">
             Verification Requirement
           </h2>
