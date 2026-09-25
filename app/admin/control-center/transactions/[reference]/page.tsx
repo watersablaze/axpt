@@ -46,28 +46,32 @@ export default async function TransactionOperatorPage({
   return (
     <div className="min-h-screen bg-[#090d0c] text-stone-100">
       <header className="sticky top-0 z-30 border-b border-stone-800 bg-[#090d0c]/95 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-4 py-3 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <div className="mx-auto max-w-7xl px-4 py-2.5 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-[10px] uppercase tracking-[0.2em] text-amber-300">
+              <p className="text-[9px] uppercase tracking-[0.2em] text-amber-300">
                 French-Ward · Transaction Control
               </p>
-              <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <h1 className="font-mono text-sm text-white sm:text-base">
+              <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+                <h1 className="font-mono text-sm font-medium text-white">
                   {reference}
                 </h1>
-                <span className="text-xs text-stone-400">
-                  Inderaksh Gold Refinery FZ-LLC · Initial 50 KG
+                <span className="text-[11px] text-stone-400">
+                  Inderaksh Gold Refinery FZ-LLC · Initial 50 KG Gold Doré
                 </span>
               </div>
             </div>
 
-            <div className="flex flex-wrap gap-x-4 gap-y-1 text-[10px] uppercase tracking-[0.12em]">
-              <span className="text-amber-300">Documents · Issued</span>
-              <span className="text-stone-300">Execution · Awaiting</span>
-              <span className="text-cyan-300">Settlement · Active</span>
-              <span className="text-rose-300">Authority · Verification only</span>
+            <div className="shrink-0 rounded-sm border border-amber-900/70 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-amber-300">
+              Operator Control
             </div>
+          </div>
+
+          <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 border-t border-stone-800/80 pt-2 text-[9px] uppercase tracking-[0.12em]">
+            <span className="text-amber-300">Documents · Issued</span>
+            <span className="text-stone-300">Execution · Awaiting</span>
+            <span className="text-cyan-300">Settlement · Active</span>
+            <span className="text-rose-300">Authority · Verification only</span>
           </div>
         </div>
       </header>
