@@ -20,6 +20,10 @@ import {
   DSI_V2_FINANCIER_REVISION,
   DSI_V2_VERSION,
 } from "@/domains/instruments/definitions/digitalSettlementV2FinancierRevision";
+import {
+  INDERAKSH_TRANSACTION_CONTINUITY,
+  resolveInderakshLifecycleStage,
+} from "@/domains/instruments/definitions/inderakshTransactionContinuity";
 import { TREASURY_WALLETS } from "@/lib/treasury/config";
 import { loadIssuedDigitalSettlementInstruction } from "@/domains/instruments/queries/loadIssuedDigitalSettlementInstruction";
 import { resolveInstrumentAccess } from "@/domains/instruments/queries/resolveInstrumentAccess";
@@ -204,18 +208,33 @@ export default async function DigitalSettlementInstructionPage({
       })} USDT`
     : null;
 
-  const movements = [
-    { index: "01", label: "Buyer Submission", active: true },
-    { index: "02", label: "Commercial Basis" },
-    { index: "03", label: "Settlement Coordinates" },
-    { index: "04", label: "Recognition Standard" },
-  ];
+  const isInderakshTransaction = instruction.reference === DSI_REFERENCE;
+  const lifecycleStage = isInderakshTransaction
+    ? resolveInderakshLifecycleStage(instruction.settlementStatus)
+    : null;
+
+  const movements = isInderakshTransaction
+    ? INDERAKSH_TRANSACTION_CONTINUITY.lifecycle.map((stage) => ({
+        index: stage.index,
+        label: stage.label,
+        active: stage.id === lifecycleStage,
+      }))
+    : [
+        { index: "01", label: "Buyer Submission", active: true },
+        { index: "02", label: "Commercial Basis" },
+        { index: "03", label: "Settlement Coordinates" },
+        { index: "04", label: "Recognition Standard" },
+      ];
 
   return (
     <InstrumentShell
-      eyebrow="French-Ward, Inc. / Controlled Settlement Instrument"
-      title="Digital Settlement Instruction"
-      subtitle="Good-Faith Transaction Authorization Payment / Settlement Coordinates"
+      eyebrow="French-Ward, Inc. / Controlled Transaction Environment"
+      title={isInderakshTransaction ? "Transaction Settlement Record" : "Digital Settlement Instruction"}
+      subtitle={
+        isInderakshTransaction
+          ? "Initial 50 KG Gold Doré / Governing Documents + Settlement Continuity"
+          : "Good-Faith Transaction Authorization Payment / Settlement Coordinates"
+      }
       reference={instruction.reference}
       version={`V${instruction.versionNumber}`}
       status={
@@ -240,6 +259,73 @@ export default async function DigitalSettlementInstructionPage({
           access grant, email, or buyer authorization has been created. Do not
           transmit value.
         </section>
+      ) : null}
+
+      {isInderakshTransaction ? (
+        <>
+          <section className={styles.panel} aria-labelledby="governing-documents-heading">
+            <div className={styles.sectionHeading}>
+              <span>00</span>
+              <div>
+                <p>Governing documents</p>
+                <h2 id="governing-documents-heading">
+                  Transaction instruments and document authority
+                </h2>
+              </div>
+            </div>
+
+            <div className={styles.documentRegister}>
+              {INDERAKSH_TRANSACTION_CONTINUITY.governingDocuments.map((document) => (
+                <article key={document.reference} className={styles.documentRecord}>
+                  <div>
+                    <p>{document.role}</p>
+                    <h3>{document.title}</h3>
+                    <code>{document.reference}</code>
+                  </div>
+                  <div className={styles.documentState}>
+                    <span>{document.status}</span>
+                    <small>{document.publicationState}</small>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <p className={styles.evidenceBoundary}>
+              The SPA and Commercial Schedule establish the governing and commercial
+              baseline. The DSI continues through the transaction as the controlled
+              settlement, recognition, reconciliation, and closure record. Execution
+              drafts are shown as pending publication until French-Ward issues the
+              finalized documents through this environment.
+            </p>
+          </section>
+
+          <section className={styles.panel} aria-labelledby="continuity-heading">
+            <div className={styles.sectionHeading}>
+              <span>↳</span>
+              <div>
+                <p>Transaction continuity</p>
+                <h2 id="continuity-heading">
+                  One transaction record from agreement through closure
+                </h2>
+              </div>
+            </div>
+
+            <ol className={styles.lifecycleRail}>
+              {INDERAKSH_TRANSACTION_CONTINUITY.lifecycle.map((stage) => (
+                <li
+                  key={stage.id}
+                  className={stage.id === lifecycleStage ? styles.lifecycleActive : undefined}
+                >
+                  <span>{stage.index}</span>
+                  <div>
+                    <strong>{stage.label}</strong>
+                    <p>{stage.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </>
       ) : null}
 
       {displaysV2Revision ? (
