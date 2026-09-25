@@ -2,11 +2,13 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import DigitalSettlementOperatorPage from "../../instruments/digital-settlement/[reference]/page";
+import { TransactionDocumentUploadControl } from "@/components/admin/transactions/TransactionDocumentUploadControl";
 import {
   INDERAKSH_TRANSACTION_CONTINUITY,
   INDERAKSH_TRANSACTION_REFERENCE,
 } from "@/domains/instruments/definitions/inderakshTransactionContinuity";
 import { DSI_REFERENCE } from "@/domains/instruments/definitions/digitalSettlementV1Definition";
+import { loadIssuedTransactionDocument } from "@/domains/instruments/transaction-documents/contracts";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +44,14 @@ export default async function TransactionOperatorPage({
     INDERAKSH_TRANSACTION_CONTINUITY.governingDocuments.filter(
       (item) => item.kind !== "DSI",
     );
+
+  const issuedDocuments = {
+    SPA: await loadIssuedTransactionDocument(reference, "SPA"),
+    COMMERCIAL_SCHEDULE: await loadIssuedTransactionDocument(
+      reference,
+      "COMMERCIAL_SCHEDULE",
+    ),
+  };
 
   return (
     <div className="min-h-screen bg-[#090d0c] text-stone-100">
@@ -212,25 +222,52 @@ export default async function TransactionOperatorPage({
                       <div className="text-[10px] uppercase tracking-wide text-amber-300">
                         {item.publicationState} · {item.status}
                       </div>
-                      <div className="flex flex-wrap gap-2">
-                        {["View", "Download", "Record Executed Copy"].map((action) => (
-                          <button
-                            key={action}
-                            type="button"
-                            disabled
-                            className="rounded border border-stone-800 px-3 py-1.5 text-[10px] uppercase tracking-wide text-stone-600 disabled:cursor-not-allowed"
-                          >
-                            {action}
-                          </button>
-                        ))}
-                      </div>
+                      {issuedDocuments[item.kind as "SPA" | "COMMERCIAL_SCHEDULE"] ? (
+                        <>
+                          <div className="flex flex-wrap gap-2">
+                            <Link
+                              href={`/api/admin/transactions/${encodeURIComponent(reference)}/documents/${item.kind}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="rounded border border-stone-700 px-3 py-1.5 text-[10px] uppercase tracking-wide text-stone-300 hover:border-amber-700 hover:text-amber-300"
+                            >
+                              View
+                            </Link>
+                            <Link
+                              href={`/api/admin/transactions/${encodeURIComponent(reference)}/documents/${item.kind}?mode=download`}
+                              className="rounded border border-stone-700 px-3 py-1.5 text-[10px] uppercase tracking-wide text-stone-300 hover:border-amber-700 hover:text-amber-300"
+                            >
+                              Download
+                            </Link>
+                            <button
+                              type="button"
+                              disabled
+                              title="Executed-copy recording is the next governed lifecycle step."
+                              className="rounded border border-stone-800 px-3 py-1.5 text-[10px] uppercase tracking-wide text-stone-600 disabled:cursor-not-allowed"
+                            >
+                              Record Executed Copy
+                            </button>
+                          </div>
+                          <p className="max-w-sm break-all text-right font-mono text-[9px] text-stone-600">
+                            SHA-256 {issuedDocuments[item.kind as "SPA" | "COMMERCIAL_SCHEDULE"]?.sha256}
+                          </p>
+                        </>
+                      ) : (
+                        <TransactionDocumentUploadControl
+                          transactionReference={reference}
+                          documentKind={item.kind as "SPA" | "COMMERCIAL_SCHEDULE"}
+                          label="Publish Issued PDF"
+                        />
+                      )}
                     </div>
                   </article>
                 ))}
               </div>
 
               <div className="rounded border border-amber-900/40 bg-amber-950/10 p-3 text-xs leading-5 text-stone-400">
-                File authority is fail-closed until the private document store is connected.
+                {issuedDocuments.SPA && issuedDocuments.COMMERCIAL_SCHEDULE
+                  ? "Both issued governing PDFs are bound to the private transaction store and protected by recorded SHA-256 integrity hashes."
+                  : "Publish each canonical issued PDF once. Publication writes the private object first and the governed manifest second; replacement is blocked once an issued copy exists."}
               </div>
             </section>
           ) : null}
