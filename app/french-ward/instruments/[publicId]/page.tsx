@@ -297,6 +297,9 @@ export default async function DigitalSettlementInstructionPage({
                     <p>{document.role}</p>
                     <h3>{document.title}</h3>
                     <code>{document.reference}</code>
+                    {"fileName" in document && document.fileName ? (
+                      <small className={styles.documentFileName}>{document.fileName}</small>
+                    ) : null}
                   </div>
                   <div className={styles.documentState}>
                     <span>{document.status}</span>
@@ -309,10 +312,34 @@ export default async function DigitalSettlementInstructionPage({
             <p className={styles.evidenceBoundary}>
               The SPA and Commercial Schedule establish the governing and commercial
               baseline. The DSI continues through the transaction as the controlled
-              settlement, recognition, reconciliation, and closure record. Execution
-              drafts are shown as pending publication until French-Ward issues the
-              finalized documents through this environment.
+              settlement, recognition, reconciliation, and closure record. Source
+              documents received for final review remain non-issued until French-Ward
+              publishes the finalized PDF instruments through this environment.
             </p>
+          </section>
+
+          <section className={styles.panel} aria-labelledby="transaction-notices-heading">
+            <div className={styles.sectionHeading}>
+              <span>!</span>
+              <div>
+                <p>Transaction notices</p>
+                <h2 id="transaction-notices-heading">
+                  Execution and delivery clarifications
+                </h2>
+              </div>
+            </div>
+
+            <div className={styles.noticeRegister}>
+              {INDERAKSH_TRANSACTION_CONTINUITY.transactionNotices.map((notice) => (
+                <article key={notice.label} className={styles.noticeRecord}>
+                  <div>
+                    <h3>{notice.label}</h3>
+                    <p>{notice.body}</p>
+                  </div>
+                  <span>{notice.status}</span>
+                </article>
+              ))}
+            </div>
           </section>
 
           <section className={styles.panel} aria-labelledby="continuity-heading">
