@@ -1,30 +1,11 @@
 import "server-only";
 
-import { createHash, createHmac } from "node:crypto";
-
-function sha256Hex(value: Uint8Array | string) {
-  return createHash("sha256").update(value).digest("hex");
-}
-
-function hmac(key: Uint8Array | string, value: string) {
-  return createHmac("sha256", key).update(value).digest();
-}
-
-function awsEncode(value: string) {
-  return encodeURIComponent(value).replace(/[!'()*]/g, (char) =>
-    `%${char.charCodeAt(0).toString(16).toUpperCase()}`,
-  );
-}
-
-function canonicalObjectPath(bucket: string, key: string) {
-  const encodedBucket = awsEncode(bucket);
-  const encodedKey = key
-    .split("/")
-    .map((segment) => awsEncode(segment))
-    .join("/");
-
-  return `/${encodedBucket}/${encodedKey}`;
-}
+import {
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+  S3ServiceException,
+} from "@aws-sdk/client-s3";
 
 type StorageConfig = Readonly<{
   endpoint: string;
@@ -57,99 +38,75 @@ export function loadNeonObjectStorageConfig(): StorageConfig | null {
 export class NeonObjectStorageError extends Error {
   constructor(
     message: string,
-    readonly status: number,
+    readonly status: number | null,
+    readonly code: string | null = null,
   ) {
     super(message);
   }
 }
 
+function statusFrom(error: unknown) {
+  if (error instanceof S3ServiceException) {
+    return error.$metadata.httpStatusCode ?? null;
+  }
+
+  return null;
+}
+
+function codeFrom(error: unknown) {
+  if (error instanceof S3ServiceException) {
+    return error.name ?? null;
+  }
+
+  return null;
+}
+
 export class NeonObjectStorage {
-  constructor(private readonly config: StorageConfig) {}
+  private readonly client: S3Client;
 
-  private async request(
-    method: "GET" | "PUT",
-    key: string,
-    body?: Uint8Array,
-    contentType?: string,
-  ) {
-    const endpoint = new URL(this.config.endpoint);
-    const path = canonicalObjectPath(this.config.bucket, key);
-    const url = new URL(path, endpoint.origin);
-    const payload = body ?? new Uint8Array();
-    const payloadHash = sha256Hex(payload);
-
-    const now = new Date();
-    const amzDate = now
-      .toISOString()
-      .replace(/[:-]|\.\d{3}/g, "");
-    const dateStamp = amzDate.slice(0, 8);
-
-    const canonicalHeaders =
-      `host:${url.host}\n` +
-      `x-amz-content-sha256:${payloadHash}\n` +
-      `x-amz-date:${amzDate}\n`;
-
-    const signedHeaders = "host;x-amz-content-sha256;x-amz-date";
-
-    const canonicalRequest = [
-      method,
-      path,
-      "",
-      canonicalHeaders,
-      signedHeaders,
-      payloadHash,
-    ].join("\n");
-
-    const credentialScope =
-      `${dateStamp}/${this.config.region}/s3/aws4_request`;
-
-    const stringToSign = [
-      "AWS4-HMAC-SHA256",
-      amzDate,
-      credentialScope,
-      sha256Hex(canonicalRequest),
-    ].join("\n");
-
-    const kDate = hmac(`AWS4${this.config.secretAccessKey}`, dateStamp);
-    const kRegion = hmac(kDate, this.config.region);
-    const kService = hmac(kRegion, "s3");
-    const kSigning = hmac(kService, "aws4_request");
-    const signature = createHmac("sha256", kSigning)
-      .update(stringToSign)
-      .digest("hex");
-
-    const authorization =
-      "AWS4-HMAC-SHA256 " +
-      `Credential=${this.config.accessKeyId}/${credentialScope}, ` +
-      `SignedHeaders=${signedHeaders}, Signature=${signature}`;
-
-    const response = await fetch(url, {
-      method,
-      headers: {
-        Authorization: authorization,
-        "x-amz-content-sha256": payloadHash,
-        "x-amz-date": amzDate,
-        ...(contentType ? { "Content-Type": contentType } : {}),
+  constructor(private readonly config: StorageConfig) {
+    this.client = new S3Client({
+      endpoint: config.endpoint,
+      region: config.region,
+      forcePathStyle: true,
+      credentials: {
+        accessKeyId: config.accessKeyId,
+        secretAccessKey: config.secretAccessKey,
       },
-      ...(method === "PUT"
-        ? { body: Buffer.from(payload) as unknown as BodyInit }
-        : {}),
-      cache: "no-store",
     });
-
-    if (!response.ok) {
-      throw new NeonObjectStorageError(
-        `Neon Object Storage ${method} failed with HTTP ${response.status}`,
-        response.status,
-      );
-    }
-
-    return response;
   }
 
   async read(key: string) {
-    const response = await this.request("GET", key);
-    return new Uint8Array(await response.arrayBuffer());
+    try {
+      const response = await this.client.send(
+        new GetObjectCommand({
+          Bucket: this.config.bucket,
+          Key: key,
+        }),
+      );
+
+      if (!response.Body) {
+        throw new NeonObjectStorageError(
+          "Neon Object Storage GET returned no object body",
+          response.$metadata.httpStatusCode ?? null,
+        );
+      }
+
+      return new Uint8Array(await response.Body.transformToByteArray());
+    } catch (error) {
+      if (error instanceof NeonObjectStorageError) {
+        throw error;
+      }
+
+      const status = statusFrom(error);
+      const code = codeFrom(error);
+
+      throw new NeonObjectStorageError(
+        `Neon Object Storage GET failed${status ? ` with HTTP ${status}` : ""}${code ? ` (${code})` : ""}`,
+        status,
+        code,
+      );
+    }
   }
 
   async readIfExists(key: string) {
@@ -158,12 +115,16 @@ export class NeonObjectStorage {
     } catch (error) {
       if (
         error instanceof NeonObjectStorageError &&
-        (error.status === 403 || error.status === 404)
+        (
+          error.status === 403 ||
+          error.status === 404 ||
+          error.code === "NoSuchKey" ||
+          error.code === "NotFound"
+        )
       ) {
-        // Private S3-compatible stores can return 403 for a missing object
-        // when the credential has object read/write authority but no bucket-list
-        // authority. This branch is used only for existence probing; actual
-        // reads and writes still fail closed on 403.
+        // Some private S3-compatible stores answer 403 for an existence probe
+        // when the object is absent and the credential cannot list the bucket.
+        // Real object reads and all writes still fail closed.
         return null;
       }
 
@@ -176,7 +137,25 @@ export class NeonObjectStorage {
     bytes: Uint8Array,
     contentType = "application/octet-stream",
   ) {
-    await this.request("PUT", key, bytes, contentType);
+    try {
+      await this.client.send(
+        new PutObjectCommand({
+          Bucket: this.config.bucket,
+          Key: key,
+          Body: bytes,
+          ContentType: contentType,
+        }),
+      );
+    } catch (error) {
+      const status = statusFrom(error);
+      const code = codeFrom(error);
+
+      throw new NeonObjectStorageError(
+        `Neon Object Storage PUT failed${status ? ` with HTTP ${status}` : ""}${code ? ` (${code})` : ""}`,
+        status,
+        code,
+      );
+    }
   }
 }
 
