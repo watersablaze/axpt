@@ -15,8 +15,8 @@ export const INDERAKSH_TRANSACTION_CONTINUITY = {
       reference: INDERAKSH_SPA_REFERENCE,
       role: "Governing agreement",
       fileName: "SPA-FWI-IGR-AU-2026-017.pdf",
-      status: "FINAL REVIEW",
-      publicationState: "SOURCE RECEIVED",
+      status: "AWAITING EXECUTION",
+      publicationState: "ISSUED",
     },
     {
       kind: "COMMERCIAL_SCHEDULE",
@@ -24,8 +24,8 @@ export const INDERAKSH_TRANSACTION_CONTINUITY = {
       reference: INDERAKSH_COMMERCIAL_SCHEDULE_REFERENCE,
       role: "Commercial configuration",
       fileName: "CP-FWI-IGR-AU-2026-017.pdf",
-      status: "FINAL REVIEW",
-      publicationState: "SOURCE RECEIVED",
+      status: "AWAITING EXECUTION",
+      publicationState: "ISSUED",
     },
     {
       kind: "DSI",
