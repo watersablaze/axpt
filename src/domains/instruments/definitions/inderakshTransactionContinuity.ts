@@ -6,8 +6,17 @@ export const INDERAKSH_SPA_REFERENCE =
 export const INDERAKSH_COMMERCIAL_SCHEDULE_REFERENCE =
   "CP-FWI-IGR-AU-2026-017" as const;
 
+export const INDERAKSH_TRANSACTION_REFERENCE =
+  "TX-FWI-IGR-AU-2026-017" as const;
+
 export const INDERAKSH_TRANSACTION_CONTINUITY = {
+  transactionReference: INDERAKSH_TRANSACTION_REFERENCE,
   transactionLabel: "Initial 50 KG Gold Doré Transaction",
+  currentState: {
+    transaction: "AWAITING EXECUTION",
+    documents: "ISSUED",
+    settlement: "ACTIVE",
+  },
   governingDocuments: [
     {
       kind: "SPA",
@@ -42,19 +51,19 @@ export const INDERAKSH_TRANSACTION_CONTINUITY = {
       label: "Buyer signatory confirmation",
       status: "CONFIRMATION REQUIRED",
       body:
-        "Corey Keller is pre-populated for transaction continuity based on his execution of the Buyer LOI and identified role as Vice President / Buyer Representative. Buyer must confirm his authority to execute the SPA and Commercial Schedule, or provide the duly authorized alternate signatory before execution.",
+        "Corey Keller is identified as Vice President / Buyer Representative and executed the Buyer LOI. Buyer is requested to confirm his authority to execute the SPA and Commercial Schedule on behalf of Inderaksh Gold Refinery FZ-LLC, or provide the duly authorized alternate signatory before execution.",
     },
     {
       label: "Delivery term clarification",
       status: "CIP / AIR FREIGHT",
       body:
-        "The Buyer LOI used CIF as preliminary insured-delivery terminology. The definitive Commercial Schedule uses CIP Inderaksh Gold Refinery FZ-LLC, Dubai, United Arab Emirates, Incoterms® 2020 to reflect the Seller-coordinated international air-freight and insurance structure.",
+        "The Buyer LOI referenced CIF as preliminary insured-delivery terminology. Because the Transaction is structured for international air freight, the definitive Commercial Schedule states CIP Inderaksh Gold Refinery FZ-LLC, Dubai, UAE — Incoterms® 2020, preserving Seller-coordinated carriage and insurance under the mode-appropriate delivery rule.",
     },
     {
       label: "Execution process",
       status: "EXTERNAL EXECUTION",
       body:
-        "AXPT presently governs controlled issuance, access, transaction continuity, and settlement-state recording. Formal document execution remains external to AXPT for this release; executed counterparts are subsequently recorded in the transaction environment.",
+        "The SPA and Commercial Schedule are issued through this controlled transaction environment. Formal execution remains external to AXPT for this release; executed counterparts are returned to French-Ward and incorporated into the governed transaction record.",
     },
   ],
   lifecycle: [
