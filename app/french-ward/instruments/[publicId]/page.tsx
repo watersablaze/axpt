@@ -663,26 +663,26 @@ export default async function DigitalSettlementInstructionPage({
                 <strong>{INDERAKSH_TRANSACTION_CONTINUITY.transactionReference}</strong>
                 <span>{INDERAKSH_LEGAL_NAME} · Initial 50 KG Gold Doré</span>
               </div>
-              <div className={styles.consoleStatePill}>AWAITING EXECUTION</div>
+              <div className={styles.consoleStatePill}>COUNTERPARTY REVIEW</div>
             </header>
 
             <div className={styles.consoleStates} aria-label="Independent transaction states">
-              <span><small>DOCUMENTS</small><strong>ISSUED</strong></span>
-              <span><small>EXECUTION</small><strong>AWAITING</strong></span>
+              <span><small>DOCUMENTS</small><strong>REVIEW</strong></span>
+              <span><small>EXECUTION</small><strong>NOT RELEASED</strong></span>
               <span><small>SETTLEMENT</small><strong>ACTIVE</strong></span>
-              <span><small>CURRENT ACTION</small><strong>EXECUTE AGREEMENT</strong></span>
+              <span><small>CURRENT ACTION</small><strong>REVIEW DOCUMENTS</strong></span>
             </div>
             {selectedView === "overview" ? (
               <section className={styles.consolePanel} aria-label="Transaction overview">
                 <p className={styles.kicker}>Current action required</p>
-                <h2>Confirm the Buyer signatory and execute the SPA and Commercial Schedule.</h2>
-                <p>Corey Keller is named as Buyer representative. Confirm his execution authority or provide an authorized alternate before signing.</p>
+                <h2>Review the SPA and Commercial Schedule and confirm the Buyer signatory.</h2>
+                <p>These are review copies only and are not released for execution. Corey Keller is named as Buyer representative; confirm his execution authority or provide an authorized alternate before French-Ward releases execution copies.</p>
                 <dl className={styles.overviewGrid}>
-                  <div><dt>Transaction stage</dt><dd>Agreement · awaiting execution</dd></div>
+                  <div><dt>Transaction stage</dt><dd>Agreement · counterparty review</dd></div>
                   <div><dt>Buyer / Seller</dt><dd>{INDERAKSH_LEGAL_NAME} / French-Ward, Inc.</dd></div>
                   <div><dt>Quantity / corridor</dt><dd>50 KG · Mali → Dubai</dd></div>
                   <div><dt>Pricing reference</dt><dd>{instruction.pricingBasis}</dd></div>
-                  <div><dt>SPA / Commercial Schedule</dt><dd>Issued · awaiting execution</dd></div>
+                  <div><dt>SPA / Commercial Schedule</dt><dd>Review copies · not for execution</dd></div>
                   <div><dt>DSI</dt><dd>{formatStatus(instruction.settlementStatus)}</dd></div>
                 </dl>
                 <h3>Most recent recorded milestones</h3>
@@ -728,7 +728,7 @@ export default async function DigitalSettlementInstructionPage({
                 </div>
                 <p className={styles.evidenceBoundary}>
                   {transactionDocuments?.SPA && transactionDocuments.COMMERCIAL_SCHEDULE
-                    ? "Issued governing documents are available through authenticated transaction access."
+                    ? "Review copies are available through authenticated transaction access. They are not released for execution."
                     : "Secure document access is pending. Contact French-Ward for the execution copies."}
                 </p>
                 <details><summary>Execution and delivery clarifications</summary>
