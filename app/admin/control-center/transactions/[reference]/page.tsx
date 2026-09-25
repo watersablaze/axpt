@@ -387,9 +387,9 @@ export default async function TransactionOperatorPage({
                   Transaction event register
                 </h2>
                 <p className="mt-2 max-w-3xl text-xs leading-5 text-stone-500">
-                  The transaction register now carries the first canonical milestone directly.
-                  Settlement controls remain fail-closed until the Preview database is reconciled
-                  to the verification-recognition schema.
+                  The transaction register carries the first canonical milestone directly.
+                  The Preview database has been reconciled to the DSI verification-recognition
+                  schema, and Settlement Control is available within this transaction workspace.
                 </p>
               </div>
 
@@ -451,8 +451,9 @@ export default async function TransactionOperatorPage({
               </div>
 
               <div className="rounded border border-stone-800 bg-black/10 p-3 text-xs leading-5 text-stone-500">
-                The legacy DSI operator shortcut is intentionally withheld here while its
-                verification-recognition database fields are absent from the Preview database.
+                DSI settlement control is now integrated into this transaction workspace.
+                Verification-recognition schema reconciliation was completed on the Preview
+                database without changing settlement state or transfer authority.
               </div>
             </section>
           ) : null}
