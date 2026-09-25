@@ -917,3 +917,112 @@
 }
 .consoleDisclosure { border-top: 1px solid var(--line); padding: 1rem 0; }
 .consoleDisclosure summary { color: #d8c68d; cursor: pointer; font-size: 0.78rem; }
+
+
+.consoleTopbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem;
+  align-items: center;
+  margin: -0.2rem 0 0;
+  padding: 0.9rem 0;
+  border-bottom: 1px solid var(--line);
+  background: rgba(9, 13, 12, 0.96);
+  backdrop-filter: blur(14px);
+}
+
+.consoleIdentity {
+  min-width: 0;
+}
+
+.consoleIdentity p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.55rem;
+  letter-spacing: 0.14em;
+}
+
+.consoleIdentity strong {
+  display: block;
+  margin-top: 0.25rem;
+  color: #e8e0cc;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+.consoleIdentity span {
+  display: block;
+  margin-top: 0.2rem;
+  color: rgba(232, 224, 204, 0.62);
+  font-size: 0.68rem;
+}
+
+.consoleStatePill {
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--line);
+  color: #d8c68d;
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+}
+
+.consoleStates {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  margin: 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.consoleStates > span {
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  border-right: 1px solid var(--line);
+}
+
+.consoleStates > span:last-child {
+  border-right: 0;
+}
+
+.consoleStates small {
+  display: block;
+  color: var(--muted);
+  font-size: 0.5rem;
+  letter-spacing: 0.11em;
+}
+
+.consoleStates strong {
+  display: block;
+  margin-top: 0.2rem;
+  color: #e8e0cc;
+  font-size: 0.64rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+@media (max-width: 720px) {
+  .consoleTopbar {
+    grid-template-columns: 1fr;
+    top: 0;
+  }
+
+  .consoleStatePill {
+    width: fit-content;
+  }
+
+  .consoleStates {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .consoleStates > span:nth-child(2) {
+    border-right: 0;
+  }
+
+  .consoleStates > span:nth-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+}
