@@ -907,6 +907,67 @@
 .consolePanel h2 { margin: 0 0 0.8rem; font-size: clamp(1rem, 1.6vw, 1.3rem); font-weight: 500; }
 .consolePanel > p { max-width: 780px; line-height: 1.6; }
 .consolePanel h3 { font-size: 0.8rem; font-weight: 500; }
+
+.currentActionHeading {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-bottom: 0.35rem;
+}
+
+.currentActionHeading .kicker {
+  margin: 0;
+}
+
+.currentActionMark {
+  width: 0.48rem;
+  height: 0.48rem;
+  flex: 0 0 auto;
+  border: 1px solid rgba(216, 198, 141, 0.72);
+  transform: rotate(45deg);
+  box-shadow: inset 0 0 0 2px rgba(9, 13, 12, 0.95);
+  background: rgba(216, 198, 141, 0.2);
+}
+
+.milestoneBlock {
+  margin-top: 1.15rem;
+  padding-top: 0.9rem;
+  border-top: 1px solid rgba(232, 224, 204, 0.1);
+}
+
+.milestoneLabel {
+  margin: 0;
+  color: rgba(232, 224, 204, 0.42);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.57rem;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.milestoneText {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.28rem 0.42rem;
+  align-items: baseline;
+  margin: 0.48rem 0 0;
+  color: rgba(232, 224, 204, 0.62);
+  font-size: 0.7rem;
+  line-height: 1.55;
+}
+
+.milestoneText time,
+.milestoneText strong {
+  color: rgba(232, 224, 204, 0.82);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.66rem;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+.milestoneSeparator {
+  color: rgba(216, 198, 141, 0.5);
+}
+
 .overviewGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; margin: 1.25rem 0; border-top: 1px solid var(--line); }
 .overviewGrid > div { padding: 0.75rem 0.8rem 0.75rem 0; border-bottom: 1px solid var(--line); }
 .overviewGrid dt { color: var(--muted); font-size: 0.62rem; }
