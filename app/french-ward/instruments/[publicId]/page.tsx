@@ -239,57 +239,6 @@ export default async function DigitalSettlementInstructionPage({
   const settlementContent = (
     <>
 
-      {displaysV2Revision ? (
-        <section className={styles.panel} aria-labelledby="revision-heading">
-          <div className={styles.sectionHeading}>
-            <span>V2</span>
-            <div>
-              <p>Institutional revision</p>
-              <h2 id="revision-heading">
-                Version 2 — Financier Revision
-              </h2>
-            </div>
-          </div>
-
-          <dl className={styles.commercialGrid}>
-            <div>
-              <dt>Buyer representative</dt>
-              <dd>
-                {DSI_V2_FINANCIER_REVISION.buyerRepresentative.name} -{" "}
-                {DSI_V2_FINANCIER_REVISION.buyerRepresentative.v2Capacity}
-              </dd>
-            </div>
-            <div className={styles.emphasis}>
-              <dt>Appointed TAP financier</dt>
-              <dd>
-                {DSI_V2_FINANCIER_REVISION.tapFinancier.name} -{" "}
-                {DSI_V2_FINANCIER_REVISION.tapFinancier.v2Capacity}
-              </dd>
-            </div>
-            <div>
-              <dt>External review participant</dt>
-              <dd>
-                {DSI_V2_FINANCIER_REVISION.externalReviewer.name} -{" "}
-                {DSI_V2_FINANCIER_REVISION.externalReviewer.loiCapacity}
-              </dd>
-            </div>
-            <div>
-              <dt>Revision source</dt>
-              <dd>
-                {DSI_V2_FINANCIER_REVISION.tapFinancier.appointmentSource}
-              </dd>
-            </div>
-          </dl>
-
-          <p className={styles.purpose}>
-            {DSI_V2_FINANCIER_REVISION.revisionBasis}
-          </p>
-          <p className={styles.evidenceBoundary}>
-            {DSI_V2_FINANCIER_REVISION.preservationBoundary}
-          </p>
-        </section>
-      ) : null}
-
       <section className={styles.settlementLayer} aria-labelledby="settlement-layer-heading">
         <div className={styles.settlementLayerHeader}>
           <div>
@@ -369,6 +318,71 @@ export default async function DigitalSettlementInstructionPage({
         )}
       </section>
 
+      <section className={styles.panel} aria-labelledby="coordinates-heading">
+        <div className={styles.sectionHeading}>
+          <span>03</span>
+          <div>
+            <p>Settlement coordinates</p>
+            <h2 id="coordinates-heading">Authorized Settlement Coordinates</h2>
+          </div>
+        </div>
+
+        <div className={styles.coordinateGrid}>
+          <div className={styles.coordinateData}>
+            <dl>
+              <div>
+                <dt>Asset</dt>
+                <dd>{instruction.settlementAsset}</dd>
+              </div>
+              <div>
+                <dt>Network</dt>
+                <dd>Ethereum (ERC-20)</dd>
+              </div>
+              <div>
+                <dt>Receiving authority</dt>
+                <dd>{instruction.receivingEntity}</dd>
+              </div>
+              <div>
+                <dt>Wallet function</dt>
+                <dd>Controlled settlement ingress</dd>
+              </div>
+            </dl>
+
+            <div className={styles.addressBlock}>
+              <p>Authorized receiving address</p>
+              <code>{instruction.receivingAddress}</code>
+              <div className={styles.addressActions}>
+                <CopySettlementAddress address={instruction.receivingAddress} />
+                <span>
+                  Fingerprint {addressFingerprint(instruction.receivingAddress)}
+                </span>
+              </div>
+            </div>
+
+            <p className={styles.axptBoundary}>
+              AXPT governs this authorization instruction and its recorded
+              transaction state. The buyer initiates the USDT transfer from its
+              own wallet or provider to the address shown; AXPT does not execute
+              the blockchain transfer on the buyer&apos;s behalf.
+            </p>
+          </div>
+
+          <figure className={styles.qr}>
+            {/* The generated data URL contains only the issued public address. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={qrCode}
+              alt="QR code for the authorized receiving address"
+            />
+            <figcaption>
+              Scan only after independently verifying the network and
+              fingerprint.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <details className={styles.consoleDisclosure}><summary>Commercial snapshot and Buyer submission</summary>
       {buyerSubmission ? (
         <section className={styles.panel} aria-labelledby="submission-heading">
           <div className={styles.sectionHeading}>
@@ -492,69 +506,59 @@ export default async function DigitalSettlementInstructionPage({
         <p className={styles.purpose}>{instruction.proceduralBasis}</p>
       </section>
 
-      <section className={styles.panel} aria-labelledby="coordinates-heading">
-        <div className={styles.sectionHeading}>
-          <span>03</span>
-          <div>
-            <p>Settlement coordinates</p>
-            <h2 id="coordinates-heading">Authorized Settlement Coordinates</h2>
-          </div>
-        </div>
+      </details>
 
-        <div className={styles.coordinateGrid}>
-          <div className={styles.coordinateData}>
-            <dl>
-              <div>
-                <dt>Asset</dt>
-                <dd>{instruction.settlementAsset}</dd>
-              </div>
-              <div>
-                <dt>Network</dt>
-                <dd>Ethereum (ERC-20)</dd>
-              </div>
-              <div>
-                <dt>Receiving authority</dt>
-                <dd>{instruction.receivingEntity}</dd>
-              </div>
-              <div>
-                <dt>Wallet function</dt>
-                <dd>Controlled settlement ingress</dd>
-              </div>
-            </dl>
-
-            <div className={styles.addressBlock}>
-              <p>Authorized receiving address</p>
-              <code>{instruction.receivingAddress}</code>
-              <div className={styles.addressActions}>
-                <CopySettlementAddress address={instruction.receivingAddress} />
-                <span>
-                  Fingerprint {addressFingerprint(instruction.receivingAddress)}
-                </span>
-              </div>
+      {displaysV2Revision ? <details className={styles.consoleDisclosure}><summary>Institutional financier revision</summary>
+        <section className={styles.panel} aria-labelledby="revision-heading">
+          <div className={styles.sectionHeading}>
+            <span>V2</span>
+            <div>
+              <p>Institutional revision</p>
+              <h2 id="revision-heading">
+                Version 2 — Financier Revision
+              </h2>
             </div>
-
-            <p className={styles.axptBoundary}>
-              AXPT governs this authorization instruction and its recorded
-              transaction state. The buyer initiates the USDT transfer from its
-              own wallet or provider to the address shown; AXPT does not execute
-              the blockchain transfer on the buyer&apos;s behalf.
-            </p>
           </div>
 
-          <figure className={styles.qr}>
-            {/* The generated data URL contains only the issued public address. */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={qrCode}
-              alt="QR code for the authorized receiving address"
-            />
-            <figcaption>
-              Scan only after independently verifying the network and
-              fingerprint.
-            </figcaption>
-          </figure>
-        </div>
-      </section>
+          <dl className={styles.commercialGrid}>
+            <div>
+              <dt>Buyer representative</dt>
+              <dd>
+                {DSI_V2_FINANCIER_REVISION.buyerRepresentative.name} -{" "}
+                {DSI_V2_FINANCIER_REVISION.buyerRepresentative.v2Capacity}
+              </dd>
+            </div>
+            <div className={styles.emphasis}>
+              <dt>Appointed TAP financier</dt>
+              <dd>
+                {DSI_V2_FINANCIER_REVISION.tapFinancier.name} -{" "}
+                {DSI_V2_FINANCIER_REVISION.tapFinancier.v2Capacity}
+              </dd>
+            </div>
+            <div>
+              <dt>External review participant</dt>
+              <dd>
+                {DSI_V2_FINANCIER_REVISION.externalReviewer.name} -{" "}
+                {DSI_V2_FINANCIER_REVISION.externalReviewer.loiCapacity}
+              </dd>
+            </div>
+            <div>
+              <dt>Revision source</dt>
+              <dd>
+                {DSI_V2_FINANCIER_REVISION.tapFinancier.appointmentSource}
+              </dd>
+            </div>
+          </dl>
+
+          <p className={styles.purpose}>
+            {DSI_V2_FINANCIER_REVISION.revisionBasis}
+          </p>
+          <p className={styles.evidenceBoundary}>
+            {DSI_V2_FINANCIER_REVISION.preservationBoundary}
+          </p>
+        </section>
+      </details> : null}
+
 
       <section className={styles.standard} aria-labelledby="standard-heading">
         <div className={`${styles.sectionHeading} ${styles.standardHeading}`}>
