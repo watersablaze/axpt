@@ -695,7 +695,10 @@ export default async function DigitalSettlementInstructionPage({
             <div className={styles.consoleContent}>
             {selectedView === "overview" ? (
               <section className={styles.consolePanel} aria-label="Transaction overview">
-                <p className={styles.kicker}>Current action required</p>
+                <div className={styles.currentActionHeading}>
+                  <span className={styles.currentActionMark} aria-hidden="true" />
+                  <p className={styles.kicker}>Current action required</p>
+                </div>
                 <h2>Review the SPA and Commercial Schedule and confirm the Buyer signatory.</h2>
                 <p>These are review copies only and are not released for execution. Corey Keller is named as Buyer representative; confirm his execution authority or provide an authorized alternate before French-Ward releases execution copies.</p>
                 <dl className={styles.overviewGrid}>
@@ -706,8 +709,16 @@ export default async function DigitalSettlementInstructionPage({
                   <div><dt>SPA / Commercial Schedule</dt><dd>Review copies · not for execution</dd></div>
                   <div><dt>DSI</dt><dd>{formatStatus(instruction.settlementStatus)}</dd></div>
                 </dl>
-                <h3>Most recent recorded milestones</h3>
-                <p>DSI issued {instruction.issuedAt.toLocaleDateString("en-US", { dateStyle: "medium", timeZone: "UTC" })} · Current settlement state: {formatStatus(instruction.settlementStatus)}.</p>
+                <div className={styles.milestoneBlock}>
+                  <p className={styles.milestoneLabel}>Most recent recorded milestone</p>
+                  <p className={styles.milestoneText}>
+                    <span>DSI issued</span>
+                    <time>{instruction.issuedAt.toLocaleDateString("en-US", { dateStyle: "medium", timeZone: "UTC" })}</time>
+                    <span className={styles.milestoneSeparator} aria-hidden="true">·</span>
+                    <span>Settlement state</span>
+                    <strong>{formatStatus(instruction.settlementStatus)}</strong>
+                  </p>
+                </div>
               </section>
             ) : null}
             {selectedView === "documents" ? (
