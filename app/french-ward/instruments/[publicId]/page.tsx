@@ -256,25 +256,6 @@ export default async function DigitalSettlementInstructionPage({
         </div>
       </section>
 
-      <section className={styles.intro} aria-labelledby="instruction-heading">
-        <div>
-          <p className={styles.kicker}>Current settlement requirement</p>
-          <h2 id="instruction-heading">
-            Verification Requirement
-          </h2>
-        </div>
-        <dl className={styles.statusPair}>
-          <div>
-            <dt>Instruction</dt>
-            <dd>Issued</dd>
-          </div>
-          <div>
-            <dt>Settlement</dt>
-            <dd>{formatStatus(instruction.settlementStatus)}</dd>
-          </div>
-        </dl>
-      </section>
-
       <section className={styles.authorityBand} aria-label="Transfer authority">
         {verificationOnly ? (
           <>
@@ -560,6 +541,8 @@ export default async function DigitalSettlementInstructionPage({
       </details> : null}
 
 
+      <details className={styles.consoleDisclosure}>
+        <summary>Recognition and issuance details</summary>
       <section className={styles.standard} aria-labelledby="standard-heading">
         <div className={`${styles.sectionHeading} ${styles.standardHeading}`}>
           <span>04</span>
@@ -594,6 +577,7 @@ export default async function DigitalSettlementInstructionPage({
           <span>{instruction.reference}</span>
         </footer>
       </section>
+      </details>
     </>
   );
 
@@ -628,6 +612,7 @@ export default async function DigitalSettlementInstructionPage({
             : "Authorized Settlement Instrument"
       }
       showStatusRail={false}
+      hideHero={isInderakshTransaction}
       density="document"
     >
       {isVisualPreview && !isBuyerViewPreview ? (
