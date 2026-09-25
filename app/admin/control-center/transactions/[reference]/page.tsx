@@ -74,6 +74,23 @@ export default async function TransactionOperatorPage({
     }
   }
 
+  let settlementControl: Awaited<ReturnType<typeof DigitalSettlementOperatorPage>> | null = null;
+  let settlementControlError: string | null = null;
+
+  if (view === "settlement") {
+    try {
+      settlementControl = await DigitalSettlementOperatorPage({
+        params: Promise.resolve({ reference: DSI_REFERENCE }),
+      });
+    } catch (error) {
+      console.error("[TRANSACTION_SETTLEMENT_CONTROL_LOAD_FAILED]", error);
+      settlementControlError =
+        error instanceof Error
+          ? error.message
+          : "Settlement Control is presently unavailable.";
+    }
+  }
+
   return (
     <div className="min-h-screen bg-[#090d0c] text-stone-100">
       <header className="sticky top-0 z-30 border-b border-stone-800 bg-[#090d0c]/95 backdrop-blur">
@@ -296,10 +313,27 @@ export default async function TransactionOperatorPage({
           ) : null}
 
           {view === "settlement" ? (
-            <section aria-label="Settlement control">
-              <DigitalSettlementOperatorPage
-                params={Promise.resolve({ reference: DSI_REFERENCE })}
-              />
+            <section className="space-y-4" aria-label="Settlement control">
+              {settlementControlError ? (
+                <div className="rounded-lg border border-rose-900/60 bg-rose-950/10 p-4">
+                  <p className="text-[10px] uppercase tracking-[0.16em] text-rose-300">
+                    Settlement Control unavailable
+                  </p>
+                  <p className="mt-2 text-xs leading-5 text-stone-400">
+                    The transaction shell remains authoritative and no settlement state
+                    has been changed. Legacy DSI control failed closed:
+                    {" "}{settlementControlError}
+                  </p>
+                  <Link
+                    href={`/admin/control-center/instruments/digital-settlement/${DSI_REFERENCE}`}
+                    className="mt-3 inline-flex rounded border border-stone-700 px-3 py-2 text-[10px] uppercase tracking-wide text-stone-300"
+                  >
+                    Open legacy DSI operator surface
+                  </Link>
+                </div>
+              ) : (
+                settlementControl
+              )}
             </section>
           ) : null}
 
