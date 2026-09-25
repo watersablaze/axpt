@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import DigitalSettlementOperatorPage from "../../instruments/digital-settlement/[reference]/page";
-import { TransactionDocumentUploadControl } from "@/components/admin/transactions/TransactionDocumentUploadControl";
+import { TransactionDocumentUploadControl } from "@/components/admin/transactions/TransactionDocumentUploadControl";\nimport { BuyerAccessReissueControl } from "@/components/admin/transactions/BuyerAccessReissueControl";
 import {
   INDERAKSH_TRANSACTION_CONTINUITY,
   INDERAKSH_TRANSACTION_REFERENCE,
@@ -352,7 +352,7 @@ export default async function TransactionOperatorPage({
                 className="inline-flex rounded border border-stone-700 px-3 py-2 text-[10px] uppercase tracking-wide text-stone-300"
               >
                 Open DSI operator surface
-              </Link>
+              </Link>\n              <BuyerAccessReissueControl reference={DSI_REFERENCE} />
             </section>
           ) : null}
 
