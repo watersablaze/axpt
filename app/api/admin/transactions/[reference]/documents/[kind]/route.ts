@@ -68,7 +68,12 @@ export async function GET(
   const record = await loadIssuedTransactionDocument(reference, kind);
   const store = privateTransactionDocumentStore();
 
-  if (!record || !store || record.status !== "ISSUED") {
+  if (
+    !record ||
+    !store ||
+    record.status === "DRAFT" ||
+    record.status === "SUPERSEDED"
+  ) {
     return NextResponse.json(
       { error: "Document attachment is not yet available." },
       { status: 404, headers },
