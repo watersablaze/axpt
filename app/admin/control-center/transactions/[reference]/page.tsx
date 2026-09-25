@@ -378,19 +378,82 @@ export default async function TransactionOperatorPage({
           ) : null}
 
           {view === "history" ? (
-            <section className="space-y-3">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-stone-500">History</p>
-              <h2 className="text-base font-medium text-white">Transaction event register</h2>
-              <p className="max-w-3xl text-xs leading-5 text-stone-500">
-                DSI history remains available on the established operator surface. Document execution
-                events will join this workspace after the governed document record is connected.
-              </p>
-              <Link
-                href={`/admin/control-center/instruments/digital-settlement/${DSI_REFERENCE}`}
-                className="inline-flex rounded border border-stone-700 px-3 py-2 text-[10px] uppercase tracking-wide text-stone-300"
-              >
-                Open DSI operator surface
-              </Link>
+            <section className="space-y-4">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em] text-stone-500">
+                  History
+                </p>
+                <h2 className="mt-1 text-base font-medium text-white">
+                  Transaction event register
+                </h2>
+                <p className="mt-2 max-w-3xl text-xs leading-5 text-stone-500">
+                  The transaction register now carries the first canonical milestone directly.
+                  Settlement controls remain fail-closed until the Preview database is reconciled
+                  to the verification-recognition schema.
+                </p>
+              </div>
+
+              <div className="overflow-hidden rounded-lg border border-stone-800">
+                <article className="grid gap-3 border-b border-stone-800 bg-black/20 p-4 md:grid-cols-[150px_minmax(0,1fr)_auto] md:items-start">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wide text-stone-500">
+                      25 Sep 2026
+                    </p>
+                    <p className="mt-1 text-[11px] text-stone-600">
+                      Initial settlement event
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm text-white">
+                      Digital Settlement Instrument issued
+                    </h3>
+                    <p className="mt-1 font-mono text-[11px] text-stone-400">
+                      {DSI_REFERENCE}
+                    </p>
+                    <p className="mt-2 max-w-2xl text-xs leading-5 text-stone-500">
+                      French-Ward established the transaction-specific DSI and placed the
+                      settlement lifecycle at AWAITING VERIFICATION TRANSFER. No remaining
+                      TAP authority was created by issuance.
+                    </p>
+                  </div>
+
+                  <div className="text-[10px] uppercase tracking-wide text-cyan-300">
+                    Recorded
+                  </div>
+                </article>
+
+                <article className="grid gap-3 bg-black/20 p-4 md:grid-cols-[150px_minmax(0,1fr)_auto] md:items-start">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wide text-stone-500">
+                      Current
+                    </p>
+                    <p className="mt-1 text-[11px] text-stone-600">
+                      Document phase
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm text-white">
+                      Counterparty review opened
+                    </h3>
+                    <p className="mt-2 max-w-2xl text-xs leading-5 text-stone-500">
+                      SPA and Commercial Schedule are staged as REVIEW COPY · NOT FOR EXECUTION.
+                      Execution copies have not been released and Buyer signatory authority
+                      remains to be confirmed.
+                    </p>
+                  </div>
+
+                  <div className="text-[10px] uppercase tracking-wide text-amber-300">
+                    Active
+                  </div>
+                </article>
+              </div>
+
+              <div className="rounded border border-stone-800 bg-black/10 p-3 text-xs leading-5 text-stone-500">
+                The legacy DSI operator shortcut is intentionally withheld here while its
+                verification-recognition database fields are absent from the Preview database.
+              </div>
             </section>
           ) : null}
         </main>
