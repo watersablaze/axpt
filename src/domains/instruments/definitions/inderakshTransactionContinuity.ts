@@ -13,8 +13,8 @@ export const INDERAKSH_TRANSACTION_CONTINUITY = {
   transactionReference: INDERAKSH_TRANSACTION_REFERENCE,
   transactionLabel: "Initial 50 KG Gold Doré Transaction",
   currentState: {
-    transaction: "AWAITING EXECUTION",
-    documents: "ISSUED",
+    transaction: "COUNTERPARTY REVIEW",
+    documents: "REVIEW",
     settlement: "ACTIVE",
   },
   governingDocuments: [
@@ -24,8 +24,8 @@ export const INDERAKSH_TRANSACTION_CONTINUITY = {
       reference: INDERAKSH_SPA_REFERENCE,
       role: "Governing agreement",
       fileName: "SPA-FWI-IGR-AU-2026-017.pdf",
-      status: "AWAITING EXECUTION",
-      publicationState: "ISSUED",
+      status: "NOT FOR EXECUTION",
+      publicationState: "REVIEW COPY",
     },
     {
       kind: "COMMERCIAL_SCHEDULE",
@@ -33,8 +33,8 @@ export const INDERAKSH_TRANSACTION_CONTINUITY = {
       reference: INDERAKSH_COMMERCIAL_SCHEDULE_REFERENCE,
       role: "Commercial configuration",
       fileName: "CP-FWI-IGR-AU-2026-017.pdf",
-      status: "AWAITING EXECUTION",
-      publicationState: "ISSUED",
+      status: "NOT FOR EXECUTION",
+      publicationState: "REVIEW COPY",
     },
     {
       kind: "DSI",
@@ -63,7 +63,7 @@ export const INDERAKSH_TRANSACTION_CONTINUITY = {
       label: "Execution process",
       status: "EXTERNAL EXECUTION",
       body:
-        "The SPA and Commercial Schedule are issued through this controlled transaction environment. Formal execution remains external to AXPT for this release; executed counterparts are returned to French-Ward and incorporated into the governed transaction record.",
+        "The SPA and Commercial Schedule are first released through this controlled transaction environment as review copies marked NOT FOR EXECUTION. Following counterparty review and signatory confirmation, French-Ward separately releases execution copies for signature. Executed counterparts are then returned to French-Ward and incorporated into the governed transaction record.",
     },
   ],
   lifecycle: [
