@@ -94,6 +94,15 @@ export async function POST(
             select: {
               id: true,
               currentVersion: true,
+              versions: {
+                where: {
+                  number: DSI_V2_VERSION,
+                },
+                select: {
+                  id: true,
+                  number: true,
+                },
+              },
             },
           });
 
@@ -109,10 +118,19 @@ export async function POST(
           );
         }
 
+        const currentVersion = instrument.versions[0];
+
+        if (!currentVersion) {
+          throw new Error(
+            "[DSI_BUYER_ACCESS_CURRENT_VERSION_NOT_FOUND]",
+          );
+        }
+
         const activeGrants =
           await tx.instrumentAccessGrant.findMany({
             where: {
               instrumentId: instrument.id,
+              instrumentVersionId: currentVersion.id,
               recipientName: buyerPlan.recipientName,
               accessLevel: buyerPlan.accessLevel,
               revokedAt: null,
