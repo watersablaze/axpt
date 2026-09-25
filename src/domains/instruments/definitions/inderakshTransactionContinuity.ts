@@ -14,24 +14,47 @@ export const INDERAKSH_TRANSACTION_CONTINUITY = {
       title: "Sales & Purchase Agreement",
       reference: INDERAKSH_SPA_REFERENCE,
       role: "Governing agreement",
-      status: "EXECUTION DRAFT",
-      publicationState: "PENDING PUBLICATION",
+      fileName: "SPA-FWI-IGR-AU-2026-017.pdf",
+      status: "FINAL REVIEW",
+      publicationState: "SOURCE RECEIVED",
     },
     {
       kind: "COMMERCIAL_SCHEDULE",
       title: "Commercial Schedule",
       reference: INDERAKSH_COMMERCIAL_SCHEDULE_REFERENCE,
       role: "Commercial configuration",
-      status: "EXECUTION DRAFT",
-      publicationState: "PENDING PUBLICATION",
+      fileName: "CP-FWI-IGR-AU-2026-017.pdf",
+      status: "FINAL REVIEW",
+      publicationState: "SOURCE RECEIVED",
     },
     {
       kind: "DSI",
       title: "Digital Settlement Instrument",
       reference: "FW-DSI-2026-001",
       role: "Settlement continuity and recognition record",
+      fileName: null,
       status: "ACTIVE",
       publicationState: "ISSUED",
+    },
+  ],
+  transactionNotices: [
+    {
+      label: "Buyer signatory confirmation",
+      status: "CONFIRMATION REQUIRED",
+      body:
+        "Corey Keller is pre-populated for transaction continuity based on his execution of the Buyer LOI and identified role as Vice President / Buyer Representative. Buyer must confirm his authority to execute the SPA and Commercial Schedule, or provide the duly authorized alternate signatory before execution.",
+    },
+    {
+      label: "Delivery term clarification",
+      status: "CIP / AIR FREIGHT",
+      body:
+        "The Buyer LOI used CIF as preliminary insured-delivery terminology. The definitive Commercial Schedule uses CIP Inderaksh Gold Refinery FZ-LLC, Dubai, United Arab Emirates, Incoterms® 2020 to reflect the Seller-coordinated international air-freight and insurance structure.",
+    },
+    {
+      label: "Execution process",
+      status: "EXTERNAL EXECUTION",
+      body:
+        "AXPT presently governs controlled issuance, access, transaction continuity, and settlement-state recording. Formal document execution remains external to AXPT for this release; executed counterparts are subsequently recorded in the transaction environment.",
     },
   ],
   lifecycle: [
