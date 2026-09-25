@@ -24,7 +24,6 @@ import {
   INDERAKSH_TRANSACTION_CONTINUITY,
   resolveInderakshLifecycleStage,
 } from "@/domains/instruments/definitions/inderakshTransactionContinuity";
-import { TREASURY_WALLETS } from "@/lib/treasury/config";
 import { loadIssuedDigitalSettlementInstruction } from "@/domains/instruments/queries/loadIssuedDigitalSettlementInstruction";
 import { resolveInstrumentAccess } from "@/domains/instruments/queries/resolveInstrumentAccess";
 import styles from "./page.module.css";
@@ -54,6 +53,19 @@ function formatStatus(value: string) {
   return value.replaceAll("_", " ");
 }
 
+const SYNTHETIC_PREVIEW_RECEIVING_ADDRESS =
+  "0x000000000000000000000000000000000000dEaD" as const;
+
+const SYNTHETIC_PREVIEW_WALLET_ID =
+  "__synthetic_preview_wallet__" as const;
+
+function canRenderSyntheticPreviewWithoutSession() {
+  return (
+    process.env.VERCEL_ENV === "preview" ||
+    process.env.NODE_ENV === "development"
+  );
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "French-Ward Digital Settlement Instruction | AXPT",
@@ -66,14 +78,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 function createPreviewInstruction(version: 1 | 2) {
   const definition = createDigitalSettlementV1Definition(INDERAKSH_LEGAL_NAME);
-
-  const operationsWallet = TREASURY_WALLETS.find(
-    (wallet) => wallet.role === "operations",
-  );
-
-  if (!operationsWallet) {
-    throw new Error("[DSI_PREVIEW_OPERATIONS_WALLET_NOT_CONFIGURED]");
-  }
 
   return {
     publicId: "__preview__",
@@ -102,9 +106,9 @@ function createPreviewInstruction(version: 1 | 2) {
     settlementAsset: definition.settlement.settlementAsset,
     settlementNetwork: definition.settlement.settlementNetwork,
     receivingEntity: definition.settlement.receivingEntity,
-    receivingAddress: operationsWallet.address,
-    receivingWalletId: operationsWallet.id,
-    receivingWalletRole: operationsWallet.role,
+    receivingAddress: SYNTHETIC_PREVIEW_RECEIVING_ADDRESS,
+    receivingWalletId: SYNTHETIC_PREVIEW_WALLET_ID,
+    receivingWalletRole: "synthetic-preview",
     verificationAmountUsdt: definition.settlement.verificationAmountUsdt,
     verificationTxHash: null,
     verificationConfirmedAt: null,
@@ -127,10 +131,15 @@ export default async function DigitalSettlementInstructionPage({
   let isV2Preview = false;
 
   if (previewRequested) {
-    const principal = await getPrincipal();
+    const sessionlessPreviewAllowed =
+      canRenderSyntheticPreviewWithoutSession();
 
-    if (!principal || !hasAdminAccess(principal)) {
-      notFound();
+    if (!sessionlessPreviewAllowed) {
+      const principal = await getPrincipal();
+
+      if (!principal || !hasAdminAccess(principal)) {
+        notFound();
+      }
     }
 
     isVisualPreview = true;
@@ -255,9 +264,10 @@ export default async function DigitalSettlementInstructionPage({
           {isV2Preview
             ? " V2 financier revision"
             : " canonical initial issuance state"}{" "}
-          but carries no settlement authority. No instrument version, private
-          access grant, email, or buyer authorization has been created. Do not
-          transmit value.
+          but carries no settlement authority. Preview deployments use a
+          synthetic receiving address and do not expose live settlement
+          coordinates. No instrument version, private access grant, email, or
+          buyer authorization has been created. Do not transmit value.
         </section>
       ) : null}
 
