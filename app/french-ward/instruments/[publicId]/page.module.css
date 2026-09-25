@@ -906,7 +906,26 @@
 .overviewGrid dt { color: var(--muted); font-size: 0.62rem; }
 .overviewGrid dd { margin: 0.35rem 0 0; font-size: 0.78rem; overflow-wrap: anywhere; }
 .documentActions { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
-.documentActions button { border: 1px solid var(--line); background: transparent; color: var(--muted); padding: 0.35rem 0.65rem; cursor: not-allowed; }
+.documentActions button,
+.documentActions a {
+  border: 1px solid var(--line);
+  background: transparent;
+  padding: 0.35rem 0.65rem;
+  font-size: 0.68rem;
+  text-decoration: none;
+}
+.documentActions a {
+  color: #e8e0cc;
+  cursor: pointer;
+}
+.documentActions a:hover {
+  border-color: #d8c68d;
+  color: #d8c68d;
+}
+.documentActions button {
+  color: var(--muted);
+  cursor: not-allowed;
+}
 @media (max-width: 720px) {
   .consoleLayout { display: block; }
   .consoleNavigation { position: static; flex-direction: row; overflow-x: auto; margin-bottom: 1rem; border-bottom: 1px solid var(--line); }
