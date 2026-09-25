@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { notFound } from "next/navigation";
 import QRCode from "qrcode";
 
@@ -20,7 +20,10 @@ import {
   DSI_V2_FINANCIER_REVISION,
   DSI_V2_VERSION,
 } from "@/domains/instruments/definitions/digitalSettlementV2FinancierRevision";
-import { TREASURY_WALLETS } from "@/lib/treasury/config";
+import {
+  INDERAKSH_TRANSACTION_CONTINUITY,
+  resolveInderakshLifecycleStage,
+} from "@/domains/instruments/definitions/inderakshTransactionContinuity";
 import { loadIssuedDigitalSettlementInstruction } from "@/domains/instruments/queries/loadIssuedDigitalSettlementInstruction";
 import { resolveInstrumentAccess } from "@/domains/instruments/queries/resolveInstrumentAccess";
 import styles from "./page.module.css";
@@ -50,6 +53,24 @@ function formatStatus(value: string) {
   return value.replaceAll("_", " ");
 }
 
+const SYNTHETIC_PREVIEW_RECEIVING_ADDRESS =
+  "0x000000000000000000000000000000000000dEaD" as const;
+
+const SYNTHETIC_PREVIEW_WALLET_ID =
+  "__synthetic_preview_wallet__" as const;
+
+function canRenderSyntheticPreviewWithoutSession(hostname: string) {
+  const normalizedHost = hostname.toLowerCase();
+
+  return (
+    process.env.NODE_ENV === "development" ||
+    (
+      normalizedHost.endsWith(".vercel.app") &&
+      normalizedHost.includes("-git-")
+    )
+  );
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "French-Ward Digital Settlement Instruction | AXPT",
@@ -62,14 +83,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 function createPreviewInstruction(version: 1 | 2) {
   const definition = createDigitalSettlementV1Definition(INDERAKSH_LEGAL_NAME);
-
-  const operationsWallet = TREASURY_WALLETS.find(
-    (wallet) => wallet.role === "operations",
-  );
-
-  if (!operationsWallet) {
-    throw new Error("[DSI_PREVIEW_OPERATIONS_WALLET_NOT_CONFIGURED]");
-  }
 
   return {
     publicId: "__preview__",
@@ -98,9 +111,9 @@ function createPreviewInstruction(version: 1 | 2) {
     settlementAsset: definition.settlement.settlementAsset,
     settlementNetwork: definition.settlement.settlementNetwork,
     receivingEntity: definition.settlement.receivingEntity,
-    receivingAddress: operationsWallet.address,
-    receivingWalletId: operationsWallet.id,
-    receivingWalletRole: operationsWallet.role,
+    receivingAddress: SYNTHETIC_PREVIEW_RECEIVING_ADDRESS,
+    receivingWalletId: SYNTHETIC_PREVIEW_WALLET_ID,
+    receivingWalletRole: "synthetic-preview",
     verificationAmountUsdt: definition.settlement.verificationAmountUsdt,
     verificationTxHash: null,
     verificationConfirmedAt: null,
@@ -123,10 +136,16 @@ export default async function DigitalSettlementInstructionPage({
   let isV2Preview = false;
 
   if (previewRequested) {
-    const principal = await getPrincipal();
+    const requestHost = (await headers()).get("host") ?? "";
+    const sessionlessPreviewAllowed =
+      canRenderSyntheticPreviewWithoutSession(requestHost);
 
-    if (!principal || !hasAdminAccess(principal)) {
-      notFound();
+    if (!sessionlessPreviewAllowed) {
+      const principal = await getPrincipal();
+
+      if (!principal || !hasAdminAccess(principal)) {
+        notFound();
+      }
     }
 
     isVisualPreview = true;
@@ -204,28 +223,53 @@ export default async function DigitalSettlementInstructionPage({
       })} USDT`
     : null;
 
-  const movements = [
-    { index: "01", label: "Buyer Submission", active: true },
-    { index: "02", label: "Commercial Basis" },
-    { index: "03", label: "Settlement Coordinates" },
-    { index: "04", label: "Recognition Standard" },
-  ];
+  const isInderakshTransaction = instruction.reference === DSI_REFERENCE;
+  const lifecycleStage = isInderakshTransaction
+    ? resolveInderakshLifecycleStage(instruction.settlementStatus)
+    : null;
+
+  const movements = isInderakshTransaction
+    ? INDERAKSH_TRANSACTION_CONTINUITY.lifecycle.map((stage) => ({
+        index: stage.index,
+        label: stage.label,
+        active: stage.id === lifecycleStage,
+      }))
+    : [
+        { index: "01", label: "Buyer Submission", active: true },
+        { index: "02", label: "Commercial Basis" },
+        { index: "03", label: "Settlement Coordinates" },
+        { index: "04", label: "Recognition Standard" },
+      ];
 
   return (
     <InstrumentShell
-      eyebrow="French-Ward, Inc. / Controlled Settlement Instrument"
-      title="Digital Settlement Instruction"
-      subtitle="Good-Faith Transaction Authorization Payment / Settlement Coordinates"
-      reference={instruction.reference}
-      version={`V${instruction.versionNumber}`}
+      eyebrow="French-Ward, Inc. / Controlled Transaction Environment"
+      title={isInderakshTransaction ? "Transaction Record" : "Digital Settlement Instruction"}
+      subtitle={
+        isInderakshTransaction
+          ? "Initial 50 KG Gold Doré / Governing Documents, Settlement Authority + Transaction Continuity"
+          : "Good-Faith Transaction Authorization Payment / Settlement Coordinates"
+      }
+      reference={
+        isInderakshTransaction
+          ? INDERAKSH_TRANSACTION_CONTINUITY.transactionReference
+          : instruction.reference
+      }
+      version={isInderakshTransaction ? "V1" : `V${instruction.versionNumber}`}
       status={
-        isVisualPreview && !isBuyerViewPreview ? "VISUAL REVIEW" : "ISSUED"
+        isVisualPreview && !isBuyerViewPreview
+          ? "VISUAL REVIEW"
+          : isInderakshTransaction
+            ? INDERAKSH_TRANSACTION_CONTINUITY.currentState.transaction
+            : "ISSUED"
       }
       movements={movements}
       classificationLabel={
         isVisualPreview && !isBuyerViewPreview
           ? "Synthetic Visual Review Fixture"
-          : "Authorized Settlement Instrument"
+          : isInderakshTransaction
+            ? "Private Governed Transaction Record"
+            : "Authorized Settlement Instrument"
       }
       showStatusRail={false}
       density="document"
@@ -236,10 +280,138 @@ export default async function DigitalSettlementInstructionPage({
           {isV2Preview
             ? " V2 financier revision"
             : " canonical initial issuance state"}{" "}
-          but carries no settlement authority. No instrument version, private
-          access grant, email, or buyer authorization has been created. Do not
-          transmit value.
+          but carries no settlement authority. Preview deployments use a
+          synthetic receiving address and do not expose live settlement
+          coordinates. No instrument version, private access grant, email, or
+          buyer authorization has been created. Do not transmit value.
         </section>
+      ) : null}
+
+      {isInderakshTransaction ? (
+        <>
+          <section className={styles.transactionAuthority} aria-labelledby="transaction-authority-heading">
+            <div>
+              <p className={styles.kicker}>Transaction authority</p>
+              <h2 id="transaction-authority-heading">
+                One governed record for agreement, settlement and performance
+              </h2>
+              <p>
+                This environment is the authoritative transaction home for{" "}
+                {INDERAKSH_TRANSACTION_CONTINUITY.transactionLabel}. The SPA
+                governs the legal relationship, the Commercial Schedule fixes the
+                transaction-specific commercial configuration, and the DSI operates
+                as the continuing settlement and recognition layer.
+              </p>
+            </div>
+            <dl className={styles.transactionStateGrid}>
+              <div>
+                <dt>Transaction reference</dt>
+                <dd>{INDERAKSH_TRANSACTION_CONTINUITY.transactionReference}</dd>
+              </div>
+              <div>
+                <dt>Document state</dt>
+                <dd>{INDERAKSH_TRANSACTION_CONTINUITY.currentState.documents}</dd>
+              </div>
+              <div>
+                <dt>Execution state</dt>
+                <dd>{INDERAKSH_TRANSACTION_CONTINUITY.currentState.transaction}</dd>
+              </div>
+              <div>
+                <dt>Settlement layer</dt>
+                <dd>{INDERAKSH_TRANSACTION_CONTINUITY.currentState.settlement}</dd>
+              </div>
+            </dl>
+          </section>
+
+          <section className={styles.panel} aria-labelledby="governing-documents-heading">
+            <div className={styles.sectionHeading}>
+              <span>00</span>
+              <div>
+                <p>Governing documents</p>
+                <h2 id="governing-documents-heading">
+                  Transaction instruments and document authority
+                </h2>
+              </div>
+            </div>
+
+            <div className={styles.documentRegister}>
+              {INDERAKSH_TRANSACTION_CONTINUITY.governingDocuments.map((document) => (
+                <article key={document.reference} className={styles.documentRecord}>
+                  <div>
+                    <p>{document.role}</p>
+                    <h3>{document.title}</h3>
+                    <code>{document.reference}</code>
+                    {"fileName" in document && document.fileName ? (
+                      <small className={styles.documentFileName}>{document.fileName}</small>
+                    ) : null}
+                  </div>
+                  <div className={styles.documentState}>
+                    <span>{document.status}</span>
+                    <small>{document.publicationState}</small>
+                  </div>
+                </article>
+              ))}
+            </div>
+
+            <p className={styles.evidenceBoundary}>
+              The SPA and Commercial Schedule establish the governing and commercial
+              baseline and are issued for execution. The DSI does not replace either
+              document; it carries the authenticated settlement, recognition,
+              reconciliation, and closure state of the same governed Transaction.
+            </p>
+          </section>
+
+          <section className={styles.panel} aria-labelledby="transaction-notices-heading">
+            <div className={styles.sectionHeading}>
+              <span>!</span>
+              <div>
+                <p>Transaction notices</p>
+                <h2 id="transaction-notices-heading">
+                  Execution and delivery clarifications
+                </h2>
+              </div>
+            </div>
+
+            <div className={styles.noticeRegister}>
+              {INDERAKSH_TRANSACTION_CONTINUITY.transactionNotices.map((notice) => (
+                <article key={notice.label} className={styles.noticeRecord}>
+                  <div>
+                    <h3>{notice.label}</h3>
+                    <p>{notice.body}</p>
+                  </div>
+                  <span>{notice.status}</span>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section className={styles.panel} aria-labelledby="continuity-heading">
+            <div className={styles.sectionHeading}>
+              <span>↳</span>
+              <div>
+                <p>Transaction continuity</p>
+                <h2 id="continuity-heading">
+                  One transaction record from agreement through closure
+                </h2>
+              </div>
+            </div>
+
+            <ol className={styles.lifecycleRail}>
+              {INDERAKSH_TRANSACTION_CONTINUITY.lifecycle.map((stage) => (
+                <li
+                  key={stage.id}
+                  className={stage.id === lifecycleStage ? styles.lifecycleActive : undefined}
+                >
+                  <span>{stage.index}</span>
+                  <div>
+                    <strong>{stage.label}</strong>
+                    <p>{stage.description}</p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+          </section>
+        </>
       ) : null}
 
       {displaysV2Revision ? (
@@ -293,9 +465,26 @@ export default async function DigitalSettlementInstructionPage({
         </section>
       ) : null}
 
+      <section className={styles.settlementLayer} aria-labelledby="settlement-layer-heading">
+        <div className={styles.settlementLayerHeader}>
+          <div>
+            <p className={styles.kicker}>Settlement layer</p>
+            <h2 id="settlement-layer-heading">Digital Settlement Instrument</h2>
+            <p>
+              {instruction.reference} · continuing settlement, payment-routing,
+              recognition and reconciliation authority for this Transaction.
+            </p>
+          </div>
+          <div className={styles.settlementLayerBadge}>
+            <span>DSI</span>
+            <strong>{formatStatus(instruction.settlementStatus)}</strong>
+          </div>
+        </div>
+      </section>
+
       <section className={styles.intro} aria-labelledby="instruction-heading">
         <div>
-          <p className={styles.kicker}>Verification requirement</p>
+          <p className={styles.kicker}>Current settlement requirement</p>
           <h2 id="instruction-heading">
             Verification Requirement
           </h2>
