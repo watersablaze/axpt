@@ -11,6 +11,7 @@ type Preview = {
     heading: string;
     authority: string;
     lines: readonly string[];
+    html: string;
   };
   internal: {
     to: readonly string[];
@@ -18,6 +19,7 @@ type Preview = {
     heading: string;
     authority: string;
     lines: readonly string[];
+    html: string;
   };
   documents: {
     spa: {
@@ -40,6 +42,7 @@ export function TransactionReviewReleaseControl({
 }: Props) {
   const [accessUrl, setAccessUrl] = useState("");
   const [preview, setPreview] = useState<Preview | null>(null);
+  const [renderedPreview, setRenderedPreview] = useState<"buyer" | "internal">("buyer");
   const [busy, setBusy] = useState<"preview" | "send" | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -200,53 +203,110 @@ export function TransactionReviewReleaseControl({
       </div>
 
       {preview ? (
-        <div className="mt-4 grid gap-3 xl:grid-cols-2">
-          <article className="rounded border border-stone-800 bg-black/25 p-4">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="text-[10px] uppercase tracking-wide text-stone-500">
-                Buyer preview
+        <div className="mt-4 space-y-4">
+          <div className="grid gap-3 xl:grid-cols-2">
+            <article className="rounded border border-stone-800 bg-black/25 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <p className="text-[10px] uppercase tracking-wide text-stone-500">
+                  Buyer preview
+                </p>
+                <span className="text-[9px] uppercase tracking-wide text-cyan-300">
+                  {preview.deliveryMode === "send"
+                    ? "Live send enabled"
+                    : "Log mode only"}
+                </span>
+              </div>
+              <p className="mt-2 text-xs text-stone-500">
+                To: {preview.buyer.to}
               </p>
-              <span className="text-[9px] uppercase tracking-wide text-cyan-300">
-                {preview.deliveryMode === "send"
-                  ? "Live send enabled"
-                  : "Log mode only"}
-              </span>
-            </div>
-            <p className="mt-2 text-xs text-stone-500">
-              To: {preview.buyer.to}
-            </p>
-            <h4 className="mt-2 text-sm text-white">
-              {preview.buyer.subject}
-            </h4>
-            <p className="mt-2 text-[10px] uppercase tracking-wide text-amber-300">
-              {preview.buyer.authority}
-            </p>
-            <div className="mt-3 space-y-2 text-xs leading-5 text-stone-400">
-              {preview.buyer.lines.map((line, index) => (
-                <p key={index}>{line}</p>
-              ))}
-            </div>
-          </article>
+              <h4 className="mt-2 text-sm text-white">
+                {preview.buyer.subject}
+              </h4>
+              <p className="mt-2 text-[10px] uppercase tracking-wide text-amber-300">
+                {preview.buyer.authority}
+              </p>
+              <div className="mt-3 space-y-2 text-xs leading-5 text-stone-400">
+                {preview.buyer.lines.map((line, index) => (
+                  <p key={index}>{line}</p>
+                ))}
+              </div>
+            </article>
 
-          <article className="rounded border border-stone-800 bg-black/25 p-4">
-            <p className="text-[10px] uppercase tracking-wide text-stone-500">
-              Internal preview
-            </p>
-            <p className="mt-2 break-all text-xs text-stone-500">
-              To: {preview.internal.to.join(", ")}
-            </p>
-            <h4 className="mt-2 text-sm text-white">
-              {preview.internal.subject}
-            </h4>
-            <p className="mt-2 text-[10px] uppercase tracking-wide text-amber-300">
-              {preview.internal.authority}
-            </p>
-            <div className="mt-3 space-y-2 text-xs leading-5 text-stone-400">
-              {preview.internal.lines.map((line, index) => (
-                <p key={index}>{line}</p>
-              ))}
+            <article className="rounded border border-stone-800 bg-black/25 p-4">
+              <p className="text-[10px] uppercase tracking-wide text-stone-500">
+                Internal preview
+              </p>
+              <p className="mt-2 break-all text-xs text-stone-500">
+                To: {preview.internal.to.join(", ")}
+              </p>
+              <h4 className="mt-2 text-sm text-white">
+                {preview.internal.subject}
+              </h4>
+              <p className="mt-2 text-[10px] uppercase tracking-wide text-amber-300">
+                {preview.internal.authority}
+              </p>
+              <div className="mt-3 space-y-2 text-xs leading-5 text-stone-400">
+                {preview.internal.lines.map((line, index) => (
+                  <p key={index}>{line}</p>
+                ))}
+              </div>
+            </article>
+          </div>
+
+          <section className="overflow-hidden rounded border border-stone-800 bg-black/25">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-stone-800 px-4 py-3">
+              <div>
+                <p className="text-[10px] uppercase tracking-wide text-stone-500">
+                  Rendered delivery preview
+                </p>
+                <p className="mt-1 text-xs text-stone-400">
+                  Exact HTML styling generated by the send path.
+                </p>
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => setRenderedPreview("buyer")}
+                  className={
+                    renderedPreview === "buyer"
+                      ? "rounded border border-amber-700 bg-amber-950/20 px-3 py-1.5 text-[10px] uppercase tracking-wide text-amber-300"
+                      : "rounded border border-stone-700 px-3 py-1.5 text-[10px] uppercase tracking-wide text-stone-400"
+                  }
+                >
+                  Buyer Email
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setRenderedPreview("internal")}
+                  className={
+                    renderedPreview === "internal"
+                      ? "rounded border border-amber-700 bg-amber-950/20 px-3 py-1.5 text-[10px] uppercase tracking-wide text-amber-300"
+                      : "rounded border border-stone-700 px-3 py-1.5 text-[10px] uppercase tracking-wide text-stone-400"
+                  }
+                >
+                  Internal Email
+                </button>
+              </div>
             </div>
-          </article>
+
+            <div className="bg-[#07110d] p-2 sm:p-4">
+              <iframe
+                title={
+                  renderedPreview === "buyer"
+                    ? "Rendered Buyer review email"
+                    : "Rendered internal review email"
+                }
+                srcDoc={
+                  renderedPreview === "buyer"
+                    ? preview.buyer.html
+                    : preview.internal.html
+                }
+                sandbox=""
+                className="h-[760px] w-full rounded border-0 bg-[#07110d]"
+              />
+            </div>
+          </section>
         </div>
       ) : null}
 
