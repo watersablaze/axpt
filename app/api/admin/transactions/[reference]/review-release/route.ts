@@ -224,6 +224,7 @@ export async function POST(
             heading: preview.buyer.heading,
             authority: preview.buyer.authority,
             lines: preview.buyer.lines,
+            html: preview.buyer.html,
           },
           internal: {
             to: preview.internal.recipients.map(
@@ -233,6 +234,7 @@ export async function POST(
             heading: preview.internal.heading,
             authority: preview.internal.authority,
             lines: preview.internal.lines,
+            html: preview.internal.html,
           },
           documents: {
             spa: {
