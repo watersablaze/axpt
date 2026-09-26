@@ -47,6 +47,7 @@ export async function resolveInstrumentAccess(params: {
       instrumentVersionId: true,
       accessLevel: true,
       recipientName: true,
+      recipientRole: true,
       expiresAt: true,
       revokedAt: true,
       firstAccessAt: true,
@@ -169,6 +170,8 @@ export async function resolveInstrumentAccess(params: {
     accessGrantId: grant.id,
     accessLevel: grant.accessLevel,
     recipientName: grant.recipientName,
+    recipientRole: grant.recipientRole,
+    instrumentVersionNumber: currentVersion.number,
     expiresAt: grant.expiresAt,
   } as const;
 }
