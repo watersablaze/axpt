@@ -53,7 +53,7 @@ function renderEmail(params: {
       ? `<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="margin:24px 0 10px;"><tr><td><a href="${href}" style="display:inline-block;background:#b99657;color:#07151c;text-decoration:none;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:13px 18px;border-radius:2px;">${escapeHtml(params.ctaLabel)}</a></td></tr></table><p style="margin:10px 0 0;color:#707b80;font-size:10px;line-height:1.55;word-break:break-all;">Private transaction console: <a href="${href}" style="color:#8f9b9f;text-decoration:underline;">${href}</a></p>`
       : "";
 
-  return `<!doctype html><html><body style="margin:0;padding:0;background:#07110d;color:#ebe7dd;font-family:Arial,Helvetica,sans-serif;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#07110d;"><tr><td align="center" style="padding:32px 14px;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:640px;border:1px solid #303b35;background:#0b1511;"><tr><td style="padding:28px 30px 16px;border-top:2px solid #b99657;"><p style="margin:0 0 12px;color:#b99657;font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;">French-Ward · Transaction Review</p><p style="margin:0 0 7px;color:#738078;font-size:10px;letter-spacing:.1em;text-transform:uppercase;">${escapeHtml(INDERAKSH_TRANSACTION_REFERENCE)}</p><h1 style="margin:0;color:#f0ece2;font-size:23px;line-height:1.25;font-weight:500;">${escapeHtml(params.heading)}</h1></td></tr><tr><td style="padding:8px 30px 0;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-top:1px solid #39443f;border-bottom:1px solid #39443f;"><tr><td style="padding:14px 0;"><p style="margin:0 0 5px;color:#758078;font-size:9px;letter-spacing:.14em;text-transform:uppercase;">Current Transaction State</p><p style="margin:0;color:#d7b76e;font-size:14px;font-weight:600;letter-spacing:.02em;">${escapeHtml(params.authority)}</p></td></tr></table></td></tr><tr><td style="padding:24px 30px 30px;">${paragraphs}${cta}</td></tr><tr><td style="border-top:1px solid #303b35;padding:18px 30px 22px;"><p style="margin:0 0 4px;color:#d8d4cb;font-size:11px;font-weight:600;">French-Ward, Inc.</p><p style="margin:0;color:#66736d;font-size:9px;letter-spacing:.1em;text-transform:uppercase;">Governed through AXPT</p></td></tr></table></td></tr></table></body></html>`;
+  return `<!doctype html><html><body style="margin:0;padding:0;background:#07110d;color:#ebe7dd;font-family:Arial,Helvetica,sans-serif;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#07110d;"><tr><td align="center" style="padding:32px 14px;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:640px;border:1px solid #303b35;background:#0b1511;"><tr><td style="padding:28px 30px 16px;border-top:2px solid #b99657;"><p style="margin:0 0 12px;color:#b99657;font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;">French-Ward · Transaction Review</p><p style="margin:0 0 7px;color:#738078;font-size:10px;letter-spacing:.1em;text-transform:uppercase;">${escapeHtml(INDERAKSH_TRANSACTION_REFERENCE)}</p><h1 style="margin:0;color:#f0ece2;font-size:23px;line-height:1.25;font-weight:500;">${escapeHtml(params.heading)}</h1></td></tr><tr><td style="padding:8px 30px 0;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-top:1px solid #39443f;border-bottom:1px solid #39443f;"><tr><td style="padding:14px 0;"><p style="margin:0 0 5px;color:#758078;font-size:9px;letter-spacing:.14em;text-transform:uppercase;">Current Transaction State</p><p style="margin:0;color:#d7b76e;font-size:14px;font-weight:600;letter-spacing:.02em;">${escapeHtml(params.authority)}</p></td></tr></table></td></tr><tr><td style="padding:24px 30px 30px;">${paragraphs}${cta}</td></tr><tr><td style="border-top:1px solid #303b35;padding:18px 30px 22px;"><p style="margin:0 0 4px;color:#d8d4cb;font-size:11px;font-weight:600;">French-Ward, Inc.</p><p style="margin:0;color:#66736d;font-size:9px;letter-spacing:.1em;text-transform:uppercase;">Transaction environment via AXPT</p></td></tr></table></td></tr></table></body></html>`;
 }
 
 export function buildTransactionReviewReleaseEmail(
@@ -67,10 +67,11 @@ export function buildTransactionReviewReleaseEmail(
     authority: "REVIEW COPY · NOT FOR EXECUTION",
     lines: [
       "Mr. Keller,",
-      "French-Ward has opened the counterparty review phase for the initial 50 KG Gold Doré transaction with Inderaksh Gold Refinery FZ-LLC.",
+      "Thank you for your continued coordination with French-Ward as we move the initial 50 KG Gold Doré transaction with Inderaksh Gold Refinery FZ-LLC into formal counterparty review.",
       `The Sales & Purchase Agreement (${INDERAKSH_SPA_REFERENCE}) and Commercial Schedule (${INDERAKSH_COMMERCIAL_SCHEDULE_REFERENCE}) are now available through your private AXPT transaction console for review. Both documents are presently issued as REVIEW COPY · NOT FOR EXECUTION.`,
       "As part of this review, please confirm that you are duly authorized to execute the SPA and Commercial Schedule on behalf of Inderaksh Gold Refinery FZ-LLC. If another individual is the authorized signatory, please provide the appropriate signatory information before execution copies are released.",
       `The Digital Settlement Instrument (${DSI_REFERENCE}) remains active separately. The present settlement authority remains limited to the 50 USDT verification transfer; the remaining TAP is not authorized.`,
+      "Please take the time you need to review the documents. If anything would benefit from clarification before execution, reply to this email and the French-Ward team will address it with you.",
     ] as const,
   };
 
@@ -81,8 +82,9 @@ export function buildTransactionReviewReleaseEmail(
     heading: "Counterparty Review Release",
     authority: "DOCUMENTS · REVIEW / EXECUTION · NOT RELEASED",
     lines: [
-      `The counterparty review package for ${INDERAKSH_TRANSACTION_REFERENCE} is ready for Buyer review.`,
-      `Governed review documents: ${INDERAKSH_SPA_REFERENCE} and ${INDERAKSH_COMMERCIAL_SCHEDULE_REFERENCE}.`,
+      `The counterparty review package for ${INDERAKSH_TRANSACTION_REFERENCE} has been released for Buyer review.`,
+      `Corey Keller has been sent his current private, individual AXPT transaction-console link directly at ${DIGITAL_SETTLEMENT_RECIPIENTS.buyer.email}. That credential is specific to his Buyer access and should not be forwarded.`,
+      `Review documents: ${INDERAKSH_SPA_REFERENCE} and ${INDERAKSH_COMMERCIAL_SCHEDULE_REFERENCE}.`,
       "Execution copies have not been released. Buyer signatory confirmation remains the next agreement gate.",
       `The DSI remains independently active at the verification-transfer stage. Current authority is limited to 50 USDT; the remaining TAP is not authorized.`,
     ] as const,
@@ -104,7 +106,7 @@ export function buildTransactionReviewReleaseEmail(
         `Private transaction console: ${input.accessUrl}`,
         "",
         "French-Ward, Inc.",
-        "Governed through AXPT",
+        "Transaction environment via AXPT",
       ].join("\n"),
     },
     internal: {
@@ -118,7 +120,7 @@ export function buildTransactionReviewReleaseEmail(
         ...internal.lines,
         "",
         "French-Ward, Inc.",
-        "Governed through AXPT",
+        "Transaction environment via AXPT",
       ].join("\n"),
     },
     releaseKey:
