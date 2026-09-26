@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import DigitalSettlementOperatorPage from "../../instruments/digital-settlement/[reference]/page";
 import { TransactionDocumentUploadControl } from "@/components/admin/transactions/TransactionDocumentUploadControl";
 import { BuyerAccessReissueControl } from "@/components/admin/transactions/BuyerAccessReissueControl";
+import { TransactionReviewReleaseControl } from "@/components/admin/transactions/TransactionReviewReleaseControl";
 import {
   INDERAKSH_TRANSACTION_CONTINUITY,
   INDERAKSH_TRANSACTION_REFERENCE,
@@ -355,6 +356,7 @@ export default async function TransactionOperatorPage({
                 Open DSI operator surface
               </Link>
               <BuyerAccessReissueControl reference={DSI_REFERENCE} />
+              <TransactionReviewReleaseControl reference={reference} />
             </section>
           ) : null}
 
