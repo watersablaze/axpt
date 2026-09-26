@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { instrumentAccessCookieName } from "@/domains/instruments/access/accessToken";
 import { DSI_REFERENCE } from "@/domains/instruments/definitions/digitalSettlementV1Definition";
+import { resolveDigitalSettlementV2Audience } from "@/domains/instruments/definitions/digitalSettlementV2Audience";
 import { INDERAKSH_TRANSACTION_REFERENCE } from "@/domains/instruments/definitions/inderakshTransactionContinuity";
 import { loadIssuedDigitalSettlementInstruction } from "@/domains/instruments/queries/loadIssuedDigitalSettlementInstruction";
 import { resolveInstrumentAccess } from "@/domains/instruments/queries/resolveInstrumentAccess";
@@ -23,7 +24,14 @@ export async function GET(request: NextRequest, { params }: Context) {
     return new NextResponse(null, { status: 404, headers });
   }
   const token = (await cookies()).get(instrumentAccessCookieName(publicId))?.value;
-  if (!token || !(await resolveInstrumentAccess({ publicId, token }))) {
+  const access = token
+    ? await resolveInstrumentAccess({ publicId, token })
+    : null;
+  const audience = access
+    ? resolveDigitalSettlementV2Audience(access.recipientName)
+    : null;
+
+  if (!access || !audience?.canViewDocuments) {
     return new NextResponse(null, { status: 404, headers });
   }
   const instruction = await loadIssuedDigitalSettlementInstruction(publicId);
