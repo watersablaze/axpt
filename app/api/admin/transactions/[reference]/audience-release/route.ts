@@ -20,6 +20,9 @@ import {
 import {
   INDERAKSH_TRANSACTION_REFERENCE,
 } from "@/domains/instruments/definitions/inderakshTransactionContinuity";
+import {
+  loadIssuedTransactionDocument,
+} from "@/domains/instruments/transaction-documents/contracts";
 import { prisma } from "@/infrastructure/db/prisma";
 
 type RouteContext = {
@@ -213,6 +216,34 @@ export async function POST(
             "TRANSACTION_AUDIENCE_ACTION_REQUIRED",
         },
         { status: 400 },
+      );
+    }
+
+    const [spa, commercialSchedule] =
+      await Promise.all([
+        loadIssuedTransactionDocument(
+          reference,
+          "SPA",
+        ),
+        loadIssuedTransactionDocument(
+          reference,
+          "COMMERCIAL_SCHEDULE",
+        ),
+      ]);
+
+    if (
+      !spa ||
+      !commercialSchedule ||
+      spa.status !== "REVIEW" ||
+      commercialSchedule.status !== "REVIEW"
+    ) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            "TRANSACTION_AUDIENCE_REVIEW_DOCUMENTS_NOT_READY",
+        },
+        { status: 409 },
       );
     }
 
