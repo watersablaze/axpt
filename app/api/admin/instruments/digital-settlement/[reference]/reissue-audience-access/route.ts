@@ -31,6 +31,19 @@ type RotationClient =
   InstrumentAccessGrantRevocationClient &
   Pick<PrismaClient, "institutionalInstrument" | "instrumentAccessGrant">;
 
+type AudienceRotation = Readonly<{
+  key: (typeof DIGITAL_SETTLEMENT_V2_ACCESS_PLAN)[number]["key"];
+  recipientName: string;
+  email: string;
+  accessPurpose: string;
+  authority: string;
+  accessLevel: (typeof DIGITAL_SETTLEMENT_V2_ACCESS_PLAN)[number]["accessLevel"];
+  replacedGrantId: string;
+  replacementGrantId: string;
+  token: string;
+  expiresAt: Date | null;
+}>;
+
 export async function POST(
   request: Request,
   context: RouteContext,
@@ -77,7 +90,8 @@ export async function POST(
       Date.now() + 168 * 60 * 60 * 1000,
     );
 
-    const rotations = await prisma.$transaction(
+    const rotations: AudienceRotation[] =
+      await prisma.$transaction(
       async (tx: RotationClient) => {
         const instrument =
           await tx.institutionalInstrument.findUnique({
@@ -117,7 +131,7 @@ export async function POST(
           );
         }
 
-        const results = [];
+        const results: AudienceRotation[] = [];
 
         for (const plan of DIGITAL_SETTLEMENT_V2_ACCESS_PLAN) {
           const activeGrants =
