@@ -1118,3 +1118,266 @@
     border-bottom: 1px solid var(--line);
   }
 }
+
+
+/* AXPT MOBILE TRANSACTION WORKSPACE HARDENING
+ *
+ * Presentation only.
+ *
+ * Mobile doctrine:
+ *   crown establishes context
+ *   crown then scrolls away
+ *   workspace rail remains available
+ *   transaction content receives maximum viewport
+ *
+ * No transaction authority, access control, document
+ * lifecycle, settlement state, or communication behavior
+ * is changed here.
+ */
+
+@media (max-width: 720px) {
+  /*
+   * On desktop the crown may remain sticky.
+   * On mobile it should establish identity once and
+   * release vertical space to the working surface.
+   */
+  .consoleTopbar {
+    position: relative;
+    top: auto;
+    z-index: 1;
+  }
+
+  /*
+   * Mobile workspace rail.
+   *
+   * This becomes the persistent navigation surface
+   * after the transaction crown has scrolled away.
+   */
+  .consoleNavigation {
+    position: sticky;
+    top: 0;
+    z-index: 18;
+
+    display: flex;
+    flex-direction: row;
+    align-items: stretch;
+
+    width: auto;
+    max-width: none;
+
+    margin: 0 -0.625rem 1rem;
+    padding:
+      0.42rem
+      max(1.15rem, env(safe-area-inset-right))
+      0.42rem
+      max(0.625rem, env(safe-area-inset-left));
+
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    border-top: 1px solid rgba(232, 224, 204, 0.09);
+    border-bottom: 1px solid var(--line);
+
+    background: rgba(6, 10, 8, 0.97);
+
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
+    scroll-behavior: smooth;
+    scroll-snap-type: x proximity;
+    scroll-padding-inline: 0.625rem;
+
+    scrollbar-width: none;
+
+    /*
+     * Subtle right-edge affordance:
+     * there may be additional workspaces offscreen.
+     */
+    box-shadow:
+      0 8px 22px rgba(0, 0, 0, 0.22),
+      inset -18px 0 18px -20px rgba(216, 198, 141, 0.7);
+  }
+
+  .consoleNavigation::-webkit-scrollbar {
+    display: none;
+  }
+
+  .consoleNavigation p {
+    display: none;
+  }
+
+  .consoleNavigation a {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+
+    min-height: 44px;
+    padding: 0.62rem 0.78rem;
+
+    border-left: 0;
+    border-bottom: 2px solid transparent;
+
+    color: rgba(232, 224, 204, 0.67);
+
+    font-size: 0.78rem;
+    line-height: 1;
+    white-space: nowrap;
+
+    scroll-snap-align: start;
+    touch-action: manipulation;
+  }
+
+  .consoleNavigation a[aria-current="page"] {
+    border-color: #d8c68d;
+    background: rgba(199, 183, 132, 0.085);
+    color: #f0e7d3;
+  }
+
+  .consoleNavigation a:active {
+    background: rgba(199, 183, 132, 0.12);
+  }
+}
+
+
+/*
+ * Mobile typography lift.
+ *
+ * Deliberately restrained: preserve the institutional
+ * visual system while removing desktop-fine typography
+ * from phone-sized viewports.
+ */
+@media (max-width: 560px) {
+  .consoleIdentity p {
+    font-size: 0.62rem;
+    letter-spacing: 0.145em;
+  }
+
+  .consoleIdentity strong {
+    margin-top: 0.3rem;
+    font-size: 0.84rem;
+    line-height: 1.4;
+  }
+
+  .consoleIdentity span {
+    margin-top: 0.28rem;
+    font-size: 0.76rem;
+    line-height: 1.45;
+  }
+
+  .consoleStatePill {
+    padding: 0.5rem 0.65rem;
+    font-size: 0.62rem;
+    line-height: 1.3;
+  }
+
+  .consoleStates small {
+    font-size: 0.58rem;
+  }
+
+  .consoleStates strong {
+    margin-top: 0.28rem;
+    font-size: 0.72rem;
+    line-height: 1.42;
+  }
+
+  .consolePanel h2 {
+    font-size: 1.08rem;
+    line-height: 1.42;
+  }
+
+  .consolePanel > p {
+    font-size: 0.79rem;
+    line-height: 1.72;
+  }
+
+  .overviewGrid dt {
+    font-size: 0.66rem;
+    line-height: 1.4;
+  }
+
+  .overviewGrid dd {
+    margin-top: 0.4rem;
+    font-size: 0.84rem;
+    line-height: 1.52;
+  }
+
+  .documentRecord p,
+  .documentState small {
+    font-size: 0.63rem;
+  }
+
+  .documentRecord h3 {
+    font-size: 0.94rem;
+    line-height: 1.45;
+  }
+
+  .documentRecord code,
+  .documentFileName {
+    font-size: 0.72rem;
+    line-height: 1.5;
+  }
+
+  .noticeRecord h3 {
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+
+  .noticeRecord p {
+    font-size: 0.77rem;
+    line-height: 1.68;
+  }
+
+  .milestoneLabel {
+    font-size: 0.61rem;
+  }
+
+  .milestoneText {
+    font-size: 0.76rem;
+    line-height: 1.62;
+  }
+
+  .milestoneText time,
+  .milestoneText strong {
+    font-size: 0.71rem;
+  }
+
+  .consoleDisclosure summary {
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .authorityBand > p:last-child,
+  .transactionAuthority > div > p:last-child,
+  .settlementLayerHeader > div > p:last-child {
+    font-size: 0.76rem;
+    line-height: 1.68;
+  }
+
+  .evidenceBoundary,
+  .purpose,
+  .axptBoundary,
+  .recognitionStatement {
+    font-size: 0.74rem;
+    line-height: 1.65;
+  }
+
+  .submissionGrid dt,
+  .commercialGrid dt,
+  .coordinateData dt {
+    font-size: 0.59rem;
+  }
+
+  .submissionGrid dd,
+  .commercialGrid dd,
+  .coordinateData dd {
+    font-size: 0.82rem;
+    line-height: 1.55;
+  }
+
+  .addressBlock code {
+    font-size: 0.78rem;
+    line-height: 1.6;
+  }
+}
