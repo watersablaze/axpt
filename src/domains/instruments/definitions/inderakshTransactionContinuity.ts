@@ -57,7 +57,7 @@ export const INDERAKSH_TRANSACTION_CONTINUITY = {
       label: "Delivery term clarification",
       status: "CIP / AIR FREIGHT",
       body:
-        "The Buyer LOI referenced CIF as preliminary insured-delivery terminology. Because the Transaction is structured for international air freight, the definitive Commercial Schedule states CIP Inderaksh Gold Refinery FZ-LLC, Dubai, UAE — Incoterms® 2020, preserving Seller-coordinated carriage and insurance under the mode-appropriate delivery rule.",
+        "The Transaction is structured for international air freight. The Commercial Schedule therefore states CIP Inderaksh Gold Refinery FZ-LLC, Dubai, UAE — Incoterms® 2020, with Seller-coordinated carriage and insurance under the mode-appropriate delivery rule.",
     },
     {
       label: "Execution process",
