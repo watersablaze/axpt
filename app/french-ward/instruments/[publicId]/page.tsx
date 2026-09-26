@@ -22,6 +22,10 @@ import {
   DSI_V2_VERSION,
 } from "@/domains/instruments/definitions/digitalSettlementV2FinancierRevision";
 import {
+  DIGITAL_SETTLEMENT_V2_AUDIENCE,
+  resolveDigitalSettlementV2Audience,
+} from "@/domains/instruments/definitions/digitalSettlementV2Audience";
+import {
   INDERAKSH_TRANSACTION_CONTINUITY,
 } from "@/domains/instruments/definitions/inderakshTransactionContinuity";
 import { loadIssuedDigitalSettlementInstruction } from "@/domains/instruments/queries/loadIssuedDigitalSettlementInstruction";
@@ -130,9 +134,7 @@ export default async function DigitalSettlementInstructionPage({
 }: PageProps) {
   const { publicId } = await params;
   const previewParams = await searchParams;
-  const availableViews = ["overview", "documents", "settlement", "evidence", "history"] as const;
   const requestedView = previewParams?.view;
-  const selectedView = availableViews.find((view) => view === requestedView) ?? "overview";
   const consolePath = `/french-ward/instruments/${encodeURIComponent(publicId)}`;
 
   const previewRequested = publicId === "__preview__";
@@ -160,6 +162,9 @@ export default async function DigitalSettlementInstructionPage({
   }
 
   let instruction;
+  let accessContext:
+    | Awaited<ReturnType<typeof resolveInstrumentAccess>>
+    | null = null;
 
   if (isVisualPreview) {
     instruction = createPreviewInstruction(isV2Preview ? 2 : 1);
@@ -181,6 +186,7 @@ export default async function DigitalSettlementInstructionPage({
       notFound();
     }
 
+    accessContext = access;
     instruction = await loadIssuedDigitalSettlementInstruction(publicId);
   }
 
@@ -230,12 +236,36 @@ export default async function DigitalSettlementInstructionPage({
     : null;
 
   const isInderakshTransaction = instruction.reference === DSI_REFERENCE;
+  const audience = isInderakshTransaction
+    ? isVisualPreview
+      ? DIGITAL_SETTLEMENT_V2_AUDIENCE.buyerRepresentative
+      : resolveDigitalSettlementV2Audience(
+          accessContext?.recipientName ?? null,
+        )
+    : null;
+
+  if (isInderakshTransaction && !audience) {
+    notFound();
+  }
+
+  const availableViews =
+    audience?.allowedViews ??
+    (["overview", "settlement", "history"] as const);
+  const selectedView =
+    availableViews.find(
+      (view) => view === requestedView,
+    ) ?? "overview";
+
   let transactionDocuments: {
     SPA: Awaited<ReturnType<typeof loadIssuedTransactionDocument>>;
     COMMERCIAL_SCHEDULE: Awaited<ReturnType<typeof loadIssuedTransactionDocument>>;
   } | null = null;
 
-  if (isInderakshTransaction && !isVisualPreview) {
+  if (
+    isInderakshTransaction &&
+    !isVisualPreview &&
+    audience?.canViewDocuments
+  ) {
     try {
       const [spa, commercialSchedule] = await Promise.all([
         loadIssuedTransactionDocument(
@@ -372,10 +402,10 @@ export default async function DigitalSettlementInstructionPage({
             </div>
 
             <p className={styles.axptBoundary}>
-              AXPT governs this authorization instruction and its recorded
-              transaction state. The buyer initiates the USDT transfer from its
-              own wallet or provider to the address shown; AXPT does not execute
-              the blockchain transfer on the buyer&apos;s behalf.
+              AXPT maintains this authorization instruction and its recorded
+              transaction state. The authorized sender initiates the USDT transfer
+              from its own wallet or provider to the address shown; AXPT does not
+              execute the blockchain transfer on the sender&apos;s behalf.
             </p>
           </div>
 
@@ -668,14 +698,14 @@ export default async function DigitalSettlementInstructionPage({
                 <strong>{INDERAKSH_TRANSACTION_CONTINUITY.transactionReference}</strong>
                 <span>{INDERAKSH_LEGAL_NAME} · Initial 50 KG Gold Doré</span>
               </div>
-              <div className={styles.consoleStatePill}>COUNTERPARTY REVIEW</div>
+              <div className={styles.consoleStatePill}>{audience?.label ?? "TRANSACTION ACCESS"}</div>
             </header>
 
             <div className={styles.consoleStates} aria-label="Independent transaction states">
-              <span><small>DOCUMENTS</small><strong>REVIEW</strong></span>
+              <span><small>DOCUMENTS</small><strong>{audience?.canViewDocuments ? "REVIEW" : "RESTRICTED"}</strong></span>
               <span><small>EXECUTION</small><strong>NOT RELEASED</strong></span>
-              <span><small>SETTLEMENT</small><strong>ACTIVE</strong></span>
-              <span><small>CURRENT ACTION</small><strong>REVIEW DOCUMENTS</strong></span>
+              <span><small>SETTLEMENT</small><strong>{audience?.canViewSettlement ? "ACTIVE" : "STATUS ONLY"}</strong></span>
+              <span><small>CURRENT ACTION</small><strong>{audience?.currentActionLabel ?? "REVIEW STATUS"}</strong></span>
             </div>
           </div>
 
@@ -699,14 +729,14 @@ export default async function DigitalSettlementInstructionPage({
                   <span className={styles.currentActionMark} aria-hidden="true" />
                   <p className={styles.kicker}>Current action required</p>
                 </div>
-                <h2>Review the SPA and Commercial Schedule and confirm the Buyer signatory.</h2>
-                <p>These are review copies only and are not released for execution. Corey Keller is named as Buyer representative; confirm his execution authority or provide an authorized alternate before French-Ward releases execution copies.</p>
+                <h2>{audience?.currentActionTitle}</h2>
+                <p>{audience?.currentActionBody}</p>
                 <dl className={styles.overviewGrid}>
                   <div><dt>Transaction stage</dt><dd>Agreement · counterparty review</dd></div>
                   <div><dt>Buyer / Seller</dt><dd>{INDERAKSH_LEGAL_NAME} / French-Ward, Inc.</dd></div>
                   <div><dt>Quantity / corridor</dt><dd>50 KG · Mali → Dubai</dd></div>
                   <div><dt>Pricing reference</dt><dd>{instruction.pricingBasis}</dd></div>
-                  <div><dt>SPA / Commercial Schedule</dt><dd>Review copies · not for execution</dd></div>
+                  <div><dt>SPA / Commercial Schedule</dt><dd>{audience?.canViewDocuments ? "Review copies · not for execution" : "Restricted to authorized transaction participants"}</dd></div>
                   <div><dt>DSI</dt><dd>{formatStatus(instruction.settlementStatus)}</dd></div>
                 </dl>
                 <div className={styles.milestoneBlock}>
