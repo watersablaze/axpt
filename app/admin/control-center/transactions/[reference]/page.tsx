@@ -3,8 +3,7 @@ import { notFound } from "next/navigation";
 
 import DigitalSettlementOperatorPage from "../../instruments/digital-settlement/[reference]/page";
 import { TransactionDocumentUploadControl } from "@/components/admin/transactions/TransactionDocumentUploadControl";
-import { BuyerAccessReissueControl } from "@/components/admin/transactions/BuyerAccessReissueControl";
-import { TransactionReviewReleaseControl } from "@/components/admin/transactions/TransactionReviewReleaseControl";
+import { TransactionAudienceAccessControl } from "@/components/admin/transactions/TransactionAudienceAccessControl";
 import {
   INDERAKSH_TRANSACTION_CONTINUITY,
   INDERAKSH_TRANSACTION_REFERENCE,
@@ -340,23 +339,31 @@ export default async function TransactionOperatorPage({
           ) : null}
 
           {view === "access" ? (
-            <section className="space-y-3">
-              <p className="text-[10px] uppercase tracking-[0.18em] text-stone-500">
-                Access & communications
-              </p>
-              <h2 className="text-base font-medium text-white">Existing access authority preserved</h2>
-              <p className="max-w-3xl text-xs leading-5 text-stone-500">
-                Use the established DSI operator surface for access reissue and communication review
-                while transaction-level access aggregation is hardened.
-              </p>
+            <section className="space-y-4">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em] text-stone-500">
+                  Access & communications
+                </p>
+                <h2 className="mt-1 text-base font-medium text-white">
+                  Role-scoped private transaction access
+                </h2>
+                <p className="mt-2 max-w-3xl text-xs leading-5 text-stone-500">
+                  Five individual V2 credentials resolve into five audience-specific
+                  transaction surfaces. Access remains separate from operator authority.
+                </p>
+              </div>
+
               <Link
                 href={`/admin/control-center/instruments/digital-settlement/${DSI_REFERENCE}`}
                 className="inline-flex rounded border border-stone-700 px-3 py-2 text-[10px] uppercase tracking-wide text-stone-300"
               >
                 Open DSI operator surface
               </Link>
-              <BuyerAccessReissueControl reference={DSI_REFERENCE} />
-              <TransactionReviewReleaseControl reference={reference} />
+
+              <TransactionAudienceAccessControl
+                reference={DSI_REFERENCE}
+                transactionReference={reference}
+              />
             </section>
           ) : null}
 
