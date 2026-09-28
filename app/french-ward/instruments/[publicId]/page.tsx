@@ -697,6 +697,12 @@ export default async function DigitalSettlementInstructionPage({
                 <p>FRENCH-WARD · TRANSACTION CONSOLE</p>
                 <strong>{INDERAKSH_TRANSACTION_CONTINUITY.transactionReference}</strong>
                 <span>{INDERAKSH_LEGAL_NAME} · Initial 50 KG Gold Doré</span>
+                {audience?.recipientName ? (
+                  <div className={styles.consolePreparedFor}>
+                    <small>PREPARED FOR</small>
+                    <b>{audience.recipientName}</b>
+                  </div>
+                ) : null}
               </div>
               <div className={styles.consoleStatePill}>{audience?.label ?? "TRANSACTION ACCESS"}</div>
             </header>

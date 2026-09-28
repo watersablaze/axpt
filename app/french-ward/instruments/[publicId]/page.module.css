@@ -1383,3 +1383,38 @@
     line-height: 1.6;
   }
 }
+
+/* Transaction audience inscription.
+ *
+ * Presentation only. Makes the intended recipient of each
+ * governed private surface explicit without changing access,
+ * authority, lifecycle, settlement, or communication behavior.
+ */
+.consolePreparedFor {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: 0.55rem;
+}
+
+.consolePreparedFor small {
+  color: var(--muted);
+  font-size: 0.5rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+}
+
+.consolePreparedFor b {
+  color: #e8e0cc;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.025em;
+}
+
+@media (max-width: 720px) {
+  .consolePreparedFor {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.18rem;
+  }
+}
