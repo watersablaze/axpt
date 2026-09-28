@@ -34,18 +34,19 @@ export const DIGITAL_SETTLEMENT_V2_AUDIENCE = {
     surface: "TAP Financier",
     allowedViews: [
       "overview",
+      "documents",
       "settlement",
       "evidence",
       "history",
     ],
-    canViewDocuments: false,
+    canViewDocuments: true,
     canViewSettlement: true,
     canViewEvidence: true,
     currentActionLabel: "REVIEW SETTLEMENT",
     currentActionTitle:
-      "Review the current settlement instruction and verification-transfer authority.",
+      "Review the governing commercial context and current settlement position.",
     currentActionBody:
-      "The present authority is limited to the 50 USDT verification transfer. The remaining TAP balance is not authorized unless French-Ward separately records that authority.",
+      "The SPA and Commercial Schedule are available as REVIEW COPY · NOT FOR EXECUTION to provide context for the TAP-financier role. The present transfer authority remains limited to the 50 USDT verification transfer; the remaining TAP balance is not authorized unless French-Ward separately records that authority.",
   },
   externalReviewer: {
     key: "externalReviewer",
