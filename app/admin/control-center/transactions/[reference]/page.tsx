@@ -290,6 +290,13 @@ export default async function TransactionOperatorPage({
                           <p className="max-w-sm break-all text-right font-mono text-[9px] text-stone-600">
                             SHA-256 {issuedDocuments[item.kind as "SPA" | "COMMERCIAL_SCHEDULE"]?.sha256}
                           </p>
+                          {issuedDocuments[item.kind as "SPA" | "COMMERCIAL_SCHEDULE"]?.status === "REVIEW" ? (
+                            <TransactionDocumentUploadControl
+                              transactionReference={reference}
+                              documentKind={item.kind as "SPA" | "COMMERCIAL_SCHEDULE"}
+                              label="Publish Revised Review PDF"
+                            />
+                          ) : null}
                         </>
                       ) : (
                         <TransactionDocumentUploadControl
@@ -308,7 +315,7 @@ export default async function TransactionOperatorPage({
                   ? `Private document store check failed closed: ${documentStoreError}`
                   : issuedDocuments.SPA && issuedDocuments.COMMERCIAL_SCHEDULE
                     ? "Both governed review PDFs are bound to the private transaction store and protected by recorded SHA-256 integrity hashes."
-                    : "Publish each canonical REVIEW COPY once. The review release is preserved by hash and version; a later execution copy advances the document state rather than overwriting review history."}
+                    : "Publish each canonical REVIEW COPY. Revised review PDFs advance the version and preserve the previous copy; execution copies remain a separate lifecycle step."}
               </div>
             </section>
           ) : null}

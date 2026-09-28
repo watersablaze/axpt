@@ -50,7 +50,7 @@ export function TransactionDocumentUploadControl({
       }
 
       setState("complete");
-      setMessage("Issued copy published");
+      setMessage("Review copy published");
       router.refresh();
     } catch (error) {
       setState("error");

@@ -1064,32 +1064,33 @@
 
 .consoleStates {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0;
+  grid-template-columns: repeat(4, max-content);
+  gap: 0.65rem 1.4rem;
   margin: 0;
-  border-bottom: 1px solid var(--line);
+  padding: 0.7rem 1.25rem;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-top: 0;
+  scrollbar-width: none;
 }
+
+.consoleStates::-webkit-scrollbar { display: none; }
 
 .consoleStates > span {
   min-width: 0;
-  padding: 0.65rem 0.75rem;
-  border-right: 1px solid var(--line);
-}
-
-.consoleStates > span:last-child {
-  border-right: 0;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  white-space: nowrap;
 }
 
 .consoleStates small {
-  display: block;
   color: var(--muted);
   font-size: 0.5rem;
   letter-spacing: 0.11em;
 }
 
 .consoleStates strong {
-  display: block;
-  margin-top: 0.2rem;
   color: #e8e0cc;
   font-size: 0.64rem;
   font-weight: 500;
@@ -1098,27 +1099,28 @@
 
 @media (max-width: 720px) {
   .consoleTopbar {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.6rem;
     top: 0;
   }
 
+  .consoleIdentity strong { overflow-wrap: anywhere; }
+
   .consoleStatePill {
     width: fit-content;
+    max-width: 7.5rem;
+    white-space: normal;
+    text-align: center;
   }
 
   .consoleStates {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    padding: 0.75rem 0.85rem;
+    scroll-snap-type: x proximity;
+    mask-image: linear-gradient(to right, #000 0%, #000 calc(100% - 1rem), transparent 100%);
   }
 
-  .consoleStates > span:nth-child(2) {
-    border-right: 0;
-  }
-
-  .consoleStates > span:nth-child(-n + 2) {
-    border-bottom: 1px solid var(--line);
-  }
+  .consoleStates > span { scroll-snap-align: start; }
 }
-
 
 /* AXPT MOBILE TRANSACTION WORKSPACE HARDENING
  *

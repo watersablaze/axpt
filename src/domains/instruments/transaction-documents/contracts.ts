@@ -104,6 +104,7 @@ function pdfStorageKey(
   transactionReference: string,
   status: "REVIEW" | "EXECUTION" | "EXECUTED",
   fileName: string,
+  version: number,
 ) {
   const folder =
     status === "REVIEW"
@@ -112,7 +113,14 @@ function pdfStorageKey(
         ? "execution"
         : "executed";
 
-  return `transactions/${transactionReference}/${folder}/${fileName}`;
+  const base = `transactions/${transactionReference}/${folder}`;
+
+  // Version 1 predates versioned PDF keys. Preserve its location and bytes.
+  // Every later publication gets a distinct key so earlier review evidence
+  // remains readable and a current.json update cannot overwrite the PDF.
+  return version === 1
+    ? `${base}/${fileName}`
+    : `${base}/versions/${version}/${fileName}`;
 }
 
 function parseStoredRecord(
@@ -223,7 +231,9 @@ async function publishTransactionDocument(input: {
       return existing;
     }
 
-    throw new Error("TRANSACTION_DOCUMENT_RELEASE_ALREADY_EXISTS");
+    if (input.status !== "REVIEW") {
+      throw new Error("TRANSACTION_DOCUMENT_RELEASE_ALREADY_EXISTS");
+    }
   }
 
   if (
@@ -242,6 +252,7 @@ async function publishTransactionDocument(input: {
     input.transactionReference,
     input.status,
     fileName,
+    version,
   );
   const issuedAt = new Date();
   const executedAt =
