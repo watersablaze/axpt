@@ -101,14 +101,14 @@ function messages(): readonly AudienceMessage[] {
       surface:
         DIGITAL_SETTLEMENT_V2_AUDIENCE.financier.surface,
       authority:
-        "Settlement · evidence · history / governing documents restricted",
+        "Review documents · settlement · evidence · history / no operator controls",
       ctaLabel: "Open Financier Console",
       lines: [
         "Mr. Meisterlin,",
         "French-Ward has prepared a private transaction view for your role as the appointed TAP financier on the Inderaksh transaction.",
-        "Your console is focused on the current settlement instruction, applicable evidence, and recorded transaction history. Governing agreement documents and operator controls are not part of this access surface.",
+        `The Sales & Purchase Agreement (${INDERAKSH_SPA_REFERENCE}) and Commercial Schedule (${INDERAKSH_COMMERCIAL_SCHEDULE_REFERENCE}) are available in your console as REVIEW COPY · NOT FOR EXECUTION, giving you the commercial context for the TAP-financier role alongside the settlement record.`,
         "At present, the only transfer authority is the 50 USDT verification transfer over the instructed settlement rail. The remaining TAP balance is not authorized unless French-Ward separately records that authority.",
-        "Please use your personal link below whenever you need to confirm the current settlement position before acting.",
+        "Please use your personal link below to review the commercial context and confirm the current settlement position before acting. This access does not confer execution or operator authority.",
       ],
     },
     {
@@ -145,9 +145,9 @@ function messages(): readonly AudienceMessage[] {
       lines: [
         "Bobby,",
         "Your private French-Ward transaction console is ready for the Inderaksh initial 50 KG transaction.",
-        "Your internal-operations surface includes the governing review documents, settlement state, evidence view, and transaction history so you can follow the complete record in one place.",
-        "Corey Keller has been sent his own separate private Buyer link for counterparty review. Each participant link is personal and resolves to the transaction surface appropriate to that role.",
-        "Full visibility does not by itself grant settlement recognition, TAP authorization, document publication, or other operator mutation authority.",
+        "Your internal view brings the governing review documents, settlement state, evidence, and transaction history together in one place. Take a look through the SPA and Commercial Schedule alongside the settlement information so you have the full picture of where the transaction stands and how the pieces connect.",
+        "Corey Keller has his own separate private Buyer surface for counterparty review. Your link is the French-Ward internal view, so you can stay close to the transaction as it moves forward.",
+        "The console is read-only for these purposes. Settlement recognition, TAP authorization, and document publication remain operator-controlled.",
       ],
     },
     {
@@ -165,9 +165,9 @@ function messages(): readonly AudienceMessage[] {
       lines: [
         "Mr. Lawrence,",
         "Your private fiduciary-review console is ready for the Inderaksh initial 50 KG transaction.",
-        "Your surface includes the governing review documents, settlement state, evidence view, and transaction history so the commercial and settlement record can be reviewed together.",
-        "Corey Keller has been sent his own separate private Buyer link for counterparty review. Each participant link is personal and resolves to the transaction surface appropriate to that role.",
-        "This access provides full transaction visibility for fiduciary review without conferring settlement-recognition, TAP-authorization, document-publication, or other operator mutation authority.",
+        `The revised Sales & Purchase Agreement (${INDERAKSH_SPA_REFERENCE}) and Commercial Schedule (${INDERAKSH_COMMERCIAL_SCHEDULE_REFERENCE}) are available in your surface as REVIEW COPY · NOT FOR EXECUTION, together with the settlement state, evidence view, and transaction history.`,
+        "When convenient, please review the governing documents in the context of the full transaction record and flag anything you believe warrants attention before execution copies are released.",
+        "Corey Keller has his own separate private Buyer surface for counterparty review. Your access remains a read-only fiduciary view and does not confer settlement recognition, TAP authorization, document publication, or other operator mutation authority.",
       ],
     },
   ] as const;
