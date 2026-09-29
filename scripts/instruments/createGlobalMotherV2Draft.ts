@@ -117,6 +117,7 @@ async function main() {
             randomUUID(),
         });
       },
+      { timeoutMs: 60_000 },
     );
 
   console.log(

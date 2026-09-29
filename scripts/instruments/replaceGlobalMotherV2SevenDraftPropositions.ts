@@ -5,8 +5,8 @@ import { runInstrumentGovernanceTransaction } from "../../src/domains/instrument
 
 const prisma = new PrismaClient();
 const oldReferences = [
-  "REL-01", "REL-02", "AUTH-01", "AUTH-02", "AUTH-03", "PASS-01",
-  "PASS-02", "CONT-01", "CONT-02", "CONT-03", "INST-01", "INST-02",
+  "REL-01", "REL-02", "AUTH-01", "AUTH-02",
+  "PASS-01", "PASS-02", "FUT-01", "FUT-02",
 ];
 
 async function main() {
@@ -47,7 +47,7 @@ async function main() {
       throw new Error("GM_V2_SEVEN_DRAFT_POSTCONDITION_FAILED");
     }
     return { versionId: draft.id, count: replaced.version.propositions.length };
-  });
+  }, { timeoutMs: 60_000 });
   console.log("GM_V2_SEVEN_DRAFT_REPLACED", result);
 }
 
