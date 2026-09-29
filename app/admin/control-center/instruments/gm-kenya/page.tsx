@@ -7,6 +7,7 @@ import styles from "./page.module.css";
 import { IssueV2Control } from "./IssueV2Control";
 import { GrantV2Control } from "./GrantV2Control";
 import { RevokeV2Control } from "./RevokeV2Control";
+import { globalMotherDraftingGate } from "@/domains/instruments/invariants/globalMotherDraftingGate";
 import { DraftingDecisionControl } from "./DraftingDecisionControl";
 
 export const dynamic = "force-dynamic";
@@ -61,7 +62,7 @@ export default async function GlobalMotherResponseReviewPage() {
   const v2Grants = instrument.accessGrants.filter(grant => grant.instrumentVersionId === version?.id);
   const receipts = instrument.responseSets.filter(set => set.versionId === version?.id);
   const draftingDecisions = instrument.draftingDecisions.filter(decision => decision.versionId === version?.id);
-  const distinctInstitutions = new Set(receipts.map(set => set.representedInstitution.trim().toLowerCase())).size;
+  const draftingGate = globalMotherDraftingGate(receipts);
   const open = receipts.reduce((count, set) => count + positionsFrom(set.positions)
     .filter(position => position.responseType !== "AFFIRM").length, 0);
 
@@ -146,7 +147,7 @@ export default async function GlobalMotherResponseReviewPage() {
         </article>) : <p>No drafting decision recorded.</p>}
         {version?.status === "ISSUED" && instrument.currentVersion === 2
           ? <DraftingDecisionControl key={receipts.map(set => set.id).join(":")} versionId={version.id}
-              receiptIds={receipts.map(set => set.id)} distinctInstitutions={distinctInstitutions} /> : null}
+              receiptIds={receipts.map(set => set.id)} gate={draftingGate} /> : null}
       </section>
         </div>
       </div>

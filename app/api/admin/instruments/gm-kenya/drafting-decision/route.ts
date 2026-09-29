@@ -6,6 +6,8 @@ import { INSTRUMENT_EVENT_TYPE } from "@/domains/instruments/eventTypes";
 import { globalMotherV2Definition } from "@/domains/instruments/definitions/globalMotherV2Definition";
 import { runInstrumentGovernanceTransaction } from "@/domains/instruments/governance/runInstrumentGovernanceTransaction";
 
+import { globalMotherDraftingGate, validateGlobalMotherDraftingDispositions } from "@/domains/instruments/invariants/globalMotherDraftingGate";
+
 export async function POST(request: Request) {
   if (request.headers.get("origin") !== new URL(request.url).origin)
     return NextResponse.json({ error: "ORIGIN_REQUIRED" }, { status: 403 });
@@ -24,20 +26,25 @@ export async function POST(request: Request) {
   if (!input || (standing !== "REVIEW_HOLD" && standing !== "OPEN_DRAFTING") ||
       typeof input.versionId !== "string" ||
       !Array.isArray(ids) || ids.some(id => typeof id !== "string") ||
-      new Set(ids).size !== ids.length || rationale.length < 20 || rationale.length > 4000 ||
+      new Set(ids).size !== ids.length || rationale.length < 20 || rationale.length > 2000 ||
       typeof input.decisionKey !== "string" || !/^[a-zA-Z0-9-]{16,80}$/.test(input.decisionKey) ||
       input.confirmation !== "RECORD DRAFTING DECISION")
     return NextResponse.json({ error: "DECISION_INPUT_INVALID" }, { status: 400 });
   try {
     const decision = await runInstrumentGovernanceTransaction(prisma, async tx => {
+      // Idempotency compares the exact persisted basis, including issue dispositions.
+      const requestedDispositions = Array.isArray(input.dispositions) ? input.dispositions : [];
       const existing = await tx.globalMotherDraftingDecision.findUnique({
         where: { decisionKey: input.decisionKey as string },
       });
       if (existing) {
         if (existing.actorUserId !== principal.userId || existing.versionId !== input.versionId ||
-            existing.standing !== standing || existing.rationale !== rationale ||
+            existing.standing !== standing || !existing.rationale.startsWith(rationale + "\n\nDrafting dispositions: ") ||
             JSON.stringify(existing.reviewedReceiptIds) !== JSON.stringify(ids))
           throw new Error("DECISION_KEY_CONFLICT");
+        const savedDispositions = existing.rationale.slice((rationale + "\n\nDrafting dispositions: ").length);
+        if (savedDispositions !== JSON.stringify(requestedDispositions.slice().sort((a, b) =>
+          `${a.receiptId}:${a.reference}`.localeCompare(`${b.receiptId}:${b.reference}`)))) throw new Error("DECISION_KEY_CONFLICT");
         return existing;
       }
       const instrument = await tx.institutionalInstrument.findUnique({
@@ -50,18 +57,26 @@ export async function POST(request: Request) {
       if (!instrument || instrument.currentVersion !== 2 || !version || version.id !== input.versionId)
         throw new Error("VERSION_NOT_ISSUED");
       const receipts = await tx.instrumentResponseSet.findMany({
-        where: { versionId: version.id }, select: { id: true, representedInstitution: true },
+        where: { versionId: version.id }, select: { id: true, representedInstitution: true, positions: true },
       });
       const recordedIds = receipts.map((receipt: { id: string; representedInstitution: string }) => receipt.id).sort();
       const reviewedIds = (ids as string[]).slice().sort();
       if (JSON.stringify(recordedIds) !== JSON.stringify(reviewedIds))
         throw new Error("RECEIPT_REVIEW_INCOMPLETE");
-      if (standing === "OPEN_DRAFTING" &&
-          new Set(receipts.map((receipt: { id: string; representedInstitution: string }) => receipt.representedInstitution.trim().toLowerCase())).size < 2)
-        throw new Error("TWO_INSTITUTION_RESPONSES_REQUIRED");
+      const gate = globalMotherDraftingGate(receipts);
+      let dispositions = [] as NonNullable<ReturnType<typeof validateGlobalMotherDraftingDispositions>>;
+      if (standing === "OPEN_DRAFTING") {
+        if (gate.missingInstitutions.length) throw new Error("AOTG_AND_ND_ROYAL_RESPONSES_REQUIRED");
+        if (gate.invalidResponses) throw new Error("RESPONSE_RECORD_INVALID");
+        if (gate.issues.some(issue => issue.responseType === "DECLINE")) throw new Error("DECLINED_POSITION_REQUIRES_REVIEW");
+        const validated = validateGlobalMotherDraftingDispositions(gate.issues, input.dispositions);
+        if (!validated) throw new Error("OUTSTANDING_POSITION_TREATMENT_REQUIRED");
+        dispositions = validated;
+      } else if (requestedDispositions.length) throw new Error("DECISION_INPUT_INVALID");
+      const recordedBasis = rationale + "\n\nDrafting dispositions: " + JSON.stringify(dispositions);
       const recorded = await tx.globalMotherDraftingDecision.create({ data: {
         instrumentId: instrument.id, versionId: version.id, actorUserId: principal.userId,
-        decisionKey: input.decisionKey as string, standing, rationale,
+        decisionKey: input.decisionKey as string, standing, rationale: recordedBasis,
         reviewedReceiptIds: reviewedIds,
       } });
       await tx.domainEvent.create({ data: {
@@ -77,7 +92,8 @@ export async function POST(request: Request) {
   } catch (error) {
     const code = error instanceof Error ? error.message : "";
     if (["DECISION_KEY_CONFLICT", "VERSION_NOT_ISSUED", "RECEIPT_REVIEW_INCOMPLETE",
-      "TWO_INSTITUTION_RESPONSES_REQUIRED"].includes(code))
+      "AOTG_AND_ND_ROYAL_RESPONSES_REQUIRED", "RESPONSE_RECORD_INVALID",
+      "DECLINED_POSITION_REQUIRES_REVIEW", "OUTSTANDING_POSITION_TREATMENT_REQUIRED", "DECISION_INPUT_INVALID"].includes(code))
       return NextResponse.json({ error: code }, { status: 409 });
     console.error("[gm-v2/drafting-decision] failed", error);
     return NextResponse.json({ error: "DECISION_RECORDING_FAILED" }, { status: 500 });
