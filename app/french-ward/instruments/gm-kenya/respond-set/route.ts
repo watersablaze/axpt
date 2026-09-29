@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { prisma } from "@/infrastructure/db/prisma";
-import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { getGlobalMotherPrincipal } from "@/domains/instruments/access/globalMotherRecipientAuth";
 import { institutionalInstrumentAccessCookieName } from "@/domains/instruments/access/accessToken";
 import { globalMotherV2Definition } from "@/domains/instruments/definitions/globalMotherV2Definition";
 import { resolveInstitutionalInstrumentAccessWithClient } from "@/domains/instruments/queries/resolveInstitutionalInstrumentAccessWithClient";
@@ -31,7 +31,7 @@ export async function GET() {
     client: prisma, instrumentReference: globalMotherV2Definition.reference,
     token, recordAccess: false,
   });
-  const principal = await getPrincipal();
+  const principal = await getGlobalMotherPrincipal();
   if (!access?.grant.recipientUserId || !access.grant.instrumentVersionId ||
       principal?.userId !== access.grant.recipientUserId) {
     return NextResponse.json({ ok: false }, { status: 403 });
@@ -49,7 +49,7 @@ export async function POST(request: Request) {
   if (!token) return NextResponse.json({ ok: false, error: "ACCESS_REQUIRED" }, { status: 401 });
   if (request.headers.get("origin") !== new URL(request.url).origin)
     return NextResponse.json({ ok: false, error: "ORIGIN_REQUIRED" }, { status: 403 });
-  const principal = await getPrincipal();
+  const principal = await getGlobalMotherPrincipal();
   const access = await resolveInstitutionalInstrumentAccessWithClient({
     client: prisma, instrumentReference: globalMotherV2Definition.reference,
     token, recordAccess: false,

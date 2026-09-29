@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 
 import styles from "./page.module.css";
 import { prisma } from "@/infrastructure/db/prisma";
-import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { getGlobalMotherPrincipal } from "@/domains/instruments/access/globalMotherRecipientAuth";
 import { isAdmin as hasAdminAccess } from "@/domains/auth/isAdmin";
 import {
   institutionalInstrumentAccessCookieName,
@@ -79,7 +79,7 @@ export default async function GreatMotherInstrumentPage({
   const [cookieStore, principal, resolvedSearchParams] =
     await Promise.all([
       cookies(),
-      getPrincipal(),
+      getGlobalMotherPrincipal(),
       searchParams ?? Promise.resolve({}),
     ]);
 

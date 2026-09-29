@@ -32,7 +32,7 @@ export function GrantV2Control({ versionId }: { versionId: string }) {
   return <details className={styles.grantDisclosure}>
     <summary>Create recipient access</summary>
     <div className={styles.grantControl}>
-    <p>Bind an existing AXPT user to V2. Verify the institution and capacity before creating a private link.</p>
+    <p>Create named recipient access to V2. AXPT creates an identity when needed. Verify the email, institution, and capacity before creating the private link.</p>
     <div className={styles.grantFields}>
       <label>Email<input type="email" value={email} autoComplete="off" onChange={e => setEmail(e.target.value)} /></label>
       <label>Name<input value={name} onChange={e => setName(e.target.value)} /></label>
@@ -46,7 +46,7 @@ export function GrantV2Control({ versionId }: { versionId: string }) {
     {link ? <div className={styles.privateLink} role="status">
       <strong>Access created · copy this link now</strong>
       <input readOnly value={link} aria-label="Private V2 access link" onFocus={e => e.currentTarget.select()} />
-      <small>This link is shown only here. Share it with the named recipient through your approved channel.</small>
+      <small>Copy and share this link with the named recipient. They request an email verification code when opening it. Creating access does not send an invitation.</small>
     </div> : null}
     </div>
   </details>;

@@ -5,6 +5,7 @@ import { prisma } from "@/infrastructure/db/prisma";
 import { globalMotherV2Definition } from "@/domains/instruments/definitions/globalMotherV2Definition";
 import { runInstrumentGovernanceTransaction } from "@/domains/instruments/governance/runInstrumentGovernanceTransaction";
 import { issueInstrumentAccessGrantWithClient } from "@/domains/instruments/commands/issueInstrumentAccessGrantWithClient";
+import { ensureInstrumentParticipantIdentityWithClient } from "@/domains/instruments/commands/ensureInstrumentParticipantIdentityWithClient";
 
 export async function POST(request: Request) {
   if (request.headers.get("origin") !== new URL(request.url).origin)
@@ -38,8 +39,10 @@ export async function POST(request: Request) {
       const version = instrument?.versions[0];
       if (!instrument || instrument.currentVersion !== 2 || !version || version.id !== values.versionId)
         throw new Error("[GM_V2_GRANT_VERSION_NOT_ISSUED]");
-      const user = await tx.user.findUnique({ where: { email }, select: { id: true } });
-      if (!user) throw new Error("[GM_V2_GRANT_USER_NOT_FOUND]");
+      const { user } = await ensureInstrumentParticipantIdentityWithClient({
+        client: tx, instrumentReference: globalMotherV2Definition.reference,
+        email, displayName: name, createdByUserId: principal.userId,
+      });
       const existing = await tx.instrumentAccessGrant.findFirst({
         where: { instrumentVersionId: version.id, recipientUserId: user.id,
           revokedAt: null, expiresAt: { gt: new Date() } }, select: { id: true },

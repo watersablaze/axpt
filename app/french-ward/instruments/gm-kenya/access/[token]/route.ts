@@ -10,7 +10,8 @@ import {
   runInstrumentGovernanceTransaction,
 } from "@/domains/instruments/governance/runInstrumentGovernanceTransaction";
 import { prisma } from "@/infrastructure/db/prisma";
-import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { getGlobalMotherPrincipal, resolveGlobalMotherRecipient, recipientCookieOptions } from "@/domains/instruments/access/globalMotherRecipientAuth";
+import { GM_PENDING_COOKIE } from "@/domains/instruments/access/globalMotherRecipientPolicy";
 
 const GM_REFERENCE =
   "GM-KENYA-RCF-001";
@@ -43,15 +44,25 @@ export async function GET(
     );
   }
 
-  const principal = await getPrincipal();
+  const principal = await getGlobalMotherPrincipal();
 
   const inspected = await resolveInstitutionalInstrumentAccessWithClient({
     client: prisma, instrumentReference: GM_REFERENCE,
     token: normalizedToken, recordAccess: false,
   });
-  if (!inspected || (inspected.grant.instrumentVersionId &&
-      (!principal || principal.userId !== inspected.grant.recipientUserId))) {
-    return new NextResponse(null, { status: 404 });
+  if (!inspected) return new NextResponse(null, { status: 404 });
+  if (inspected.grant.instrumentVersionId) {
+    const recipient = await resolveGlobalMotherRecipient(prisma, normalizedToken);
+    if (!recipient) return new NextResponse(null, { status: 404 });
+    if (!principal || principal.userId !== inspected.grant.recipientUserId) {
+      const response = NextResponse.redirect(new URL(`${GM_ROUTE}/verify`, request.url), 303);
+      response.headers.set("Cache-Control", "no-store");
+      response.headers.set("Referrer-Policy", "no-referrer");
+      response.cookies.set(GM_PENDING_COOKIE, normalizedToken, {
+        ...recipientCookieOptions, maxAge: 20 * 60,
+      });
+      return response;
+    }
   }
 
   const access =
@@ -92,6 +103,8 @@ export async function GET(
       303,
     );
 
+  response.headers.set("Cache-Control", "no-store");
+  response.headers.set("Referrer-Policy", "no-referrer");
   response.cookies.set({
     name:
       institutionalInstrumentAccessCookieName(

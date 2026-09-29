@@ -135,7 +135,7 @@ export async function resolveInstitutionalInstrumentAccessWithClient(params: {
           },
         },
       ],
-    } as const;
+    };
 
     if (!grant.firstAccessAt) {
       const firstAccess =

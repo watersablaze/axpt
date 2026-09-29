@@ -337,6 +337,7 @@ model InstrumentAccessGrant {
   recipientUser     User?                   @relation("InstrumentAccessRecipient", fields: [recipientUserId], references: [id], onDelete: SetNull)
   issuedBy          User                    @relation("InstrumentAccessIssuer", fields: [issuedByUserId], references: [id])
   responseSets InstrumentResponseSet[]
+  recipientChallenge GlobalMotherRecipientChallenge?
 
   @@index([instrumentId, accessLevel])
   @@index([instrumentVersionId])
@@ -3308,4 +3309,20 @@ model TreasurySettlementObservationCursor {
 
   @@unique([chainId, tokenContractAddress, watchedAddress])
   @@index([chainId, updatedAt])
+}
+model GlobalMotherRecipientChallenge {
+  grantId         String    @id
+  recipientUserId String
+  email           String
+  pinHash         String
+  nonceHash       String
+  attemptCount    Int       @default(0)
+  expiresAt       DateTime
+  consumedAt      DateTime?
+  sentAt          DateTime
+  windowStartedAt DateTime
+  sendCount       Int       @default(1)
+  grant InstrumentAccessGrant @relation(fields: [grantId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
 }
