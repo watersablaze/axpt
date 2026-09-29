@@ -75,3 +75,19 @@
   background: linear-gradient(115deg, rgba(151, 119, 70, 0.11), rgba(151, 119, 70, 0.035));
   border-color: rgba(120, 95, 56, 0.3);
 }
+
+/* GM visual pass: focused reading and deliberation. */
+
+.field { --muted: #505b61; --rule: #33465820; padding: 0 0 1rem; }
+.sequence { grid-template-columns: 1fr; border-top: 1px solid var(--rule); }
+.step { display: grid; grid-template-columns: 2rem minmax(0,1fr); gap: .75rem; min-height: 0; padding: .7rem 0; }
+.step + .step { border-left: 0; border-top: 1px solid var(--rule); }
+.step strong { margin: 0; }
+.statement, .memory, .gift { grid-template-columns: 1fr; gap: .85rem; }
+.statement p, .memory p, .giftBody p { line-height: 1.7; }
+.productive { padding: 0; background: transparent; border: 0; }
+.domains { grid-template-columns: 1fr; }
+.domains article, .domains article:nth-child(even) { padding: 1rem 0; border-left: 0; }
+.domains p { font-size: .95rem; line-height: 1.65; }
+.gift { border-color: #98744630; border-radius: 3px; }
+.doctrine { background: #1a3041; border-left: 2px solid #b29a69; border-radius: 0 3px 3px 0; }

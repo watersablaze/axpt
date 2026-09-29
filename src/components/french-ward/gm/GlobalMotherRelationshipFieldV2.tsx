@@ -25,7 +25,7 @@ export function GlobalMotherRelationshipFieldV2() {
           </div>
           <div>
             <p className={styles.eyebrow}>02 / Existing relationship</p>
-            <h4>AHMA OLMEC TARTARIAN GOVERNMENT</h4>
+            <h4>Ahma Olmec Tartarian Government</h4>
             <p>AOTG brings its relationship with French-Ward. Trade may support its governmental capacity on terms it authorizes.</p>
           </div>
         </div>

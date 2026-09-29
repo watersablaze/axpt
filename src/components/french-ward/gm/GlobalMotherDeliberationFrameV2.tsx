@@ -10,16 +10,18 @@ import type {
   ReactNode,
 } from "react";
 
+import { createPortal } from "react-dom";
+
 import styles from "./GlobalMotherDeliberationFrameV2.module.css";
 import { globalMotherV2Definition } from "@/domains/instruments/definitions/globalMotherV2Definition";
 
 type Position = "AFFIRM" | "CLARIFY" | "REVISE" | "DECLINE";
 
 const choices: { value: Position; label: string; meaning: string }[] = [
-  { value: "AFFIRM", label: "Affirm", meaning: "This states our position" },
-  { value: "CLARIFY", label: "Clarify", meaning: "Explain a point" },
-  { value: "REVISE", label: "Propose revision", meaning: "Suggest wording" },
-  { value: "DECLINE", label: "Decline", meaning: "Do not accept as stated" },
+  { value: "AFFIRM", label: "Affirm", meaning: "This reflects my position." },
+  { value: "CLARIFY", label: "Clarify", meaning: "I need a point explained." },
+  { value: "REVISE", label: "Propose revision", meaning: "I suggest different wording or scope." },
+  { value: "DECLINE", label: "Decline", meaning: "This does not reflect my position." },
 ];
 
 const sections = [
@@ -59,6 +61,9 @@ export function GlobalMotherDeliberationFrameV2({
   children,
 }: GlobalMotherDeliberationFrameV2Props) {
   const [entered, setEntered] = useState(false);
+  const [activePosition, setActivePosition] = useState(0);
+  const [reviewing, setReviewing] = useState(false);
+  const headingRef = useRef<HTMLHeadingElement>(null);
   const registerRef = useRef<HTMLDivElement>(null);
   const entryRef = useRef<HTMLButtonElement>(null);
   const [positions, setPositions] = useState<Record<string, Position>>({});
@@ -73,6 +78,7 @@ export function GlobalMotherDeliberationFrameV2({
 
   function acceptReceipt(value: Receipt) {
     setReceipt(value);
+    setReviewing(true);
     if (!Array.isArray(value.positions)) return;
     const savedPositions: Record<string, Position> = {};
     const savedNotes: Record<string, string> = {};
@@ -152,21 +158,88 @@ export function GlobalMotherDeliberationFrameV2({
     }
   }
 
-  function openRegister() {
-    setEntered(true);
+  const activeEntry = entries[activePosition];
+  const [reference, title, statement] = activeEntry;
+  const activeComplete = Boolean(positions[reference]) &&
+    (positions[reference] === "AFFIRM" || Boolean(notes[reference]?.trim()));
+  const completed = entries.filter(([ref]) => positions[ref] &&
+    (positions[ref] === "AFFIRM" || Boolean(notes[ref]?.trim()))).length;
+  const locked = Boolean(receipt) || recording || receiptState === "loading";
+
+  function focusHeading() {
     requestAnimationFrame(() => {
-      registerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
-      registerRef.current?.focus({ preventScroll: true });
+      registerRef.current?.scrollTo({ top: 0, behavior: "instant" });
+      headingRef.current?.focus({ preventScroll: true });
     });
   }
 
+  function visitPosition(index: number) {
+    setActivePosition(index);
+    setReviewing(false);
+    focusHeading();
+  }
+
+  function openRegister() {
+    setEntered(true);
+    focusHeading();
+  }
+
   function closeRegister() {
+    if (recording) return;
     setEntered(false);
     requestAnimationFrame(() => {
-      entryRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+      entryRef.current?.scrollIntoView({ block: "center" });
       entryRef.current?.focus({ preventScroll: true });
     });
   }
+
+  async function checkRecord() {
+    setReceiptState("loading");
+    setRecordError(null);
+    try {
+      const response = await fetch("/french-ward/instruments/gm-kenya/respond-set", { cache: "no-store" });
+      if (!response.ok) throw new Error("The response record could not be checked.");
+      const payload = await response.json() as { receipt: Receipt | null };
+      if (payload.receipt) acceptReceipt(payload.receipt);
+      setReceiptState("ready");
+    } catch {
+      setReceiptState("error");
+    }
+  }
+
+  // The register is a separate portal. Keep the underlying article out of the
+  // keyboard and accessibility navigation until the participant returns to it.
+  useEffect(() => {
+    if (!entered) return;
+    const portal = registerRef.current;
+    const previousOverflow = document.body.style.overflow;
+    const siblings = Array.from(document.body.children)
+      .filter((element): element is HTMLElement => element instanceof HTMLElement && element !== portal);
+    const previousInert = siblings.map(element => element.inert);
+    siblings.forEach(element => { element.inert = true; });
+    document.body.style.overflow = "hidden";
+    function trapFocus(event: KeyboardEvent) {
+      if (event.key !== "Tab") return;
+      const targets = portal?.querySelectorAll<HTMLElement>(
+        'button:not(:disabled), textarea:not(:disabled), a[href], [tabindex="0"]',
+      );
+      if (!targets?.length) { event.preventDefault(); return; }
+      const first = targets[0];
+      const last = targets[targets.length - 1];
+      const current = document.activeElement;
+      if (event.shiftKey && (current === first || !Array.from(targets).includes(current as HTMLElement))) {
+        event.preventDefault(); last.focus();
+      } else if (!event.shiftKey && (current === last || !Array.from(targets).includes(current as HTMLElement))) {
+        event.preventDefault(); first.focus();
+      }
+    }
+    document.addEventListener("keydown", trapFocus);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      siblings.forEach((element, index) => { element.inert = previousInert[index]; });
+      document.removeEventListener("keydown", trapFocus);
+    };
+  }, [entered]);
 
   if (!enabled) {
     return <>{children}</>;
@@ -229,7 +302,7 @@ export function GlobalMotherDeliberationFrameV2({
             </button>
           </div>
           <p className={styles.previewStatus}>{actorBound
-            ? "Your positions are recorded only when you press Record seven positions and receive a receipt."
+            ? "Your positions are recorded only when you submit the full response and receive a receipt."
             : "Internal preview · Selections are not recorded."}</p>
         </div>
 
@@ -269,139 +342,170 @@ export function GlobalMotherDeliberationFrameV2({
           </div>
         </aside>
       </div>
-      </> : (
-
+      </> : createPortal(
         <div id="gm-v2-alignment-register" ref={registerRef} tabIndex={-1}
-          className={styles.councilField} role="region" aria-label="Framework response register">
-          <div className={styles.registerToolbar}>
-            <button type="button" className={styles.backAction} onClick={closeRegister}>
-              ← Back to Article V
-            </button>
-            <span>{actorBound ? "Framework response · issued V2" : "Framework response · internal preview"}</span>
-          </div>
-          <div className={styles.positionField}>
-          <div className={styles.councilOpening}>
-            <span>
-              V2 alignment register · seven positions
-            </span>
+          className={styles.councilField} role="dialog" aria-modal="true"
+          aria-labelledby="gm-response-heading" aria-describedby="gm-response-status">
+          <div className={styles.portalInner}>
+            <div className={styles.registerToolbar}>
+              <button type="button" className={styles.backAction} onClick={closeRegister} disabled={recording}>
+                ← Return to Article V
+              </button>
+              <span>Global Mother · Deliberation</span>
+            </div>
 
-            <div>
-              <strong>
-                State your position on each intention.
-              </strong>
-
-              <p>
-                Select one response per position. For clarification,
-                revision, or decline, identify the specific point in a note.
+            <header className={styles.councilOpening}>
+              <span>{receipt ? "Recorded response" : "Your response register"}</span>
+              <h2 id="gm-response-heading" ref={reviewing ? headingRef : undefined} tabIndex={-1}>
+                {reviewing ? receipt ? "Your response is recorded." : "Review your responses." : "Consider each intention."}
+              </h2>
+              <p>{reviewing
+                ? receipt ? "These are the seven positions held in your response receipt."
+                  : "Check your seven positions and notes. You can return to any position before submitting."
+                : "Choose the response that reflects your position. You can revisit any intention before submitting."}</p>
+              <p id="gm-response-status" className={styles.draftStatus} role="status">
+                {receipt ? "Recorded · Receipt received"
+                  : receiptState === "loading" ? "Checking for an existing response…"
+                  : actorBound ? "Not submitted · Choices stay on this page until you submit. Reloading clears unsubmitted choices."
+                  : "Internal preview · Choices are not saved or sent."}
               </p>
-            </div>
-          </div>
+            </header>
 
-          <div className={styles.registerSurface}>
-            {affirmations.map((section) => (
-              <section className={styles.registerSection} key={section.article}>
-                <h4>{section.article}</h4>
-                {section.entries.map(([reference, title, statement]) => (
-                  <article className={styles.registerEntry} key={reference}>
-                    <div className={styles.entryIdentity}><span>{reference}</span><h5>{title}</h5></div>
-                    <div className={styles.entryResponse}>
-                      <p>{statement}</p>
-                      <div className={styles.choiceGrid} role="group" aria-label={`Position on ${title}`}>
-                        {choices.map(choice => (
-                          <button type="button" key={choice.value}
-                            className={`${styles.choice} ${positions[reference] === choice.value ? styles.choiceSelected : ""}`}
-                            aria-pressed={positions[reference] === choice.value}
-                            disabled={Boolean(receipt) || recording}
-                            title={choice.meaning}
-                            onClick={() => {
-                              setPositions(current => ({ ...current, [reference]: choice.value }));
-                              if (choice.value === "AFFIRM") {
-                                setNotes(current => {
-                                  const next = { ...current };
-                                  delete next[reference];
-                                  return next;
-                                });
-                              }
-                            }}>
-                            {choice.label}
-                          </button>
-                        ))}
-                      </div>
-                      {positions[reference] ? <small className={styles.choiceMeaning}>{choices.find(choice => choice.value === positions[reference])?.meaning}</small> : null}
-                      {positions[reference] && positions[reference] !== "AFFIRM" ? (
-                        <label className={styles.noteField}>
-                          <span>{positions[reference] === "REVISE" ? "Proposed wording and reason · required" : positions[reference] === "CLARIFY" ? "Point requiring clarification · required" : "Reason for declining · required"}</span>
-                          <textarea value={notes[reference] ?? ""} rows={3} maxLength={4000} required aria-required="true" disabled={Boolean(receipt) || recording}
-                            placeholder="Name the specific point, condition, or wording."
-                            onChange={event => setNotes(current => ({ ...current, [reference]: event.target.value }))} />
-                        </label>
-                      ) : null}
-                    </div>
-                  </article>
-                ))}
-              </section>
-            ))}
-          </div>
-          </div>
-          <div className={styles.registerSurface}>
-            <div className={styles.recordMechanics} aria-live="polite">
-              <strong>Review your response · {responded} of {entries.length} selected</strong>
-              <p>{unanswered === 0 && missingNotes === 0
-                ? "All seven positions have a response and any required notes."
-                : `${unanswered} without a response · ${missingNotes} missing a required note.`}
-                {" "}{forDiscussion > 0
-                  ? `${forDiscussion} position${forDiscussion === 1 ? " remains" : "s remain"} for discussion; a complete response does not mean full alignment.`
-                  : "Responses are ready for review in this preview."}</p>
-              <ol className={styles.reviewList}>
-                {entries.map(([reference, title]) => (
-                  <li key={reference}><span>{reference} · {title}</span><strong>{!positions[reference] ? "Response needed" : positions[reference] !== "AFFIRM" && !notes[reference]?.trim() ? "Required note missing" : choices.find(choice => choice.value === positions[reference])?.label}</strong>{notes[reference] && positions[reference] !== "AFFIRM" ? <p>{notes[reference]}</p> : null}</li>
-                ))}
-              </ol>
-              <div className={styles.reviewIdentity}>{actorBound
-                ? "One act records all seven positions against your issued Framework version and verified capacity."
-                : "Framework V2 preview · No response can be recorded here."}</div>
-              {receipt ? (
-                <div className={styles.receipt} role="status">
-                  <strong>Response recorded</strong>
-                  <span>Receipt {receipt.id} · {new Date(receipt.recordedAt).toLocaleString()}</span>
-                  <span>{receipt.representedInstitution} · {receipt.representativeCapacity}</span>
-                  <small>AXPT can now review these positions. This receipt does not itself bind an institution or open drafting.</small>
+            <nav className={styles.positionNavigator} aria-label="Seven response positions">
+              {entries.map(([ref, entryTitle], index) => {
+                const complete = Boolean(positions[ref]) &&
+                  (positions[ref] === "AFFIRM" || Boolean(notes[ref]?.trim()));
+                return <button key={ref} type="button" disabled={recording || receiptState === "loading"}
+                  className={`${styles.positionStep} ${!reviewing && activePosition === index ? styles.positionStepActive : ""}`}
+                  aria-current={!reviewing && activePosition === index ? "step" : undefined}
+                  aria-label={`Position ${index + 1}: ${entryTitle}. ${complete ? receipt ? "Recorded" : "Ready for review" : positions[ref] ? "Note needed" : "Response needed"}`}
+                  onClick={() => visitPosition(index)}>
+                  <span>{index + 1}</span><small>{complete ? "✓" : "·"}</small>
+                </button>;
+              })}
+              <button type="button" className={`${styles.reviewStep} ${reviewing ? styles.positionStepActive : ""}`}
+                disabled={recording || receiptState === "loading"}
+                aria-current={reviewing ? "step" : undefined}
+                onClick={() => { setReviewing(true); focusHeading(); }}>Review</button>
+            </nav>
+            <p className={styles.progressCaption}>{completed} of {entries.length} positions {receipt ? "recorded" : "ready for review"}</p>
+
+            {!reviewing ? (
+              <article className={styles.positionCard} key={reference}>
+                <span className={styles.positionEyebrow}>Position {activePosition + 1} of {entries.length} · {reference}</span>
+                <h3 ref={headingRef} tabIndex={-1}>{title}</h3>
+                <p className={styles.positionStatement}>{statement}</p>
+                <fieldset className={styles.responseField}>
+                  <legend>Choose one response</legend>
+                  <div className={styles.choiceGrid}>
+                    {choices.map(choice => {
+                      const selected = positions[reference] === choice.value;
+                      return <button type="button" key={choice.value}
+                        className={`${styles.choice} ${selected ? styles.choiceSelected : ""}`}
+                        aria-pressed={selected} aria-label={choice.label}
+                        aria-describedby={`${reference}-${choice.value}-meaning`} disabled={locked}
+                        onClick={() => {
+                          setPositions(current => ({ ...current, [reference]: choice.value }));
+                          if (choice.value === "AFFIRM") {
+                            setNotes(current => {
+                              const next = { ...current }; delete next[reference]; return next;
+                            });
+                          }
+                        }}>
+                        <span className={styles.choiceLabel}>{choice.label}<span aria-hidden="true">{selected ? "✓" : ""}</span></span>
+                        <span id={`${reference}-${choice.value}-meaning`} className={styles.choiceDescription}>{choice.meaning}</span>
+                      </button>;
+                    })}
+                  </div>
+                </fieldset>
+                {positions[reference] && positions[reference] !== "AFFIRM" ? (
+                  <label className={styles.noteField}>
+                    <span>{positions[reference] === "REVISE" ? "Proposed wording and reason" : positions[reference] === "CLARIFY" ? "Point requiring clarification" : "Reason for declining"} <small>Required</small></span>
+                    <textarea value={notes[reference] ?? ""} rows={4} maxLength={4000}
+                      required aria-required="true" disabled={locked}
+                      placeholder="Name the specific point, condition, or wording."
+                      onChange={event => setNotes(current => ({ ...current, [reference]: event.target.value }))} />
+                    <small>Your note will accompany this position in the submitted response.</small>
+                  </label>
+                ) : null}
+                <div className={styles.positionActions}>
+                  <button type="button" className={styles.backAction} disabled={activePosition === 0 || recording}
+                    onClick={() => visitPosition(activePosition - 1)}>Previous</button>
+                  <button type="button" className={styles.continueAction}
+                    disabled={recording || receiptState === "loading" || !activeComplete}
+                    onClick={() => {
+                      if (activePosition < entries.length - 1) visitPosition(activePosition + 1);
+                      else { setReviewing(true); focusHeading(); }
+                    }}>{activePosition === entries.length - 1 ? "Review responses" : "Continue"} →</button>
                 </div>
-              ) : (
-                <>
-                  <button className={styles.recordAction} type="button" onClick={recordPositions}
-                    disabled={!actorBound || receiptState !== "ready" || recording || unanswered > 0 || missingNotes > 0}>
-                    {recording ? "Recording…" : "Record seven positions"}
-                  </button>
-                  {receiptState === "error" ? <p role="alert">The record needs to be checked. Reload this page before trying again.</p> : null}
-                  {recordError ? <p role="alert">{recordError}</p> : null}
-                  <small>{actorBound
-                    ? "The seven positions are saved together. You will receive a receipt after the record commits."
-                    : "Preview only: selections and notes are not saved or sent."}</small>
-                </>
-              )}
-            </div>
-          </div>
+                {!activeComplete ? <p className={styles.completionHint}>
+                  {!positions[reference] ? "Select a response to continue." : "Add the required note to continue."}
+                </p> : null}
+              </article>
+            ) : (
+              <section className={styles.reviewPanel} aria-label="Review all seven responses">
+                <ol className={styles.reviewList}>
+                  {entries.map(([ref, entryTitle, entryStatement], index) => (
+                    <li key={ref}>
+                      <div className={styles.reviewRow}>
+                        <span>{index + 1}. {entryTitle}</span>
+                        <button type="button" className={styles.editAction} disabled={recording}
+                          aria-label={`${receipt ? "View" : "Edit"} position ${index + 1}: ${entryTitle}`}
+                          onClick={() => visitPosition(index)}>{receipt ? "View" : "Edit"}</button>
+                      </div>
+                      <p className={styles.reviewStatement}>{entryStatement}</p>
+                      <strong>{!positions[ref] ? "Response needed" : positions[ref] !== "AFFIRM" && !notes[ref]?.trim()
+                        ? "Required note missing" : choices.find(choice => choice.value === positions[ref])?.label}</strong>
+                      {notes[ref] && positions[ref] !== "AFFIRM" ? <p className={styles.reviewNote}>{notes[ref]}</p> : null}
+                    </li>
+                  ))}
+                </ol>
+                <div className={styles.recordMechanics}>
+                  <p>{unanswered === 0 && missingNotes === 0
+                    ? "All seven positions have a response and any required notes."
+                    : `${unanswered} without a response · ${missingNotes} missing a required note.`}
+                    {" "}{forDiscussion > 0 ? `${forDiscussion} position${forDiscussion === 1 ? " remains" : "s remain"} for discussion; a complete response does not mean full alignment.` : ""}</p>
+                  {receipt ? (
+                    <div className={styles.receipt} role="status">
+                      <strong>Response recorded</strong>
+                      <span>Receipt {receipt.id}</span>
+                      <span>{new Date(receipt.recordedAt).toLocaleString()}</span>
+                      <span>{receipt.representedInstitution} · {receipt.representativeCapacity}</span>
+                      <small>AXPT can now review these positions. This receipt does not itself bind an institution or open drafting.</small>
+                    </div>
+                  ) : (
+                    <>
+                      <p className={styles.reviewIdentity}>{actorBound
+                        ? "Submitting records all seven positions together against your issued Framework version and verified capacity. You will receive a receipt once recording is complete."
+                        : "Preview only · No response can be recorded here."}</p>
+                      <button className={styles.recordAction} type="button" onClick={recordPositions}
+                        disabled={!actorBound || receiptState !== "ready" || recording || unanswered > 0 || missingNotes > 0}>
+                        {recording ? "Submitting responses…" : "Submit responses"}
+                      </button>
+                    </>
+                  )}
+                </div>
+              </section>
+            )}
 
-          <div className={styles.formationBoundary}>
-            <span>
-              Formation boundary
-            </span>
-
-            <p>
-              Framework alignment can support drafting the proposed
-              master agreement. It does not grant new
-              authority, execute an SPA, allocate gold, or
-              satisfy the operative conditions for execution.
-            </p>
+            {receiptState === "error" ? <div className={styles.errorState} role="alert">
+              <p>{recordError ? "Submission could not be confirmed. Your choices remain on this page." : "The existing response record could not be checked."}
+                {" "}Check the record before trying to submit.</p>
+              <button className={styles.backAction} type="button" onClick={checkRecord}>Check response record</button>
+            </div> : null}
+            <footer className={styles.formationBoundary}>
+              <span>{instrumentReference} · Framework V2</span>
+              <p>Your response informs further deliberation and proposed agreement drafting.
+                It does not grant authority, execute an SPA, or allocate gold.</p>
+            </footer>
           </div>
-        </div>
+        </div>, document.body,
       )}
 
-      <div className={styles.doctrine}>
+      {!entered ? <div className={styles.doctrine}>
         <span>Article V / Principle</span>
         <p>Understanding must become attributable response before it becomes binding action.</p>
-      </div>
+      </div> : null}
     </section>
   );
 }

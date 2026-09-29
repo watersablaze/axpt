@@ -73,62 +73,19 @@ export function GlobalMotherExperience({
           className={`${styles.stage} ${styles.gate}`}
           aria-labelledby="gm-gate-heading"
         >
-          <div className={styles.gatePrelude}>
-            <p>
-              Private Institutional Environment
-            </p>
-
-            <Seal />
-          </div>
-
+          <div className={styles.gatePrelude}><Seal /></div>
+          <p className={styles.stageKicker}>Global Mother · Institutional Framework</p>
+          <h1 id="gm-gate-heading">Framework of Royal Custodianship, Restoration &amp; Global Trade</h1>
           <div className={styles.prepared}>
-            <span>
-              Prepared for
-            </span>
-
-            <h1 id="gm-gate-heading">
-              {recipient?.name ?? "Dr. Awulah Naanii Amon"}
-            </h1>
-
-            <p>
-              {recipient?.institution ?? "Nubian Empress Omaedro II"}
-            </p>
-
-            <div className={styles.capacities}>
-              <span>
-                {recipient?.capacity ?? "Global Mother"}
-              </span>
-
-              <span>
-                {recipient?.institution ?? "Royal Council Representative"}
-              </span>
-            </div>
+            <span>Prepared for</span>
+            <h2>{recipient?.name ?? "Dr. Awulah Naanii Amon"}</h2>
+            <p>{recipient?.institution ?? "ND Royal Ministry"}</p>
+            <p>{recipient?.capacity ?? "Global Mother · Royal Council Representative"}</p>
           </div>
-
           <div className={styles.gateStatement}>
-            <p>
-              You have been received into a private,
-              access-controlled institutional environment
-              prepared for the development of this
-              relationship.
-            </p>
-
-            <p>
-              Your access is personal and attributable.
-              Materials presented within this environment
-              are reserved for invited participants and
-              authorized institutional custodians
-              associated with this Framework.
-            </p>
-          </div>
-
-          <div
-            className={styles.accessDoctrine}
-            aria-label="Access characteristics"
-          >
-            <span>Private</span>
-            <span>Invitation-bound</span>
-            <span>Attributable</span>
+            <p>This private chamber presents the Global Mother Framework for your review.
+              Within it, you may consider the proposed relationship and record your positions
+              through the response register.</p>
           </div>
 
           <button
@@ -142,10 +99,8 @@ export function GlobalMotherExperience({
           </button>
 
           <p className={styles.thresholdNotice}>
-            Entry permits review of the Framework.
-            It does not by itself constitute agreement,
-            delegation of authority, commercial
-            commitment, or execution.
+            Entering opens the Framework for review. It does not constitute agreement,
+            confer authority, or execute an instrument.
           </p>
         </section>
       ) : null}
@@ -162,14 +117,18 @@ export function GlobalMotherExperience({
           </h1>
 
           <p className={styles.folioLead}>
-            {recipient
-              ? `French-Ward receives ${recipient.name} in the presented capacity of ${recipient.capacity} for ${recipient.institution}.`
-              : "French-Ward receives Dr. Awulah Naanii Amon, known as Nubian Empress Omaedro II and also as Gloria Amon-Vanderpuije, in the capacities presented as Global Mother and Royal Council Representative."}
+            French-Ward receives you in the capacities presented for this relationship.
           </p>
+          <div className={styles.prepared}>
+            <span>Presented participant</span>
+            <h2>{recipient?.name ?? "Dr. Awulah Naanii Amon"}</h2>
+            <p>{recipient?.institution ?? "ND Royal Ministry"}</p>
+            <p>{recipient?.capacity ?? "Global Mother · Royal Council Representative"}</p>
+          </div>
 
           <div className={styles.folioColumns}>
             <div>
-              <span>Recognition</span>
+              <span>Presented capacities</span>
               <p>
                 This reception records the presented capacities.
                 It does not independently confer or adjudicate Royal

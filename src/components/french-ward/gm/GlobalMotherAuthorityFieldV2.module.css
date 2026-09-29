@@ -94,3 +94,18 @@
   background: rgba(77, 100, 77, 0.065);
   border-color: rgba(77, 100, 77, 0.26);
 }
+
+/* GM visual pass: focused reading and deliberation. */
+
+.field { --muted: #505b61; --rule: #33465820; padding: 0 0 1rem; }
+.columns { display: none; }
+.schedule { border-top: 1px solid var(--rule); }
+.row { grid-template-columns: 1fr; gap: .65rem; padding: 1.5rem 0; background: transparent; }
+.row:nth-child(even) { background: transparent; }
+.classification { display: flex; flex-wrap: wrap; align-items: baseline; gap: .75rem; }
+.classification strong { margin-top: 0; font-weight: 400; }
+.party h3 { font-size: 1.45rem; line-height: 1.3; }
+.details p, .record > p { font-size: 1rem; line-height: 1.7; }
+.details small { font-size: .9rem; line-height: 1.6; }
+.record { background: #33465806; border-color: var(--rule); border-radius: 3px; }
+.doctrine { background: #1a3041; border-left: 2px solid #b29a69; border-radius: 0 3px 3px 0; }

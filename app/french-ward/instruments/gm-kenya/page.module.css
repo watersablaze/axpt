@@ -2974,3 +2974,16 @@
 @media (prefers-reduced-motion: reduce) {
   .baseArticle { animation: none; }
 }
+
+/* GM visual pass: focused reading and deliberation. */
+
+.baseArticle { --gm-chamber-reading-width: 46rem; --gm-chamber-wide-width: 46rem; max-width: 46rem; gap: 1.5rem; animation: none; }
+.baseArticle .movementHeader, .baseArticle .articleMasthead { padding: 1.4rem 0 1.25rem; border-bottom-color: #33465820; }
+.baseArticle .movementHeader::after, .baseArticle .articleMasthead::after { display: none; }
+.baseArticle .movementHeader > div { max-width: 100%; }
+.baseArticle .movementKicker, .baseArticle .articleLabel { margin-bottom: .6rem; font-size: clamp(1.6rem,3vw,2.15rem); color: #29323a; line-height: 1.2; }
+.baseArticle .movementHeader h2, .baseArticle .articleIdentity h2 { font-size: 1.12rem; line-height: 1.45; }
+.baseArticle .movementLead, .baseArticle.articleRelationship .movementLead, .baseArticle.articleAuthority .articleSummary { max-width: 100%; color: #505b61; font-size: 1rem; line-height: 1.7; }
+.baseArticle .articleMasthead { margin: 0; background: transparent; border: 0; border-bottom: 1px solid #33465820; }
+.baseArticle .articleTopline, .baseArticle .articleIdentity { padding: 0; }
+.baseArticle .articleReference { display: none; }

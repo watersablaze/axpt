@@ -11,3 +11,11 @@
 .verification input { min-width: 0; width: 100%; padding: .8rem; font: 1.4rem monospace; letter-spacing: .3em; background: #102c26; color: #ede8da; border: 1px solid #789082; }
 .verification :focus-visible { outline: 2px solid #d4ba76; outline-offset: 3px; }
 .card small { display: block; color: #b9c4b6; line-height: 1.5; }
+
+/* GM visual pass: focused reading and deliberation. */
+
+.surface { min-height: 100svh; box-sizing: border-box; }
+.verification > p:first-child { margin: 0 0 1rem; }
+.verification > button { min-height: 48px; border-radius: 3px; }
+.verification input { box-sizing: border-box; }
+.card { box-sizing: border-box; border-color: #78908230; border-radius: 4px; }
