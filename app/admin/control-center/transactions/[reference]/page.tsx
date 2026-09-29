@@ -179,7 +179,7 @@ export default async function TransactionOperatorPage({
       </header>
 
       <div className="mx-auto grid min-w-0 max-w-7xl grid-cols-[minmax(0,1fr)] gap-0 px-4 pb-12 sm:px-6 lg:min-h-[calc(100dvh-173px)] lg:grid-cols-[220px_minmax(0,1fr)] lg:px-8 lg:pb-0">
-        <aside className="sticky top-[116px] z-30 min-w-0 border-b border-amber-900/25 bg-[#09100d] py-3 shadow-[0_12px_30px_rgba(0,0,0,0.18)] backdrop-blur-2xl backdrop-saturate-150 lg:top-[var(--cc-crown-height)] lg:z-30 lg:self-start lg:border-b-0 lg:border-r lg:border-stone-800 lg:bg-[#07100c]/82 lg:py-5 lg:shadow-[8px_0_28px_rgba(0,0,0,0.18)] lg:backdrop-blur-2xl lg:backdrop-saturate-150">
+        <aside className="sticky top-[var(--cc-mobile-crown-height)] z-30 min-w-0 border-b border-amber-900/25 bg-[#09100d] py-3 shadow-[0_12px_30px_rgba(0,0,0,0.18)] backdrop-blur-2xl backdrop-saturate-150 lg:top-[var(--cc-crown-height)] lg:z-30 lg:self-start lg:border-b-0 lg:border-r lg:border-stone-800 lg:bg-[#07100c]/82 lg:py-5 lg:shadow-[8px_0_28px_rgba(0,0,0,0.18)] lg:backdrop-blur-2xl lg:backdrop-saturate-150">
           <nav
             aria-label="Operator transaction workspaces"
             className="flex gap-1 overflow-x-auto pr-0 lg:flex-col lg:overflow-visible lg:pr-4"

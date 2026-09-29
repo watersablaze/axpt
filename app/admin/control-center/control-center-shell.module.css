@@ -1,5 +1,6 @@
 .shell {
   --cc-crown-height: 76px;
+  --cc-mobile-crown-height: 88px;
   min-height: 100%;
   width: 100%;
   background: #05070a;
@@ -165,8 +166,8 @@
   .identity {
     align-items: flex-start;
     flex-direction: column;
-    gap: 0.12rem;
-    padding: 0.52rem 0.65rem 0.34rem;
+    gap: 0.06rem;
+    padding: 0.34rem 0.65rem 0.24rem;
   }
 
   .identity span {
@@ -203,7 +204,7 @@
     align-items: center;
     justify-content: space-between;
     min-width: 0;
-    padding: 0.58rem 0.65rem;
+    padding: 0.36rem 0.65rem;
     color: rgba(250, 241, 218, 0.96);
     cursor: pointer;
     font-size: 0.68rem;
@@ -266,7 +267,7 @@
   .location {
     overflow: hidden;
     border-top: 1px solid rgba(255, 255, 255, 0.045);
-    padding: 0.34rem 0.65rem 0.38rem;
+    padding: 0.22rem 0.65rem 0.24rem;
     font-size: 0.5rem;
     text-overflow: ellipsis;
     white-space: nowrap;
