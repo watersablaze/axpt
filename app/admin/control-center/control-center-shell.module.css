@@ -137,7 +137,6 @@
    * instead of remaining as an exposed paint corridor.
    */
   .shell {
-    margin-top: -0.75rem;
     padding-top: 0.75rem;
   }
   .shell,
