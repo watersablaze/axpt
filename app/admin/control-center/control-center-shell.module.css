@@ -127,6 +127,19 @@
 }
 
 @media (max-width: 720px) {
+  /*
+   * OperationsShell gives its scroll owner 12px of top padding.
+   * Consume that inset for Control Center so the sticky
+   * constitutional crown can clamp to the true scrollport edge.
+   *
+   * Recreate the same initial breathing room inside the CC
+   * document; it therefore scrolls away with the document
+   * instead of remaining as an exposed paint corridor.
+   */
+  .shell {
+    margin-top: -0.75rem;
+    padding-top: 0.75rem;
+  }
   .shell,
   .axis,
   .content {
@@ -142,7 +155,8 @@
         180deg,
         rgba(8, 14, 13, 0.985),
         rgba(5, 9, 9, 0.965)
-      );
+      ),
+      #050909;
     box-shadow:
       0 1px 0 rgba(205, 169, 86, 0.08),
       0 12px 30px rgba(0, 0, 0, 0.16);
