@@ -1,0 +1,261 @@
+.shell {
+  --cc-crown-height: 76px;
+  min-height: 100%;
+  width: 100%;
+  background: #05070a;
+  color: #e5e7eb;
+}
+
+.axis {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(10, 13, 14, 0.98),
+      rgba(5, 7, 10, 0.96)
+    );
+  backdrop-filter: blur(14px);
+}
+
+.identity {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  padding: 0.65rem 0.9rem 0.45rem;
+}
+
+.identity span {
+  color: rgba(245, 208, 117, 0.88);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+}
+
+.identity strong {
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+}
+
+.navigationRow {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.65rem;
+  overflow-x: auto;
+  padding: 0 0.9rem;
+  scrollbar-width: none;
+}
+
+.navigationRow::-webkit-scrollbar {
+  display: none;
+}
+
+.primaryNavigation,
+.secondaryNavigation {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.primaryNavigation a,
+.secondaryNavigation a {
+  position: relative;
+  display: block;
+  padding: 0.55rem 0.7rem 0.65rem;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 0.64rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.secondaryNavigation a {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.primaryNavigation a:hover,
+.secondaryNavigation a:hover {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.primaryNavigation a.active,
+.secondaryNavigation a.active {
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.primaryNavigation a.active::after,
+.secondaryNavigation a.active::after {
+  position: absolute;
+  right: 0.7rem;
+  bottom: 0;
+  left: 0.7rem;
+  height: 1px;
+  background: rgba(245, 208, 117, 0.88);
+  content: '';
+}
+
+.axisDivider {
+  width: 1px;
+  height: 1rem;
+  flex: 0 0 1px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.location {
+  border-top: 1px solid rgba(255, 255, 255, 0.045);
+  padding: 0.42rem 0.9rem 0.48rem;
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 0.54rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.content {
+  min-width: 0;
+}
+
+.mobileDisclosure {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .shell,
+  .axis,
+  .content {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .axis {
+    position: sticky;
+    top: 0;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(8, 14, 13, 0.985),
+        rgba(5, 9, 9, 0.965)
+      );
+    box-shadow:
+      0 1px 0 rgba(205, 169, 86, 0.08),
+      0 12px 30px rgba(0, 0, 0, 0.16);
+    backdrop-filter: blur(16px) saturate(112%);
+  }
+
+  .identity {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.12rem;
+    padding: 0.52rem 0.65rem 0.34rem;
+  }
+
+  .identity span {
+    font-size: 0.58rem;
+  }
+
+  .identity strong {
+    font-size: 0.52rem;
+  }
+
+  .desktopNavigation {
+    display: none;
+  }
+
+  .mobileDisclosure {
+    display: block;
+    border-top: 1px solid rgba(222, 184, 92, 0.12);
+    border-bottom: 1px solid rgba(222, 184, 92, 0.16);
+    background:
+      linear-gradient(
+        90deg,
+        rgba(74, 57, 25, 0.22),
+        rgba(20, 35, 29, 0.30) 52%,
+        rgba(8, 15, 13, 0.18)
+      );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 235, 183, 0.025),
+      0 6px 20px rgba(0, 0, 0, 0.10);
+    backdrop-filter: blur(16px) saturate(125%);
+  }
+
+  .mobileDisclosure summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 0;
+    padding: 0.58rem 0.65rem;
+    color: rgba(250, 241, 218, 0.96);
+    cursor: pointer;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    list-style: none;
+    text-transform: uppercase;
+  }
+
+  .mobileDisclosure summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .disclosureMark {
+    flex: 0 0 auto;
+    color: rgba(245, 208, 117, 0.88);
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 1;
+    transition: transform 140ms ease;
+  }
+
+  .mobileDisclosure[open] .disclosureMark {
+    transform: rotate(45deg);
+  }
+
+  .mobileDomainNavigation {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid rgba(255, 255, 255, 0.055);
+    padding: 0.3rem 0.4rem 0.45rem;
+  }
+
+  .mobileDomainNavigation a {
+    position: relative;
+    min-width: 0;
+    padding: 0.52rem 0.45rem;
+    color: rgba(255, 255, 255, 0.42);
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .mobileDomainNavigation a.active {
+    color: rgba(255, 255, 255, 0.96);
+  }
+
+  .mobileDomainNavigation a.active::before {
+    position: absolute;
+    top: 0.45rem;
+    bottom: 0.45rem;
+    left: 0;
+    width: 1px;
+    background: rgba(245, 208, 117, 0.88);
+    content: '';
+  }
+
+  .location {
+    overflow: hidden;
+    border-top: 1px solid rgba(255, 255, 255, 0.045);
+    padding: 0.34rem 0.65rem 0.38rem;
+    font-size: 0.5rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

@@ -33,7 +33,7 @@ export default function OperationsShell({
       >
         <OperationsHeader />
         <main
-          className="min-h-0 flex-1 overflow-auto bg-neutral-950 px-6 py-6"
+          className="min-h-0 min-w-0 flex-1 overflow-auto bg-neutral-950 px-3 py-3 sm:px-6 sm:py-6"
           style={{
             minHeight: 0,
             minWidth: 0,

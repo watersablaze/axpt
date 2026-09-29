@@ -94,9 +94,9 @@ export default async function TransactionOperatorPage({
 
   return (
     <div className="min-h-screen bg-[#090d0c] text-stone-100">
-      <header className="sticky top-0 z-30 border-b border-stone-800 bg-[#090d0c]/95 backdrop-blur">
-        <div className="mx-auto max-w-7xl px-4 py-2.5 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between gap-4">
+      <header className="relative z-20 border-b border-stone-800 bg-[#090d0c]/88 backdrop-blur-xl backdrop-saturate-125">
+        <div className="mx-auto hidden max-w-7xl px-4 py-2.5 sm:block sm:px-6 lg:px-8">
+          <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             <div className="min-w-0">
               <p className="text-[9px] uppercase tracking-[0.2em] text-amber-300">
                 French-Ward · Transaction Control
@@ -111,7 +111,7 @@ export default async function TransactionOperatorPage({
               </div>
             </div>
 
-            <div className="shrink-0 rounded-sm border border-amber-900/70 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-amber-300">
+            <div className="self-start rounded-sm border border-amber-900/70 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-amber-300 sm:shrink-0">
               Operator Control
             </div>
           </div>
@@ -123,10 +123,63 @@ export default async function TransactionOperatorPage({
             <span className="text-rose-300">Authority · Verification only</span>
           </div>
         </div>
+
+        <details className="group sm:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 border-b border-amber-900/20 bg-[linear-gradient(90deg,rgba(12,27,22,0.78),rgba(9,16,14,0.62))] px-4 py-3 backdrop-blur-xl [&::-webkit-details-marker]:hidden">
+            <div className="min-w-0">
+              <p className="truncate font-mono text-[12px] font-medium text-white">
+                {reference}
+              </p>
+              <p className="mt-1 truncate text-[9px] uppercase tracking-[0.14em] text-amber-200/70">
+                Inderaksh · Transaction Control
+              </p>
+            </div>
+
+            <span
+              aria-hidden="true"
+              className="shrink-0 text-base leading-none text-amber-300 transition-transform group-open:rotate-45"
+            >
+              +
+            </span>
+          </summary>
+
+          <div className="border-b border-amber-900/20 bg-[#08100d]/72 px-4 py-4 shadow-[0_12px_28px_rgba(0,0,0,0.16)] backdrop-blur-2xl backdrop-saturate-150">
+            <p className="text-[9px] uppercase tracking-[0.2em] text-amber-300">
+              French-Ward · Transaction Control
+            </p>
+
+            <p className="mt-2 font-mono text-sm font-medium text-white">
+              {reference}
+            </p>
+
+            <p className="mt-1 text-[11px] leading-5 text-stone-400">
+              Inderaksh Gold Refinery FZ-LLC · Initial 50 KG Gold Doré
+            </p>
+
+            <div className="mt-3 inline-flex rounded-sm border border-amber-900/70 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-amber-300">
+              Operator Control
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-stone-800/80 pt-3 text-[9px] uppercase tracking-[0.1em]">
+              <span className="text-amber-300">
+                Documents · Review
+              </span>
+              <span className="text-stone-300">
+                Execution · Not Released
+              </span>
+              <span className="text-cyan-300">
+                Settlement · Active
+              </span>
+              <span className="text-rose-300">
+                Authority · Verification only
+              </span>
+            </div>
+          </div>
+        </details>
       </header>
 
-      <div className="mx-auto grid max-w-7xl gap-0 px-4 pb-12 sm:px-6 lg:grid-cols-[220px_minmax(0,1fr)] lg:px-8">
-        <aside className="border-b border-stone-800 py-3 lg:sticky lg:top-[74px] lg:h-[calc(100vh-74px)] lg:border-b-0 lg:border-r lg:py-5">
+      <div className="mx-auto grid min-w-0 max-w-7xl grid-cols-[minmax(0,1fr)] gap-0 px-4 pb-12 sm:px-6 lg:min-h-[calc(100dvh-173px)] lg:grid-cols-[220px_minmax(0,1fr)] lg:px-8 lg:pb-0">
+        <aside className="sticky top-[116px] z-30 min-w-0 border-b border-amber-900/25 bg-[#09100d]/72 py-3 shadow-[0_12px_30px_rgba(0,0,0,0.18)] backdrop-blur-2xl backdrop-saturate-150 lg:top-[var(--cc-crown-height)] lg:z-30 lg:self-start lg:border-b-0 lg:border-r lg:border-stone-800 lg:bg-[#07100c]/82 lg:py-5 lg:shadow-[8px_0_28px_rgba(0,0,0,0.18)] lg:backdrop-blur-2xl lg:backdrop-saturate-150">
           <nav
             aria-label="Operator transaction workspaces"
             className="flex gap-1 overflow-x-auto pr-0 lg:flex-col lg:overflow-visible lg:pr-4"
@@ -137,7 +190,7 @@ export default async function TransactionOperatorPage({
                 aria-current={view === key ? "page" : undefined}
                 className={
                   view === key
-                    ? "whitespace-nowrap border-l-2 border-amber-300 bg-amber-950/20 px-3 py-2 text-xs text-white"
+                    ? "whitespace-nowrap border-l-2 border-amber-300 bg-[rgba(94,67,24,0.20)] px-3 py-2 text-xs text-amber-50 shadow-[inset_0_0_0_1px_rgba(245,208,117,0.035)]"
                     : "whitespace-nowrap border-l-2 border-transparent px-3 py-2 text-xs text-stone-400 hover:bg-white/[0.03] hover:text-white"
                 }
                 href={`${path}?view=${key}`}
@@ -157,7 +210,7 @@ export default async function TransactionOperatorPage({
           </div>
         </aside>
 
-        <main className="min-w-0 py-5 lg:pl-6">
+        <main className="min-w-0 pt-7 pb-5 lg:py-5 lg:pl-6">
           {view === "overview" ? (
             <section className="space-y-4" aria-label="Transaction control overview">
               <div className="border-b border-stone-800 pb-4">
