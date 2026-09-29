@@ -1,0 +1,6042 @@
+.shell {
+  --gm-bg: #07110f;
+  --gm-bg-soft: #0a1512;
+  --gm-cream: #e8dfc8;
+  --gm-soft: rgba(232, 223, 200, 0.7);
+  --gm-faint: rgba(232, 223, 200, 0.4);
+  --gm-line: rgba(196, 176, 128, 0.18);
+  --gm-gold: rgba(190, 153, 84, 0.82);
+
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      circle at 50% 18%,
+      rgba(55, 88, 70, 0.14),
+      transparent 31%
+    ),
+    var(--gm-bg);
+  color: var(--gm-cream);
+}
+
+.atmosphere {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.34;
+  background-image:
+    linear-gradient(
+      rgba(232, 223, 200, 0.015) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(232, 223, 200, 0.012) 1px,
+      transparent 1px
+    );
+  background-size: 76px 76px;
+  mask-image:
+    radial-gradient(
+      circle at 50% 22%,
+      black,
+      transparent 72%
+    );
+}
+
+.axis {
+  position: absolute;
+  top: 7rem;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      to bottom,
+      transparent,
+      var(--gm-line) 8%,
+      var(--gm-line) 92%,
+      transparent
+    );
+  opacity: 0.32;
+}
+
+.header {
+  position: relative;
+  z-index: 2;
+}
+
+.utility {
+  display: flex;
+  justify-content: space-between;
+  gap: 2rem;
+  padding:
+    1rem
+    clamp(1.4rem, 4vw, 4.5rem);
+  border-bottom:
+    1px solid var(--gm-line);
+  color: var(--gm-faint);
+  font-size: 0.58rem;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.hero {
+  width: min(
+    calc(100% - 3rem),
+    1180px
+  );
+  margin: 0 auto;
+  padding:
+    clamp(6rem, 13vh, 11rem)
+    0
+    clamp(4rem, 9vh, 7rem);
+}
+
+.eyebrow,
+.frameworkClass {
+  margin: 0;
+  font-size: 0.63rem;
+  letter-spacing: 0.19em;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  color: var(--gm-faint);
+}
+
+.frameworkClass {
+  margin-top: 1.4rem;
+  color: var(--gm-gold);
+}
+
+.hero h1 {
+  max-width: 1040px;
+  margin:
+    clamp(2rem, 5vh, 3.5rem)
+    0
+    0;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size:
+    clamp(
+      3rem,
+      7.3vw,
+      7.5rem
+    );
+  font-weight: 400;
+  line-height: 0.92;
+  letter-spacing: -0.048em;
+}
+
+.subtitle {
+  max-width: 760px;
+  margin: 2rem 0 0;
+  color: var(--gm-soft);
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size:
+    clamp(
+      1.05rem,
+      2vw,
+      1.45rem
+    );
+  line-height: 1.6;
+}
+
+.meta {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      3,
+      minmax(0, 1fr)
+    );
+  width: min(
+    100%,
+    820px
+  );
+  margin-top:
+    clamp(
+      3.5rem,
+      8vh,
+      6rem
+    );
+  border-top:
+    1px solid var(--gm-line);
+  border-bottom:
+    1px solid var(--gm-line);
+}
+
+.meta div {
+  padding:
+    1.2rem
+    1.5rem
+    1.2rem
+    0;
+}
+
+.meta div + div {
+  padding-left: 1.5rem;
+  border-left:
+    1px solid var(--gm-line);
+}
+
+.meta span {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--gm-faint);
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.meta strong {
+  color: var(--gm-soft);
+  font-size: 0.72rem;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+}
+
+.doctrineSequence {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      4,
+      minmax(0, 1fr)
+    );
+  width: min(
+    calc(100% - 3rem),
+    1180px
+  );
+  margin: 0 auto;
+  border-top:
+    1px solid var(--gm-line);
+  border-bottom:
+    1px solid var(--gm-line);
+}
+
+.doctrineSequence div {
+  min-height: 9rem;
+  padding:
+    1.4rem
+    clamp(
+      1rem,
+      2vw,
+      2rem
+    );
+}
+
+.doctrineSequence div + div {
+  border-left:
+    1px solid var(--gm-line);
+}
+
+.doctrineSequence span {
+  color: var(--gm-gold);
+  font-size: 0.58rem;
+  letter-spacing: 0.14em;
+}
+
+.doctrineSequence p {
+  margin: 2rem 0 0;
+  color: var(--gm-cream);
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size:
+    clamp(
+      1rem,
+      1.8vw,
+      1.35rem
+    );
+  line-height: 1.45;
+}
+
+.movements {
+  display: grid;
+  grid-template-columns:
+    repeat(
+      5,
+      minmax(0, 1fr)
+    );
+  width: min(
+    calc(100% - 3rem),
+    1180px
+  );
+  margin:
+    clamp(
+      3rem,
+      7vh,
+      5rem
+    )
+    auto
+    0;
+}
+
+.movements a {
+  display: grid;
+  gap: 0.85rem;
+  min-height: 7rem;
+  padding:
+    1.3rem
+    1.2rem;
+  border-top:
+    1px solid var(--gm-line);
+  border-bottom:
+    1px solid var(--gm-line);
+  color: inherit;
+  text-decoration: none;
+}
+
+.movements a + a {
+  border-left:
+    1px solid var(--gm-line);
+}
+
+.movements span {
+  color: var(--gm-faint);
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size: 0.8rem;
+}
+
+.movements strong {
+  align-self: end;
+  color: var(--gm-soft);
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size:
+    clamp(
+      0.9rem,
+      1.45vw,
+      1.15rem
+    );
+  font-weight: 400;
+  line-height: 1.3;
+}
+
+.movements .movementActive {
+  border-top-color:
+    var(--gm-gold);
+}
+
+.movements .movementActive span,
+.movements .movementActive strong {
+  color: var(--gm-cream);
+}
+
+.threshold {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns:
+    minmax(140px, 0.34fr)
+    minmax(0, 1fr);
+  gap:
+    clamp(
+      2rem,
+      6vw,
+      7rem
+    );
+  width: min(
+    calc(100% - 3rem),
+    980px
+  );
+  margin:
+    clamp(
+      6rem,
+      12vh,
+      10rem
+    )
+    auto
+    0;
+  padding-top: 1.5rem;
+  border-top:
+    1px solid var(--gm-line);
+}
+
+.threshold span {
+  color: var(--gm-faint);
+  font-size: 0.6rem;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.threshold p {
+  max-width: 680px;
+  margin: 0;
+  color: var(--gm-soft);
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size:
+    clamp(
+      1.1rem,
+      2.25vw,
+      1.65rem
+    );
+  line-height: 1.55;
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  width: min(
+    calc(100% - 3rem),
+    1180px
+  );
+  margin:
+    clamp(
+      7rem,
+      14vh,
+      12rem
+    )
+    auto
+    0;
+  padding-bottom:
+    clamp(
+      8rem,
+      15vh,
+      14rem
+    );
+}
+
+.footer {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns:
+    auto
+    minmax(0, 1fr)
+    auto;
+  gap: 2rem;
+  align-items: center;
+  padding:
+    1.5rem
+    clamp(
+      1.5rem,
+      4vw,
+      4.5rem
+    );
+  border-top:
+    1px solid var(--gm-line);
+  color: var(--gm-faint);
+}
+
+.footer span {
+  font-size: 0.58rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.footer p {
+  max-width: 700px;
+  margin: 0 auto;
+  color: var(--gm-soft);
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media (
+  max-width: 900px
+) {
+  .doctrineSequence {
+    grid-template-columns:
+      repeat(
+        2,
+        minmax(0, 1fr)
+      );
+  }
+
+  .doctrineSequence div:nth-child(3) {
+    border-left: 0;
+    border-top:
+      1px solid var(--gm-line);
+  }
+
+  .doctrineSequence div:nth-child(4) {
+    border-top:
+      1px solid var(--gm-line);
+  }
+
+  .movements {
+    grid-template-columns: 1fr;
+  }
+
+  .movements a {
+    min-height: auto;
+    grid-template-columns:
+      3rem
+      minmax(0, 1fr);
+    align-items: center;
+  }
+
+  .movements a + a {
+    border-left: 0;
+    border-top: 0;
+  }
+
+  .meta {
+    grid-template-columns: 1fr;
+  }
+
+  .meta div + div {
+    padding-left: 0;
+    border-top:
+      1px solid var(--gm-line);
+    border-left: 0;
+  }
+}
+
+@media (
+  max-width: 680px
+) {
+  .utility {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+
+  .axis {
+    display: none;
+  }
+
+  .doctrineSequence {
+    grid-template-columns: 1fr;
+  }
+
+  .doctrineSequence div + div,
+  .doctrineSequence div:nth-child(3) {
+    border-top:
+      1px solid var(--gm-line);
+    border-left: 0;
+  }
+
+  .threshold {
+    grid-template-columns: 1fr;
+  }
+
+  .footer {
+    grid-template-columns: 1fr;
+  }
+
+  .footer p {
+    margin: 0;
+    text-align: left;
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB2
+   Constitutional scroll grammar
+   Compact front matter · manuscript rhythm · reduced UI chrome
+   ========================================================= */
+
+.shell {
+  --gm-reading: 940px;
+  --gm-folio: 820px;
+}
+
+/*
+ * Front matter should read as constitutional title matter,
+ * not a product hero.
+ */
+.hero {
+  width: min(
+    calc(100% - 3rem),
+    var(--gm-reading)
+  );
+
+  padding:
+    clamp(4rem, 8vh, 6.5rem)
+    0
+    clamp(2.75rem, 5vh, 4rem);
+}
+
+.hero h1 {
+  max-width: 860px;
+
+  margin:
+    clamp(1.35rem, 3vh, 2rem)
+    0
+    0;
+
+  font-size:
+    clamp(
+      2.65rem,
+      5vw,
+      4.65rem
+    );
+
+  line-height: 1.02;
+  letter-spacing: -0.038em;
+}
+
+.subtitle {
+  max-width: 660px;
+  margin-top: 1.25rem;
+
+  font-size:
+    clamp(
+      1rem,
+      1.55vw,
+      1.22rem
+    );
+
+  line-height: 1.55;
+}
+
+/*
+ * Metadata becomes archival notation rather than
+ * a dashboard block.
+ */
+.meta {
+  width: 100%;
+  margin-top: 2.4rem;
+
+  grid-template-columns:
+    auto
+    auto
+    minmax(0, 1fr);
+
+  border-top: 1px solid var(--gm-line);
+  border-bottom: 1px solid var(--gm-line);
+}
+
+.meta div {
+  min-height: 0;
+  padding:
+    0.8rem
+    1.25rem
+    0.8rem
+    0;
+}
+
+.meta div + div {
+  padding-left: 1.25rem;
+}
+
+.meta span {
+  margin-bottom: 0.3rem;
+  font-size: 0.52rem;
+}
+
+.meta strong {
+  font-size: 0.66rem;
+}
+
+/*
+ * Doctrine should read like an ordered constitutional
+ * inscription, not four product cards.
+ */
+.doctrineSequence {
+  width: min(
+    calc(100% - 3rem),
+    var(--gm-reading)
+  );
+
+  grid-template-columns: 1fr;
+
+  border-bottom: 0;
+}
+
+.doctrineSequence div {
+  display: grid;
+  grid-template-columns:
+    2.5rem
+    minmax(0, 1fr);
+
+  gap: 1.2rem;
+  align-items: baseline;
+
+  min-height: 0;
+
+  padding:
+    0.9rem
+    0;
+
+  border-bottom:
+    1px solid var(--gm-line);
+}
+
+.doctrineSequence div + div {
+  border-left: 0;
+}
+
+.doctrineSequence span {
+  font-size: 0.52rem;
+}
+
+.doctrineSequence p {
+  margin: 0;
+
+  font-size:
+    clamp(
+      1rem,
+      1.6vw,
+      1.28rem
+    );
+
+  line-height: 1.42;
+}
+
+/*
+ * Movement navigation becomes an order / contents folio.
+ */
+.movements {
+  width: min(
+    calc(100% - 3rem),
+    var(--gm-reading)
+  );
+
+  margin:
+    clamp(2.4rem, 5vh, 3.5rem)
+    auto
+    0;
+
+  grid-template-columns: 1fr;
+
+  border-top:
+    1px solid var(--gm-line);
+}
+
+.movements a {
+  display: grid;
+
+  grid-template-columns:
+    3rem
+    minmax(0, 1fr);
+
+  gap: 1rem;
+  align-items: baseline;
+
+  min-height: 0;
+
+  padding:
+    0.9rem
+    0;
+
+  border-top: 0;
+  border-bottom:
+    1px solid var(--gm-line);
+}
+
+.movements a + a {
+  border-left: 0;
+}
+
+.movements span {
+  font-size: 0.72rem;
+}
+
+.movements strong {
+  align-self: auto;
+
+  font-size:
+    clamp(
+      0.95rem,
+      1.45vw,
+      1.12rem
+    );
+
+  line-height: 1.35;
+}
+
+.movements .movementActive {
+  border-top-color: transparent;
+}
+
+.movements .movementActive span {
+  color: var(--gm-gold);
+}
+
+/*
+ * Threshold becomes a short preamble.
+ */
+.threshold {
+  width: min(
+    calc(100% - 3rem),
+    var(--gm-folio)
+  );
+
+  margin:
+    clamp(3rem, 6vh, 4.5rem)
+    auto
+    0;
+
+  grid-template-columns:
+    9rem
+    minmax(0, 1fr);
+
+  gap: 2rem;
+
+  padding-top: 1rem;
+}
+
+.threshold p {
+  max-width: none;
+
+  font-size:
+    clamp(
+      1rem,
+      1.6vw,
+      1.24rem
+    );
+
+  line-height: 1.55;
+}
+
+/*
+ * Bring the constitutional text much closer to
+ * the front matter. The manuscript should begin,
+ * not launch.
+ */
+.content {
+  width: min(
+    calc(100% - 3rem),
+    var(--gm-reading)
+  );
+
+  margin:
+    clamp(4rem, 8vh, 6rem)
+    auto
+    0;
+
+  padding-bottom:
+    clamp(6rem, 10vh, 9rem);
+}
+
+/*
+ * Remove central-axis theatricality from the document.
+ */
+.axis {
+  opacity: 0.16;
+}
+
+/*
+ * Footer as folio notation rather than a closing UI bar.
+ */
+.footer {
+  width: min(
+    calc(100% - 3rem),
+    var(--gm-reading)
+  );
+
+  margin: 0 auto;
+
+  padding:
+    1.3rem
+    0;
+
+  grid-template-columns:
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  gap: 1.5rem;
+}
+
+.footer p {
+  font-size: 0.78rem;
+}
+
+/*
+ * Smaller screens retain manuscript order.
+ */
+@media (max-width: 900px) {
+  .meta {
+    grid-template-columns: 1fr;
+  }
+
+  .meta div + div {
+    padding-left: 0;
+    border-top:
+      1px solid var(--gm-line);
+    border-left: 0;
+  }
+
+  .doctrineSequence {
+    grid-template-columns: 1fr;
+  }
+
+  .doctrineSequence div + div,
+  .doctrineSequence div:nth-child(3),
+  .doctrineSequence div:nth-child(4) {
+    border-left: 0;
+    border-top: 0;
+  }
+
+  .movements {
+    grid-template-columns: 1fr;
+  }
+
+  .movements a + a {
+    border-top: 0;
+  }
+}
+
+@media (max-width: 680px) {
+  .hero,
+  .doctrineSequence,
+  .movements,
+  .threshold,
+  .content,
+  .footer {
+    width: min(
+      calc(100% - 2rem),
+      var(--gm-reading)
+    );
+  }
+
+  .hero {
+    padding-top: 3.5rem;
+  }
+
+  .threshold {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  .footer {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB3
+   One constitutional index.
+   Doctrine and movement are no longer separate systems.
+   ========================================================= */
+
+.hero {
+  padding-top:
+    clamp(3.6rem, 7vh, 5.4rem);
+
+  padding-bottom:
+    clamp(2.2rem, 4vh, 3rem);
+}
+
+.hero h1 {
+  max-width: 800px;
+
+  font-size:
+    clamp(
+      2.35rem,
+      4.35vw,
+      4rem
+    );
+
+  line-height: 1.055;
+  letter-spacing: -0.032em;
+}
+
+.subtitle {
+  max-width: 620px;
+  margin-top: 1rem;
+
+  font-size:
+    clamp(
+      0.98rem,
+      1.4vw,
+      1.14rem
+    );
+}
+
+.preamble {
+  max-width: 690px;
+
+  margin:
+    1.5rem
+    0
+    0;
+
+  padding-top: 1.25rem;
+
+  border-top:
+    1px solid var(--gm-line);
+
+  color: var(--gm-soft);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      0.95rem,
+      1.35vw,
+      1.08rem
+    );
+
+  line-height: 1.6;
+}
+
+.meta {
+  margin-top: 1.8rem;
+}
+
+.constitutionalIndex {
+  width: min(
+    calc(100% - 3rem),
+    var(--gm-reading)
+  );
+
+  margin:
+    clamp(2.4rem, 5vh, 3.4rem)
+    auto
+    0;
+
+  border-top:
+    1px solid var(--gm-line);
+}
+
+.indexLabel {
+  margin: 0;
+
+  padding:
+    0.85rem
+    0;
+
+  border-bottom:
+    1px solid var(--gm-line);
+
+  color: var(--gm-faint);
+
+  font-size: 0.55rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.indexEntries {
+  display: grid;
+}
+
+.indexEntries a {
+  display: grid;
+
+  grid-template-columns:
+    3rem
+    minmax(0, 1fr);
+
+  gap: 1rem;
+  align-items: start;
+
+  padding:
+    0.9rem
+    0;
+
+  border-bottom:
+    1px solid var(--gm-line);
+
+  color: inherit;
+  text-decoration: none;
+}
+
+.indexEntries > a > span {
+  padding-top: 0.12rem;
+
+  color: var(--gm-faint);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 0.72rem;
+}
+
+.indexEntries a > div {
+  display: grid;
+
+  grid-template-columns:
+    minmax(220px, 0.8fr)
+    minmax(0, 1.2fr);
+
+  gap:
+    clamp(1.5rem, 4vw, 4rem);
+
+  align-items: baseline;
+}
+
+.indexEntries strong {
+  color: var(--gm-soft);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      0.96rem,
+      1.35vw,
+      1.1rem
+    );
+
+  font-weight: 400;
+  line-height: 1.35;
+}
+
+.indexEntries p {
+  margin: 0;
+
+  color: var(--gm-faint);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      0.9rem,
+      1.2vw,
+      1rem
+    );
+
+  line-height: 1.4;
+}
+
+.indexEntries .indexActive > span,
+.indexEntries .indexActive strong {
+  color: var(--gm-cream);
+}
+
+.indexEntries .indexActive p {
+  color: var(--gm-soft);
+}
+
+/*
+ * The constitutional text should begin directly
+ * after the front matter.
+ */
+.content {
+  margin-top:
+    clamp(3.5rem, 6vh, 5rem);
+}
+
+@media (max-width: 760px) {
+  .indexEntries a > div {
+    grid-template-columns: 1fr;
+    gap: 0.3rem;
+  }
+
+  .constitutionalIndex {
+    width:
+      calc(100% - 2rem);
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB3.1
+   Initial viewport compression
+   The constitutional front matter should read in one frame.
+   ========================================================= */
+
+.hero {
+  padding-top:
+    clamp(2.6rem, 5vh, 3.8rem);
+
+  padding-bottom:
+    clamp(1.4rem, 2.8vh, 2rem);
+}
+
+.eyebrow,
+.frameworkClass {
+  font-size: 0.56rem;
+  letter-spacing: 0.17em;
+}
+
+.frameworkClass {
+  margin-top: 0.75rem;
+}
+
+.hero h1 {
+  max-width: 760px;
+
+  margin-top:
+    clamp(0.9rem, 1.8vh, 1.25rem);
+
+  font-size:
+    clamp(
+      2.15rem,
+      3.75vw,
+      3.55rem
+    );
+
+  line-height: 1.02;
+}
+
+.subtitle {
+  max-width: 590px;
+  margin-top: 0.8rem;
+
+  font-size:
+    clamp(
+      0.92rem,
+      1.2vw,
+      1.04rem
+    );
+
+  line-height: 1.48;
+}
+
+.preamble {
+  max-width: 650px;
+
+  margin-top: 1rem;
+  padding-top: 0.9rem;
+
+  font-size:
+    clamp(
+      0.88rem,
+      1.1vw,
+      0.98rem
+    );
+
+  line-height: 1.5;
+}
+
+.meta {
+  margin-top: 1.25rem;
+}
+
+.meta div {
+  padding:
+    0.58rem
+    1rem
+    0.58rem
+    0;
+}
+
+.meta div + div {
+  padding-left: 1rem;
+}
+
+.meta span {
+  margin-bottom: 0.2rem;
+  font-size: 0.48rem;
+}
+
+.meta strong {
+  font-size: 0.61rem;
+}
+
+.constitutionalIndex {
+  margin-top:
+    clamp(1.45rem, 2.8vh, 2rem);
+}
+
+.indexLabel {
+  padding:
+    0.58rem
+    0;
+
+  font-size: 0.5rem;
+}
+
+.indexEntries a {
+  grid-template-columns:
+    2.4rem
+    minmax(0, 1fr);
+
+  gap: 0.75rem;
+
+  padding:
+    0.58rem
+    0;
+}
+
+.indexEntries > a > span {
+  font-size: 0.64rem;
+}
+
+.indexEntries a > div {
+  grid-template-columns:
+    minmax(190px, 0.72fr)
+    minmax(0, 1.28fr);
+
+  gap:
+    clamp(1rem, 2.5vw, 2.5rem);
+}
+
+.indexEntries strong {
+  font-size:
+    clamp(
+      0.86rem,
+      1.05vw,
+      0.98rem
+    );
+}
+
+.indexEntries p {
+  font-size:
+    clamp(
+      0.8rem,
+      0.95vw,
+      0.9rem
+    );
+
+  line-height: 1.32;
+}
+
+/*
+ * The document should begin soon after the order,
+ * but still feel intentionally separated.
+ */
+.content {
+  margin-top:
+    clamp(2.5rem, 4.5vh, 3.5rem);
+}
+
+@media (min-width: 1100px) and (min-height: 780px) {
+  .hero {
+    padding-top: 2.8rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .constitutionalIndex {
+    margin-top: 1.6rem;
+  }
+
+  .indexEntries a {
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB8B.1
+   COUNCIL PAMPHLET SURFACE
+
+   Environment = ceremonial field.
+   Pamphlet = received institutional document.
+   ========================================================= */
+
+.shell {
+  --gm-field: #07110f;
+  --gm-field-soft: #0a1512;
+
+  --gm-paper: #ddd4bf;
+  --gm-paper-soft: #d4c9b1;
+  --gm-paper-deep: #cbc0a7;
+
+  --gm-ink: #18201b;
+  --gm-ink-soft: rgba(24, 32, 27, 0.72);
+  --gm-ink-faint: rgba(24, 32, 27, 0.48);
+
+  --gm-bronze: #876b3b;
+  --gm-paper-line: rgba(63, 67, 52, 0.2);
+
+  min-height: 100svh;
+
+  padding:
+    clamp(1.5rem, 4vw, 3.5rem)
+    clamp(0.75rem, 2.5vw, 2rem)
+    clamp(3rem, 6vw, 5rem);
+
+  overflow: visible;
+
+  background:
+    radial-gradient(
+      circle at 50% 12%,
+      rgba(56, 88, 70, 0.18),
+      transparent 32%
+    ),
+    radial-gradient(
+      circle at 18% 70%,
+      rgba(105, 79, 43, 0.055),
+      transparent 28%
+    ),
+    var(--gm-field);
+
+  color: var(--gm-ink);
+}
+
+/*
+ * Retain the atmospheric field outside the document,
+ * but remove its visual authority from the reading object.
+ */
+.atmosphere {
+  position: fixed;
+
+  opacity: 0.22;
+
+  background-size:
+    96px
+    96px;
+}
+
+.axis {
+  display: none;
+}
+
+/*
+ * The actual received object.
+ *
+ * No rounded web-card treatment.
+ * No high-gloss shadow.
+ * It should feel materially present and finite.
+ */
+.pamphlet {
+  position: relative;
+  z-index: 2;
+
+  width:
+    min(
+      100%,
+      1020px
+    );
+
+  margin:
+    0
+    auto;
+
+  overflow: hidden;
+
+  border:
+    1px solid
+    rgba(196, 176, 128, 0.18);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.07),
+      transparent 18rem
+    ),
+    var(--gm-paper);
+
+  box-shadow:
+    0 1.5rem 4rem
+    rgba(0, 0, 0, 0.22);
+
+  color: var(--gm-ink);
+}
+
+/*
+ * Quiet material grain — not faux parchment.
+ */
+.pamphlet::before {
+  content: "";
+
+  position: absolute;
+  inset: 0;
+
+  z-index: 0;
+
+  pointer-events: none;
+
+  opacity: 0.22;
+
+  background-image:
+    linear-gradient(
+      rgba(70, 68, 54, 0.025) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(70, 68, 54, 0.018) 1px,
+      transparent 1px
+    );
+
+  background-size:
+    52px
+    52px;
+}
+
+.header,
+.content,
+.footer {
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================================================
+   TOP PROVENANCE
+   ========================================================= */
+
+.utility {
+  padding:
+    0.8rem
+    clamp(1.5rem, 4vw, 3.25rem);
+
+  border-bottom:
+    1px solid
+    var(--gm-paper-line);
+
+  color:
+    var(--gm-ink-faint);
+
+  font-size: 0.66rem;
+
+  letter-spacing: 0.14em;
+}
+
+/* =========================================================
+   FORMAL INVITATION / FRONT MATTER
+   ========================================================= */
+
+.hero {
+  width: 100%;
+
+  margin: 0;
+
+  padding:
+    clamp(2.4rem, 5vw, 4.25rem)
+    clamp(1.5rem, 4vw, 3.25rem)
+    clamp(2rem, 4vw, 3rem);
+}
+
+.eyebrow {
+  color:
+    var(--gm-ink-faint);
+
+  font-size: 0.72rem;
+}
+
+.frameworkClass {
+  margin-top: 1rem;
+
+  color:
+    var(--gm-bronze);
+
+  font-size: 0.72rem;
+}
+
+.hero h1 {
+  max-width: 820px;
+
+  margin:
+    clamp(1rem, 2vw, 1.5rem)
+    0
+    0;
+
+  color:
+    var(--gm-ink);
+
+  font-size:
+    clamp(
+      2rem,
+      4.4vw,
+      3.75rem
+    );
+
+  line-height: 1.02;
+
+  letter-spacing: -0.035em;
+}
+
+.subtitle {
+  max-width: 680px;
+
+  margin-top: 1rem;
+
+  color:
+    var(--gm-ink-soft);
+
+  font-size:
+    clamp(
+      1.05rem,
+      1.45vw,
+      1.22rem
+    );
+
+  line-height: 1.55;
+}
+
+/*
+ * Formal receipt of the reader.
+ */
+.preparedFor {
+  display: grid;
+
+  max-width: 720px;
+
+  margin-top:
+    clamp(1.7rem, 3vw, 2.5rem);
+
+  padding:
+    1rem
+    0
+    1.1rem;
+
+  border-top:
+    1px solid
+    var(--gm-paper-line);
+
+  border-bottom:
+    1px solid
+    var(--gm-paper-line);
+}
+
+.preparedFor > span {
+  color:
+    var(--gm-bronze);
+
+  font-size: 0.7rem;
+
+  letter-spacing: 0.12em;
+
+  text-transform: uppercase;
+}
+
+.preparedFor strong {
+  margin-top: 0.45rem;
+
+  color:
+    var(--gm-ink);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      1.25rem,
+      1.8vw,
+      1.55rem
+    );
+
+  font-weight: 400;
+}
+
+.preparedFor p {
+  margin:
+    0.25rem
+    0
+    0;
+
+  color:
+    var(--gm-ink-soft);
+
+  font-size:
+    clamp(
+      0.92rem,
+      1vw,
+      1rem
+    );
+
+  line-height: 1.5;
+}
+
+.preamble {
+  max-width: 700px;
+
+  margin:
+    clamp(1.4rem, 2.5vw, 2rem)
+    0
+    0;
+
+  color:
+    var(--gm-ink-soft);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      1rem,
+      1.15vw,
+      1.08rem
+    );
+
+  line-height: 1.62;
+}
+
+/* =========================================================
+   METADATA — NOT A DASHBOARD
+   ========================================================= */
+
+.meta {
+  width: 100%;
+
+  margin-top:
+    clamp(1.5rem, 3vw, 2.25rem);
+
+  border-top:
+    1px solid
+    var(--gm-paper-line);
+
+  border-bottom:
+    1px solid
+    var(--gm-paper-line);
+}
+
+.meta div {
+  padding:
+    0.8rem
+    1rem
+    0.8rem
+    0;
+}
+
+.meta div + div {
+  padding-left: 1rem;
+
+  border-left:
+    1px solid
+    var(--gm-paper-line);
+}
+
+.meta span {
+  margin-bottom: 0.3rem;
+
+  color:
+    var(--gm-ink-faint);
+
+  font-size: 0.64rem;
+}
+
+.meta strong {
+  color:
+    var(--gm-ink-soft);
+
+  font-size: 0.78rem;
+}
+
+/* =========================================================
+   CONTENTS FOLIO
+   ========================================================= */
+
+.constitutionalIndex {
+  width: auto;
+
+  margin: 0;
+
+  padding:
+    0
+    clamp(1.5rem, 4vw, 3.25rem)
+    clamp(1.9rem, 4vw, 2.8rem);
+}
+
+.indexLabel {
+  margin: 0;
+
+  padding:
+    0.8rem
+    0;
+
+  border-top:
+    1px solid
+    var(--gm-paper-line);
+
+  border-bottom:
+    1px solid
+    var(--gm-paper-line);
+
+  color:
+    var(--gm-ink-faint);
+
+  font-size: 0.68rem;
+}
+
+.indexEntries {
+  border-bottom:
+    1px solid
+    var(--gm-paper-line);
+}
+
+.indexEntries a {
+  grid-template-columns:
+    2.4rem
+    minmax(220px, 0.75fr)
+    minmax(0, 1fr);
+
+  min-height: auto;
+
+  padding:
+    0.72rem
+    0;
+
+  border-top:
+    1px solid
+    rgba(63, 67, 52, 0.11);
+
+  color:
+    var(--gm-ink);
+
+  background: transparent;
+}
+
+.indexEntries a:first-child {
+  border-top: 0;
+}
+
+.indexEntries a > span {
+  color:
+    var(--gm-bronze);
+
+  font-size: 0.78rem;
+}
+
+.indexEntries a > div {
+  display: contents;
+}
+
+.indexEntries strong {
+  color:
+    var(--gm-ink);
+
+  font-size:
+    clamp(
+      0.98rem,
+      1.1vw,
+      1.06rem
+    );
+
+  line-height: 1.4;
+}
+
+.indexEntries p {
+  margin: 0;
+
+  color:
+    var(--gm-ink-soft);
+
+  font-size:
+    clamp(
+      0.9rem,
+      1vw,
+      0.98rem
+    );
+
+  line-height: 1.45;
+}
+
+.indexActive {
+  background: transparent;
+}
+
+.indexEntries .indexActive > span,
+.indexEntries .indexActive strong {
+  color:
+    var(--gm-ink);
+}
+
+/* =========================================================
+   FRAMEWORK CONTENT
+   ========================================================= */
+
+.content {
+  width: 100%;
+
+  margin: 0;
+
+  padding:
+    0
+    clamp(1.5rem, 4vw, 3.25rem)
+    clamp(2.5rem, 5vw, 4rem);
+}
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+.footer {
+  grid-template-columns:
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  padding:
+    1rem
+    clamp(1.5rem, 4vw, 3.25rem);
+
+  border-top:
+    1px solid
+    var(--gm-paper-line);
+
+  color:
+    var(--gm-ink-faint);
+}
+
+.footer span {
+  font-size: 0.64rem;
+}
+
+.footer p {
+  max-width: 560px;
+
+  color:
+    var(--gm-ink-soft);
+
+  font-size: 0.86rem;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .shell {
+    padding:
+      0.5rem
+      0.35rem
+      2rem;
+  }
+
+  .pamphlet {
+    width: 100%;
+  }
+
+  .utility {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 0.25rem;
+  }
+
+  .indexEntries a {
+    grid-template-columns:
+      2rem
+      minmax(0, 1fr);
+  }
+
+  .indexEntries a > div {
+    display: block;
+  }
+
+  .indexEntries p {
+    margin-top: 0.2rem;
+  }
+
+  .meta {
+    grid-template-columns: 1fr;
+  }
+
+  .meta div + div {
+    padding-left: 0;
+
+    border-top:
+      1px solid
+      var(--gm-paper-line);
+
+    border-left: 0;
+  }
+
+  .footer {
+    grid-template-columns: 1fr;
+
+    gap: 0.45rem;
+  }
+
+  .footer p {
+    margin: 0;
+
+    text-align: left;
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB8B.2A
+   BREATHING FIELD
+
+   The document should be approached before it is read.
+
+   Outer rails remain deliberately empty for now and may
+   later support quiet institutional interaction.
+   ========================================================= */
+
+.shell {
+  --gm-outer-rail:
+    clamp(
+      2.25rem,
+      6vw,
+      6rem
+    );
+
+  --gm-inner-gutter:
+    clamp(
+      2rem,
+      4.75vw,
+      4.25rem
+    );
+
+  padding:
+    clamp(3rem, 7vh, 5.5rem)
+    var(--gm-outer-rail)
+    clamp(4.5rem, 8vh, 7rem);
+}
+
+/*
+ * Slightly narrower document creates visible ceremonial
+ * territory around the object rather than edge-to-edge arrival.
+ */
+.pamphlet {
+  width:
+    min(
+      100%,
+      980px
+    );
+}
+
+/*
+ * The top provenance strip should not begin immediately
+ * against the paper edge.
+ */
+.utility {
+  padding:
+    0.9rem
+    var(--gm-inner-gutter);
+}
+
+/*
+ * Main title matter receives a true internal gutter.
+ */
+.hero {
+  padding-left:
+    var(--gm-inner-gutter);
+
+  padding-right:
+    var(--gm-inner-gutter);
+
+  padding-top:
+    clamp(2.75rem, 5.5vw, 4.5rem);
+}
+
+/*
+ * Contents and body share the same document axis.
+ */
+.constitutionalIndex {
+  padding-left:
+    var(--gm-inner-gutter);
+
+  padding-right:
+    var(--gm-inner-gutter);
+}
+
+.content {
+  padding-left:
+    var(--gm-inner-gutter);
+
+  padding-right:
+    var(--gm-inner-gutter);
+}
+
+/*
+ * Footer remains on the same internal axis.
+ */
+.footer {
+  padding-left:
+    var(--gm-inner-gutter);
+
+  padding-right:
+    var(--gm-inner-gutter);
+}
+
+/*
+ * Preserve a little room below the contents before
+ * the first Article begins.
+ */
+.constitutionalIndex + .content {
+  padding-top:
+    clamp(
+      0.8rem,
+      2vw,
+      1.5rem
+    );
+}
+
+/*
+ * Mobile collapses the future interaction rails,
+ * but never lets text touch the paper edge.
+ */
+@media (max-width: 760px) {
+  .shell {
+    --gm-outer-rail:
+      clamp(
+        0.5rem,
+        3vw,
+        1rem
+      );
+
+    --gm-inner-gutter:
+      clamp(
+        1.2rem,
+        5vw,
+        1.65rem
+      );
+
+    padding:
+      1.25rem
+      var(--gm-outer-rail)
+      2.5rem;
+  }
+
+  .hero {
+    padding-top: 2.2rem;
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB8B.2B
+   PERSISTENT FRAMEWORK RAIL
+
+   The surrounding field now performs navigation.
+   The pamphlet remains a reading object.
+   ========================================================= */
+
+.frameworkRail {
+  position: fixed;
+
+  z-index: 20;
+
+  top: 50%;
+  left:
+    max(
+      0.8rem,
+      calc(50% - 490px - 5.5rem)
+    );
+
+  transform:
+    translateY(-50%);
+
+  display: grid;
+
+  gap: 0.8rem;
+
+  color:
+    rgba(232, 223, 200, 0.46);
+}
+
+.railLabel {
+  color:
+    rgba(232, 223, 200, 0.26);
+
+  font-size: 0.52rem;
+
+  letter-spacing: 0.17em;
+
+  text-transform: uppercase;
+
+  writing-mode: vertical-rl;
+
+  transform:
+    rotate(180deg);
+
+  margin:
+    0
+    auto
+    0.5rem;
+}
+
+.railEntries {
+  display: grid;
+
+  gap: 0.35rem;
+}
+
+.railEntries a {
+  position: relative;
+
+  display: flex;
+
+  align-items: center;
+
+  min-width: 2rem;
+  min-height: 2rem;
+
+  color: inherit;
+
+  text-decoration: none;
+}
+
+.railEntries a > span {
+  display: grid;
+
+  width: 2rem;
+  height: 2rem;
+
+  place-items: center;
+
+  border:
+    1px solid
+    rgba(232, 223, 200, 0.12);
+
+  color:
+    rgba(232, 223, 200, 0.48);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 0.72rem;
+
+  transition:
+    border-color 160ms ease,
+    color 160ms ease,
+    background 160ms ease;
+}
+
+.railEntries strong {
+  position: absolute;
+
+  left: 2.6rem;
+
+  width: max-content;
+  max-width: 230px;
+
+  padding:
+    0.45rem
+    0.65rem;
+
+  border:
+    1px solid
+    rgba(196, 176, 128, 0.15);
+
+  background:
+    rgba(7, 17, 15, 0.94);
+
+  color:
+    rgba(232, 223, 200, 0.8);
+
+  font-size: 0.66rem;
+  font-weight: 400;
+  line-height: 1.3;
+
+  opacity: 0;
+
+  pointer-events: none;
+
+  transform:
+    translateX(-0.25rem);
+
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+}
+
+.railEntries a:hover > strong,
+.railEntries a:focus-visible > strong {
+  opacity: 1;
+
+  transform:
+    translateX(0);
+}
+
+.railEntries a:hover > span,
+.railEntries a:focus-visible > span {
+  border-color:
+    rgba(190, 153, 84, 0.5);
+
+  color:
+    rgba(232, 223, 200, 0.9);
+
+  background:
+    rgba(190, 153, 84, 0.06);
+}
+
+.railEntries a:focus-visible {
+  outline: none;
+}
+
+.railActive > span {
+  border-color:
+    rgba(190, 153, 84, 0.55) !important;
+
+  color:
+    rgba(232, 223, 200, 0.92) !important;
+}
+
+/* =========================================================
+   COMPACT FORMAL RECEIPT
+
+   One title.
+   One subtitle.
+   One human recipient.
+   One institutional purpose.
+   One standing line.
+   ========================================================= */
+
+.hero {
+  padding-top:
+    clamp(2.4rem, 4.5vw, 3.5rem);
+
+  padding-bottom:
+    clamp(1.7rem, 3vw, 2.3rem);
+}
+
+.hero h1 {
+  max-width: 760px;
+
+  margin: 0;
+
+  font-size:
+    clamp(
+      1.85rem,
+      3.6vw,
+      3rem
+    );
+
+  line-height: 1.035;
+}
+
+.subtitle {
+  max-width: 630px;
+
+  margin-top: 0.7rem;
+
+  font-size:
+    clamp(
+      1rem,
+      1.25vw,
+      1.1rem
+    );
+
+  line-height: 1.5;
+}
+
+.receiptGrid {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 0.9fr)
+    minmax(0, 1.1fr);
+
+  gap:
+    clamp(
+      2rem,
+      5vw,
+      4rem
+    );
+
+  max-width: 800px;
+
+  margin-top:
+    clamp(1.5rem, 3vw, 2.15rem);
+
+  padding:
+    1rem
+    0;
+
+  border-top:
+    1px solid
+    var(--gm-rule-strong);
+
+  border-bottom:
+    1px solid
+    var(--gm-rule);
+}
+
+/*
+ * Existing prepared-for block becomes an element of
+ * the receipt grid rather than its own large section.
+ */
+.receiptGrid .preparedFor {
+  display: block;
+
+  max-width: none;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0;
+}
+
+.receiptGrid .preparedFor > span,
+.frameworkPurpose > span {
+  display: block;
+
+  color:
+    rgba(112, 82, 40, 0.92);
+
+  font-size: 0.67rem;
+
+  letter-spacing: 0.12em;
+
+  text-transform: uppercase;
+}
+
+.receiptGrid .preparedFor strong {
+  display: block;
+
+  margin-top: 0.38rem;
+
+  font-size:
+    clamp(
+      1.15rem,
+      1.5vw,
+      1.35rem
+    );
+}
+
+.receiptGrid .preparedFor p {
+  margin:
+    0.18rem
+    0
+    0;
+
+  color:
+    rgba(24, 32, 27, 0.68);
+
+  font-size:
+    clamp(
+      0.9rem,
+      1vw,
+      0.98rem
+    );
+
+  line-height: 1.42;
+}
+
+.frameworkPurpose {
+  padding-left:
+    clamp(1.25rem, 2.5vw, 2rem);
+
+  border-left:
+    1px solid
+    var(--gm-rule);
+}
+
+.frameworkPurpose p {
+  max-width: 430px;
+
+  margin:
+    0.4rem
+    0
+    0;
+
+  color:
+    rgba(24, 32, 27, 0.72);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      0.94rem,
+      1.05vw,
+      1rem
+    );
+
+  line-height: 1.52;
+}
+
+/*
+ * Replace the old three-part metadata table with one
+ * archival standing notation.
+ */
+.standingLine {
+  display: flex;
+
+  align-items: baseline;
+
+  gap: 1rem;
+
+  margin-top: 0.8rem;
+
+  color:
+    rgba(24, 32, 27, 0.52);
+}
+
+.standingLine span {
+  color:
+    rgba(112, 82, 40, 0.84);
+
+  font-size: 0.62rem;
+
+  letter-spacing: 0.12em;
+
+  text-transform: uppercase;
+}
+
+.standingLine strong {
+  font-size: 0.7rem;
+  font-weight: 400;
+
+  letter-spacing: 0.075em;
+}
+
+/*
+ * Legacy front-matter systems no longer participate.
+ */
+.eyebrow,
+.frameworkClass,
+.preamble,
+.meta,
+.constitutionalIndex {
+  display: none;
+}
+
+/*
+ * With the contents register removed from the paper,
+ * move directly from receipt into Article field.
+ */
+.content {
+  padding-top:
+    clamp(0.65rem, 1.5vw, 1rem);
+}
+
+/* =========================================================
+   RESPONSIVE RAIL
+   On smaller screens, persistent navigation becomes a
+   quiet sticky horizontal index above the pamphlet.
+   ========================================================= */
+
+@media (max-width: 1180px) {
+  .frameworkRail {
+    left: 0.65rem;
+  }
+
+  .railEntries strong {
+    display: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .frameworkRail {
+    position: sticky;
+
+    top: 0;
+
+    z-index: 40;
+
+    width:
+      min(
+        calc(100% - 1rem),
+        980px
+      );
+
+    margin:
+      0
+      auto
+      0.65rem;
+
+    transform: none;
+
+    display: block;
+
+    padding:
+      0.4rem
+      0.55rem;
+
+    border:
+      1px solid
+      rgba(232, 223, 200, 0.1);
+
+    background:
+      rgba(7, 17, 15, 0.94);
+
+    backdrop-filter:
+      blur(10px);
+  }
+
+  .railLabel {
+    display: none;
+  }
+
+  .railEntries {
+    display: grid;
+
+    grid-template-columns:
+      repeat(5, 1fr);
+
+    gap: 0.35rem;
+  }
+
+  .railEntries a {
+    justify-content: center;
+  }
+
+  .railEntries a > span {
+    width: 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  .receiptGrid {
+    grid-template-columns: 1fr;
+
+    gap: 1rem;
+  }
+
+  .frameworkPurpose {
+    padding:
+      1rem
+      0
+      0;
+
+    border-top:
+      1px solid
+      var(--gm-rule);
+
+    border-left: 0;
+  }
+
+  .standingLine {
+    align-items: flex-start;
+
+    flex-direction: column;
+
+    gap: 0.3rem;
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB8B.2C
+   PERSISTENT DOCUMENT IDENTITY
+
+   Quiet folio identity.
+   Not application navigation.
+   Not another hero.
+   ========================================================= */
+
+.documentIdentity {
+  position: sticky;
+
+  z-index: 30;
+
+  top: 0;
+
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  gap:
+    clamp(
+      1.5rem,
+      4vw,
+      3rem
+    );
+
+  align-items: center;
+
+  width:
+    min(
+      100%,
+      980px
+    );
+
+  margin:
+    0
+    auto
+    0.65rem;
+
+  padding:
+    0.72rem
+    var(--gm-inner-gutter);
+
+  border:
+    1px solid
+    rgba(232, 223, 200, 0.09);
+
+  background:
+    rgba(7, 17, 15, 0.92);
+
+  backdrop-filter:
+    blur(14px);
+
+  color:
+    rgba(232, 223, 200, 0.82);
+}
+
+.documentIdentity > div {
+  min-width: 0;
+}
+
+.documentIdentity strong {
+  display: block;
+
+  overflow: hidden;
+
+  color:
+    rgba(232, 223, 200, 0.92);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      0.9rem,
+      1.15vw,
+      1.03rem
+    );
+
+  font-weight: 400;
+
+  line-height: 1.2;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+.documentIdentity p {
+  overflow: hidden;
+
+  max-width: 680px;
+
+  margin:
+    0.18rem
+    0
+    0;
+
+  color:
+    rgba(232, 223, 200, 0.46);
+
+  font-size:
+    clamp(
+      0.68rem,
+      0.8vw,
+      0.75rem
+    );
+
+  line-height: 1.35;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+.documentIdentity > span {
+  color:
+    rgba(232, 223, 200, 0.34);
+
+  font-size: 0.58rem;
+
+  letter-spacing: 0.12em;
+
+  white-space: nowrap;
+}
+
+/*
+ * The persistent identity belongs to the digital shell,
+ * not the paper.
+ */
+.documentIdentity + .pamphlet {
+  margin-top: 0;
+}
+
+/*
+ * Desktop:
+ * rail and sticky identity work together.
+ */
+@media (min-width: 861px) {
+  .documentIdentity {
+    width:
+      min(
+        calc(
+          100% -
+          (
+            var(--gm-outer-rail) * 2
+          )
+        ),
+        980px
+      );
+  }
+}
+
+/*
+ * Mobile:
+ * identity remains readable without consuming the viewport.
+ */
+@media (max-width: 700px) {
+  .documentIdentity {
+    grid-template-columns: 1fr;
+
+    gap: 0.3rem;
+
+    width:
+      calc(
+        100% -
+        (
+          var(--gm-outer-rail) * 2
+        )
+      );
+
+    padding:
+      0.65rem
+      var(--gm-inner-gutter);
+  }
+
+  .documentIdentity p {
+    display: none;
+  }
+
+  .documentIdentity > span {
+    display: none;
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB8B.3A
+   DOCUMENT IDENTITY CONSOLIDATION
+
+   Digital shell owns:
+   full title
+   subtitle
+   reference
+
+   Paper owns:
+   receipt
+   substance
+   deliberation
+   ========================================================= */
+
+.documentInscription {
+  display: flex;
+
+  align-items: baseline;
+
+  gap: 0.75rem;
+
+  margin-bottom:
+    clamp(1.2rem, 2.5vw, 1.75rem);
+
+  padding-bottom: 0.65rem;
+
+  border-bottom:
+    1px solid var(--gm-rule-faint);
+}
+
+.documentInscription span {
+  color:
+    rgba(112, 82, 40, 0.92);
+
+  font-size: 0.68rem;
+
+  letter-spacing: 0.13em;
+
+  text-transform: uppercase;
+}
+
+.documentInscription strong {
+  color:
+    rgba(24, 32, 27, 0.72);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      0.95rem,
+      1.15vw,
+      1.05rem
+    );
+
+  font-weight: 400;
+}
+
+/*
+ * Full title/subtitle now belong exclusively to
+ * the persistent digital shell.
+ */
+.hero > h1,
+.hero > .subtitle {
+  display: none;
+}
+
+/*
+ * The paper can begin sooner now that the duplicate
+ * title matter has been removed.
+ */
+.hero {
+  padding-top:
+    clamp(1.6rem, 3vw, 2.25rem);
+}
+
+/*
+ * Sticky document identity should feel like folio notation,
+ * not another page header.
+ */
+.documentIdentity {
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+}
+
+.documentIdentity strong {
+  font-size:
+    clamp(
+      0.86rem,
+      1.05vw,
+      0.98rem
+    );
+}
+
+.documentIdentity p {
+  font-size:
+    clamp(
+      0.66rem,
+      0.75vw,
+      0.72rem
+    );
+}
+
+/* =========================================================
+   G2M.5D-GB8B.4
+   GLOBAL INSTITUTIONAL FIELD
+
+   Barely perceptible cosmographic / territorial geometry.
+   It belongs to the environment, never to the paper.
+   ========================================================= */
+
+.shell {
+  position: relative;
+
+  isolation: isolate;
+}
+
+.shell::before {
+  content: "";
+
+  position: fixed;
+  inset: 0;
+
+  z-index: 0;
+
+  pointer-events: none;
+
+  opacity: 0.42;
+
+  background:
+    radial-gradient(
+      circle at 11% 31%,
+      transparent 0,
+      transparent 17rem,
+      rgba(118, 143, 119, 0.055) 17.05rem,
+      rgba(118, 143, 119, 0.055) 17.12rem,
+      transparent 17.18rem
+    ),
+    radial-gradient(
+      circle at 87% 72%,
+      transparent 0,
+      transparent 25rem,
+      rgba(135, 107, 59, 0.045) 25.05rem,
+      rgba(135, 107, 59, 0.045) 25.12rem,
+      transparent 25.18rem
+    ),
+    linear-gradient(
+      118deg,
+      transparent 0,
+      transparent 43%,
+      rgba(112, 135, 113, 0.025) 43.08%,
+      transparent 43.16%,
+      transparent 100%
+    );
+}
+
+.shell::after {
+  content: "";
+
+  position: fixed;
+
+  z-index: 0;
+
+  top: 8%;
+  right: 2%;
+
+  width:
+    min(
+      38vw,
+      34rem
+    );
+
+  aspect-ratio: 1;
+
+  border:
+    1px solid
+    rgba(118, 143, 119, 0.035);
+
+  border-radius: 50%;
+
+  pointer-events: none;
+}
+
+/*
+ * Shell actors stay above the environmental field.
+ */
+.frameworkRail,
+.documentIdentity,
+.pamphlet {
+  position: relative;
+
+  z-index: 2;
+}
+
+/* =========================================================
+   FRAMEWORK RAIL — CONSTITUTIONAL INDEX
+
+   More consequential through proportion and alignment,
+   not brightness.
+   ========================================================= */
+
+.frameworkRail {
+  gap: 1rem;
+
+  color:
+    rgba(232, 223, 200, 0.58);
+}
+
+.railLabel {
+  margin-bottom: 0.8rem;
+
+  color:
+    rgba(232, 223, 200, 0.38);
+
+  font-size: 0.56rem;
+
+  letter-spacing: 0.2em;
+}
+
+.railEntries {
+  position: relative;
+
+  gap: 0.46rem;
+
+  padding-left: 0.7rem;
+
+  border-left:
+    1px solid
+    rgba(190, 153, 84, 0.16);
+}
+
+.railEntries a {
+  min-width: 2.35rem;
+  min-height: 2.35rem;
+}
+
+.railEntries a > span {
+  width: 2.35rem;
+  height: 2.35rem;
+
+  border-color:
+    rgba(232, 223, 200, 0.16);
+
+  color:
+    rgba(232, 223, 200, 0.6);
+
+  font-size: 0.8rem;
+}
+
+.railEntries a:hover > span,
+.railEntries a:focus-visible > span {
+  border-color:
+    rgba(190, 153, 84, 0.58);
+
+  color:
+    rgba(232, 223, 200, 0.94);
+}
+
+.railActive {
+  position: relative;
+}
+
+.railActive::before {
+  content: "";
+
+  position: absolute;
+
+  left: -0.75rem;
+  top: 50%;
+
+  width: 0.5rem;
+  height: 1px;
+
+  transform:
+    translateY(-50%);
+
+  background:
+    rgba(190, 153, 84, 0.78);
+}
+
+.railActive > span {
+  border-color:
+    rgba(190, 153, 84, 0.62) !important;
+
+  background:
+    rgba(190, 153, 84, 0.055);
+
+  color:
+    rgba(232, 223, 200, 0.96) !important;
+}
+
+.railEntries strong {
+  left: 3rem;
+
+  padding:
+    0.5rem
+    0.72rem;
+
+  font-size: 0.7rem;
+}
+
+/* =========================================================
+   OPENING CHAMBER / FORMAL RECEIPT
+
+   The opening uses the same charter gutter logic that
+   Articles will inherit.
+   ========================================================= */
+
+.hero {
+  display: grid;
+
+  grid-template-columns:
+    clamp(4.5rem, 7vw, 6.25rem)
+    minmax(0, 1fr);
+
+  column-gap:
+    clamp(
+      1.25rem,
+      3vw,
+      2.25rem
+    );
+
+  align-items: start;
+}
+
+.documentInscription {
+  grid-column: 1;
+  grid-row: 1 / span 2;
+
+  display: grid;
+
+  align-content: start;
+
+  gap: 0.3rem;
+
+  margin: 0;
+
+  padding:
+    0.2rem
+    clamp(0.7rem, 1.5vw, 1rem)
+    0
+    0;
+
+  border-right:
+    1px solid
+    var(--gm-rule);
+
+  border-bottom: 0;
+}
+
+.documentInscription span,
+.documentInscription strong {
+  display: block;
+}
+
+.documentInscription strong {
+  max-width: 5rem;
+
+  line-height: 1.3;
+}
+
+.receiptGrid {
+  grid-column: 2;
+
+  width: 100%;
+  max-width: none;
+
+  margin-top: 0;
+
+  padding-top: 0.15rem;
+}
+
+.standingLine {
+  grid-column: 2;
+
+  margin-top: 0.75rem;
+
+  padding-top: 0.7rem;
+
+  border-top:
+    1px solid
+    var(--gm-rule-faint);
+}
+
+/*
+ * Strong closing threshold before Article I begins.
+ */
+.hero::after {
+  content: "";
+
+  grid-column: 1 / -1;
+
+  display: block;
+
+  margin-top:
+    clamp(1.4rem, 3vw, 2rem);
+
+  border-bottom:
+    1px solid
+    var(--gm-rule-strong);
+}
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 760px) {
+  .hero {
+    grid-template-columns: 1fr;
+  }
+
+  .documentInscription,
+  .receiptGrid,
+  .standingLine,
+  .hero::after {
+    grid-column: 1;
+  }
+
+  .documentInscription {
+    grid-row: auto;
+
+    display: flex;
+
+    gap: 0.55rem;
+
+    padding:
+      0
+      0
+      0.65rem;
+
+    border-right: 0;
+
+    border-bottom:
+      1px solid
+      var(--gm-rule-faint);
+  }
+
+  .documentInscription strong {
+    max-width: none;
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB8B.4A
+   PHYSICAL LEFT WEIGHT
+
+   The left-side hierarchy must be visible in the geometry,
+   not merely implied through classes.
+   ========================================================= */
+
+.shell {
+  --gm-document-width: 960px;
+  --gm-document-shift: clamp(1.5rem, 4vw, 4rem);
+  --gm-rail-gap: clamp(1rem, 2vw, 1.75rem);
+
+  padding-left:
+    clamp(3.5rem, 8vw, 8rem);
+
+  padding-right:
+    clamp(1.5rem, 4vw, 4rem);
+}
+
+/*
+ * Shift the actual reading object slightly right.
+ * This creates real territory for the constitutional rail.
+ */
+.pamphlet,
+.documentIdentity {
+  width:
+    min(
+      calc(100% - var(--gm-document-shift)),
+      var(--gm-document-width)
+    );
+
+  margin-left:
+    calc(
+      auto +
+      var(--gm-document-shift)
+    );
+
+  margin-right: auto;
+}
+
+/*
+ * CSS does not support arithmetic with auto.
+ * Explicitly establish the asymmetric page placement.
+ */
+.pamphlet,
+.documentIdentity {
+  transform:
+    translateX(
+      calc(
+        var(--gm-document-shift) / 2
+      )
+    );
+}
+
+/* =========================================================
+   FRAMEWORK RAIL
+   Attach it to the document's left edge.
+   ========================================================= */
+
+.frameworkRail {
+  position: fixed;
+
+  top:
+    clamp(7rem, 14vh, 10rem);
+
+  left:
+    calc(
+      50% -
+      (
+        min(
+          calc(100vw - var(--gm-document-shift)),
+          var(--gm-document-width)
+        ) / 2
+      ) -
+      5.2rem
+    );
+
+  transform: none;
+
+  gap: 0.8rem;
+}
+
+.railLabel {
+  margin:
+    0
+    auto
+    0.9rem;
+
+  font-size: 0.58rem;
+
+  letter-spacing: 0.22em;
+}
+
+.railEntries {
+  gap: 0.55rem;
+
+  padding-left: 0.85rem;
+
+  border-left:
+    1px solid
+    rgba(190, 153, 84, 0.28);
+}
+
+.railEntries a > span {
+  width: 2.5rem;
+  height: 2.5rem;
+
+  font-size: 0.84rem;
+
+  border-color:
+    rgba(232, 223, 200, 0.2);
+}
+
+.railActive::before {
+  left: -0.95rem;
+
+  width: 0.72rem;
+
+  background:
+    rgba(190, 153, 84, 0.9);
+}
+
+/* =========================================================
+   OPENING CHAMBER
+   Stronger left constitutional band.
+   ========================================================= */
+
+.hero {
+  grid-template-columns:
+    clamp(7rem, 11vw, 9rem)
+    minmax(0, 1fr);
+
+  column-gap:
+    clamp(1.5rem, 3vw, 2.4rem);
+}
+
+.documentInscription {
+  padding-right:
+    clamp(1rem, 2vw, 1.4rem);
+
+  border-right:
+    1px solid
+    rgba(112, 82, 40, 0.34);
+}
+
+.documentInscription span {
+  font-size: 0.7rem;
+}
+
+.documentInscription strong {
+  max-width: 6rem;
+
+  font-size:
+    clamp(
+      0.98rem,
+      1.2vw,
+      1.1rem
+    );
+}
+
+/*
+ * Give the receipt content stronger alignment
+ * against the charter band.
+ */
+.receiptGrid {
+  grid-template-columns:
+    minmax(220px, 0.8fr)
+    minmax(0, 1fr);
+
+  gap:
+    clamp(2.25rem, 5vw, 4.25rem);
+}
+
+.standingLine {
+  padding-bottom: 0.4rem;
+}
+
+/* =========================================================
+   DESKTOP ONLY
+   ========================================================= */
+
+@media (max-width: 1180px) {
+  .shell {
+    --gm-document-shift: 1rem;
+  }
+
+  .frameworkRail {
+    left: 0.75rem;
+  }
+
+  .pamphlet,
+  .documentIdentity {
+    transform: none;
+  }
+}
+
+@media (max-width: 860px) {
+  .shell {
+    padding-left:
+      var(--gm-outer-rail);
+
+    padding-right:
+      var(--gm-outer-rail);
+  }
+
+  .pamphlet,
+  .documentIdentity {
+    width: 100%;
+
+    transform: none;
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB8B.4B
+   DESKTOP GEOMETRY REPAIR
+
+   Left weight belongs to the constitutional anatomy,
+   not to a physically displaced page.
+   ========================================================= */
+
+.shell {
+  --gm-document-width: 980px;
+
+  padding-left:
+    clamp(2rem, 5vw, 5rem);
+
+  padding-right:
+    clamp(2rem, 5vw, 5rem);
+
+  overflow-x: hidden;
+}
+
+/*
+ * Recenter the document completely.
+ */
+.pamphlet,
+.documentIdentity {
+  width:
+    min(
+      100%,
+      var(--gm-document-width)
+    );
+
+  margin-left: auto;
+  margin-right: auto;
+
+  transform: none;
+}
+
+/*
+ * Rail attaches to the centered document geometry.
+ *
+ * 490px = half of 980px document width.
+ * The rail sits outside the document, not outside the viewport.
+ */
+.frameworkRail {
+  top:
+    clamp(7rem, 14vh, 10rem);
+
+  left:
+    calc(
+      50% -
+      490px -
+      4.8rem
+    );
+
+  transform: none;
+}
+
+/*
+ * If the viewport cannot support the full outside rail,
+ * pin it safely inside the field rather than moving the page.
+ */
+@media (max-width: 1180px) {
+  .frameworkRail {
+    left: 0.75rem;
+  }
+}
+
+/*
+ * Mobile / narrow tablet retains the existing sticky rail mode.
+ */
+@media (max-width: 860px) {
+  .shell {
+    padding-left:
+      var(--gm-outer-rail);
+
+    padding-right:
+      var(--gm-outer-rail);
+  }
+
+  .pamphlet,
+  .documentIdentity {
+    width: 100%;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    transform: none;
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB8B.4B
+   DESKTOP GEOMETRY REPAIR
+
+   Left weight belongs to the constitutional anatomy,
+   not to a physically displaced page.
+   ========================================================= */
+
+.shell {
+  --gm-document-width: 980px;
+
+  padding-left:
+    clamp(2rem, 5vw, 5rem);
+
+  padding-right:
+    clamp(2rem, 5vw, 5rem);
+
+  overflow-x: hidden;
+}
+
+/*
+ * Recenter the document completely.
+ */
+.pamphlet,
+.documentIdentity {
+  width:
+    min(
+      100%,
+      var(--gm-document-width)
+    );
+
+  margin-left: auto;
+  margin-right: auto;
+
+  transform: none;
+}
+
+/*
+ * Rail attaches to the centered document geometry.
+ *
+ * 490px = half of 980px document width.
+ * The rail sits outside the document, not outside the viewport.
+ */
+.frameworkRail {
+  top:
+    clamp(7rem, 14vh, 10rem);
+
+  left:
+    calc(
+      50% -
+      490px -
+      4.8rem
+    );
+
+  transform: none;
+}
+
+/*
+ * If the viewport cannot support the full outside rail,
+ * pin it safely inside the field rather than moving the page.
+ */
+@media (max-width: 1180px) {
+  .frameworkRail {
+    left: 0.75rem;
+  }
+}
+
+/*
+ * Mobile / narrow tablet retains the existing sticky rail mode.
+ */
+@media (max-width: 860px) {
+  .shell {
+    padding-left:
+      var(--gm-outer-rail);
+
+    padding-right:
+      var(--gm-outer-rail);
+  }
+
+  .pamphlet,
+  .documentIdentity {
+    width: 100%;
+
+    margin-left: auto;
+    margin-right: auto;
+
+    transform: none;
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB9A
+   CONSTITUTIONAL INDEX + ACTIVE CHAMBER
+
+   The Framework remains whole.
+   Attention becomes selective.
+   ========================================================= */
+
+/*
+ * Retire the previous floating rail and opening receipt.
+ * Their information has moved into the Council Spine.
+ */
+.frameworkRail,
+.hero {
+  display: none;
+}
+
+/*
+ * Stable centered constitutional object.
+ */
+.shell {
+  --gm-council-spine:
+    clamp(
+      13rem,
+      22vw,
+      17rem
+    );
+
+  --gm-chamber-gap:
+    clamp(
+      2rem,
+      4vw,
+      3.75rem
+    );
+
+  padding-left:
+    clamp(1.25rem, 4vw, 4rem);
+
+  padding-right:
+    clamp(1.25rem, 4vw, 4rem);
+
+  overflow-x: hidden;
+}
+
+.documentIdentity,
+.pamphlet {
+  width:
+    min(
+      100%,
+      1080px
+    );
+
+  margin-left: auto;
+  margin-right: auto;
+
+  transform: none;
+}
+
+/*
+ * The paper becomes a constitutional dossier rather
+ * than one long pamphlet.
+ */
+.pamphlet {
+  min-height:
+    clamp(
+      44rem,
+      78vh,
+      58rem
+    );
+}
+
+/*
+ * Compact folio strip.
+ */
+.utility {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: center;
+
+  min-height: 2.8rem;
+
+  padding:
+    0
+    clamp(1.5rem, 3vw, 2.5rem);
+
+  border-bottom:
+    1px solid
+    var(--gm-rule);
+
+  color:
+    rgba(24, 32, 27, 0.48);
+
+  font-size: 0.64rem;
+
+  letter-spacing: 0.12em;
+
+  text-transform: uppercase;
+}
+
+/* =========================================================
+   CONSTITUTIONAL BODY
+   ========================================================= */
+
+.constitutionalBody {
+  display: grid;
+
+  grid-template-columns:
+    var(--gm-council-spine)
+    minmax(0, 1fr);
+
+  gap:
+    var(--gm-chamber-gap);
+
+  align-items: start;
+
+  padding:
+    clamp(2rem, 4vw, 3.5rem)
+    clamp(1.5rem, 4vw, 3.5rem)
+    clamp(2.5rem, 5vw, 4rem);
+}
+
+/* =========================================================
+   COUNCIL SPINE
+   Functional institutional context.
+   ========================================================= */
+
+.councilSpine {
+  position: sticky;
+
+  top:
+    clamp(5.5rem, 11vh, 7.5rem);
+
+  display: grid;
+
+  align-content: start;
+
+  min-width: 0;
+
+  padding-right:
+    clamp(1.25rem, 2.5vw, 2rem);
+
+  border-right:
+    1px solid
+    rgba(112, 82, 40, 0.28);
+}
+
+.spineIdentity {
+  display: grid;
+
+  gap: 0.25rem;
+
+  padding-bottom: 1rem;
+
+  border-bottom:
+    1px solid
+    var(--gm-rule);
+}
+
+.spineIdentity span,
+.spineRecipient > span,
+.spineStanding > span,
+.spineFrameworkLabel {
+  color:
+    rgba(112, 82, 40, 0.92);
+
+  font-size: 0.64rem;
+
+  letter-spacing: 0.13em;
+
+  text-transform: uppercase;
+}
+
+.spineIdentity strong {
+  max-width: 11rem;
+
+  color:
+    var(--gm-ink);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      1.05rem,
+      1.25vw,
+      1.18rem
+    );
+
+  font-weight: 400;
+
+  line-height: 1.3;
+}
+
+.spineRecipient,
+.spineStanding {
+  padding:
+    1rem
+    0;
+
+  border-bottom:
+    1px solid
+    var(--gm-rule);
+}
+
+.spineRecipient strong {
+  display: block;
+
+  margin-top: 0.4rem;
+
+  color:
+    var(--gm-ink);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      1rem,
+      1.15vw,
+      1.1rem
+    );
+
+  font-weight: 400;
+
+  line-height: 1.3;
+}
+
+.spineRecipient p {
+  margin:
+    0.22rem
+    0
+    0;
+
+  color:
+    var(--gm-ink-soft);
+
+  font-size:
+    0.84rem;
+
+  line-height: 1.42;
+}
+
+.spineStanding strong {
+  display: block;
+
+  margin-top: 0.38rem;
+
+  color:
+    var(--gm-ink-soft);
+
+  font-size: 0.7rem;
+
+  font-weight: 400;
+
+  letter-spacing: 0.06em;
+
+  line-height: 1.45;
+}
+
+/* =========================================================
+   FRAMEWORK INDEX
+   ========================================================= */
+
+.spineFramework {
+  display: grid;
+
+  margin-top: 1rem;
+}
+
+.spineFrameworkLabel {
+  display: block;
+
+  margin-bottom: 0.55rem;
+}
+
+.spineMovement {
+  position: relative;
+
+  display: grid;
+
+  grid-template-columns:
+    2.15rem
+    minmax(0, 1fr);
+
+  gap: 0.7rem;
+
+  align-items: start;
+
+  width: 100%;
+
+  padding:
+    0.65rem
+    0;
+
+  border: 0;
+  border-top:
+    1px solid
+    var(--gm-rule-faint);
+
+  background: transparent;
+
+  color:
+    rgba(24, 32, 27, 0.62);
+
+  cursor: pointer;
+
+  text-align: left;
+
+  transition:
+    color 140ms ease,
+    padding-left 140ms ease;
+}
+
+.spineMovement:first-of-type {
+  border-top:
+    1px solid
+    var(--gm-rule);
+}
+
+.spineMovement > span {
+  color:
+    rgba(112, 82, 40, 0.72);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 0.82rem;
+
+  line-height: 1.3;
+}
+
+.spineMovement strong {
+  color: inherit;
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 0.88rem;
+
+  font-weight: 400;
+
+  line-height: 1.35;
+}
+
+.spineMovement:hover,
+.spineMovement:focus-visible {
+  color:
+    rgba(24, 32, 27, 0.95);
+
+  padding-left: 0.25rem;
+}
+
+.spineMovement:focus-visible {
+  outline:
+    1px solid
+    rgba(135, 107, 59, 0.42);
+
+  outline-offset: 3px;
+}
+
+.spineMovementActive {
+  color:
+    rgba(24, 32, 27, 0.98);
+}
+
+.spineMovementActive::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  bottom: 0;
+  left: -1rem;
+
+  width: 2px;
+
+  background:
+    rgba(112, 82, 40, 0.82);
+}
+
+.spineMovementActive > span {
+  color:
+    rgba(112, 82, 40, 0.98);
+}
+
+/* =========================================================
+   ACTIVE CHAMBER
+   ========================================================= */
+
+.activeChamber {
+  min-width: 0;
+}
+
+.chamberNotation {
+  display: flex;
+
+  justify-content: space-between;
+
+  align-items: baseline;
+
+  gap: 1rem;
+
+  padding-bottom: 0.75rem;
+
+  border-bottom:
+    1px solid
+    var(--gm-rule-strong);
+}
+
+.chamberNotation > div {
+  display: flex;
+
+  align-items: baseline;
+
+  gap: 0.55rem;
+}
+
+.chamberNotation span {
+  color:
+    rgba(24, 32, 27, 0.46);
+
+  font-size: 0.64rem;
+
+  letter-spacing: 0.11em;
+
+  text-transform: uppercase;
+}
+
+.chamberNotation strong {
+  color:
+    rgba(112, 82, 40, 0.94);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size: 1rem;
+
+  font-weight: 400;
+}
+
+.chamberContent {
+  min-height:
+    clamp(
+      25rem,
+      48vh,
+      38rem
+    );
+}
+
+/*
+ * Progression should feel like moving to another matter,
+ * not operating carousel controls.
+ */
+.chamberProgression {
+  display: grid;
+
+  grid-template-columns:
+    repeat(
+      2,
+      minmax(0, 1fr)
+    );
+
+  gap:
+    clamp(1.5rem, 4vw, 3rem);
+
+  margin-top:
+    clamp(1.5rem, 3vw, 2.5rem);
+
+  padding-top: 1rem;
+
+  border-top:
+    1px solid
+    var(--gm-rule-strong);
+}
+
+.chamberProgression > div:last-child {
+  text-align: right;
+}
+
+.chamberProgression button {
+  display: inline-grid;
+
+  gap: 0.22rem;
+
+  max-width: 250px;
+
+  padding: 0;
+
+  border: 0;
+
+  background: transparent;
+
+  color:
+    var(--gm-ink);
+
+  cursor: pointer;
+
+  text-align: inherit;
+}
+
+.chamberProgression button span,
+.progressionBoundary {
+  color:
+    rgba(24, 32, 27, 0.46);
+
+  font-size: 0.64rem;
+
+  letter-spacing: 0.1em;
+
+  text-transform: uppercase;
+}
+
+.chamberProgression button strong {
+  color:
+    rgba(24, 32, 27, 0.82);
+
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+
+  font-size:
+    clamp(
+      0.92rem,
+      1.1vw,
+      1.02rem
+    );
+
+  font-weight: 400;
+
+  line-height: 1.35;
+}
+
+.chamberProgression button:hover strong,
+.chamberProgression button:focus-visible strong {
+  color:
+    rgba(112, 82, 40, 0.98);
+}
+
+.chamberProgression button:focus-visible {
+  outline:
+    1px solid
+    rgba(135, 107, 59, 0.42);
+
+  outline-offset: 4px;
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 860px) {
+  .constitutionalBody {
+    grid-template-columns: 1fr;
+
+    gap: 1.5rem;
+  }
+
+  .councilSpine {
+    position: static;
+
+    padding-right: 0;
+
+    border-right: 0;
+
+    border-bottom:
+      1px solid
+      var(--gm-rule-strong);
+  }
+
+  .spineRecipient,
+  .spineStanding {
+    display: none;
+  }
+
+  .spineFramework {
+    grid-template-columns:
+      repeat(
+        5,
+        minmax(0, 1fr)
+      );
+
+    gap: 0.3rem;
+  }
+
+  .spineFrameworkLabel {
+    grid-column: 1 / -1;
+  }
+
+  .spineMovement {
+    display: block;
+
+    padding:
+      0.6rem
+      0.3rem;
+
+    border:
+      1px solid
+      var(--gm-rule-faint);
+
+    text-align: center;
+  }
+
+  .spineMovement > span {
+    display: block;
+  }
+
+  .spineMovement strong {
+    display: none;
+  }
+
+  .spineMovementActive::before {
+    top: auto;
+    right: 0;
+    bottom: -1px;
+    left: 0;
+
+    width: auto;
+    height: 2px;
+  }
+}
+
+@media (max-width: 560px) {
+  .constitutionalBody {
+    padding-left: 1.2rem;
+    padding-right: 1.2rem;
+  }
+
+  .chamberProgression {
+    grid-template-columns: 1fr;
+  }
+
+  .chamberProgression > div:last-child {
+    text-align: left;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spineMovement {
+    transition: none;
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB9B
+   ACTIVE CHAMBER COMPRESSION
+
+   No forced canvas.
+   Constitutional matter determines its own height.
+   ========================================================= */
+
+.chamberContent {
+  min-height: 0;
+}
+
+/*
+ * Chamber notation already carries Article number.
+ * Keep it compact and documentary.
+ */
+.chamberNotation {
+  padding-bottom: 0.65rem;
+}
+
+/*
+ * Progression follows the matter immediately.
+ * It is a constitutional transition, not a carousel footer.
+ */
+.chamberProgression {
+  margin-top:
+    clamp(1.25rem, 2.5vw, 1.9rem);
+
+  padding-top: 0.9rem;
+
+  gap:
+    clamp(1.5rem, 4vw, 3rem);
+}
+
+.chamberProgression button {
+  max-width: 310px;
+}
+
+.chamberProgression button span,
+.progressionBoundary {
+  font-size: 0.62rem;
+
+  letter-spacing: 0.12em;
+}
+
+.chamberProgression button strong {
+  margin-top: 0.15rem;
+
+  font-size:
+    clamp(
+      1rem,
+      1.2vw,
+      1.12rem
+    );
+
+  line-height: 1.3;
+}
+
+/*
+ * The paper itself no longer needs a viewport-like minimum.
+ */
+.pamphlet {
+  min-height: 0;
+}
+
+/* =========================================================
+   G2M.5D-GB9C.1
+   CROWN + COUNCIL SPINE
+
+   One continuous institutional L-body:
+   crown = persistent document identity
+   spine = persistent constitutional memory
+   chamber = distinct inner article environment
+   ========================================================= */
+
+.shell {
+  --gm-shell-body:
+    #0b1a17;
+
+  --gm-shell-body-soft:
+    #10231e;
+
+  --gm-shell-ink:
+    rgba(232, 223, 200, 0.9);
+
+  --gm-shell-muted:
+    rgba(232, 223, 200, 0.5);
+
+  --gm-shell-rule:
+    rgba(190, 153, 84, 0.22);
+
+  --gm-inner-paper:
+    #ded5c0;
+}
+
+/*
+ * Crown now visually belongs to the same body as the Council Spine.
+ */
+.documentIdentity {
+  position: sticky;
+
+  top: 0;
+
+  z-index: 50;
+
+  width:
+    min(
+      100%,
+      1080px
+    );
+
+  margin:
+    0
+    auto;
+
+  padding:
+    0.8rem
+    clamp(1.5rem, 3vw, 2.5rem);
+
+  border:
+    1px solid
+    var(--gm-shell-rule);
+
+  border-bottom: 0;
+
+  background:
+    var(--gm-shell-body);
+
+  color:
+    var(--gm-shell-ink);
+
+  backdrop-filter: none;
+}
+
+.documentIdentity strong {
+  color:
+    var(--gm-shell-ink);
+}
+
+.documentIdentity p {
+  color:
+    var(--gm-shell-muted);
+}
+
+.documentIdentity > span {
+  color:
+    rgba(232, 223, 200, 0.42);
+}
+
+/*
+ * The pamphlet is no longer visually one uniform sheet.
+ * It contains the institutional spine and the article field.
+ */
+.pamphlet {
+  overflow: visible;
+
+  background:
+    transparent;
+}
+
+/*
+ * Quiet folio strip belongs to article environment,
+ * not the dark institutional shell.
+ */
+.utility {
+  margin-left:
+    var(--gm-council-spine);
+
+  background:
+    var(--gm-inner-paper);
+
+  border-left:
+    1px solid
+    rgba(112, 82, 40, 0.18);
+
+  border-right:
+    1px solid
+    rgba(112, 82, 40, 0.18);
+}
+
+/* =========================================================
+   90-DEGREE BODY
+   ========================================================= */
+
+.constitutionalBody {
+  position: relative;
+
+  grid-template-columns:
+    var(--gm-council-spine)
+    minmax(0, 1fr);
+
+  gap: 0;
+
+  padding: 0;
+
+  align-items: stretch;
+
+  background: transparent;
+}
+
+/*
+ * Council Spine inherits the Crown's institutional material.
+ * It persists while the active chamber changes.
+ */
+.councilSpine {
+  position: sticky;
+
+  top:
+    4.7rem;
+
+  align-self: start;
+
+  min-height:
+    calc(
+      100vh -
+      6rem
+    );
+
+  padding:
+    clamp(1.8rem, 3.5vw, 2.8rem)
+    clamp(1.25rem, 2.5vw, 2rem);
+
+  border-right:
+    1px solid
+    var(--gm-shell-rule);
+
+  background:
+    linear-gradient(
+      to bottom,
+      var(--gm-shell-body),
+      var(--gm-shell-body-soft)
+    );
+
+  color:
+    var(--gm-shell-ink);
+}
+
+/*
+ * All spine typography is translated from ink-on-paper
+ * to the darker institutional body.
+ */
+.spineIdentity {
+  border-bottom:
+    1px solid
+    var(--gm-shell-rule);
+}
+
+.spineIdentity span,
+.spineRecipient > span,
+.spineStanding > span,
+.spineFrameworkLabel {
+  color:
+    rgba(190, 153, 84, 0.86);
+}
+
+.spineIdentity strong,
+.spineRecipient strong {
+  color:
+    var(--gm-shell-ink);
+}
+
+.spineRecipient,
+.spineStanding {
+  border-bottom:
+    1px solid
+    var(--gm-shell-rule);
+}
+
+.spineRecipient p,
+.spineStanding strong {
+  color:
+    var(--gm-shell-muted);
+}
+
+.spineMovement {
+  border-top:
+    1px solid
+    rgba(232, 223, 200, 0.08);
+
+  color:
+    rgba(232, 223, 200, 0.54);
+}
+
+.spineMovement:first-of-type {
+  border-top:
+    1px solid
+    rgba(232, 223, 200, 0.14);
+}
+
+.spineMovement > span {
+  color:
+    rgba(190, 153, 84, 0.7);
+}
+
+.spineMovement:hover,
+.spineMovement:focus-visible,
+.spineMovementActive {
+  color:
+    rgba(232, 223, 200, 0.96);
+}
+
+.spineMovementActive::before {
+  background:
+    rgba(190, 153, 84, 0.96);
+}
+
+.spineMovementActive > span {
+  color:
+    rgba(220, 181, 104, 0.98);
+}
+
+/* =========================================================
+   INNER ARTICLE ENVIRONMENT
+   ========================================================= */
+
+.activeChamber {
+  min-height:
+    clamp(
+      35rem,
+      66vh,
+      50rem
+    );
+
+  padding:
+    clamp(1.8rem, 3.5vw, 3rem)
+    clamp(2rem, 4vw, 3.75rem)
+    clamp(2rem, 4vw, 3.5rem);
+
+  border-right:
+    1px solid
+    rgba(112, 82, 40, 0.18);
+
+  background:
+    var(--gm-inner-paper);
+
+  color:
+    #18201b;
+}
+
+/*
+ * Chamber notation becomes the upper register of the inner field.
+ */
+.chamberNotation {
+  margin-top: 0;
+
+  border-bottom:
+    1px solid
+    rgba(112, 82, 40, 0.32);
+}
+
+/*
+ * Footer follows the inner article environment,
+ * not beneath the Council Spine.
+ */
+.footer {
+  margin-left:
+    var(--gm-council-spine);
+
+  background:
+    var(--gm-inner-paper);
+
+  border-left:
+    1px solid
+    rgba(112, 82, 40, 0.18);
+
+  border-right:
+    1px solid
+    rgba(112, 82, 40, 0.18);
+}
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 860px) {
+  .documentIdentity {
+    border-bottom:
+      1px solid
+      var(--gm-shell-rule);
+  }
+
+  .utility,
+  .footer {
+    margin-left: 0;
+  }
+
+  .constitutionalBody {
+    grid-template-columns: 1fr;
+  }
+
+  .councilSpine {
+    position: static;
+
+    min-height: 0;
+
+    border-right: 0;
+
+    border-bottom:
+      1px solid
+      var(--gm-shell-rule);
+  }
+
+  .activeChamber {
+    border-left:
+      1px solid
+      rgba(112, 82, 40, 0.18);
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB9C.2
+   FIXED CONSTITUTIONAL FRAME
+
+   The shell no longer scrolls as one document.
+
+   Crown = lintel
+   Council Spine = structural column
+   Active Chamber = interior scroll field
+   ========================================================= */
+
+.shell {
+  height: 100svh;
+  min-height: 0;
+
+  display: grid;
+
+  grid-template-rows:
+    auto
+    minmax(0, 1fr);
+
+  overflow: hidden;
+
+  padding-top:
+    clamp(1rem, 2vh, 1.5rem);
+
+  padding-bottom:
+    clamp(1rem, 2vh, 1.5rem);
+}
+
+/* =========================================================
+   CROWN / LINTEL
+   Permanently occupies the upper structural edge.
+   ========================================================= */
+
+.documentIdentity {
+  position: relative;
+
+  top: auto;
+
+  z-index: 50;
+
+  flex: none;
+
+  margin-bottom: 0;
+
+  border-bottom:
+    1px solid
+    var(--gm-shell-rule);
+}
+
+/*
+ * Crown visually connects directly into the pamphlet body.
+ */
+.documentIdentity + .pamphlet {
+  margin-top: 0;
+}
+
+/* =========================================================
+   BUILDING BODY
+   Fixed within remaining viewport height.
+   ========================================================= */
+
+.pamphlet {
+  min-height: 0;
+  height: 100%;
+
+  display: grid;
+
+  grid-template-rows:
+    auto
+    minmax(0, 1fr)
+    auto;
+
+  overflow: hidden;
+
+  border-top: 0;
+}
+
+/*
+ * Quiet inner folio strip remains fixed with the frame.
+ */
+.utility {
+  flex: none;
+}
+
+/* =========================================================
+   STRUCTURAL INTERIOR
+   ========================================================= */
+
+.constitutionalBody {
+  min-height: 0;
+  height: 100%;
+
+  overflow: hidden;
+
+  align-items: stretch;
+}
+
+/* =========================================================
+   COUNCIL SPINE / COLUMN
+   No longer sticky because it never enters the scrollport.
+   ========================================================= */
+
+.councilSpine {
+  position: relative;
+
+  top: auto;
+
+  align-self: stretch;
+
+  height: 100%;
+  min-height: 0;
+
+  overflow: hidden;
+
+  padding-top:
+    clamp(1.5rem, 3vh, 2.25rem);
+
+  padding-bottom:
+    clamp(1.5rem, 3vh, 2.25rem);
+}
+
+/*
+ * Framework sequence should remain fully available
+ * inside the fixed structural column.
+ */
+.spineFramework {
+  margin-top:
+    clamp(0.8rem, 1.8vh, 1.25rem);
+}
+
+.spineMovement {
+  padding-top:
+    clamp(0.45rem, 1vh, 0.65rem);
+
+  padding-bottom:
+    clamp(0.45rem, 1vh, 0.65rem);
+}
+
+/* =========================================================
+   ACTIVE CHAMBER / INTERIOR ROOM
+
+   This is now the sole vertical scroll surface.
+   ========================================================= */
+
+.activeChamber {
+  min-height: 0;
+  height: 100%;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  overscroll-behavior:
+    contain;
+
+  scrollbar-gutter:
+    stable;
+
+  padding-top:
+    clamp(1.5rem, 3vh, 2.5rem);
+
+  padding-bottom:
+    clamp(2rem, 5vh, 4rem);
+}
+
+/*
+ * Keep content from jumping immediately into the crown.
+ */
+.chamberNotation {
+  margin-top: 0;
+}
+
+/*
+ * A small amount of breathing room after the final
+ * chamber progression before the scroll field ends.
+ */
+.chamberProgression {
+  margin-bottom:
+    clamp(1rem, 3vh, 2rem);
+}
+
+/* =========================================================
+   FOOT / FOUNDATION
+   Fixed with the structural frame.
+   ========================================================= */
+
+.footer {
+  flex: none;
+
+  min-height: 0;
+
+  padding-top: 0.7rem;
+  padding-bottom: 0.7rem;
+
+  background:
+    var(--gm-inner-paper);
+}
+
+/* =========================================================
+   OPTIONAL SCROLLBAR RESTRAINT
+   Keep the interior functional but visually quiet.
+   ========================================================= */
+
+.activeChamber {
+  scrollbar-width: thin;
+  scrollbar-color:
+    rgba(112, 82, 40, 0.34)
+    transparent;
+}
+
+.activeChamber::-webkit-scrollbar {
+  width: 8px;
+}
+
+.activeChamber::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.activeChamber::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+
+  background:
+    rgba(112, 82, 40, 0.26);
+}
+
+.activeChamber::-webkit-scrollbar-thumb:hover {
+  background:
+    rgba(112, 82, 40, 0.4);
+}
+
+/* =========================================================
+   RESPONSIVE
+
+   On small screens the building metaphor relaxes:
+   normal document scrolling is preferable to trapping
+   too much content inside nested mobile scrollports.
+   ========================================================= */
+
+@media (max-width: 860px) {
+  .shell {
+    height: auto;
+    min-height: 100svh;
+
+    display: block;
+
+    overflow: visible;
+  }
+
+  .pamphlet {
+    height: auto;
+
+    display: block;
+
+    overflow: visible;
+  }
+
+  .constitutionalBody {
+    height: auto;
+
+    overflow: visible;
+  }
+
+  .councilSpine {
+    height: auto;
+
+    overflow: visible;
+  }
+
+  .activeChamber {
+    height: auto;
+
+    overflow: visible;
+
+    scrollbar-gutter: auto;
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB9C.3
+   MATERIAL CONTRAST STUDY
+
+   Plane 1 — outer atmospheric field
+   Plane 2 — crown + council spine architecture
+   Plane 3 — constitutional article matter
+   ========================================================= */
+
+.shell {
+  --gm-outer-field:
+    #07110f;
+
+  --gm-frame-top:
+    #14261f;
+
+  --gm-frame-bottom:
+    #102019;
+
+  --gm-frame-ink:
+    rgba(236, 228, 206, 0.94);
+
+  --gm-frame-muted:
+    rgba(236, 228, 206, 0.54);
+
+  --gm-frame-rule:
+    rgba(154, 122, 66, 0.28);
+
+  --gm-article-paper:
+    #e3dccb;
+
+  --gm-article-ink:
+    #162019;
+
+  --gm-article-soft:
+    rgba(22, 32, 25, 0.72);
+
+  --gm-bronze:
+    #9a7a42;
+
+  background:
+    radial-gradient(
+      circle at 72% 18%,
+      rgba(48, 72, 60, 0.16),
+      transparent 36%
+    ),
+    radial-gradient(
+      circle at 18% 82%,
+      rgba(84, 62, 35, 0.08),
+      transparent 28%
+    ),
+    var(--gm-outer-field);
+}
+
+/* =========================================================
+   INSTITUTIONAL ARCHITECTURE
+   Crown and spine share one material family.
+   ========================================================= */
+
+.documentIdentity {
+  background:
+    linear-gradient(
+      180deg,
+      var(--gm-frame-top) 0%,
+      var(--gm-frame-bottom) 100%
+    );
+
+  border-color:
+    var(--gm-frame-rule);
+
+  color:
+    var(--gm-frame-ink);
+
+  box-shadow:
+    0 8px 24px
+    rgba(0, 0, 0, 0.12);
+}
+
+.documentIdentity strong {
+  color:
+    var(--gm-frame-ink);
+}
+
+.documentIdentity p {
+  color:
+    var(--gm-frame-muted);
+}
+
+.documentIdentity > span {
+  color:
+    rgba(236, 228, 206, 0.42);
+}
+
+.councilSpine {
+  background:
+    linear-gradient(
+      180deg,
+      var(--gm-frame-top) 0%,
+      var(--gm-frame-bottom) 100%
+    );
+
+  border-right:
+    1px solid
+    var(--gm-frame-rule);
+
+  color:
+    var(--gm-frame-ink);
+
+  box-shadow:
+    8px 0 20px
+    rgba(0, 0, 0, 0.08);
+}
+
+.spineIdentity,
+.spineRecipient,
+.spineStanding {
+  border-bottom-color:
+    var(--gm-frame-rule);
+}
+
+.spineIdentity span,
+.spineRecipient > span,
+.spineStanding > span,
+.spineFrameworkLabel {
+  color:
+    rgba(189, 151, 82, 0.94);
+}
+
+.spineIdentity strong,
+.spineRecipient strong {
+  color:
+    var(--gm-frame-ink);
+}
+
+.spineRecipient p,
+.spineStanding strong {
+  color:
+    var(--gm-frame-muted);
+}
+
+.spineMovement {
+  color:
+    rgba(236, 228, 206, 0.58);
+
+  border-top-color:
+    rgba(236, 228, 206, 0.09);
+}
+
+.spineMovement:first-of-type {
+  border-top-color:
+    rgba(236, 228, 206, 0.14);
+}
+
+.spineMovement > span {
+  color:
+    rgba(189, 151, 82, 0.74);
+}
+
+.spineMovement:hover,
+.spineMovement:focus-visible,
+.spineMovementActive {
+  color:
+    rgba(248, 240, 218, 0.98);
+}
+
+.spineMovementActive::before {
+  background:
+    var(--gm-bronze);
+}
+
+.spineMovementActive > span {
+  color:
+    #c69c52;
+}
+
+/* =========================================================
+   ARTICLE MATTER
+   Cooler limestone / parchment.
+   Distinct from architectural shell.
+   ========================================================= */
+
+.activeChamber {
+  background:
+    var(--gm-article-paper);
+
+  color:
+    var(--gm-article-ink);
+
+  border-left:
+    1px solid
+    rgba(104, 79, 42, 0.2);
+
+  border-right:
+    1px solid
+    rgba(104, 79, 42, 0.18);
+
+  box-shadow:
+    inset 12px 0 22px
+    rgba(6, 12, 9, 0.065);
+}
+
+.utility,
+.footer {
+  background:
+    var(--gm-article-paper);
+
+  color:
+    var(--gm-article-soft);
+
+  border-color:
+    rgba(104, 79, 42, 0.18);
+}
+
+.chamberNotation {
+  border-bottom-color:
+    rgba(104, 79, 42, 0.26);
+}
+
+/* =========================================================
+   STRUCTURAL BRONZE
+   Signal only — not ambient decoration.
+   ========================================================= */
+
+.chamberNotation span,
+.spineMovementActive > span {
+  color:
+    var(--gm-bronze);
+}
+
+/* =========================================================
+   QUIET DEPTH AT FRAME / ARTICLE JOIN
+   ========================================================= */
+
+.constitutionalBody {
+  background:
+    transparent;
+}
+
+.activeChamber::before {
+  content: "";
+
+  position: absolute;
+
+  inset:
+    0
+    auto
+    0
+    0;
+
+  width: 1px;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(154, 122, 66, 0.22),
+      rgba(154, 122, 66, 0.06)
+    );
+}
+
+/*
+ * activeChamber already participates in positioning
+ * through prior rules; preserve that and only ensure
+ * pseudo-element anchoring.
+ */
+.activeChamber {
+  position: relative;
+}
+
+/* =========================================================
+   MOBILE
+   Preserve contrast without forcing desktop monumentality.
+   ========================================================= */
+
+@media (max-width: 860px) {
+  .documentIdentity,
+  .councilSpine {
+    box-shadow: none;
+  }
+
+  .activeChamber {
+    box-shadow:
+      inset 0 8px 18px
+      rgba(6, 12, 9, 0.05);
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB9C.3
+   MATERIAL CONTRAST STUDY
+
+   Plane 1 — outer atmospheric field
+   Plane 2 — crown + council spine architecture
+   Plane 3 — constitutional article matter
+   ========================================================= */
+
+.shell {
+  --gm-outer-field:
+    #07110f;
+
+  --gm-frame-top:
+    #14261f;
+
+  --gm-frame-bottom:
+    #102019;
+
+  --gm-frame-ink:
+    rgba(236, 228, 206, 0.94);
+
+  --gm-frame-muted:
+    rgba(236, 228, 206, 0.54);
+
+  --gm-frame-rule:
+    rgba(154, 122, 66, 0.28);
+
+  --gm-article-paper:
+    #e3dccb;
+
+  --gm-article-ink:
+    #162019;
+
+  --gm-article-soft:
+    rgba(22, 32, 25, 0.72);
+
+  --gm-bronze:
+    #9a7a42;
+
+  background:
+    radial-gradient(
+      circle at 72% 18%,
+      rgba(48, 72, 60, 0.16),
+      transparent 36%
+    ),
+    radial-gradient(
+      circle at 18% 82%,
+      rgba(84, 62, 35, 0.08),
+      transparent 28%
+    ),
+    var(--gm-outer-field);
+}
+
+/* =========================================================
+   INSTITUTIONAL ARCHITECTURE
+   Crown and spine share one material family.
+   ========================================================= */
+
+.documentIdentity {
+  background:
+    linear-gradient(
+      180deg,
+      var(--gm-frame-top) 0%,
+      var(--gm-frame-bottom) 100%
+    );
+
+  border-color:
+    var(--gm-frame-rule);
+
+  color:
+    var(--gm-frame-ink);
+
+  box-shadow:
+    0 8px 24px
+    rgba(0, 0, 0, 0.12);
+}
+
+.documentIdentity strong {
+  color:
+    var(--gm-frame-ink);
+}
+
+.documentIdentity p {
+  color:
+    var(--gm-frame-muted);
+}
+
+.documentIdentity > span {
+  color:
+    rgba(236, 228, 206, 0.42);
+}
+
+.councilSpine {
+  background:
+    linear-gradient(
+      180deg,
+      var(--gm-frame-top) 0%,
+      var(--gm-frame-bottom) 100%
+    );
+
+  border-right:
+    1px solid
+    var(--gm-frame-rule);
+
+  color:
+    var(--gm-frame-ink);
+
+  box-shadow:
+    8px 0 20px
+    rgba(0, 0, 0, 0.08);
+}
+
+.spineIdentity,
+.spineRecipient,
+.spineStanding {
+  border-bottom-color:
+    var(--gm-frame-rule);
+}
+
+.spineIdentity span,
+.spineRecipient > span,
+.spineStanding > span,
+.spineFrameworkLabel {
+  color:
+    rgba(189, 151, 82, 0.94);
+}
+
+.spineIdentity strong,
+.spineRecipient strong {
+  color:
+    var(--gm-frame-ink);
+}
+
+.spineRecipient p,
+.spineStanding strong {
+  color:
+    var(--gm-frame-muted);
+}
+
+.spineMovement {
+  color:
+    rgba(236, 228, 206, 0.58);
+
+  border-top-color:
+    rgba(236, 228, 206, 0.09);
+}
+
+.spineMovement:first-of-type {
+  border-top-color:
+    rgba(236, 228, 206, 0.14);
+}
+
+.spineMovement > span {
+  color:
+    rgba(189, 151, 82, 0.74);
+}
+
+.spineMovement:hover,
+.spineMovement:focus-visible,
+.spineMovementActive {
+  color:
+    rgba(248, 240, 218, 0.98);
+}
+
+.spineMovementActive::before {
+  background:
+    var(--gm-bronze);
+}
+
+.spineMovementActive > span {
+  color:
+    #c69c52;
+}
+
+/* =========================================================
+   ARTICLE MATTER
+   Cooler limestone / parchment.
+   Distinct from architectural shell.
+   ========================================================= */
+
+.activeChamber {
+  background:
+    var(--gm-article-paper);
+
+  color:
+    var(--gm-article-ink);
+
+  border-left:
+    1px solid
+    rgba(104, 79, 42, 0.2);
+
+  border-right:
+    1px solid
+    rgba(104, 79, 42, 0.18);
+
+  box-shadow:
+    inset 12px 0 22px
+    rgba(6, 12, 9, 0.065);
+}
+
+.utility,
+.footer {
+  background:
+    var(--gm-article-paper);
+
+  color:
+    var(--gm-article-soft);
+
+  border-color:
+    rgba(104, 79, 42, 0.18);
+}
+
+.chamberNotation {
+  border-bottom-color:
+    rgba(104, 79, 42, 0.26);
+}
+
+/* =========================================================
+   STRUCTURAL BRONZE
+   Signal only — not ambient decoration.
+   ========================================================= */
+
+.chamberNotation span,
+.spineMovementActive > span {
+  color:
+    var(--gm-bronze);
+}
+
+/* =========================================================
+   QUIET DEPTH AT FRAME / ARTICLE JOIN
+   ========================================================= */
+
+.constitutionalBody {
+  background:
+    transparent;
+}
+
+.activeChamber::before {
+  content: "";
+
+  position: absolute;
+
+  inset:
+    0
+    auto
+    0
+    0;
+
+  width: 1px;
+
+  pointer-events: none;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(154, 122, 66, 0.22),
+      rgba(154, 122, 66, 0.06)
+    );
+}
+
+/*
+ * activeChamber already participates in positioning
+ * through prior rules; preserve that and only ensure
+ * pseudo-element anchoring.
+ */
+.activeChamber {
+  position: relative;
+}
+
+/* =========================================================
+   MOBILE
+   Preserve contrast without forcing desktop monumentality.
+   ========================================================= */
+
+@media (max-width: 860px) {
+  .documentIdentity,
+  .councilSpine {
+    box-shadow: none;
+  }
+
+  .activeChamber {
+    box-shadow:
+      inset 0 8px 18px
+      rgba(6, 12, 9, 0.05);
+  }
+}
+
+/* =========================================================
+   G2M.5D-GB10A
+   SHELL → INNER CHAMBER HANDOFF
+
+   Shell owns navigation and progression.
+   Article owns constitutional matter between them.
+   ========================================================= */
+
+.chamberContent {
+  width: 100%;
+
+  min-height: 0;
+
+  padding: 0;
+}
+
+.activeChamber {
+  display: flex;
+
+  flex-direction: column;
+}
+
+.chamberNotation {
+  flex: none;
+}
+
+.chamberContent {
+  flex: 0 0 auto;
+}
+
+.chamberProgression {
+  flex: none;
+
+  width: 100%;
+
+  margin-top:
+    clamp(1.4rem, 3vw, 2.2rem);
+
+  padding-top:
+    clamp(0.9rem, 1.8vw, 1.2rem);
+}
+
+/*
+ * Progression remains structurally subordinate to the
+ * constitutional matter above it.
+ */
+.chamberProgression button {
+  min-height: 0;
+}
+
+/* =========================================================
+   CHAMBER MATERIAL STUDY / V2
+   Crown and council spine form one right-angled frame.
+   The article remains a legible interior reading plane.
+   ========================================================= */
+
+.shell {
+  --gm-frame-material: #17271f;
+  --gm-frame-rule: rgba(194, 158, 99, 0.3);
+  --gm-article-paper: #e7dfce;
+  --gm-outer-field: #101b16;
+  --gm-council-spine: clamp(14.5rem, 22vw, 18rem);
+  --gm-spine-inset: clamp(1.3rem, 2.5vw, 2rem);
+
+  padding-left: clamp(1rem, 2.5vw, 3rem);
+  padding-right: clamp(1rem, 2.5vw, 3rem);
+
+  background:
+    radial-gradient(ellipse at 50% 35%, rgba(65, 83, 67, 0.22), transparent 70%),
+    linear-gradient(145deg, #15241d, var(--gm-outer-field) 75%);
+}
+
+.documentIdentity,
+.pamphlet {
+  width: min(100%, 1240px);
+}
+
+.documentIdentity,
+.councilSpine,
+.utility {
+  background: var(--gm-frame-material);
+  box-shadow: none;
+}
+
+.documentIdentity {
+  padding-left: var(--gm-spine-inset);
+  border: 1px solid var(--gm-frame-rule);
+  border-bottom: 0;
+}
+
+.utility {
+  position: relative;
+  margin-left: 0;
+  padding-left: var(--gm-spine-inset);
+  border: 1px solid var(--gm-frame-rule);
+  border-bottom-color: rgba(194, 158, 99, 0.16);
+  color: rgba(236, 228, 206, 0.56);
+}
+
+.utility::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: var(--gm-council-spine);
+  width: 1px;
+  background: var(--gm-frame-rule);
+  pointer-events: none;
+}
+
+.councilSpine {
+  padding-left: var(--gm-spine-inset);
+  border-left: 1px solid var(--gm-frame-rule);
+  border-right: 1px solid var(--gm-frame-rule);
+}
+
+.activeChamber {
+  background:
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 5px,
+      rgba(63, 51, 35, 0.012) 6px,
+      transparent 7px
+    ),
+    radial-gradient(ellipse at 92% 14%, rgba(180, 157, 113, 0.1), transparent 58%),
+    var(--gm-article-paper);
+  border-right: 1px solid var(--gm-frame-rule);
+  box-shadow: none;
+}
+
+.footer {
+  margin-left: var(--gm-council-spine);
+  background: var(--gm-article-paper);
+  box-shadow: none;
+}
+
+.atmosphere {
+  opacity: 0.18;
+}
+
+@media (max-width: 860px) {
+  .shell {
+    padding-left: clamp(0.75rem, 3vw, 1.25rem);
+    padding-right: clamp(0.75rem, 3vw, 1.25rem);
+  }
+
+  .utility::before {
+    display: none;
+  }
+
+  .councilSpine {
+    border-right: 1px solid var(--gm-frame-rule);
+  }
+
+  .footer {
+    margin-left: 0;
+  }
+}
+
+/* =========================================================
+   CHAMBER MATERIAL STUDY / V2.1
+   A tonal surround gives the constitutional folio a setting.
+   Depth belongs at its outer edge; the reading plane stays clear.
+   ========================================================= */
+
+.shell {
+  background:
+    radial-gradient(
+      ellipse 70% 95% at 50% 42%,
+      rgba(67, 82, 65, 0.42),
+      rgba(35, 58, 44, 0.2) 68%,
+      transparent 100%
+    ),
+    linear-gradient(145deg, #18281e, #101d17 78%);
+}
+
+.pamphlet {
+  position: relative;
+  box-shadow:
+    0 0 0 1px rgba(190, 153, 84, 0.12),
+    0 0 0 11px rgba(99, 116, 91, 0.035),
+    0 24px 72px rgba(5, 13, 9, 0.2);
+}
+
+.documentIdentity {
+  box-shadow:
+    0 -8px 28px rgba(5, 13, 9, 0.08);
+}
+
+.activeChamber {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(87, 79, 59, 0.055),
+      transparent 2.5rem,
+      transparent calc(100% - 1.75rem),
+      rgba(87, 79, 59, 0.035)
+    ),
+    repeating-linear-gradient(
+      0deg,
+      transparent 0,
+      transparent 5px,
+      rgba(63, 51, 35, 0.008) 6px,
+      transparent 7px
+    ),
+    var(--gm-article-paper);
+}
+
+.footer {
+  position: relative;
+}
+
+.footer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 100%;
+  width: var(--gm-council-spine);
+  border-top: 1px solid var(--gm-frame-rule);
+  background: var(--gm-frame-material);
+  pointer-events: none;
+}
+
+@media (max-width: 860px) {
+  .pamphlet {
+    box-shadow:
+      0 0 0 1px rgba(190, 153, 84, 0.14),
+      0 12px 36px rgba(5, 13, 9, 0.16);
+  }
+
+  .footer::before {
+    display: none;
+  }
+}
+
+/* Palette and inscription: quieter mineral color, sharper title forms. */
+.shell {
+  --gm-frame-material: #1b2b23;
+  --gm-article-paper: #e5e0d3;
+  --gm-bronze: #987446;
+  background:
+    radial-gradient(
+      ellipse 70% 95% at 50% 42%,
+      rgba(77, 94, 73, 0.38),
+      rgba(41, 64, 47, 0.16) 68%,
+      transparent 100%
+    ),
+    linear-gradient(145deg, #1a2a21, #132019 78%);
+}
+
+.documentIdentity strong,
+.spineIdentity strong,
+.spineRecipient strong,
+.spineMovement strong {
+  font-family: Baskerville, "Times New Roman", serif;
+  font-weight: 400;
+  letter-spacing: -0.012em;
+}
+
+/* Crown carries the instrument's name with the weight of a title leaf. */
+.documentIdentity {
+  min-height: 5.9rem;
+  padding-top: clamp(0.85rem, 1.5vw, 1.15rem);
+  padding-bottom: clamp(0.85rem, 1.5vw, 1.15rem);
+  border-top-color: rgba(194, 158, 99, 0.44);
+}
+
+.documentIdentity strong {
+  max-width: 58rem;
+  overflow: visible;
+  font-size: clamp(1.25rem, 1.7vw, 1.58rem);
+  line-height: 1.13;
+  letter-spacing: -0.018em;
+  text-overflow: clip;
+  white-space: normal;
+}
+
+.documentIdentity p {
+  max-width: 55rem;
+  margin-top: 0.3rem;
+  color: rgba(236, 228, 206, 0.67);
+  font-size: clamp(0.74rem, 0.85vw, 0.86rem);
+  line-height: 1.35;
+  white-space: normal;
+}
+
+.documentIdentity > span {
+  align-self: start;
+  margin-top: 0.25rem;
+  color: rgba(194, 158, 99, 0.76);
+  font-size: 0.64rem;
+}
+
+/* Spatial depth without drawn globes or borrowed cultural ornament. */
+.shell::before {
+  opacity: 0.5;
+  background:
+    linear-gradient(
+      125deg,
+      rgba(99, 113, 88, 0.09),
+      transparent 34%,
+      rgba(103, 81, 54, 0.055) 78%,
+      transparent
+    );
+}
+
+.shell::after {
+  display: none;
+}
+
+.atmosphere {
+  opacity: 0.11;
+}
+
+@media (max-width: 860px) {
+  .documentIdentity {
+    min-height: 0;
+    gap: 0.75rem;
+  }
+
+  .documentIdentity strong {
+    font-size: clamp(1.12rem, 3.5vw, 1.35rem);
+  }
+}
+
+@media (max-width: 620px) {
+  .documentIdentity {
+    grid-template-columns: 1fr;
+  }
+
+  .documentIdentity > span {
+    margin-top: 0;
+  }
+}
+
+/* Footnote scale: a recurring institutional maxim, not a second headline. */
+.footer p {
+  max-width: 32rem;
+  font-size: clamp(0.76rem, 0.9vw, 0.88rem);
+  line-height: 1.35;
+  letter-spacing: 0.005em;
+}
+
+/* The foundation carries one quiet institutional classification. */
+.footer {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+.footer span {
+  font-size: 0.66rem;
+  letter-spacing: 0.17em;
+  color: var(--gm-soft);
+}
+
+/* A quieter transition from the earthly field into the folio. */
+.pamphlet {
+  box-shadow:
+    0 0 0 1px rgba(173, 153, 111, 0.11),
+    0 0 0 7px rgba(74, 96, 72, 0.035),
+    0 16px 46px rgba(5, 13, 9, 0.14);
+}
+.documentIdentity {
+  box-shadow: 0 -4px 18px rgba(5, 13, 9, 0.055);
+}
+.utility {
+  justify-content: flex-start;
+}
+
+/* Final material relationship: field, frame, and paper share one threshold. */
+.shell {
+  background:
+    radial-gradient(
+      ellipse 61% 90% at 50% 51%,
+      rgba(82, 101, 78, 0.27) 0%,
+      rgba(48, 70, 52, 0.14) 57%,
+      transparent 100%
+    ),
+    linear-gradient(90deg, #17271e 0%, #1b2e23 50%, #17271e 100%);
+}
+.documentIdentity {
+  box-shadow: none;
+  border-color: rgba(186, 160, 108, 0.27);
+}
+.pamphlet {
+  box-shadow:
+    0 0 0 1px rgba(186, 160, 108, 0.2),
+    0 10px 32px rgba(5, 13, 9, 0.13);
+}
+.footer span {
+  color: #555447;
+  font-size: 0.69rem;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+}
+@media (max-width: 860px) {
+  .pamphlet {
+    box-shadow:
+      0 0 0 1px rgba(186, 160, 108, 0.2),
+      0 8px 24px rgba(5, 13, 9, 0.11);
+  }
+}
+
+/* The institutional frame occupies the view; the field is a narrow reveal. */
+.shell {
+  padding: clamp(0.55rem, 1.1vw, 1rem);
+  background:
+    radial-gradient(ellipse 80% 95% at 50% 50%, rgba(68, 91, 69, 0.34), transparent 78%),
+    #14241b;
+}
+.documentIdentity,
+.pamphlet {
+  width: 100%;
+  max-width: none;
+}
+.documentIdentity {
+  border-left-color: rgba(194, 158, 99, 0.32);
+  border-right-color: rgba(194, 158, 99, 0.32);
+}
+.pamphlet {
+  box-shadow:
+    0 0 0 1px rgba(194, 158, 99, 0.22),
+    0 8px 24px rgba(5, 13, 9, 0.1);
+}
+.footer {
+  margin-left: 0;
+  background: var(--gm-frame-material);
+  border-top: 1px solid var(--gm-frame-rule);
+  border-left: 1px solid var(--gm-frame-rule);
+  border-right: 1px solid var(--gm-frame-rule);
+}
+.footer::before {
+  display: none;
+}
+.footer span {
+  color: rgba(236, 228, 206, 0.83);
+  font-weight: 500;
+}
+@media (max-width: 860px) {
+  .shell {
+    padding: 0.5rem;
+  }
+}
+/* The reading measure remains composed inside the wider institutional frame. */
+.chamberNotation,
+.chamberContent,
+.chamberProgression {
+  width: 100%;
+  max-width: 92rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* The footer inscription belongs to the article plane, not the whole frame. */
+.footer {
+  display: grid;
+  grid-template-columns: var(--gm-council-spine) minmax(0, 1fr);
+  gap: 0;
+  padding-left: 0;
+  padding-right: 0;
+}
+.footer span {
+  grid-column: 2;
+  justify-self: center;
+  align-self: center;
+  text-align: center;
+}
+.chamberNotation,
+.chamberContent,
+.chamberProgression {
+  max-width: 76rem;
+}
+@media (max-width: 860px) {
+  .footer {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .footer span {
+    grid-column: 1;
+  }
+}
+
+/* A focused chapter transition and a legible keyboard destination. */
+.chamberNotation:focus { outline: none; }
+.chamberNotation:focus-visible {
+  outline: 2px solid #927145;
+  outline-offset: 5px;
+}
+.spineMovement,
+.chamberProgression button {
+  transition: color 170ms ease, background-color 170ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .spineMovement,
+  .chamberProgression button { transition: none; }
+}

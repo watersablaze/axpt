@@ -17,6 +17,7 @@ type InstrumentShellProps = {
   version: string;
   status: string;
   movements: Movement[];
+  recipient?: { name: string; institution: string; capacity: string } | null;
   classificationLabel?: string;
   showStatusRail?: boolean;
   hideHero?: boolean;

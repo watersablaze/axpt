@@ -36,7 +36,7 @@ export const greatMotherV1Definition = {
       domain: "Relationship",
       title: "Royal standing",
       body:
-        "The Great Mother’s Royal standing has been sufficiently established for the relationship to proceed in good faith.",
+        "The Global Mother’s Royal standing has been sufficiently established for the relationship to proceed in good faith.",
       state: INSTRUMENT_PROPOSITION_STATE.CONFIRMED,
       ordinal: 1,
     },

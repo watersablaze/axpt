@@ -57,9 +57,9 @@ function getCurrentObjective(currentState: string, nextStates: string[]) {
       )}.`;
 
     case "SPA_EXECUTED":
-      return `Confirm executed SPA and prepare escrow pathway toward ${formatState(
+      return `Open the profile-authorized execution lane toward ${formatState(
         nextState,
-      )}.`;
+      )}. Lane opening establishes the controlled working path; it does not confirm settlement or value movement.`;
 
     case "ESCROW_PENDING":
       return `Confirm escrow setup and funding readiness before moving toward ${formatState(

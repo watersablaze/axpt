@@ -1,0 +1,101 @@
+.field {
+  --ink: #29281f;
+  --muted: #625d50;
+  --bronze: #785f38;
+  --rule: rgba(75, 67, 48, 0.2);
+  width: 100%;
+  padding: 0 clamp(0.75rem, 2.2vw, 1.5rem) 2.5rem;
+  color: var(--ink);
+}
+.field * { box-sizing: border-box; }
+.field p, .field h3 { margin-top: 0; }
+.opening {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  padding: 0.3rem 0 1rem;
+}
+.opening span, .label, .stageNumber, .record, .doctrine span {
+  color: var(--bronze);
+  font-size: 0.66rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.opening p { max-width: 29rem; margin-bottom: 0; color: var(--muted); font-size: 0.89rem; line-height: 1.45; }
+.sequence { position: relative; border-top: 2px solid var(--bronze); }
+.sequence::before { position: absolute; top: 1.75rem; bottom: 1.75rem; left: 1.1rem; width: 1px; background: var(--bronze); content: ""; }
+.stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 2.2rem minmax(11rem, 0.75fr) minmax(0, 1.25fr);
+  align-items: baseline;
+  gap: clamp(0.75rem, 2vw, 1.5rem);
+  padding: clamp(0.9rem, 1.6vw, 1.25rem) 0;
+  border-bottom: 1px solid var(--rule);
+}
+.stageNumber { position: relative; z-index: 1; width: 2.2rem; padding: 0.3rem 0; background: #e6dfcf; text-align: center; }
+.stage h3, .corridor h3, .movement h3 {
+  margin-bottom: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.2rem, 1.9vw, 1.65rem);
+  font-weight: 400;
+  line-height: 1.16;
+}
+.stage p { margin-bottom: 0; color: var(--muted); font-size: 0.88rem; line-height: 1.45; }
+.corridor, .movement { margin-top: clamp(1.8rem, 3.2vw, 2.5rem); }
+.label { display: flex; justify-content: space-between; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--rule); }
+.corridorBody { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(1rem, 3vw, 2rem); padding: 1.35rem 0; }
+.corridorBody h3, .movement h3 { font-size: clamp(1.5rem, 2.5vw, 2.1rem); }
+.corridorBody p, .movement > p { margin-bottom: 0; color: var(--muted); line-height: 1.5; }
+.boundary { margin: 0; padding: 0.9rem 0; border-top: 1px solid var(--rule); color: var(--bronze); font-size: 0.88rem; line-height: 1.45; }
+.movement { padding: 0 clamp(1rem, 2.8vw, 2rem) clamp(1.2rem, 2.5vw, 1.8rem); border: 1px solid var(--rule); }
+.movement h3 { margin: 1.3rem 0 0.65rem; }
+.record { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.35rem; }
+.record span { padding: 0.5rem 0.65rem; border: 1px solid var(--rule); }
+.doctrine {
+  margin-top: clamp(1.8rem, 3vw, 2.5rem);
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  border-left: 3px solid #a37c3e;
+  background: #172820;
+  color: #eee5d0;
+}
+.doctrine span { display: block; margin-bottom: 0.85rem; color: #cba76c; letter-spacing: 0.16em; }
+.doctrine p { max-width: 36rem; margin-bottom: 0; color: #eee5d0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.4rem, 2.3vw, 1.9rem); line-height: 1.23; }
+@media (max-width: 700px) {
+  .corridorBody { grid-template-columns: 1fr; }
+  .stage { grid-template-columns: 2.2rem minmax(0, 1fr); gap: 0.3rem 0.75rem; }
+  .stage p { grid-column: 2; }
+  .label { flex-wrap: wrap; }
+}
+.stage h3,
+.corridor h3,
+.movement h3 {
+  font-family: Baskerville, "Times New Roman", serif;
+  letter-spacing: -0.012em;
+}
+
+.field { padding-bottom: 1.7rem; }
+.opening { padding-bottom: 0.7rem; }
+.stage { padding: clamp(0.65rem, 1.1vw, 0.85rem) 0; }
+.corridor, .movement { margin-top: clamp(1.2rem, 2.1vw, 1.65rem); }
+.corridorBody { padding: 0.95rem 0; }
+.movement { padding-bottom: 1rem; }
+.movement h3 { margin-top: 0.9rem; }
+.record { margin-top: 0.85rem; }
+.doctrine { margin-top: 1.4rem; padding: clamp(0.9rem, 1.7vw, 1.3rem); }
+.doctrine span { margin-bottom: 0.45rem; }
+.doctrine p { font-size: clamp(1.08rem, 1.65vw, 1.38rem); line-height: 1.3; }
+
+/* A trace of warm material follows the passage sequence. */
+.sequence {
+  background: linear-gradient(90deg, rgba(151, 119, 70, 0.075), transparent 67%);
+}
+.stage { padding-left: clamp(0.45rem, 0.9vw, 0.8rem); padding-right: clamp(0.45rem, 0.9vw, 0.8rem); }
+.stageNumber { background: #e8e0d0; }
+.corridor {
+  padding: 0 clamp(0.7rem, 1.4vw, 1.2rem);
+  border-left: 2px solid rgba(151, 119, 70, 0.42);
+  background: linear-gradient(90deg, rgba(151, 119, 70, 0.055), transparent 70%);
+}

@@ -12,3 +12,14 @@ export function instrumentAccessCookieName(publicId: string) {
 
   return `fw_dsi_access_${suffix}`;
 }
+
+export function institutionalInstrumentAccessCookieName(
+  instrumentReference: string,
+) {
+  const suffix = createHash("sha256")
+    .update(instrumentReference, "utf8")
+    .digest("hex")
+    .slice(0, 16);
+
+  return `fw_instrument_access_${suffix}`;
+}
