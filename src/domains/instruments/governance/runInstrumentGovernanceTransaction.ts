@@ -14,6 +14,8 @@ export type InstrumentGovernanceTransactionClient = Pick<
   | "instrumentVersion"
   | "instrumentProposition"
   | "instrumentResponse"
+  | "instrumentResponseSet"
+  | "globalMotherDraftingDecision"
   | "instrumentParty"
   | "instrumentAccessGrant"
   | "instrumentAuthority"
@@ -39,6 +41,7 @@ export async function runInstrumentGovernanceTransaction<T>(
   operation: (
     tx: InstrumentGovernanceTransactionClient,
   ) => Promise<T>,
+  options?: { timeoutMs?: number },
 ): Promise<T> {
   return client.$transaction(
     async (
@@ -46,5 +49,6 @@ export async function runInstrumentGovernanceTransaction<T>(
     ) => {
       return operation(tx);
     },
+    options?.timeoutMs ? { timeout: options.timeoutMs } : undefined,
   );
 }

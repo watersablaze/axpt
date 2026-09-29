@@ -52,6 +52,7 @@ model User {
   sessionLogs           SessionLog[]
   simProfiles           SimProfile[]
   stakes                Stake[]
+  globalMotherDraftingDecisions GlobalMotherDraftingDecision[] @relation("GlobalMotherDraftingDecisionActor")
   createdTokens         Token[]                  @relation("TokensCreatedBy")
   tokenIssuanceRequests TokenIssuanceRequest[]   @relation("RequestsByUser")
   transactions          Transaction[]
@@ -69,6 +70,7 @@ model User {
   instrumentParties               InstrumentParty[]         @relation("InstrumentPartyUser")
   instrumentAccessGrantsReceived  InstrumentAccessGrant[]   @relation("InstrumentAccessRecipient")
   instrumentAccessGrantsIssued    InstrumentAccessGrant[]   @relation("InstrumentAccessIssuer")
+  instrumentResponseSets         InstrumentResponseSet[]    @relation("InstrumentResponseSetActor")
 
   instrumentAuthoritiesCreated InstrumentAuthority[]       @relation("InstrumentAuthorityCreator")
   instrumentTransitionsActed   InstrumentStateTransition[] @relation("InstrumentTransitionActor")
@@ -106,6 +108,8 @@ model InstitutionalInstrument {
   versions                         InstrumentVersion[]
   parties                          InstrumentParty[]
   accessGrants                     InstrumentAccessGrant[]
+  responseSets                     InstrumentResponseSet[]
+  draftingDecisions                GlobalMotherDraftingDecision[]
   authorities                      InstrumentAuthority[]
   stateTransitions                 InstrumentStateTransition[]
   evidence                         InstrumentEvidence[]
@@ -181,6 +185,8 @@ model InstrumentVersion {
 
   propositions InstrumentProposition[]
   accessGrants InstrumentAccessGrant[] @relation("InstrumentVersionAccessGrants")
+  responseSets InstrumentResponseSet[]
+  draftingDecisions GlobalMotherDraftingDecision[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -236,6 +242,48 @@ model InstrumentResponse {
   @@index([responseType])
 }
 
+model InstrumentResponseSet {
+  id String @id @default(cuid())
+  instrumentId String
+  versionId String
+  grantId String
+  actorUserId String
+  submissionKey String
+  contentHash String
+  representedInstitution String
+  representativeCapacity String
+  positions Json
+  recordedAt DateTime @default(now())
+
+  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+  version InstrumentVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  grant InstrumentAccessGrant @relation(fields: [grantId], references: [id], onDelete: Restrict)
+  actor User @relation("InstrumentResponseSetActor", fields: [actorUserId], references: [id])
+
+  @@unique([versionId, actorUserId, submissionKey])
+  @@unique([versionId, actorUserId])
+  @@index([instrumentId, recordedAt])
+  @@index([grantId])
+}
+
+model GlobalMotherDraftingDecision {
+  id String @id @default(cuid())
+  instrumentId String
+  versionId String
+  actorUserId String
+  decisionKey String @unique
+  standing String
+  reviewedReceiptIds Json
+  rationale String
+  recordedAt DateTime @default(now())
+
+  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+  version InstrumentVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  actor User @relation("GlobalMotherDraftingDecisionActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([versionId, recordedAt])
+}
+
 model InstrumentParty {
   id             String              @id @default(cuid())
   instrumentId   String
@@ -247,8 +295,7 @@ model InstrumentParty {
   instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
   user       User?                   @relation("InstrumentPartyUser", fields: [userId], references: [id], onDelete: SetNull)
 
-  authorities InstrumentAuthority[]
-
+  authorities                      InstrumentAuthority[]
   representativeProgramAppointment RepresentativeProgramAppointment?
 
   createdAt DateTime @default(now())
@@ -264,6 +311,8 @@ model InstrumentAccessGrant {
   instrumentVersionId String?
   recipientUserId     String?
   recipientName       String?
+  representedInstitution String?
+  representativeCapacity String?
   recipientRole       InstrumentPartyRole
   accessLevel         InstrumentAccessLevel
   codeHash            String?               @unique
@@ -279,6 +328,7 @@ model InstrumentAccessGrant {
   instrumentVersion InstrumentVersion?      @relation("InstrumentVersionAccessGrants", fields: [instrumentVersionId], references: [id], onDelete: SetNull)
   recipientUser     User?                   @relation("InstrumentAccessRecipient", fields: [recipientUserId], references: [id], onDelete: SetNull)
   issuedBy          User                    @relation("InstrumentAccessIssuer", fields: [issuedByUserId], references: [id])
+  responseSets InstrumentResponseSet[]
 
   @@index([instrumentId, accessLevel])
   @@index([instrumentVersionId])
@@ -286,6 +336,103 @@ model InstrumentAccessGrant {
   @@index([issuedByUserId])
   @@index([expiresAt])
   @@index([revokedAt])
+}
+
+model InstrumentAuthority {
+  id              String                   @id @default(cuid())
+  instrumentId    String
+  authorityKey    String
+  title           String
+  authorityClass  InstrumentAuthorityClass
+  holderPartyId   String?
+  action          String
+  conditions      Json?
+  effectiveAt     DateTime                 @default(now())
+  expiresAt       DateTime?
+  revokedAt       DateTime?
+  createdByUserId String
+
+  instrument  InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  holderParty InstrumentParty?        @relation(fields: [holderPartyId], references: [id], onDelete: SetNull)
+  createdBy   User                    @relation("InstrumentAuthorityCreator", fields: [createdByUserId], references: [id])
+
+  transitions InstrumentStateTransition[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([instrumentId, authorityKey])
+  @@index([instrumentId, authorityClass])
+  @@index([holderPartyId])
+  @@index([revokedAt])
+}
+
+model InstrumentStateTransition {
+  id           String                         @id @default(cuid())
+  instrumentId String
+  fromStatus   InstitutionalInstrumentStatus?
+  toStatus     InstitutionalInstrumentStatus
+  actorUserId  String
+  authorityId  String?
+  reason       String?
+  metadata     Json?
+  occurredAt   DateTime                       @default(now())
+
+  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  actor      User                    @relation("InstrumentTransitionActor", fields: [actorUserId], references: [id])
+  authority  InstrumentAuthority?    @relation(fields: [authorityId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([instrumentId, occurredAt])
+  @@index([instrumentId, toStatus])
+  @@index([actorUserId])
+  @@index([authorityId])
+}
+
+model InstrumentEvidence {
+  id               String                    @id @default(cuid())
+  instrumentId     String
+  evidenceType     InstrumentEvidenceType
+  subjectType      InstrumentEvidenceSubject
+  subjectId        String?
+  title            String
+  uri              String?
+  contentHash      String?
+  metadata         Json?
+  recordedByUserId String
+  recordedAt       DateTime                  @default(now())
+
+  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  recordedBy User                    @relation("InstrumentEvidenceRecorder", fields: [recordedByUserId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([instrumentId, evidenceType])
+  @@index([instrumentId, subjectType, subjectId])
+  @@index([contentHash])
+  @@index([recordedAt])
+}
+
+model InstrumentRelation {
+  id                 String                 @id @default(cuid())
+  sourceInstrumentId String
+  targetInstrumentId String
+  relationType       InstrumentRelationType
+  label              String?
+  metadata           Json?
+  createdByUserId    String
+
+  sourceInstrument InstitutionalInstrument @relation("InstrumentRelationSource", fields: [sourceInstrumentId], references: [id], onDelete: Cascade)
+  targetInstrument InstitutionalInstrument @relation("InstrumentRelationTarget", fields: [targetInstrumentId], references: [id], onDelete: Cascade)
+  createdBy        User                    @relation("InstrumentRelationCreator", fields: [createdByUserId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([sourceInstrumentId, targetInstrumentId, relationType])
+  @@index([sourceInstrumentId, relationType])
+  @@index([targetInstrumentId, relationType])
+  @@index([createdByUserId])
 }
 
 // ============================================================================
@@ -472,6 +619,43 @@ enum RepresentativeQualificationDecision {
   QUALIFIED
   RETURN_FOR_COMPLETION
   DECLINED
+}
+
+enum InstrumentAuthorityClass {
+  RESERVED
+  JOINT
+  DELEGATED
+  PROHIBITED
+}
+
+enum InstrumentEvidenceType {
+  DOCUMENT
+  ATTESTATION
+  EXTERNAL_RECORD
+  DIGITAL_PROOF
+  COMMERCIAL_RECORD
+  SETTLEMENT_PROOF
+  OTHER
+}
+
+enum InstrumentEvidenceSubject {
+  INSTRUMENT
+  VERSION
+  PROPOSITION
+  AUTHORITY
+  TRANSITION
+  RELATION
+  EXECUTION
+}
+
+enum InstrumentRelationType {
+  GOVERNS
+  IMPLEMENTS
+  DERIVES_FROM
+  SUPERSEDES
+  SUPPORTS
+  SETTLES
+  REFERENCES
 }
 
 enum InstitutionalInstrumentKind {
@@ -2888,8 +3072,8 @@ model CommunicationMessage {
   workflowTargetId      String?
 
   conversation CommunicationConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  sender       User                      @relation("CommunicationMessageSender", fields: [senderUserId], references: [id])
-  readMarkers  CommunicationMember[]     @relation("CommunicationLastReadMessage")
+  sender        User                        @relation("CommunicationMessageSender", fields: [senderUserId], references: [id])
+  readMarkers   CommunicationMember[]       @relation("CommunicationLastReadMessage")
 
   @@unique([conversationId, senderUserId, clientMessageId])
   @@index([conversationId, createdAt])
@@ -2929,8 +3113,8 @@ model CommunicationOperationalRoom {
 
   createdBy User @relation("CommunicationOperationalRoomCreator", fields: [createdByUserId], references: [id])
 
-  links       CommunicationOperationalLink[]
-  reflections CommunicationOperationalReflection[]
+  links          CommunicationOperationalLink[]
+  reflections    CommunicationOperationalReflection[]
 
   @@unique([createdByUserId, clientRoomId])
   @@index([roomClass, updatedAt])
@@ -3114,142 +3298,4 @@ model TreasurySettlementObservationCursor {
 
   @@unique([chainId, tokenContractAddress, watchedAddress])
   @@index([chainId, updatedAt])
-}
-
-// ============================================================================
-// INSTITUTIONAL INSTRUMENT GOVERNANCE KERNEL
-// ============================================================================
-
-model InstrumentAuthority {
-  id              String                   @id @default(cuid())
-  instrumentId    String
-  authorityKey    String
-  title           String
-  authorityClass  InstrumentAuthorityClass
-  holderPartyId   String?
-  action          String
-  conditions      Json?
-  effectiveAt     DateTime                 @default(now())
-  expiresAt       DateTime?
-  revokedAt       DateTime?
-  createdByUserId String
-
-  instrument  InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
-  holderParty InstrumentParty?        @relation(fields: [holderPartyId], references: [id], onDelete: SetNull)
-  createdBy   User                    @relation("InstrumentAuthorityCreator", fields: [createdByUserId], references: [id])
-
-  transitions InstrumentStateTransition[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([instrumentId, authorityKey])
-  @@index([instrumentId, authorityClass])
-  @@index([holderPartyId])
-  @@index([revokedAt])
-}
-
-model InstrumentStateTransition {
-  id           String                         @id @default(cuid())
-  instrumentId String
-  fromStatus   InstitutionalInstrumentStatus?
-  toStatus     InstitutionalInstrumentStatus
-  actorUserId  String
-  authorityId  String?
-  reason       String?
-  metadata     Json?
-  occurredAt   DateTime                       @default(now())
-
-  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
-  actor      User                    @relation("InstrumentTransitionActor", fields: [actorUserId], references: [id])
-  authority  InstrumentAuthority?    @relation(fields: [authorityId], references: [id], onDelete: SetNull)
-
-  createdAt DateTime @default(now())
-
-  @@index([instrumentId, occurredAt])
-  @@index([instrumentId, toStatus])
-  @@index([actorUserId])
-  @@index([authorityId])
-}
-
-model InstrumentEvidence {
-  id               String                    @id @default(cuid())
-  instrumentId     String
-  evidenceType     InstrumentEvidenceType
-  subjectType      InstrumentEvidenceSubject
-  subjectId        String?
-  title            String
-  uri              String?
-  contentHash      String?
-  metadata         Json?
-  recordedByUserId String
-  recordedAt       DateTime                  @default(now())
-
-  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
-  recordedBy User                    @relation("InstrumentEvidenceRecorder", fields: [recordedByUserId], references: [id])
-
-  createdAt DateTime @default(now())
-
-  @@index([instrumentId, evidenceType])
-  @@index([instrumentId, subjectType, subjectId])
-  @@index([contentHash])
-  @@index([recordedAt])
-}
-
-model InstrumentRelation {
-  id                 String                 @id @default(cuid())
-  sourceInstrumentId String
-  targetInstrumentId String
-  relationType       InstrumentRelationType
-  label              String?
-  metadata           Json?
-  createdByUserId    String
-
-  sourceInstrument InstitutionalInstrument @relation("InstrumentRelationSource", fields: [sourceInstrumentId], references: [id], onDelete: Cascade)
-  targetInstrument InstitutionalInstrument @relation("InstrumentRelationTarget", fields: [targetInstrumentId], references: [id], onDelete: Cascade)
-  createdBy        User                    @relation("InstrumentRelationCreator", fields: [createdByUserId], references: [id])
-
-  createdAt DateTime @default(now())
-
-  @@unique([sourceInstrumentId, targetInstrumentId, relationType])
-  @@index([sourceInstrumentId, relationType])
-  @@index([targetInstrumentId, relationType])
-  @@index([createdByUserId])
-}
-
-enum InstrumentAuthorityClass {
-  RESERVED
-  JOINT
-  DELEGATED
-  PROHIBITED
-}
-
-enum InstrumentEvidenceType {
-  DOCUMENT
-  ATTESTATION
-  EXTERNAL_RECORD
-  DIGITAL_PROOF
-  COMMERCIAL_RECORD
-  SETTLEMENT_PROOF
-  OTHER
-}
-
-enum InstrumentEvidenceSubject {
-  INSTRUMENT
-  VERSION
-  PROPOSITION
-  AUTHORITY
-  TRANSITION
-  RELATION
-  EXECUTION
-}
-
-enum InstrumentRelationType {
-  GOVERNS
-  IMPLEMENTS
-  DERIVES_FROM
-  SUPERSEDES
-  SUPPORTS
-  SETTLES
-  REFERENCES
 }

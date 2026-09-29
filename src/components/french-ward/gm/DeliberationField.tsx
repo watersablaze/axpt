@@ -1,13 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import styles from "./DeliberationField.module.css";
+import {
+  useState,
+} from "react";
+import {
+  useRouter,
+} from "next/navigation";
 
-type PropositionState =
-  | "CONFIRMED"
-  | "UNDERSTOOD"
-  | "PROPOSED"
-  | "OPEN";
+import styles from "./DeliberationField.module.css";
 
 type ResponseType =
   | "ACKNOWLEDGE"
@@ -16,163 +16,246 @@ type ResponseType =
   | "REVISE"
   | "DECLINE";
 
-type Proposition = {
+type CurrentResponse = {
+  id: string;
+  responseType:
+    ResponseType;
+  note: string | null;
+  createdAt: string;
+};
+
+type DeliberationProposition = {
   id: string;
   reference: string;
-  state: PropositionState;
+  state: string;
   domain: string;
   title: string;
   body: string;
+  ordinal: number;
+  resolution:
+    | "UNRESPONDED"
+    | "RECEIVED"
+    | "ALIGNED"
+    | "CLARIFICATION_OPEN"
+    | "REVISION_PENDING"
+    | "NOT_ALIGNED";
+  response: CurrentResponse | null;
 };
 
-type ResponseRecord = {
-  type: ResponseType;
-  note: string;
+type DeliberationSummary = {
+  total: number;
+  responded: number;
+  unresponded: number;
+  aligned: number;
+  received: number;
+  clarificationOpen: number;
+  revisionPending: number;
+  notAligned: number;
 };
 
-const propositions: Proposition[] = [
-  {
-    id: "royal-standing",
-    reference: "REL-01",
-    state: "CONFIRMED",
-    domain: "Relationship",
-    title: "Royal standing",
-    body:
-      "The Great Mother’s Royal standing has been sufficiently established for the relationship to proceed in good faith.",
-  },
-  {
-    id: "relational-opening",
-    reference: "REL-02",
-    state: "UNDERSTOOD",
-    domain: "Relationship",
-    title: "Relational economic opening",
-    body:
-      "The invitation is understood to join family relationship, lawful trade, restoration, projects and continuing return.",
-  },
-  {
-    id: "custodial-role",
-    reference: "AUTH-01",
-    state: "PROPOSED",
-    domain: "Authority",
-    title: "French-Ward custodianship",
-    body:
-      "French-Ward is proposed as a custodial institutional partner operating through expressly defined delegated authority.",
-  },
-  {
-    id: "reserved-authority",
-    reference: "AUTH-02",
-    state: "PROPOSED",
-    domain: "Authority",
-    title: "Reserved Royal authority",
-    body:
-      "Royal identity, recognition, symbols, appointments and final Royal representation remain under Royal authority unless expressly delegated.",
-  },
-  {
-    id: "corridor-principle",
-    reference: "PASS-01",
-    state: "PROPOSED",
-    domain: "Economic Corridor",
-    title: "Governed passage",
-    body:
-      "Gold should progress only through an identified source, verified authority, controlled passage, qualified receiving gateway, assay and settlement.",
-  },
-  {
-    id: "three-kilogram",
-    reference: "PASS-02",
-    state: "OPEN",
-    domain: "Economic Corridor",
-    title: "Three-kilogram provision",
-    body:
-      "The legal and economic character of the proposed three-kilogram / approximately USD 300,000 provision remains to be defined.",
-  },
-  {
-    id: "digital-house",
-    reference: "FUT-01",
-    state: "PROPOSED",
-    domain: "Future Body",
-    title: "Royal Digital House",
-    body:
-      "French-Ward proposes the Royal Digital House as an inaugural institutional gift for heritage, identity, projects, governance and future digital-economic development.",
-  },
-  {
-    id: "annual-return",
-    reference: "FUT-02",
-    state: "OPEN",
-    domain: "Future Body",
-    title: "Annual return and homage",
-    body:
-      "The principle of annual return is recognized while its ceremonial, project, service and economic dimensions remain to be jointly defined.",
-  },
-];
+type DeliberationFieldProps = {
+  instrumentReference: string;
+  instrumentStatus: string;
+  actorBound: boolean;
+  propositions: DeliberationProposition[];
+  summary: DeliberationSummary;
+};
 
-const responseTypes: ResponseType[] = [
-  "ACKNOWLEDGE",
-  "AFFIRM",
-  "CLARIFY",
-  "REVISE",
-  "DECLINE",
-];
-
-function readableResponse(type: ResponseType) {
-  return type.charAt(0) + type.slice(1).toLowerCase();
+function readable(value: string) {
+  return value
+    .toLowerCase()
+    .split("_")
+    .map(
+      (part) =>
+        part.charAt(0).toUpperCase() +
+        part.slice(1),
+    )
+    .join(" ");
 }
 
-export function DeliberationField() {
-  const [selectedId, setSelectedId] = useState(propositions[0].id);
-  const [draftType, setDraftType] = useState<ResponseType>("ACKNOWLEDGE");
-  const [draftNote, setDraftNote] = useState("");
-  const [responses, setResponses] = useState<Record<string, ResponseRecord>>({});
+export function DeliberationField({
+  instrumentReference,
+  instrumentStatus,
+  actorBound,
+  propositions,
+  summary,
+}: DeliberationFieldProps) {
+  const router =
+    useRouter();
+
+  const [selectedId, setSelectedId] =
+    useState(
+      propositions[0]?.id ?? "",
+    );
+
+  /*
+   * These values are drafting state only.
+   *
+   * They do not represent institutional truth and
+   * are never used to derive resolution, standing,
+   * access, actor identity or response history.
+   */
+  const [
+    draftResponseType,
+    setDraftResponseType,
+  ] =
+    useState<ResponseType | null>(
+      null,
+    );
+
+  const [
+    draftNote,
+    setDraftNote,
+  ] =
+    useState("");
+
+  const [
+    submitting,
+    setSubmitting,
+  ] =
+    useState(false);
+
+  const [
+    submissionError,
+    setSubmissionError,
+  ] =
+    useState<string | null>(
+      null,
+    );
+
+  const [
+    submissionNotice,
+    setSubmissionNotice,
+  ] =
+    useState<string | null>(
+      null,
+    );
 
   const selected =
-    propositions.find((proposition) => proposition.id === selectedId) ??
-    propositions[0];
+    propositions.find(
+      (proposition) =>
+        proposition.id === selectedId,
+    ) ??
+    propositions[0] ??
+    null;
 
-  const respondedCount = Object.keys(responses).length;
+  const unresolvedCount =
+    summary.total -
+    summary.aligned;
 
-  const unresolvedCount = useMemo(
-    () =>
-      propositions.filter(
-        (proposition) =>
-          proposition.state === "OPEN" &&
-          responses[proposition.id]?.type !== "AFFIRM"
-      ).length,
-    [responses]
-  );
+  function selectProposition(
+    propositionId: string,
+  ) {
+    setSelectedId(
+      propositionId,
+    );
 
-  function selectProposition(id: string) {
-    setSelectedId(id);
+    /*
+     * Moving between propositions clears only
+     * unsubmitted drafting state.
+     */
+    setDraftResponseType(
+      null,
+    );
+    setDraftNote("");
+    setSubmissionError(
+      null,
+    );
+    setSubmissionNotice(
+      null,
+    );
+  }
 
-    const existing = responses[id];
-
-    if (existing) {
-      setDraftType(existing.type);
-      setDraftNote(existing.note);
+  async function submitResponse() {
+    if (
+      !actorBound ||
+      !selected ||
+      !draftResponseType ||
+      submitting
+    ) {
       return;
     }
 
-    setDraftType("ACKNOWLEDGE");
-    setDraftNote("");
-  }
+    setSubmitting(true);
+    setSubmissionError(
+      null,
+    );
+    setSubmissionNotice(
+      null,
+    );
 
-  function submitResponse() {
-    setResponses((current) => ({
-      ...current,
-      [selected.id]: {
-        type: draftType,
-        note: draftNote.trim(),
-      },
-    }));
-  }
+    try {
+      const response =
+        await fetch(
+          "/french-ward/instruments/gm-kenya/respond",
+          {
+            method:
+              "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body:
+              JSON.stringify({
+                propositionReference:
+                  selected.reference,
+                responseType:
+                  draftResponseType,
+                note:
+                  draftNote,
+              }),
+          },
+        );
 
-  function clearResponse() {
-    setResponses((current) => {
-      const next = { ...current };
-      delete next[selected.id];
-      return next;
-    });
+      const payload:
+        | {
+            ok?: boolean;
+            error?: string;
+          }
+        | null =
+        await response
+          .json()
+          .catch(
+            () => null,
+          );
 
-    setDraftType("ACKNOWLEDGE");
-    setDraftNote("");
+      if (
+        !response.ok ||
+        !payload?.ok
+      ) {
+        throw new Error(
+          payload?.error ||
+          "RESPONSE_SUBMISSION_FAILED",
+        );
+      }
+
+      /*
+       * No response record is installed into local
+       * state. The server projection remains the
+       * source of truth.
+       */
+      setDraftResponseType(
+        null,
+      );
+      setDraftNote("");
+
+      setSubmissionNotice(
+        "Response recorded. Refreshing the institutional register.",
+      );
+
+      router.refresh();
+    } catch (error) {
+      console.error(
+        "[DeliberationField] response submission failed",
+        error,
+      );
+
+      setSubmissionError(
+        "The response could not be recorded. Confirm controlled access and try again.",
+      );
+    } finally {
+      setSubmitting(false);
+    }
   }
 
   return (
@@ -181,216 +264,615 @@ export function DeliberationField() {
       aria-label="Interactive institutional deliberation"
     >
       <div className={styles.fieldMeta}>
-        <span>Deliberation Field 05</span>
-        <span>GM-KENYA-RCF-001</span>
+        <span>
+          Deliberation Field 05
+        </span>
+
+        <span>
+          {instrumentReference}
+        </span>
       </div>
 
       <div className={styles.introduction}>
         <div>
-          <span>Institutional Deliberation</span>
-          <h3>The framework becomes actionable through response.</h3>
+          <span>
+            Institutional Deliberation
+          </span>
+
+          <h3>
+            The framework becomes actionable
+            through attributable response.
+          </h3>
         </div>
 
         <p>
-          Each proposition is distinguished by its present institutional state.
-          Responses do not silently alter the framework; they create a visible
-          position from which clarification, revision and alignment can proceed.
+          This register is projected from the
+          durable AXPT institutional record.
+          Proposition language, response standing
+          and deliberative resolution are no longer
+          maintained as browser-local institutional
+          state.
         </p>
       </div>
 
-      <div className={styles.summary} aria-label="Deliberation summary">
+      <div
+        className={styles.summary}
+        aria-label="Deliberation summary"
+      >
         <article>
-          <span>Total propositions</span>
-          <strong>{propositions.length}</strong>
-        </article>
+          <span>
+            Total propositions
+          </span>
 
-        <article>
-          <span>Responses recorded</span>
-          <strong>{respondedCount}</strong>
-        </article>
-
-        <article>
-          <span>Open propositions</span>
-          <strong>{unresolvedCount}</strong>
-        </article>
-
-        <article>
-          <span>Instrument state</span>
           <strong>
-            {respondedCount === propositions.length && unresolvedCount === 0
-              ? "READY FOR ALIGNMENT"
-              : "UNDER DELIBERATION"}
+            {summary.total}
+          </strong>
+        </article>
+
+        <article>
+          <span>
+            Responses recorded
+          </span>
+
+          <strong>
+            {summary.responded}
+          </strong>
+        </article>
+
+        <article>
+          <span>
+            Unresolved positions
+          </span>
+
+          <strong>
+            {unresolvedCount}
+          </strong>
+        </article>
+
+        <article>
+          <span>
+            Instrument state
+          </span>
+
+          <strong>
+            {readable(
+              instrumentStatus,
+            )}
           </strong>
         </article>
       </div>
 
       <div className={styles.workspace}>
         <div className={styles.register}>
-          <div className={styles.registerHeader}>
-            <span>Proposition Register</span>
-            <small>Select a proposition to deliberate</small>
+          <div
+            className={
+              styles.registerHeader
+            }
+          >
+            <span>
+              Proposition Register
+            </span>
+
+            <small>
+              Select a proposition to inspect
+            </small>
           </div>
 
-          <div className={styles.propositions}>
-            {propositions.map((proposition) => {
-              const response = responses[proposition.id];
-              const active = proposition.id === selected.id;
+          <div
+            className={
+              styles.propositions
+            }
+          >
+            {propositions.map(
+              (proposition) => {
+                const active =
+                  proposition.id ===
+                  selected?.id;
 
-              return (
-                <button
-                  key={proposition.id}
-                  type="button"
-                  className={`${styles.proposition} ${
-                    active ? styles.active : ""
-                  }`}
-                  onClick={() => selectProposition(proposition.id)}
-                >
-                  <div className={styles.propositionMeta}>
-                    <span>{proposition.reference}</span>
-                    <span>{proposition.state}</span>
-                  </div>
+                return (
+                  <button
+                    key={
+                      proposition.id
+                    }
+                    type="button"
+                    className={`${
+                      styles.proposition
+                    } ${
+                      active
+                        ? styles.active
+                        : ""
+                    }`}
+                    onClick={() =>
+                      selectProposition(
+                        proposition.id,
+                      )
+                    }
+                  >
+                    <div
+                      className={
+                        styles.propositionMeta
+                      }
+                    >
+                      <span>
+                        {
+                          proposition.reference
+                        }
+                      </span>
 
-                  <strong>{proposition.title}</strong>
-
-                  <small>{proposition.domain}</small>
-
-                  {response ? (
-                    <div className={styles.responseMarker}>
-                      {readableResponse(response.type)}
+                      <span>
+                        {
+                          proposition.state
+                        }
+                      </span>
                     </div>
-                  ) : null}
-                </button>
-              );
-            })}
+
+                    <strong>
+                      {
+                        proposition.title
+                      }
+                    </strong>
+
+                    <small>
+                      {
+                        proposition.domain
+                      }
+                    </small>
+
+                    <div
+                      className={
+                        styles.responseMarker
+                      }
+                    >
+                      {readable(
+                        proposition.resolution,
+                      )}
+                    </div>
+                  </button>
+                );
+              },
+            )}
           </div>
         </div>
 
-        <div className={styles.deliberator}>
-          <div className={styles.selectedMeta}>
-            <span>{selected.reference}</span>
-            <span>{selected.domain}</span>
-            <span>{selected.state}</span>
-          </div>
-
-          <h3>{selected.title}</h3>
-
-          <p className={styles.selectedBody}>{selected.body}</p>
-
-          <fieldset className={styles.responseTypes}>
-            <legend>Institutional response</legend>
-
-            {responseTypes.map((type) => (
-              <label key={type}>
-                <input
-                  type="radio"
-                  name="deliberation-response"
-                  value={type}
-                  checked={draftType === type}
-                  onChange={() => setDraftType(type)}
-                />
-
-                <span>{readableResponse(type)}</span>
-              </label>
-            ))}
-          </fieldset>
-
-          <label className={styles.noteField}>
-            <span>Response note</span>
-
-            <textarea
-              value={draftNote}
-              onChange={(event) => setDraftNote(event.target.value)}
-              placeholder={
-                draftType === "CLARIFY"
-                  ? "State the clarification required…"
-                  : draftType === "REVISE"
-                    ? "State the proposed revision…"
-                    : draftType === "DECLINE"
-                      ? "State the reason or boundary…"
-                      : "Optional institutional note…"
-              }
-              rows={6}
-            />
-          </label>
-
-          <div className={styles.actions}>
-            <button type="button" onClick={submitResponse}>
-              Record response
-            </button>
-
-            {responses[selected.id] ? (
-              <button
-                type="button"
-                className={styles.secondaryAction}
-                onClick={clearResponse}
+        <div
+          className={
+            styles.deliberator
+          }
+        >
+          {selected ? (
+            <>
+              <div
+                className={
+                  styles.selectedMeta
+                }
               >
-                Clear response
-              </button>
-            ) : null}
-          </div>
+                <span>
+                  {selected.reference}
+                </span>
 
-          <div className={styles.localNotice}>
-            <span>V1 interaction state</span>
-            <p>
-              Responses are presently held in this browser session only. They
-              are not yet written to the AXPT institutional record.
-            </p>
-          </div>
+                <span>
+                  {selected.domain}
+                </span>
+
+                <span>
+                  {selected.state}
+                </span>
+              </div>
+
+              <h3>
+                {selected.title}
+              </h3>
+
+              <p
+                className={
+                  styles.selectedBody
+                }
+              >
+                {selected.body}
+              </p>
+
+              <div
+                className={
+                  styles.responseTypes
+                }
+              >
+                <span>
+                  Current resolution
+                </span>
+
+                <strong>
+                  {readable(
+                    selected.resolution,
+                  )}
+                </strong>
+              </div>
+
+              {selected.response ? (
+                <div
+                  className={
+                    styles.noteField
+                  }
+                >
+                  <span>
+                    Current attributable
+                    response
+                  </span>
+
+                  <strong>
+                    {readable(
+                      selected.response
+                        .responseType,
+                    )}
+                  </strong>
+
+                  <p>
+                    {selected.response
+                      .note ||
+                      "No additional response note recorded."}
+                  </p>
+                </div>
+              ) : (
+                <div
+                  className={
+                    styles.localNotice
+                  }
+                >
+                  <span>
+                    No attributable
+                    response
+                  </span>
+
+                  <p>
+                    No current durable
+                    response exists for
+                    the deliberation
+                    identity represented
+                    by this view.
+                  </p>
+                </div>
+              )}
+
+              {actorBound ? (
+                <div
+                  className={
+                    styles.responseComposer
+                  }
+                >
+                  <div
+                    className={
+                      styles.responseComposerHeader
+                    }
+                  >
+                    <div>
+                      <span>
+                        Record a position
+                      </span>
+
+                      <p>
+                        Select the response that
+                        best represents your
+                        present institutional
+                        position on this
+                        proposition.
+                      </p>
+                    </div>
+
+                    <small>
+                      Attributable response
+                    </small>
+                  </div>
+
+                  <div
+                    className={
+                      styles.responseActionGrid
+                    }
+                    role="group"
+                    aria-label="Response type"
+                  >
+                    {(
+                      [
+                        "ACKNOWLEDGE",
+                        "AFFIRM",
+                        "CLARIFY",
+                        "REVISE",
+                        "DECLINE",
+                      ] as ResponseType[]
+                    ).map(
+                      (
+                        responseType,
+                      ) => {
+                        const active =
+                          draftResponseType ===
+                          responseType;
+
+                        return (
+                          <button
+                            key={
+                              responseType
+                            }
+                            type="button"
+                            className={`${
+                              styles.responseAction
+                            } ${
+                              active
+                                ? styles.responseActionActive
+                                : ""
+                            }`}
+                            aria-pressed={
+                              active
+                            }
+                            disabled={
+                              submitting
+                            }
+                            onClick={() => {
+                              setDraftResponseType(
+                                responseType,
+                              );
+                              setSubmissionError(
+                                null,
+                              );
+                              setSubmissionNotice(
+                                null,
+                              );
+                            }}
+                          >
+                            {readable(
+                              responseType,
+                            )}
+                          </button>
+                        );
+                      },
+                    )}
+                  </div>
+
+                  <label
+                    className={
+                      styles.responseNoteLabel
+                    }
+                  >
+                    <span>
+                      Response note
+                    </span>
+
+                    <small>
+                      Optional supporting
+                      context
+                    </small>
+
+                    <textarea
+                      value={
+                        draftNote
+                      }
+                      disabled={
+                        submitting
+                      }
+                      rows={5}
+                      maxLength={
+                        4000
+                      }
+                      placeholder="Add clarification, conditions, revision language, or other context where useful."
+                      onChange={(
+                        event,
+                      ) =>
+                        setDraftNote(
+                          event.target
+                            .value,
+                        )
+                      }
+                    />
+                  </label>
+
+                  {submissionError ? (
+                    <p
+                      className={
+                        styles.submissionError
+                      }
+                      role="alert"
+                    >
+                      {
+                        submissionError
+                      }
+                    </p>
+                  ) : null}
+
+                  {submissionNotice ? (
+                    <p
+                      className={
+                        styles.submissionNotice
+                      }
+                      role="status"
+                    >
+                      {
+                        submissionNotice
+                      }
+                    </p>
+                  ) : null}
+
+                  <div
+                    className={
+                      styles.responseComposerFooter
+                    }
+                  >
+                    <p>
+                      Submission creates an
+                      attributable durable
+                      response. A later response
+                      preserves and supersedes
+                      the prior position rather
+                      than deleting it.
+                    </p>
+
+                    <button
+                      type="button"
+                      className={
+                        styles.submitResponse
+                      }
+                      disabled={
+                        !draftResponseType ||
+                        submitting
+                      }
+                      onClick={() => {
+                        void submitResponse();
+                      }}
+                    >
+                      {submitting
+                        ? "Recording..."
+                        : selected.response
+                          ? "Record revised position"
+                          : "Record response"}
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div
+                  className={
+                    styles.localNotice
+                  }
+                >
+                  <span>
+                    Response submission
+                  </span>
+
+                  <p>
+                    This view does not carry a
+                    deliberation identity.
+                    Controlled identity-bound
+                    access is required before an
+                    attributable response may be
+                    recorded.
+                  </p>
+                </div>
+              )}
+            </>
+          ) : (
+            <div
+              className={
+                styles.localNotice
+              }
+            >
+              <span>
+                No propositions
+              </span>
+
+              <p>
+                The current instrument
+                version contains no
+                deliberation propositions.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 
-      <div className={styles.responseLedger}>
-        <div className={styles.responseLedgerHeader}>
-          <span>Deliberation Ledger</span>
+      <div
+        className={
+          styles.responseLedger
+        }
+      >
+        <div
+          className={
+            styles.responseLedgerHeader
+          }
+        >
+          <span>
+            Deliberation Ledger
+          </span>
+
           <small>
-            {respondedCount === 0
-              ? "No responses recorded"
-              : `${respondedCount} response${
-                  respondedCount === 1 ? "" : "s"
-                } recorded`}
+            {summary.responded === 0
+              ? "No attributable responses recorded"
+              : `${
+                  summary.responded
+                } current response${
+                  summary.responded === 1
+                    ? ""
+                    : "s"
+                }`}
           </small>
         </div>
 
-        {respondedCount === 0 ? (
-          <p className={styles.emptyLedger}>
-            Institutional responses will appear here as propositions are
-            deliberated.
+        {summary.responded === 0 ? (
+          <p
+            className={
+              styles.emptyLedger
+            }
+          >
+            Durable institutional
+            responses will appear here
+            after an identified
+            deliberator records a
+            position.
           </p>
         ) : (
-          <div className={styles.ledgerRows}>
+          <div
+            className={
+              styles.ledgerRows
+            }
+          >
             {propositions
-              .filter((proposition) => responses[proposition.id])
-              .map((proposition) => {
-                const response = responses[proposition.id];
-
-                return (
-                  <article key={proposition.id}>
+              .filter(
+                (proposition) =>
+                  proposition.response,
+              )
+              .map(
+                (proposition) => (
+                  <article
+                    key={
+                      proposition.id
+                    }
+                  >
                     <div>
-                      <span>{proposition.reference}</span>
-                      <strong>{proposition.title}</strong>
+                      <span>
+                        {
+                          proposition.reference
+                        }
+                      </span>
+
+                      <strong>
+                        {
+                          proposition.title
+                        }
+                      </strong>
                     </div>
 
                     <div>
-                      <span>Response</span>
-                      <strong>{readableResponse(response.type)}</strong>
+                      <span>
+                        Response
+                      </span>
+
+                      <strong>
+                        {readable(
+                          proposition
+                            .response!
+                            .responseType,
+                        )}
+                      </strong>
                     </div>
 
                     <p>
-                      {response.note || "No additional response note recorded."}
+                      {proposition
+                        .response!
+                        .note ||
+                        "No additional response note recorded."}
                     </p>
                   </article>
-                );
-              })}
+                ),
+              )}
           </div>
         )}
       </div>
 
       <div className={styles.doctrine}>
-        <span>Deliberation Doctrine 05</span>
+        <span>
+          Deliberation Doctrine 05
+        </span>
 
         <p>
-          Agreement should emerge from visible propositions, attributable
-          responses and preserved revision — not from silent assumptions.
+          Agreement should emerge from
+          visible propositions,
+          attributable responses and
+          preserved revision — not from
+          silent assumptions.
         </p>
       </div>
     </section>

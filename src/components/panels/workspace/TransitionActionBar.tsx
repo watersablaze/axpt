@@ -59,6 +59,24 @@ type Props = {
   onTransitioned?: () => Promise<void>;
 };
 
+const CANONICAL_EXECUTION_LANE_STATES = new Set([
+  "ESCROW_PENDING",
+  "PAYMENT_INSTRUCTION_PENDING",
+  "CRYPTO_WALLET_CONFIRMATION",
+  "FINANCIAL_INSTRUMENT_PENDING",
+  "REFINERY_COORDINATION",
+]);
+
+function isCanonicalExecutionLaneOpen(
+  fromState: string,
+  toState: string,
+) {
+  return (
+    fromState === "SPA_EXECUTED" &&
+    CANONICAL_EXECUTION_LANE_STATES.has(toState)
+  );
+}
+
 const EXCEPTION_STATES = new Set(["BLOCKED", "CANCELLED"]);
 
 function gateTone(passed: boolean) {
@@ -347,8 +365,16 @@ export default function TransitionActionBar({
       return;
     }
 
+    const canonicalLaneOpen =
+      isCanonicalExecutionLaneOpen(
+        preview.fromState,
+        preview.toState,
+      );
+
     const confirmed = window.confirm(
-      `Transition dossier from ${preview.fromState} to ${preview.toState}?`,
+      canonicalLaneOpen
+        ? `Open the ${preview.toState.replace(/_/g, " ")} execution lane? This records lane-opening authority only; it does not confirm settlement, receipt, funding, treasury movement, or downstream execution.`
+        : `Transition dossier from ${preview.fromState} to ${preview.toState}?`,
     );
 
     if (!confirmed) return;
@@ -357,17 +383,25 @@ export default function TransitionActionBar({
     setError(null);
 
     const response = await fetch(
-      `/api/admin/control-center/dossiers/${dossierId}/transition`,
+      canonicalLaneOpen
+        ? `/api/admin/control-center/dossiers/${dossierId}/execution-lane`
+        : `/api/admin/control-center/dossiers/${dossierId}/transition`,
       {
-        method: "PATCH",
+        method: canonicalLaneOpen ? "POST" : "PATCH",
         credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({
-          toState: selectedState,
-          message: `Dossier transitioned to ${selectedState}.`,
-        }),
+        body: JSON.stringify(
+          canonicalLaneOpen
+            ? {
+                toState: selectedState,
+              }
+            : {
+                toState: selectedState,
+                message: `Dossier transitioned to ${selectedState}.`,
+              },
+        ),
       },
     );
 
@@ -395,7 +429,10 @@ export default function TransitionActionBar({
 
       <p className="mt-1 max-w-2xl text-xs text-neutral-500">
         Select a target state, review gates and consequences, then advance the
-        dossier only when the preview is executable.
+        dossier only when the preview is executable. From SPA_EXECUTED, opening
+        a primary execution lane records lane authority only; it does not
+        confirm settlement, receipt, funding, treasury movement, or downstream
+        execution.
       </p>
 
       <div className="mt-3 grid gap-3 md:grid-cols-[1.5fr_1fr]">

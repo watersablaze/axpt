@@ -27,3 +27,16 @@ export * from "./commands/transitionInstrumentStateWithClient";
 export * from "./commands/recordInstrumentEvidenceWithClient";
 export * from "./commands/createInstrumentRelationWithClient";
 export * from "./governance/runInstrumentGovernanceTransaction";
+
+export * from "./commands/recordInstrumentResponseWithClient";
+
+export * from "./invariants/deriveInstrumentPropositionResolution";
+
+export * from "./queries/loadInstrumentDeliberationWithClient";
+
+export * from "./queries/resolveInstitutionalInstrumentAccessWithClient";
+
+export * from "./commands/ensureInstrumentParticipantIdentityWithClient";
+
+export * from "./commands/submitInstrumentResponseWithTokenWithClient";
+export * from "./representative-program";
