@@ -7,8 +7,8 @@ export const GLOBAL_MOTHER_V2_INSTRUMENT_REFERENCE =
 export const globalMotherV2Definition = {
   reference: GLOBAL_MOTHER_V2_INSTRUMENT_REFERENCE,
   version: 2,
-  title: "Framework of Royal Custodianship, Restoration & Global Economic Cooperation",
-  subtitle: "An institutional framework for relationship, authority, passage, continuity, and future cooperation.",
+  title: "Framework of Royal Custodianship, Restoration & Global Trade",
+  subtitle: "An institutional framework for relationship, authority, gold passage, and continuity.",
   propositions: [
     {
       reference: "ALIGN-01",

@@ -52,7 +52,7 @@ const v2Movements = [
   },
   {
     index: "III",
-    label: "Passage & Economic Cooperation",
+    label: "Gold Passage",
   },
   {
     index: "IV",
@@ -257,7 +257,7 @@ export default async function GreatMotherInstrumentPage({
       subtitle={
         v2Presentation
           ? globalMotherV2Definition.subtitle
-          : "Ancestral Restoration & Global Economic Cooperation"
+          : "Ancestral Restoration & Global Trade"
       }
       reference="GM-KENYA-RCF-001"
       version={
@@ -423,7 +423,7 @@ export default async function GreatMotherInstrumentPage({
           <div>
             <p className={styles.movementKicker}>
               {v2Presentation
-                ? "Passage & Economic Cooperation"
+                ? "Gold Passage"
                 : "The Economic Corridor"}
             </p>
 
@@ -479,7 +479,7 @@ export default async function GreatMotherInstrumentPage({
 
             <p className={styles.movementLead}>
               {v2Presentation
-                ? "Agreed return can support restoration and governmental capacity. French-Ward’s two-part Gift extends the relationship through Axis Point."
+                ? "Productive return can strengthen restoration and governmental capacity. The two-part Gift opens distinct digital pathways for AOTG and ND Royal Ministry."
                 : "Projects, digital infrastructure, cultural memory and continuing family relationship are treated as the productive body that should remain after individual transactions are complete."}
             </p>
           </div>

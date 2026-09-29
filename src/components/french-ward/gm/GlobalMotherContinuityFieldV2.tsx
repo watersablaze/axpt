@@ -42,7 +42,7 @@ export function GlobalMotherContinuityFieldV2() {
         <div className={styles.label}><span>CONT-02</span><span>Continuing relationship & future formation</span></div>
         <div className={styles.statement}>
           <h3>Capacity can become continuity.</h3>
-          <p>ND Royal Ministry, AOTG, and French-Ward may carry custodial cooperation, culture, and projects beyond any one sale.</p>
+          <p>ND Royal Ministry, AOTG, and French-Ward may sustain custodial work, culture, and projects beyond any one sale.</p>
         </div>
         <div className={styles.memory}>
           <div>
@@ -59,7 +59,7 @@ export function GlobalMotherContinuityFieldV2() {
           <h3>One Gift. Two digital commitments.</h3>
         </div>
         <div className={styles.giftBody}>
-          <p>Through Axis Point, French-Ward intends to offer AOTG and ND Royal Ministry a two-part Gift: a digital tokenization pathway and a complete digital media management, design, and development package.</p>
+          <p>French-Ward intends a two-part Gift for AOTG and ND Royal Ministry: a digital tokenization pathway and a complete digital media management, design, and development package.</p>
           <p>Each recipient shapes scope and activation. The Gift supports identity, heritage, and communication; it sets no gold-sale term or Royal authority.</p>
         </div>
       </aside>

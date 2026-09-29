@@ -80,8 +80,8 @@ export default async function ControlCenterInstrumentsPage() {
                     <div>
                       <p className="text-stone-600">Domain state</p>
                       <p className="mt-1 text-stone-300">
-                        {instrument.settlementStatus
-                          ? humanize(instrument.settlementStatus)
+                        {instrument.domainState
+                          ? humanize(instrument.domainState)
                           : "No Control Center operator surface"}
                       </p>
                     </div>
