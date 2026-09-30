@@ -19,3 +19,14 @@
 .verification > button { min-height: 48px; border-radius: 3px; }
 .verification input { box-sizing: border-box; }
 .card { box-sizing: border-box; border-color: #78908230; border-radius: 4px; }
+
+.surface { background: radial-gradient(ellipse at 40% 25%,#31514677,transparent 70%),#0b211b; }
+.card { width: min(100%,44rem); text-align: center; border-radius: 12px; border-color: #c7d7cb28; background: linear-gradient(135deg,#a9c7b815,#12372b55 48%,#e5d7ad08); box-shadow: inset 0 1px #e5eddc25,inset 0 -1px #071a1470,0 24px 70px #05140e44; }
+.card h1 { font-family: Baskerville,Georgia,serif; font-weight: 400; font-size: clamp(1.65rem,3vw,2.25rem); line-height: 1.25; }
+.prepared span { color: #c6b98d; font-size: .64rem; letter-spacing: .13em; text-transform: uppercase; }
+.prepared h2 { font-family: Baskerville,Georgia,serif; font-weight: 400; margin: .6rem 0; font-size: 1.5rem; overflow-wrap: anywhere; }
+.capacity { border: 0; padding: 0; overflow-wrap: anywhere; }
+.invitation { color: #d0d7cd; font-size: .95rem; margin-top: 1.5rem; }
+.verification { max-width: 25rem; margin: 1.4rem auto; }
+.verification button { width: 100%; min-height: 48px; border-radius: 4px; }
+.verification label { text-align: left; }

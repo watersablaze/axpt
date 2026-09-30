@@ -148,3 +148,8 @@
 .bridge .twoColumns > div + div, .convergence .twoColumns > div + div { padding: 1.1rem 0 0; border: 0; border-top: 1px solid var(--rule); }
 .note { border: 0; padding-top: .65rem; font-size: .95rem; }
 .doctrine { background: #1a3041; border-left: 2px solid #b29a69; border-radius: 0 3px 3px 0; }
+
+.registry { padding: 1rem 1.2rem; border-radius: 5px; background: linear-gradient(115deg,#64869b12,transparent); border-left: 2px solid #64869b55; }
+.convergence { padding: 1rem 1.2rem; border: 1px solid #997c4930; border-radius: 6px; background: linear-gradient(120deg,#c5ac7620,#fffaf00c); }
+.twoColumns > p,.twoColumns > div > p:not(.eyebrow):not(.identities),.note { line-height: 1.58; }
+.field h3,.field h4 { color: #233f51; }

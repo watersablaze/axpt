@@ -100,3 +100,72 @@
 @media(prefers-reduced-motion:reduce) { .choice { transition: none; } }
 
 .positionCard h3:focus { outline: none; }
+
+/* The hallway marks the passage from reading into deliberation. */
+.folio { padding: clamp(1.4rem,3vw,2.2rem); color: #eee9de; border: 1px solid #a6c0cc32; background: radial-gradient(ellipse at 80% 0,#51819b28,transparent 65%),linear-gradient(135deg,#1c394b,#102837); box-shadow: inset 0 1px #d5e6eb18,0 16px 32px #10283718; border-radius: 8px; }
+.folio .status,.folio .responseSpectrum > span,.folio .record span { color: #ccb581; }
+.folio .threshold h3 { color: #f0e8d5; }
+.folio .threshold p,.folio .responseSpectrum p,.folio .previewStatus,.folio .record strong,.folio .record p { color: #c7d7df; }
+.folio .record { border-color: #a8b9c326; }
+.enterAction { background: #e5dac0; color: #172d3d; border-color: #dbc997; }
+.portalInner { max-width: 78rem; display: grid; grid-template-columns: 18rem minmax(0,1fr); gap: clamp(1.5rem,4vw,3.5rem); align-items: start; }
+.registerRail { position: sticky; top: 0; max-height: calc(100dvh - 3rem); overflow-y: auto; padding: .25rem .5rem .75rem; }
+.registerToolbar { align-items: start; gap: .85rem; padding-bottom: 1rem; }
+.councilOpening { margin: 1.3rem 0; }
+.councilOpening h2 { font-size: 1.9rem; }
+.councilOpening > p { font-size: .85rem; line-height: 1.55; }
+.positionNavigator { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: .4rem; }
+.reviewStep { padding-inline: .35rem; font-size: .78rem; }
+.registerContent { min-width: 0; }
+.positionCard h3 { color: #e4c991; font-size: clamp(1.6rem,3vw,2.1rem); margin-bottom: 1.25rem; }
+.positionStatement { line-height: 1.6; }
+.giftPart { display: block; margin-top: .8rem; padding-left: .8rem; border-left: 1px solid #ccb58155; }
+.giftClose { display: block; margin-top: 1rem; }
+.reviewPanel { background: #f0ebe0; color: #203847; border-color: #d7c99f55; }
+.reviewIntro { margin-bottom: 1.5rem; }
+.reviewIntro > span { color: #785f38; font-size: .65rem; text-transform: uppercase; letter-spacing: .13em; }
+.reviewIntro h3 { font: normal 1.65rem Baskerville,Georgia,serif; margin: .6rem 0; }
+.reviewIntro p,.reviewPanel .reviewStatement,.reviewPanel .recordMechanics p { color: #4d5d65; }
+.reviewRow > span { color: #254a60; }
+.reviewPanel .editAction { color: #5b482c; }
+.reviewPanel .reviewList li > strong { color: #6e542b; }
+.reviewPanel .reviewList li { border-color: #33465826; }
+.reviewPanel .reviewNote { color: #263f4e; }
+.recordedPanel { padding: 0; background: transparent; border: 0; box-shadow: none; }
+.receipt { padding: clamp(1.5rem,4vw,3rem); gap: .8rem; text-align: center; border-radius: 10px; background: radial-gradient(ellipse at 50% 0,#557d922c,transparent 70%),#1d3b4f; box-shadow: inset 0 1px #e9dfbd28,0 20px 50px #07111a30; }
+.receiptSeal { display: grid; place-items: center; width: 3.5rem; height: 3.5rem; margin: 0 auto .4rem; border: 1px solid #ccb58188; border-radius: 50%; color: #e4c991!important; font-size: 1.6rem!important; }
+.receipt h3 { color: #f0e8d5; font: normal clamp(1.9rem,3.5vw,2.7rem)/1.15 Baskerville,Georgia,serif; margin: .25rem 0; }
+.receipt h3:focus { outline: none; }
+.receipt p { color: #ccdae1; font-size: 1rem; line-height: 1.6; margin: .3rem 0 1rem; }
+.receipt dl { text-align: left; margin: 0; border-top: 1px solid #a8b9c326; }
+.receipt dl > div { display: grid; grid-template-columns: 5.5rem minmax(0,1fr); gap: .75rem; padding: .7rem 0; }
+.receipt dt { color: #ccb581; font-size: .7rem; }
+.receipt dd { color: #dae3e7; font-size: .85rem; margin: 0; overflow-wrap: anywhere; }
+.recordedPanel .reviewList { margin-top: 1.5rem; padding: 1.2rem; background: #182f40; border-radius: 6px; gap: .5rem; }
+.recordedPanel .reviewList li { padding-bottom: .5rem; }
+.recordedPanel .reviewRow > span { color: #d3e0e8; font: normal .9rem/1.5 Arial,sans-serif; }
+.recordedPanel .reviewList li > strong { color: #e4c991; font-size: .75rem; }
+.recordedPanel .editAction { color: #daccab; }
+.recordedPanel .recordMechanics p { color: #bdced7; }
+@media(max-width:760px) {
+ .councilField { padding: 0 1rem 2rem; }
+ .portalInner { display: block; }
+ .registerRail { top: 0; z-index: 2; max-height: none; overflow: visible; padding: .75rem 0 .6rem; background: #101f2df5; backdrop-filter: blur(12px); border-bottom: 1px solid #a8b9c326; }
+ .registerToolbar { padding: 0; border: 0; }
+ .registerToolbar > span { display: none; }
+ .councilOpening { margin: .55rem 0; }
+ .councilOpening h2 { font-size: 1.3rem; margin: .3rem 0; }
+ .councilOpening > p:not(.draftStatus),.councilOpening > span { display: none; }
+ .councilOpening .draftStatus { font-size: .7rem; line-height: 1.4; margin-top: .4rem; }
+ .positionNavigator { grid-template-columns: repeat(8,minmax(0,1fr)); gap: .25rem; }
+ .positionStep,.reviewStep { min-height: 44px; min-width: 0; font-size: .75rem; }
+ .positionStep small { display: none; }
+ .reviewStep { font-size: .6rem; }
+ .progressCaption { font-size: .7rem; margin: .4rem 0 0; }
+ .registerContent { padding-top: 1rem; }
+ .positionCard h3,.receipt h3 { scroll-margin-top: 17rem; }
+}
+
+.receipt { animation: receiptArrival 420ms ease-out both; }
+@keyframes receiptArrival { from { opacity: .3; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@media(prefers-reduced-motion:reduce) { .receipt { animation: none; } }

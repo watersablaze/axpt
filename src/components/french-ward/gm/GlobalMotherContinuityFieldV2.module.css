@@ -84,7 +84,7 @@
 .step + .step { border-left: 0; border-top: 1px solid var(--rule); }
 .step strong { margin: 0; }
 .statement, .memory, .gift { grid-template-columns: 1fr; gap: .85rem; }
-.statement p, .memory p, .giftBody p { line-height: 1.7; }
+.statement p, .memory p, .giftBody p { line-height: 1.58; }
 .productive { padding: 0; background: transparent; border: 0; }
 .domains { grid-template-columns: 1fr; }
 .domains article, .domains article:nth-child(even) { padding: 1rem 0; border-left: 0; }

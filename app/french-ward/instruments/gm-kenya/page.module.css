@@ -2987,3 +2987,5 @@
 .baseArticle .articleMasthead { margin: 0; background: transparent; border: 0; border-bottom: 1px solid #33465820; }
 .baseArticle .articleTopline, .baseArticle .articleIdentity { padding: 0; }
 .baseArticle .articleReference { display: none; }
+
+.baseArticle .movementLead,.baseArticle.articleRelationship .movementLead,.baseArticle.articleAuthority .articleSummary { line-height: 1.58; }

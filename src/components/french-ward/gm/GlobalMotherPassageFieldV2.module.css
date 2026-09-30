@@ -106,10 +106,10 @@
 .sequence { border-top: 1px solid var(--rule); background: transparent; }
 .sequence::before { display: none; }
 .stage { grid-template-columns: 2rem minmax(0,1fr); gap: .4rem .85rem; padding: 1.25rem 0; }
-.stage p { grid-column: 2; font-size: 1rem; line-height: 1.7; }
+.stage p { grid-column: 2; font-size: 1rem; line-height: 1.58; }
 .stageNumber { background: transparent; }
 .corridorBody { grid-template-columns: 1fr; gap: .8rem; }
 .corridor { padding: 0; border: 0; background: transparent; }
-.corridorBody p, .movement > p { line-height: 1.7; }
+.corridorBody p, .movement > p { line-height: 1.58; }
 .movement { border-color: var(--rule); background: #33465806; border-radius: 3px; }
 .doctrine { background: #1a3041; border-left: 2px solid #b29a69; border-radius: 0 3px 3px 0; }

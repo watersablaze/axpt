@@ -83,9 +83,7 @@ export function GlobalMotherExperience({
             <p>{recipient?.capacity ?? "Global Mother · Royal Council Representative"}</p>
           </div>
           <div className={styles.gateStatement}>
-            <p>This private chamber presents the Global Mother Framework for your review.
-              Within it, you may consider the proposed relationship and record your positions
-              through the response register.</p>
+            <p>You are formally invited to review the proposed relationship and respond to its seven intentions.</p>
           </div>
 
           <button
@@ -113,14 +111,14 @@ export function GlobalMotherExperience({
           <p className={styles.stageKicker}>Opening folio</p>
 
           <h1 id="gm-opening-heading">
-            The relationship comes first.
+            Your place in the deliberation.
           </h1>
 
           <p className={styles.folioLead}>
-            French-Ward receives you in the capacities presented for this relationship.
+            Five articles introduce the relationship, custodianship, gold passage, restoration, and the path toward a proposed agreement.
           </p>
           <div className={styles.prepared}>
-            <span>Presented participant</span>
+            <span>Prepared for</span>
             <h2>{recipient?.name ?? "Dr. Awulah Naanii Amon"}</h2>
             <p>{recipient?.institution ?? "ND Royal Ministry"}</p>
             <p>{recipient?.capacity ?? "Global Mother · Royal Council Representative"}</p>
@@ -128,28 +126,20 @@ export function GlobalMotherExperience({
 
           <div className={styles.folioColumns}>
             <div>
-              <span>Presented capacities</span>
-              <p>
-                This reception records the presented capacities.
-                It does not independently confer or adjudicate Royal
-                title, standing, sovereignty, lineage, or internal authority.
-              </p>
+              <span>Read</span>
+              <p>Move through the five articles at your own pace. The article rail keeps your place.</p>
             </div>
 
             <div>
-              <span>Purpose</span>
+              <span>Respond</span>
               <p>
-                The Framework provides a place for relationship,
-                responsible passage, restoration, continuity, and
-                attributable deliberation to develop.
+                Consider seven intentions, add clarification or revisions where needed, and review your responses before submitting.
               </p>
             </div>
           </div>
 
           <p className={styles.folioBoundary}>
-            Recognition does not establish authority. Access and silence
-            do not create agreement. Specific obligations arise only
-            through expressly formed instruments.
+            Reading and responding support deliberation. Specific obligations arise through expressly formed instruments.
           </p>
 
           <button
@@ -162,6 +152,7 @@ export function GlobalMotherExperience({
         </section>
       ) : null}
 
+      <blockquote className={styles.inscription}>“Nobility is not for sale.”<cite>Global Mother · Nubian Empress Omaedro II</cite></blockquote>
       <footer className={styles.footer}>
         <span>
           GM-KENYA-RCF-001

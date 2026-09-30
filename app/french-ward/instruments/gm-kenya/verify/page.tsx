@@ -17,11 +17,12 @@ export default async function Page() {
   return <main className={styles.surface}>
     <section className={styles.card} aria-labelledby="recipient-title">
       <span className={styles.inscription}>AXPT · Private Institutional Framework</span>
-      <h1 id="recipient-title">Verify your access.</h1>
-      <p>Prepared for {access.grant.recipientName ?? access.user.displayName ?? "the named recipient"}.</p>
+      <h1 id="recipient-title">Framework of Royal Custodianship,<br />Restoration &amp; Global Trade</h1>
+      <div className={styles.prepared}><span>Prepared for</span><h2>{access.grant.recipientName ?? access.user.displayName ?? "the named recipient"}</h2></div>
       <p className={styles.capacity}>{access.grant.representedInstitution}<br />{access.grant.representativeCapacity}</p>
+      <p className={styles.invitation}>You are formally invited to review the Framework.<br />Verify your access to enter the private chamber.</p>
       <RecipientVerification emailHint={emailHint} />
-      <small>This verification opens your Framework access. Your positions are recorded separately in the response register.</small>
+      <small>Private recipient access · Responses are submitted inside the chamber.</small>
     </section>
   </main>;
 }
