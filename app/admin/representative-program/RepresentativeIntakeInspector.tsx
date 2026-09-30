@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 
+import RepresentativeAccessReissuePanel from "./RepresentativeAccessReissuePanel";
 import RepresentativeIntakeDecisionControls from "./RepresentativeIntakeDecisionControls";
 import RepresentativeMasterAgreementPanel from "./RepresentativeMasterAgreementPanel";
 
@@ -200,7 +201,10 @@ export default function RepresentativeIntakeInspector() {
         </ul>
       ) : null}
 
-      <form onSubmit={loadIntake} className="mt-5 flex flex-wrap items-end gap-3">
+      <form
+        onSubmit={loadIntake}
+        className="mt-5 flex flex-wrap items-end gap-3"
+      >
         <label className="grid min-w-64 flex-1 gap-2">
           <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
             Intake ID
@@ -250,9 +254,15 @@ export default function RepresentativeIntakeInspector() {
               ["Qualified", displayDate(intake.qualifiedAt)],
               ["Admitted", displayDate(intake.admittedAt)],
               ["Participant ID", intake.admittedParticipantId ?? "—"],
-              ["Master Agreement ID", intake.masterAgreementInstrumentId ?? "—"],
+              [
+                "Master Agreement ID",
+                intake.masterAgreementInstrumentId ?? "—",
+              ],
             ].map(([label, value]) => (
-              <div key={label} className="rounded border border-gray-800 bg-black p-3">
+              <div
+                key={label}
+                className="rounded border border-gray-800 bg-black p-3"
+              >
                 <dt className="text-xs uppercase tracking-wide text-gray-500">
                   {label}
                 </dt>
