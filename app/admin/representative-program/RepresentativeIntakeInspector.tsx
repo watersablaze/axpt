@@ -291,6 +291,12 @@ export default function RepresentativeIntakeInspector() {
             </pre>
           </details>
 
+          <RepresentativeAccessReissuePanel
+            key={`${intake.id}-access`}
+            intakeId={intake.id}
+            status={intake.status}
+          />
+
           <RepresentativeIntakeDecisionControls
             key={intake.id}
             intakeId={intake.id}
