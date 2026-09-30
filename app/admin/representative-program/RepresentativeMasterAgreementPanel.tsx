@@ -35,16 +35,39 @@ type ExecutionResponse =
     }
   | { ok: false; error: string };
 
+type AdmissionResponse =
+  | {
+      ok: true;
+      intakeId: string;
+      participant: {
+        id: string;
+        docketReference: string;
+        standing: string;
+        created: boolean;
+      };
+      agreement: {
+        instrumentId: string;
+        bound: boolean;
+      };
+    }
+  | { ok: false; error: string };
+
 const MAX_EXECUTION_PACKAGE_BYTES = 4_000_000;
 
 export default function RepresentativeMasterAgreementPanel({
   intake,
+  onChanged,
 }: {
   intake: {
+    id: string;
     reference: string;
     candidateDisplayName: string;
     candidateEmail: string;
+    status: string;
+    admittedParticipantId: string | null;
+    masterAgreementInstrumentId: string | null;
   };
+  onChanged?: () => Promise<void>;
 }) {
   const [reference, setReference] = useState(`${intake.reference}-MA`);
   const [title, setTitle] = useState(
@@ -59,6 +82,10 @@ export default function RepresentativeMasterAgreementPanel({
   const [executionBusy, setExecutionBusy] = useState(false);
   const [executionError, setExecutionError] = useState<string | null>(null);
   const [executionMessage, setExecutionMessage] = useState<string | null>(null);
+
+  const [admissionBusy, setAdmissionBusy] = useState(false);
+  const [admissionError, setAdmissionError] = useState<string | null>(null);
+  const [admissionMessage, setAdmissionMessage] = useState<string | null>(null);
 
   async function readAgreement(): Promise<Agreement | null> {
     const response = await fetch(
@@ -289,8 +316,103 @@ export default function RepresentativeMasterAgreementPanel({
     }
   }
 
+  async function admitAndBind(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    setAdmissionBusy(true);
+    setAdmissionError(null);
+    setAdmissionMessage(null);
+
+    try {
+      if (!agreement) {
+        setAdmissionError(
+          "Load the executed Master Agreement before recording admission.",
+        );
+        return;
+      }
+
+      if (agreement.status !== "EXECUTED") {
+        setAdmissionError(
+          "Program admission requires an EXECUTED Master Agreement.",
+        );
+        return;
+      }
+
+      if (
+        agreement.candidateEmail !== intake.candidateEmail.trim().toLowerCase()
+      ) {
+        setAdmissionError(
+          "The executed Master Agreement signer does not match this intake.",
+        );
+        return;
+      }
+
+      if (intake.status !== "QUALIFIED") {
+        setAdmissionError(
+          `Admission cannot be recorded from intake state ${intake.status}.`,
+        );
+        return;
+      }
+
+      const submitted = new FormData(event.currentTarget);
+
+      if (submitted.get("operatorConfirmedAdmission") !== "on") {
+        setAdmissionError(
+          "Explicit Program admission confirmation is required.",
+        );
+        return;
+      }
+
+      const response = await fetch(
+        `/api/admin/representative-program/intakes/${encodeURIComponent(
+          intake.id,
+        )}/admit`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          cache: "no-store",
+          body: JSON.stringify({
+            decision: "ADMIT_AND_BIND",
+            instrumentReference: agreement.reference,
+          }),
+        },
+      );
+
+      const payload = (await response.json()) as AdmissionResponse;
+
+      if (!response.ok || !payload.ok) {
+        setAdmissionError(
+          payload.ok ? "Unable to record Program admission." : payload.error,
+        );
+        return;
+      }
+
+      setAdmissionMessage(
+        `Program admission recorded. Participant ${payload.participant.docketReference} established at ${payload.participant.standing} standing and Master Agreement bound.`,
+      );
+
+      if (onChanged) {
+        await onChanged();
+      }
+    } catch (cause) {
+      setAdmissionError(
+        cause instanceof Error
+          ? cause.message
+          : "Program admission and agreement binding failed.",
+      );
+    } finally {
+      setAdmissionBusy(false);
+    }
+  }
+
   const signerMatches =
     agreement?.candidateEmail === intake.candidateEmail.trim().toLowerCase();
+
+  const agreementBound =
+    Boolean(agreement) &&
+    intake.masterAgreementInstrumentId === agreement?.instrumentId;
 
   return (
     <section className="rounded border border-gray-800 bg-gray-950 p-5">
@@ -547,6 +669,127 @@ export default function RepresentativeMasterAgreementPanel({
             appointment, or grant delegated authority.
           </p>
         </div>
+      ) : null}
+
+      {agreement &&
+      signerMatches &&
+      agreement.status === "EXECUTED" &&
+      intake.status === "QUALIFIED" ? (
+        <div className="mt-5 border-t border-gray-800 pt-5">
+          <p className="text-xs uppercase tracking-[0.18em] text-amber-400/70">
+            Program Admission
+          </p>
+
+          <h4 className="mt-2 text-base font-semibold text-white">
+            Admit Candidate + Bind Executed Agreement
+          </h4>
+
+          <p className="mt-2 text-sm leading-6 text-gray-400">
+            Admission is a separate institutional decision. This operation
+            atomically creates the canonical Program Participant at PROVISIONAL
+            standing and binds this executed Master Agreement. It does not
+            create an Appointment Instrument, Authority Schedule, transaction
+            authority, or delegated authority.
+          </p>
+
+          <form onSubmit={admitAndBind} className="mt-4 space-y-4">
+            <div className="rounded border border-gray-800 bg-black p-3 text-xs leading-5 text-gray-400">
+              <p>
+                Candidate:{" "}
+                <strong className="text-gray-200">
+                  {intake.candidateDisplayName}
+                </strong>
+              </p>
+              <p className="mt-1">
+                Agreement:{" "}
+                <strong className="text-gray-200">{agreement.reference}</strong>
+              </p>
+              <p className="mt-1">
+                Initial standing:{" "}
+                <strong className="text-amber-200">PROVISIONAL</strong>
+              </p>
+            </div>
+
+            <label className="flex items-start gap-3 rounded border border-amber-800/40 bg-amber-950/10 p-3">
+              <input
+                name="operatorConfirmedAdmission"
+                type="checkbox"
+                required
+                className="mt-1 h-4 w-4 accent-amber-500"
+              />
+
+              <span className="text-xs leading-5 text-amber-100/80">
+                I am recording a separate Program admission decision. I
+                understand that admission establishes Program participation at
+                PROVISIONAL standing and binds the executed Master Agreement,
+                but does not create appointment or delegated authority.
+              </span>
+            </label>
+
+            {admissionError ? (
+              <p
+                role="alert"
+                className="rounded border border-red-900/50 bg-red-950/20 p-3 text-sm text-red-300"
+              >
+                {admissionError}
+              </p>
+            ) : null}
+
+            <button
+              type="submit"
+              disabled={admissionBusy}
+              className="rounded border border-amber-600/50 bg-amber-950/30 px-4 py-2.5 text-sm font-medium text-amber-100 disabled:opacity-50"
+            >
+              {admissionBusy
+                ? "Recording Admission…"
+                : "Admit to Program + Bind Agreement"}
+            </button>
+          </form>
+        </div>
+      ) : null}
+
+      {agreement &&
+      signerMatches &&
+      agreement.status === "EXECUTED" &&
+      intake.status === "ADMITTED" ? (
+        <div
+          className={
+            agreementBound
+              ? "mt-5 rounded border border-blue-800/50 bg-blue-950/20 p-4"
+              : "mt-5 rounded border border-red-800/50 bg-red-950/20 p-4"
+          }
+        >
+          <p className="text-xs uppercase tracking-[0.18em] text-blue-400/70">
+            Program Admission
+          </p>
+
+          <h4 className="mt-2 text-base font-semibold text-white">
+            {agreementBound
+              ? "Admission Recorded · Agreement Bound"
+              : "Admission Recorded · Binding Requires Review"}
+          </h4>
+
+          <p className="mt-2 text-sm leading-6 text-gray-300">
+            Participant ID:{" "}
+            <span className="font-mono text-xs">
+              {intake.admittedParticipantId ?? "Missing"}
+            </span>
+          </p>
+
+          <p className="mt-2 text-sm leading-6 text-gray-400">
+            Program admission does not itself create an appointment or grant
+            delegated authority.
+          </p>
+        </div>
+      ) : null}
+
+      {admissionMessage ? (
+        <p
+          role="status"
+          className="mt-4 rounded border border-blue-800/50 bg-blue-950/20 p-3 text-sm text-blue-200"
+        >
+          {admissionMessage}
+        </p>
       ) : null}
 
       {agreement &&

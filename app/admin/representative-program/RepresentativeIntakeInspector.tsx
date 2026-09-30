@@ -97,7 +97,13 @@ export default function RepresentativeIntakeInspector({
 
     setLoading(true);
     setError(null);
-    setIntake(null);
+
+    // Preserve the focused record during a same-intake refresh so
+    // child operator controls retain their local success state.
+    // Clear only when moving to a different candidate.
+    if (intake?.id !== id) {
+      setIntake(null);
+    }
 
     try {
       const response = await fetch(
@@ -133,16 +139,60 @@ export default function RepresentativeIntakeInspector({
   async function loadIntake(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    const id = intakeId.trim();
+    const identifier = intakeId.trim();
 
-    if (!id) return;
+    if (!identifier) return;
 
-    if (onFocusedIntakeChange) {
-      onFocusedIntakeChange(id);
+    let resolvedId = identifier;
+
+    if (identifier.toUpperCase().startsWith("FWI-")) {
+      setLoading(true);
+      setError(null);
+
+      try {
+        const response = await fetch(
+          `/api/admin/representative-program/intakes?q=${encodeURIComponent(
+            identifier,
+          )}`,
+          { cache: "no-store" },
+        );
+
+        const payload = (await response.json()) as SearchResponse;
+
+        if (!response.ok || !payload.ok) {
+          setError(
+            payload.ok
+              ? `Unable to resolve intake reference (${response.status}).`
+              : payload.error,
+          );
+          return;
+        }
+
+        const exact = payload.intakes.find(
+          (item) => item.reference.toLowerCase() === identifier.toLowerCase(),
+        );
+
+        if (!exact) {
+          setError("No intake matches that institutional reference.");
+          return;
+        }
+
+        resolvedId = exact.id;
+        setIntakeId(exact.id);
+      } catch {
+        setError("Unable to resolve the intake reference.");
+        return;
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    if (onFocusedIntakeChange && resolvedId !== focusedIntakeId) {
+      onFocusedIntakeChange(resolvedId);
       return;
     }
 
-    await loadIntakeById(id);
+    await loadIntakeById(resolvedId);
   }
 
   return (
@@ -157,8 +207,9 @@ export default function RepresentativeIntakeInspector({
         Inspect Candidate Intake
       </h2>
       <p className="mt-2 text-sm text-gray-400">
-        Load an intake by its ID to inspect the submission and recorded
-        decisions. Viewing this record makes no status change.
+        Load an intake by institutional reference or internal ID to inspect the
+        submission and recorded decisions. Viewing this record makes no status
+        change.
       </p>
 
       <form
@@ -209,7 +260,7 @@ export default function RepresentativeIntakeInspector({
                 onClick={() => {
                   setIntakeId(match.id);
 
-                  if (onFocusedIntakeChange) {
+                  if (onFocusedIntakeChange && match.id !== focusedIntakeId) {
                     onFocusedIntakeChange(match.id);
                     return;
                   }
@@ -236,14 +287,14 @@ export default function RepresentativeIntakeInspector({
       >
         <label className="grid min-w-64 flex-1 gap-2">
           <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
-            Intake ID
+            Intake ID or Reference
           </span>
           <input
             required
             maxLength={191}
             value={intakeId}
             onChange={(event) => setIntakeId(event.target.value)}
-            placeholder="Paste the intake ID"
+            placeholder="Paste internal ID or FWI reference"
             className="rounded border border-gray-700 bg-black px-3 py-2 text-white outline-none focus:border-gray-500"
           />
         </label>
@@ -363,6 +414,7 @@ export default function RepresentativeIntakeInspector({
               <RepresentativeMasterAgreementPanel
                 key={`${intake.id}-agreement`}
                 intake={intake}
+                onChanged={() => loadIntakeById(intake.id)}
               />
             ) : (
               <section className="rounded border border-gray-800 bg-gray-950 p-4">
