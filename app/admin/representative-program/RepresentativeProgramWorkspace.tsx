@@ -9,8 +9,8 @@ export default function RepresentativeProgramWorkspace() {
   const [focusedIntakeId, setFocusedIntakeId] = useState<string | null>(null);
 
   return (
-    <section className="grid gap-6 xl:grid-cols-[minmax(320px,0.72fr)_minmax(0,1.65fr)] xl:items-start">
-      <div className="xl:sticky xl:top-6">
+    <section className="grid gap-5 lg:grid-cols-[minmax(300px,0.62fr)_minmax(0,1.7fr)] lg:items-start">
+      <div className="lg:sticky lg:top-6">
         <RepresentativeInvitationForm
           onIssued={(intakeId) => setFocusedIntakeId(intakeId)}
         />

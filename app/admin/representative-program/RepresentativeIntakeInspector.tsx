@@ -263,7 +263,7 @@ export default function RepresentativeIntakeInspector({
       ) : null}
 
       {intake ? (
-        <div className="mt-6 grid gap-5 2xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.65fr)]">
+        <div className="mt-6 grid gap-5 xl:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.55fr)]">
           <div className="space-y-5">
             <div className="rounded border border-gray-800 bg-black p-4">
               <div className="flex flex-wrap items-start justify-between gap-4">
@@ -335,7 +335,7 @@ export default function RepresentativeIntakeInspector({
             </details>
           </div>
 
-          <aside className="space-y-4 2xl:sticky 2xl:top-6 2xl:self-start">
+          <aside className="space-y-4 xl:sticky xl:top-6 xl:self-start">
             <div className="rounded border border-gray-800 bg-black p-3">
               <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
                 Operator Actions
