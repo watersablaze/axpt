@@ -160,7 +160,7 @@ export default function RepresentativeInvitationForm({
           </p>
         </div>
 
-        <div className="mt-6 grid gap-4 md:grid-cols-2">
+        <div className="mt-6 grid gap-4">
           <label className="grid gap-2">
             <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
               Candidate Name
@@ -192,7 +192,7 @@ export default function RepresentativeInvitationForm({
             />
           </label>
 
-          <label className="grid gap-2 md:max-w-xs">
+          <label className="grid max-w-xs gap-2">
             <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
               Private Access Window
             </span>
