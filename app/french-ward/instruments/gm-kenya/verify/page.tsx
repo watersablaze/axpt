@@ -18,8 +18,11 @@ export default async function Page() {
     <section className={styles.card} aria-labelledby="recipient-title">
       <span className={styles.inscription}>AXPT · Private Institutional Framework</span>
       <h1 id="recipient-title">Framework of Royal Custodianship,<br />Restoration &amp; Global Trade</h1>
-      <div className={styles.prepared}><span>Prepared for</span><h2>{access.grant.recipientName ?? access.user.displayName ?? "the named recipient"}</h2></div>
-      <p className={styles.capacity}>{access.grant.representedInstitution}<br />{access.grant.representativeCapacity}</p>
+      <div className={styles.prepared}>
+        <span>Prepared for</span>
+        <h2>{access.grant.recipientName ?? access.user.displayName ?? "the named recipient"}</h2>
+        <p className={styles.capacity}>{access.grant.representedInstitution}<br />{access.grant.representativeCapacity}</p>
+      </div>
       <p className={styles.invitation}>You are formally invited to review the Framework.<br />Verify your access to enter the private chamber.</p>
       <RecipientVerification emailHint={emailHint} />
       <small>Private recipient access · Responses are submitted inside the chamber.</small>
