@@ -254,9 +254,9 @@ export function GlobalMotherDeliberationFrameV2({
       {!entered ? <>
       <div className={styles.propositions}>
         <article>
-          <span>INST-01 / Attributable deliberation</span>
-          <h3>Let each response keep its source.</h3>
-          <p>Each position and note keeps its source. Written, audio, documentary, and formal responses are received according to their nature; communication alone creates no authority.</p>
+          <span>INST-01 / Your recorded response</span>
+          <h3>Your response stays with your name.</h3>
+          <p>Your seven positions and any notes are recorded with your verified recipient identity and represented capacity. Review them before submitting; a receipt confirms they have been received.</p>
         </article>
         <article>
           <span>INST-02 / Instrument formation</span>
@@ -337,7 +337,7 @@ export function GlobalMotherDeliberationFrameV2({
 
             <p>
               {actorBound
-                ? "Your seven positions become a response set only after the server records them and returns a receipt."
+                ? "Your seven positions are recorded together when you submit. A receipt confirms they have been received."
                 : "This draft preview shows the V2 affirmations. Opening the register does not record a response."}
             </p>
           </div>
@@ -498,6 +498,10 @@ export function GlobalMotherDeliberationFrameV2({
               <button className={styles.backAction} type="button" onClick={checkRecord}>Check response record</button>
             </div> : null}
             <footer className={styles.formationBoundary}>
+              <button type="button" className={styles.backAction} onClick={() => {
+                registerRef.current?.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+                headingRef.current?.focus({ preventScroll: true });
+              }}>Back to response top ↑</button>
               <span>{instrumentReference} · Framework V2</span>
               <p>Your response informs further deliberation and proposed agreement drafting.
                 It does not grant authority, execute an SPA, or allocate gold.</p>

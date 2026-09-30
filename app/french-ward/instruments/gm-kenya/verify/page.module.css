@@ -30,3 +30,5 @@
 .verification { max-width: 25rem; margin: 1.4rem auto; }
 .verification button { width: 100%; min-height: 48px; border-radius: 4px; }
 .verification label { text-align: left; }
+
+.card { border-top: 0; border-bottom: 0; border-radius: 0; box-shadow: none; background: linear-gradient(90deg,#a9c7b807,transparent 35%,transparent 65%,#a9c7b807); }

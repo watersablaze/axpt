@@ -42,3 +42,32 @@
 .inscription { margin: 0 auto 1.8rem; text-align: center; font-family: Baskerville,Georgia,serif; font-size: 1.05rem; color: #d8caa8; }
 .inscription cite { display: block; margin-top: .5rem; font: normal .6rem Arial,sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #aebfb3; }
 @media(max-width:620px) { .stage { margin-block: 1.2rem; } }
+
+/* The portal is held between two rails, open above and below. */
+.stage { border-top: 0; border-bottom: 0; border-radius: 0; box-shadow: none; background: linear-gradient(90deg,#a9c7b807,transparent 35%,transparent 65%,#a9c7b807); }
+.stage h1 { font-size: clamp(1.9rem,3.8vw,2.8rem); line-height: 1.2; text-wrap: balance; }
+.stage h1 > span,.stage h1 > em { display: block; }
+.stage h1 em { font-weight: 400; color: #d7cba9; font-size: .91em; line-height: 1.35; }
+.stage h1:focus { outline: none; }
+.stageKicker { margin-bottom: 1rem; }
+.chamberSigil { display: block; width: 112px; height: 63px; object-fit: contain; }
+.prepared { margin-top: 1.5rem; }
+.prepared h2 { margin-top: .45rem; }
+.gateStatement { margin-top: 1.5rem; margin-bottom: 1.4rem; }
+.folioColumns { background: transparent; border: 0; border-radius: 0; padding: 1rem 0; border-top: 1px solid #c7d7cb18; }
+.folioColumns > div + div { border-left: 1px solid #c7d7cb18; padding-left: 1.3rem; }
+.topAction { background: transparent; color: #c7d1c7; border: 0; min-height: 44px; padding: .4rem .6rem; cursor: pointer; font: inherit; font-size: .63rem; letter-spacing: .04em; }
+.topAction:focus-visible { outline: 2px solid #ccb581; outline-offset: 3px; }
+.departing .stage { opacity: 0; transform: translateY(-5px); transition: opacity 320ms ease,transform 320ms ease; }
+.transitionStatus { position: fixed; bottom: 5rem; left: 0; right: 0; text-align: center; color: #d7cba9; font-size: .8rem; }
+.frameworkField { animation: frameworkArrival 550ms ease-out both; }
+@keyframes frameworkArrival { from { opacity: 0; } to { opacity: 1; } }
+.primaryAction:disabled { cursor: wait; opacity: .65; }
+@media(max-width:620px) { .folioColumns > div + div { border-left: 0; padding-left: 0; } .stage { padding-inline: 1.1rem; } }
+@media(prefers-reduced-motion:reduce) { .frameworkField { animation: none; } .departing .stage { transition: none; transform: none; } }
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+ .utility > span,.footer > span,.stage h1 > span { background-image: linear-gradient(110deg,#eee7d7 0%,#eee7d7 43%,#f8efd7 48%,#eee7d7 53%,#eee7d7 100%); background-size: 260% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; color: transparent; animation: chamberGlimmer 24s linear infinite; }
+}
+@keyframes chamberGlimmer { 0%,84% { background-position: 100% 0; } 94%,100% { background-position: 0% 0; } }
+@media(prefers-reduced-motion:reduce) { .utility > span,.footer > span,.stage h1 > span { animation: none; background: none; color: #eee7d7; } }

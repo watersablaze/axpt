@@ -1,7 +1,7 @@
 "use client";
 
 import type { ReactNode } from "react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import styles from "./GlobalMotherExperience.module.css";
 
@@ -14,16 +14,8 @@ type GlobalMotherExperienceProps = {
 };
 
 function Seal() {
-  return (
-    <div
-      className={styles.seal}
-      aria-hidden="true"
-    >
-      <span />
-      <span />
-      <span />
-    </div>
-  );
+  return <img className={styles.chamberSigil} src="/sigil/sigil_center_version.png"
+    width={112} height={63} alt="AXPT sigil" />;
 }
 
 export function GlobalMotherExperience({
@@ -33,6 +25,28 @@ export function GlobalMotherExperience({
 }: GlobalMotherExperienceProps) {
   const [stage, setStage] =
     useState<ExperienceStage>("gate");
+  const [entering, setEntering] = useState(false);
+  const transitionTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (transitionTimer.current) clearTimeout(transitionTimer.current); }, []);
+  useEffect(() => {
+    if (stage === "gate") return;
+    const id = stage === "opening" ? "gm-opening-heading" : "gm-document-identity";
+    document.getElementById(id)?.focus({ preventScroll: true });
+    window.scrollTo({ top: 0, behavior: "instant" });
+  }, [stage]);
+  function enter(next: ExperienceStage) {
+    if (entering) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) { setStage(next); return; }
+    setEntering(true);
+    transitionTimer.current = setTimeout(() => {
+      setStage(next); setEntering(false); transitionTimer.current = null;
+    }, 320);
+  }
+  function backToTop() {
+    window.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+    document.getElementById(stage === "opening" ? "gm-opening-heading" : "gm-gate-heading")?.focus({ preventScroll: true });
+  }
+
 
   if (!enabled) {
     return <>{children}</>;
@@ -47,7 +61,7 @@ export function GlobalMotherExperience({
   }
 
   return (
-    <main className={styles.experience}>
+    <main className={`${styles.experience} ${entering ? styles.departing : ""}`} aria-busy={entering}>
       <div
         className={styles.atmosphere}
         aria-hidden="true"
@@ -75,7 +89,7 @@ export function GlobalMotherExperience({
         >
           <div className={styles.gatePrelude}><Seal /></div>
           <p className={styles.stageKicker}>Global Mother · Institutional Framework</p>
-          <h1 id="gm-gate-heading">Framework of Royal Custodianship, Restoration &amp; Global Trade</h1>
+          <h1 id="gm-gate-heading" tabIndex={-1}><span>Framework of Royal Custodianship</span><em>Restoration &amp; Global Trade</em></h1>
           <div className={styles.prepared}>
             <span>Prepared for</span>
             <h2>{recipient?.name ?? "Dr. Awulah Naanii Amon"}</h2>
@@ -89,8 +103,9 @@ export function GlobalMotherExperience({
           <button
             type="button"
             className={styles.primaryAction}
+            disabled={entering}
             onClick={() =>
-              setStage("opening")
+              enter("opening")
             }
           >
             Enter the Framework
@@ -110,12 +125,12 @@ export function GlobalMotherExperience({
         >
           <p className={styles.stageKicker}>Opening folio</p>
 
-          <h1 id="gm-opening-heading">
-            Your place in the deliberation.
+          <h1 id="gm-opening-heading" tabIndex={-1}>
+            Read with care.<br /><em>Respond with intention.</em>
           </h1>
 
           <p className={styles.folioLead}>
-            Five articles introduce the relationship, custodianship, gold passage, restoration, and the path toward a proposed agreement.
+            Five articles set out the proposed relationship and its responsibilities. Seven intentions invite your considered response.
           </p>
           <div className={styles.prepared}>
             <span>Prepared for</span>
@@ -127,13 +142,13 @@ export function GlobalMotherExperience({
           <div className={styles.folioColumns}>
             <div>
               <span>Read</span>
-              <p>Move through the five articles at your own pace. The article rail keeps your place.</p>
+              <p>Explore relationship, custodianship, gold passage, and continuity. The article rail keeps your place.</p>
             </div>
 
             <div>
               <span>Respond</span>
               <p>
-                Consider seven intentions, add clarification or revisions where needed, and review your responses before submitting.
+                Affirm, clarify, propose a revision, or decline. Review all seven positions before submitting.
               </p>
             </div>
           </div>
@@ -145,7 +160,8 @@ export function GlobalMotherExperience({
           <button
             type="button"
             className={styles.primaryAction}
-            onClick={() => setStage("framework")}
+            disabled={entering}
+            onClick={() => enter("framework")}
           >
             Read the Framework
           </button>
@@ -153,6 +169,7 @@ export function GlobalMotherExperience({
       ) : null}
 
       <blockquote className={styles.inscription}>“Nobility is not for sale.”<cite>Global Mother · Nubian Empress Omaedro II</cite></blockquote>
+      {entering ? <p className={styles.transitionStatus} role="status">Opening {stage === "gate" ? "the reception" : "the Framework"}…</p> : null}
       <footer className={styles.footer}>
         <span>
           GM-KENYA-RCF-001
@@ -161,6 +178,7 @@ export function GlobalMotherExperience({
         <span>
           Controlled institutional access
         </span>
+        <button type="button" onClick={backToTop} disabled={entering} className={styles.topAction}>Back to top ↑</button>
       </footer>
     </main>
   );

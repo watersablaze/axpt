@@ -93,7 +93,7 @@ export function GlobalMotherConstitutionalShell({
         aria-hidden="true"
       />
 
-      <header className={styles.documentIdentity}>
+      <header id="gm-document-identity" tabIndex={-1} className={styles.documentIdentity}>
         <div>
           <strong>
             {title}
@@ -311,6 +311,10 @@ export function GlobalMotherConstitutionalShell({
           <span>
             Private Institutional Framework
           </span>
+          <button type="button" className={styles.topAction} onClick={() => {
+            chamberRef.current?.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
+            notationRef.current?.focus({ preventScroll: true });
+          }}>Back to article top ↑</button>
         </footer>
       </div>
     </main>

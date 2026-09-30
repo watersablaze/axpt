@@ -90,3 +90,13 @@
  .activeChamber { padding: 1.1rem; }
  .footer { padding: .6rem; }
 }
+
+.footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: .35rem; }
+.topAction { min-height: 44px; border: 0; background: transparent; color: #c5cbd0; font: inherit; font-size: .63rem; letter-spacing: .04em; padding: .4rem .6rem; cursor: pointer; }
+.documentIdentity:focus { outline: none; }
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+ .documentIdentity strong,.footer > span { background-image: linear-gradient(110deg,#eee7d7 0%,#eee7d7 43%,#f8efd7 48%,#eee7d7 53%,#eee7d7 100%); background-size: 260% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; color: transparent; animation: chamberGlimmer 24s linear infinite; }
+}
+@keyframes chamberGlimmer { 0%,84% { background-position: 100% 0; } 94%,100% { background-position: 0% 0; } }
+@media(prefers-reduced-motion:reduce) { .documentIdentity strong,.footer > span { animation: none; background: none; color: #eee7d7; } }
