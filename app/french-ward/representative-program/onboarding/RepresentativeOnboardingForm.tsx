@@ -204,281 +204,345 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
   }
 
   return (
-    <form onSubmit={submit} className="border-t border-black/20">
-      <Section
-        index="01"
-        eyebrow="Candidate Identity"
-        title="Identify the person entering review."
-      >
-        <Grid>
+    <form
+      onSubmit={submit}
+      className="border-t border-black/20 lg:grid lg:grid-cols-[210px_minmax(0,1fr)]"
+    >
+      <aside className="hidden border-r border-black/20 bg-[#EAE4D8] lg:block">
+        <nav className="sticky top-32 p-5">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-black/35">
+            Intake Sections
+          </p>
+
+          <div className="mt-4 grid gap-1">
+            {[
+              ["01", "Candidate Identity", "candidate-identity"],
+              ["02", "Professional Profile", "professional-profile"],
+              ["03", "Representation Context", "representation-context"],
+              ["04", "Disclosures", "disclosures"],
+              ["05", "Candidate Assertions", "candidate-assertions"],
+            ].map(([index, label, id]) => (
+              <a
+                key={id}
+                href={`#${id}`}
+                className="group flex items-start gap-3 border-l border-black/15 px-3 py-2.5 transition hover:border-black hover:bg-black/[0.04]"
+              >
+                <span className="font-mono text-[10px] leading-5 text-black/30 group-hover:text-black/55">
+                  {index}
+                </span>
+
+                <span className="text-[11px] font-medium leading-5 text-black/55 group-hover:text-black/85">
+                  {label}
+                </span>
+              </a>
+            ))}
+          </div>
+
+          <div className="mt-6 border-t border-black/15 pt-4">
+            <p className="text-[10px] uppercase tracking-[0.15em] text-black/30">
+              Controlled Instrument
+            </p>
+            <p className="mt-2 text-[11px] leading-5 text-black/45">
+              Candidate ≠ Participant
+              <br />
+              Submission ≠ Authority
+            </p>
+          </div>
+        </nav>
+      </aside>
+
+      <div className="min-w-0">
+        <Section
+          id="candidate-identity"
+          index="01"
+          eyebrow="Candidate Identity"
+          title="Identify the person entering review."
+        >
+          <Grid>
+            <Field
+              label="Full Legal Name"
+              name="fullLegalName"
+              required
+              defaultValue={
+                existing?.identity.fullLegalName ??
+                candidate.candidateDisplayName
+              }
+            />
+
+            <Field
+              label="Preferred Professional Name"
+              name="preferredProfessionalName"
+              defaultValue={existing?.identity.preferredProfessionalName}
+            />
+
+            <Field
+              label="Email"
+              name="email"
+              type="email"
+              required
+              defaultValue={
+                existing?.identity.email ?? candidate.candidateEmail
+              }
+            />
+
+            <Field
+              label="Nationality"
+              name="nationality"
+              defaultValue={existing?.identity.nationality}
+            />
+
+            <Field
+              label="Country of Residence"
+              name="countryOfResidence"
+              defaultValue={existing?.identity.countryOfResidence}
+            />
+
+            <Field
+              label="Telephone"
+              name="telephone"
+              defaultValue={existing?.identity.telephone}
+            />
+
+            <Field
+              label="WhatsApp"
+              name="whatsapp"
+              defaultValue={existing?.identity.whatsapp}
+            />
+
+            <Field
+              label="Passport / ID Reference"
+              name="passportOrIdReference"
+              defaultValue={existing?.identity.passportOrIdReference}
+            />
+          </Grid>
+
+          <TextArea
+            label="Primary Address"
+            name="primaryAddress"
+            defaultValue={existing?.identity.primaryAddress}
+          />
+        </Section>
+
+        <Section
+          id="professional-profile"
+          index="02"
+          eyebrow="Professional Profile"
+          title="Describe your present commercial field."
+        >
           <Field
-            label="Full Legal Name"
-            name="fullLegalName"
-            required
+            label="Current Occupation / Role"
+            name="currentOccupationOrRole"
+            defaultValue={existing?.professionalProfile.currentOccupationOrRole}
+          />
+
+          <Grid>
+            <TextArea
+              label="Companies / Organizations"
+              name="companyOrOrganizationAffiliations"
+              hint="One per line or comma-separated."
+              defaultValue={initialList(
+                existing?.professionalProfile.companyOrOrganizationAffiliations,
+              )}
+            />
+
+            <TextArea
+              label="Relevant Markets / Industries"
+              name="relevantMarketsOrIndustries"
+              hint="One per line or comma-separated."
+              defaultValue={initialList(
+                existing?.professionalProfile.relevantMarketsOrIndustries,
+              )}
+            />
+
+            <TextArea
+              label="Primary Territories"
+              name="primaryTerritories"
+              hint="Countries, regions, or corridors."
+              defaultValue={initialList(
+                existing?.professionalProfile.primaryTerritories,
+              )}
+            />
+
+            <TextArea
+              label="Languages"
+              name="languages"
+              hint="One per line or comma-separated."
+              defaultValue={initialList(
+                existing?.professionalProfile.languages,
+              )}
+            />
+          </Grid>
+
+          <TextArea
+            label="Commercial Capabilities"
+            name="commercialCapabilities"
+            hint="Introductions, coordination, sector knowledge, documentary work, logistics, or other relevant capabilities."
+            defaultValue={initialList(
+              existing?.professionalProfile.commercialCapabilities,
+            )}
+          />
+        </Section>
+
+        <Section
+          id="representation-context"
+          index="03"
+          eyebrow="Representation Context"
+          title="Place the proposed relationship in context."
+        >
+          <TextArea
+            label="Introduction Context"
+            name="introductionContext"
+            defaultValue={existing?.representationContext.introductionContext}
+          />
+
+          <TextArea
+            label="Expected Contribution"
+            name="expectedContribution"
+            defaultValue={existing?.representationContext.expectedContribution}
+          />
+
+          <TextArea
+            label="Relevant Relationships / Networks"
+            name="relevantRelationshipsOrNetworks"
             defaultValue={
-              existing?.identity.fullLegalName ?? candidate.candidateDisplayName
+              existing?.representationContext.relevantRelationshipsOrNetworks
             }
           />
 
-          <Field
-            label="Preferred Professional Name"
-            name="preferredProfessionalName"
-            defaultValue={existing?.identity.preferredProfessionalName}
-          />
-
-          <Field
-            label="Email"
-            name="email"
-            type="email"
-            required
-            defaultValue={existing?.identity.email ?? candidate.candidateEmail}
-          />
-
-          <Field
-            label="Nationality"
-            name="nationality"
-            defaultValue={existing?.identity.nationality}
-          />
-
-          <Field
-            label="Country of Residence"
-            name="countryOfResidence"
-            defaultValue={existing?.identity.countryOfResidence}
-          />
-
-          <Field
-            label="Telephone"
-            name="telephone"
-            defaultValue={existing?.identity.telephone}
-          />
-
-          <Field
-            label="WhatsApp"
-            name="whatsapp"
-            defaultValue={existing?.identity.whatsapp}
-          />
-
-          <Field
-            label="Passport / ID Reference"
-            name="passportOrIdReference"
-            defaultValue={existing?.identity.passportOrIdReference}
-          />
-        </Grid>
-
-        <TextArea
-          label="Primary Address"
-          name="primaryAddress"
-          defaultValue={existing?.identity.primaryAddress}
-        />
-      </Section>
-
-      <Section
-        index="02"
-        eyebrow="Professional Profile"
-        title="Describe your present commercial field."
-      >
-        <Field
-          label="Current Occupation / Role"
-          name="currentOccupationOrRole"
-          defaultValue={existing?.professionalProfile.currentOccupationOrRole}
-        />
-
-        <Grid>
           <TextArea
-            label="Companies / Organizations"
-            name="companyOrOrganizationAffiliations"
-            hint="One per line or comma-separated."
+            label="Anticipated Representation Areas"
+            name="anticipatedRepresentationAreas"
+            hint="One per line or comma-separated. This does not itself create authority."
             defaultValue={initialList(
-              existing?.professionalProfile.companyOrOrganizationAffiliations,
+              existing?.representationContext.anticipatedRepresentationAreas,
             )}
           />
+        </Section>
 
-          <TextArea
-            label="Relevant Markets / Industries"
-            name="relevantMarketsOrIndustries"
-            hint="One per line or comma-separated."
-            defaultValue={initialList(
-              existing?.professionalProfile.relevantMarketsOrIndustries,
-            )}
-          />
-
-          <TextArea
-            label="Primary Territories"
-            name="primaryTerritories"
-            hint="Countries, regions, or corridors."
-            defaultValue={initialList(
-              existing?.professionalProfile.primaryTerritories,
-            )}
-          />
-
-          <TextArea
-            label="Languages"
-            name="languages"
-            hint="One per line or comma-separated."
-            defaultValue={initialList(existing?.professionalProfile.languages)}
-          />
-        </Grid>
-
-        <TextArea
-          label="Commercial Capabilities"
-          name="commercialCapabilities"
-          hint="Introductions, coordination, sector knowledge, documentary work, logistics, or other relevant capabilities."
-          defaultValue={initialList(
-            existing?.professionalProfile.commercialCapabilities,
-          )}
-        />
-      </Section>
-
-      <Section
-        index="03"
-        eyebrow="Representation Context"
-        title="Place the proposed relationship in context."
-      >
-        <TextArea
-          label="Introduction Context"
-          name="introductionContext"
-          defaultValue={existing?.representationContext.introductionContext}
-        />
-
-        <TextArea
-          label="Expected Contribution"
-          name="expectedContribution"
-          defaultValue={existing?.representationContext.expectedContribution}
-        />
-
-        <TextArea
-          label="Relevant Relationships / Networks"
-          name="relevantRelationshipsOrNetworks"
-          defaultValue={
-            existing?.representationContext.relevantRelationshipsOrNetworks
-          }
-        />
-
-        <TextArea
-          label="Anticipated Representation Areas"
-          name="anticipatedRepresentationAreas"
-          hint="One per line or comma-separated. This does not itself create authority."
-          defaultValue={initialList(
-            existing?.representationContext.anticipatedRepresentationAreas,
-          )}
-        />
-      </Section>
-
-      <Section
-        index="04"
-        eyebrow="Disclosures"
-        title="Surface conditions that French-Ward should know."
-      >
-        <p className="max-w-3xl text-[12px] leading-5 text-black/50 md:text-xs md:leading-6">
-          Disclose any applicable condition below. If none applies, state
-          “None.”
-        </p>
-
-        <TextArea
-          label="Existing Mandates / Representative Relationships"
-          name="existingMandatesOrRepresentativeRelationships"
-          required
-          defaultValue={
-            existing?.disclosures.existingMandatesOrRepresentativeRelationships
-          }
-        />
-
-        <TextArea
-          label="Potential Conflicts"
-          name="potentialConflicts"
-          required
-          defaultValue={existing?.disclosures.potentialConflicts}
-        />
-
-        <TextArea
-          label="Regulated / Licensed Activities"
-          name="regulatedActivities"
-          required
-          defaultValue={existing?.disclosures.regulatedActivities}
-        />
-
-        <TextArea
-          label="Material Affiliations"
-          name="materialAffiliations"
-          hint="Organizations, commercial interests, fiduciary roles, or other affiliations potentially relevant to representation."
-          required
-          defaultValue={existing?.disclosures.materialAffiliations}
-        />
-      </Section>
-
-      <Section
-        index="05"
-        eyebrow="Candidate Assertions"
-        title="Confirm the conditions of candidacy."
-      >
-        <div className="grid gap-3">
-          {acknowledgementFields.map(({ key, title, body }) => (
-            <label
-              key={key}
-              className="flex gap-3 border border-black/20 bg-white/20 p-4 md:gap-4"
-            >
-              <input
-                type="checkbox"
-                name={key}
-                required
-                defaultChecked={existing?.acknowledgements[key] ?? false}
-                className="mt-0.5 h-[18px] w-[18px] shrink-0 accent-black md:mt-1 md:h-4 md:w-4"
-              />
-
-              <span>
-                <strong className="block text-[13px] font-semibold leading-5 text-[#181714] md:text-sm md:leading-normal">
-                  {title}
-                </strong>
-
-                <span className="mt-1.5 block text-[12px] leading-5 text-black/65 md:mt-1 md:text-xs md:leading-6">
-                  {body}
-                </span>
-              </span>
-            </label>
-          ))}
-        </div>
-      </Section>
-
-      <section className="border-t border-black/30 px-5 py-9 md:border-black/20 md:px-12 md:py-10">
-        <p className="max-w-3xl text-[12px] leading-5 text-black/55 md:text-xs md:leading-6">
-          Submission places this candidate intake into French-Ward review. It
-          does not itself constitute qualification, admission, appointment,
-          mandate, authority, transaction attachment, or compensation
-          entitlement.
-        </p>
-
-        {error ? (
-          <p className="mt-5 border border-red-900/30 bg-red-900/5 p-3 text-sm text-red-900">
-            {error}
-          </p>
-        ) : null}
-
-        <button
-          type="submit"
-          disabled={submitting}
-          className="mt-7 w-full border border-black bg-[#181714] px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#F4EFE3] disabled:opacity-50 md:mt-6 md:w-auto md:py-3 md:text-xs"
+        <Section
+          id="disclosures"
+          index="04"
+          eyebrow="Disclosures"
+          title="Surface conditions that French-Ward should know."
         >
-          {submitting ? "Submitting…" : "Submit Candidate Intake"}
-        </button>
-      </section>
+          <p className="max-w-3xl text-[12px] leading-5 text-black/50 md:text-xs md:leading-6">
+            Disclose any applicable condition below. If none applies, state
+            “None.”
+          </p>
+
+          <TextArea
+            label="Existing Mandates / Representative Relationships"
+            name="existingMandatesOrRepresentativeRelationships"
+            required
+            defaultValue={
+              existing?.disclosures
+                .existingMandatesOrRepresentativeRelationships
+            }
+          />
+
+          <TextArea
+            label="Potential Conflicts"
+            name="potentialConflicts"
+            required
+            defaultValue={existing?.disclosures.potentialConflicts}
+          />
+
+          <TextArea
+            label="Regulated / Licensed Activities"
+            name="regulatedActivities"
+            required
+            defaultValue={existing?.disclosures.regulatedActivities}
+          />
+
+          <TextArea
+            label="Material Affiliations"
+            name="materialAffiliations"
+            hint="Organizations, commercial interests, fiduciary roles, or other affiliations potentially relevant to representation."
+            required
+            defaultValue={existing?.disclosures.materialAffiliations}
+          />
+        </Section>
+
+        <Section
+          id="candidate-assertions"
+          index="05"
+          eyebrow="Candidate Assertions"
+          title="Confirm the conditions of candidacy."
+        >
+          <div className="grid gap-3">
+            {acknowledgementFields.map(({ key, title, body }) => (
+              <label
+                key={key}
+                className="flex gap-3 border border-black/25 bg-white/25 p-3.5 transition focus-within:border-black/50 md:gap-4"
+              >
+                <input
+                  type="checkbox"
+                  name={key}
+                  required
+                  defaultChecked={existing?.acknowledgements[key] ?? false}
+                  className="mt-0.5 h-[18px] w-[18px] shrink-0 accent-black md:mt-1 md:h-4 md:w-4"
+                />
+
+                <span>
+                  <strong className="block text-[13px] font-semibold leading-5 text-[#181714] md:text-sm md:leading-normal">
+                    {title}
+                  </strong>
+
+                  <span className="mt-1.5 block text-[12px] leading-5 text-black/65 md:mt-1 md:text-xs md:leading-6">
+                    {body}
+                  </span>
+                </span>
+              </label>
+            ))}
+          </div>
+        </Section>
+
+        <section className="border-t border-black/30 px-5 py-8 md:border-black/20 md:px-9 md:py-9">
+          <p className="max-w-3xl text-[12px] leading-5 text-black/55 md:text-xs md:leading-6">
+            Submission places this candidate intake into French-Ward review. It
+            does not itself constitute qualification, admission, appointment,
+            mandate, authority, transaction attachment, or compensation
+            entitlement.
+          </p>
+
+          {error ? (
+            <p className="mt-5 border border-red-900/30 bg-red-900/5 p-3 text-sm text-red-900">
+              {error}
+            </p>
+          ) : null}
+
+          <button
+            type="submit"
+            disabled={submitting}
+            className="mt-7 w-full border border-black bg-[#181714] px-6 py-3.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#F4EFE3] disabled:opacity-50 md:mt-6 md:w-auto md:py-3 md:text-xs"
+          >
+            {submitting ? "Submitting…" : "Submit Candidate Intake"}
+          </button>
+        </section>
+      </div>
     </form>
   );
 }
 
 function Section({
+  id,
   index,
   eyebrow,
   title,
   children,
 }: {
+  id: string;
   index: string;
   eyebrow: string;
   title: string;
   children: React.ReactNode;
 }) {
   return (
-    <section className="border-t border-black/20 px-5 py-8 md:px-12 md:py-10">
-      <div className="mb-6 flex gap-3 md:mb-7 md:gap-5">
+    <section
+      id={id}
+      className="scroll-mt-32 border-t border-black/20 px-5 py-7 md:px-9 md:py-8"
+    >
+      <div className="mb-5 flex gap-3 md:mb-6 md:gap-4">
         <span className="font-mono text-[11px] leading-4 text-black/35 md:text-xs">
           {index}
         </span>
@@ -494,7 +558,7 @@ function Section({
         </div>
       </div>
 
-      <div className="grid gap-4 md:gap-5">{children}</div>
+      <div className="grid gap-4">{children}</div>
     </section>
   );
 }
@@ -527,7 +591,7 @@ function Field({
         type={type}
         required={required}
         defaultValue={defaultValue ?? ""}
-        className="border-b border-black/30 bg-transparent px-0 py-2.5 text-[15px] leading-6 text-[#181714] outline-none focus:border-black md:py-2 md:text-sm md:leading-normal"
+        className="border-b border-black/40 bg-white/10 px-1 py-2.5 text-[15px] leading-6 text-[#181714] outline-none transition focus:border-black focus:bg-white/35 md:py-2 md:text-sm md:leading-normal"
       />
     </label>
   );
@@ -557,7 +621,7 @@ function TextArea({
         rows={3}
         required={required}
         defaultValue={defaultValue ?? ""}
-        className="min-h-[6.25rem] resize-y border border-black/20 bg-white/15 p-3 text-[15px] leading-6 text-[#181714] outline-none focus:border-black/50 md:min-h-[7.5rem] md:text-sm"
+        className="min-h-[6.25rem] resize-y border border-black/25 bg-white/25 p-3 text-[15px] leading-6 text-[#181714] outline-none transition focus:border-black/60 focus:bg-white/45 md:min-h-[7rem] md:text-sm"
       />
 
       {hint ? (
