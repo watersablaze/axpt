@@ -189,3 +189,152 @@
 }
 .grantDisclosure[open] > summary { border-bottom: 1px solid #3b483e; }
 .grantDisclosure .grantControl { margin: 0; border: 0; }
+
+
+/* Recipient operations: make access lifecycle and credential actions explicit. */
+.recipientList {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.7rem;
+}
+.recipientItem {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border: 1px solid #3b483e;
+  background: #121713;
+}
+.recipientIdentity {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+.recipientIdentity > div {
+  display: grid;
+  gap: 0.22rem;
+  min-width: 0;
+}
+.recipientIdentity strong {
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+.recipientIdentity span:not(.lifecycle),
+.recipientStanding span,
+.recipientStanding small {
+  color: #adb5ad;
+  font-size: 0.74rem;
+  line-height: 1.4;
+}
+.lifecycle {
+  flex: none;
+  padding: 0.28rem 0.42rem;
+  border: 1px solid #5d6c60;
+  color: #d7c59e;
+  font-size: 0.61rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.recipientMeta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 0.8rem;
+  margin: 0;
+  padding: 0.65rem 0;
+  border-top: 1px solid #303a32;
+  border-bottom: 1px solid #303a32;
+}
+.recipientMeta > div {
+  min-width: 0;
+}
+.recipientMeta dt {
+  color: #7f8c82;
+  font-size: 0.61rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.recipientMeta dd {
+  margin: 0.18rem 0 0;
+  color: #d3d8d3;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.recipientStanding {
+  display: grid;
+  gap: 0.2rem;
+}
+.accessActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: start;
+}
+.accessActions button {
+  font: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+.accessActions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.accessMaintenance {
+  padding: 0.46rem 0.62rem;
+  border: 1px solid #657268;
+  background: #1b241e;
+  color: #d9dfda;
+}
+.accessDanger {
+  padding: 0.46rem 0.62rem;
+  border: 1px solid #7f4e49;
+  background: #2a1716;
+  color: #efc3bd;
+}
+.replacementCredential {
+  display: grid;
+  width: 100%;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid #b9945a;
+  background: #17130d;
+}
+.replacementCredential strong {
+  color: #e4cfaa;
+  font-size: 0.78rem;
+}
+.replacementCredential p {
+  margin: 0;
+  color: #b9b0a1;
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+.replacementLink {
+  width: 100%;
+  min-width: 0;
+  padding: 0.52rem 0.6rem;
+  border: 1px solid #6f624d;
+  background: #0d0b08;
+  color: #eee7db;
+  font: inherit;
+  font-size: 0.72rem;
+}
+.replacementActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.accessError {
+  width: 100%;
+  margin: 0;
+  color: #e3a89c;
+  font-size: 0.72rem;
+}
+@media (max-width: 540px) {
+  .recipientIdentity {
+    flex-direction: column;
+  }
+  .recipientMeta {
+    grid-template-columns: 1fr;
+  }
+}

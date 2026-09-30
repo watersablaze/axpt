@@ -32,7 +32,7 @@ export function GrantV2Control({ versionId }: { versionId: string }) {
   return <details className={styles.grantDisclosure}>
     <summary>Create recipient access</summary>
     <div className={styles.grantControl}>
-    <p>Create named recipient access to V3. AXPT creates an identity when needed. Verify the email, institution, and capacity before creating the private link.</p>
+    <p>Create named recipient access to the current Framework. AXPT creates an identity when needed. Verify the email, institution, and capacity before creating the private link.</p>
     <div className={styles.grantFields}>
       <label>Email<input type="email" value={email} autoComplete="off" onChange={e => setEmail(e.target.value)} /></label>
       <label>Name<input value={name} onChange={e => setName(e.target.value)} /></label>
@@ -40,12 +40,12 @@ export function GrantV2Control({ versionId }: { versionId: string }) {
       <label>Representative capacity<input value={capacity} onChange={e => setCapacity(e.target.value)} /></label>
     </div>
     <button type="button" disabled={busy || !email || !name || !institution || !capacity || Boolean(link)} onClick={grant}>
-      {busy ? "Creating…" : "Create V3 access"}
+      {busy ? "Creating…" : "Create Framework access"}
     </button>
     {error ? <p role="alert">{error}</p> : null}
     {link ? <div className={styles.privateLink} role="status">
       <strong>Access created · copy this link now</strong>
-      <input readOnly value={link} aria-label="Private V3 access link" onFocus={e => e.currentTarget.select()} />
+      <input readOnly value={link} aria-label="Private Framework access link" onFocus={e => e.currentTarget.select()} />
       <small>Copy and share this link with the named recipient. They request an email verification code when opening it. Creating access does not send an invitation.</small>
     </div> : null}
     </div>

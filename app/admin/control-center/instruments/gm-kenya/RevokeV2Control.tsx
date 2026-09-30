@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import styles from "./page.module.css";
 
 export function RevokeV2Control({ grantId }: { grantId: string }) {
   const router = useRouter();
@@ -28,7 +29,7 @@ export function RevokeV2Control({ grantId }: { grantId: string }) {
     catch { setError("Select the link below and copy it manually."); }
   }
   async function revoke() {
-    if (busy || !window.confirm("Revoke this recipient's V3 access? Their recorded response will remain.")) return;
+    if (busy || !window.confirm("Revoke this recipient's current Framework access? Their recorded response will remain.")) return;
     setBusy(true); setError("");
     try {
       const response = await fetch("/api/admin/instruments/gm-kenya/revoke-v2", {
@@ -41,17 +42,21 @@ export function RevokeV2Control({ grantId }: { grantId: string }) {
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Revocation failed"); }
     finally { setBusy(false); }
   }
-  return <div>
-    <button type="button" disabled={busy || Boolean(link)} onClick={revoke}>{busy ? "Working…" : "Revoke access"}</button>
-    {!link ? <button type="button" disabled={busy} onClick={replaceLink}>Replace private link</button> : (
-      <div role="status">
-        <strong>Private link replaced</strong>
-        <p>The old link is inactive. Copy this replacement before closing. No email was sent.</p>
-        <input aria-label="Replacement private link" readOnly value={link} onFocus={event => event.currentTarget.select()} style={{ width: "100%" }} />
-        <button type="button" onClick={copyLink}>{copied ? "Copied" : "Copy private link"}</button>
-        <button type="button" onClick={() => { setLink(""); setCopied(false); router.refresh(); }}>Done</button>
+  return <div className={styles.accessActions}>
+    {!link ? <>
+      <button className={styles.accessMaintenance} type="button" disabled={busy} onClick={replaceLink}>Replace private link</button>
+      <button className={styles.accessDanger} type="button" disabled={busy} onClick={revoke}>{busy ? "Working…" : "Revoke access"}</button>
+    </> : (
+      <div className={styles.replacementCredential} role="status">
+        <strong>Replacement private link · copy now</strong>
+        <p>The prior link and recipient sessions are inactive. This credential is shown here for immediate copying; no email was sent.</p>
+        <input className={styles.replacementLink} aria-label="Replacement private link" readOnly value={link} onFocus={event => event.currentTarget.select()} />
+        <div className={styles.replacementActions}>
+          <button className={styles.accessMaintenance} type="button" onClick={copyLink}>{copied ? "Copied" : "Copy private link"}</button>
+          <button className={styles.accessMaintenance} type="button" onClick={() => { setLink(""); setCopied(false); router.refresh(); }}>Done</button>
+        </div>
       </div>
     )}
-    {error ? <p role="alert">{error}</p> : null}
+    {error ? <p className={styles.accessError} role="alert">{error}</p> : null}
   </div>;
 }

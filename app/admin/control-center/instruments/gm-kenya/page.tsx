@@ -43,6 +43,9 @@ export default async function GlobalMotherResponseReviewPage() {
         representedInstitution: true, representativeCapacity: true,
         issuedAt: true, expiresAt: true, revokedAt: true,
         firstAccessAt: true, lastAccessAt: true,
+        recipientChallenge: { select: {
+          sentAt: true, attemptCount: true, sendCount: true, consumedAt: true,
+        } },
       } },
       draftingDecisions: { orderBy: { recordedAt: "desc" }, select: {
         id: true, versionId: true, standing: true, rationale: true,
@@ -64,7 +67,7 @@ export default async function GlobalMotherResponseReviewPage() {
   const historicalReceipts = instrument.responseSets.filter(
     set => set.versionId !== version?.id,
   );
-  const v2Grants = instrument.accessGrants.filter(grant => grant.instrumentVersionId === version?.id);
+  const currentGrants = instrument.accessGrants.filter(grant => grant.instrumentVersionId === version?.id);
   const receipts = instrument.responseSets.filter(set => set.versionId === version?.id);
   const draftingDecisions = instrument.draftingDecisions.filter(decision => decision.versionId === version?.id);
   const draftingGate = globalMotherDraftingGate(receipts);
@@ -82,8 +85,8 @@ export default async function GlobalMotherResponseReviewPage() {
 
       <section className={styles.metrics} aria-label="Framework response standing">
         <div><span>Instrument</span><strong>{instrument.reference}</strong><small>{instrument.status} · current V{instrument.currentVersion}</small></div>
-        <div><span>V3 standing</span><strong>{version?.status ?? "ABSENT"}</strong><small>{version?.issuedAt?.toLocaleString() ?? "Not issued"}</small></div>
-        <div><span>Bound grants</span><strong>{v2Grants.length}</strong><small>{v2Grants.filter(grant => grant.firstAccessAt).length} accessed</small></div>
+        <div><span>Framework version</span><strong>V{globalMotherV3Definition.version} · {version?.status ?? "ABSENT"}</strong><small>{version?.issuedAt?.toLocaleString() ?? "Not issued"}</small></div>
+        <div><span>Bound grants</span><strong>{currentGrants.length}</strong><small>{currentGrants.filter(grant => grant.firstAccessAt).length} accessed</small></div>
         <div><span>Response sets</span><strong>{receipts.length}</strong><small>{open} positions for discussion</small></div>
       </section>
 
@@ -109,15 +112,50 @@ export default async function GlobalMotherResponseReviewPage() {
       <section className={styles.section}>
         <h2>Recipient access</h2>
         {version?.status === "ISSUED" && instrument.currentVersion === globalMotherV3Definition.version ? <GrantV2Control versionId={version.id} /> : null}
-        {v2Grants.length === 0 ? <p>No version-bound recipient grants.</p> : (
-          <div className={styles.list}>
-            {v2Grants.map(grant => <article key={grant.id} className={styles.item}>
-              <div><strong>{grant.recipientName ?? grant.recipientUserId ?? "Unnamed recipient"}</strong>
-                <span>{grant.representedInstitution ?? "Institution missing"} · {grant.representativeCapacity ?? "Capacity missing"}</span></div>
-              <div><span>{grant.recipientRole} · {grant.accessLevel}</span>
-                <small>{grant.revokedAt ? "Revoked" : grant.expiresAt && grant.expiresAt < new Date() ? "Expired" : grant.lastAccessAt ? "Accessed" : "Not accessed"}</small>
-                {!grant.revokedAt ? <RevokeV2Control grantId={grant.id} /> : null}</div>
-            </article>)}
+        {currentGrants.length === 0 ? <p>No version-bound recipient grants.</p> : (
+          <div className={styles.recipientList}>
+            {currentGrants.map(grant => {
+              const response = receipts.find(set => set.grantId === grant.id);
+              const expired = Boolean(grant.expiresAt && grant.expiresAt < new Date());
+              const lifecycle = grant.revokedAt
+                ? "REVOKED"
+                : expired
+                  ? "EXPIRED"
+                  : response
+                    ? "RESPONDED"
+                    : grant.lastAccessAt
+                      ? "CHAMBER ENTERED"
+                      : grant.recipientChallenge
+                        ? "VERIFICATION INITIATED"
+                        : "ISSUED";
+              return <article key={grant.id} className={styles.recipientItem}>
+                <div className={styles.recipientIdentity}>
+                  <div>
+                    <strong>{grant.recipientName ?? grant.recipientUserId ?? "Unnamed recipient"}</strong>
+                    <span>{grant.representedInstitution ?? "Institution missing"} · {grant.representativeCapacity ?? "Capacity missing"}</span>
+                  </div>
+                  <span className={styles.lifecycle}>{lifecycle}</span>
+                </div>
+
+                <dl className={styles.recipientMeta}>
+                  <div><dt>Issued</dt><dd>{grant.issuedAt.toLocaleString()}</dd></div>
+                  <div><dt>Expires</dt><dd>{grant.expiresAt?.toLocaleString() ?? "No expiry"}</dd></div>
+                  <div><dt>First chamber access</dt><dd>{grant.firstAccessAt?.toLocaleString() ?? "—"}</dd></div>
+                  <div><dt>Last chamber access</dt><dd>{grant.lastAccessAt?.toLocaleString() ?? "—"}</dd></div>
+                </dl>
+
+                <div className={styles.recipientStanding}>
+                  <span>{grant.recipientRole} · {grant.accessLevel}</span>
+                  {response
+                    ? <small>Response recorded {response.recordedAt.toLocaleString()}</small>
+                    : grant.recipientChallenge
+                      ? <small>Verification requested {grant.recipientChallenge.sentAt.toLocaleString()} · {grant.recipientChallenge.sendCount} code request{grant.recipientChallenge.sendCount === 1 ? "" : "s"} · {grant.recipientChallenge.attemptCount} failed attempt{grant.recipientChallenge.attemptCount === 1 ? "" : "s"}</small>
+                      : <small>Verification has not been initiated.</small>}
+                </div>
+
+                {!grant.revokedAt ? <RevokeV2Control grantId={grant.id} /> : null}
+              </article>;
+            })}
           </div>
         )}
       </section>
