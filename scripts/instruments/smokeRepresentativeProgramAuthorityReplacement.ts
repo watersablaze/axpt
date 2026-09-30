@@ -42,7 +42,12 @@ type SmokeClient = Pick<
   | "domainEvent"
 >;
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  transactionOptions: {
+    maxWait: 10_000,
+    timeout: 60_000,
+  },
+});
 
 const ROLLBACK = "ARP_2C_2_REPLACEMENT_SMOKE_ROLLBACK";
 
@@ -83,7 +88,7 @@ async function main() {
           reference: `SMOKE-${participant.docketReference}-REPLACE`,
           kind: INSTITUTIONAL_INSTRUMENT_KIND.REPRESENTATIVE_APPOINTMENT,
           title: "ARP-2C.2 Authority Replacement Smoke Appointment",
-          status: INSTITUTIONAL_INSTRUMENT_STATUS.DRAFT,
+          status: INSTITUTIONAL_INSTRUMENT_STATUS.ACTIVE,
           currentVersion: 1,
           createdByUserId: actor.id,
         },
