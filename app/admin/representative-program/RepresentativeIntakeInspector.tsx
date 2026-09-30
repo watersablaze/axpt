@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 
 import RepresentativeAccessReissuePanel from "./RepresentativeAccessReissuePanel";
 import RepresentativeIntakeDecisionControls from "./RepresentativeIntakeDecisionControls";
@@ -42,7 +42,13 @@ function displayDate(value: string | null) {
   return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
 }
 
-export default function RepresentativeIntakeInspector() {
+export default function RepresentativeIntakeInspector({
+  focusedIntakeId,
+  onFocusedIntakeChange,
+}: {
+  focusedIntakeId?: string | null;
+  onFocusedIntakeChange?: (intakeId: string) => void;
+}) {
   const [intakeId, setIntakeId] = useState("");
   const [intake, setIntake] = useState<Intake | null>(null);
   const [loading, setLoading] = useState(false);
@@ -117,15 +123,32 @@ export default function RepresentativeIntakeInspector() {
     }
   }
 
+  useEffect(() => {
+    if (!focusedIntakeId) return;
+
+    setIntakeId(focusedIntakeId);
+    void loadIntakeById(focusedIntakeId);
+  }, [focusedIntakeId]);
+
   async function loadIntake(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    await loadIntakeById(intakeId.trim());
+
+    const id = intakeId.trim();
+
+    if (!id) return;
+
+    if (onFocusedIntakeChange) {
+      onFocusedIntakeChange(id);
+      return;
+    }
+
+    await loadIntakeById(id);
   }
 
   return (
     <section
       aria-busy={loading}
-      className="mt-6 rounded border border-gray-800 bg-gray-950 p-5"
+      className="rounded border border-gray-800 bg-gray-950 p-5"
     >
       <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
         Operator Review
@@ -185,6 +208,12 @@ export default function RepresentativeIntakeInspector() {
                 type="button"
                 onClick={() => {
                   setIntakeId(match.id);
+
+                  if (onFocusedIntakeChange) {
+                    onFocusedIntakeChange(match.id);
+                    return;
+                  }
+
                   void loadIntakeById(match.id);
                 }}
                 className="w-full rounded border border-gray-800 bg-black p-3 text-left hover:border-gray-600"
@@ -234,80 +263,123 @@ export default function RepresentativeIntakeInspector() {
       ) : null}
 
       {intake ? (
-        <div className="mt-6 space-y-5">
-          <div>
-            <h3 className="text-lg font-semibold text-white">
-              {intake.candidateDisplayName}
-            </h3>
-            <p className="text-sm text-gray-400">{intake.candidateEmail}</p>
-            <p className="mt-1 font-mono text-xs text-gray-500">
-              {intake.reference} · {intake.id}
-            </p>
-          </div>
+        <div className="mt-6 grid gap-5 2xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,0.65fr)]">
+          <div className="space-y-5">
+            <div className="rounded border border-gray-800 bg-black p-4">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
+                    Focused Candidate
+                  </p>
+                  <h3 className="mt-2 text-lg font-semibold text-white">
+                    {intake.candidateDisplayName}
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-400">
+                    {intake.candidateEmail}
+                  </p>
+                  <p className="mt-2 break-all font-mono text-xs text-gray-500">
+                    {intake.reference} · {intake.id}
+                  </p>
+                </div>
 
-          <dl className="grid gap-3 text-sm sm:grid-cols-2">
-            {[
-              ["Intake status", intake.status],
-              ["Qualification decision", intake.qualificationDecision],
-              ["Submitted", displayDate(intake.submittedAt)],
-              ["Review opened", displayDate(intake.reviewStartedAt)],
-              ["Qualified", displayDate(intake.qualifiedAt)],
-              ["Admitted", displayDate(intake.admittedAt)],
-              ["Participant ID", intake.admittedParticipantId ?? "—"],
-              [
-                "Master Agreement ID",
-                intake.masterAgreementInstrumentId ?? "—",
-              ],
-            ].map(([label, value]) => (
-              <div
-                key={label}
-                className="rounded border border-gray-800 bg-black p-3"
-              >
-                <dt className="text-xs uppercase tracking-wide text-gray-500">
-                  {label}
-                </dt>
-                <dd className="mt-2 break-all text-gray-200">{value}</dd>
+                <div className="rounded border border-gray-700 bg-gray-950 px-3 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-gray-300">
+                  {intake.status}
+                </div>
               </div>
-            ))}
-          </dl>
+            </div>
 
-          <div className="rounded border border-gray-800 bg-black p-4">
-            <h3 className="text-sm font-semibold text-gray-200">
-              Internal Review Notes
-            </h3>
-            <p className="mt-2 whitespace-pre-wrap text-sm text-gray-400">
-              {intake.internalNotes || "No notes recorded."}
-            </p>
+            <dl className="grid gap-3 text-sm sm:grid-cols-2">
+              {[
+                ["Intake status", intake.status],
+                ["Qualification decision", intake.qualificationDecision],
+                ["Submitted", displayDate(intake.submittedAt)],
+                ["Review opened", displayDate(intake.reviewStartedAt)],
+                ["Qualified", displayDate(intake.qualifiedAt)],
+                ["Admitted", displayDate(intake.admittedAt)],
+                ["Participant ID", intake.admittedParticipantId ?? "—"],
+                [
+                  "Master Agreement ID",
+                  intake.masterAgreementInstrumentId ?? "—",
+                ],
+              ].map(([label, value]) => (
+                <div
+                  key={label}
+                  className="rounded border border-gray-800 bg-black p-3"
+                >
+                  <dt className="text-xs uppercase tracking-wide text-gray-500">
+                    {label}
+                  </dt>
+                  <dd className="mt-2 break-all text-gray-200">{value}</dd>
+                </div>
+              ))}
+            </dl>
+
+            <div className="rounded border border-gray-800 bg-black p-4">
+              <h3 className="text-sm font-semibold text-gray-200">
+                Internal Review Notes
+              </h3>
+              <p className="mt-2 whitespace-pre-wrap text-sm text-gray-400">
+                {intake.internalNotes || "No notes recorded."}
+              </p>
+            </div>
+
+            <details className="rounded border border-gray-800 bg-black p-4">
+              <summary className="cursor-pointer text-sm font-semibold text-gray-200">
+                Candidate Submission
+              </summary>
+              <pre className="mt-4 max-h-[34rem] overflow-auto whitespace-pre-wrap break-words text-xs leading-5 text-gray-300">
+                {intake.submission === null
+                  ? "No submission recorded."
+                  : JSON.stringify(intake.submission, null, 2)}
+              </pre>
+            </details>
           </div>
 
-          <details className="rounded border border-gray-800 bg-black p-4">
-            <summary className="cursor-pointer text-sm font-semibold text-gray-200">
-              Candidate Submission
-            </summary>
-            <pre className="mt-4 max-h-96 overflow-auto whitespace-pre-wrap break-words text-xs leading-5 text-gray-300">
-              {intake.submission === null
-                ? "No submission recorded."
-                : JSON.stringify(intake.submission, null, 2)}
-            </pre>
-          </details>
+          <aside className="space-y-4 2xl:sticky 2xl:top-6 2xl:self-start">
+            <div className="rounded border border-gray-800 bg-black p-3">
+              <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
+                Operator Actions
+              </p>
+              <p className="mt-2 text-xs leading-5 text-gray-400">
+                Controls appear only when the candidate reaches the lifecycle
+                state that permits them.
+              </p>
+            </div>
 
-          <RepresentativeAccessReissuePanel
-            key={`${intake.id}-access`}
-            intakeId={intake.id}
-            status={intake.status}
-          />
+            <RepresentativeAccessReissuePanel
+              key={`${intake.id}-access`}
+              intakeId={intake.id}
+              status={intake.status}
+            />
 
-          <RepresentativeIntakeDecisionControls
-            key={intake.id}
-            intakeId={intake.id}
-            status={intake.status}
-            onChanged={() => loadIntakeById(intake.id)}
-          />
+            <RepresentativeIntakeDecisionControls
+              key={intake.id}
+              intakeId={intake.id}
+              status={intake.status}
+              onChanged={() => loadIntakeById(intake.id)}
+            />
 
-          <RepresentativeMasterAgreementPanel
-            key={`${intake.id}-agreement`}
-            intake={intake}
-          />
+            {intake.status === "QUALIFIED" || intake.status === "ADMITTED" ? (
+              <RepresentativeMasterAgreementPanel
+                key={`${intake.id}-agreement`}
+                intake={intake}
+              />
+            ) : (
+              <section className="rounded border border-gray-800 bg-gray-950 p-4">
+                <p className="text-xs uppercase tracking-[0.16em] text-gray-500">
+                  Agreement Control
+                </p>
+                <p className="mt-2 text-sm font-semibold text-gray-200">
+                  Not yet available
+                </p>
+                <p className="mt-2 text-xs leading-5 text-gray-500">
+                  Master Agreement controls remain withheld until candidate
+                  qualification. Submission and review do not create Agreement,
+                  admission, appointment, or authority.
+                </p>
+              </section>
+            )}
+          </aside>
         </div>
       ) : null}
     </section>

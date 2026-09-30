@@ -1,14 +1,13 @@
 import Link from "next/link";
 
-import RepresentativeInvitationForm from "./RepresentativeInvitationForm";
-import RepresentativeIntakeInspector from "./RepresentativeIntakeInspector";
+import RepresentativeProgramWorkspace from "./RepresentativeProgramWorkspace";
 
 export const dynamic = "force-dynamic";
 
 export default function RepresentativeProgramAdminPage() {
   return (
     <main className="min-h-screen bg-black p-8 text-white">
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-[1560px]">
         <header className="mb-8 flex flex-wrap items-start justify-between gap-5">
           <div>
             <p className="text-sm uppercase tracking-[0.28em] text-gray-400">
@@ -52,8 +51,7 @@ export default function RepresentativeProgramAdminPage() {
           ))}
         </section>
 
-        <RepresentativeInvitationForm />
-        <RepresentativeIntakeInspector />
+        <RepresentativeProgramWorkspace />
       </div>
     </main>
   );

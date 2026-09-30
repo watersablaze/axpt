@@ -61,7 +61,11 @@ function buildCandidateMessage(invitation: InvitationResult) {
   ].join("\n");
 }
 
-export default function RepresentativeInvitationForm() {
+export default function RepresentativeInvitationForm({
+  onIssued,
+}: {
+  onIssued?: (intakeId: string) => void;
+}) {
   const [candidateDisplayName, setCandidateDisplayName] = useState("");
   const [candidateEmail, setCandidateEmail] = useState("");
   const [accessDurationDays, setAccessDurationDays] = useState(7);
@@ -113,6 +117,7 @@ export default function RepresentativeInvitationForm() {
       }
 
       setInvitation(payload.invitation);
+      onIssued?.(payload.invitation.id);
     } catch {
       setError("Unable to reach the invitation service.");
     } finally {
@@ -134,7 +139,7 @@ export default function RepresentativeInvitationForm() {
   }
 
   return (
-    <div className="grid gap-6">
+    <div className="space-y-4">
       <form
         onSubmit={issueInvitation}
         className="rounded border border-gray-800 bg-gray-950 p-5"
@@ -234,7 +239,7 @@ export default function RepresentativeInvitationForm() {
           <div className="flex flex-wrap items-start justify-between gap-4">
             <div>
               <p className="text-xs uppercase tracking-[0.2em] text-emerald-300/70">
-                Invitation Issued
+                Invitation Issued · Not Delivered
               </p>
 
               <h2 className="mt-2 text-xl font-semibold text-white">
@@ -293,10 +298,10 @@ export default function RepresentativeInvitationForm() {
             </button>
           </div>
 
-          <div className="mt-4 rounded border border-gray-800 bg-black p-4">
-            <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
+          <details className="mt-4 rounded border border-gray-800 bg-black p-4">
+            <summary className="cursor-pointer text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
               Candidate Message
-            </p>
+            </summary>
 
             <pre className="mt-3 whitespace-pre-wrap rounded border border-gray-900 bg-gray-950 p-3 text-xs leading-5 text-gray-300">
               {candidateMessage}
@@ -309,12 +314,31 @@ export default function RepresentativeInvitationForm() {
             >
               Copy Candidate Message
             </button>
-          </div>
+          </details>
 
-          <div className="mt-4 rounded border border-amber-500/20 bg-amber-500/5 p-3 text-xs leading-5 text-amber-100/80">
-            Candidate access UI is established in P1.4. Do not send a live
-            invitation externally until that ingress has passed release
-            verification.
+          <div className="mt-4 rounded border border-amber-500/20 bg-amber-500/5 p-3">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.16em] text-amber-200">
+                  Delivery State · Not Sent
+                </p>
+                <p className="mt-1 text-xs leading-5 text-amber-100/70">
+                  AXPT created the intake and private credential only. No email
+                  or external message has been transmitted.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setInvitation(null);
+                  setCopied(null);
+                }}
+                className="rounded border border-gray-700 bg-black px-3 py-1.5 text-xs text-gray-300 hover:border-gray-500"
+              >
+                Clear Receipt
+              </button>
+            </div>
           </div>
 
           {copied ? (
