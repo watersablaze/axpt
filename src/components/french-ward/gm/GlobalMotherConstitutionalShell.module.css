@@ -100,3 +100,11 @@
 }
 @keyframes chamberGlimmer { 0%,84% { background-position: 100% 0; } 94%,100% { background-position: 0% 0; } }
 @media(prefers-reduced-motion:reduce) { .documentIdentity strong,.footer > span { animation: none; background: none; color: #eee7d7; } }
+
+/* Quiet depth within the cream reading surface. */
+.activeChamber {
+  background:
+    radial-gradient(ellipse at 18% 0, #fffdf780, transparent 60%),
+    linear-gradient(145deg, #f2eee4, #eee9dd 62%, #e9e3d5);
+  box-shadow: inset 1px 0 0 #fffdf766;
+}

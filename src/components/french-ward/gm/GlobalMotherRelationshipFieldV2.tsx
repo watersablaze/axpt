@@ -19,14 +19,8 @@ export function GlobalMotherRelationshipFieldV2() {
         <div className={styles.label}><span>REL-02</span><span>The trusted bridge</span></div>
         <div className={styles.twoColumns}>
           <div>
-            <p className={styles.eyebrow}>01 / Trust</p>
-            <h4>Imperial Khan-Khan</h4>
-            <p>Entrusted by the Global Mother to open the relationship.</p>
-          </div>
-          <div>
-            <p className={styles.eyebrow}>02 / Existing relationship</p>
-            <h4>Ahma Olmec Tartarian Government</h4>
-            <p>AOTG brings its relationship with French-Ward. Trade may support its governmental capacity on terms it authorizes.</p>
+            <h4>AOTG</h4>
+            <p>The trusted bridge connecting ND Royal Ministry and French-Ward. AOTG brings its existing relationship with French-Ward; trade may support its governmental capacity on terms it authorizes.</p>
           </div>
         </div>
       </div>

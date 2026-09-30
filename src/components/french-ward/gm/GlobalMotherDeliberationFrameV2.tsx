@@ -498,10 +498,6 @@ export function GlobalMotherDeliberationFrameV2({
               <button className={styles.backAction} type="button" onClick={checkRecord}>Check response record</button>
             </div> : null}
             <footer className={styles.formationBoundary}>
-              <button type="button" className={styles.backAction} onClick={() => {
-                registerRef.current?.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
-                headingRef.current?.focus({ preventScroll: true });
-              }}>Back to response top ↑</button>
               <span>{instrumentReference} · Framework V3</span>
               <p>Your response informs further deliberation and proposed agreement drafting.
                 It does not grant authority, execute an SPA, or allocate gold.</p>

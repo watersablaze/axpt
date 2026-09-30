@@ -12,7 +12,7 @@ const schedule = [
   {
     reference: "AUTH-02",
     classification: "ENTRUSTED ROLE",
-    party: "AOTG, through Imperial Khan-Khan",
+    party: "AOTG",
     role: "Trusted bridge & governmental participant",
     scope: "Introduction, protection, coordination, and governmental capacity through trade.",
     boundary: "AOTG defines its governmental decisions and the authority it brings to joint work.",

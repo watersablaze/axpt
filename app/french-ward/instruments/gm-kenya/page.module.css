@@ -2989,3 +2989,33 @@
 .baseArticle .articleReference { display: none; }
 
 .baseArticle .movementLead,.baseArticle.articleRelationship .movementLead,.baseArticle.articleAuthority .articleSummary { line-height: 1.58; }
+
+/* Article V marks the threshold into deliberation. */
+.articleDeliberation h2[id="deliberation-heading"] {
+  font-weight: 600;
+  font-size: clamp(2rem, 3.5vw, 2.9rem);
+  line-height: 1.18;
+  letter-spacing: -.025em;
+  color: #263f50;
+  text-shadow: 0 1px 0 #fffdf780;
+}
+
+/* Grounded typography across the five articles. */
+.baseArticle h2[id] {
+  font-weight: 600;
+  font-size: clamp(2rem, 3.5vw, 2.9rem);
+  line-height: 1.18;
+  letter-spacing: -.025em;
+  color: #263f50;
+  text-shadow: 0 1px 0 #fffdf780;
+}
+
+/* Recognition heading matches the grounded article typography. */
+.baseArticle.articleRelationship .movementHeader h2[id="relationship-heading"] {
+  font-weight: 600;
+  font-size: clamp(2rem, 3.5vw, 2.9rem);
+  line-height: 1.18;
+  letter-spacing: -.025em;
+  color: #263f50;
+  text-shadow: 0 1px 0 #fffdf780;
+}

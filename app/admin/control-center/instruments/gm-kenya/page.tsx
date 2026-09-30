@@ -33,7 +33,7 @@ export default async function GlobalMotherResponseReviewPage() {
     where: { reference: globalMotherV3Definition.reference },
     select: {
       id: true, reference: true, status: true, currentVersion: true,
-      versions: { where: { number: globalMotherV3Definition.version }, select: {
+      versions: { orderBy: { number: "desc" }, select: {
         id: true, number: true, status: true, issuedAt: true,
         propositions: { orderBy: { ordinal: "asc" }, select: { reference: true, title: true, body: true } },
       } },
@@ -58,7 +58,12 @@ export default async function GlobalMotherResponseReviewPage() {
     },
   });
   if (!instrument) notFound();
-  const version = instrument.versions[0];
+  const version = instrument.versions.find(
+    item => item.number === globalMotherV3Definition.version,
+  );
+  const historicalReceipts = instrument.responseSets.filter(
+    set => set.versionId !== version?.id,
+  );
   const v2Grants = instrument.accessGrants.filter(grant => grant.instrumentVersionId === version?.id);
   const receipts = instrument.responseSets.filter(set => set.versionId === version?.id);
   const draftingDecisions = instrument.draftingDecisions.filter(decision => decision.versionId === version?.id);
@@ -134,6 +139,36 @@ export default async function GlobalMotherResponseReviewPage() {
             <p className={styles.boundary}>Review the record and authority evidence before deciding whether to open Master Agreement drafting.</p>
           </article>;
         })}
+      </section>
+      <section className={styles.section}>
+        <h2>Prior-version response history</h2>
+        <p>Historical receipts remain attributable to their original version. They do not count toward the V3 drafting threshold.</p>
+        {historicalReceipts.length === 0 ? <p>No prior-version responses recorded.</p> : (
+          <details className={styles.grantDisclosure}>
+            <summary>View {historicalReceipts.length} historical receipts</summary>
+            {historicalReceipts.map(set => {
+              const originalVersion = instrument.versions.find(item => item.id === set.versionId);
+              const positions = positionsFrom(set.positions);
+              return <article key={set.id} className={styles.receipt}>
+                <header>
+                  <div>
+                    <span>{originalVersion ? `V${originalVersion.number}` : "Prior version"} · Receipt {set.id}</span>
+                    <h3>{set.representedInstitution}</h3>
+                    <p>{set.actor.displayName ?? set.actor.name ?? set.actor.email} · {set.representativeCapacity}</p>
+                  </div>
+                  <time dateTime={set.recordedAt.toISOString()}>{set.recordedAt.toLocaleString()}</time>
+                </header>
+                <ol>{positions.map((position, index) => <li key={String(position.reference ?? index)}>
+                  <div>
+                    <span>{String(position.reference ?? "")}</span>
+                    <strong>{String(position.responseType ?? "")}</strong>
+                  </div>
+                  {typeof position.note === "string" && position.note ? <p>{position.note}</p> : null}
+                </li>)}</ol>
+              </article>;
+            })}
+          </details>
+        )}
       </section>
       <section className={styles.section}>
         <h2>Master agreement drafting threshold</h2>
