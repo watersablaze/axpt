@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { isAdmin } from "@/domains/auth/isAdmin";
 import { prisma } from "@/infrastructure/db/prisma";
-import { globalMotherV2Definition } from "@/domains/instruments/definitions/globalMotherV2Definition";
+import { globalMotherV3Definition } from "@/domains/instruments/definitions/globalMotherV3Definition";
 import { INSTRUMENT_EVENT_TYPE } from "@/domains/instruments/eventTypes";
 import { runInstrumentGovernanceTransaction } from "@/domains/instruments/governance/runInstrumentGovernanceTransaction";
 
@@ -19,7 +19,7 @@ export async function POST(request: Request) {
   const input = body && typeof body === "object" && !Array.isArray(body)
     ? body as Record<string, unknown> : null;
   if (!input || typeof input.grantId !== "string" ||
-      !/^[a-z0-9]{10,40}$/.test(input.grantId) || input.confirmation !== "REVOKE V2 ACCESS")
+      !/^[a-z0-9]{10,40}$/.test(input.grantId) || input.confirmation !== "REVOKE V3 ACCESS")
     return NextResponse.json({ error: "CONFIRMATION_REQUIRED" }, { status: 400 });
   try {
     const revokedAt = await runInstrumentGovernanceTransaction(prisma, async tx => {
@@ -31,8 +31,8 @@ export async function POST(request: Request) {
           instrumentVersion: { select: { number: true } },
         },
       });
-      if (!grant || grant.instrument.reference !== globalMotherV2Definition.reference ||
-          grant.instrumentVersion?.number !== 2) throw new Error("GRANT_NOT_FOUND");
+      if (!grant || grant.instrument.reference !== globalMotherV3Definition.reference ||
+          grant.instrumentVersion?.number !== globalMotherV3Definition.version) throw new Error("GRANT_NOT_FOUND");
       if (grant.revokedAt) return grant.revokedAt;
       const now = new Date();
       const changed = await tx.instrumentAccessGrant.updateMany({

@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import type { PrismaClient } from "@prisma/client";
-import { globalMotherV2Definition } from "../definitions/globalMotherV2Definition";
+import { globalMotherV3Definition } from "../definitions/globalMotherV3Definition";
 import { resolveInstitutionalInstrumentAccessWithClient } from "../queries/resolveInstitutionalInstrumentAccessWithClient";
 import { submitInstrumentResponseWithTokenWithClient } from "./submitInstrumentResponseWithTokenWithClient";
 
@@ -25,7 +25,7 @@ export async function submitGlobalMotherV2ResponseSetWithClient(params: {
   if (!/^[a-zA-Z0-9-]{16,80}$/.test(params.submissionKey)) {
     throw new Error("[GM_RESPONSE_SET_KEY_INVALID]");
   }
-  const expected = globalMotherV2Definition.propositions.map(item => item.reference);
+  const expected = globalMotherV3Definition.propositions.map(item => item.reference);
   if (params.positions.length !== expected.length ||
       params.positions.some((item, index) => item.reference !== expected[index] ||
         !["AFFIRM", "CLARIFY", "REVISE", "DECLINE"].includes(item.responseType) ||
@@ -44,7 +44,7 @@ export async function submitGlobalMotherV2ResponseSetWithClient(params: {
   const contentHash = createHash("sha256").update(JSON.stringify(positions)).digest("hex");
   const access = await resolveInstitutionalInstrumentAccessWithClient({
     client: params.client,
-    instrumentReference: globalMotherV2Definition.reference,
+    instrumentReference: globalMotherV3Definition.reference,
     token: params.token,
     recordAccess: false,
   });
@@ -54,19 +54,19 @@ export async function submitGlobalMotherV2ResponseSetWithClient(params: {
     throw new Error("[GM_RESPONSE_SET_BOUND_ACCESS_REQUIRED]");
   }
   const instrument = await params.client.institutionalInstrument.findUnique({
-    where: { reference: globalMotherV2Definition.reference },
+    where: { reference: globalMotherV3Definition.reference },
     select: { id: true, currentVersion: true,
-      versions: { where: { number: globalMotherV2Definition.version },
+      versions: { where: { number: globalMotherV3Definition.version },
         select: { id: true, status: true, propositions: {
           orderBy: { ordinal: "asc" }, select: { reference: true, body: true },
         } }, },
     },
   });
   const version = instrument?.versions[0];
-  if (!instrument || instrument.currentVersion !== 2 || !version ||
+  if (!instrument || instrument.currentVersion !== globalMotherV3Definition.version || !version ||
       version.status !== "ISSUED" || access.grant.instrumentVersionId !== version.id ||
       JSON.stringify(version.propositions.map((item: { reference: string; body: string }) => [item.reference, item.body])) !==
-        JSON.stringify(globalMotherV2Definition.propositions.map(item => [item.reference, item.body]))) {
+        JSON.stringify(globalMotherV3Definition.propositions.map(item => [item.reference, item.body]))) {
     throw new Error("[GM_RESPONSE_SET_VERSION_MISMATCH]");
   }
   const previous = await params.client.instrumentResponseSet.findUnique({
@@ -83,7 +83,7 @@ export async function submitGlobalMotherV2ResponseSetWithClient(params: {
   for (const position of positions) {
     const result = await submitInstrumentResponseWithTokenWithClient({
       client: params.client,
-      instrumentReference: globalMotherV2Definition.reference,
+      instrumentReference: globalMotherV3Definition.reference,
       token: params.token,
       propositionReference: position.reference,
       responseType: position.responseType,
@@ -112,7 +112,7 @@ export async function submitGlobalMotherV2ResponseSetWithClient(params: {
       eventType: "INSTRUMENT_RESPONSE_SET_RECORDED",
       payload: { receiptId: receipt.id, versionId: version.id, responseIds: recorded.map(item => item.responseId) },
       metadata: { actorUserId: access.grant.recipientUserId, accessGrantId: access.grant.id,
-        correlationId: params.correlationId, source: "gm.v2.response-set" },
+        correlationId: params.correlationId, source: "gm.v3.response-set" },
     },
   });
   return { receipt, repeated: false } as const;

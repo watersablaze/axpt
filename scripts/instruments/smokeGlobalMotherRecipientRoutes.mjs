@@ -29,8 +29,8 @@ function reset() {
 const user = { id: "recipient", email: "recipient@example.test", displayName: "Recipient", name: null };
 const tx = {
   $queryRaw: async () => [{ id: "grant" }],
-  institutionalInstrument: { findUnique: async () => ({ id: "instrument", reference: "GM-KENYA-RCF-001", currentVersion: 2 }) },
-  instrumentVersion: { findUnique: async () => ({ instrumentId: "instrument", number: 2, status: "ISSUED" }) },
+  institutionalInstrument: { findUnique: async () => ({ id: "instrument", reference: "GM-KENYA-RCF-001", currentVersion: 3 }) },
+  instrumentVersion: { findUnique: async () => ({ instrumentId: "instrument", number: 3, status: "ISSUED" }) },
   user: { findUnique: async () => user },
   instrumentAccessGrant: {
     findUnique: async ({ where }) => (where.id === "grant" || where.codeHash === state.grant.codeHash) ? { ...state.grant } : null,

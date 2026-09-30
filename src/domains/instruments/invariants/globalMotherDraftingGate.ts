@@ -1,6 +1,9 @@
+import { globalMotherV3Definition } from "../definitions/globalMotherV3Definition";
+
 export type DraftingReceipt = { id: string; representedInstitution: string; positions: unknown };
 export type DraftingIssue = { receiptId: string; institution: string; reference: string; responseType: string; note: string };
 export type DraftingDisposition = { receiptId: string; reference: string; treatment: "CARRY_TO_DRAFTING"; note: string };
+const expectedReferences = new Set<string>(globalMotherV3Definition.propositions.map(item => item.reference));
 const canonical = ["AOTG", "ND Royal Ministry"] as const;
 const normalize = (value: string) => value.trim().replace(/\s+/g, " ").toLowerCase();
 export function globalMotherDraftingGate(receipts: readonly DraftingReceipt[]) {
@@ -9,12 +12,12 @@ export function globalMotherDraftingGate(receipts: readonly DraftingReceipt[]) {
   const issues: DraftingIssue[] = [];
   let invalidResponses = false;
   for (const receipt of receipts) {
-    if (!Array.isArray(receipt.positions) || receipt.positions.length !== 7) { invalidResponses = true; continue; }
+    if (!Array.isArray(receipt.positions) || receipt.positions.length !== expectedReferences.size) { invalidResponses = true; continue; }
     const seen = new Set<string>();
     for (const value of receipt.positions) {
       if (!value || typeof value !== "object" || Array.isArray(value)) { invalidResponses = true; continue; }
       const row = value as Record<string, unknown>;
-      if (typeof row.reference !== "string" || !/^ALIGN-0[1-7]$/.test(row.reference) || seen.has(row.reference) ||
+      if (typeof row.reference !== "string" || !expectedReferences.has(row.reference) || seen.has(row.reference) ||
           !["AFFIRM", "CLARIFY", "REVISE", "DECLINE"].includes(String(row.responseType))) { invalidResponses = true; continue; }
       seen.add(row.reference);
       if (row.responseType !== "AFFIRM") {

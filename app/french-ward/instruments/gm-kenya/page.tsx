@@ -15,8 +15,8 @@ import {
   resolveInstitutionalInstrumentAccessWithClient,
 } from "@/domains/instruments/queries/resolveInstitutionalInstrumentAccessWithClient";
 import {
-  globalMotherV2Definition,
-} from "@/domains/instruments/definitions/globalMotherV2Definition";
+  globalMotherV3Definition,
+} from "@/domains/instruments/definitions/globalMotherV3Definition";
 import { InstrumentShell } from "@/components/instruments/InstrumentShell";
 import { RoyalRelationshipMap } from "@/components/french-ward/gm/RoyalRelationshipMap";
 import { RelationshipUnderstanding } from "@/components/french-ward/gm/RelationshipUnderstanding";
@@ -103,12 +103,12 @@ export default async function GreatMotherInstrumentPage({
    */
   const requestedPreviewVersion =
     internalInspectionAllowed &&
-    previewVersionParam === "2"
-      ? 2
+    previewVersionParam === String(globalMotherV3Definition.version)
+      ? globalMotherV3Definition.version
       : null;
 
   const internalV2Preview =
-    requestedPreviewVersion === 2;
+    requestedPreviewVersion === globalMotherV3Definition.version;
 
   const accessToken =
     cookieStore.get(
@@ -218,7 +218,7 @@ export default async function GreatMotherInstrumentPage({
   const participantV2 =
     !internalV2Preview &&
     recipientAccess !== null &&
-    deliberation.version.number === 2 &&
+    deliberation.version.number === globalMotherV3Definition.version &&
     deliberation.version.status === "ISSUED" &&
     recipientAccess.grant.instrumentVersionId === deliberation.version.id;
 
@@ -251,12 +251,12 @@ export default async function GreatMotherInstrumentPage({
       }
       title={
         v2Presentation
-          ? globalMotherV2Definition.title
+          ? globalMotherV3Definition.title
           : "Framework of Royal Custodianship"
       }
       subtitle={
         v2Presentation
-          ? globalMotherV2Definition.subtitle
+          ? globalMotherV3Definition.subtitle
           : "Ancestral Restoration & Global Trade"
       }
       reference="GM-KENYA-RCF-001"

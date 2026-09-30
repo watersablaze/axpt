@@ -13,7 +13,7 @@ import type {
 import { createPortal } from "react-dom";
 
 import styles from "./GlobalMotherDeliberationFrameV2.module.css";
-import { globalMotherV2Definition } from "@/domains/instruments/definitions/globalMotherV2Definition";
+import { globalMotherV3Definition } from "@/domains/instruments/definitions/globalMotherV3Definition";
 
 type Position = "AFFIRM" | "CLARIFY" | "REVISE" | "DECLINE";
 
@@ -28,12 +28,12 @@ const sections = [
   { article: "I–II / Relationship & Authority", references: ["ALIGN-01", "ALIGN-02", "ALIGN-03"] },
   { article: "III / Economic Passage", references: ["ALIGN-04"] },
   { article: "IV / Restoration & Continuity", references: ["ALIGN-05", "ALIGN-06"] },
-  { article: "V / Deliberation & Formation", references: ["ALIGN-07"] },
+  { article: "V / Deliberation & Formation", references: ["ALIGN-07", "ALIGN-08"] },
 ] as const;
 
 const affirmations = sections.map(section => ({
   article: section.article,
-  entries: globalMotherV2Definition.propositions
+  entries: globalMotherV3Definition.propositions
     .filter(item => (section.references as readonly string[]).includes(item.reference))
     .map(item => [item.reference, item.title, item.body] as const),
 }));
@@ -256,7 +256,7 @@ export function GlobalMotherDeliberationFrameV2({
         <article>
           <span>INST-01 / Your recorded response</span>
           <h3>Your response stays with your name.</h3>
-          <p>Your seven positions and any notes are recorded with your verified recipient identity and represented capacity. Review them before submitting; a receipt confirms they have been received.</p>
+          <p>Your eight positions and any notes are recorded with your verified recipient identity and represented capacity. Review them before submitting; a receipt confirms they have been received.</p>
         </article>
         <article>
           <span>INST-02 / Instrument formation</span>
@@ -281,7 +281,7 @@ export function GlobalMotherDeliberationFrameV2({
             </h3>
 
             <p>
-              Respond to seven intentions. Identify any point needing
+              Respond to eight intentions. Identify any point needing
               clarification or revision, then review the full response.
             </p>
           </header>
@@ -337,8 +337,8 @@ export function GlobalMotherDeliberationFrameV2({
 
             <p>
               {actorBound
-                ? "Your seven positions are recorded together when you submit. A receipt confirms they have been received."
-                : "This draft preview shows the V2 affirmations. Opening the register does not record a response."}
+                ? "Your eight positions are recorded together when you submit. A receipt confirms they have been received."
+                : "This draft preview shows the V3 intentions. Opening the register does not record a response."}
             </p>
           </div>
         </aside>
@@ -362,8 +362,8 @@ export function GlobalMotherDeliberationFrameV2({
                 {reviewing ? receipt ? "Response receipt." : "Review your responses." : "Consider each intention."}
               </h2>
               <p>{reviewing
-                ? receipt ? "These are the seven positions held in your response receipt."
-                  : "Check your seven positions and notes. You can return to any position before submitting."
+                ? receipt ? "These are the eight positions held in your response receipt."
+                  : "Check your eight positions and notes. You can return to any position before submitting."
                 : "Choose the response that reflects your position. You can revisit any intention before submitting."}</p>
               <p id="gm-response-status" className={styles.draftStatus} role="status">
                 {receipt ? "Recorded · Receipt received"
@@ -373,7 +373,7 @@ export function GlobalMotherDeliberationFrameV2({
               </p>
             </header>
 
-            <nav className={styles.positionNavigator} aria-label="Seven response positions">
+            <nav className={styles.positionNavigator} aria-label="Eight response positions">
               {entries.map(([ref, entryTitle], index) => {
                 const complete = Boolean(positions[ref]) &&
                   (positions[ref] === "AFFIRM" || Boolean(notes[ref]?.trim()));
@@ -398,7 +398,7 @@ export function GlobalMotherDeliberationFrameV2({
               <article className={styles.positionCard} key={reference}>
                 <span className={styles.positionEyebrow}>Position {activePosition + 1} of {entries.length} · {reference}</span>
                 <h3 ref={headingRef} tabIndex={-1}>{title}</h3>
-                <p className={styles.positionStatement}>{reference === "ALIGN-06" ? <>French-Ward intends a two-part Gift for AOTG and ND Royal Ministry:<span className={styles.giftPart}>(1) a digital tokenization pathway;</span><span className={styles.giftPart}>(2) a digital media management, design, and development package.</span><span className={styles.giftClose}>The recipients will help shape each part.</span></> : statement}</p>
+                <p className={styles.positionStatement}>{reference === "ALIGN-06" ? <>French-Ward intends a two-part Gift for AOTG and ND Royal Ministry:<span className={styles.giftPart}>(1) a digital tokenization pathway;</span><span className={styles.giftPart}>(2) a digital media management, design, and development package.</span><span className={styles.giftClose}>The recipients will help shape each part.</span></> : statement.split("\n\n").map((part, index) => <span className={styles.giftClose} key={index}>{part}</span>)}</p>
                 <fieldset className={styles.responseField}>
                   <legend>Choose one response</legend>
                   <div className={styles.choiceGrid}>
@@ -447,15 +447,15 @@ export function GlobalMotherDeliberationFrameV2({
                 </p> : null}
               </article>
             ) : (
-              <section className={`${styles.reviewPanel} ${receipt ? styles.recordedPanel : ""}`} aria-label="Review all seven responses">
+              <section className={`${styles.reviewPanel} ${receipt ? styles.recordedPanel : ""}`} aria-label="Review all eight responses">
                 {receipt ? <div className={styles.receipt} role="status">
                   <span className={styles.receiptSeal} aria-hidden="true">✓</span>
-                  <span>Global Mother · Framework V2</span>
+                  <span>Global Mother · Framework V3</span>
                   <h3 ref={headingRef} tabIndex={-1}>Your response is recorded.</h3>
-                  <p>Seven positions received. Your deliberation now has its place in the institutional record.</p>
+                  <p>Eight positions received. Your deliberation now has its place in the institutional record.</p>
                   <dl><div><dt>Receipt</dt><dd>{receipt.id}</dd></div><div><dt>Recorded</dt><dd>{new Date(receipt.recordedAt).toLocaleString()}</dd></div><div><dt>Institution</dt><dd>{receipt.representedInstitution}</dd></div><div><dt>Capacity</dt><dd>{receipt.representativeCapacity}</dd></div></dl>
                   <small>This receipt records your response. It does not itself bind an institution or open drafting.</small>
-                </div> : <div className={styles.reviewIntro}><span>Before submission</span><h3>Seven intentions. One considered response.</h3><p>Review every position and note below. Edit any entry before submitting.</p></div>}
+                </div> : <div className={styles.reviewIntro}><span>Before submission</span><h3>Eight intentions. One considered response.</h3><p>Review every position and note below. Edit any entry before submitting.</p></div>}
                 <ol className={styles.reviewList}>
                   {entries.map(([ref, entryTitle, entryStatement], index) => (
                     <li key={ref}>
@@ -465,7 +465,7 @@ export function GlobalMotherDeliberationFrameV2({
                           aria-label={`${receipt ? "View" : "Edit"} position ${index + 1}: ${entryTitle}`}
                           onClick={() => visitPosition(index)}>{receipt ? "View" : "Edit"}</button>
                       </div>
-                      {!receipt ? <p className={styles.reviewStatement}>{ref === "ALIGN-06" ? <>French-Ward intends a two-part Gift for AOTG and ND Royal Ministry:<span className={styles.giftPart}>(1) a digital tokenization pathway;</span><span className={styles.giftPart}>(2) a digital media management, design, and development package.</span><span className={styles.giftClose}>The recipients will help shape each part.</span></> : entryStatement}</p> : null}
+                      {!receipt ? <p className={styles.reviewStatement}>{ref === "ALIGN-06" ? <>French-Ward intends a two-part Gift for AOTG and ND Royal Ministry:<span className={styles.giftPart}>(1) a digital tokenization pathway;</span><span className={styles.giftPart}>(2) a digital media management, design, and development package.</span><span className={styles.giftClose}>The recipients will help shape each part.</span></> : entryStatement.split("\n\n").map((part, index) => <span className={styles.giftClose} key={index}>{part}</span>)}</p> : null}
                       <strong>{!positions[ref] ? "Response needed" : positions[ref] !== "AFFIRM" && !notes[ref]?.trim()
                         ? "Required note missing" : choices.find(choice => choice.value === positions[ref])?.label}</strong>
                       {!receipt && notes[ref] && positions[ref] !== "AFFIRM" ? <p className={styles.reviewNote}>{notes[ref]}</p> : null}
@@ -474,13 +474,13 @@ export function GlobalMotherDeliberationFrameV2({
                 </ol>
                 <div className={styles.recordMechanics}>
                   <p>{unanswered === 0 && missingNotes === 0
-                    ? "All seven positions have a response and any required notes."
+                    ? "All eight positions have a response and any required notes."
                     : `${unanswered} without a response · ${missingNotes} missing a required note.`}
                     {" "}{forDiscussion > 0 ? `${forDiscussion} position${forDiscussion === 1 ? " remains" : "s remain"} for discussion; a complete response does not mean full alignment.` : ""}</p>
                   {receipt ? null : (
                     <>
                       <p className={styles.reviewIdentity}>{actorBound
-                        ? "Submitting records all seven positions together against your issued Framework version and verified capacity. You will receive a receipt once recording is complete."
+                        ? "Submitting records all eight positions together against your issued Framework version and verified capacity. You will receive a receipt once recording is complete."
                         : "Preview only · No response can be recorded here."}</p>
                       <button className={styles.recordAction} type="button" onClick={recordPositions}
                         disabled={!actorBound || receiptState !== "ready" || recording || unanswered > 0 || missingNotes > 0}>
@@ -502,7 +502,7 @@ export function GlobalMotherDeliberationFrameV2({
                 registerRef.current?.scrollTo({ top: 0, behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth" });
                 headingRef.current?.focus({ preventScroll: true });
               }}>Back to response top ↑</button>
-              <span>{instrumentReference} · Framework V2</span>
+              <span>{instrumentReference} · Framework V3</span>
               <p>Your response informs further deliberation and proposed agreement drafting.
                 It does not grant authority, execute an SPA, or allocate gold.</p>
             </footer>

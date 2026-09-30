@@ -8,7 +8,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "../..");
 const state = globalThis.__gmLinkTest = { admin: true, revoked: false, events: [], hash: "original", sessions: 1, challenges: 1, receipts: ["unchanged"] };
 const tx = {
   instrumentAccessGrant: {
-    findUnique: async () => ({ id: "testgrant123", codeHash: state.hash, instrumentId: "instrument", instrumentVersionId: "version", recipientUserId: "recipient", revokedAt: state.revoked ? new Date() : null, expiresAt: new Date(Date.now()+86400000), instrument: { reference: "GM-KENYA-RCF-001", currentVersion: 2 }, instrumentVersion: { number: 2, status: "ISSUED" } }),
+    findUnique: async () => ({ id: "testgrant123", codeHash: state.hash, instrumentId: "instrument", instrumentVersionId: "version", recipientUserId: "recipient", revokedAt: state.revoked ? new Date() : null, expiresAt: new Date(Date.now()+86400000), instrument: { reference: "GM-KENYA-RCF-001", currentVersion: 3 }, instrumentVersion: { number: 3, status: "ISSUED" } }),
     updateMany: async ({where,data}) => { if (state.hash !== where.codeHash) return {count:0}; state.hash=data.codeHash; return {count:1}; },
   },
   globalMotherRecipientChallenge: { deleteMany: async () => { state.challenges=0; } },
@@ -20,7 +20,7 @@ const virtual = {
   "@/infrastructure/db/prisma": "export const prisma=globalThis.__gmLinkTest.prisma;",
   "@/domains/auth/getPrincipal": "export async function getPrincipal(){return globalThis.__gmLinkTest.admin?{userId:'admin'}:null;}",
   "@/domains/auth/isAdmin": "export function isAdmin(p){return Boolean(p);}",
-  "@/domains/instruments/definitions/globalMotherV2Definition": "export const globalMotherV2Definition={reference:'GM-KENYA-RCF-001'};",
+  "@/domains/instruments/definitions/globalMotherV3Definition": "export const globalMotherV3Definition={reference:'GM-KENYA-RCF-001',version:3};",
 };
 registerHooks({
   resolve(specifier,context,next){

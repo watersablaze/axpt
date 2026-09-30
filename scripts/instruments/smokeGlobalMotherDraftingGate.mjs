@@ -3,8 +3,14 @@ import { registerHooks } from 'node:module';
 import { resolve, dirname } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { existsSync } from 'node:fs';
-import { globalMotherDraftingGate, validateGlobalMotherDraftingDispositions } from '../../src/domains/instruments/invariants/globalMotherDraftingGate.ts';
-const positions = () => Array.from({length:7},(_,i)=>({reference:`ALIGN-0${i+1}`,responseType:'AFFIRM'}));
+registerHooks({resolve(s,c,next){if(s.startsWith('.')){const u=new URL(s,c.parentURL);if(existsSync(fileURLToPath(u)+'.ts'))return{url:u.href+'.ts',shortCircuit:true};}return next(s,c);}});
+const { globalMotherDraftingGate, validateGlobalMotherDraftingDispositions } = await import('../../src/domains/instruments/invariants/globalMotherDraftingGate.ts');
+const positions = () => Array.from({length:8},(_,i)=>({reference:`ALIGN-0${i+1}`,responseType:'AFFIRM'}));
+assert.equal(globalMotherDraftingGate([{id:'old',representedInstitution:'AOTG',positions:positions().slice(0,7)}]).invalidResponses,true);
+const duplicate=positions();duplicate[7]={...duplicate[6]};
+assert.equal(globalMotherDraftingGate([{id:'duplicate',representedInstitution:'AOTG',positions:duplicate}]).invalidResponses,true);
+const eighth=positions();eighth[7]={reference:'ALIGN-08',responseType:'CLARIFY',note:'Clarify meeting availability expectations.'};
+assert.equal(globalMotherDraftingGate([{id:'eighth',representedInstitution:'AOTG',positions:eighth}]).issues[0].reference,'ALIGN-08');
 const receipts = [{id:'receipt1',representedInstitution:'AXPT Preview Test',positions:positions()},{id:'receipt2',representedInstitution:'AOTG',positions:positions()}];
 assert.deepEqual(globalMotherDraftingGate(receipts).missingInstitutions,['ND Royal Ministry']);
 receipts[0].representedInstitution='ND Royal Ministry';
@@ -17,7 +23,7 @@ assert.equal(validateGlobalMotherDraftingDispositions(gate.issues,[{...dispositi
 const state=globalThis.__gmGateTest={receipts,decisions:[],events:[],admin:true};
 const tx={
  globalMotherDraftingDecision:{findUnique:async({where})=>state.decisions.find(d=>d.decisionKey===where.decisionKey),create:async({data})=>{const row={id:'decision'+state.decisions.length,...data};state.decisions.push(row);return row;}},
- institutionalInstrument:{findUnique:async()=>({id:'instrument',currentVersion:2,versions:[{id:'version'}]})},
+ institutionalInstrument:{findUnique:async()=>({id:'instrument',currentVersion:3,versions:[{id:'version'}]})},
  instrumentResponseSet:{findMany:async()=>state.receipts},
  domainEvent:{create:async({data})=>state.events.push(data)},
 };
@@ -29,7 +35,7 @@ const virtual={
  '@/domains/auth/isAdmin':'export function isAdmin(p){return Boolean(p);}',
  '@/domains/instruments/governance/runInstrumentGovernanceTransaction':'export async function runInstrumentGovernanceTransaction(p,fn){return fn(globalThis.__gmGateTest.tx);}',
  '@/domains/instruments/eventTypes':"export const INSTRUMENT_EVENT_TYPE={GM_V2_DRAFTING_DECISION_RECORDED:'GM_V2_DRAFTING_DECISION_RECORDED'};",
- '@/domains/instruments/definitions/globalMotherV2Definition':"export const globalMotherV2Definition={reference:'GM-KENYA-RCF-001'};",
+ '@/domains/instruments/definitions/globalMotherV3Definition':"export const globalMotherV3Definition={reference:'GM-KENYA-RCF-001',version:3};",
 };
 registerHooks({resolve(s,c,next){if(virtual[s])return{url:'gm-gate:'+s,shortCircuit:true};if(s==='next/server')return next('next/server.js',c);if(s.startsWith('@/')){const p=resolve(root,'src',s.slice(2)+'.ts');if(existsSync(p))return{url:pathToFileURL(p).href,shortCircuit:true};}return next(s,c);},load(u,c,next){if(u.startsWith('gm-gate:'))return{format:'module',source:virtual[u.slice(8)],shortCircuit:true};return next(u,c);}});
 const {POST}=await import('../../app/api/admin/instruments/gm-kenya/drafting-decision/route.ts');

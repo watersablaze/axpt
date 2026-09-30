@@ -10,7 +10,7 @@ export function IssueV2Control({ versionId }: { versionId: string }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   async function issue() {
-    if (confirmation !== "ISSUE GM V2" || busy) return;
+    if (confirmation !== "ISSUE GM V3" || busy) return;
     setBusy(true); setError("");
     try {
       const response = await fetch("/api/admin/instruments/gm-kenya/issue-v2", {
@@ -25,11 +25,11 @@ export function IssueV2Control({ versionId }: { versionId: string }) {
     } finally { setBusy(false); }
   }
   return <div className={styles.issueControl}>
-    <label htmlFor="gm-issue-confirm">To issue this frozen V2, type <strong>ISSUE GM V2</strong></label>
+    <label htmlFor="gm-issue-confirm">To issue this frozen V3, type <strong>ISSUE GM V3</strong></label>
     <div><input id="gm-issue-confirm" value={confirmation} autoComplete="off"
       onChange={event => setConfirmation(event.target.value)} />
-      <button type="button" disabled={busy || confirmation !== "ISSUE GM V2"} onClick={issue}>
-        {busy ? "Issuing…" : "Issue V2"}
+      <button type="button" disabled={busy || confirmation !== "ISSUE GM V3"} onClick={issue}>
+        {busy ? "Issuing…" : "Issue V3"}
       </button></div>
     {error ? <p role="alert">{error}. Refresh and verify the draft standing before retrying.</p> : null}
   </div>;

@@ -28,12 +28,12 @@ export function RevokeV2Control({ grantId }: { grantId: string }) {
     catch { setError("Select the link below and copy it manually."); }
   }
   async function revoke() {
-    if (busy || !window.confirm("Revoke this recipient's V2 access? Their recorded response will remain.")) return;
+    if (busy || !window.confirm("Revoke this recipient's V3 access? Their recorded response will remain.")) return;
     setBusy(true); setError("");
     try {
       const response = await fetch("/api/admin/instruments/gm-kenya/revoke-v2", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ grantId, confirmation: "REVOKE V2 ACCESS" }),
+        body: JSON.stringify({ grantId, confirmation: "REVOKE V3 ACCESS" }),
       });
       const result = await response.json() as { ok?: boolean; error?: string };
       if (!response.ok || !result.ok) throw new Error(result.error ?? "Revocation failed");

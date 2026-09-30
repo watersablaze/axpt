@@ -97,7 +97,7 @@ export function GlobalMotherExperience({
             <p>{recipient?.capacity ?? "Global Mother · Royal Council Representative"}</p>
           </div>
           <div className={styles.gateStatement}>
-            <p>You are formally invited to review the proposed relationship and respond to its seven intentions.</p>
+            <p>You are formally invited to review the proposed relationship and respond to its eight intentions.</p>
           </div>
 
           <button
@@ -130,7 +130,7 @@ export function GlobalMotherExperience({
           </h1>
 
           <p className={styles.folioLead}>
-            Five articles set out the proposed relationship and its responsibilities. Seven intentions invite your considered response.
+            Five articles set out the proposed relationship and its responsibilities. Eight intentions invite your considered response.
           </p>
           <div className={styles.prepared}>
             <span>Prepared for</span>
@@ -148,7 +148,7 @@ export function GlobalMotherExperience({
             <div>
               <span>Respond</span>
               <p>
-                Affirm, clarify, propose a revision, or decline. Review all seven positions before submitting.
+                Affirm, clarify, propose a revision, or decline. Review all eight positions before submitting.
               </p>
             </div>
           </div>

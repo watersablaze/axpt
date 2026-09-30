@@ -15,7 +15,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "INVALID_PAYLOAD" }, { status: 400 });
   }
   if (!input || typeof input !== "object" || Array.isArray(input) ||
-      (input as Record<string, unknown>).confirmation !== "ISSUE GM V2" ||
+      (input as Record<string, unknown>).confirmation !== "ISSUE GM V3" ||
       typeof (input as Record<string, unknown>).versionId !== "string") {
     return NextResponse.json({ error: "CONFIRMATION_REQUIRED" }, { status: 400 });
   }
