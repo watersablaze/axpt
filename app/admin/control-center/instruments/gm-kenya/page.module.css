@@ -1,0 +1,1222 @@
+.page {
+  width: 100%;
+  min-height: calc(100vh - 9rem);
+  margin-inline: auto;
+  padding: clamp(1rem, 2vw, 1.75rem);
+  background: #0d0f0e;
+  color: #e8e8e4;
+  font-family: Arial, sans-serif;
+}
+.header, .metrics, .section { max-width: 90rem; margin-inline: auto; }
+.header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(16rem, 28rem);
+  column-gap: 2rem;
+  align-items: end;
+  margin-bottom: 1rem;
+  padding: 0.15rem 0 1rem;
+  border-bottom: 1px solid #343b37;
+}
+.header span, .metrics span, .receipt header span {
+  color: #a5b4aa;
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.header span { grid-column: 1 / -1; margin-bottom: 0.45rem; }
+.header h1, .section h2, .receipt h3 { margin: 0; font-weight: 600; }
+.header h1 { font-size: clamp(1.35rem, 2vw, 1.9rem); letter-spacing: -0.025em; }
+.header p { margin: 0; color: #a9b0aa; font-size: 0.82rem; line-height: 1.45; }
+.metrics {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.metrics > div, .section {
+  border: 1px solid #333a35;
+  background: #171b18;
+}
+.metrics > div { display: grid; align-content: start; gap: 0.32rem; min-height: 5.9rem; padding: 0.75rem 0.9rem; }
+.metrics strong { font-size: 1rem; line-height: 1.25; overflow-wrap: anywhere; }
+.metrics small, .item small { color: #9fa9a0; font-size: 0.74rem; }
+.section { margin-bottom: 0.65rem; padding: 0.9rem 1rem; }
+.section h2 { font-size: 0.92rem; letter-spacing: 0.01em; }
+.section > p { margin: 0.38rem 0 0; color: #adb5ad; font-size: 0.79rem; line-height: 1.45; }
+.list { margin-top: 0.65rem; border-top: 1px solid #303a32; }
+.item { display: flex; justify-content: space-between; gap: 1rem; padding: 0.62rem 0; border-bottom: 1px solid #303a32; font-size: 0.8rem; }
+.item > div { display: grid; gap: 0.2rem; }
+.item > div:last-child { text-align: right; }
+.item span, .receipt p { color: #adb5ad; line-height: 1.4; }
+.receipt { margin-top: 0.7rem; padding: 0.8rem; border: 1px solid #3b483e; background: #1c231e; }
+.receipt header { display: flex; justify-content: space-between; gap: 1rem; }
+.receipt h3 { margin-top: 0.3rem; font-size: 1rem; }
+.receipt p { margin: 0.25rem 0; font-size: 0.78rem; }
+.receipt time { white-space: nowrap; color: #a7afa4; font-size: 0.74rem; }
+.receipt ol { list-style: none; margin: 0.7rem 0; padding: 0; border-top: 1px solid #3b483e; }
+.receipt li { display: grid; grid-template-columns: 12rem 1fr; gap: 0.7rem; padding: 0.5rem 0; border-bottom: 1px solid #3b483e; }
+.receipt li > div { display: flex; gap: 0.6rem; font-size: 0.78rem; }
+.receipt li span { color: #c9ab75; font-size: 0.71rem; }
+.receipt .boundary { padding-top: 0.35rem; font-size: 0.74rem; }
+@media (max-width: 850px) {
+  .header { grid-template-columns: 1fr; gap: 0.4rem; }
+  .metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 540px) {
+  .page { padding: 0.75rem; }
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .metrics > div { padding: 0.65rem; }
+  .item, .receipt header { flex-direction: column; }
+  .item > div:last-child { text-align: left; }
+  .receipt li { grid-template-columns: 1fr; gap: 0.15rem; }
+}
+
+.issueControl { display: grid; gap: 0.45rem; margin-top: 0.8rem; padding-top: 0.8rem; border-top: 1px solid #3b483e; font-size: 0.78rem; }
+.issueControl > div { display: flex; gap: 0.45rem; flex-wrap: wrap; }
+.issueControl input { min-width: 13rem; padding: 0.5rem 0.65rem; border: 1px solid #647468; background: #0e120f; color: #e8e8e4; }
+.issueControl button { padding: 0.5rem 0.8rem; border: 1px solid #b9945a; background: #b9945a; color: #131915; font-weight: 700; cursor: pointer; }
+.issueControl button:disabled { opacity: 0.45; cursor: not-allowed; }
+.issueControl p { margin: 0; color: #e3a89c; }
+
+.grantControl { display: grid; gap: 0.65rem; margin: 0.75rem 0; padding: 0.8rem; border: 1px solid #3b483e; background: #101511; font-size: 0.78rem; }
+.grantControl p { margin: 0; color: #adb5ad; }
+.grantFields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.65rem; }
+.grantFields label { display: grid; gap: 0.25rem; color: #a9b5aa; }
+.grantFields input, .privateLink input { width: 100%; min-width: 0; padding: 0.48rem 0.6rem; border: 1px solid #566459; background: #0d110e; color: #e8e8e4; font: inherit; }
+.grantControl button { justify-self: start; padding: 0.5rem 0.8rem; border: 1px solid #9dab9d; background: #27382c; color: #e8e8e4; cursor: pointer; }
+.grantControl button:disabled { opacity: 0.45; cursor: not-allowed; }
+.privateLink { display: grid; gap: 0.4rem; border-top: 1px solid #3b483e; padding-top: 0.7rem; }
+.privateLink small { color: #a9b5aa; }
+@media (max-width: 540px) { .grantFields { grid-template-columns: 1fr; } }
+
+/* The review panel uses a centered operator measure rather than a full-width slab. */
+.draftingControl {
+  display: grid;
+  gap: 0.8rem;
+  max-width: 47rem;
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #3b483e;
+  background: #101511;
+  font-size: 0.8rem;
+}
+.draftingControl h3 { margin: 0; font-size: 0.98rem; font-weight: 600; }
+.draftingControl p { margin: 0; color: #adb5ad; line-height: 1.5; }
+.draftingChoice, .draftingBasis { display: grid; gap: 0.35rem; color: #bdc9bf; }
+.draftingChoice select, .draftingBasis textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #566459;
+  border-radius: 0;
+  background: #0d110e;
+  color: #e8e8e4;
+  font: inherit;
+  line-height: 1.45;
+  color-scheme: dark;
+}
+.draftingChoice select { max-width: 20rem; }
+.draftingBasis textarea { resize: vertical; min-height: 6.5rem; }
+.reviewAttestation {
+  display: flex;
+  gap: 0.65rem;
+  align-items: flex-start;
+  color: #d1d8d1;
+  line-height: 1.45;
+}
+.reviewAttestation input { width: 1rem; height: 1rem; margin: 0.08rem 0 0; accent-color: #b9945a; flex: none; }
+.draftingAction {
+  justify-self: start;
+  padding: 0.6rem 0.85rem;
+  border: 1px solid #b9945a;
+  background: #29392f;
+  color: #f0e9dc;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+.draftingAction:disabled { opacity: 0.45; cursor: not-allowed; }
+.draftingControl [role="alert"] { color: #e3a89c; }
+.draftingControl [role="status"] { color: #d5bc91; }
+@media (max-width: 540px) {
+  .draftingControl { padding: 0.8rem; }
+  .draftingChoice select { max-width: 100%; }
+}
+
+/* AXPT operator workbench: contained reading field and two functional lanes. */
+.workspace {
+  width: 100%;
+  max-width: 68rem;
+  margin-inline: auto;
+}
+.workGrid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  gap: clamp(0.85rem, 1.5vw, 1.25rem);
+  align-items: start;
+}
+.accessColumn, .reviewColumn { display: grid; gap: clamp(0.85rem, 1.5vw, 1.25rem); min-width: 0; }
+.accessColumn { position: sticky; top: 1.25rem; align-self: start; }
+.workGrid .section { width: 100%; min-width: 0; margin: 0; }
+.integritySection { border-left: 3px solid #b9945a; }
+.integritySection > p { color: #d5bc91; }
+.workGrid .grantFields { grid-template-columns: 1fr; }
+.workGrid .receipt { min-width: 0; }
+.workGrid .receipt header { align-items: start; }
+.workGrid .receipt time { white-space: normal; text-align: right; }
+.workGrid .receipt li { grid-template-columns: minmax(0, 1fr); gap: 0.25rem; }
+.workGrid .receipt li > div { display: flex; justify-content: space-between; align-items: baseline; }
+.workGrid .draftingControl { max-width: none; }
+@media (max-width: 1000px) {
+  .workGrid { grid-template-columns: 1fr; }
+  .accessColumn { position: static; }
+  .workGrid .grantFields { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 540px) {
+  .workGrid .grantFields { grid-template-columns: 1fr; }
+  .workGrid .receipt li > div { gap: 0.5rem; }
+}
+
+.grantDisclosure { margin-top: 0.9rem; border: 1px solid #3b483e; background: #101511; }
+.grantDisclosure > summary {
+  padding: 0.75rem 0.85rem;
+  color: #d6c29c;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  list-style-position: inside;
+}
+.grantDisclosure[open] > summary { border-bottom: 1px solid #3b483e; }
+.grantDisclosure .grantControl { margin: 0; border: 0; }
+
+
+/* Recipient operations: make access lifecycle and credential actions explicit. */
+.recipientList {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.7rem;
+}
+.recipientItem {
+  display: grid;
+  gap: 0.75rem;
+  padding: 0.85rem;
+  border: 1px solid #3b483e;
+  background: #121713;
+}
+.recipientIdentity {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: start;
+}
+.recipientIdentity > div {
+  display: grid;
+  gap: 0.22rem;
+  min-width: 0;
+}
+.recipientIdentity strong {
+  font-size: 0.86rem;
+  overflow-wrap: anywhere;
+}
+.recipientIdentity span:not(.lifecycle),
+.recipientStanding span,
+.recipientStanding small {
+  color: #adb5ad;
+  font-size: 0.74rem;
+  line-height: 1.4;
+}
+.lifecycle {
+  flex: none;
+  padding: 0.28rem 0.42rem;
+  border: 1px solid #5d6c60;
+  color: #d7c59e;
+  font-size: 0.61rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.recipientMeta {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem 0.8rem;
+  margin: 0;
+  padding: 0.65rem 0;
+  border-top: 1px solid #303a32;
+  border-bottom: 1px solid #303a32;
+}
+.recipientMeta > div {
+  min-width: 0;
+}
+.recipientMeta dt {
+  color: #7f8c82;
+  font-size: 0.61rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.recipientMeta dd {
+  margin: 0.18rem 0 0;
+  color: #d3d8d3;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+.recipientStanding {
+  display: grid;
+  gap: 0.2rem;
+}
+.accessActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  align-items: start;
+}
+.accessActions button {
+  font: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+.accessActions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.accessMaintenance {
+  padding: 0.46rem 0.62rem;
+  border: 1px solid #657268;
+  background: #1b241e;
+  color: #d9dfda;
+}
+.accessDanger {
+  padding: 0.46rem 0.62rem;
+  border: 1px solid #7f4e49;
+  background: #2a1716;
+  color: #efc3bd;
+}
+.replacementCredential {
+  display: grid;
+  width: 100%;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 1px solid #b9945a;
+  background: #17130d;
+}
+.replacementCredential strong {
+  color: #e4cfaa;
+  font-size: 0.78rem;
+}
+.replacementCredential p {
+  margin: 0;
+  color: #b9b0a1;
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+.replacementLink {
+  width: 100%;
+  min-width: 0;
+  padding: 0.52rem 0.6rem;
+  border: 1px solid #6f624d;
+  background: #0d0b08;
+  color: #eee7db;
+  font: inherit;
+  font-size: 0.72rem;
+}
+.replacementActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.accessError {
+  width: 100%;
+  margin: 0;
+  color: #e3a89c;
+  font-size: 0.72rem;
+}
+@media (max-width: 540px) {
+  .recipientIdentity {
+    flex-direction: column;
+  }
+  .recipientMeta {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+/* Desktop operator refinement — dense control-plane treatment.
+ * Mobile intentionally retains the card treatment already QA'd.
+ */
+@media (min-width: 1001px) {
+  .page {
+    padding: 1.15rem clamp(1.2rem, 2.2vw, 2rem) 2rem;
+    background:
+      linear-gradient(180deg, #0b0e0c 0%, #090b0a 100%);
+  }
+
+  .workspace {
+    max-width: 82rem;
+  }
+
+  .header {
+    grid-template-columns: minmax(0, 1.15fr) minmax(20rem, 0.85fr);
+    margin-bottom: 0.7rem;
+    padding: 0 0 0.72rem;
+    border-bottom-color: #28302b;
+  }
+
+  .header span {
+    margin-bottom: 0.3rem;
+  }
+
+  .header h1 {
+    font-size: clamp(1.22rem, 1.55vw, 1.62rem);
+  }
+
+  .header p {
+    max-width: 34rem;
+    justify-self: end;
+    font-size: 0.76rem;
+  }
+
+  /* One institutional status rail instead of four floating cards. */
+  .metrics {
+    gap: 0;
+    margin-bottom: 1rem;
+    border-top: 1px solid #28302b;
+    border-bottom: 1px solid #28302b;
+    background: transparent;
+  }
+
+  .metrics > div {
+    min-height: 0;
+    padding: 0.6rem 0.8rem 0.62rem;
+    border: 0;
+    border-right: 1px solid #28302b;
+    background: transparent;
+  }
+
+  .metrics > div:first-child {
+    padding-left: 0;
+  }
+
+  .metrics > div:last-child {
+    border-right: 0;
+  }
+
+  .metrics strong {
+    font-size: 0.86rem;
+    font-weight: 600;
+  }
+
+  .metrics small {
+    font-size: 0.68rem;
+  }
+
+  .workGrid {
+    grid-template-columns: minmax(20rem, 0.78fr) minmax(0, 1.22fr);
+    gap: clamp(1.4rem, 2.2vw, 2.2rem);
+  }
+
+  .accessColumn,
+  .reviewColumn {
+    gap: 1rem;
+  }
+
+  /*
+   * The Control Center crown is itself sticky inside the OperationsShell
+   * scrollport. Offset this rail below that crown rather than sending it
+   * underneath the crown at top: 1.25rem.
+   */
+  .accessColumn {
+    position: sticky;
+    top: calc(var(--cc-crown-height, 76px) + 0.8rem);
+    max-height: calc(100dvh - var(--cc-crown-height, 76px) - 1.6rem);
+    overflow-y: auto;
+    padding-right: 0.35rem;
+    scrollbar-width: thin;
+    scrollbar-color: #39443c transparent;
+  }
+
+  .workGrid .section {
+    padding: 0;
+    border: 0;
+    border-top: 1px solid #354039;
+    background: transparent;
+  }
+
+  .workGrid .section > h2 {
+    padding-top: 0.72rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.025em;
+  }
+
+  .workGrid .section > p {
+    max-width: 46rem;
+    font-size: 0.74rem;
+  }
+
+  /* Integrity becomes a status line, not another card. */
+  .integritySection {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.8rem 1rem;
+    align-items: baseline;
+    padding: 0.66rem 0 0 !important;
+    border-top-color: #7b6641 !important;
+    border-left: 0;
+  }
+
+  .integritySection h2 {
+    padding-top: 0 !important;
+    white-space: nowrap;
+  }
+
+  .integritySection > p {
+    margin: 0;
+    color: #d5bc91;
+    text-align: right;
+  }
+
+  .issueControl {
+    grid-column: 1 / -1;
+  }
+
+  /* Recipient access reads as an operational ledger. */
+  .grantDisclosure {
+    margin-top: 0.65rem;
+    border: 0;
+    border-top: 1px solid #2d3731;
+    border-bottom: 1px solid #2d3731;
+    background: transparent;
+  }
+
+  .grantDisclosure > summary {
+    padding: 0.56rem 0;
+    font-size: 0.7rem;
+  }
+
+  .grantControl {
+    margin: 0;
+    padding: 0.7rem 0 0.8rem;
+    border: 0;
+    background: transparent;
+  }
+
+  .recipientList {
+    gap: 0;
+    margin-top: 0.55rem;
+    border-top: 1px solid #2e3832;
+  }
+
+  .recipientItem {
+    gap: 0.46rem;
+    padding: 0.7rem 0;
+    border: 0;
+    border-bottom: 1px solid #2e3832;
+    background: transparent;
+  }
+
+  .recipientIdentity {
+    align-items: baseline;
+  }
+
+  .recipientIdentity strong {
+    font-size: 0.79rem;
+    font-weight: 600;
+  }
+
+  .recipientIdentity span:not(.lifecycle) {
+    font-size: 0.68rem;
+  }
+
+  .lifecycle {
+    padding: 0.18rem 0.32rem;
+    border-color: #526158;
+    font-size: 0.54rem;
+  }
+
+  .recipientMeta {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.5rem;
+    padding: 0.42rem 0;
+    border-color: #273029;
+  }
+
+  .recipientMeta dt {
+    font-size: 0.52rem;
+  }
+
+  .recipientMeta dd {
+    margin-top: 0.12rem;
+    font-size: 0.63rem;
+  }
+
+  .recipientStanding {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.8rem;
+    align-items: baseline;
+  }
+
+  .recipientStanding span,
+  .recipientStanding small {
+    font-size: 0.64rem;
+  }
+
+  .recipientStanding small {
+    text-align: right;
+  }
+
+  .accessActions {
+    gap: 0.35rem;
+  }
+
+  .accessActions button {
+    font-size: 0.64rem;
+  }
+
+  .accessMaintenance,
+  .accessDanger {
+    padding: 0.36rem 0.5rem;
+    background: transparent;
+  }
+
+  /* Review lane is the dominant reading/work surface. */
+  .reviewColumn {
+    padding-left: 0.2rem;
+  }
+
+  .reviewColumn .section {
+    padding-bottom: 0.9rem;
+  }
+
+  .receipt {
+    margin-top: 0.58rem;
+    padding: 0.68rem 0;
+    border: 0;
+    border-top: 1px solid #334038;
+    background: transparent;
+  }
+
+  .receipt + .receipt {
+    margin-top: 0;
+  }
+
+  .receipt h3 {
+    font-size: 0.9rem;
+  }
+
+  .receipt p,
+  .receipt time {
+    font-size: 0.7rem;
+  }
+
+  .receipt ol {
+    margin: 0.55rem 0;
+    border-top-color: #2d3831;
+  }
+
+  .receipt li {
+    padding: 0.42rem 0;
+    border-bottom-color: #2d3831;
+  }
+
+  .draftingControl {
+    gap: 0.7rem;
+    margin-top: 0.7rem;
+    padding: 0.8rem 0 0;
+    border: 0;
+    border-top: 1px solid #344039;
+    background: transparent;
+  }
+
+  .draftingControl h3 {
+    font-size: 0.88rem;
+  }
+
+  .draftingChoice select,
+  .draftingBasis textarea {
+    border-color: #46534a;
+    background: #0c100d;
+  }
+}
+
+
+/* Official invitation delivery control. */
+.accessSend {
+  padding: 0.46rem 0.62rem;
+  border: 1px solid #aa8f5f;
+  background: #2d281c;
+  color: #ead9b7;
+}
+
+.deliveryNotice {
+  width: 100%;
+  margin: 0;
+  color: #d8c59b;
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+@media (min-width: 1001px) {
+  .accessSend {
+    padding: 0.36rem 0.5rem;
+    background: transparent;
+    font-size: 0.64rem;
+  }
+}
+
+
+/* Mature operator information architecture. */
+.operatorRail {
+  position: sticky;
+  top: var(--cc-crown-height, 76px);
+  z-index: 12;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%;
+  margin: 0 0 1rem;
+  border-top: 1px solid #3a433d;
+  border-bottom: 1px solid #3a433d;
+  background: rgba(10, 13, 11, .94);
+  backdrop-filter: blur(12px);
+}
+.operatorRail a {
+  display: flex;
+  justify-content: space-between;
+  gap: .75rem;
+  padding: .62rem .72rem;
+  border-right: 1px solid #303731;
+  color: #aeb8b0;
+  text-decoration: none;
+  font-size: .67rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+.operatorRail a:last-child { border-right: 0; }
+.operatorRail a:hover,
+.operatorRail a:focus-visible {
+  color: #ead9b7;
+  background: #151a16;
+}
+.operatorRail strong {
+  color: #d7c59d;
+  font-size: .64rem;
+}
+
+#gm-access,
+#gm-responses,
+#gm-history,
+#gm-drafting {
+  scroll-margin-top: calc(var(--cc-crown-height, 76px) + 4rem);
+}
+
+.sectionHeading,
+.sectionSummary {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+}
+.sectionHeading > div,
+.sectionSummary > div {
+  min-width: 0;
+}
+.sectionHeading span,
+.sectionSummary span {
+  display: block;
+  margin-bottom: .28rem;
+  color: #8d9a91;
+  font-size: .56rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.sectionHeading small,
+.sectionSummary > strong {
+  flex: none;
+  color: #d2bd92;
+  font-size: .64rem;
+  font-weight: 600;
+  letter-spacing: .06em;
+}
+
+.sectionDisclosure {
+  padding: 0 !important;
+}
+.sectionSummary {
+  padding: .72rem 0;
+  cursor: pointer;
+  list-style: none;
+}
+.sectionSummary::-webkit-details-marker { display: none; }
+.sectionSummary::after {
+  content: "+";
+  flex: none;
+  color: #9eaa9f;
+  font-size: 1rem;
+  line-height: 1;
+}
+.sectionDisclosure[open] > .sectionSummary::after {
+  content: "−";
+}
+.sectionBody {
+  padding: .05rem 0 .9rem;
+}
+.sectionBody > p:first-child {
+  margin-top: .2rem;
+}
+
+.recipientItem {
+  padding: 0 !important;
+}
+.recipientItem > summary {
+  list-style: none;
+  cursor: pointer;
+  padding: .72rem 0;
+}
+.recipientItem > summary::-webkit-details-marker { display: none; }
+.recipientItem > summary::after {
+  content: "+";
+  flex: none;
+  margin-left: .15rem;
+  color: #819087;
+  font-size: .95rem;
+}
+.recipientItem[open] > summary::after {
+  content: "−";
+}
+.recipientBody {
+  display: grid;
+  gap: .5rem;
+  padding: 0 0 .8rem;
+}
+.invitationEvidence {
+  align-self: center;
+  color: #839088;
+  font-size: .58rem;
+  line-height: 1.4;
+}
+
+@media (min-width: 1001px) {
+  .workspace {
+    max-width: 84rem;
+  }
+  .workGrid {
+    grid-template-columns: minmax(22rem, .9fr) minmax(0, 1.35fr);
+    gap: clamp(1.75rem, 2.8vw, 3rem);
+  }
+  .accessColumn {
+    top: calc(var(--cc-crown-height, 76px) + 3.4rem);
+    max-height: calc(100dvh - var(--cc-crown-height, 76px) - 4rem);
+  }
+  .sectionSummary {
+    padding-top: .78rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .operatorRail {
+    top: 0;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .operatorRail a:nth-child(2) {
+    border-right: 0;
+  }
+  .operatorRail a:nth-child(-n+2) {
+    border-bottom: 1px solid #303731;
+  }
+}
+
+
+/* Final operator architecture: Chamber-linked context rail + focused work plane. */
+.page {
+  --gm-admin-deep: #0b1722;
+  --gm-admin-panel: #102432;
+  --gm-admin-panel-soft: #132b3a;
+  --gm-admin-line: rgba(166, 190, 202, .16);
+  --gm-admin-gold: #ccb581;
+  --gm-admin-cream: #eee8dc;
+  --gm-admin-soft: #aebdc5;
+  background:
+    radial-gradient(ellipse at 68% 0, rgba(47, 82, 102, .14), transparent 46rem),
+    var(--gm-admin-deep);
+}
+
+.workspace {
+  max-width: 88rem;
+  display: grid;
+  grid-template-columns: minmax(17rem, 20rem) minmax(0, 1fr);
+  grid-template-areas:
+    "header header"
+    "context work";
+  gap: 0 clamp(1.7rem, 3vw, 3.2rem);
+  align-items: start;
+}
+
+.header {
+  grid-area: header;
+  max-width: none;
+  padding-top: .8rem;
+  border-bottom-color: var(--gm-admin-line);
+}
+
+.header > span {
+  color: var(--gm-admin-gold);
+}
+
+.header h1 {
+  font-family: Baskerville, Georgia, serif;
+  font-size: clamp(1.55rem, 2vw, 2rem);
+  font-weight: 400;
+  letter-spacing: -.018em;
+}
+
+.header p {
+  color: var(--gm-admin-soft);
+}
+
+.contextRail {
+  grid-area: context;
+  position: sticky;
+  top: calc(var(--cc-crown-height, 76px) + .8rem);
+  max-height: calc(100dvh - var(--cc-crown-height, 76px) - 1.6rem);
+  overflow-y: auto;
+  padding: 1rem;
+  border: 1px solid var(--gm-admin-line);
+  border-top: 2px solid rgba(204, 181, 129, .56);
+  background:
+    radial-gradient(ellipse at 18% 0, rgba(62, 96, 115, .22), transparent 54%),
+    linear-gradient(150deg, #112633, #0d1c27 72%);
+  box-shadow:
+    inset 0 1px rgba(240, 232, 210, .025),
+    0 18px 44px rgba(4, 10, 14, .13);
+  scrollbar-width: thin;
+  scrollbar-color: #41535d transparent;
+}
+
+.contextRail .metrics {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin: 0;
+  border-top: 1px solid var(--gm-admin-line);
+  border-bottom: 0;
+}
+
+.contextRail .metrics > div {
+  min-height: 0;
+  padding: .72rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--gm-admin-line);
+  background: transparent;
+}
+
+.contextRail .metrics > div:first-child {
+  padding-left: 0;
+}
+
+.contextRail .metrics span {
+  color: var(--gm-admin-gold);
+  font-size: .56rem;
+  letter-spacing: .13em;
+}
+
+.contextRail .metrics strong {
+  color: var(--gm-admin-cream);
+  font-family: Baskerville, Georgia, serif;
+  font-size: .96rem;
+  font-weight: 400;
+}
+
+.contextRail .metrics small {
+  color: #8fa1aa;
+  font-size: .65rem;
+  line-height: 1.4;
+}
+
+.contextRail .operatorRail {
+  position: static;
+  z-index: auto;
+  grid-template-columns: 1fr;
+  margin: .9rem 0 0;
+  border-top: 1px solid var(--gm-admin-line);
+  border-bottom: 0;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.contextRail .operatorRail a {
+  padding: .68rem 0;
+  border-right: 0;
+  border-bottom: 1px solid var(--gm-admin-line);
+  color: #b5c2c8;
+}
+
+.contextRail .operatorRail strong {
+  color: var(--gm-admin-gold);
+}
+
+.workGrid {
+  grid-area: work;
+  display: block;
+  min-width: 0;
+}
+
+.accessColumn,
+.reviewColumn {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.accessColumn {
+  position: static !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding-right: 0 !important;
+  margin-bottom: 1rem;
+}
+
+.reviewColumn {
+  padding-left: 0 !important;
+}
+
+/* Work domains echo the Chamber portal without imitating participant UI. */
+.workGrid .section {
+  padding: 1rem 1.05rem !important;
+  border: 1px solid var(--gm-admin-line) !important;
+  background:
+    linear-gradient(145deg, rgba(27, 55, 72, .66), rgba(13, 29, 39, .86)) !important;
+}
+
+.workGrid .section > h2,
+.sectionHeading h2,
+.sectionSummary h2 {
+  color: var(--gm-admin-cream);
+  font-family: Baskerville, Georgia, serif;
+  font-size: 1.08rem !important;
+  font-weight: 400;
+}
+
+.integritySection {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: .8rem 1rem;
+  align-items: baseline;
+  border-top: 1px solid rgba(204, 181, 129, .34) !important;
+  background: rgba(10, 25, 34, .72) !important;
+}
+
+.integritySection > p {
+  color: #d4c092 !important;
+  text-align: right;
+}
+
+/* Access grants are controlled credentials. */
+.recipientList {
+  gap: .65rem !important;
+  border-top: 0 !important;
+}
+
+.recipientItem {
+  overflow: hidden;
+  padding: 0 !important;
+  border: 1px solid rgba(157, 181, 193, .2) !important;
+  background:
+    radial-gradient(ellipse at 88% 0, rgba(71, 108, 128, .13), transparent 52%),
+    #102432 !important;
+}
+
+.recipientItem > summary {
+  padding: .88rem .92rem !important;
+  border: 0 !important;
+}
+
+.recipientIdentity {
+  align-items: center !important;
+}
+
+.recipientIdentity strong {
+  color: #f0eadf;
+  font-family: Baskerville, Georgia, serif;
+  font-size: .98rem !important;
+  font-weight: 400 !important;
+  line-height: 1.34;
+}
+
+.recipientIdentity span:not(.lifecycle) {
+  color: #9fb0b8;
+  font-size: .67rem !important;
+}
+
+.lifecycle {
+  border-color: rgba(204, 181, 129, .32) !important;
+  background: rgba(204, 181, 129, .035);
+  color: #d8c69b;
+}
+
+.recipientBody {
+  padding: .8rem .92rem 1rem !important;
+  border-top: 1px solid var(--gm-admin-line);
+  background: rgba(5, 13, 18, .23);
+}
+
+.recipientMeta {
+  border-color: var(--gm-admin-line) !important;
+}
+
+.recipientMeta dt {
+  color: #7f939d;
+}
+
+.recipientMeta dd,
+.recipientStanding span,
+.recipientStanding small {
+  color: #b7c4ca;
+}
+
+.accessActions {
+  padding-top: .65rem;
+  border-top: 1px solid var(--gm-admin-line);
+}
+
+.accessSend {
+  border-color: #bda169;
+  background: rgba(189, 161, 105, .08);
+  color: #ead9b7;
+}
+
+.accessMaintenance {
+  border-color: #61747d;
+  color: #bac7cd;
+}
+
+.accessDanger {
+  border-color: #704c4c;
+  color: #d9a6a6;
+}
+
+/* Response/history disclosures: calm portal-linked drawers. */
+.sectionDisclosure {
+  padding: 0 !important;
+}
+
+.sectionSummary {
+  padding: .9rem 1rem !important;
+}
+
+.sectionBody {
+  padding: .15rem 1rem 1rem !important;
+  border-top: 1px solid var(--gm-admin-line);
+}
+
+.receipt {
+  border-color: rgba(157, 181, 193, .18);
+  background: rgba(9, 23, 32, .62);
+}
+
+/* Master Agreement sits in a visibly separate formation domain. */
+.draftingDomain {
+  margin-top: 1.35rem !important;
+  border-color: rgba(119, 102, 132, .3) !important;
+  background:
+    radial-gradient(ellipse at 88% 0, rgba(98, 79, 115, .15), transparent 52%),
+    linear-gradient(145deg, #181821, #111219 76%) !important;
+}
+
+.draftingDomain .sectionSummary > div > span {
+  color: #aa96b7;
+}
+
+.draftingDomain .sectionSummary > strong {
+  color: #b9a9c1;
+}
+
+.draftingDormant {
+  opacity: .82;
+}
+
+.draftingDormant .sectionSummary h2 {
+  color: #d4ced8;
+}
+
+.draftingDormant .sectionSummary p {
+  color: #8f8994;
+}
+
+.draftingReady {
+  opacity: 1;
+  border-color: rgba(204, 181, 129, .34) !important;
+}
+
+.draftingReady .sectionSummary > div > span,
+.draftingReady .sectionSummary > strong {
+  color: #d4bf93;
+}
+
+.draftingDomain .sectionBody {
+  border-top-color: rgba(119, 102, 132, .24);
+}
+
+.draftingBoundary {
+  max-width: 45rem;
+  margin: .9rem 0 0;
+  color: #97919b;
+  font-size: .75rem;
+  line-height: 1.55;
+}
+
+.draftingDomain .draftingControl {
+  border-top-color: rgba(119, 102, 132, .24);
+}
+
+#gm-access,
+#gm-responses,
+#gm-history,
+#gm-drafting {
+  scroll-margin-top: calc(var(--cc-crown-height, 76px) + 1rem);
+}
+
+@media (max-width: 1000px) {
+  .workspace {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "context"
+      "work";
+    gap: 1rem;
+  }
+
+  .contextRail {
+    position: static;
+    max-height: none;
+  }
+
+  .contextRail .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .contextRail .operatorRail {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .contextRail .operatorRail a {
+    padding-right: .65rem;
+  }
+}
+
+@media (max-width: 620px) {
+  .contextRail .metrics,
+  .contextRail .operatorRail {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .contextRail .operatorRail a:nth-child(-n+2) {
+    border-bottom: 1px solid var(--gm-admin-line);
+  }
+
+  .integritySection {
+    grid-template-columns: 1fr !important;
+  }
+
+  .integritySection > p {
+    text-align: left;
+  }
+}

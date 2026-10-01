@@ -777,12 +777,12 @@ function buildActiveWorkQueue(dossier: DossierWorkspace): WorkQueueItem[] {
 
     if (spaStatus !== "EXECUTED") {
       queue.push({
-        label: "Execute SPA instrument",
+        label: "Confirm executed SPA evidence",
         detail: spaStatus
           ? spaStatus === "DRAFT"
-            ? "SPA is DRAFT. Activate it for review, then mark it executed before advancing to SPA_EXECUTED."
-            : `SPA is ${spaStatus}. Mark it executed before advancing to SPA_EXECUTED.`
-          : "Create the SPA in Core Package, activate it, then mark it executed.",
+            ? "SPA is DRAFT. Activate it for review, then confirm executed-agreement evidence through the canonical SPA execution control before advancing to SPA_EXECUTED."
+            : `SPA is ${spaStatus}. Confirm executed-agreement evidence through the canonical SPA execution control before advancing to SPA_EXECUTED.`
+          : "Create the SPA in Core Package, activate it for review, then confirm executed-agreement evidence through the canonical SPA execution control.",
         tone: "amber",
         actionLabel: "Open document workbench",
         targetTab: "DOCUMENTS",

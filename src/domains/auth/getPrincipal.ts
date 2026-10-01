@@ -57,13 +57,13 @@ export async function getPrincipal(): Promise<Principal | null> {
         (userRole: {
           role: {
             rolePermissions: Array<{
-              permission: { key: PermissionKey }
+              permission: { key: string }
             }>
           }
         }) =>
           userRole.role.rolePermissions.map(
-            (rolePermission: { permission: { key: PermissionKey } }) =>
-              rolePermission.permission.key
+            (rolePermission: { permission: { key: string } }) =>
+              rolePermission.permission.key as PermissionKey
           )
       )
     )

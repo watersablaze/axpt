@@ -48,6 +48,7 @@ async function main() {
       client: tx,
         actorUserId: actor.id,
       }),
+    { maxWait: 30_000, timeout: 60_000 },
   );
 
   console.log(

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { DSI_REFERENCE } from "@/domains/instruments/definitions/digitalSettlementV1Definition";
+import { globalMotherV3Definition } from "@/domains/instruments/definitions/globalMotherV3Definition";
 import { prisma } from "@/infrastructure/db/prisma";
 
 export type ControlCenterInstrumentRegistryEntry = {
@@ -10,7 +11,7 @@ export type ControlCenterInstrumentRegistryEntry = {
   status: string;
   currentVersion: number;
   updatedAt: Date;
-  settlementStatus: string | null;
+  domainState: string | null;
   counterpartyName: string | null;
   operatorHref: string | null;
 };
@@ -26,6 +27,7 @@ type ControlCenterInstrumentRegistryRow = {
     settlementStatus: string;
     counterpartyName: string;
   } | null;
+  versions: { status: string }[];
 };
 
 export async function loadControlCenterInstrumentRegistry(): Promise<
@@ -53,6 +55,10 @@ export async function loadControlCenterInstrumentRegistry(): Promise<
           counterpartyName: true,
         },
       },
+      versions: {
+        where: { number: globalMotherV3Definition.version },
+        select: { status: true },
+      },
     },
   });
 
@@ -64,12 +70,18 @@ export async function loadControlCenterInstrumentRegistry(): Promise<
     status: instrument.status,
     currentVersion: instrument.currentVersion,
     updatedAt: instrument.updatedAt,
-    settlementStatus:
-      instrument.digitalSettlementInstruction?.settlementStatus ?? null,
+    domainState:
+      instrument.reference === globalMotherV3Definition.reference
+        ? instrument.versions[0]?.status
+          ? `V${globalMotherV3Definition.version} ${instrument.versions[0].status}`
+          : "FRAMEWORK SETUP"
+        : instrument.digitalSettlementInstruction?.settlementStatus ?? null,
     counterpartyName:
       instrument.digitalSettlementInstruction?.counterpartyName ?? null,
       operatorHref:
-        instrument.reference === DSI_REFERENCE &&
+        instrument.reference === globalMotherV3Definition.reference
+          ? "/admin/control-center/instruments/gm-kenya"
+          : instrument.reference === DSI_REFERENCE &&
         instrument.digitalSettlementInstruction
           ? `/admin/control-center/instruments/digital-settlement/${encodeURIComponent(
               instrument.reference,

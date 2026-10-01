@@ -1,0 +1,255 @@
+.frame { --ink: #29323a; --soft: #505b61; --bronze: #785f38; --rule: #33465820; color: var(--ink); }
+.frame *, .councilField * { box-sizing: border-box; }
+.propositions { display: grid; gap: 1.5rem; }
+.propositions article { padding: 1rem 0; border-bottom: 1px solid var(--rule); }
+.propositions span, .status, .responseSpectrum > span, .record span, .doctrine span { font-size: .63rem; letter-spacing: .12em; text-transform: uppercase; color: var(--bronze); }
+.propositions h3, .threshold h3 { font-family: Baskerville, Georgia, serif; font-size: clamp(1.35rem,2.5vw,1.8rem); font-weight: 400; line-height: 1.3; margin: .65rem 0; }
+.propositions p, .threshold p { margin: 0; color: var(--soft); font-size: 1rem; line-height: 1.7; }
+.formationPath { display: flex; flex-wrap: wrap; gap: .45rem .85rem; margin: 1.5rem 0; padding: .85rem 0; border-bottom: 1px solid var(--rule); }
+.formationPath span { font-size: .78rem; line-height: 1.5; color: var(--soft); }
+.formationPath span + span::before { content: '→'; margin-right: .85rem; color: var(--bronze); }
+.folio { padding: 1.5rem; background: #dfe4e433; border-radius: 4px; }
+.threshold h3 { margin-top: .6rem; }
+.responseSpectrum { margin: 1.25rem 0; }
+.responseSpectrum p { color: var(--soft); font-size: .9rem; line-height: 1.6; margin: .45rem 0; }
+.enterAction { min-height: 48px; padding: .85rem 1.1rem; background: #1c3548; color: #f2eddf; border: 1px solid #1c3548; border-radius: 4px; font: inherit; font-size: .9rem; cursor: pointer; }
+.previewStatus { color: var(--soft); font-size: .8rem; line-height: 1.6; margin-top: .9rem; }
+.record { display: grid; gap: .8rem; border-top: 1px solid var(--rule); margin-top: 1.2rem; padding-top: 1rem; }
+.record strong { display: block; color: var(--soft); font-size: .85rem; font-weight: 400; margin-top: .3rem; }
+.record p { color: var(--soft); font-size: .85rem; line-height: 1.6; margin: .35rem 0 0; }
+.doctrine { margin-top: 1.5rem; padding: 1rem 1.2rem; border-left: 2px solid #b29a69; border-radius: 0 3px 3px 0; background: #1a3041; }
+.doctrine span { color: #ccb581; }
+.doctrine p { color: #eee7d7; font-family: Baskerville, Georgia, serif; font-size: 1.1rem; line-height: 1.5; margin: .55rem 0 0; }
+
+/* A body-level portal gives deliberation its own setting and scroll surface. */
+.councilField { position: fixed; inset: 0; z-index: 1000; overflow-y: auto; overscroll-behavior: contain; color: #eee9de; background: radial-gradient(ellipse at 50% 12%, #26445855, transparent 65%), #101f2d; font-family: Arial, sans-serif; padding: 1.5rem clamp(1rem,4vw,3rem) 3rem; }
+.portalInner { max-width: 52rem; margin: 0 auto; }
+.registerToolbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; padding-bottom: 1.4rem; border-bottom: 1px solid #a8b9c322; }
+.registerToolbar > span { color: #ccb581; font-size: .63rem; line-height: 1.5; letter-spacing: .12em; text-transform: uppercase; }
+.backAction { min-height: 44px; padding: .65rem .8rem; border: 1px solid #a8b9c330; border-radius: 4px; background: transparent; color: inherit; font: inherit; font-size: .85rem; cursor: pointer; }
+.councilOpening { margin: 2rem 0 1.6rem; }
+.councilOpening > span { font-size: .65rem; letter-spacing: .14em; text-transform: uppercase; color: #ccb581; }
+.councilOpening h2 { font-family: Baskerville, Georgia, serif; font-weight: 400; font-size: clamp(1.9rem,4vw,2.65rem); line-height: 1.2; letter-spacing: -.02em; margin: .75rem 0; }
+.councilOpening h2:focus, .councilField:focus { outline: none; }
+.councilOpening > p { max-width: 43rem; font-size: .97rem; line-height: 1.65; color: #cad5dc; margin: .55rem 0 0; }
+.councilOpening .draftStatus { color: #b8c7d0; font-size: .8rem; line-height: 1.6; margin-top: .9rem; }
+.positionNavigator { display: flex; gap: .5rem; width: 100%; }
+.positionStep, .reviewStep { min-height: 48px; border: 1px solid #a8b9c326; border-radius: 4px; background: transparent; color: #d7dfe3; font: inherit; font-size: .85rem; cursor: pointer; }
+.positionStep { display: flex; align-items: center; justify-content: center; gap: .45rem; flex: 1 1 0; padding: .6rem .25rem; }
+.positionStep small { font-size: .7rem; color: #ccb581; }
+.reviewStep { padding: .6rem .9rem; }
+.positionStepActive { background: #29495f; border-color: #8ea9bd; color: #f4efe3; }
+.progressCaption { margin: .65rem 0 1.5rem; color: #b8c7d0; font-size: .78rem; }
+.positionCard, .reviewPanel { background: #1a3041; border: 1px solid #a8b9c320; border-radius: 8px; padding: clamp(1.25rem,4vw,2.5rem); box-shadow: 0 12px 32px #07111a20; }
+.positionEyebrow { display: block; font-size: .64rem; letter-spacing: .12em; text-transform: uppercase; color: #ccb581; line-height: 1.6; }
+.positionCard h3 { font-family: Baskerville, Georgia, serif; font-size: clamp(1.35rem,3vw,1.85rem); font-weight: 400; line-height: 1.3; margin: .6rem 0 1rem; }
+.positionStatement { margin: 0; max-width: 42rem; font-size: clamp(1.02rem,1.6vw,1.13rem); line-height: 1.75; color: #e5e5dd; }
+.responseField { min-width: 0; padding: 0; margin: 1.9rem 0 0; border: 0; }
+.responseField legend { padding: 0; margin-bottom: .8rem; font-size: .82rem; color: #cad5dc; }
+.choiceGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .8rem; }
+.choice { min-height: 88px; min-width: 0; text-align: left; padding: 1rem 1.1rem; border: 1px solid #a8b9c34a; border-radius: 6px; background: #12263644; color: #eee9de; font: inherit; cursor: pointer; transition: background-color 140ms ease, border-color 140ms ease; }
+.choiceLabel { display: flex; justify-content: space-between; gap: .5rem; font-size: .95rem; line-height: 1.4; font-weight: 500; }
+.choiceLabel > span { width: 1rem; color: #e5d5a9; }
+.choiceDescription { display: block; margin-top: .45rem; font-size: .79rem; color: #c4d0d8; line-height: 1.5; }
+.choice:hover:not(:disabled) { border-color: #afc3d0; background: #264456; }
+.choiceSelected { background: #2b4b62; border-color: #a8c4d8; box-shadow: inset 0 0 0 1px #a8c4d844; }
+.noteField { display: grid; gap: .65rem; margin-top: 1.5rem; font-size: .86rem; line-height: 1.6; color: #e6e6de; }
+.noteField > span { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; }
+.noteField small { color: #bdcbd4; font-size: .75rem; }
+.noteField textarea { width: 100%; min-width: 0; min-height: 7rem; resize: vertical; padding: .9rem; border: 1px solid #a8b9c34a; border-radius: 4px; background: #112535; color: #eee9de; font: inherit; font-size: .95rem; line-height: 1.65; }
+.noteField textarea::placeholder { color: #aebdc7; }
+.positionActions { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .8rem; border-top: 1px solid #a8b9c322; margin-top: 1.8rem; padding-top: 1.2rem; }
+.continueAction, .recordAction { min-height: 48px; padding: .8rem 1.2rem; border: 1px solid #dbc997; border-radius: 4px; background: #e5dac0; color: #172d3d; font: inherit; font-size: .9rem; font-weight: 500; cursor: pointer; }
+.completionHint { color: #bdcbd4; font-size: .78rem; line-height: 1.6; margin: .85rem 0 0; }
+.reviewList { display: grid; gap: 1.25rem; list-style: none; padding: 0; margin: 0; }
+.reviewList li { padding-bottom: 1.25rem; border-bottom: 1px solid #a8b9c326; }
+.reviewRow { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.reviewRow > span { font-family: Baskerville, Georgia, serif; font-size: 1.2rem; line-height: 1.5; }
+.editAction { min-height: 44px; padding: .4rem .6rem; border: 0; border-radius: 3px; background: transparent; color: #daccab; text-decoration: underline; text-underline-offset: .2rem; font: inherit; font-size: .8rem; cursor: pointer; }
+.reviewStatement { color: #c5d0d7; margin: .5rem 0 .8rem; font-size: .9rem; line-height: 1.65; }
+.reviewList li > strong { color: #e5d5a9; font-size: .83rem; font-weight: 500; }
+.reviewNote { white-space: pre-wrap; overflow-wrap: anywhere; color: #e5e5dd; line-height: 1.7; font-size: .9rem; margin: .6rem 0 0; }
+.recordMechanics { padding-top: 1.25rem; }
+.recordMechanics p { font-size: .9rem; color: #cad5dc; line-height: 1.65; margin: 0 0 1rem; }
+.recordMechanics .reviewIdentity { font-size: .82rem; }
+.recordAction { width: 100%; margin-top: .3rem; }
+.receipt { display: grid; gap: .5rem; background: #29495f; border: 1px solid #adc4d54a; border-radius: 4px; padding: 1.2rem; }
+.receipt strong { color: #efe7d5; font-size: 1.1rem; font-weight: 500; }
+.receipt span, .receipt small { overflow-wrap: anywhere; color: #d6e0e6; font-size: .85rem; line-height: 1.6; }
+.errorState { padding: 1rem 1.25rem; margin-top: 1.2rem; border: 1px solid #ddb38c77; border-radius: 4px; color: #f1d6bb; }
+.errorState p { margin: 0 0 .75rem; font-size: .9rem; line-height: 1.65; }
+.formationBoundary { margin-top: 1.7rem; padding-top: 1.2rem; border-top: 1px solid #a8b9c322; }
+.formationBoundary span { color: #ccb581; font-size: .63rem; letter-spacing: .1em; }
+.formationBoundary p { color: #b8c7d0; font-size: .8rem; line-height: 1.65; margin: .65rem 0 0; }
+.frame button:focus-visible, .councilField button:focus-visible, .councilField textarea:focus-visible { outline: 2px solid #d2bc86; outline-offset: 4px; }
+.councilField button:disabled { opacity: .55; cursor: not-allowed; }
+.councilField .choice:disabled { opacity: .85; }
+.councilField .choiceSelected:disabled { opacity: 1; }
+@media(max-width:560px) {
+ .councilField { padding: 1rem 1rem 2rem; }
+ .registerToolbar > span { font-size: .58rem; }
+ .councilOpening { margin-top: 1.5rem; }
+ .positionNavigator { gap: .3rem; flex-wrap: wrap; }
+ .positionStep { min-width: 32px; gap: .2rem; }
+ .reviewStep { flex-basis: 100%; }
+ .choiceGrid { grid-template-columns: 1fr; gap: .7rem; }
+ .choice { min-height: 80px; }
+ .positionCard, .reviewPanel { padding: 1.25rem; }
+ .positionActions { gap: .65rem; }
+}
+@media(prefers-reduced-motion:reduce) { .choice { transition: none; } }
+
+.positionCard h3:focus { outline: none; }
+
+/* The hallway marks the passage from reading into deliberation. */
+.folio { padding: clamp(1.4rem,3vw,2.2rem); color: #eee9de; border: 1px solid #a6c0cc32; background: radial-gradient(ellipse at 80% 0,#51819b28,transparent 65%),linear-gradient(135deg,#1c394b,#102837); box-shadow: inset 0 1px #d5e6eb18,0 16px 32px #10283718; border-radius: 8px; }
+.folio .status,.folio .responseSpectrum > span,.folio .record span { color: #ccb581; }
+.folio .threshold h3 { color: #f0e8d5; }
+.folio .threshold p,.folio .responseSpectrum p,.folio .previewStatus,.folio .record strong,.folio .record p { color: #c7d7df; }
+.folio .record { border-color: #a8b9c326; }
+.enterAction { background: #e5dac0; color: #172d3d; border-color: #dbc997; }
+.portalInner { max-width: 78rem; display: grid; grid-template-columns: 18rem minmax(0,1fr); gap: clamp(1.5rem,4vw,3.5rem); align-items: start; }
+.registerRail { position: sticky; top: 0; max-height: calc(100dvh - 3rem); overflow-y: auto; padding: .25rem .5rem .75rem; }
+.registerToolbar { align-items: start; gap: .85rem; padding-bottom: 1rem; }
+.councilOpening { margin: 1.3rem 0; }
+.councilOpening h2 { font-size: 1.9rem; }
+.councilOpening > p { font-size: .85rem; line-height: 1.55; }
+.positionNavigator { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: .4rem; }
+.reviewStep { padding-inline: .35rem; font-size: .78rem; }
+.registerContent { min-width: 0; }
+.positionCard h3 { color: #e4c991; font-size: clamp(1.6rem,3vw,2.1rem); margin-bottom: 1.25rem; }
+.positionStatement { line-height: 1.6; }
+.giftPart { display: block; margin-top: .8rem; padding-left: .8rem; border-left: 1px solid #ccb58155; }
+.giftClose { display: block; margin-top: 1rem; }
+.reviewPanel { background: #f0ebe0; color: #203847; border-color: #d7c99f55; }
+.reviewIntro { margin-bottom: 1.5rem; }
+.reviewIntro > span { color: #785f38; font-size: .65rem; text-transform: uppercase; letter-spacing: .13em; }
+.reviewIntro h3 { font: normal 1.65rem Baskerville,Georgia,serif; margin: .6rem 0; }
+.reviewIntro p,.reviewPanel .reviewStatement,.reviewPanel .recordMechanics p { color: #4d5d65; }
+.reviewRow > span { color: #254a60; }
+.reviewPanel .editAction { color: #5b482c; }
+.reviewPanel .reviewList li > strong { color: #6e542b; }
+.reviewPanel .reviewList li { border-color: #33465826; }
+.reviewPanel .reviewNote { color: #263f4e; }
+.recordedPanel { padding: 0; background: transparent; border: 0; box-shadow: none; }
+.receipt { padding: clamp(1.5rem,4vw,3rem); gap: .8rem; text-align: center; border-radius: 10px; background: radial-gradient(ellipse at 50% 0,#557d922c,transparent 70%),#1d3b4f; box-shadow: inset 0 1px #e9dfbd28,0 20px 50px #07111a30; }
+.receiptSeal { display: grid; place-items: center; width: 3.5rem; height: 3.5rem; margin: 0 auto .4rem; border: 1px solid #ccb58188; border-radius: 50%; color: #e4c991!important; font-size: 1.6rem!important; }
+.receipt h3 { color: #f0e8d5; font: normal clamp(1.9rem,3.5vw,2.7rem)/1.15 Baskerville,Georgia,serif; margin: .25rem 0; }
+.receipt h3:focus { outline: none; }
+.receipt p { color: #ccdae1; font-size: 1rem; line-height: 1.6; margin: .3rem 0 1rem; }
+.receipt dl { text-align: left; margin: 0; border-top: 1px solid #a8b9c326; }
+.receipt dl > div { display: grid; grid-template-columns: 5.5rem minmax(0,1fr); gap: .75rem; padding: .7rem 0; }
+.receipt dt { color: #ccb581; font-size: .7rem; }
+.receipt dd { color: #dae3e7; font-size: .85rem; margin: 0; overflow-wrap: anywhere; }
+.recordedPanel .reviewList { margin-top: 1.5rem; padding: 1.2rem; background: #182f40; border-radius: 6px; gap: .5rem; }
+.recordedPanel .reviewList li { padding-bottom: .5rem; }
+.recordedPanel .reviewRow > span { color: #d3e0e8; font: normal .9rem/1.5 Arial,sans-serif; }
+.recordedPanel .reviewList li > strong { color: #e4c991; font-size: .75rem; }
+.recordedPanel .editAction { color: #daccab; }
+.recordedPanel .recordMechanics p { color: #bdced7; }
+@media(max-width:760px) {
+ .councilField { padding: 0 1rem 2rem; }
+ .portalInner { display: block; }
+ .registerRail { top: 0; z-index: 2; max-height: none; overflow: visible; padding: .75rem 0 .6rem; background: #101f2df5; backdrop-filter: blur(12px); border-bottom: 1px solid #a8b9c326; }
+ .registerToolbar { padding: 0; border: 0; }
+ .registerToolbar > span { display: none; }
+ .councilOpening { margin: .55rem 0; }
+ .councilOpening h2 { font-size: 1.3rem; margin: .3rem 0; }
+ .councilOpening > p:not(.draftStatus),.councilOpening > span { display: none; }
+ .councilOpening .draftStatus { font-size: .7rem; line-height: 1.4; margin-top: .4rem; }
+ .positionNavigator { grid-template-columns: repeat(8,minmax(0,1fr)); gap: .25rem; }
+ .positionStep,.reviewStep { min-height: 44px; min-width: 0; font-size: .75rem; }
+ .positionStep small { display: none; }
+ .reviewStep { font-size: .6rem; }
+ .progressCaption { font-size: .7rem; margin: .4rem 0 0; }
+ .registerContent { padding-top: 1rem; }
+ .positionCard h3,.receipt h3 { scroll-margin-top: 17rem; }
+}
+
+.receipt { animation: receiptArrival 420ms ease-out both; }
+@keyframes receiptArrival { from { opacity: .3; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+@media(prefers-reduced-motion:reduce) { .receipt { animation: none; } }
+
+
+/* Closing principle: a distinct doctrinal field, quieter and deeper than the response folio. */
+.doctrine {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding: clamp(1.3rem, 2.5vw, 1.75rem);
+  border: 1px solid rgba(185, 153, 92, .18);
+  border-left: 3px solid rgba(204, 181, 129, .78);
+  border-radius: 2px;
+  background:
+    radial-gradient(ellipse at 14% 0, rgba(53, 83, 103, .22), transparent 54%),
+    linear-gradient(135deg, #101f2d, #09151f 72%);
+  box-shadow:
+    inset 0 1px 0 rgba(235, 226, 199, .035),
+    0 14px 30px rgba(9, 20, 29, .08);
+}
+
+.doctrine span {
+  color: #d2b979;
+}
+
+.doctrine p {
+  max-width: 52rem;
+  margin-top: .7rem;
+  color: #f0e9db;
+  font-size: clamp(1.08rem, 1.8vw, 1.32rem);
+  line-height: 1.46;
+}
+
+@media (max-width: 560px) {
+  .doctrine {
+    padding: 1.15rem 1rem 1.3rem;
+  }
+}
+
+
+/* Final Register material: the active response field inherits the Article principle language. */
+.positionCard {
+  border: 1px solid rgba(185, 153, 92, .18);
+  border-left: 3px solid rgba(204, 181, 129, .8);
+  border-radius: 2px;
+  background:
+    radial-gradient(ellipse at 14% 0, rgba(53, 83, 103, .22), transparent 54%),
+    linear-gradient(135deg, #101f2d, #09151f 72%);
+  box-shadow:
+    inset 0 1px 0 rgba(235, 226, 199, .035),
+    0 18px 44px rgba(4, 10, 15, .16);
+}
+
+.positionCard h3 {
+  color: #e4c991;
+}
+
+.positionStatement {
+  color: #f0e9db;
+}
+
+.responseField legend,
+.completionHint,
+.noteField small {
+  color: #aebdc4;
+}
+
+.choice {
+  border-color: rgba(171, 192, 202, .22);
+  background: rgba(18, 38, 54, .34);
+}
+
+.choice:hover:not(:disabled) {
+  border-color: rgba(204, 181, 129, .48);
+  background: rgba(31, 55, 69, .62);
+}
+
+.choiceSelected {
+  border-color: rgba(204, 181, 129, .72);
+  background:
+    linear-gradient(135deg, rgba(54, 77, 89, .82), rgba(20, 40, 52, .9));
+  box-shadow: inset 3px 0 0 rgba(204, 181, 129, .72);
+}
+
+.positionActions,
+.formationBoundary {
+  border-top-color: rgba(204, 181, 129, .16);
+}

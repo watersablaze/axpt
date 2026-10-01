@@ -16,13 +16,7 @@ export default function DocumentReadyGate() {
 
 
     /*
-     * PRE-HYDRATION AUTHORITY
-     *
-     * layout.tsx has already disabled browser
-     * restoration before React arrives.
-     *
-     * This is only the hydration-side
-     * verification of the same entry law.
+     * Normalize canonical homepage entry before revealing the app.
      */
 
     if (isCanonicalHomepageEntry) {
