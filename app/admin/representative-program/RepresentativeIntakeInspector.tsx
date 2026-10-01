@@ -5,6 +5,7 @@ import { useEffect, useState, type FormEvent } from "react";
 import RepresentativeAccessReissuePanel from "./RepresentativeAccessReissuePanel";
 import RepresentativeIntakeDecisionControls from "./RepresentativeIntakeDecisionControls";
 import RepresentativeMasterAgreementPanel from "./RepresentativeMasterAgreementPanel";
+import RepresentativeAppointmentPreparationPanel from "./RepresentativeAppointmentPreparationPanel";
 
 type Intake = {
   id: string;
@@ -431,6 +432,14 @@ export default function RepresentativeIntakeInspector({
                 </p>
               </section>
             )}
+
+            {intake.status === "ADMITTED" && intake.admittedParticipantId ? (
+              <RepresentativeAppointmentPreparationPanel
+                key={`${intake.id}-appointment`}
+                participantId={intake.admittedParticipantId}
+                candidateDisplayName={intake.candidateDisplayName}
+              />
+            ) : null}
           </aside>
         </div>
       ) : null}
