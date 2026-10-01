@@ -823,3 +823,400 @@
     border-bottom: 1px solid #303731;
   }
 }
+
+
+/* Final operator architecture: Chamber-linked context rail + focused work plane. */
+.page {
+  --gm-admin-deep: #0b1722;
+  --gm-admin-panel: #102432;
+  --gm-admin-panel-soft: #132b3a;
+  --gm-admin-line: rgba(166, 190, 202, .16);
+  --gm-admin-gold: #ccb581;
+  --gm-admin-cream: #eee8dc;
+  --gm-admin-soft: #aebdc5;
+  background:
+    radial-gradient(ellipse at 68% 0, rgba(47, 82, 102, .14), transparent 46rem),
+    var(--gm-admin-deep);
+}
+
+.workspace {
+  max-width: 88rem;
+  display: grid;
+  grid-template-columns: minmax(17rem, 20rem) minmax(0, 1fr);
+  grid-template-areas:
+    "header header"
+    "context work";
+  gap: 0 clamp(1.7rem, 3vw, 3.2rem);
+  align-items: start;
+}
+
+.header {
+  grid-area: header;
+  max-width: none;
+  padding-top: .8rem;
+  border-bottom-color: var(--gm-admin-line);
+}
+
+.header > span {
+  color: var(--gm-admin-gold);
+}
+
+.header h1 {
+  font-family: Baskerville, Georgia, serif;
+  font-size: clamp(1.55rem, 2vw, 2rem);
+  font-weight: 400;
+  letter-spacing: -.018em;
+}
+
+.header p {
+  color: var(--gm-admin-soft);
+}
+
+.contextRail {
+  grid-area: context;
+  position: sticky;
+  top: calc(var(--cc-crown-height, 76px) + .8rem);
+  max-height: calc(100dvh - var(--cc-crown-height, 76px) - 1.6rem);
+  overflow-y: auto;
+  padding: 1rem;
+  border: 1px solid var(--gm-admin-line);
+  border-top: 2px solid rgba(204, 181, 129, .56);
+  background:
+    radial-gradient(ellipse at 18% 0, rgba(62, 96, 115, .22), transparent 54%),
+    linear-gradient(150deg, #112633, #0d1c27 72%);
+  box-shadow:
+    inset 0 1px rgba(240, 232, 210, .025),
+    0 18px 44px rgba(4, 10, 14, .13);
+  scrollbar-width: thin;
+  scrollbar-color: #41535d transparent;
+}
+
+.contextRail .metrics {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin: 0;
+  border-top: 1px solid var(--gm-admin-line);
+  border-bottom: 0;
+}
+
+.contextRail .metrics > div {
+  min-height: 0;
+  padding: .72rem 0;
+  border: 0;
+  border-bottom: 1px solid var(--gm-admin-line);
+  background: transparent;
+}
+
+.contextRail .metrics > div:first-child {
+  padding-left: 0;
+}
+
+.contextRail .metrics span {
+  color: var(--gm-admin-gold);
+  font-size: .56rem;
+  letter-spacing: .13em;
+}
+
+.contextRail .metrics strong {
+  color: var(--gm-admin-cream);
+  font-family: Baskerville, Georgia, serif;
+  font-size: .96rem;
+  font-weight: 400;
+}
+
+.contextRail .metrics small {
+  color: #8fa1aa;
+  font-size: .65rem;
+  line-height: 1.4;
+}
+
+.contextRail .operatorRail {
+  position: static;
+  z-index: auto;
+  grid-template-columns: 1fr;
+  margin: .9rem 0 0;
+  border-top: 1px solid var(--gm-admin-line);
+  border-bottom: 0;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.contextRail .operatorRail a {
+  padding: .68rem 0;
+  border-right: 0;
+  border-bottom: 1px solid var(--gm-admin-line);
+  color: #b5c2c8;
+}
+
+.contextRail .operatorRail strong {
+  color: var(--gm-admin-gold);
+}
+
+.workGrid {
+  grid-area: work;
+  display: block;
+  min-width: 0;
+}
+
+.accessColumn,
+.reviewColumn {
+  display: grid;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.accessColumn {
+  position: static !important;
+  max-height: none !important;
+  overflow: visible !important;
+  padding-right: 0 !important;
+  margin-bottom: 1rem;
+}
+
+.reviewColumn {
+  padding-left: 0 !important;
+}
+
+/* Work domains echo the Chamber portal without imitating participant UI. */
+.workGrid .section {
+  padding: 1rem 1.05rem !important;
+  border: 1px solid var(--gm-admin-line) !important;
+  background:
+    linear-gradient(145deg, rgba(27, 55, 72, .66), rgba(13, 29, 39, .86)) !important;
+}
+
+.workGrid .section > h2,
+.sectionHeading h2,
+.sectionSummary h2 {
+  color: var(--gm-admin-cream);
+  font-family: Baskerville, Georgia, serif;
+  font-size: 1.08rem !important;
+  font-weight: 400;
+}
+
+.integritySection {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: .8rem 1rem;
+  align-items: baseline;
+  border-top: 1px solid rgba(204, 181, 129, .34) !important;
+  background: rgba(10, 25, 34, .72) !important;
+}
+
+.integritySection > p {
+  color: #d4c092 !important;
+  text-align: right;
+}
+
+/* Access grants are controlled credentials. */
+.recipientList {
+  gap: .65rem !important;
+  border-top: 0 !important;
+}
+
+.recipientItem {
+  overflow: hidden;
+  padding: 0 !important;
+  border: 1px solid rgba(157, 181, 193, .2) !important;
+  background:
+    radial-gradient(ellipse at 88% 0, rgba(71, 108, 128, .13), transparent 52%),
+    #102432 !important;
+}
+
+.recipientItem > summary {
+  padding: .88rem .92rem !important;
+  border: 0 !important;
+}
+
+.recipientIdentity {
+  align-items: center !important;
+}
+
+.recipientIdentity strong {
+  color: #f0eadf;
+  font-family: Baskerville, Georgia, serif;
+  font-size: .98rem !important;
+  font-weight: 400 !important;
+  line-height: 1.34;
+}
+
+.recipientIdentity span:not(.lifecycle) {
+  color: #9fb0b8;
+  font-size: .67rem !important;
+}
+
+.lifecycle {
+  border-color: rgba(204, 181, 129, .32) !important;
+  background: rgba(204, 181, 129, .035);
+  color: #d8c69b;
+}
+
+.recipientBody {
+  padding: .8rem .92rem 1rem !important;
+  border-top: 1px solid var(--gm-admin-line);
+  background: rgba(5, 13, 18, .23);
+}
+
+.recipientMeta {
+  border-color: var(--gm-admin-line) !important;
+}
+
+.recipientMeta dt {
+  color: #7f939d;
+}
+
+.recipientMeta dd,
+.recipientStanding span,
+.recipientStanding small {
+  color: #b7c4ca;
+}
+
+.accessActions {
+  padding-top: .65rem;
+  border-top: 1px solid var(--gm-admin-line);
+}
+
+.accessSend {
+  border-color: #bda169;
+  background: rgba(189, 161, 105, .08);
+  color: #ead9b7;
+}
+
+.accessMaintenance {
+  border-color: #61747d;
+  color: #bac7cd;
+}
+
+.accessDanger {
+  border-color: #704c4c;
+  color: #d9a6a6;
+}
+
+/* Response/history disclosures: calm portal-linked drawers. */
+.sectionDisclosure {
+  padding: 0 !important;
+}
+
+.sectionSummary {
+  padding: .9rem 1rem !important;
+}
+
+.sectionBody {
+  padding: .15rem 1rem 1rem !important;
+  border-top: 1px solid var(--gm-admin-line);
+}
+
+.receipt {
+  border-color: rgba(157, 181, 193, .18);
+  background: rgba(9, 23, 32, .62);
+}
+
+/* Master Agreement sits in a visibly separate formation domain. */
+.draftingDomain {
+  margin-top: 1.35rem !important;
+  border-color: rgba(119, 102, 132, .3) !important;
+  background:
+    radial-gradient(ellipse at 88% 0, rgba(98, 79, 115, .15), transparent 52%),
+    linear-gradient(145deg, #181821, #111219 76%) !important;
+}
+
+.draftingDomain .sectionSummary > div > span {
+  color: #aa96b7;
+}
+
+.draftingDomain .sectionSummary > strong {
+  color: #b9a9c1;
+}
+
+.draftingDormant {
+  opacity: .82;
+}
+
+.draftingDormant .sectionSummary h2 {
+  color: #d4ced8;
+}
+
+.draftingDormant .sectionSummary p {
+  color: #8f8994;
+}
+
+.draftingReady {
+  opacity: 1;
+  border-color: rgba(204, 181, 129, .34) !important;
+}
+
+.draftingReady .sectionSummary > div > span,
+.draftingReady .sectionSummary > strong {
+  color: #d4bf93;
+}
+
+.draftingDomain .sectionBody {
+  border-top-color: rgba(119, 102, 132, .24);
+}
+
+.draftingBoundary {
+  max-width: 45rem;
+  margin: .9rem 0 0;
+  color: #97919b;
+  font-size: .75rem;
+  line-height: 1.55;
+}
+
+.draftingDomain .draftingControl {
+  border-top-color: rgba(119, 102, 132, .24);
+}
+
+#gm-access,
+#gm-responses,
+#gm-history,
+#gm-drafting {
+  scroll-margin-top: calc(var(--cc-crown-height, 76px) + 1rem);
+}
+
+@media (max-width: 1000px) {
+  .workspace {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "context"
+      "work";
+    gap: 1rem;
+  }
+
+  .contextRail {
+    position: static;
+    max-height: none;
+  }
+
+  .contextRail .metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .contextRail .operatorRail {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .contextRail .operatorRail a {
+    padding-right: .65rem;
+  }
+}
+
+@media (max-width: 620px) {
+  .contextRail .metrics,
+  .contextRail .operatorRail {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .contextRail .operatorRail a:nth-child(-n+2) {
+    border-bottom: 1px solid var(--gm-admin-line);
+  }
+
+  .integritySection {
+    grid-template-columns: 1fr !important;
+  }
+
+  .integritySection > p {
+    text-align: left;
+  }
+}

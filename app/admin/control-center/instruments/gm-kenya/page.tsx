@@ -113,6 +113,7 @@ export default async function GlobalMotherResponseReviewPage() {
         <p>Receipts establish attributable positions. AXPT reviews alignment before any Master Agreement drafting decision.</p>
       </header>
 
+      <aside className={styles.contextRail}>
       <section className={styles.metrics} aria-label="Framework response standing">
         <div><span>Instrument</span><strong>{instrument.reference}</strong><small>{instrument.status} · current V{instrument.currentVersion}</small></div>
         <div><span>Framework version</span><strong>V{globalMotherV3Definition.version} · {version?.status ?? "ABSENT"}</strong><small>{version?.issuedAt?.toLocaleString() ?? "Not issued"}</small></div>
@@ -126,6 +127,7 @@ export default async function GlobalMotherResponseReviewPage() {
         <a href="#gm-history"><span>History</span><strong>{historicalReceipts.length}</strong></a>
         <a href="#gm-drafting"><span>Drafting</span><strong>{draftingGate.ok ? "READY" : "HOLD"}</strong></a>
       </nav>
+      </aside>
 
       <div className={styles.workGrid}>
         <div className={styles.accessColumn}>
@@ -260,13 +262,13 @@ export default async function GlobalMotherResponseReviewPage() {
         )}
         </div>
       </details>
-      <details id="gm-drafting" className={`${styles.section} ${styles.sectionDisclosure}`} open>
+      <details id="gm-drafting" className={`${styles.section} ${styles.sectionDisclosure} ${styles.draftingDomain} ${draftingGate.ok ? styles.draftingReady : styles.draftingDormant}`} open={draftingGate.ok}>
         <summary className={styles.sectionSummary}>
-          <div><span>04 / Drafting</span><h2>Master agreement drafting threshold</h2></div>
-          <strong>{draftingGate.ok ? "READY" : "HOLD"}</strong>
+          <div><span>04 / Master Agreement domain</span><h2>Master Agreement formation</h2></div>
+          <strong>{draftingGate.ok ? "READY FOR REVIEW" : "NOT ACTIVATED"}</strong>
         </summary>
         <div className={styles.sectionBody}>
-        <p>Recorded positions support review. Only a separate operator decision opens preparation of a proposed agreement; authority and execution remain later steps.</p>
+        <p className={styles.draftingBoundary}>This is a separate formation domain. Framework issuance does not activate it. Recorded responses establish the review basis; only a separate operator decision can open preparation of a proposed Master Agreement.</p>
         {draftingDecisions.length ? draftingDecisions.map(decision => <article className={styles.item} key={decision.id}>
           <div><strong>{decision.standing === "OPEN_DRAFTING" ? "Proposed drafting opened" : "Held for review"}</strong>
             <span>{decision.actor.displayName ?? decision.actor.name ?? decision.actor.email} · {decision.recordedAt.toLocaleString()}</span>
