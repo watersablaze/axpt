@@ -338,3 +338,301 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Desktop operator refinement — dense control-plane treatment.
+ * Mobile intentionally retains the card treatment already QA'd.
+ */
+@media (min-width: 1001px) {
+  .page {
+    padding: 1.15rem clamp(1.2rem, 2.2vw, 2rem) 2rem;
+    background:
+      linear-gradient(180deg, #0b0e0c 0%, #090b0a 100%);
+  }
+
+  .workspace {
+    max-width: 82rem;
+  }
+
+  .header {
+    grid-template-columns: minmax(0, 1.15fr) minmax(20rem, 0.85fr);
+    margin-bottom: 0.7rem;
+    padding: 0 0 0.72rem;
+    border-bottom-color: #28302b;
+  }
+
+  .header span {
+    margin-bottom: 0.3rem;
+  }
+
+  .header h1 {
+    font-size: clamp(1.22rem, 1.55vw, 1.62rem);
+  }
+
+  .header p {
+    max-width: 34rem;
+    justify-self: end;
+    font-size: 0.76rem;
+  }
+
+  /* One institutional status rail instead of four floating cards. */
+  .metrics {
+    gap: 0;
+    margin-bottom: 1rem;
+    border-top: 1px solid #28302b;
+    border-bottom: 1px solid #28302b;
+    background: transparent;
+  }
+
+  .metrics > div {
+    min-height: 0;
+    padding: 0.6rem 0.8rem 0.62rem;
+    border: 0;
+    border-right: 1px solid #28302b;
+    background: transparent;
+  }
+
+  .metrics > div:first-child {
+    padding-left: 0;
+  }
+
+  .metrics > div:last-child {
+    border-right: 0;
+  }
+
+  .metrics strong {
+    font-size: 0.86rem;
+    font-weight: 600;
+  }
+
+  .metrics small {
+    font-size: 0.68rem;
+  }
+
+  .workGrid {
+    grid-template-columns: minmax(20rem, 0.78fr) minmax(0, 1.22fr);
+    gap: clamp(1.4rem, 2.2vw, 2.2rem);
+  }
+
+  .accessColumn,
+  .reviewColumn {
+    gap: 1rem;
+  }
+
+  /*
+   * The Control Center crown is itself sticky inside the OperationsShell
+   * scrollport. Offset this rail below that crown rather than sending it
+   * underneath the crown at top: 1.25rem.
+   */
+  .accessColumn {
+    position: sticky;
+    top: calc(var(--cc-crown-height, 76px) + 0.8rem);
+    max-height: calc(100dvh - var(--cc-crown-height, 76px) - 1.6rem);
+    overflow-y: auto;
+    padding-right: 0.35rem;
+    scrollbar-width: thin;
+    scrollbar-color: #39443c transparent;
+  }
+
+  .workGrid .section {
+    padding: 0;
+    border: 0;
+    border-top: 1px solid #354039;
+    background: transparent;
+  }
+
+  .workGrid .section > h2 {
+    padding-top: 0.72rem;
+    font-size: 0.82rem;
+    letter-spacing: 0.025em;
+  }
+
+  .workGrid .section > p {
+    max-width: 46rem;
+    font-size: 0.74rem;
+  }
+
+  /* Integrity becomes a status line, not another card. */
+  .integritySection {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.8rem 1rem;
+    align-items: baseline;
+    padding: 0.66rem 0 0 !important;
+    border-top-color: #7b6641 !important;
+    border-left: 0;
+  }
+
+  .integritySection h2 {
+    padding-top: 0 !important;
+    white-space: nowrap;
+  }
+
+  .integritySection > p {
+    margin: 0;
+    color: #d5bc91;
+    text-align: right;
+  }
+
+  .issueControl {
+    grid-column: 1 / -1;
+  }
+
+  /* Recipient access reads as an operational ledger. */
+  .grantDisclosure {
+    margin-top: 0.65rem;
+    border: 0;
+    border-top: 1px solid #2d3731;
+    border-bottom: 1px solid #2d3731;
+    background: transparent;
+  }
+
+  .grantDisclosure > summary {
+    padding: 0.56rem 0;
+    font-size: 0.7rem;
+  }
+
+  .grantControl {
+    margin: 0;
+    padding: 0.7rem 0 0.8rem;
+    border: 0;
+    background: transparent;
+  }
+
+  .recipientList {
+    gap: 0;
+    margin-top: 0.55rem;
+    border-top: 1px solid #2e3832;
+  }
+
+  .recipientItem {
+    gap: 0.46rem;
+    padding: 0.7rem 0;
+    border: 0;
+    border-bottom: 1px solid #2e3832;
+    background: transparent;
+  }
+
+  .recipientIdentity {
+    align-items: baseline;
+  }
+
+  .recipientIdentity strong {
+    font-size: 0.79rem;
+    font-weight: 600;
+  }
+
+  .recipientIdentity span:not(.lifecycle) {
+    font-size: 0.68rem;
+  }
+
+  .lifecycle {
+    padding: 0.18rem 0.32rem;
+    border-color: #526158;
+    font-size: 0.54rem;
+  }
+
+  .recipientMeta {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.5rem;
+    padding: 0.42rem 0;
+    border-color: #273029;
+  }
+
+  .recipientMeta dt {
+    font-size: 0.52rem;
+  }
+
+  .recipientMeta dd {
+    margin-top: 0.12rem;
+    font-size: 0.63rem;
+  }
+
+  .recipientStanding {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.8rem;
+    align-items: baseline;
+  }
+
+  .recipientStanding span,
+  .recipientStanding small {
+    font-size: 0.64rem;
+  }
+
+  .recipientStanding small {
+    text-align: right;
+  }
+
+  .accessActions {
+    gap: 0.35rem;
+  }
+
+  .accessActions button {
+    font-size: 0.64rem;
+  }
+
+  .accessMaintenance,
+  .accessDanger {
+    padding: 0.36rem 0.5rem;
+    background: transparent;
+  }
+
+  /* Review lane is the dominant reading/work surface. */
+  .reviewColumn {
+    padding-left: 0.2rem;
+  }
+
+  .reviewColumn .section {
+    padding-bottom: 0.9rem;
+  }
+
+  .receipt {
+    margin-top: 0.58rem;
+    padding: 0.68rem 0;
+    border: 0;
+    border-top: 1px solid #334038;
+    background: transparent;
+  }
+
+  .receipt + .receipt {
+    margin-top: 0;
+  }
+
+  .receipt h3 {
+    font-size: 0.9rem;
+  }
+
+  .receipt p,
+  .receipt time {
+    font-size: 0.7rem;
+  }
+
+  .receipt ol {
+    margin: 0.55rem 0;
+    border-top-color: #2d3831;
+  }
+
+  .receipt li {
+    padding: 0.42rem 0;
+    border-bottom-color: #2d3831;
+  }
+
+  .draftingControl {
+    gap: 0.7rem;
+    margin-top: 0.7rem;
+    padding: 0.8rem 0 0;
+    border: 0;
+    border-top: 1px solid #344039;
+    background: transparent;
+  }
+
+  .draftingControl h3 {
+    font-size: 0.88rem;
+  }
+
+  .draftingChoice select,
+  .draftingBasis textarea {
+    border-color: #46534a;
+    background: #0c100d;
+  }
+}
