@@ -199,7 +199,10 @@ export default function RepresentativeIntakeInspector({
   return (
     <section
       aria-busy={loading}
-      className="rounded border border-gray-800 bg-gray-950 p-5"
+      className={[
+        "mx-auto w-full rounded border border-gray-800 bg-gray-950 p-5",
+        intake ? "max-w-3xl" : "max-w-2xl",
+      ].join(" ")}
     >
       <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
         Operator Review
@@ -207,10 +210,10 @@ export default function RepresentativeIntakeInspector({
       <h2 className="mt-2 text-xl font-semibold text-white">
         Inspect Candidate Intake
       </h2>
-      <p className="mt-2 text-sm text-gray-400">
-        Load an intake by institutional reference or internal ID to inspect the
-        submission and recorded decisions. Viewing this record makes no status
-        change.
+      <p className="mt-2 max-w-2xl text-sm leading-5 text-gray-400">
+        Search the candidate registry first. Use exact lookup only when you
+        already have a known institutional identifier. Viewing this record makes
+        no status change.
       </p>
 
       <form
@@ -282,31 +285,50 @@ export default function RepresentativeIntakeInspector({
         </ul>
       ) : null}
 
-      <form
-        onSubmit={loadIntake}
-        className="mt-5 flex flex-wrap items-end gap-3"
-      >
-        <label className="grid min-w-64 flex-1 gap-2">
-          <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
-            Intake ID or Reference
+      <details className="mt-5 rounded border border-gray-900 bg-black">
+        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3">
+          <span>
+            <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
+              Exact lookup
+            </span>
+            <span className="mt-1 block text-xs text-gray-600">
+              Load by internal ID or institutional reference
+            </span>
           </span>
-          <input
-            required
-            maxLength={191}
-            value={intakeId}
-            onChange={(event) => setIntakeId(event.target.value)}
-            placeholder="Paste internal ID or FWI reference"
-            className="rounded border border-gray-700 bg-black px-3 py-2 text-white outline-none focus:border-gray-500"
-          />
-        </label>
-        <button
-          type="submit"
-          disabled={loading}
-          className="rounded border border-blue-500/40 bg-blue-500/10 px-4 py-2 text-sm font-semibold text-blue-200 hover:bg-blue-500/20 disabled:opacity-50"
-        >
-          {loading ? "Loading…" : "Load Intake"}
-        </button>
-      </form>
+
+          <span className="rounded border border-gray-800 bg-gray-950 px-2 py-1 text-[10px] uppercase tracking-[0.14em] text-gray-600">
+            Fallback
+          </span>
+        </summary>
+
+        <div className="border-t border-gray-900 px-4 py-4">
+          <form
+            onSubmit={loadIntake}
+            className="flex flex-wrap items-end gap-3"
+          >
+            <label className="grid min-w-64 flex-1 gap-2">
+              <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
+                Intake ID or Reference
+              </span>
+              <input
+                required
+                maxLength={191}
+                value={intakeId}
+                onChange={(event) => setIntakeId(event.target.value)}
+                placeholder="Paste internal ID or FWI reference"
+                className="rounded border border-gray-700 bg-black px-3 py-2 text-white outline-none focus:border-gray-500"
+              />
+            </label>
+            <button
+              type="submit"
+              disabled={loading}
+              className="rounded border border-gray-700 bg-gray-900 px-4 py-2 text-sm font-semibold text-gray-300 hover:border-gray-600 hover:bg-gray-800 disabled:opacity-50"
+            >
+              {loading ? "Loading…" : "Load Intake"}
+            </button>
+          </form>
+        </div>
+      </details>
 
       {error ? (
         <p role="alert" className="mt-4 text-sm text-red-300">
