@@ -1,5 +1,7 @@
 import assert from "node:assert/strict";
+import { execFile } from "node:child_process";
 import { randomUUID } from "node:crypto";
+import { promisify } from "node:util";
 
 import { SignJWT } from "jose";
 
@@ -17,19 +19,57 @@ if (!participantId) {
   throw new Error("ARP_TEST_PARTICIPANT_ID_REQUIRED");
 }
 
-const OPERATOR_EMAIL = "ar3e-runtime@axpt.local";
+const OPERATOR_EMAIL = process.env.ARP_TEST_OPERATOR_EMAIL ?? "connect@axpt.io";
+
+const execFileAsync = promisify(execFile);
 
 async function post(cookie?: string) {
-  return fetch(endpoint!, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      ...(cookie ? { Cookie: cookie } : {}),
-    },
-    body: JSON.stringify({
+  const args = [
+    "curl",
+    endpoint!,
+    "--silent",
+    "--show-error",
+    "--request",
+    "POST",
+    "--header",
+    "content-type: application/json",
+    "--data",
+    JSON.stringify({
       participantId,
     }),
+    "--write-out",
+    "\\n__HTTP_STATUS__:%{http_code}\\n",
+  ];
+
+  if (cookie) {
+    args.push("--header", `Cookie: ${cookie}`);
+  }
+
+  const { stdout, stderr } = await execFileAsync("vercel", args, {
+    maxBuffer: 1024 * 1024,
   });
+
+  if (stderr.trim()) {
+    process.stderr.write(stderr);
+  }
+
+  const marker = /\n__HTTP_STATUS__:(\d{3})\s*$/;
+  const match = stdout.match(marker);
+
+  if (!match || match.index === undefined) {
+    throw new Error(`ARP_APPT_1B1_VERCEL_CURL_STATUS_MISSING:${stdout}`);
+  }
+
+  const status = Number(match[1]);
+  const body = stdout.slice(0, match.index).trim();
+
+  return {
+    status,
+    ok: status >= 200 && status < 300,
+    async json() {
+      return JSON.parse(body);
+    },
+  };
 }
 
 async function main() {
