@@ -169,3 +169,37 @@
 .receipt { animation: receiptArrival 420ms ease-out both; }
 @keyframes receiptArrival { from { opacity: .3; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 @media(prefers-reduced-motion:reduce) { .receipt { animation: none; } }
+
+
+/* Closing principle: a distinct doctrinal field, quieter and deeper than the response folio. */
+.doctrine {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding: clamp(1.3rem, 2.5vw, 1.75rem);
+  border: 1px solid rgba(185, 153, 92, .18);
+  border-left: 3px solid rgba(204, 181, 129, .78);
+  border-radius: 2px;
+  background:
+    radial-gradient(ellipse at 14% 0, rgba(53, 83, 103, .22), transparent 54%),
+    linear-gradient(135deg, #101f2d, #09151f 72%);
+  box-shadow:
+    inset 0 1px 0 rgba(235, 226, 199, .035),
+    0 14px 30px rgba(9, 20, 29, .08);
+}
+
+.doctrine span {
+  color: #d2b979;
+}
+
+.doctrine p {
+  max-width: 52rem;
+  margin-top: .7rem;
+  color: #f0e9db;
+  font-size: clamp(1.08rem, 1.8vw, 1.32rem);
+  line-height: 1.46;
+}
+
+@media (max-width: 560px) {
+  .doctrine {
+    padding: 1.15rem 1rem 1.3rem;
+  }
+}

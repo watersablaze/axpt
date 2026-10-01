@@ -325,8 +325,8 @@ export function GlobalMotherDeliberationFrameV2({
 
             <strong>
               {actorBound
-                ? "Version-bound participant"
-                : "Read-only draft preview"}
+                ? "Authorized participant"
+                : "Read-only preview"}
             </strong>
           </div>
 
@@ -338,7 +338,7 @@ export function GlobalMotherDeliberationFrameV2({
             <p>
               {actorBound
                 ? "Your eight positions are recorded together when you submit. A receipt confirms they have been received."
-                : "This draft preview shows the V3 intentions. Opening the register does not record a response."}
+                : "Responses are not recorded from this view."}
             </p>
           </div>
         </aside>
@@ -450,7 +450,7 @@ export function GlobalMotherDeliberationFrameV2({
               <section className={`${styles.reviewPanel} ${receipt ? styles.recordedPanel : ""}`} aria-label="Review all eight responses">
                 {receipt ? <div className={styles.receipt} role="status">
                   <span className={styles.receiptSeal} aria-hidden="true">✓</span>
-                  <span>Global Mother · Framework V3</span>
+                  <span>Global Mother · Framework Response</span>
                   <h3 ref={headingRef} tabIndex={-1}>Your response is recorded.</h3>
                   <p>Eight positions received. Your deliberation now has its place in the institutional record.</p>
                   <dl><div><dt>Receipt</dt><dd>{receipt.id}</dd></div><div><dt>Recorded</dt><dd>{new Date(receipt.recordedAt).toLocaleString()}</dd></div><div><dt>Institution</dt><dd>{receipt.representedInstitution}</dd></div><div><dt>Capacity</dt><dd>{receipt.representativeCapacity}</dd></div></dl>
@@ -498,9 +498,9 @@ export function GlobalMotherDeliberationFrameV2({
               <button className={styles.backAction} type="button" onClick={checkRecord}>Check response record</button>
             </div> : null}
             <footer className={styles.formationBoundary}>
-              <span>{instrumentReference} · Framework V3</span>
-              <p>Your response informs further deliberation and proposed agreement drafting.
-                It does not grant authority, execute an SPA, or allocate gold.</p>
+              <span>{instrumentReference}</span>
+              <p>Your response informs further deliberation and any proposed agreement.
+                It does not by itself create binding authority.</p>
             </footer>
             </div>
           </div>

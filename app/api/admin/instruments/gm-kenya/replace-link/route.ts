@@ -1,4 +1,4 @@
-import { randomBytes } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import { NextResponse } from "next/server";
 import type { PrismaClient } from "@prisma/client";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
@@ -6,6 +6,7 @@ import { isAdmin } from "@/domains/auth/isAdmin";
 import { prisma } from "@/infrastructure/db/prisma";
 import { hashInstrumentAccessToken } from "@/domains/instruments/access/accessToken";
 import { globalMotherV3Definition } from "@/domains/instruments/definitions/globalMotherV3Definition";
+import { sendGlobalMotherChamberInvitation } from "@/domains/instruments/communications/globalMotherChamberInvitation";
 
 type Client = Pick<PrismaClient, "instrumentAccessGrant" | "globalMotherRecipientChallenge" | "session" | "domainEvent">;
 
@@ -25,12 +26,15 @@ export async function POST(request: Request) {
   if (typeof input.grantId !== "string" || !/^[a-z0-9]{10,40}$/.test(input.grantId) ||
       input.confirmation !== "REPLACE PRIVATE LINK")
     return reply({ error: "CONFIRMATION_REQUIRED" }, 400);
+  const sendInvitation = input.sendInvitation === true;
   try {
-    const token = await prisma.$transaction(async (tx: Client) => {
+    const replacement = await prisma.$transaction(async (tx: Client) => {
       const grant = await tx.instrumentAccessGrant.findUnique({
         where: { id: input.grantId as string },
         select: { id: true, codeHash: true, instrumentId: true, instrumentVersionId: true,
-          recipientUserId: true, revokedAt: true, expiresAt: true,
+          recipientUserId: true, recipientName: true, representedInstitution: true,
+          representativeCapacity: true, revokedAt: true, expiresAt: true,
+          recipientUser: { select: { email: true, displayName: true, name: true } },
           instrument: { select: { reference: true, currentVersion: true } },
           instrumentVersion: { select: { number: true, status: true } } },
       });
@@ -60,9 +64,88 @@ export async function POST(request: Request) {
         metadata: { actorUserId: principal.userId, source: "gm-v2.operator.replace-link" },
         occurredAt: now,
       } });
-      return replacement;
+      return {
+        token: replacement,
+        grantId: grant.id,
+        recipientName:
+          grant.recipientName ??
+          grant.recipientUser?.displayName ??
+          grant.recipientUser?.name ??
+          "Institutional participant",
+        recipientEmail:
+          grant.recipientUser?.email ?? "",
+        representedInstitution:
+          grant.representedInstitution ?? "",
+        representativeCapacity:
+          grant.representativeCapacity ?? "",
+      };
     }, { maxWait: 10_000, timeout: 30_000 });
-    return reply({ ok: true, privatePath: `/french-ward/instruments/gm-kenya/access/${token}` });
+
+    const privatePath =
+      `/french-ward/instruments/gm-kenya/access/${replacement.token}`;
+
+    if (!sendInvitation) {
+      return reply({ ok: true, privatePath });
+    }
+
+    if (
+      !replacement.recipientEmail ||
+      !replacement.representedInstitution ||
+      !replacement.representativeCapacity
+    ) {
+      return reply({
+        ok: true,
+        privatePath,
+        invitation: {
+          ok: false,
+          error: "RECIPIENT_EMAIL_OR_CAPACITY_MISSING",
+        },
+      });
+    }
+
+    try {
+      const delivery =
+        await sendGlobalMotherChamberInvitation({
+          grantId:
+            replacement.grantId,
+          deliveryKey:
+            randomUUID(),
+          recipientName:
+            replacement.recipientName,
+          recipientEmail:
+            replacement.recipientEmail,
+          representedInstitution:
+            replacement.representedInstitution,
+          representativeCapacity:
+            replacement.representativeCapacity,
+          accessUrl:
+            `${new URL(request.url).origin}${privatePath}`,
+        });
+
+      return reply({
+        ok: true,
+        privatePath,
+        invitation: {
+          ok: true,
+          mode: delivery.mode,
+          messageId: delivery.messageId,
+        },
+      });
+    } catch (deliveryError) {
+      console.error(
+        "[gm-v2/replace-link] invitation delivery failed",
+        deliveryError,
+      );
+
+      return reply({
+        ok: true,
+        privatePath,
+        invitation: {
+          ok: false,
+          error: "INVITATION_SEND_FAILED",
+        },
+      });
+    }
   } catch (cause) {
     const code = cause instanceof Error ? cause.message : "";
     if (code === "GRANT_NOT_FOUND") return reply({ error: code }, 404);

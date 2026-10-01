@@ -636,3 +636,28 @@
     background: #0c100d;
   }
 }
+
+
+/* Official invitation delivery control. */
+.accessSend {
+  padding: 0.46rem 0.62rem;
+  border: 1px solid #aa8f5f;
+  background: #2d281c;
+  color: #ead9b7;
+}
+
+.deliveryNotice {
+  width: 100%;
+  margin: 0;
+  color: #d8c59b;
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+@media (min-width: 1001px) {
+  .accessSend {
+    padding: 0.36rem 0.5rem;
+    background: transparent;
+    font-size: 0.64rem;
+  }
+}

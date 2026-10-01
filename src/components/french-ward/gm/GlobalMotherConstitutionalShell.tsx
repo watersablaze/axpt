@@ -43,7 +43,6 @@ export function GlobalMotherConstitutionalShell({
   title,
   subtitle,
   reference,
-  version,
   status,
   movements,
   recipient,
@@ -362,7 +361,7 @@ export function GlobalMotherConstitutionalShell({
                       Authorized Participants
                     </h2>
                     <p>
-                      Current Framework · {reference} · {version}
+                      Private Institutional Framework · {reference}
                     </p>
                   </div>
 

@@ -6,6 +6,7 @@ import { globalMotherV3Definition } from "@/domains/instruments/definitions/glob
 import { runInstrumentGovernanceTransaction } from "@/domains/instruments/governance/runInstrumentGovernanceTransaction";
 import { issueInstrumentAccessGrantWithClient } from "@/domains/instruments/commands/issueInstrumentAccessGrantWithClient";
 import { ensureInstrumentParticipantIdentityWithClient } from "@/domains/instruments/commands/ensureInstrumentParticipantIdentityWithClient";
+import { sendGlobalMotherChamberInvitation } from "@/domains/instruments/communications/globalMotherChamberInvitation";
 
 export async function POST(request: Request) {
   if (request.headers.get("origin") !== new URL(request.url).origin)
@@ -57,8 +58,54 @@ export async function POST(request: Request) {
         expiresAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000),
       });
     }, { timeoutMs: 30000 });
-    return NextResponse.json({ ok: true, grantId: issued.grant.id,
-      privatePath: `/french-ward/instruments/gm-kenya/access/${issued.token}`,
+    const privatePath =
+      `/french-ward/instruments/gm-kenya/access/${issued.token}`;
+    const accessUrl =
+      `${new URL(request.url).origin}${privatePath}`;
+
+    let invitation:
+      | { ok: true; mode: "send" | "log"; messageId: string | null }
+      | { ok: false; error: "INVITATION_SEND_FAILED" };
+
+    try {
+      const delivery =
+        await sendGlobalMotherChamberInvitation({
+          grantId:
+            issued.grant.id,
+          deliveryKey:
+            issued.grant.id,
+          recipientName:
+            name,
+          recipientEmail:
+            email,
+          representedInstitution:
+            institution,
+          representativeCapacity:
+            capacity,
+          accessUrl,
+        });
+
+      invitation = {
+        ok: true,
+        mode: delivery.mode,
+        messageId: delivery.messageId,
+      };
+    } catch (deliveryError) {
+      console.error(
+        "[gm-v2/grant] invitation delivery failed",
+        deliveryError,
+      );
+      invitation = {
+        ok: false,
+        error: "INVITATION_SEND_FAILED",
+      };
+    }
+
+    return NextResponse.json({
+      ok: true,
+      grantId: issued.grant.id,
+      privatePath,
+      invitation,
     }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
