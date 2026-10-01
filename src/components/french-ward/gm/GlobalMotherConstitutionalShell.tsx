@@ -18,6 +18,14 @@ type Movement = {
   active?: boolean;
 };
 
+type ChamberParticipant = {
+  id: string;
+  name: string;
+  institution: string;
+  capacity: string;
+  current: boolean;
+};
+
 type GlobalMotherConstitutionalShellProps = {
   eyebrow: string;
   title: string;
@@ -27,6 +35,7 @@ type GlobalMotherConstitutionalShellProps = {
   status: string;
   movements: Movement[];
   recipient?: { name: string; institution: string; capacity: string } | null;
+  chamberParticipants?: ChamberParticipant[];
   children: ReactNode;
 };
 
@@ -34,9 +43,11 @@ export function GlobalMotherConstitutionalShell({
   title,
   subtitle,
   reference,
+  version,
   status,
   movements,
   recipient,
+  chamberParticipants = [],
   children,
 }: GlobalMotherConstitutionalShellProps) {
   const chambers =
@@ -57,6 +68,11 @@ export function GlobalMotherConstitutionalShell({
     activeIndex,
     setActiveIndex,
   ] = useState(initialIndex);
+
+  const [
+    registryOpen,
+    setRegistryOpen,
+  ] = useState(false);
 
   const activeMovement =
     movements[activeIndex] ??
@@ -159,6 +175,24 @@ export function GlobalMotherConstitutionalShell({
                 {status}
               </strong>
             </section>
+
+            {chamberParticipants.length > 0 ? (
+              <section className={styles.spineRegistry}>
+                <button
+                  type="button"
+                  className={styles.registryTrigger}
+                  onClick={() => setRegistryOpen(true)}
+                  aria-haspopup="dialog"
+                  aria-expanded={registryOpen}
+                >
+                  <span>Chamber Registry</span>
+                  <strong>
+                    {chamberParticipants.length} authorized participant{chamberParticipants.length === 1 ? "" : "s"}
+                  </strong>
+                  <em>View registry →</em>
+                </button>
+              </section>
+            ) : null}
 
             <nav
               className={styles.spineFramework}
@@ -305,6 +339,71 @@ export function GlobalMotherConstitutionalShell({
               </div>
             </nav>
           </section>
+
+          {registryOpen ? (
+            <div className={styles.registryLayer}>
+              <button
+                type="button"
+                className={styles.registryScrim}
+                aria-label="Close Chamber Registry"
+                onClick={() => setRegistryOpen(false)}
+              />
+
+              <section
+                className={styles.registryPanel}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="gm-chamber-registry-title"
+              >
+                <header className={styles.registryHeader}>
+                  <div>
+                    <span>Chamber Registry</span>
+                    <h2 id="gm-chamber-registry-title">
+                      Authorized Participants
+                    </h2>
+                    <p>
+                      Current Framework · {reference} · {version}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    className={styles.registryClose}
+                    onClick={() => setRegistryOpen(false)}
+                  >
+                    Close
+                  </button>
+                </header>
+
+                <p className={styles.registryStatement}>
+                  This registry identifies participants formally authorized to deliberate within the current issued Framework. It does not indicate live attendance or disclose private access credentials.
+                </p>
+
+                <div className={styles.registryEntries}>
+                  {chamberParticipants.map(participant => (
+                    <article
+                      key={participant.id}
+                      className={styles.registryEntry}
+                    >
+                      <div className={styles.registryEntryIdentity}>
+                        <strong>{participant.name}</strong>
+                        {participant.current ? (
+                          <span className={styles.registryYou}>You</span>
+                        ) : null}
+                      </div>
+
+                      <p>{participant.institution}</p>
+                      <p>{participant.capacity}</p>
+
+                      <span className={styles.registryStanding}>
+                        Authorized Participant
+                      </span>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            </div>
+          ) : null}
         </div>
 
         <footer className={styles.footer}>

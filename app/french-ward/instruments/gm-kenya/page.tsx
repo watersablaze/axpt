@@ -224,6 +224,75 @@ export default async function GreatMotherInstrumentPage({
 
   const v2Presentation = internalV2Preview || participantV2;
 
+  const chamberParticipants =
+    v2Presentation
+      ? (
+          await prisma.instrumentAccessGrant.findMany({
+            where: {
+              instrumentVersionId:
+                deliberation.version.id,
+              revokedAt:
+                null,
+              expiresAt: {
+                gt:
+                  new Date(),
+              },
+            },
+            orderBy: {
+              issuedAt:
+                "asc",
+            },
+            select: {
+              id:
+                true,
+              recipientUserId:
+                true,
+              recipientName:
+                true,
+              representedInstitution:
+                true,
+              representativeCapacity:
+                true,
+              recipientUser: {
+                select: {
+                  displayName:
+                    true,
+                  name:
+                    true,
+                },
+              },
+            },
+          })
+        )
+          .filter(
+            grant =>
+              grant.recipientUserId !== null &&
+              grant.representedInstitution !== null &&
+              grant.representativeCapacity !== null,
+          )
+          .map(
+            grant => ({
+              id:
+                grant.id,
+              name:
+                grant.recipientName ??
+                grant.recipientUser?.displayName ??
+                grant.recipientUser?.name ??
+                "Institutional participant",
+              institution:
+                grant.representedInstitution ??
+                "",
+              capacity:
+                grant.representativeCapacity ??
+                "",
+              current:
+                participantV2 &&
+                recipientAccess?.grant.recipientUserId ===
+                  grant.recipientUserId,
+            }),
+          )
+      : [];
+
   const FrameworkShell =
     v2Presentation
       ? GlobalMotherConstitutionalShell
@@ -242,6 +311,7 @@ export default async function GreatMotherInstrumentPage({
         institution: access.grant.representedInstitution ?? "",
         capacity: access.grant.representativeCapacity ?? "",
       } : null}
+      chamberParticipants={chamberParticipants}
     >
       <FrameworkShell
       eyebrow={

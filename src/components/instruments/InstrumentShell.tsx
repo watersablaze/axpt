@@ -18,6 +18,13 @@ type InstrumentShellProps = {
   status: string;
   movements: Movement[];
   recipient?: { name: string; institution: string; capacity: string } | null;
+  chamberParticipants?: {
+    id: string;
+    name: string;
+    institution: string;
+    capacity: string;
+    current: boolean;
+  }[];
   classificationLabel?: string;
   showStatusRail?: boolean;
   hideHero?: boolean;

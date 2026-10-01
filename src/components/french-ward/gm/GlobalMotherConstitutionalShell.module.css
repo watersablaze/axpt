@@ -108,3 +108,202 @@
     linear-gradient(145deg, #f2eee4, #eee9dd 62%, #e9e3d5);
   box-shadow: inset 1px 0 0 #fffdf766;
 }
+
+
+/* Chamber Registry — authorization is visible; private access telemetry is not. */
+.constitutionalBody { position: relative; }
+.spineRegistry {
+  margin: 1.15rem 0 1.35rem;
+  padding: 1.05rem 0;
+  border-top: 1px solid var(--gm-frame-rule);
+  border-bottom: 1px solid var(--gm-frame-rule);
+}
+.registryTrigger {
+  display: grid;
+  width: 100%;
+  gap: .32rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.registryTrigger > span {
+  color: var(--gm-gold);
+  font-size: .62rem;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+.registryTrigger strong {
+  color: var(--gm-cream);
+  font-family: Baskerville, Georgia, serif;
+  font-size: .88rem;
+  font-weight: 400;
+  line-height: 1.35;
+}
+.registryTrigger em {
+  color: #9faeb6;
+  font-size: .68rem;
+  font-style: normal;
+  letter-spacing: .02em;
+}
+.registryTrigger:hover em { color: var(--gm-cream); }
+
+.registryLayer {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: flex;
+  justify-content: flex-end;
+}
+.registryScrim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  border: 0;
+  background: rgba(5, 14, 20, .42);
+  backdrop-filter: blur(2px);
+  cursor: default;
+}
+.registryPanel {
+  position: relative;
+  z-index: 1;
+  width: min(34rem, 78%);
+  height: 100%;
+  overflow-y: auto;
+  padding: clamp(1.4rem, 3vw, 2.2rem);
+  border-left: 1px solid rgba(204,181,129,.24);
+  background:
+    radial-gradient(ellipse at 80% 0, rgba(49,84,104,.32), transparent 48%),
+    #132634;
+  color: var(--gm-cream);
+  box-shadow: -20px 0 55px rgba(4,10,15,.24);
+}
+.registryHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.25rem;
+  align-items: start;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--gm-frame-rule);
+}
+.registryHeader > div > span {
+  color: var(--gm-gold);
+  font-size: .62rem;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+.registryHeader h2 {
+  margin: .45rem 0 0;
+  font-family: Baskerville, Georgia, serif;
+  font-size: clamp(1.45rem, 2.2vw, 2rem);
+  font-weight: 400;
+  line-height: 1.12;
+}
+.registryHeader p,
+.registryStatement,
+.registryEntry p {
+  color: #bcc7cc;
+}
+.registryHeader p {
+  margin: .5rem 0 0;
+  font-size: .72rem;
+  letter-spacing: .035em;
+}
+.registryClose {
+  min-height: 44px;
+  padding: .45rem .65rem;
+  border: 1px solid rgba(204,181,129,.22);
+  background: transparent;
+  color: #d5d9d8;
+  font: inherit;
+  font-size: .68rem;
+  cursor: pointer;
+}
+.registryStatement {
+  max-width: 30rem;
+  margin: 1.15rem 0 1.35rem;
+  font-size: .76rem;
+  line-height: 1.6;
+}
+.registryEntries {
+  border-top: 1px solid var(--gm-frame-rule);
+}
+.registryEntry {
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--gm-frame-rule);
+}
+.registryEntryIdentity {
+  display: flex;
+  gap: .75rem;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.registryEntryIdentity strong {
+  font-family: Baskerville, Georgia, serif;
+  font-size: 1.03rem;
+  font-weight: 400;
+  line-height: 1.4;
+}
+.registryYou {
+  flex: none;
+  color: var(--gm-gold);
+  font-size: .58rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.registryEntry p {
+  margin: .28rem 0 0;
+  font-size: .76rem;
+  line-height: 1.5;
+}
+.registryStanding {
+  display: inline-block;
+  margin-top: .65rem;
+  color: #d9c69d;
+  font-size: .58rem;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 860px) {
+  .spineRegistry {
+    margin: .35rem 0 .55rem;
+    padding: .5rem 0 .6rem;
+  }
+  .registryTrigger {
+    grid-template-columns: auto 1fr auto;
+    align-items: baseline;
+    gap: .6rem;
+  }
+  .registryTrigger strong {
+    font-family: inherit;
+    font-size: .68rem;
+  }
+  .registryTrigger em {
+    font-size: .64rem;
+  }
+  .registryPanel {
+    width: 100%;
+    padding: 1.15rem 1rem 1.5rem;
+    border-left: 0;
+    border-top: 1px solid rgba(204,181,129,.24);
+  }
+  .registryHeader h2 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .registryTrigger {
+    grid-template-columns: 1fr auto;
+  }
+  .registryTrigger > span {
+    grid-column: 1 / -1;
+  }
+  .registryEntryIdentity {
+    align-items: start;
+  }
+}
