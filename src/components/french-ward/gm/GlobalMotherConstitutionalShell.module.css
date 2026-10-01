@@ -307,3 +307,113 @@
     align-items: start;
   }
 }
+
+
+/* Final chamber atmosphere — restrained, refracted light rather than literal rays. */
+.atmosphere {
+  display: block;
+  position: absolute;
+  inset: -18% -10% -10%;
+  z-index: 0;
+  pointer-events: none;
+  opacity: .72;
+  background:
+    linear-gradient(
+      113deg,
+      transparent 17%,
+      rgba(222, 235, 235, .035) 24%,
+      rgba(230, 217, 177, .028) 29%,
+      transparent 37%
+    ),
+    linear-gradient(
+      101deg,
+      transparent 32%,
+      rgba(202, 225, 232, .042) 39%,
+      transparent 46%
+    ),
+    linear-gradient(
+      124deg,
+      transparent 48%,
+      rgba(225, 213, 175, .026) 54%,
+      transparent 61%
+    ),
+    radial-gradient(
+      ellipse at 52% 4%,
+      rgba(203, 226, 235, .10),
+      rgba(174, 201, 215, .035) 30%,
+      transparent 63%
+    );
+  filter: blur(13px);
+  transform: translate3d(-1.5%, -2%, 0) scale(1.04);
+  mix-blend-mode: screen;
+  animation: gmEthericLight 34s ease-in-out infinite alternate;
+}
+
+.documentIdentity,
+.pamphlet {
+  z-index: 1;
+}
+
+.documentIdentity {
+  padding-top: 1.18rem;
+  padding-bottom: 1.5rem;
+}
+
+.documentIdentity > div {
+  max-width: 48rem;
+}
+
+.documentIdentity strong {
+  font-size: clamp(1.34rem, 1.9vw, 1.82rem);
+  font-weight: 500;
+  line-height: 1.16;
+  letter-spacing: -.012em;
+  text-wrap: balance;
+  text-shadow:
+    0 1px 0 rgba(255,255,255,.035),
+    0 0 22px rgba(203, 223, 230, .055);
+}
+
+.documentIdentity p {
+  margin-top: .42rem;
+  max-width: 42rem;
+  color: #cbd1d4;
+  font-size: .87rem;
+  letter-spacing: .005em;
+}
+
+@keyframes gmEthericLight {
+  0% {
+    opacity: .58;
+    transform: translate3d(-2.2%, -2.5%, 0) scale(1.03);
+  }
+  100% {
+    opacity: .76;
+    transform: translate3d(1.2%, .5%, 0) scale(1.065);
+  }
+}
+
+@media (max-width: 860px) {
+  .atmosphere {
+    inset: -12% -35% 0;
+    opacity: .56;
+    filter: blur(15px);
+  }
+
+  .documentIdentity {
+    padding-top: .72rem;
+    padding-bottom: .78rem;
+  }
+
+  .documentIdentity strong {
+    font-size: 1.13rem;
+    line-height: 1.22;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atmosphere {
+    animation: none;
+    transform: none;
+  }
+}
