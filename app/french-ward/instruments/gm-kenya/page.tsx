@@ -311,7 +311,6 @@ export default async function GreatMotherInstrumentPage({
         institution: access.grant.representedInstitution ?? "",
         capacity: access.grant.representativeCapacity ?? "",
       } : null}
-      chamberParticipants={chamberParticipants}
     >
       <FrameworkShell
       eyebrow={
@@ -348,6 +347,7 @@ export default async function GreatMotherInstrumentPage({
         institution: access.grant.representedInstitution ?? "",
         capacity: access.grant.representativeCapacity ?? "",
       } : null}
+      chamberParticipants={chamberParticipants}
     >
       <section
         id="gm-movement-I"
