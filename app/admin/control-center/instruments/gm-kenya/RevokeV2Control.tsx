@@ -4,7 +4,13 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./page.module.css";
 
-export function RevokeV2Control({ grantId }: { grantId: string }) {
+export function RevokeV2Control({
+  grantId,
+  invitationSentAt,
+}: {
+  grantId: string;
+  invitationSentAt: string | null;
+}) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -29,7 +35,9 @@ export function RevokeV2Control({ grantId }: { grantId: string }) {
     if (
       busy ||
       !window.confirm(
-        "Email a fresh official Chamber invitation? AXPT will issue a new private link and invalidate any prior link and active recipient session.",
+        invitationSentAt
+          ? "Resend the official Chamber invitation? AXPT will rotate the private link, invalidate the prior link and active recipient session, then email the fresh credential."
+          : "Send the official Chamber invitation? This existing grant predates system delivery, so AXPT will issue a fresh private link and email that credential. Any prior link or active recipient session will stop working.",
       )
     ) return;
     setBusy(true); setError(""); setNotice("");
@@ -93,9 +101,10 @@ export function RevokeV2Control({ grantId }: { grantId: string }) {
   return <div className={styles.accessActions}>
     {!link ? <>
       <button className={styles.accessSend} type="button" disabled={busy} onClick={emailInvitation}>
-        {busy ? "Working…" : "Email invitation"}
+        {busy ? "Working…" : invitationSentAt ? "Resend invitation" : "Send invitation"}
       </button>
       <button className={styles.accessMaintenance} type="button" disabled={busy} onClick={replaceLink}>Replace private link</button>
+      {invitationSentAt ? <span className={styles.invitationEvidence}>Sent {new Date(invitationSentAt).toLocaleString()}</span> : null}
       <button className={styles.accessDanger} type="button" disabled={busy} onClick={revoke}>{busy ? "Working…" : "Revoke access"}</button>
     </> : (
       <div className={styles.replacementCredential} role="status">

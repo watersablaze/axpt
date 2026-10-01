@@ -91,3 +91,41 @@
 .domains p { font-size: .95rem; line-height: 1.65; }
 .gift { border-color: #98744630; border-radius: 3px; }
 .doctrine { background: #1a3041; border-left: 2px solid #b29a69; border-radius: 0 3px 3px 0; }
+
+
+/* Canonical article closing principle — shared across Articles I–V. */
+.doctrine {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding: clamp(1.3rem, 2.5vw, 1.75rem);
+  border: 1px solid rgba(185, 153, 92, .18);
+  border-left: 3px solid rgba(204, 181, 129, .78);
+  border-radius: 2px;
+  background:
+    radial-gradient(ellipse at 14% 0, rgba(53, 83, 103, .22), transparent 54%),
+    linear-gradient(135deg, #101f2d, #09151f 72%);
+  box-shadow:
+    inset 0 1px 0 rgba(235, 226, 199, .035),
+    0 14px 30px rgba(9, 20, 29, .08);
+  color: #f0e9db;
+}
+.doctrine span {
+  display: block;
+  margin-bottom: .7rem;
+  color: #d2b979;
+  font-family: Arial, sans-serif;
+  font-size: .63rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.doctrine p {
+  max-width: 52rem;
+  margin: 0;
+  color: #f0e9db;
+  font-family: Baskerville, Georgia, "Times New Roman", serif;
+  font-size: clamp(1.08rem, 1.8vw, 1.32rem);
+  font-weight: 400;
+  line-height: 1.46;
+}
+@media (max-width: 560px) {
+  .doctrine { padding: 1.15rem 1rem 1.3rem; }
+}
