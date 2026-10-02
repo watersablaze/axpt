@@ -918,3 +918,22 @@
 .prepared h2 > span {
   display: block;
 }
+
+/* GM V4 — desktop Prepared For metadata stack. */
+@media (min-width: 761px) {
+  .openingFolio .prepared {
+    display: block;
+  }
+
+  .openingFolio .prepared h2 {
+    margin: .35rem 0 .22rem;
+  }
+
+  .openingFolio .prepared p {
+    margin: .12rem 0 0;
+  }
+
+  .openingFolio .prepared p + p::before {
+    content: none;
+  }
+}

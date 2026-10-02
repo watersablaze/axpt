@@ -20,7 +20,17 @@ export default async function Page() {
       <h1 id="recipient-title">Framework of Royal Custodianship,<br />Restoration &amp; Global Trade</h1>
       <div className={styles.prepared}>
         <span>Prepared for</span>
-        <h2>{access.grant.recipientName ?? access.user.displayName ?? "the named recipient"}</h2>
+        <h2>
+          {(access.grant.recipientName ??
+            access.user.displayName ??
+            "the named recipient")
+            .split("·")
+            .map(part => part.trim())
+            .filter(Boolean)
+            .map((part, index) => (
+              <span key={`${part}-${index}`}>{part}</span>
+            ))}
+        </h2>
         <p className={styles.capacity}>{access.grant.representedInstitution}<br />{access.grant.representativeCapacity}</p>
       </div>
       <p className={styles.invitation}>You are formally invited to review the Framework.<br />Verify your access to enter the private chamber.</p>

@@ -655,3 +655,8 @@
       .28em;
   }
 }
+
+/* GM V4 — canonical recipient identity, one presented name per line. */
+.prepared h2 > span {
+  display: block;
+}

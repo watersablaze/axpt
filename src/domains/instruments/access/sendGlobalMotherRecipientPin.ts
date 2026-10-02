@@ -7,10 +7,8 @@ export async function sendGlobalMotherRecipientPin(
 ) {
   const result = await resend.emails.send({
     from:
-      process.env.AUTH_EMAIL_FROM ??
-      process.env.RESEND_FROM_EMAIL ??
-      process.env.EMAIL_FROM ??
-      "AXPT <connect@axpt.io>",
+      process.env.FRENCH_WARD_EMAIL_FROM ??
+      "French-Ward <french-ward@axpt.io>",
     to: email,
     subject: "Your AXPT Framework verification code",
     text: [
