@@ -123,9 +123,12 @@ export function renderGlobalMotherChamberInvitation(
           ${escapeHtml(input.accessUrl)}
         </a>
       </p>`
-    : `<div style="margin:26px 0 14px;display:inline-block;background:#b8cad5;color:#365266;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:13px 18px;border-radius:2px;">
-        Private access generated after approval
-      </div>`;
+    : `<div style="margin:26px 0 8px;display:inline-block;background:#142f45;color:#edf5f8;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:14px 20px;border-radius:2px;">
+        Enter Private Chamber
+      </div>
+      <p style="margin:0 0 14px;color:#557083;font-size:10px;line-height:1.55;">
+        Private access link generated upon approval.
+      </p>`;
 
   const text = [
     `Dear ${primaryName},`,
