@@ -15,8 +15,8 @@ import {
   resolveInstitutionalInstrumentAccessWithClient,
 } from "@/domains/instruments/queries/resolveInstitutionalInstrumentAccessWithClient";
 import {
-  globalMotherV3Definition,
-} from "@/domains/instruments/definitions/globalMotherV3Definition";
+  globalMotherV4Definition,
+} from "@/domains/instruments/definitions/globalMotherV4Definition";
 import { InstrumentShell } from "@/components/instruments/InstrumentShell";
 import { RoyalRelationshipMap } from "@/components/french-ward/gm/RoyalRelationshipMap";
 import { RelationshipUnderstanding } from "@/components/french-ward/gm/RelationshipUnderstanding";
@@ -103,12 +103,12 @@ export default async function GreatMotherInstrumentPage({
    */
   const requestedPreviewVersion =
     internalInspectionAllowed &&
-    previewVersionParam === String(globalMotherV3Definition.version)
-      ? globalMotherV3Definition.version
+    previewVersionParam === String(globalMotherV4Definition.version)
+      ? globalMotherV4Definition.version
       : null;
 
   const internalV2Preview =
-    requestedPreviewVersion === globalMotherV3Definition.version;
+    requestedPreviewVersion === globalMotherV4Definition.version;
 
   const accessToken =
     cookieStore.get(
@@ -218,15 +218,69 @@ export default async function GreatMotherInstrumentPage({
   const participantV2 =
     !internalV2Preview &&
     recipientAccess !== null &&
-    deliberation.version.number === globalMotherV3Definition.version &&
+    deliberation.version.number === globalMotherV4Definition.version &&
     deliberation.version.status === "ISSUED" &&
     recipientAccess.grant.instrumentVersionId === deliberation.version.id;
 
   const v2Presentation = internalV2Preview || participantV2;
 
+  const internalPreviewParticipants =
+    [
+      {
+        id:
+          "gm-preview-awulah",
+        name:
+          "Dr. Awulah Naanii Amon",
+        institution:
+          "ND Royal Ministry",
+        capacity:
+          "Global Mother · Nubian Empress · Royal Council Representative",
+        current:
+          false,
+      },
+      {
+        id:
+          "gm-preview-gary",
+        name:
+          "Imperial Sultan Nama Chancellor · Gary Michael Callender",
+        institution:
+          "Ahma Olmec Tartarian Government (AOTG)",
+        capacity:
+          "Chancellor",
+        current:
+          false,
+      },
+      {
+        id:
+          "gm-preview-michael",
+        name:
+          "His Imperial Majesty Khan-Khan · Michael Paul Brown · Utcha Net Hotep-El",
+        institution:
+          "Ahma Olmec Tartarian Government (AOTG)",
+        capacity:
+          "His Imperial Majesty Khan-Khan",
+        current:
+          false,
+      },
+      {
+        id:
+          "gm-preview-jamal",
+        name:
+          "Chief Jamarú Wata Falkhan · Jamal James Ward",
+        institution:
+          "French-Ward",
+        capacity:
+          "Chief Strategic Officer · AOTG Treasury Consultant",
+        current:
+          false,
+      },
+    ] as const;
+
   const chamberParticipants =
-    v2Presentation
-      ? (
+    internalV2Preview
+      ? [...internalPreviewParticipants]
+      : v2Presentation
+        ? (
           await prisma.instrumentAccessGrant.findMany({
             where: {
               instrumentVersionId:
@@ -291,7 +345,7 @@ export default async function GreatMotherInstrumentPage({
                   grant.recipientUserId,
             }),
           )
-      : [];
+        : [];
 
   const FrameworkShell =
     v2Presentation
@@ -320,12 +374,12 @@ export default async function GreatMotherInstrumentPage({
       }
       title={
         v2Presentation
-          ? globalMotherV3Definition.title
+          ? globalMotherV4Definition.title
           : "Framework of Royal Custodianship"
       }
       subtitle={
         v2Presentation
-          ? globalMotherV3Definition.subtitle
+          ? globalMotherV4Definition.subtitle
           : "Ancestral Restoration & Global Trade"
       }
       reference="GM-KENYA-RCF-001"
@@ -375,7 +429,7 @@ export default async function GreatMotherInstrumentPage({
             </h2>
             <p className={styles.movementLead}>
               {v2Presentation
-                ? "The Global Mother’s trust in Imperial Khan-Khan opens a bridge among ND Royal Ministry, AOTG, and French-Ward. Gold anchors the present work."
+                ? "The Global Mother’s trust in Imperial Khan-Khan opens a bridge among ND Royal Ministry, the Ahma Olmec Tartarian Government (AOTG), and French-Ward. Gold anchors the present work."
                 : "The initiating proposition is understood as a Royal and custodial relationship through which trade, restoration, projects and continuing return may be responsibly developed."}
             </p>
           </div>

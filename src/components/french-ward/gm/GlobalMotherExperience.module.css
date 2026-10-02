@@ -198,3 +198,693 @@
 @media(prefers-reduced-motion:reduce) {
   .primaryAction { transition: none; }
 }
+
+/* =========================================================
+   GM V4 — RECEPTION DISCIPLINE
+   Identity → Instruction → Action
+   ========================================================= */
+
+.experience {
+  background:
+    radial-gradient(
+      ellipse at 28% 10%,
+      rgba(238, 250, 255, .42),
+      transparent 52%
+    ),
+    linear-gradient(
+      150deg,
+      #bdd8e3 0%,
+      #9fc5d4 56%,
+      #88afc1 100%
+    );
+}
+
+/* environmental metadata recedes */
+.utility,
+.footer {
+  padding:
+    .9rem
+    clamp(1.15rem, 4vw, 2.6rem);
+
+  color:
+    rgba(29, 72, 93, .72);
+
+  font-size:
+    .56rem;
+
+  letter-spacing:
+    .16em;
+}
+
+.utility {
+  background:
+    rgba(224, 242, 248, .13);
+
+  border-bottom-color:
+    rgba(34, 83, 105, .13);
+}
+
+.footer {
+  background:
+    rgba(99, 151, 174, .08);
+
+  border-top-color:
+    rgba(34, 83, 105, .13);
+}
+
+/* ---------------------------------------------------------
+   SHARED RECEPTION PLANE
+   --------------------------------------------------------- */
+
+.stage {
+  width:
+    min(calc(100% - 2.4rem), 61rem);
+
+  margin:
+    clamp(1.6rem, 4vh, 3rem)
+    auto;
+
+  padding:
+    clamp(2rem, 5vw, 3.5rem);
+
+  column-gap:
+    clamp(2rem, 5vw, 4rem);
+
+  row-gap:
+    .85rem;
+
+  border:
+    1px solid
+    rgba(42, 88, 109, .18);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(241, 248, 248, .37),
+      rgba(211, 231, 235, .18)
+    );
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, .38);
+}
+
+/* quiet rails rather than a framed card */
+.stage::before,
+.stage::after {
+  content: "";
+
+  position: absolute;
+  top: 2.4rem;
+  bottom: 2.4rem;
+
+  width: 1px;
+
+  background:
+    rgba(45, 91, 112, .16);
+}
+
+.stage::before {
+  left: 0;
+}
+
+.stage::after {
+  right: 0;
+}
+
+/* give the eye a single starting point */
+.stageKicker {
+  color:
+    rgba(39, 83, 104, .74);
+
+  font-size:
+    .59rem;
+
+  letter-spacing:
+    .17em;
+}
+
+.stage h1 {
+  max-width:
+    38rem;
+
+  color:
+    #173f54;
+
+  font-size:
+    clamp(2rem, 4vw, 3.15rem);
+
+  line-height:
+    1.04;
+
+  letter-spacing:
+    -.025em;
+}
+
+.stage h1 em {
+  color:
+    #376478;
+
+  font-size:
+    .82em;
+
+  line-height:
+    1.22;
+}
+
+/* ---------------------------------------------------------
+   GATE
+   --------------------------------------------------------- */
+
+.gate {
+  grid-template-columns:
+    minmax(0, 1.45fr)
+    minmax(14rem, .75fr);
+}
+
+.gatePrelude {
+  margin-bottom:
+    .35rem;
+}
+
+.chamberSigil {
+  width:
+    84px;
+
+  height:
+    48px;
+
+  opacity:
+    .88;
+}
+
+.gate .prepared {
+  grid-column:
+    2;
+
+  grid-row:
+    2 / span 3;
+
+  margin:
+    0;
+
+  padding:
+    .45rem
+    0
+    .45rem
+    1.5rem;
+
+  border-left:
+    1px solid
+    rgba(42, 88, 109, .19);
+
+  border-top:
+    0;
+}
+
+.prepared > span {
+  color:
+    rgba(41, 80, 99, .72);
+
+  font-size:
+    .56rem;
+
+  letter-spacing:
+    .15em;
+}
+
+.prepared h2 {
+  margin:
+    .48rem
+    0
+    .25rem;
+
+  color:
+    #234c60;
+
+  font-size:
+    clamp(1.18rem, 2.2vw, 1.55rem);
+
+  line-height:
+    1.22;
+}
+
+.prepared p {
+  margin:
+    .12rem
+    0;
+
+  color:
+    #476b7c;
+
+  font-size:
+    .79rem;
+
+  line-height:
+    1.45;
+}
+
+.gateStatement {
+  max-width:
+    32rem;
+
+  margin:
+    .55rem
+    0
+    .7rem;
+}
+
+.gateStatement p {
+  color:
+    #294f63;
+
+  font-size:
+    .94rem;
+
+  line-height:
+    1.55;
+}
+
+/* action is the final visual event */
+.primaryAction {
+  min-height:
+    50px;
+
+  min-width:
+    14rem;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, .7);
+
+  border-radius:
+    4px;
+
+  background:
+    rgba(241, 250, 253, .32);
+
+  color:
+    #173f54;
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255,255,255,.72);
+
+  backdrop-filter:
+    blur(8px);
+
+  -webkit-backdrop-filter:
+    blur(8px);
+}
+
+.thresholdNotice {
+  max-width:
+    31rem;
+
+  color:
+    rgba(44, 78, 94, .76);
+
+  font-size:
+    .68rem;
+
+  line-height:
+    1.48;
+}
+
+/* ---------------------------------------------------------
+   OPENING FOLIO
+   --------------------------------------------------------- */
+
+.openingFolio {
+  grid-template-columns:
+    minmax(0, 1fr);
+
+  max-width:
+    54rem;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(244, 249, 246, .44),
+      rgba(213, 230, 231, .20)
+    );
+}
+
+.openingFolio > * {
+  grid-column:
+    1;
+}
+
+.openingFolio h1 {
+  max-width:
+    35rem;
+}
+
+.folioLead {
+  max-width:
+    34rem;
+
+  margin-top:
+    .45rem;
+
+  color:
+    #31586b;
+
+  font-size:
+    .9rem;
+
+  line-height:
+    1.55;
+}
+
+/*
+ * Recipient becomes metadata rather than
+ * a second headline on the opening folio.
+ */
+.openingFolio .prepared {
+  display:
+    flex;
+
+  flex-wrap:
+    wrap;
+
+  align-items:
+    baseline;
+
+  gap:
+    .25rem
+    .7rem;
+
+  margin:
+    .8rem
+    0
+    0;
+
+  padding:
+    .75rem
+    0;
+
+  border-top:
+    1px solid
+    rgba(45, 91, 112, .15);
+
+  border-bottom:
+    1px solid
+    rgba(45, 91, 112, .15);
+}
+
+.openingFolio .prepared > span {
+  flex:
+    0 0 100%;
+}
+
+.openingFolio .prepared h2 {
+  margin:
+    .15rem
+    0;
+
+  font-size:
+    1rem;
+}
+
+.openingFolio .prepared p {
+  margin:
+    .15rem
+    0;
+
+  font-size:
+    .72rem;
+}
+
+.openingFolio .prepared p + p::before {
+  content:
+    "·";
+
+  margin-right:
+    .65rem;
+
+  color:
+    rgba(46, 88, 107, .45);
+}
+
+/*
+ * Read / Respond becomes a guide strip,
+ * not another large content section.
+ */
+.openingFolio .folioColumns {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap:
+    0;
+
+  margin:
+    .7rem
+    0
+    0;
+
+  padding:
+    .7rem
+    0;
+
+  border-top:
+    0;
+
+  border-bottom:
+    1px solid
+    rgba(45, 91, 112, .15);
+}
+
+.openingFolio .folioColumns > div {
+  padding:
+    .15rem
+    1rem
+    .15rem
+    0;
+}
+
+.openingFolio .folioColumns > div + div {
+  padding-left:
+    1rem;
+
+  border-left:
+    1px solid
+    rgba(45, 91, 112, .16);
+}
+
+.openingFolio .folioColumns span {
+  color:
+    #335f73;
+
+  font-size:
+    .55rem;
+
+  letter-spacing:
+    .16em;
+}
+
+.openingFolio .folioColumns p {
+  margin-top:
+    .35rem;
+
+  color:
+    #3e6171;
+
+  font-size:
+    .77rem;
+
+  line-height:
+    1.45;
+}
+
+.openingFolio .folioBoundary {
+  margin-top:
+    .25rem;
+
+  color:
+    rgba(51, 86, 102, .72);
+
+  font-size:
+    .66rem;
+
+  line-height:
+    1.45;
+}
+
+.openingFolio .primaryAction {
+  margin-top:
+    .7rem;
+
+  justify-self:
+    start;
+}
+
+/* quote becomes an atmospheric seal, not another section */
+.inscription {
+  margin:
+    .5rem
+    auto
+    1.1rem;
+
+  color:
+    rgba(40, 78, 96, .65);
+
+  font-size:
+    .85rem;
+}
+
+.inscription cite {
+  margin-top:
+    .3rem;
+
+  color:
+    rgba(49, 87, 104, .62);
+
+  font-size:
+    .52rem;
+}
+
+/* ---------------------------------------------------------
+   MOBILE
+   --------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .utility {
+    padding:
+      .85rem
+      1.15rem;
+
+    gap:
+      .35rem;
+  }
+
+  .utility span {
+    flex:
+      0 0 100%;
+  }
+
+  .stage {
+    width:
+      calc(100% - 1.2rem);
+
+    margin:
+      .8rem
+      auto;
+
+    padding:
+      1.65rem
+      1.25rem
+      1.75rem;
+
+    row-gap:
+      .7rem;
+  }
+
+  .stage::before,
+  .stage::after {
+    top:
+      1.3rem;
+
+    bottom:
+      1.3rem;
+  }
+
+  .gate,
+  .openingFolio {
+    grid-template-columns:
+      1fr;
+  }
+
+  .gate .prepared {
+    grid-column:
+      1;
+
+    grid-row:
+      auto;
+
+    margin-top:
+      .55rem;
+
+    padding:
+      .65rem
+      0;
+
+    border-left:
+      0;
+
+    border-top:
+      1px solid
+      rgba(45, 91, 112, .15);
+
+    border-bottom:
+      1px solid
+      rgba(45, 91, 112, .15);
+  }
+
+  .gateStatement {
+    margin-top:
+      .4rem;
+  }
+
+  .openingFolio .prepared {
+    gap:
+      .1rem
+      .45rem;
+  }
+
+  .openingFolio .prepared p:last-child {
+    flex:
+      0 0 100%;
+  }
+
+  .openingFolio .prepared p + p::before {
+    content:
+      none;
+  }
+
+  .openingFolio .folioColumns {
+    grid-template-columns:
+      1fr;
+
+    padding:
+      .5rem
+      0;
+  }
+
+  .openingFolio .folioColumns > div {
+    padding:
+      .55rem
+      0;
+  }
+
+  .openingFolio .folioColumns > div + div {
+    padding-left:
+      0;
+
+    border-left:
+      0;
+
+    border-top:
+      1px solid
+      rgba(45, 91, 112, .12);
+  }
+
+  .primaryAction {
+    width:
+      100%;
+  }
+
+  .footer {
+    padding:
+      .8rem
+      1.15rem;
+  }
+
+  .footer .topAction {
+    display:
+      none;
+  }
+}

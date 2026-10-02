@@ -13,7 +13,7 @@ import type {
 import { createPortal } from "react-dom";
 
 import styles from "./GlobalMotherDeliberationFrameV2.module.css";
-import { globalMotherV3Definition } from "@/domains/instruments/definitions/globalMotherV3Definition";
+import { globalMotherV4Definition } from "@/domains/instruments/definitions/globalMotherV4Definition";
 
 type Position = "AFFIRM" | "CLARIFY" | "REVISE" | "DECLINE";
 
@@ -33,7 +33,7 @@ const sections = [
 
 const affirmations = sections.map(section => ({
   article: section.article,
-  entries: globalMotherV3Definition.propositions
+  entries: globalMotherV4Definition.propositions
     .filter(item => (section.references as readonly string[]).includes(item.reference))
     .map(item => [item.reference, item.title, item.body] as const),
 }));
@@ -260,13 +260,22 @@ export function GlobalMotherDeliberationFrameV2({
         </article>
         <article>
           <span>INST-02 / Instrument formation</span>
-          <h3>Alignment opens the next formation step.</h3>
-          <p>Sufficient alignment may open drafting of a proposed master agreement for AOTG–French-Ward, French-Ward–ND Royal Ministry, and shared three-party duties. Gold stays in its transaction dossier.</p>
+          <h3>Alignment opens trust formation.</h3>
+          <p>
+          Sufficient alignment may open preparation of the proposed{" "}
+          <strong className={styles.instrumentName}>
+            Master Agreement &amp; Proclamation of Trust
+          </strong>
+          , a living trust instrument defining the relationship,
+          custodial responsibilities, institutional duties, and any
+          agreed operating structure. Gold remains governed through
+          its own transaction dossier and passage conditions.
+        </p>
         </article>
       </div>
 
       <div className={styles.formationPath} aria-label="From framework response to operative standing">
-        <span>Response</span><span>Framework alignment</span><span>Master agreement drafting</span><span>Authority to bind</span><span>Operative conditions</span><span>Execution & evidence</span>
+        <span>Attributable response</span><span>Framework alignment</span><span>Master Agreement &amp; Proclamation of Trust</span><span>Defined institutional undertaking</span><span>Authority to bind</span><span>Operative conditions</span><span>Execution &amp; evidence</span>
       </div>
 
       <div className={styles.folio}>
@@ -281,8 +290,11 @@ export function GlobalMotherDeliberationFrameV2({
             </h3>
 
             <p>
-              Respond to eight intentions. Identify any point needing
-              clarification or revision, then review the full response.
+              Eight intentions have been placed before the Chamber.
+              Consider each one, identify what is aligned and what still
+              requires work, then establish your attributable position.
+              The purpose is not more conversation. It is enough clarity
+              to determine the next responsible act.
             </p>
           </header>
 
@@ -378,7 +390,13 @@ export function GlobalMotherDeliberationFrameV2({
                 const complete = Boolean(positions[ref]) &&
                   (positions[ref] === "AFFIRM" || Boolean(notes[ref]?.trim()));
                 return <button key={ref} type="button" disabled={recording || receiptState === "loading"}
-                  className={`${styles.positionStep} ${!reviewing && activePosition === index ? styles.positionStepActive : ""}`}
+                  className={[
+                    styles.positionStep,
+                    complete ? styles.positionStepComplete : "",
+                    !reviewing && activePosition === index
+                      ? styles.positionStepActive
+                      : "",
+                  ].filter(Boolean).join(" ")}
                   aria-current={!reviewing && activePosition === index ? "step" : undefined}
                   aria-label={`Position ${index + 1}: ${entryTitle}. ${complete ? receipt ? "Recorded" : "Ready for review" : positions[ref] ? "Note needed" : "Response needed"}`}
                   onClick={() => visitPosition(index)}>
@@ -499,8 +517,7 @@ export function GlobalMotherDeliberationFrameV2({
             </div> : null}
             <footer className={styles.formationBoundary}>
               <span>{instrumentReference}</span>
-              <p>Your response informs further deliberation and any proposed agreement.
-                It does not by itself create binding authority.</p>
+              <p>Your response informs further deliberation and any proposed Master Agreement & Proclamation of Trust. It does not by itself create binding authority.</p>
             </footer>
             </div>
           </div>
@@ -509,7 +526,7 @@ export function GlobalMotherDeliberationFrameV2({
 
       {!entered ? <div className={styles.doctrine}>
         <span>Article V / Principle</span>
-        <p>Understanding must become attributable response before it becomes binding action.</p>
+        <p>Relationship establishes the field. Authority establishes the perimeter. Deliberation establishes alignment. Agreement establishes the undertaking. Conditions determine movement.</p>
       </div> : null}
     </section>
   );

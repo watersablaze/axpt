@@ -96,9 +96,26 @@ export function GlobalMotherConstitutionalShell({
     index: number,
   ) => {
     if (index === activeIndex) return;
+
     setActiveIndex(index);
-    if (chamberRef.current) chamberRef.current.scrollTop = 0;
-    requestAnimationFrame(() => notationRef.current?.focus({ preventScroll: true }));
+
+    requestAnimationFrame(() => {
+      if (window.matchMedia("(max-width: 860px)").matches) {
+        chamberRef.current?.scrollIntoView({
+          block: "start",
+          behavior: "auto",
+        });
+      } else {
+        chamberRef.current?.scrollTo({
+          top: 0,
+          behavior: "auto",
+        });
+      }
+
+      notationRef.current?.focus({
+        preventScroll: true,
+      });
+    });
   };
 
   return (

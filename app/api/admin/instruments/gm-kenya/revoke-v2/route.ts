@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { isAdmin } from "@/domains/auth/isAdmin";
 import { prisma } from "@/infrastructure/db/prisma";
-import { globalMotherV3Definition } from "@/domains/instruments/definitions/globalMotherV3Definition";
+import { globalMotherV4Definition } from "@/domains/instruments/definitions/globalMotherV4Definition";
 import { INSTRUMENT_EVENT_TYPE } from "@/domains/instruments/eventTypes";
 import { runInstrumentGovernanceTransaction } from "@/domains/instruments/governance/runInstrumentGovernanceTransaction";
 
@@ -31,8 +31,8 @@ export async function POST(request: Request) {
           instrumentVersion: { select: { number: true } },
         },
       });
-      if (!grant || grant.instrument.reference !== globalMotherV3Definition.reference ||
-          grant.instrumentVersion?.number !== globalMotherV3Definition.version) throw new Error("GRANT_NOT_FOUND");
+      if (!grant || grant.instrument.reference !== globalMotherV4Definition.reference ||
+          grant.instrumentVersion?.number !== globalMotherV4Definition.version) throw new Error("GRANT_NOT_FOUND");
       if (grant.revokedAt) return grant.revokedAt;
       const now = new Date();
       const changed = await tx.instrumentAccessGrant.updateMany({

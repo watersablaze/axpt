@@ -4,14 +4,14 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/infrastructure/db/prisma";
 import { getGlobalMotherPrincipal } from "@/domains/instruments/access/globalMotherRecipientAuth";
 import { institutionalInstrumentAccessCookieName } from "@/domains/instruments/access/accessToken";
-import { globalMotherV3Definition } from "@/domains/instruments/definitions/globalMotherV3Definition";
+import { globalMotherV4Definition } from "@/domains/instruments/definitions/globalMotherV4Definition";
 import { resolveInstitutionalInstrumentAccessWithClient } from "@/domains/instruments/queries/resolveInstitutionalInstrumentAccessWithClient";
 import { runInstrumentGovernanceTransaction } from "@/domains/instruments/governance/runInstrumentGovernanceTransaction";
 import { submitGlobalMotherV2ResponseSetWithClient, type GlobalMotherPosition } from "@/domains/instruments/commands/submitGlobalMotherV2ResponseSetWithClient";
 
 async function accessToken() {
   const jar = await cookies();
-  return jar.get(institutionalInstrumentAccessCookieName(globalMotherV3Definition.reference))?.value ?? null;
+  return jar.get(institutionalInstrumentAccessCookieName(globalMotherV4Definition.reference))?.value ?? null;
 }
 
 function receiptPayload(receipt: {
@@ -28,11 +28,11 @@ export async function GET() {
   const token = await accessToken();
   if (!token) return NextResponse.json({ ok: false }, { status: 401 });
   const access = await resolveInstitutionalInstrumentAccessWithClient({
-    client: prisma, instrumentReference: globalMotherV3Definition.reference,
+    client: prisma, instrumentReference: globalMotherV4Definition.reference,
     token, recordAccess: false,
   });
   const principal = await getGlobalMotherPrincipal();
-  if (access?.instrument.currentVersion !== globalMotherV3Definition.version ||
+  if (access?.instrument.currentVersion !== globalMotherV4Definition.version ||
       !access?.grant.recipientUserId || !access.grant.instrumentVersionId ||
       principal?.userId !== access.grant.recipientUserId) {
     return NextResponse.json({ ok: false }, { status: 403 });
@@ -52,7 +52,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false, error: "ORIGIN_REQUIRED" }, { status: 403 });
   const principal = await getGlobalMotherPrincipal();
   const access = await resolveInstitutionalInstrumentAccessWithClient({
-    client: prisma, instrumentReference: globalMotherV3Definition.reference,
+    client: prisma, instrumentReference: globalMotherV4Definition.reference,
     token, recordAccess: false,
   });
   if (!principal || !access?.grant.recipientUserId ||

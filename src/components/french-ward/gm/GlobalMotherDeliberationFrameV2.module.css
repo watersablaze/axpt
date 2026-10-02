@@ -253,3 +253,932 @@
 .formationBoundary {
   border-top-color: rgba(204, 181, 129, .16);
 }
+
+/* GM V4 — Article V becomes a deliberative threshold rather than
+   another utility card in the article stream. */
+.folio {
+  position: relative;
+  margin-top: clamp(2rem, 5vw, 4rem);
+  padding: clamp(2rem, 5vw, 3.5rem);
+  border: 1px solid rgba(204, 181, 129, .34);
+  border-top: 3px solid rgba(204, 181, 129, .82);
+  background:
+    radial-gradient(
+      ellipse at 50% 0,
+      rgba(213, 194, 145, .12),
+      transparent 42%
+    ),
+    radial-gradient(
+      ellipse at 82% 22%,
+      rgba(82, 128, 151, .2),
+      transparent 58%
+    ),
+    linear-gradient(145deg, #1b394b, #0d2231 72%);
+  box-shadow:
+    inset 0 1px 0 rgba(242, 229, 194, .12),
+    0 24px 60px rgba(4, 12, 18, .22);
+}
+
+.folio::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 3.25rem;
+  height: 1px;
+  transform: translateX(-50%);
+  background: #ccb581;
+  box-shadow:
+    -4rem 0 0 rgba(204, 181, 129, .24),
+    4rem 0 0 rgba(204, 181, 129, .24);
+}
+
+.threshold {
+  max-width: 43rem;
+}
+
+.threshold .status {
+  color: #dcc487;
+}
+
+.folio .threshold h3 {
+  margin-top: .75rem;
+  color: #f3ead7;
+  font-size: clamp(2rem, 4vw, 3rem);
+  line-height: 1.08;
+}
+
+.folio .threshold p {
+  max-width: 38rem;
+  font-size: clamp(.98rem, 1.6vw, 1.08rem);
+  line-height: 1.72;
+}
+
+.entry {
+  margin-top: 1.65rem;
+}
+
+.enterAction {
+  width: min(100%, 25rem);
+  min-height: 58px;
+  padding: 1rem 1.35rem;
+  border: 1px solid #e5d3a2;
+  background:
+    linear-gradient(
+      180deg,
+      #eee4ca,
+      #dccba2
+    );
+  color: #142a39;
+  font-family: Baskerville, Georgia, serif;
+  font-size: 1.06rem;
+  letter-spacing: .012em;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.7),
+    0 8px 24px rgba(4, 12, 18, .2);
+}
+
+.enterAction:hover:not(:disabled) {
+  background:
+    linear-gradient(
+      180deg,
+      #f5ecd7,
+      #e6d5ab
+    );
+}
+
+@media (max-width: 560px) {
+  .folio {
+    margin-top: 1.6rem;
+    padding: 1.5rem 1.15rem 1.65rem;
+  }
+
+  .folio .threshold h3 {
+    font-size: 2rem;
+  }
+
+  .enterAction {
+    width: 100%;
+    min-height: 60px;
+  }
+}
+
+/* A position that has actually been answered should read as established,
+   not merely visited. */
+.positionStepComplete {
+  border-color: rgba(204, 181, 129, .58);
+  background:
+    radial-gradient(
+      circle at 50% 35%,
+      rgba(229, 211, 166, .18),
+      transparent 62%
+    ),
+    rgba(39, 68, 83, .68);
+  color: #f3ead5;
+  box-shadow:
+    inset 0 0 0 1px rgba(204, 181, 129, .12),
+    0 0 14px rgba(204, 181, 129, .08);
+}
+
+.positionStepComplete small {
+  color: #ead69e;
+  font-weight: 700;
+}
+
+.positionStepComplete.positionStepActive {
+  border-color: #dcc487;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(68, 96, 108, .94),
+      rgba(31, 61, 78, .96)
+    );
+  box-shadow:
+    inset 0 0 0 1px rgba(232, 214, 164, .22),
+    0 0 18px rgba(204, 181, 129, .12);
+}
+
+/* The governance boundary remains visible throughout deliberation. */
+.formationBoundary {
+  position: sticky;
+  bottom: 0;
+  z-index: 5;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: .8rem 1rem;
+  align-items: center;
+  margin: 1.4rem -.7rem -.7rem;
+  padding: .7rem .8rem;
+  border-top: 1px solid rgba(204, 181, 129, .24);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(16, 31, 45, .94),
+      rgba(11, 24, 35, .985)
+    );
+  box-shadow:
+    0 -10px 24px rgba(6, 15, 22, .16);
+  backdrop-filter: blur(10px);
+}
+
+.formationBoundary span {
+  white-space: nowrap;
+  color: #d7bf82;
+  font-size: .58rem;
+}
+
+.formationBoundary p {
+  margin: 0;
+  color: #c0cdd4;
+  font-size: .7rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 760px) {
+  .formationBoundary {
+    grid-template-columns: 1fr;
+    gap: .2rem;
+    margin-inline: -.25rem;
+    margin-bottom: -.25rem;
+    padding: .5rem .6rem .55rem;
+  }
+
+  .formationBoundary p {
+    font-size: .65rem;
+    line-height: 1.32;
+  }
+}
+
+@media (max-width: 760px) {
+  .councilField {
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .portalInner {
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .registerRail {
+    position: relative;
+    top: auto;
+    max-height: none;
+    overflow: visible;
+    padding: .45rem .65rem .4rem;
+  }
+
+  .registerToolbar {
+    min-height: 38px;
+  }
+
+  .backAction {
+    min-height: 38px;
+    padding: .42rem .6rem;
+    font-size: .72rem;
+  }
+
+  .councilOpening {
+    margin: .25rem 0 .4rem;
+  }
+
+  .councilOpening h2 {
+    font-size: 1.15rem;
+    line-height: 1.15;
+  }
+
+  .councilOpening .draftStatus {
+    margin-top: .25rem;
+    font-size: .62rem;
+  }
+
+  .positionNavigator {
+    grid-template-columns:
+      repeat(8, minmax(0, 1fr))
+      minmax(3rem, auto);
+    gap: .2rem;
+  }
+
+  .positionStep,
+  .reviewStep {
+    min-height: 38px;
+    padding: .3rem .15rem;
+  }
+
+  .reviewStep {
+    grid-column: auto;
+    font-size: .55rem;
+  }
+
+  .progressCaption {
+    margin: .28rem 0 0;
+    font-size: .62rem;
+  }
+
+  .registerContent {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: .75rem .8rem 0;
+    scroll-padding-bottom: 4.5rem;
+  }
+
+  .positionCard,
+  .reviewPanel {
+    min-height: auto;
+    padding: 1.35rem 1.05rem 1.1rem;
+  }
+
+  .positionCard h3 {
+    scroll-margin-top: 1rem;
+    font-size: clamp(1.55rem, 7vw, 2rem);
+    line-height: 1.2;
+  }
+
+  .positionStatement {
+    font-size: 1rem;
+    line-height: 1.68;
+  }
+
+  .choice {
+    min-height: 72px;
+  }
+
+  .choiceDescription {
+    font-size: .8rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .positionNavigator {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+
+  .reviewStep {
+    grid-column: 1 / -1;
+    min-height: 34px;
+  }
+}
+
+/* GM V4 — named formation instrument receives institutional weight. */
+.instrumentName {
+  color: #263f50;
+  font-family: Baskerville, Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  letter-spacing: .005em;
+}
+
+
+/*
+ * GM V4 — deliberation register must become a vertical reading instrument
+ * before tablet widths begin compressing the position card.
+ */
+@media (max-width: 900px) {
+  .councilField {
+    width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    overflow: hidden;
+  }
+
+  .portalInner {
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .registerRail {
+    position: relative;
+    top: auto;
+    width: 100%;
+    max-width: none;
+    max-height: none;
+    overflow: visible;
+    box-sizing: border-box;
+    padding: .65rem .8rem .6rem;
+    border-right: 0;
+    border-bottom: 1px solid rgba(204, 181, 129, .18);
+  }
+
+  .registerToolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .65rem;
+  }
+
+  .backAction {
+    min-height: 42px;
+    padding: .55rem .75rem;
+  }
+
+  .councilOpening {
+    margin: .45rem 0 .55rem;
+  }
+
+  .councilOpening h2 {
+    margin: 0;
+    font-size: clamp(1.3rem, 4.5vw, 1.7rem);
+    line-height: 1.15;
+  }
+
+  .councilOpening .draftStatus {
+    margin-top: .25rem;
+  }
+
+  .positionNavigator {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: .28rem;
+    width: 100%;
+  }
+
+  .positionStep {
+    min-width: 0;
+    min-height: 42px;
+    padding: .35rem .15rem;
+  }
+
+  .reviewStep {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-height: 40px;
+    margin-top: .12rem;
+  }
+
+  .progressCaption {
+    margin: .4rem 0 0;
+  }
+
+  .registerContent {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    box-sizing: border-box;
+    padding: 1rem .9rem 5.25rem;
+  }
+
+  .positionCard,
+  .reviewPanel {
+    width: 100%;
+    max-width: 46rem;
+    min-width: 0;
+    margin-inline: auto;
+    box-sizing: border-box;
+    padding: 1.35rem 1.05rem 1.25rem;
+  }
+
+  .positionCard header,
+  .positionCard section,
+  .positionCard p,
+  .positionStatement {
+    max-width: 100%;
+  }
+
+  .positionCard h3 {
+    max-width: 100%;
+    font-size: clamp(1.7rem, 6vw, 2.25rem);
+    line-height: 1.12;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  .positionStatement {
+    font-size: 1rem;
+    line-height: 1.65;
+    overflow-wrap: normal;
+    word-break: normal;
+  }
+
+  .choice {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .formationBoundary {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 560px) {
+  .registerRail {
+    padding: .55rem .65rem .5rem;
+  }
+
+  .positionNavigator {
+    gap: .2rem;
+  }
+
+  .positionStep {
+    min-height: 40px;
+  }
+
+  .registerContent {
+    padding-inline: .7rem;
+  }
+
+  .positionCard,
+  .reviewPanel {
+    padding: 1.2rem .9rem;
+  }
+}
+
+
+@media (max-width: 620px) {
+
+  .positionCard {
+    border:
+      0;
+    border-left:
+      1px solid rgba(185,153,92,.55);
+    background:
+      transparent;
+    padding:
+      1rem 0 1.5rem 1rem;
+  }
+
+  .positionCard h2 {
+    font-size:
+      clamp(1.8rem, 8vw, 2.3rem);
+  }
+
+  .positionCard p {
+    font-size:
+      .98rem;
+    line-height:
+      1.55;
+  }
+
+  .responseChoice {
+    padding:
+      .9rem;
+    background:
+      transparent;
+  }
+
+}
+
+/* =========================================================
+   GM V4 — MOBILE DELIBERATION FINAL FLOW
+   Single scroll surface · sticky deliberation rail · air/water
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .councilField {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+  }
+
+  .portalInner {
+    display: block;
+    width: 100%;
+    height: auto;
+    min-height: 100%;
+    overflow: visible;
+  }
+
+  .registerRail {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    width: 100%;
+    padding: .75rem .7rem .8rem;
+    background:
+      linear-gradient(
+        to bottom,
+        rgba(12, 31, 44, .985) 0%,
+        rgba(12, 31, 44, .965) 88%,
+        rgba(12, 31, 44, .90) 100%
+      );
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(191, 160, 94, .22);
+  }
+
+  .registerContent {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    padding: 1.3rem .75rem 5.5rem;
+  }
+
+  .positionNavigator {
+    gap: .28rem;
+  }
+
+  .positionStep,
+  .reviewStep {
+    min-height: 38px;
+    padding: .35rem .3rem;
+  }
+
+  .positionStep {
+    font-size: .78rem;
+  }
+
+  .reviewStep {
+    font-size: .72rem;
+  }
+
+  .progressCaption {
+    margin-top: .55rem;
+    font-size: .72rem;
+    line-height: 1.35;
+  }
+
+  .positionCard,
+  .reviewPanel {
+    border: 0;
+    border-left: 1px solid rgba(191, 160, 94, .58);
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: .8rem 0 1.5rem 1rem;
+  }
+
+  .positionCard h3 {
+    font-size: clamp(1.65rem, 6vw, 2rem);
+    line-height: 1.05;
+    margin-bottom: .8rem;
+  }
+
+  .positionStatement {
+    font-size: .96rem;
+    line-height: 1.55;
+  }
+
+  .responseField {
+    margin-top: 1.2rem;
+  }
+
+  .choiceGrid {
+    gap: .45rem;
+  }
+
+  .choice {
+    min-height: 0;
+    padding: .72rem .8rem;
+    border-radius: 9px;
+    background: transparent;
+  }
+
+  .choiceLabel {
+    font-size: .94rem;
+    line-height: 1.2;
+  }
+
+  .choiceDescription {
+    margin-top: .2rem;
+    font-size: .73rem;
+    line-height: 1.35;
+  }
+
+  .noteField textarea {
+    min-height: 5.5rem;
+  }
+
+  .positionActions {
+    margin-top: 1.1rem;
+    padding-top: .85rem;
+  }
+
+  .formationBoundary {
+    position: sticky;
+    bottom: 0;
+    z-index: 25;
+  }
+}
+
+@media (max-width: 560px) {
+  .registerRail {
+    padding: .6rem .55rem .65rem;
+  }
+
+  .positionNavigator {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: .18rem;
+  }
+
+  .positionStep {
+    min-width: 0;
+    min-height: 32px;
+    padding: .2rem;
+    font-size: .7rem;
+  }
+
+  .reviewStep {
+    grid-column: 1 / -1;
+    min-height: 30px;
+    margin-top: .15rem;
+    padding: .25rem;
+  }
+
+  .registerContent {
+    padding: 1.15rem .65rem 5rem;
+  }
+
+  .positionCard,
+  .reviewPanel {
+    padding: .65rem 0 1.3rem .8rem;
+  }
+
+  .choice {
+    padding: .65rem .7rem;
+  }
+}
+
+/* =========================================================
+   GM V4 — MOBILE DELIBERATION MINIMAL SURFACE
+   ========================================================= */
+
+@media (max-width: 900px) {
+  .registerContent {
+    padding-bottom: 7rem;
+  }
+
+  .positionCard,
+  .reviewPanel {
+    border: 0;
+    border-left: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /*
+   * Institutional boundary remains visible,
+   * but no longer lives inside the scrolling manuscript.
+   */
+  .formationBoundary {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    z-index: 60;
+
+    width: 100%;
+    margin: 0;
+    padding:
+      .7rem 1rem
+      max(.7rem, env(safe-area-inset-bottom));
+
+    background: rgba(10, 28, 39, .985);
+    border-top: 1px solid rgba(191, 160, 94, .22);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .formationBoundary span {
+    margin: 0 0 .22rem;
+  }
+
+  .formationBoundary p {
+    margin: 0;
+    line-height: 1.35;
+  }
+}
+
+@media (max-width: 560px) {
+  .registerContent {
+    padding:
+      1.15rem .85rem
+      7.25rem;
+  }
+
+  .positionCard,
+  .reviewPanel {
+    padding:
+      .65rem 0
+      1.3rem;
+  }
+}
+
+/* =========================================================
+   GM V4 — RESPONSE CHOICES / QUIET DECISION LINES
+   ========================================================= */
+
+.councilField .choiceGrid {
+  gap: .38rem;
+}
+
+.councilField .choice {
+  position: relative;
+
+  min-height: 0;
+  padding:
+    .82rem
+    2.5rem
+    .82rem
+    .15rem;
+
+  border: 0;
+  border-bottom:
+    1px solid
+    rgba(174, 196, 207, .22);
+
+  border-radius: 0;
+
+  background: transparent;
+
+  transition:
+    padding-left 150ms ease,
+    border-color 150ms ease,
+    background-color 150ms ease;
+}
+
+.councilField .choice::before {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  top: .75rem;
+  bottom: .75rem;
+
+  width: 1px;
+
+  background:
+    rgba(204, 181, 129, 0);
+
+  transition:
+    width 150ms ease,
+    background-color 150ms ease;
+}
+
+.councilField .choice::after {
+  content: "○";
+
+  position: absolute;
+  top: 50%;
+  right: .35rem;
+
+  transform:
+    translateY(-50%);
+
+  color:
+    rgba(180, 199, 208, .52);
+
+  font-family:
+    Georgia,
+    serif;
+
+  font-size: .9rem;
+}
+
+.councilField .choiceLabel {
+  display: block;
+
+  color: #f0ece2;
+
+  font-family:
+    Baskerville,
+    Georgia,
+    serif;
+
+  font-size: 1.03rem;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.councilField .choiceLabel > span {
+  display: none;
+}
+
+.councilField .choiceDescription {
+  margin-top: .22rem;
+
+  color: #aebdc5;
+
+  font-size: .72rem;
+  line-height: 1.4;
+}
+
+.councilField .choice:hover:not(:disabled) {
+  padding-left: .55rem;
+
+  border-color:
+    rgba(204, 181, 129, .4);
+
+  background:
+    rgba(59, 91, 108, .09);
+}
+
+.councilField .choiceSelected {
+  padding-left: .7rem;
+
+  border-color:
+    rgba(204, 181, 129, .62);
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(204, 181, 129, .09),
+      transparent 54%
+    );
+
+  box-shadow: none;
+}
+
+.councilField .choiceSelected::before {
+  width: 2px;
+
+  background:
+    rgba(222, 195, 128, .9);
+}
+
+.councilField .choiceSelected::after {
+  content: "●";
+
+  color:
+    #dcc486;
+
+  font-size: .68rem;
+}
+
+@media (max-width: 560px) {
+  .councilField .choiceGrid {
+    gap: .18rem;
+  }
+
+  .councilField .choice {
+    padding:
+      .78rem
+      2.25rem
+      .78rem
+      .1rem;
+  }
+
+  .councilField .choiceSelected {
+    padding-left: .6rem;
+  }
+
+  .councilField .choiceLabel {
+    font-size: 1rem;
+  }
+
+  .councilField .choiceDescription {
+    font-size: .7rem;
+  }
+}

@@ -2,9 +2,9 @@ import { notFound } from "next/navigation";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { isAdmin } from "@/domains/auth/isAdmin";
 import { prisma } from "@/infrastructure/db/prisma";
-import { globalMotherV3Definition } from "@/domains/instruments/definitions/globalMotherV3Definition";
+import { globalMotherV4Definition } from "@/domains/instruments/definitions/globalMotherV4Definition";
 import styles from "./page.module.css";
-import { IssueV2Control } from "./IssueV2Control";
+import { IssueV4Control } from "./IssueV4Control";
 import { GrantV2Control } from "./GrantV2Control";
 import { RevokeV2Control } from "./RevokeV2Control";
 import { globalMotherDraftingGate } from "@/domains/instruments/invariants/globalMotherDraftingGate";
@@ -30,7 +30,7 @@ export default async function GlobalMotherResponseReviewPage() {
   if (!isAdmin(principal)) notFound();
 
   const instrument = await prisma.institutionalInstrument.findUnique({
-    where: { reference: globalMotherV3Definition.reference },
+    where: { reference: globalMotherV4Definition.reference },
     select: {
       id: true, reference: true, status: true, currentVersion: true,
       versions: { orderBy: { number: "desc" }, select: {
@@ -62,7 +62,7 @@ export default async function GlobalMotherResponseReviewPage() {
   });
   if (!instrument) notFound();
   const version = instrument.versions.find(
-    item => item.number === globalMotherV3Definition.version,
+    item => item.number === globalMotherV4Definition.version,
   );
   const historicalReceipts = instrument.responseSets.filter(
     set => set.versionId !== version?.id,
@@ -116,7 +116,7 @@ export default async function GlobalMotherResponseReviewPage() {
       <aside className={styles.contextRail}>
       <section className={styles.metrics} aria-label="Framework response standing">
         <div><span>Instrument</span><strong>{instrument.reference}</strong><small>{instrument.status} · current V{instrument.currentVersion}</small></div>
-        <div><span>Framework version</span><strong>V{globalMotherV3Definition.version} · {version?.status ?? "ABSENT"}</strong><small>{version?.issuedAt?.toLocaleString() ?? "Not issued"}</small></div>
+        <div><span>Framework version</span><strong>V{globalMotherV4Definition.version} · {version?.status ?? "ABSENT"}</strong><small>{version?.issuedAt?.toLocaleString() ?? "Not issued"}</small></div>
         <div><span>Bound grants</span><strong>{currentGrants.length}</strong><small>{currentGrants.filter(grant => grant.firstAccessAt).length} accessed</small></div>
         <div><span>Response sets</span><strong>{receipts.length}</strong><small>{open} positions for discussion</small></div>
       </section>
@@ -133,19 +133,19 @@ export default async function GlobalMotherResponseReviewPage() {
         <div className={styles.accessColumn}>
       <section className={`${styles.section} ${styles.integritySection}`}>
         <h2>Version integrity</h2>
-        <p>{version?.propositions.length === globalMotherV3Definition.propositions.length &&
-          version.propositions.every((item, index) => item.reference === globalMotherV3Definition.propositions[index]?.reference &&
-            item.body === globalMotherV3Definition.propositions[index]?.body)
+        <p>{version?.propositions.length === globalMotherV4Definition.propositions.length &&
+          version.propositions.every((item, index) => item.reference === globalMotherV4Definition.propositions[index]?.reference &&
+            item.body === globalMotherV4Definition.propositions[index]?.body)
           ? version.status === "ISSUED"
             ? "Eight issued positions match the Framework source."
             : "Eight draft positions match the Framework source. V3 remains unissued."
           : "The V3 proposition record does not match the eight-position source. Resolve before issuance or response."}</p>
         {version?.status === "DRAFT" && instrument.currentVersion === 2 &&
-          version.propositions.length === globalMotherV3Definition.propositions.length &&
+          version.propositions.length === globalMotherV4Definition.propositions.length &&
           version.propositions.every((item, index) =>
-            item.reference === globalMotherV3Definition.propositions[index]?.reference &&
-            item.body === globalMotherV3Definition.propositions[index]?.body)
-          ? <IssueV2Control versionId={version.id} /> : null}
+            item.reference === globalMotherV4Definition.propositions[index]?.reference &&
+            item.body === globalMotherV4Definition.propositions[index]?.body)
+          ? <IssueV4Control versionId={version.id} /> : null}
       </section>
 
       <section id="gm-access" className={styles.section}>
@@ -153,7 +153,7 @@ export default async function GlobalMotherResponseReviewPage() {
           <div><span>01 / Access</span><h2>Recipient access</h2></div>
           <small>{currentGrants.length} current grant{currentGrants.length === 1 ? "" : "s"}</small>
         </div>
-        {version?.status === "ISSUED" && instrument.currentVersion === globalMotherV3Definition.version ? <GrantV2Control versionId={version.id} /> : null}
+        {version?.status === "ISSUED" && instrument.currentVersion === globalMotherV4Definition.version ? <GrantV2Control versionId={version.id} /> : null}
         {currentGrants.length === 0 ? <p>No version-bound recipient grants.</p> : (
           <div className={styles.recipientList}>
             {currentGrants.map(grant => {
@@ -276,7 +276,7 @@ export default async function GlobalMotherResponseReviewPage() {
             <small>{Array.isArray(decision.reviewedReceiptIds) ? decision.reviewedReceiptIds.length : 0} receipts reviewed</small>
           </div>
         </article>) : <p>No drafting decision recorded.</p>}
-        {version?.status === "ISSUED" && instrument.currentVersion === globalMotherV3Definition.version
+        {version?.status === "ISSUED" && instrument.currentVersion === globalMotherV4Definition.version
           ? <DraftingDecisionControl key={receipts.map(set => set.id).join(":")} versionId={version.id}
               receiptIds={receipts.map(set => set.id)} gate={draftingGate} /> : null}
         </div>

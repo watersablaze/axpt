@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { isAdmin } from "@/domains/auth/isAdmin";
 import { prisma } from "@/infrastructure/db/prisma";
-import { globalMotherV3Definition } from "@/domains/instruments/definitions/globalMotherV3Definition";
+import { globalMotherV4Definition } from "@/domains/instruments/definitions/globalMotherV4Definition";
 import { runInstrumentGovernanceTransaction } from "@/domains/instruments/governance/runInstrumentGovernanceTransaction";
 import { issueInstrumentAccessGrantWithClient } from "@/domains/instruments/commands/issueInstrumentAccessGrantWithClient";
 import { ensureInstrumentParticipantIdentityWithClient } from "@/domains/instruments/commands/ensureInstrumentParticipantIdentityWithClient";
@@ -32,16 +32,16 @@ export async function POST(request: Request) {
   try {
     const issued = await runInstrumentGovernanceTransaction(prisma, async tx => {
       const instrument = await tx.institutionalInstrument.findUnique({
-        where: { reference: globalMotherV3Definition.reference },
+        where: { reference: globalMotherV4Definition.reference },
         select: { id: true, currentVersion: true,
-          versions: { where: { number: globalMotherV3Definition.version, status: "ISSUED" }, select: { id: true } },
+          versions: { where: { number: globalMotherV4Definition.version, status: "ISSUED" }, select: { id: true } },
         },
       });
       const version = instrument?.versions[0];
-      if (!instrument || instrument.currentVersion !== globalMotherV3Definition.version || !version || version.id !== values.versionId)
+      if (!instrument || instrument.currentVersion !== globalMotherV4Definition.version || !version || version.id !== values.versionId)
         throw new Error("[GM_V2_GRANT_VERSION_NOT_ISSUED]");
       const { user } = await ensureInstrumentParticipantIdentityWithClient({
-        client: tx, instrumentReference: globalMotherV3Definition.reference,
+        client: tx, instrumentReference: globalMotherV4Definition.reference,
         email, displayName: name, createdByUserId: principal.userId,
       });
       const existing = await tx.instrumentAccessGrant.findFirst({
@@ -50,8 +50,8 @@ export async function POST(request: Request) {
       });
       if (existing) throw new Error("[GM_V2_GRANT_ALREADY_ACTIVE]");
       return issueInstrumentAccessGrantWithClient({
-        client: tx, instrumentReference: globalMotherV3Definition.reference,
-        recipientName: name, recipientUserId: user.id, versionNumber: globalMotherV3Definition.version,
+        client: tx, instrumentReference: globalMotherV4Definition.reference,
+        recipientName: name, recipientUserId: user.id, versionNumber: globalMotherV4Definition.version,
         representedInstitution: institution, representativeCapacity: capacity,
         recipientRole: "DELIBERATOR", accessLevel: "DELIBERATE",
         issuedByUserId: principal.userId,

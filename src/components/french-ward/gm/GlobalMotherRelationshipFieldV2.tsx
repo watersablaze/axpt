@@ -19,8 +19,8 @@ export function GlobalMotherRelationshipFieldV2() {
         <div className={styles.label}><span>REL-02</span><span>The trusted bridge</span></div>
         <div className={styles.twoColumns}>
           <div>
-            <h4>AOTG</h4>
-            <p>The trusted bridge connecting ND Royal Ministry and French-Ward. AOTG brings its existing relationship with French-Ward; trade may support its governmental capacity on terms it authorizes.</p>
+            <h4>Ahma Olmec Tartarian Government (AOTG)</h4>
+            <p>The trusted bridge connecting ND Royal Ministry and French-Ward. The Ahma Olmec Tartarian Government (AOTG) brings its existing relationship with French-Ward; trade may strengthen its governmental capacity, global trade standing, and restorative work for the global Indigenous and Melanated family and community on terms it authorizes.</p>
           </div>
         </div>
       </div>
@@ -40,14 +40,14 @@ export function GlobalMotherRelationshipFieldV2() {
             <p>Stewards the relationship, governed passage, and productive return.</p>
           </div>
         </div>
-        <p className={styles.note}>A proposed master agreement would define AOTG–French-Ward, French-Ward–ND Royal Ministry, and shared three-party responsibilities. French-Ward’s gold authority rests on its separate operative mandate.</p>
+        <p className={styles.note}>A proposed Master Agreement & Proclamation of Trust would define AOTG–French-Ward, French-Ward–ND Royal Ministry, and shared three-party responsibilities. French-Ward’s gold authority rests on its separate operative mandate.</p>
       </div>
 
       <div className={styles.anchor}>
         <div className={styles.label}><span>REL-04</span><span>Purpose & present economic anchor</span></div>
         <div className={styles.twoColumns}>
           <div><p className={styles.eyebrow}>The present work</p><h3>Gold is the economic anchor.</h3></div>
-          <p>Beyond the gold corridor: restoration, AOTG governmental capacity, projects, cultural continuity, and the two-part Gift in Article IV.</p>
+          <p>Beyond the gold corridor: restoration, AOTG governmental capacity, the empowerment and support of the global Indigenous and Melanated family and community, projects, cultural continuity, and the two-part Gift in Article IV.</p>
         </div>
       </div>
 

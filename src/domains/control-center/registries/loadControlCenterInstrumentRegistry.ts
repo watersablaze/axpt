@@ -1,7 +1,7 @@
 import "server-only";
 
 import { DSI_REFERENCE } from "@/domains/instruments/definitions/digitalSettlementV1Definition";
-import { globalMotherV3Definition } from "@/domains/instruments/definitions/globalMotherV3Definition";
+import { globalMotherV4Definition } from "@/domains/instruments/definitions/globalMotherV4Definition";
 import { prisma } from "@/infrastructure/db/prisma";
 
 export type ControlCenterInstrumentRegistryEntry = {
@@ -56,7 +56,7 @@ export async function loadControlCenterInstrumentRegistry(): Promise<
         },
       },
       versions: {
-        where: { number: globalMotherV3Definition.version },
+        where: { number: globalMotherV4Definition.version },
         select: { status: true },
       },
     },
@@ -71,15 +71,15 @@ export async function loadControlCenterInstrumentRegistry(): Promise<
     currentVersion: instrument.currentVersion,
     updatedAt: instrument.updatedAt,
     domainState:
-      instrument.reference === globalMotherV3Definition.reference
+      instrument.reference === globalMotherV4Definition.reference
         ? instrument.versions[0]?.status
-          ? `V${globalMotherV3Definition.version} ${instrument.versions[0].status}`
+          ? `V${globalMotherV4Definition.version} ${instrument.versions[0].status}`
           : "FRAMEWORK SETUP"
         : instrument.digitalSettlementInstruction?.settlementStatus ?? null,
     counterpartyName:
       instrument.digitalSettlementInstruction?.counterpartyName ?? null,
       operatorHref:
-        instrument.reference === globalMotherV3Definition.reference
+        instrument.reference === globalMotherV4Definition.reference
           ? "/admin/control-center/instruments/gm-kenya"
           : instrument.reference === DSI_REFERENCE &&
         instrument.digitalSettlementInstruction

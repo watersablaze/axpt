@@ -25,7 +25,7 @@ export function GlobalMotherContinuityFieldV2() {
         <div className={styles.label}><span>CONT-01</span><span>Productive return</span></div>
         <div className={styles.statement}>
           <h3>Return can build capacity.</h3>
-          <p>Lawful trade may support ND Royal Ministry’s restoration and AOTG’s governmental capacity. Agreed return can sustain further work.</p>
+          <p>Lawful trade may support ND Royal Ministry’s restoration, AOTG’s governmental capacity, and restorative work benefiting the global Indigenous and Melanated family and community. Agreed return can sustain further work.</p>
         </div>
         <div className={styles.domains}>
           {domains.map(domain => (
@@ -59,7 +59,7 @@ export function GlobalMotherContinuityFieldV2() {
           <h3>One Gift. Two digital commitments.</h3>
         </div>
         <div className={styles.giftBody}>
-          <p>French-Ward intends a two-part Gift for AOTG and ND Royal Ministry: a digital tokenization pathway and a complete digital media management, design, and development package.</p>
+          <p>French-Ward intends a two-part Gift for the Ahma Olmec Tartarian Government (AOTG) and ND Royal Ministry: a digital tokenization pathway and a complete digital media management, design, and development package.</p>
           <p>Each recipient shapes scope and activation. The Gift supports identity, heritage, and communication; it sets no gold-sale term or Royal authority.</p>
         </div>
       </aside>

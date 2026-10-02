@@ -129,3 +129,139 @@
 @media (max-width: 560px) {
   .doctrine { padding: 1.15rem 1rem 1.3rem; }
 }
+
+/* =========================================================
+   GM V4 — INAUGURAL GIFT / DIGITAL FIELD
+   Distinct from the constitutional article surfaces.
+   ========================================================= */
+
+.gift {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding: clamp(1.55rem, 3.5vw, 2.5rem);
+
+  border: 1px solid rgba(54, 91, 111, .28);
+  border-radius: 2px;
+
+  background:
+    radial-gradient(
+      circle at 88% 16%,
+      rgba(71, 134, 158, .16),
+      transparent 26%
+    ),
+    radial-gradient(
+      circle at 8% 100%,
+      rgba(169, 137, 79, .09),
+      transparent 34%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(235, 231, 218, .82),
+      rgba(224, 229, 221, .62)
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.5),
+    0 14px 34px rgba(40, 58, 65, .06);
+}
+
+/* quiet digital constellation */
+.gift::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+
+  opacity: .42;
+
+  background-image:
+    linear-gradient(
+      rgba(44, 86, 106, .055) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(44, 86, 106, .055) 1px,
+      transparent 1px
+    );
+
+  background-size:
+    28px 28px;
+}
+
+/* small digital mark */
+.gift::after {
+  content: "◇  01 / 10";
+  position: absolute;
+  top: 1.15rem;
+  right: 1.25rem;
+
+  color: rgba(45, 83, 102, .48);
+
+  font-family:
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+
+  font-size: .57rem;
+  letter-spacing: .14em;
+}
+
+.giftHeading {
+  position: relative;
+  z-index: 1;
+  max-width: 25rem;
+}
+
+.giftHeading span {
+  color: #745d38;
+}
+
+.giftHeading h3 {
+  max-width: 20rem;
+  color: #243d4b;
+}
+
+.giftBody {
+  position: relative;
+  z-index: 1;
+}
+
+.giftBody p:first-child {
+  color: #46555c;
+}
+
+.giftBody p + p {
+  color: #765e36;
+}
+
+@media (max-width: 620px) {
+  .gift {
+    margin-inline: -.15rem;
+    padding: 1.45rem 1.25rem 1.55rem;
+  }
+
+  .gift::before {
+    background-size:
+      22px 22px;
+  }
+
+  .gift::after {
+    top: .8rem;
+    right: .8rem;
+    font-size: .5rem;
+  }
+
+  .giftHeading {
+    padding-right: 4rem;
+  }
+
+  .giftHeading h3 {
+    font-size: clamp(1.55rem, 7vw, 2rem);
+  }
+}

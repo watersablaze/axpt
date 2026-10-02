@@ -1,153 +1,435 @@
 .field {
-  --ink: #29281f;
-  --muted: #625d50;
-  --bronze: #785f38;
-  --rule: rgba(75, 67, 48, 0.2);
+  --ink: #28343b;
+  --muted: #556168;
+  --bronze: #80643a;
+  --gold: #b99a61;
+  --rule: rgba(52, 70, 82, .16);
+  --paper-warm: rgba(151, 119, 70, .055);
+
   width: 100%;
-  padding: 0 clamp(0.75rem, 2.2vw, 1.5rem) 2.5rem;
+  padding: 0 0 1.4rem;
   color: var(--ink);
 }
-.field * { box-sizing: border-box; }
-.field p, .field h3 { margin-top: 0; }
-.opening {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.5rem 1.5rem;
-  padding: 0.3rem 0 1rem;
+
+.field * {
+  box-sizing: border-box;
 }
-.opening span, .label, .stageNumber, .record, .doctrine span {
-  color: var(--bronze);
-  font-size: 0.66rem;
-  letter-spacing: 0.13em;
-  text-transform: uppercase;
+
+.field h3,
+.field h4,
+.field p {
+  margin-top: 0;
 }
-.opening p { max-width: 29rem; margin-bottom: 0; color: var(--muted); font-size: 0.89rem; line-height: 1.45; }
-.sequence { position: relative; border-top: 2px solid var(--bronze); }
-.sequence::before { position: absolute; top: 1.75rem; bottom: 1.75rem; left: 1.1rem; width: 1px; background: var(--bronze); content: ""; }
-.stage {
-  position: relative;
+
+.readiness {
+  margin-top: .2rem;
+}
+
+.readinessHeader {
   display: grid;
-  grid-template-columns: 2.2rem minmax(11rem, 0.75fr) minmax(0, 1.25fr);
-  align-items: baseline;
-  gap: clamp(0.75rem, 2vw, 1.5rem);
-  padding: clamp(0.9rem, 1.6vw, 1.25rem) 0;
-  border-bottom: 1px solid var(--rule);
-}
-.stageNumber { position: relative; z-index: 1; width: 2.2rem; padding: 0.3rem 0; background: #e6dfcf; text-align: center; }
-.stage h3, .corridor h3, .movement h3 {
-  margin-bottom: 0;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(1.2rem, 1.9vw, 1.65rem);
-  font-weight: 400;
-  line-height: 1.16;
-}
-.stage p { margin-bottom: 0; color: var(--muted); font-size: 0.88rem; line-height: 1.45; }
-.corridor, .movement { margin-top: clamp(1.8rem, 3.2vw, 2.5rem); }
-.label { display: flex; justify-content: space-between; gap: 1rem; padding: 0.75rem 0; border-bottom: 1px solid var(--rule); }
-.corridorBody { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: clamp(1rem, 3vw, 2rem); padding: 1.35rem 0; }
-.corridorBody h3, .movement h3 { font-size: clamp(1.5rem, 2.5vw, 2.1rem); }
-.corridorBody p, .movement > p { margin-bottom: 0; color: var(--muted); line-height: 1.5; }
-.boundary { margin: 0; padding: 0.9rem 0; border-top: 1px solid var(--rule); color: var(--bronze); font-size: 0.88rem; line-height: 1.45; }
-.movement { padding: 0 clamp(1rem, 2.8vw, 2rem) clamp(1.2rem, 2.5vw, 1.8rem); border: 1px solid var(--rule); }
-.movement h3 { margin: 1.3rem 0 0.65rem; }
-.record { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.35rem; }
-.record span { padding: 0.5rem 0.65rem; border: 1px solid var(--rule); }
-.doctrine {
-  margin-top: clamp(1.8rem, 3vw, 2.5rem);
-  padding: clamp(1.5rem, 3vw, 2.25rem);
-  border-left: 3px solid #a37c3e;
-  background: #172820;
-  color: #eee5d0;
-}
-.doctrine span { display: block; margin-bottom: 0.85rem; color: #cba76c; letter-spacing: 0.16em; }
-.doctrine p { max-width: 36rem; margin-bottom: 0; color: #eee5d0; font-family: Georgia, "Times New Roman", serif; font-size: clamp(1.4rem, 2.3vw, 1.9rem); line-height: 1.23; }
-@media (max-width: 700px) {
-  .corridorBody { grid-template-columns: 1fr; }
-  .stage { grid-template-columns: 2.2rem minmax(0, 1fr); gap: 0.3rem 0.75rem; }
-  .stage p { grid-column: 2; }
-  .label { flex-wrap: wrap; }
-}
-.stage h3,
-.corridor h3,
-.movement h3 {
-  font-family: Baskerville, "Times New Roman", serif;
-  letter-spacing: -0.012em;
-}
-
-.field { padding-bottom: 1.7rem; }
-.opening { padding-bottom: 0.7rem; }
-.stage { padding: clamp(0.65rem, 1.1vw, 0.85rem) 0; }
-.corridor, .movement { margin-top: clamp(1.2rem, 2.1vw, 1.65rem); }
-.corridorBody { padding: 0.95rem 0; }
-.movement { padding-bottom: 1rem; }
-.movement h3 { margin-top: 0.9rem; }
-.record { margin-top: 0.85rem; }
-.doctrine { margin-top: 1.4rem; padding: clamp(0.9rem, 1.7vw, 1.3rem); }
-.doctrine span { margin-bottom: 0.45rem; }
-.doctrine p { font-size: clamp(1.08rem, 1.65vw, 1.38rem); line-height: 1.3; }
-
-/* A trace of warm material follows the passage sequence. */
-.sequence {
-  background: linear-gradient(90deg, rgba(151, 119, 70, 0.075), transparent 67%);
-}
-.stage { padding-left: clamp(0.45rem, 0.9vw, 0.8rem); padding-right: clamp(0.45rem, 0.9vw, 0.8rem); }
-.stageNumber { background: #e8e0d0; }
-.corridor {
-  padding: 0 clamp(0.7rem, 1.4vw, 1.2rem);
-  border-left: 2px solid rgba(151, 119, 70, 0.42);
-  background: linear-gradient(90deg, rgba(151, 119, 70, 0.055), transparent 70%);
-}
-
-/* GM visual pass: focused reading and deliberation. */
-
-.field { --muted: #505b61; --rule: #33465820; padding: 0 0 1rem; }
-.sequence { border-top: 1px solid var(--rule); background: transparent; }
-.sequence::before { display: none; }
-.stage { grid-template-columns: 2rem minmax(0,1fr); gap: .4rem .85rem; padding: 1.25rem 0; }
-.stage p { grid-column: 2; font-size: 1rem; line-height: 1.58; }
-.stageNumber { background: transparent; }
-.corridorBody { grid-template-columns: 1fr; gap: .8rem; }
-.corridor { padding: 0; border: 0; background: transparent; }
-.corridorBody p, .movement > p { line-height: 1.58; }
-.movement { border-color: var(--rule); background: #33465806; border-radius: 3px; }
-.doctrine { background: #1a3041; border-left: 2px solid #b29a69; border-radius: 0 3px 3px 0; }
-
-
-/* Canonical article closing principle — shared across Articles I–V. */
-.doctrine {
-  margin-top: clamp(2rem, 4vw, 3rem);
-  padding: clamp(1.3rem, 2.5vw, 1.75rem);
-  border: 1px solid rgba(185, 153, 92, .18);
-  border-left: 3px solid rgba(204, 181, 129, .78);
-  border-radius: 2px;
+  grid-template-columns:
+    minmax(0, .95fr)
+    minmax(0, 1.05fr);
+  gap: clamp(1rem, 4vw, 3rem);
+  align-items: end;
+  padding:
+    clamp(1rem, 2.6vw, 1.65rem)
+    clamp(.9rem, 2vw, 1.4rem);
+  border-top:
+    2px solid rgba(128, 100, 58, .62);
+  border-bottom:
+    1px solid var(--rule);
   background:
-    radial-gradient(ellipse at 14% 0, rgba(53, 83, 103, .22), transparent 54%),
-    linear-gradient(135deg, #101f2d, #09151f 72%);
-  box-shadow:
-    inset 0 1px 0 rgba(235, 226, 199, .035),
-    0 14px 30px rgba(9, 20, 29, .08);
-  color: #f0e9db;
+    linear-gradient(
+      120deg,
+      rgba(151, 119, 70, .09),
+      transparent 58%
+    );
 }
-.doctrine span {
-  display: block;
-  margin-bottom: .7rem;
-  color: #d2b979;
+
+.readinessHeader span,
+.propositionHeader > span,
+.nextAct > span,
+.doctrine > span,
+.propositionItem > span,
+.propositionBoundary > span,
+.conditionNumber,
+.recordFields {
+  color: var(--bronze);
   font-family: Arial, sans-serif;
-  font-size: .63rem;
+  font-size: .65rem;
   letter-spacing: .14em;
   text-transform: uppercase;
 }
-.doctrine p {
-  max-width: 52rem;
-  margin: 0;
-  color: #f0e9db;
-  font-family: Baskerville, Georgia, "Times New Roman", serif;
-  font-size: clamp(1.08rem, 1.8vw, 1.32rem);
+
+.readinessHeader h3 {
+  max-width: 30rem;
+  margin: .65rem 0 0;
+  font-family:
+    Baskerville,
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size:
+    clamp(1.65rem, 3vw, 2.35rem);
   font-weight: 400;
-  line-height: 1.46;
+  line-height: 1.08;
 }
-@media (max-width: 560px) {
-  .doctrine { padding: 1.15rem 1rem 1.3rem; }
+
+.readinessHeader > p {
+  max-width: 38rem;
+  margin: 0;
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.62;
+}
+
+.schedule {
+  display: grid;
+  grid-template-columns: 1fr;
+  border-top:
+    1px solid var(--rule);
+  border-bottom:
+    1px solid var(--rule);
+}
+
+.condition {
+  display: grid;
+  grid-template-columns:
+    3.2rem minmax(0, 1fr);
+  gap: 1rem;
+  padding:
+    1rem
+    .25rem;
+  border-bottom:
+    1px solid var(--rule);
+  align-items: start;
+}
+
+.condition:last-child {
+  border-bottom: 0;
+}
+
+.conditionNumber {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  margin-top: .1rem;
+  border:
+    1px solid rgba(128, 100, 58, .35);
+  border-radius: 50%;
+  padding: 0;
+  font-size: .6rem;
+}
+
+.condition h4 {
+  margin: 0 0 .5rem;
+  font-family:
+    Baskerville,
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size:
+    clamp(1.25rem, 2vw, 1.55rem);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.condition p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .92rem;
+  line-height: 1.52;
+}
+
+.doctrine {
+  margin-top:
+    clamp(1.8rem, 4vw, 3rem);
+  padding:
+    clamp(1.25rem, 3vw, 2rem);
+  border:
+    1px solid rgba(185, 153, 92, .14);
+  border-left:
+    3px solid rgba(204, 181, 129, .84);
+  background:
+    radial-gradient(
+      ellipse at 12% 0,
+      rgba(58, 91, 111, .28),
+      transparent 50%
+    ),
+    linear-gradient(
+      135deg,
+      #112535,
+      #091720 76%
+    );
+  color: #f0e9db;
+}
+
+.doctrine > span {
+  display: block;
+  margin-bottom: 1.2rem;
+  color: #d6bc78;
+}
+
+.doctrine > strong {
+  display: block;
+  color: #d9c187;
+  font-family:
+    Arial,
+    sans-serif;
+  font-size: .79rem;
+  font-weight: 650;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+
+.doctrine h3 {
+  max-width: 42rem;
+  margin: .45rem 0 1.5rem;
+  color: #f3ecde;
+  font-family:
+    Baskerville,
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size:
+    clamp(1.75rem, 3.3vw, 2.7rem);
+  font-weight: 400;
+  line-height: 1.08;
+}
+
+.doctrineLines {
+  display: grid;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+  gap: .55rem 1.5rem;
+  max-width: 48rem;
+  padding-top: 1rem;
+  border-top:
+    1px solid rgba(230, 216, 180, .14);
+}
+
+.doctrineLines p {
+  margin: 0;
+  color: #cbd3d3;
+  font-size: .9rem;
+  line-height: 1.5;
+}
+
+.proposition {
+  margin-top:
+    clamp(2rem, 4vw, 3rem);
+}
+
+.propositionHeader {
+  display: grid;
+  grid-template-columns:
+    minmax(0, .7fr)
+    minmax(0, 1.3fr);
+  gap: 1rem 2rem;
+  align-items: end;
+  padding-bottom: 1rem;
+  border-bottom:
+    1px solid var(--rule);
+}
+
+.propositionHeader h3 {
+  margin: 0;
+  font-family:
+    Baskerville,
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size:
+    clamp(1.45rem, 2.6vw, 2rem);
+  font-weight: 400;
+  line-height: 1.18;
+}
+
+.propositionGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  border-top:
+    1px solid var(--rule);
+  border-bottom:
+    1px solid var(--rule);
+}
+
+.propositionItem {
+  display: grid;
+  grid-template-columns:
+    minmax(9rem, .45fr)
+    minmax(0, 1.55fr);
+  gap: 1.5rem;
+  padding:
+    1.25rem
+    .25rem;
+  border-bottom:
+    1px solid var(--rule);
+}
+
+.propositionItem:last-child {
+  border-bottom: 0;
+}
+
+.propositionItem > span {
+  display: block;
+  align-self: start;
+}
+
+.propositionItem p {
+  margin: .85rem 0 0;
+  color: var(--muted);
+  font-size: .9rem;
+  line-height: 1.55;
+}
+
+.propositionBoundary {
+  display: grid;
+  grid-template-columns:
+    minmax(8rem, .45fr)
+    minmax(0, 1.55fr);
+  gap: 1.2rem 2rem;
+  margin-top: 1rem;
+  padding: 1rem 1.15rem;
+  border-left:
+    2px solid rgba(128, 100, 58, .5);
+  background:
+    linear-gradient(
+      90deg,
+      var(--paper-warm),
+      transparent 72%
+    );
+}
+
+.propositionBoundary p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .85rem;
+  line-height: 1.52;
+}
+
+.nextAct {
+  margin-top:
+    clamp(1.8rem, 3vw, 2.5rem);
+  padding:
+    1.2rem
+    clamp(1rem, 2vw, 1.5rem);
+  border:
+    1px solid var(--rule);
+  background:
+    rgba(51, 70, 88, .025);
+}
+
+.nextAct > div:nth-of-type(1) {
+  display: grid;
+  grid-template-columns:
+    minmax(0, .8fr)
+    minmax(0, 1.2fr);
+  gap: 1rem 2rem;
+  margin-top: .9rem;
+}
+
+.nextAct h3 {
+  margin: 0;
+  font-family:
+    Baskerville,
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size:
+    clamp(1.4rem, 2.3vw, 1.9rem);
+  font-weight: 400;
+  line-height: 1.16;
+}
+
+.nextAct p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.recordFields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  margin-top: 1.1rem;
+}
+
+.recordFields span {
+  padding: .5rem .65rem;
+  border:
+    1px solid var(--rule);
+}
+
+@media (max-width: 820px) {
+  .readinessHeader,
+  .propositionHeader,
+  .propositionBoundary,
+  .nextAct > div:nth-of-type(1) {
+    grid-template-columns: 1fr;
+  }
+
+  .propositionGrid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .propositionItem:nth-child(3n) {
+    border-right:
+      1px solid var(--rule);
+  }
+
+  .propositionItem:nth-child(even) {
+    border-right: 0;
+  }
+
+  .propositionItem:nth-last-child(-n + 3) {
+    border-bottom:
+      1px solid var(--rule);
+  }
+
+  .propositionItem:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+}
+
+@media (max-width: 620px) {
+  .schedule,
+  .propositionGrid,
+  .doctrineLines {
+    grid-template-columns: 1fr;
+  }
+
+  .condition {
+    min-height: 0;
+    grid-template-columns:
+      2.5rem minmax(0, 1fr);
+  }
+
+  .propositionItem {
+    min-height: 0;
+    border-right: 0 !important;
+    border-bottom:
+      1px solid var(--rule) !important;
+  }
+
+  .propositionItem:last-child {
+    border-bottom: 0 !important;
+  }
+
+  .doctrine {
+    padding: 1.35rem 1.05rem;
+  }
+
+  .readinessHeader {
+    padding-inline: .2rem;
+    background: transparent;
+  }
+
+  .condition {
+    padding-inline: .15rem;
+  }
 }

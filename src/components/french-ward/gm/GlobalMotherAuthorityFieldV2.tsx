@@ -12,7 +12,7 @@ const schedule = [
   {
     reference: "AUTH-02",
     classification: "ENTRUSTED ROLE",
-    party: "AOTG",
+    party: "Ahma Olmec Tartarian Government (AOTG)",
     role: "Trusted bridge & governmental participant",
     scope: "Introduction, protection, coordination, and governmental capacity through trade.",
     boundary: "AOTG defines its governmental decisions and the authority it brings to joint work.",
@@ -30,7 +30,7 @@ const schedule = [
     classification: "LEAD CUSTODIAN / PROPOSED",
     party: "French-Ward",
     role: "Lead institutional custodian",
-    scope: "Stewardship of the relationship, trade passage, projects, and continuity.",
+    scope: "Stewardship of the relationship, trade passage, projects, Treasury, and continuity.",
     boundary: "Gold-selling authority rests separately on an operative mandate.",
   },
   {
@@ -74,7 +74,21 @@ export function GlobalMotherAuthorityFieldV2() {
       </div>
 
       <div className={styles.record}>
-        <span>AUTH-06 / Express authority & institutional record</span>
+        <span>AUTH-06 / Treasury relationship</span>
+        <h3>Treasury coordination supports continuity across the relationship.</h3>
+        <p>
+          Chief Jamarú Wata Falkhan · Jamal James Ward serves French-Ward
+          as Chief Strategic Officer and provides Treasury Consultant
+          support to the Ahma Olmec Tartarian Government (AOTG). The
+          advisory relationship supports treasury coordination,
+          institutional understanding, and continuity across the
+          developing relationship while each institutional capacity
+          remains distinct.
+        </p>
+      </div>
+
+      <div className={styles.record}>
+        <span>AUTH-07 / Express authority & institutional record</span>
         <h3>Authority must be traceable.</h3>
         <div className={styles.elements} aria-label="Elements of authority">
           <span>Source</span><span>Holder</span><span>Subject</span><span>Scope</span><span>Conditions</span><span>Evidence</span>

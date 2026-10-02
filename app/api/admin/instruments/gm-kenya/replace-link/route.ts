@@ -5,7 +5,7 @@ import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { isAdmin } from "@/domains/auth/isAdmin";
 import { prisma } from "@/infrastructure/db/prisma";
 import { hashInstrumentAccessToken } from "@/domains/instruments/access/accessToken";
-import { globalMotherV3Definition } from "@/domains/instruments/definitions/globalMotherV3Definition";
+import { globalMotherV4Definition } from "@/domains/instruments/definitions/globalMotherV4Definition";
 import { sendGlobalMotherChamberInvitation } from "@/domains/instruments/communications/globalMotherChamberInvitation";
 
 type Client = Pick<PrismaClient, "instrumentAccessGrant" | "globalMotherRecipientChallenge" | "session" | "domainEvent">;
@@ -38,12 +38,12 @@ export async function POST(request: Request) {
           instrument: { select: { reference: true, currentVersion: true } },
           instrumentVersion: { select: { number: true, status: true } } },
       });
-      if (!grant || grant.instrument.reference !== globalMotherV3Definition.reference)
+      if (!grant || grant.instrument.reference !== globalMotherV4Definition.reference)
         throw new Error("GRANT_NOT_FOUND");
       const now = new Date();
       if (grant.revokedAt || !grant.expiresAt || grant.expiresAt <= now ||
-          !grant.recipientUserId || grant.instrument.currentVersion !== globalMotherV3Definition.version ||
-          grant.instrumentVersion?.number !== globalMotherV3Definition.version || grant.instrumentVersion.status !== "ISSUED")
+          !grant.recipientUserId || grant.instrument.currentVersion !== globalMotherV4Definition.version ||
+          grant.instrumentVersion?.number !== globalMotherV4Definition.version || grant.instrumentVersion.status !== "ISSUED")
         throw new Error("GRANT_NOT_ACTIVE");
       const replacement = randomBytes(32).toString("base64url");
       const changed = await tx.instrumentAccessGrant.updateMany({

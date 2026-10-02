@@ -1,5 +1,5 @@
 import "server-only";
-import { globalMotherV3Definition } from "../definitions/globalMotherV3Definition";
+import { globalMotherV4Definition } from "../definitions/globalMotherV4Definition";
 import { createHash, createHmac } from "node:crypto";
 import { cookies } from "next/headers";
 import { SignJWT, jwtVerify } from "jose";
@@ -37,9 +37,9 @@ export async function resolveGlobalMotherRecipient(client: Client, token: string
     where: { id: grant.instrumentVersionId },
     select: { instrumentId: true, number: true, status: true },
   });
-  if (instrument?.reference !== GM_REFERENCE || instrument.currentVersion !== globalMotherV3Definition.version ||
+  if (instrument?.reference !== GM_REFERENCE || instrument.currentVersion !== globalMotherV4Definition.version ||
       !version || version.instrumentId !== grant.instrumentId ||
-      version.number !== globalMotherV3Definition.version || version.status !== "ISSUED") return null;
+      version.number !== globalMotherV4Definition.version || version.status !== "ISSUED") return null;
   const user = await client.user.findUnique({
     where: { id: grant.recipientUserId },
     select: { id: true, email: true, displayName: true, name: true },

@@ -447,3 +447,491 @@
     padding: 1rem .8rem .72rem;
   }
 }
+
+/* GM V4 — elder-readable mobile chamber.
+   The article is the primary surface; navigation becomes a compact crown. */
+@media (max-width: 860px) {
+  .shell {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+    padding: .3rem .35rem .18rem;
+  }
+
+  .documentIdentity {
+    padding: .38rem .65rem .42rem;
+    gap: .18rem;
+    align-items: center;
+  }
+
+  .documentIdentity strong {
+    font-size: .98rem;
+    line-height: 1.17;
+  }
+
+  .documentIdentity p {
+    display: none;
+  }
+
+  .documentIdentity > span {
+    padding-top: 0;
+    font-size: .54rem;
+    line-height: 1.25;
+  }
+
+  .utility {
+    display: none;
+  }
+
+  .pamphlet {
+    min-height: 0;
+  }
+
+  .constitutionalBody {
+    grid-template-rows: auto minmax(0, 1fr);
+  }
+
+  .councilSpine {
+    padding: .34rem .55rem .38rem;
+  }
+
+  .spineRegistry {
+    margin: .15rem 0 .28rem;
+    padding: .28rem 0 .32rem;
+  }
+
+  .registryTrigger > span {
+    font-size: .54rem;
+  }
+
+  .registryTrigger strong,
+  .registryTrigger em {
+    font-size: .61rem;
+  }
+
+  .spineFramework {
+    gap: .2rem;
+    padding-bottom: .04rem;
+  }
+
+  .spineMovement {
+    min-height: 38px;
+    max-width: 8rem;
+    padding: .38rem .48rem;
+  }
+
+  .spineMovement span {
+    font-size: .72rem;
+  }
+
+  .spineMovement strong {
+    font-size: .7rem;
+    line-height: 1.25;
+  }
+
+  .activeChamber {
+    min-height: 0;
+    padding: .9rem 1rem 1.45rem;
+    scroll-padding-top: .8rem;
+  }
+
+  .chamberNotation {
+    padding-bottom: .62rem;
+  }
+
+  .chamberContent {
+    padding-top: .2rem;
+  }
+
+  .chamberProgression {
+    margin-top: 1.65rem;
+    padding-top: .8rem;
+  }
+
+  .footer {
+    min-height: 34px;
+    padding: .12rem .5rem;
+    font-size: .52rem;
+  }
+
+  .topAction {
+    min-height: 34px;
+    padding: .2rem .35rem;
+    font-size: .55rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .documentIdentity {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .documentIdentity > span {
+    max-width: 8rem;
+    text-align: right;
+  }
+
+  .spineMovement {
+    max-width: 7rem;
+  }
+
+  .activeChamber {
+    padding-inline: .9rem;
+  }
+}
+
+/* GM V4 — keep the constitutional crown clear of the viewport edge. */
+.documentIdentity {
+  padding-top: max(1rem, env(safe-area-inset-top));
+}
+
+@media (max-width: 860px) {
+  .shell {
+    padding-top: max(.5rem, env(safe-area-inset-top));
+  }
+
+  .documentIdentity {
+    padding-top: .62rem;
+  }
+}
+
+
+/* GM V4 — mobile becomes a living document, not a fixed viewport chamber. */
+@media (max-width: 860px) {
+
+  .shell {
+    height: auto;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  .pamphlet {
+    overflow: visible;
+  }
+
+  .constitutionalBody {
+    display: block;
+  }
+
+  .activeChamber {
+    overflow: visible;
+    min-height: auto;
+  }
+
+  .footer {
+    margin-top: 1rem;
+  }
+
+}
+
+/* GM V4 — mobile document flow correction.
+   The article is the page. The chamber is not an internal viewport. */
+
+@media (max-width: 860px) {
+
+  .shell {
+    height: auto;
+    min-height: 100dvh;
+    display: block;
+    overflow: visible;
+  }
+
+  .pamphlet {
+    display: block;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .constitutionalBody {
+    display: block;
+    height: auto;
+  }
+
+  .activeChamber {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    padding: 1rem .9rem 2rem;
+  }
+
+  .councilSpine {
+    overflow: visible;
+  }
+
+  .footer {
+    margin-top: 1.25rem;
+  }
+
+}
+
+/* GM V4 — final mobile manuscript flow.
+   The chamber becomes a page, and the registry becomes readable. */
+
+@media (max-width: 860px) {
+
+  .shell {
+    height: auto;
+    min-height: 100dvh;
+    display: block;
+    overflow: visible;
+  }
+
+  .pamphlet {
+    display: block;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .constitutionalBody {
+    display: block;
+    height: auto;
+  }
+
+  .activeChamber {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    padding: 1rem .9rem 2rem;
+  }
+
+  .councilSpine {
+    padding: .65rem .8rem .85rem;
+    overflow: visible;
+  }
+
+  .spineRegistry {
+    margin: .65rem 0 .8rem;
+    padding: .65rem 0 .8rem;
+  }
+
+  .registryTrigger {
+    grid-template-columns: 1fr;
+    gap: .35rem;
+  }
+
+  .registryTrigger strong {
+    font-size: .78rem;
+    line-height: 1.35;
+  }
+
+  .registryTrigger em {
+    font-size: .68rem;
+  }
+
+  .spineFramework {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0,1fr));
+    gap: .35rem;
+    overflow: visible;
+  }
+
+  .spineMovement {
+    max-width: none;
+    width: auto;
+    min-height: 42px;
+  }
+
+  .footer {
+    margin-top: 1.25rem;
+    padding-bottom: .8rem;
+  }
+
+}
+
+@media (max-width: 520px) {
+
+  .spineFramework {
+    grid-template-columns: 1fr;
+  }
+
+  .registryPanel {
+    padding: 1rem .85rem 1.5rem;
+  }
+
+  .activeChamber {
+    padding-inline: .8rem;
+  }
+
+}
+
+/* GM V4 — mobile manuscript mode.
+   The constitutional shell becomes the page itself.
+   Article flow replaces internal viewport behavior. */
+
+@media (max-width: 860px) {
+
+  .shell {
+    height: auto;
+    min-height: 100dvh;
+    display: block;
+    overflow: visible;
+    padding: .45rem;
+  }
+
+  .documentIdentity {
+    padding:
+      .55rem .75rem .65rem;
+  }
+
+  .documentIdentity strong {
+    font-size:
+      1.05rem;
+    line-height:
+      1.2;
+  }
+
+  .pamphlet {
+    display: block;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .constitutionalBody {
+    display: block;
+    height: auto;
+  }
+
+  .councilSpine {
+    padding:
+      .45rem .75rem;
+    overflow: visible;
+  }
+
+  .spineFramework {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: .35rem;
+    padding-bottom: .25rem;
+  }
+
+  .spineMovement {
+    flex:
+      0 0 auto;
+    min-height:
+      34px;
+    padding:
+      .35rem .5rem;
+  }
+
+  .spineMovement strong {
+    font-size:
+      .72rem;
+    line-height:
+      1.25;
+  }
+
+  .activeChamber {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    padding:
+      1.25rem .85rem 2rem;
+  }
+
+  .footer {
+    margin-top:
+      1rem;
+    padding-bottom:
+      1rem;
+  }
+
+}
+
+/* =========================================================
+   GM V4 — MOBILE ARTICLE NAVIGATION AUTHORITY
+   Registry flows away · Roman framework rail remains
+   ========================================================= */
+
+@media (max-width: 860px) {
+  /*
+   * Remove the council spine as a layout box so the registry
+   * remains ordinary document content while the framework
+   * navigation can stick independently.
+   */
+  .councilSpine {
+    display: contents;
+  }
+
+  .spineRegistry {
+    margin: 0;
+    padding: .8rem 1rem 1rem;
+  }
+
+  /*
+   * The framework rail reaches this point naturally,
+   * then remains at the top of the mobile viewport.
+   */
+  .spineFramework {
+    position: sticky;
+    top: 0;
+    z-index: 80;
+
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+
+    width: 100%;
+    gap: 0;
+    padding: .18rem .45rem;
+
+    overflow: visible;
+
+    background: rgba(18, 43, 57, .97);
+    border-top: 1px solid rgba(191, 160, 94, .16);
+    border-bottom: 1px solid rgba(191, 160, 94, .18);
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+
+  .spineFrameworkLabel {
+    display: none;
+  }
+
+  .spineMovement {
+    display: grid;
+    place-items: center;
+
+    width: 100%;
+    min-width: 0;
+    min-height: 38px;
+    padding: .2rem;
+
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  /*
+   * Mobile carries only the constitutional numeral.
+   * Article title is already present in the manuscript below.
+   */
+  .spineMovement strong {
+    display: none;
+  }
+
+  .spineMovement span {
+    display: block;
+    font-size: .9rem;
+    line-height: 1;
+    text-align: center;
+  }
+
+  .spineMovementActive {
+    background: rgba(191, 160, 94, .10);
+    box-shadow:
+      inset 0 -2px 0 rgba(220, 187, 116, .78);
+  }
+
+  .activeChamber {
+    scroll-margin-top: 3rem;
+  }
+
+  .chamberNotation {
+    scroll-margin-top: 3rem;
+  }
+}

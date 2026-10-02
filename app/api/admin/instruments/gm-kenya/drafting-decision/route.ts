@@ -3,7 +3,7 @@ import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { isAdmin } from "@/domains/auth/isAdmin";
 import { prisma } from "@/infrastructure/db/prisma";
 import { INSTRUMENT_EVENT_TYPE } from "@/domains/instruments/eventTypes";
-import { globalMotherV3Definition } from "@/domains/instruments/definitions/globalMotherV3Definition";
+import { globalMotherV4Definition } from "@/domains/instruments/definitions/globalMotherV4Definition";
 import { runInstrumentGovernanceTransaction } from "@/domains/instruments/governance/runInstrumentGovernanceTransaction";
 
 import { globalMotherDraftingGate, validateGlobalMotherDraftingDispositions } from "@/domains/instruments/invariants/globalMotherDraftingGate";
@@ -48,13 +48,13 @@ export async function POST(request: Request) {
         return existing;
       }
       const instrument = await tx.institutionalInstrument.findUnique({
-        where: { reference: globalMotherV3Definition.reference },
+        where: { reference: globalMotherV4Definition.reference },
         select: { id: true, currentVersion: true,
-          versions: { where: { number: globalMotherV3Definition.version, status: "ISSUED" }, select: { id: true } },
+          versions: { where: { number: globalMotherV4Definition.version, status: "ISSUED" }, select: { id: true } },
         },
       });
       const version = instrument?.versions[0];
-      if (!instrument || instrument.currentVersion !== globalMotherV3Definition.version || !version || version.id !== input.versionId)
+      if (!instrument || instrument.currentVersion !== globalMotherV4Definition.version || !version || version.id !== input.versionId)
         throw new Error("VERSION_NOT_ISSUED");
       const receipts = await tx.instrumentResponseSet.findMany({
         where: { versionId: version.id }, select: { id: true, representedInstitution: true, positions: true },

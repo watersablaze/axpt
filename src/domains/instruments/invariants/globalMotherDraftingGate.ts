@@ -1,9 +1,9 @@
-import { globalMotherV3Definition } from "../definitions/globalMotherV3Definition";
+import { globalMotherV4Definition } from "../definitions/globalMotherV4Definition";
 
 export type DraftingReceipt = { id: string; representedInstitution: string; positions: unknown };
 export type DraftingIssue = { receiptId: string; institution: string; reference: string; responseType: string; note: string };
 export type DraftingDisposition = { receiptId: string; reference: string; treatment: "CARRY_TO_DRAFTING"; note: string };
-const expectedReferences = new Set<string>(globalMotherV3Definition.propositions.map(item => item.reference));
+const expectedReferences = new Set<string>(globalMotherV4Definition.propositions.map(item => item.reference));
 const canonical = ["AOTG", "ND Royal Ministry"] as const;
 const normalize = (value: string) => value.trim().replace(/\s+/g, " ").toLowerCase();
 export function globalMotherDraftingGate(receipts: readonly DraftingReceipt[]) {
