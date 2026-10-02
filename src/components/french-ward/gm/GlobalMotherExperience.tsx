@@ -92,7 +92,15 @@ export function GlobalMotherExperience({
           <h1 id="gm-gate-heading" tabIndex={-1}><span>Framework of Royal Custodianship</span><em>Restoration &amp; Global Trade</em></h1>
           <div className={styles.prepared}>
             <span>Prepared for</span>
-            <h2>{recipient?.name ?? "Dr. Awulah Naanii Amon"}</h2>
+            <h2>
+              {(recipient?.name ?? "Dr. Awulah Naanii Amon")
+                .split("·")
+                .map(part => part.trim())
+                .filter(Boolean)
+                .map((part, index) => (
+                  <span key={`${part}-${index}`}>{part}</span>
+                ))}
+            </h2>
             <p>{recipient?.institution ?? "ND Royal Ministry"}</p>
             <p>{recipient?.capacity ?? "Global Mother · Royal Council Representative"}</p>
           </div>
@@ -134,7 +142,15 @@ export function GlobalMotherExperience({
           </p>
           <div className={styles.prepared}>
             <span>Prepared for</span>
-            <h2>{recipient?.name ?? "Dr. Awulah Naanii Amon"}</h2>
+            <h2>
+              {(recipient?.name ?? "Dr. Awulah Naanii Amon")
+                .split("·")
+                .map(part => part.trim())
+                .filter(Boolean)
+                .map((part, index) => (
+                  <span key={`${part}-${index}`}>{part}</span>
+                ))}
+            </h2>
             <p>{recipient?.institution ?? "ND Royal Ministry"}</p>
             <p>{recipient?.capacity ?? "Global Mother · Royal Council Representative"}</p>
           </div>

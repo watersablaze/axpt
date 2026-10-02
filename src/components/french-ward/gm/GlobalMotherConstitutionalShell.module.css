@@ -940,3 +940,8 @@
 .spineRecipient strong {
   color: #9fc9dc;
 }
+
+/* GM V4 — canonical identity names retain one line per presented name. */
+.spineRecipient strong > span {
+  display: block;
+}

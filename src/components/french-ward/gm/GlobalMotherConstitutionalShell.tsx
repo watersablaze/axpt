@@ -170,7 +170,13 @@ export function GlobalMotherConstitutionalShell({
               </span>
 
               <strong>
-                {recipient?.name ?? "Dr. Awulah Naanii Amon"}
+                {(recipient?.name ?? "Dr. Awulah Naanii Amon")
+                  .split("·")
+                  .map(part => part.trim())
+                  .filter(Boolean)
+                  .map((part, index) => (
+                    <span key={`${part}-${index}`}>{part}</span>
+                  ))}
               </strong>
 
               <p>

@@ -913,3 +913,8 @@
     width: 100%;
   }
 }
+
+/* GM V4 — canonical identity names retain one line per presented name. */
+.prepared h2 > span {
+  display: block;
+}
