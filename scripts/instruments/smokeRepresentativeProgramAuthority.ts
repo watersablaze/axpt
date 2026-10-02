@@ -9,6 +9,8 @@ import {
   INSTRUMENT_AUTHORITY_CLASS,
 } from "../../src/domains/instruments/contracts";
 
+import { transitionInstrumentStateWithClient } from "../../src/domains/instruments/commands/transitionInstrumentStateWithClient";
+
 import {
   REPRESENTATIVE_APPOINTMENT_CLASS,
   REPRESENTATIVE_AUTHORITY_EXERCISABILITY_REASON,
@@ -36,10 +38,16 @@ type RepresentativeAuthoritySmokeClient = Pick<
   | "institutionalInstrument"
   | "instrumentParty"
   | "instrumentAuthority"
+  | "instrumentStateTransition"
   | "domainEvent"
 >;
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  transactionOptions: {
+    maxWait: 10_000,
+    timeout: 60_000,
+  },
+});
 
 const ROLLBACK = "ARP_2C_AUTHORITY_SMOKE_ROLLBACK";
 
@@ -120,12 +128,44 @@ async function main() {
           appointment.instrumentPartyId,
         );
 
-        const presentationResolution =
+        const presentationBeforeAppointmentActivation =
           await resolveRepresentativeProgramAuthorityExercisabilityWithClient({
             client: tx,
             appointmentId: appointment.id,
             authorityKey: REPRESENTATIVE_AUTHORITY_KEY.PRESENTATION,
             at: new Date("2026-09-20T12:01:00.000Z"),
+          });
+
+        assert.equal(
+          presentationBeforeAppointmentActivation.exercisable,
+          false,
+        );
+
+        assert.equal(
+          presentationBeforeAppointmentActivation.reason,
+          REPRESENTATIVE_AUTHORITY_EXERCISABILITY_REASON.APPOINTMENT_INSTRUMENT_NOT_ACTIVE,
+        );
+
+        console.log(
+          "✓ ACTIVE participant cannot exercise authority under DRAFT appointment instrument",
+        );
+
+        await transitionInstrumentStateWithClient({
+          client: tx,
+          instrumentReference: instrument.reference,
+          expectedFromStatus: INSTITUTIONAL_INSTRUMENT_STATUS.DRAFT,
+          toStatus: INSTITUTIONAL_INSTRUMENT_STATUS.ACTIVE,
+          actorUserId: actor.id,
+          reason: "ARP authority smoke appointment activation",
+          occurredAt: new Date("2026-09-20T12:02:00.000Z"),
+        });
+
+        const presentationResolution =
+          await resolveRepresentativeProgramAuthorityExercisabilityWithClient({
+            client: tx,
+            appointmentId: appointment.id,
+            authorityKey: REPRESENTATIVE_AUTHORITY_KEY.PRESENTATION,
+            at: new Date("2026-09-20T12:02:30.000Z"),
           });
 
         assert.equal(presentationResolution.exercisable, true);
@@ -136,7 +176,7 @@ async function main() {
         );
 
         console.log(
-          "✓ delegated presentation authority exercisable while ACTIVE",
+          "✓ delegated presentation authority exercisable only after appointment instrument activation",
         );
 
         const duplicate = await recordRepresentativeProgramAuthorityWithClient({

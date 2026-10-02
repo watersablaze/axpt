@@ -60,7 +60,7 @@ export function GlobalMotherContinuityFieldV2() {
         </div>
         <div className={styles.giftBody}>
           <p>French-Ward intends a two-part Gift for the Ahma Olmec Tartarian Government (AOTG) and ND Royal Ministry: a digital tokenization pathway and a complete digital media management, design, and development package.</p>
-          <p>Each recipient shapes scope and activation. The Gift supports identity, heritage, and communication; it sets no gold-sale term or Royal authority.</p>
+          <p>Each recipient shapes scope and activation. The Gift supports identity, heritage, and communication.</p>
         </div>
       </aside>
 

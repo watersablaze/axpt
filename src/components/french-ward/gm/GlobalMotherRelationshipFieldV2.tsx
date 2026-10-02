@@ -20,7 +20,7 @@ export function GlobalMotherRelationshipFieldV2() {
         <div className={styles.twoColumns}>
           <div>
             <h4>Ahma Olmec Tartarian Government (AOTG)</h4>
-            <p>The trusted bridge connecting ND Royal Ministry and French-Ward. The Ahma Olmec Tartarian Government (AOTG) brings its existing relationship with French-Ward; trade may strengthen its governmental capacity, global trade standing, and restorative work for the global Indigenous and Melanated family and community on terms it authorizes.</p>
+            <p>The trusted bridge connecting ND Royal Ministry and French-Ward. The Ahma Olmec Tartarian Government (AOTG) brings its existing relationship with French-Ward; trade may strengthen its governmental capacity, global trade standing, and restorative work for the global Indigenous and Melanated family and community.</p>
           </div>
         </div>
       </div>
@@ -40,7 +40,7 @@ export function GlobalMotherRelationshipFieldV2() {
             <p>Stewards the relationship, governed passage, and productive return.</p>
           </div>
         </div>
-        <p className={styles.note}>A proposed Master Agreement & Proclamation of Trust would define AOTG–French-Ward, French-Ward–ND Royal Ministry, and shared three-party responsibilities. French-Ward’s gold authority rests on its separate operative mandate.</p>
+        <p className={styles.note}>A proposed Master Agreement & Proclamation of Trust would define AOTG–French-Ward, French-Ward–ND Royal Ministry, and shared three-party responsibilities.</p>
       </div>
 
       <div className={styles.anchor}>
