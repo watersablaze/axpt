@@ -31,7 +31,7 @@ const schedule = [
     party: "French-Ward",
     role: "Lead institutional custodian",
     scope: "Stewardship of the relationship, trade passage, projects, Treasury, and continuity.",
-    boundary: "Gold-selling authority rests separately on an operative mandate.",
+    boundary: "Custodial stewardship and commercial authority remain distinct.",
   },
   {
     reference: "AUTH-05",
@@ -39,7 +39,7 @@ const schedule = [
     party: "French-Ward",
     role: "Gold-selling & trading authority",
     scope: "Gold selling and trading under the operative mandate.",
-    boundary: "The mandate defines source, product, transaction, limits, and conditions.",
+    boundary: "Gold-selling authority, where applicable, is governed by the operative mandate.",
   },
 ] as const;
 

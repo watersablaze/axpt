@@ -935,3 +935,8 @@
     scroll-margin-top: 3rem;
   }
 }
+
+/* GM V4 — recipient identity receives its own tonal register. */
+.spineRecipient strong {
+  color: #9fc9dc;
+}

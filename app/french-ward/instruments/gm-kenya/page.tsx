@@ -485,9 +485,8 @@ export default async function GreatMotherInstrumentPage({
 
                 <p className={styles.articleSummary}>
                   ND Royal Ministry retains Royal authority.
-                  AOTG and French-Ward carry distinct roles;
-                  French-Ward’s gold authority follows its
-                  operative mandate.
+                  AOTG and French-Ward carry distinct roles
+                  and responsibilities.
                 </p>
               </div>
             </header>

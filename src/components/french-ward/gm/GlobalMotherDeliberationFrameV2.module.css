@@ -1182,3 +1182,11 @@
     font-size: .7rem;
   }
 }
+
+/* GM V4 — desktop register rests on the surface, not a decorative rail. */
+@media (min-width: 621px) {
+  .positionCard {
+    border-left-width: 1px;
+    border-left-color: rgba(185, 153, 92, .18);
+  }
+}

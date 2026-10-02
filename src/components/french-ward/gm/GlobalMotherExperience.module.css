@@ -888,3 +888,28 @@
       none;
   }
 }
+
+/* GM V4 — opening folio desktop repair. */
+@media (min-width: 761px) {
+  .openingFolio {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .openingFolio > * {
+    grid-column: 1;
+  }
+
+  .openingFolio .prepared,
+  .openingFolio .folioColumns,
+  .openingFolio .folioBoundary,
+  .openingFolio .primaryAction {
+    grid-column: 1;
+    grid-row: auto;
+    min-width: 0;
+  }
+
+  .openingFolio .prepared,
+  .openingFolio .folioColumns {
+    width: 100%;
+  }
+}
