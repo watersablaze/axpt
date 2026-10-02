@@ -2,6 +2,7 @@ import { z } from "zod";
 
 const optionalShortText = z.string().trim().max(320).optional();
 const optionalLongText = z.string().trim().max(4000).optional();
+const requiredLongText = z.string().trim().min(1).max(4000);
 
 const stringList = z.array(z.string().trim().min(1).max(240)).max(40);
 
@@ -43,10 +44,10 @@ export const representativeCandidateSubmissionSchema = z
 
     disclosures: z
       .object({
-        existingMandatesOrRepresentativeRelationships: optionalLongText,
-        potentialConflicts: optionalLongText,
-        regulatedActivities: optionalLongText,
-        materialAffiliations: optionalLongText,
+        existingMandatesOrRepresentativeRelationships: requiredLongText,
+        potentialConflicts: requiredLongText,
+        regulatedActivities: requiredLongText,
+        materialAffiliations: requiredLongText,
       })
       .strict(),
 
