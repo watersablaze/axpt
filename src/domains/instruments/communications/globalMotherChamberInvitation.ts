@@ -7,14 +7,14 @@ import { getDigitalSettlementEmailMode } from "./emailMode";
 import { getDigitalSettlementSender } from "./digitalSettlementSender";
 import { globalMotherV4Definition } from "../definitions/globalMotherV4Definition";
 
-type GlobalMotherInvitationInput = Readonly<{
-  grantId: string;
-  deliveryKey: string;
+export type GlobalMotherInvitationInput = Readonly<{
+  grantId?: string;
+  deliveryKey?: string;
   recipientName: string;
   recipientEmail: string;
   representedInstitution: string;
   representativeCapacity: string;
-  accessUrl: string;
+  accessUrl: string | null;
 }>;
 
 function escapeHtml(value: string) {
@@ -68,50 +68,219 @@ function invitationInstitution(value: string) {
   return normalized;
 }
 
-function renderInvitation(input: GlobalMotherInvitationInput) {
-  const displayedInstitution =
-    invitationInstitution(input.representedInstitution);
+function recipientNameLines(value: string) {
+  return value
+    .split("·")
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
 
-  const recipientName = escapeHtml(input.recipientName);
+export function renderGlobalMotherChamberInvitation(
+  input: GlobalMotherInvitationInput,
+) {
+  const displayedInstitution = invitationInstitution(
+    input.representedInstitution,
+  );
+
+  const nameLines = recipientNameLines(input.recipientName);
+  const primaryName = nameLines[0] ?? input.recipientName;
+
+  const recipientNameHtml = nameLines
+    .map((line) => `<span style="display:block;">${escapeHtml(line)}</span>`)
+    .join("");
+
+  const recipientNameText = nameLines.join("\n");
+
   const institution = escapeHtml(displayedInstitution);
   const capacity = escapeHtml(input.representativeCapacity);
-  const href = escapeHtml(input.accessUrl);
 
   const subject =
-    "Private Chamber Invitation — Framework of Royal Custodianship, Restoration & Global Trade";
+    "Private Chamber Access — Framework of Royal Custodianship, Restoration & Global Trade";
+
+  const accessText = input.accessUrl
+    ? input.accessUrl
+    : "[Private access credential will be generated upon approval.]";
+
+  const accessMarkup = input.accessUrl
+    ? `<table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:26px 0 14px;">
+        <tr>
+          <td>
+            <a
+              href="${escapeHtml(input.accessUrl)}"
+              style="display:inline-block;background:#142f45;color:#edf5f8;text-decoration:none;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:14px 20px;border-radius:2px;"
+            >
+              Enter Private Chamber
+            </a>
+          </td>
+        </tr>
+      </table>
+      <p style="margin:10px 0 0;color:#557083;font-size:10px;line-height:1.55;word-break:break-all;">
+        Private link:
+        <a
+          href="${escapeHtml(input.accessUrl)}"
+          style="color:#365a72;text-decoration:underline;"
+        >
+          ${escapeHtml(input.accessUrl)}
+        </a>
+      </p>`
+    : `<div style="margin:26px 0 14px;display:inline-block;background:#b8cad5;color:#365266;font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:13px 18px;border-radius:2px;">
+        Private access generated after approval
+      </div>`;
 
   const text = [
-    `Dear ${input.recipientName},`,
+    `Dear ${primaryName},`,
     "",
-    "French-Ward has prepared private Chamber access for you to review the Framework of Royal Custodianship, Restoration & Global Trade in your presented institutional capacity.",
+    "French-Ward has prepared your private Chamber access to the Framework of Royal Custodianship, Restoration & Global Trade, presented for review in your recorded institutional capacity.",
+    "",
+    "Prepared for:",
+    recipientNameText,
     "",
     `Represented institution: ${displayedInstitution}`,
     `Capacity: ${input.representativeCapacity}`,
     "",
-    "Open your private Chamber link below. When prompted, request a verification code; the one-time code will be sent to this email address to confirm access.",
+    "Use the private access below to enter the Chamber. When prompted, request a verification code; the one-time code will be sent to this email address to confirm access.",
     "",
-    input.accessUrl,
+    accessText,
     "",
-    "After verification, you may enter the Chamber, review the Framework, view the authorized Chamber Registry, and record your considered response.",
+    "Once verified, you may review the Framework, view the authorized Chamber Registry, and record your considered response.",
     "",
-    "This private link is personal to your access record. Please do not forward it.",
+    "This access is personal to your record and should not be forwarded.",
+    "",
+    "TOGETHER, WITH INTEGRITY",
+    "What endures is built together. Integrity gives continuity its strength, and continuity gives shared purpose room to take form. This Chamber is an opening into that work.",
     "",
     "French-Ward, Inc.",
     "Institutional environment via AXPT",
   ].join("\n");
 
-  const html = `<!doctype html><html><body style="margin:0;padding:0;background:#0b1722;color:#eee8dc;font-family:Arial,Helvetica,sans-serif;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#0b1722;"><tr><td align="center" style="padding:34px 14px;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:650px;border:1px solid #314452;background:#102230;"><tr><td style="padding:30px 32px 18px;border-top:2px solid #c4aa70;"><p style="margin:0 0 12px;color:#ccb581;font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;">French-Ward · Private Institutional Chamber</p><p style="margin:0 0 7px;color:#8fa0aa;font-size:10px;letter-spacing:.1em;text-transform:uppercase;">${escapeHtml(globalMotherV4Definition.reference)}</p><h1 style="margin:0;color:#f1ebdf;font-family:Georgia,'Times New Roman',serif;font-size:25px;line-height:1.25;font-weight:400;">Framework of Royal Custodianship, Restoration &amp; Global Trade</h1></td></tr><tr><td style="padding:8px 32px 0;"><table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="border-top:1px solid #354957;border-bottom:1px solid #354957;"><tr><td style="padding:15px 0;"><p style="margin:0 0 5px;color:#ccb581;font-size:9px;letter-spacing:.14em;text-transform:uppercase;">Prepared for</p><p style="margin:0;color:#f0e9dc;font-family:Georgia,'Times New Roman',serif;font-size:18px;line-height:1.35;">${recipientName}</p><p style="margin:6px 0 0;color:#bdc9cf;font-size:12px;line-height:1.5;">${institution} · ${capacity}</p></td></tr></table></td></tr><tr><td style="padding:25px 32px 32px;"><p style="margin:0 0 16px;color:#cad4d9;font-size:14px;line-height:1.68;">French-Ward has prepared private Chamber access for you to review the Framework in your presented institutional capacity.</p><p style="margin:0 0 16px;color:#cad4d9;font-size:14px;line-height:1.68;">Open the private link below. When prompted, request a verification code; the one-time code will be sent to this email address to confirm access.</p><table role="presentation" cellspacing="0" cellpadding="0" border="0" style="margin:24px 0 12px;"><tr><td><a href="${href}" style="display:inline-block;background:#e6dcc3;color:#132837;text-decoration:none;font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;padding:14px 19px;border-radius:2px;">Enter Private Chamber</a></td></tr></table><p style="margin:10px 0 0;color:#84949d;font-size:10px;line-height:1.55;word-break:break-all;">Private link: <a href="${href}" style="color:#aab9c0;text-decoration:underline;">${href}</a></p><p style="margin:15px 0 0;color:#8d9aa1;font-size:11px;line-height:1.6;">After verification, you may review the Framework, view the authorized Chamber Registry, and record your considered response. This link is personal to your access record; please do not forward it.</p></td></tr><tr><td style="border-top:1px solid #314452;padding:19px 32px 23px;"><p style="margin:0 0 4px;color:#ded9cf;font-size:11px;font-weight:600;">French-Ward, Inc.</p><p style="margin:0;color:#758690;font-size:9px;letter-spacing:.1em;text-transform:uppercase;">Institutional environment via AXPT</p></td></tr></table></td></tr></table></body></html>`;
+  const html = `<!doctype html>
+<html>
+<body style="margin:0;padding:0;background:#0a1926;color:#183447;font-family:Arial,Helvetica,sans-serif;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#0a1926;">
+<tr>
+<td align="center" style="padding:36px 14px;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:660px;border:1px solid #36546a;background:#dceaf1;">
 
-  return { subject, text, html };
+<tr>
+<td style="padding:31px 34px 24px;background:#112b40;border-top:2px solid #c8ae72;">
+  <p style="margin:0 0 12px;color:#cfb87e;font-size:9px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;">
+    French-Ward · Private Institutional Chamber
+  </p>
+  <p style="margin:0 0 8px;color:#9eb5c3;font-size:10px;letter-spacing:.1em;text-transform:uppercase;">
+    ${escapeHtml(globalMotherV4Definition.reference)}
+  </p>
+  <h1 style="margin:0;color:#f1eee6;font-family:Georgia,'Times New Roman',serif;font-size:26px;line-height:1.25;font-weight:400;">
+    Framework of Royal Custodianship,<br />
+    Restoration &amp; Global Trade
+  </h1>
+</td>
+</tr>
+
+<tr>
+<td style="padding:24px 34px 0;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#edf5f8;border:1px solid #b3c9d5;">
+    <tr>
+      <td style="padding:18px 20px;">
+        <p style="margin:0 0 7px;color:#8c733d;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;">
+          Prepared for
+        </p>
+        <div style="margin:0;color:#15364d;font-family:Georgia,'Times New Roman',serif;font-size:20px;line-height:1.45;">
+          ${recipientNameHtml}
+        </div>
+        <p style="margin:9px 0 0;color:#4d6878;font-size:12px;line-height:1.55;">
+          ${institution}<br />
+          ${capacity}
+        </p>
+      </td>
+    </tr>
+  </table>
+</td>
+</tr>
+
+<tr>
+<td style="padding:28px 34px 30px;">
+  <p style="margin:0 0 18px;color:#294b60;font-size:14px;line-height:1.72;">
+    French-Ward has prepared your private Chamber access to the
+    <strong>Framework of Royal Custodianship, Restoration &amp; Global Trade</strong>,
+    presented for review in your recorded institutional capacity.
+  </p>
+
+  <p style="margin:0 0 18px;color:#294b60;font-size:14px;line-height:1.72;">
+    Use the private access below to enter the Chamber. When prompted,
+    request a verification code; the one-time code will be sent to this
+    email address to confirm access.
+  </p>
+
+  ${accessMarkup}
+
+  <p style="margin:19px 0 0;color:#405f71;font-size:12px;line-height:1.7;">
+    Once verified, you may review the Framework, view the authorized
+    Chamber Registry, and record your considered response.
+  </p>
+
+  <p style="margin:13px 0 0;color:#657d8b;font-size:11px;line-height:1.65;">
+    This access is personal to your record and should not be forwarded.
+  </p>
+</td>
+</tr>
+
+<tr>
+<td style="padding:0 34px 30px;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#142f45;border-left:2px solid #c8ae72;">
+    <tr>
+      <td style="padding:22px 24px;">
+        <p style="margin:0 0 10px;color:#cfb87e;font-size:9px;font-weight:700;letter-spacing:.17em;text-transform:uppercase;">
+          Together, With Integrity
+        </p>
+        <p style="margin:0;color:#e7eff2;font-family:Georgia,'Times New Roman',serif;font-size:14px;line-height:1.75;">
+          What endures is built together. Integrity gives continuity its
+          strength, and continuity gives shared purpose room to take form.
+          This Chamber is an opening into that work.
+        </p>
+      </td>
+    </tr>
+  </table>
+</td>
+</tr>
+
+<tr>
+<td style="border-top:1px solid #aec2cd;padding:20px 34px 24px;background:#ccdde6;">
+  <p style="margin:0 0 4px;color:#18384d;font-size:11px;font-weight:700;">
+    French-Ward, Inc.
+  </p>
+  <p style="margin:0;color:#587181;font-size:9px;letter-spacing:.1em;text-transform:uppercase;">
+    Institutional environment via AXPT
+  </p>
+</td>
+</tr>
+
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>`;
+
+  return {
+    subject,
+    text,
+    html,
+  };
 }
 
 export async function sendGlobalMotherChamberInvitation(
-  input: GlobalMotherInvitationInput,
+  input: GlobalMotherInvitationInput & {
+    grantId: string;
+    deliveryKey: string;
+    accessUrl: string;
+  },
 ) {
   const mode = getDigitalSettlementEmailMode();
   const from = getDigitalSettlementSender();
-  const rendered = renderInvitation(input);
+  const rendered = renderGlobalMotherChamberInvitation(input);
+
   const type = `GM_CHAMBER_INVITATION_${input.grantId}_${input.deliveryKey}`;
+
   const successfulStatus = mode === "send" ? "SENT" : "LOGGED_ONLY";
 
   const existing = await prisma.emailLog.findFirst({
@@ -172,9 +341,7 @@ export async function sendGlobalMotherChamberInvitation(
   const response = await resend.emails.send({
     from,
     to: input.recipientEmail,
-    replyTo:
-      process.env.DSI_REPLY_TO_EMAIL ||
-      "french-ward@axpt.io",
+    replyTo: process.env.DSI_REPLY_TO_EMAIL || "french-ward@axpt.io",
     subject: rendered.subject,
     text: rendered.text,
     html: rendered.html,
