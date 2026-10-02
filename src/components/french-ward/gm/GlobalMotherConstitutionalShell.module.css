@@ -945,3 +945,29 @@
 .spineRecipient strong > span {
   display: block;
 }
+
+/* =========================================================
+   GM V4 — DESKTOP CHAMBER VIEWPORT LOCK
+   Keep the constitutional crown fully inside the viewport
+   regardless of scroll position inherited from reception.
+   ========================================================= */
+
+@media (min-width: 861px) {
+  .shell {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100dvh;
+  }
+
+  .documentIdentity {
+    flex: 0 0 auto;
+    padding-top: 1.35rem;
+    padding-bottom: 1.35rem;
+  }
+
+  .pamphlet {
+    flex: 1 1 auto;
+    min-height: 0;
+  }
+}
