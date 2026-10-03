@@ -54,6 +54,383 @@ function displayDate(value: string | null) {
   return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
 }
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+
+  return value as Record<string, unknown>;
+}
+
+function recordAt(
+  source: Record<string, unknown> | null,
+  key: string,
+): Record<string, unknown> | null {
+  return source ? asRecord(source[key]) : null;
+}
+
+function stringAt(
+  source: Record<string, unknown> | null,
+  key: string,
+): string | null {
+  const value = source?.[key];
+
+  return typeof value === "string" && value.trim()
+    ? value.trim()
+    : null;
+}
+
+function stringsAt(
+  source: Record<string, unknown> | null,
+  key: string,
+): string[] {
+  const value = source?.[key];
+
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.filter(
+    (item): item is string =>
+      typeof item === "string" &&
+      Boolean(item.trim()),
+  );
+}
+
+function booleanAt(
+  source: Record<string, unknown> | null,
+  key: string,
+): boolean | null {
+  const value = source?.[key];
+
+  return typeof value === "boolean"
+    ? value
+    : null;
+}
+
+function ReadOnlySubmissionValue({
+  label,
+  value,
+}: {
+  label: string;
+  value: string | null | undefined;
+}) {
+  return (
+    <div className="rounded border border-gray-800 bg-gray-950 p-3">
+      <dt className="text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-500">
+        {label}
+      </dt>
+      <dd className="mt-2 whitespace-pre-wrap break-words text-sm leading-5 text-gray-200">
+        {value || "Not provided"}
+      </dd>
+    </div>
+  );
+}
+
+function CandidateSubmissionDossier({
+  submission,
+  submittedAt,
+}: {
+  submission: unknown | null;
+  submittedAt: string | null;
+}) {
+  const root = asRecord(submission);
+
+  if (!root) {
+    return (
+      <section className="rounded border border-gray-800 bg-black p-4">
+        <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
+          Submitted Intake
+        </p>
+        <h3 className="mt-2 text-base font-semibold text-white">
+          Candidate Submission
+        </h3>
+        <p className="mt-3 text-sm text-gray-400">
+          No structured submission is recorded for this intake.
+        </p>
+      </section>
+    );
+  }
+
+  const identity = recordAt(root, "identity");
+  const professional = recordAt(root, "professionalProfile");
+  const representation = recordAt(root, "representationContext");
+  const disclosures = recordAt(root, "disclosures");
+  const acknowledgements = recordAt(root, "acknowledgements");
+
+  const listValue = (
+    source: Record<string, unknown> | null,
+    key: string,
+  ) => {
+    const values = stringsAt(source, key);
+    return values.length ? values.join("\n") : null;
+  };
+
+  const acknowledgementValue = (
+    key: string,
+  ) => {
+    const value = booleanAt(acknowledgements, key);
+
+    if (value === true) return "Acknowledged";
+    if (value === false) return "Not acknowledged";
+    return "Not recorded";
+  };
+
+  return (
+    <section className="rounded border border-cyan-900/70 bg-[#020a10] p-4">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <p className="text-xs uppercase tracking-[0.18em] text-cyan-500/80">
+            Submitted Intake
+          </p>
+          <h3 className="mt-2 text-base font-semibold text-white">
+            Candidate-Supplied Review Record
+          </h3>
+          <p className="mt-2 max-w-2xl text-sm leading-5 text-gray-400">
+            Read-only record of the information supplied by the candidate.
+            Operator qualification should be based on this submitted record
+            together with any independently reviewed materials.
+          </p>
+        </div>
+
+        <div className="rounded border border-cyan-900/60 bg-black px-3 py-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-cyan-300">
+          Submitted · {displayDate(submittedAt)}
+        </div>
+      </div>
+
+      <div className="mt-5 space-y-5">
+        <section>
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
+            01 · Candidate Identity
+          </p>
+
+          <dl className="grid gap-3 sm:grid-cols-2">
+            <ReadOnlySubmissionValue
+              label="Full Legal Name"
+              value={stringAt(identity, "fullLegalName")}
+            />
+            <ReadOnlySubmissionValue
+              label="Preferred Professional Name"
+              value={stringAt(identity, "preferredProfessionalName")}
+            />
+            <ReadOnlySubmissionValue
+              label="Email"
+              value={stringAt(identity, "email")}
+            />
+            <ReadOnlySubmissionValue
+              label="Nationality"
+              value={stringAt(identity, "nationality")}
+            />
+            <ReadOnlySubmissionValue
+              label="Country of Residence"
+              value={stringAt(identity, "countryOfResidence")}
+            />
+            <ReadOnlySubmissionValue
+              label="Telephone"
+              value={stringAt(identity, "telephone")}
+            />
+            <ReadOnlySubmissionValue
+              label="WhatsApp"
+              value={stringAt(identity, "whatsapp")}
+            />
+            <ReadOnlySubmissionValue
+              label="Passport / ID Reference"
+              value={stringAt(identity, "passportOrIdReference")}
+            />
+          </dl>
+
+          <dl className="mt-3">
+            <ReadOnlySubmissionValue
+              label="Primary Address"
+              value={stringAt(identity, "primaryAddress")}
+            />
+          </dl>
+        </section>
+
+        <section className="border-t border-gray-800 pt-5">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
+            02 · Professional Profile
+          </p>
+
+          <dl className="grid gap-3 sm:grid-cols-2">
+            <ReadOnlySubmissionValue
+              label="Current Occupation / Role"
+              value={stringAt(professional, "currentOccupationOrRole")}
+            />
+            <ReadOnlySubmissionValue
+              label="Companies / Organizations"
+              value={listValue(
+                professional,
+                "companyOrOrganizationAffiliations",
+              )}
+            />
+            <ReadOnlySubmissionValue
+              label="Relevant Markets / Industries"
+              value={listValue(
+                professional,
+                "relevantMarketsOrIndustries",
+              )}
+            />
+            <ReadOnlySubmissionValue
+              label="Primary Territories"
+              value={listValue(
+                professional,
+                "primaryTerritories",
+              )}
+            />
+            <ReadOnlySubmissionValue
+              label="Languages"
+              value={listValue(
+                professional,
+                "languages",
+              )}
+            />
+            <ReadOnlySubmissionValue
+              label="Commercial Capabilities"
+              value={listValue(
+                professional,
+                "commercialCapabilities",
+              )}
+            />
+          </dl>
+        </section>
+
+        <section className="border-t border-gray-800 pt-5">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
+            03 · Representation Context
+          </p>
+
+          <dl className="grid gap-3 sm:grid-cols-2">
+            <ReadOnlySubmissionValue
+              label="Introduction Context"
+              value={stringAt(
+                representation,
+                "introductionContext",
+              )}
+            />
+            <ReadOnlySubmissionValue
+              label="Expected Contribution"
+              value={stringAt(
+                representation,
+                "expectedContribution",
+              )}
+            />
+            <ReadOnlySubmissionValue
+              label="Relevant Relationships / Networks"
+              value={stringAt(
+                representation,
+                "relevantRelationshipsOrNetworks",
+              )}
+            />
+            <ReadOnlySubmissionValue
+              label="Anticipated Representation Areas"
+              value={listValue(
+                representation,
+                "anticipatedRepresentationAreas",
+              )}
+            />
+          </dl>
+        </section>
+
+        <section className="border-t border-amber-900/40 pt-5">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-amber-500/80">
+            04 · Disclosures
+          </p>
+
+          <dl className="grid gap-3 sm:grid-cols-2">
+            <ReadOnlySubmissionValue
+              label="Existing Mandates / Representative Relationships"
+              value={stringAt(
+                disclosures,
+                "existingMandatesOrRepresentativeRelationships",
+              )}
+            />
+            <ReadOnlySubmissionValue
+              label="Potential Conflicts"
+              value={stringAt(
+                disclosures,
+                "potentialConflicts",
+              )}
+            />
+            <ReadOnlySubmissionValue
+              label="Regulated Activities"
+              value={stringAt(
+                disclosures,
+                "regulatedActivities",
+              )}
+            />
+            <ReadOnlySubmissionValue
+              label="Material Affiliations"
+              value={stringAt(
+                disclosures,
+                "materialAffiliations",
+              )}
+            />
+          </dl>
+        </section>
+
+        <section className="border-t border-gray-800 pt-5">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-gray-500">
+            05 · Candidate Assertions
+          </p>
+
+          <dl className="grid gap-3 sm:grid-cols-2">
+            <ReadOnlySubmissionValue
+              label="No Implied Authority"
+              value={acknowledgementValue("noImpliedAuthority")}
+            />
+            <ReadOnlySubmissionValue
+              label="Commercial Terms Remain Controlled"
+              value={acknowledgementValue(
+                "noUnauthorizedCommercialTermChanges",
+              )}
+            />
+            <ReadOnlySubmissionValue
+              label="No Impersonation"
+              value={acknowledgementValue(
+                "noImpersonationOfFrenchWard",
+              )}
+            />
+            <ReadOnlySubmissionValue
+              label="No Unauthorized Subdelegation"
+              value={acknowledgementValue(
+                "noUnauthorizedSubdelegation",
+              )}
+            />
+            <ReadOnlySubmissionValue
+              label="Confidentiality"
+              value={acknowledgementValue(
+                "confidentialityAcknowledged",
+              )}
+            />
+            <ReadOnlySubmissionValue
+              label="Written Appointment Controls Authority"
+              value={acknowledgementValue(
+                "writtenAppointmentControlsAuthority",
+              )}
+            />
+            <ReadOnlySubmissionValue
+              label="Information Accurate / Materially Complete"
+              value={acknowledgementValue(
+                "informationAccurateToBestKnowledge",
+              )}
+            />
+          </dl>
+        </section>
+      </div>
+
+      <details className="mt-5 border-t border-gray-800 pt-4">
+        <summary className="cursor-pointer text-xs font-semibold uppercase tracking-[0.14em] text-gray-500">
+          Raw Submission Record
+        </summary>
+        <pre className="mt-4 max-h-[26rem] overflow-auto whitespace-pre-wrap break-words rounded border border-gray-800 bg-black p-3 text-xs leading-5 text-gray-400">
+          {JSON.stringify(submission, null, 2)}
+        </pre>
+      </details>
+    </section>
+  );
+}
+
 export default function RepresentativeIntakeInspector({
   focusedIntakeId,
   onFocusedIntakeChange,
@@ -408,16 +785,10 @@ export default function RepresentativeIntakeInspector({
               </p>
             </div>
 
-            <details className="rounded border border-gray-800 bg-black p-4">
-              <summary className="cursor-pointer text-sm font-semibold text-gray-200">
-                Candidate Submission
-              </summary>
-              <pre className="mt-4 max-h-[34rem] overflow-auto whitespace-pre-wrap break-words text-xs leading-5 text-gray-300">
-                {intake.submission === null
-                  ? "No submission recorded."
-                  : JSON.stringify(intake.submission, null, 2)}
-              </pre>
-            </details>
+            <CandidateSubmissionDossier
+              submission={intake.submission}
+              submittedAt={intake.submittedAt}
+            />
           </div>
 
           <aside className="space-y-4 xl:sticky xl:top-6 xl:self-start">
