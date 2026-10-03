@@ -11,6 +11,10 @@ export type PrivateAgreementEvidenceStore = Readonly<{
 
 const receiptBrand: unique symbol = Symbol("master-agreement-evidence-receipt");
 
+export type MasterAgreementExecutionPackageMode =
+  | "SEPARATE_FILES"
+  | "COMBINED_ACROBAT_PACKAGE";
+
 export type MasterAgreementEvidenceReceipt = Readonly<{
   reference: string;
   signerEmail: string;
@@ -18,6 +22,7 @@ export type MasterAgreementEvidenceReceipt = Readonly<{
   completedAt: Date;
   reviewedByUserId: string;
   reviewedAt: Date;
+  packageMode: MasterAgreementExecutionPackageMode;
   signedDocument: Readonly<{ uri: string; contentHash: string }>;
   auditTrail: Readonly<{ uri: string; contentHash: string }>;
   [receiptBrand]: true;
@@ -79,13 +84,17 @@ export async function assembleMasterAgreementEvidence(input: {
   reviewedByUserId: string;
   reviewedAt: Date;
   operatorConfirmedAllSignatures: boolean;
-  signedPdf: Uint8Array;
-  auditPdf: Uint8Array;
+  packageMode?: MasterAgreementExecutionPackageMode;
+  signedPdf?: Uint8Array;
+  auditPdf?: Uint8Array;
+  combinedPdf?: Uint8Array;
 }): Promise<MasterAgreementEvidenceReceipt> {
   const reference = input.reference.trim();
   const signerEmail = input.signerEmail.trim().toLowerCase();
   const adobeAgreementId = input.adobeAgreementId.trim();
   const reviewedByUserId = input.reviewedByUserId.trim();
+  const packageMode =
+    input.packageMode ?? "SEPARATE_FILES";
 
   if (
     !/^[A-Za-z0-9][A-Za-z0-9._-]{2,100}$/.test(reference) ||
@@ -99,8 +108,6 @@ export async function assembleMasterAgreementEvidence(input: {
     throw new Error("[ARP_MASTER_AGREEMENT_EXECUTION_REVIEW_REQUIRED]");
   }
 
-  const signedPdf = Uint8Array.from(input.signedPdf);
-  const auditPdf = Uint8Array.from(input.auditPdf);
   const completedAt = new Date(input.completedAt.getTime());
   const reviewedAt = new Date(input.reviewedAt.getTime());
 
@@ -108,40 +115,112 @@ export async function assembleMasterAgreementEvidence(input: {
     throw new Error("[ARP_MASTER_AGREEMENT_REVIEW_PRECEDES_COMPLETION]");
   }
 
-  requirePdf(signedPdf, "SIGNED_DOCUMENT");
-  requirePdf(auditPdf, "AUDIT_TRAIL");
-
-  const documentHash = createHash("sha256")
-    .update(signedPdf)
-    .digest("hex");
-  const auditHash = createHash("sha256")
-    .update(auditPdf)
-    .digest("hex");
-  if (documentHash === auditHash) {
-    throw new Error("[ARP_MASTER_AGREEMENT_DISTINCT_AUDIT_REQUIRED]");
-  }
-
   const prefix = `arp/master-agreements/${reference}`;
 
-  const documentLocation = requirePrivateLocation(
-    await input.store.putPrivate({
-      key: `${prefix}/signed-${documentHash}.pdf`,
-      bytes: signedPdf,
-      contentType: "application/pdf",
-      sha256: documentHash,
-    }),
-    "SIGNED_DOCUMENT",
-  );
+  let signedDocument: Readonly<{
+    uri: string;
+    contentHash: string;
+  }>;
 
-  const auditLocation = requirePrivateLocation(
-    await input.store.putPrivate({
-      key: `${prefix}/audit-${auditHash}.pdf`,
-      bytes: auditPdf,
-      contentType: "application/pdf",
-      sha256: auditHash,
-    }),
-    "AUDIT_TRAIL",
-  );
+  let auditTrail: Readonly<{
+    uri: string;
+    contentHash: string;
+  }>;
+
+  if (packageMode === "COMBINED_ACROBAT_PACKAGE") {
+    if (!input.combinedPdf) {
+      throw new Error(
+        "[ARP_MASTER_AGREEMENT_COMBINED_PACKAGE_REQUIRED]",
+      );
+    }
+
+    const combinedPdf = Uint8Array.from(input.combinedPdf);
+    requirePdf(combinedPdf, "COMBINED_ACROBAT_PACKAGE");
+
+    const combinedHash = createHash("sha256")
+      .update(combinedPdf)
+      .digest("hex");
+
+    const combinedLocation = requirePrivateLocation(
+      await input.store.putPrivate({
+        key: `${prefix}/combined-${combinedHash}.pdf`,
+        bytes: combinedPdf,
+        contentType: "application/pdf",
+        sha256: combinedHash,
+      }),
+      "COMBINED_ACROBAT_PACKAGE",
+    );
+
+    signedDocument = {
+      uri: combinedLocation,
+      contentHash: combinedHash,
+    };
+
+    auditTrail = {
+      uri: combinedLocation,
+      contentHash: combinedHash,
+    };
+  } else if (packageMode === "SEPARATE_FILES") {
+    if (!input.signedPdf || !input.auditPdf) {
+      throw new Error(
+        "[ARP_MASTER_AGREEMENT_SIGNED_AND_AUDIT_REQUIRED]",
+      );
+    }
+
+    const signedPdf = Uint8Array.from(input.signedPdf);
+    const auditPdf = Uint8Array.from(input.auditPdf);
+
+    requirePdf(signedPdf, "SIGNED_DOCUMENT");
+    requirePdf(auditPdf, "AUDIT_TRAIL");
+
+    const documentHash = createHash("sha256")
+      .update(signedPdf)
+      .digest("hex");
+
+    const auditHash = createHash("sha256")
+      .update(auditPdf)
+      .digest("hex");
+
+    if (documentHash === auditHash) {
+      throw new Error(
+        "[ARP_MASTER_AGREEMENT_DISTINCT_AUDIT_REQUIRED]",
+      );
+    }
+
+    const documentLocation = requirePrivateLocation(
+      await input.store.putPrivate({
+        key: `${prefix}/signed-${documentHash}.pdf`,
+        bytes: signedPdf,
+        contentType: "application/pdf",
+        sha256: documentHash,
+      }),
+      "SIGNED_DOCUMENT",
+    );
+
+    const auditLocation = requirePrivateLocation(
+      await input.store.putPrivate({
+        key: `${prefix}/audit-${auditHash}.pdf`,
+        bytes: auditPdf,
+        contentType: "application/pdf",
+        sha256: auditHash,
+      }),
+      "AUDIT_TRAIL",
+    );
+
+    signedDocument = {
+      uri: documentLocation,
+      contentHash: documentHash,
+    };
+
+    auditTrail = {
+      uri: auditLocation,
+      contentHash: auditHash,
+    };
+  } else {
+    throw new Error(
+      "[ARP_MASTER_AGREEMENT_PACKAGE_MODE_INVALID]",
+    );
+  }
 
   return {
     reference,
@@ -150,14 +229,9 @@ export async function assembleMasterAgreementEvidence(input: {
     completedAt,
     reviewedByUserId,
     reviewedAt,
-    signedDocument: {
-      uri: documentLocation,
-      contentHash: documentHash,
-    },
-    auditTrail: {
-      uri: auditLocation,
-      contentHash: auditHash,
-    },
+    packageMode,
+    signedDocument,
+    auditTrail,
     [receiptBrand]: true,
   };
 }

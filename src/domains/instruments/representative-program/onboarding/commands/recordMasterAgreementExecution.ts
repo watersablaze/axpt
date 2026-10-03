@@ -67,7 +67,23 @@ export async function recordMasterAgreementExecutionWithClient(params: {
     !Number.isFinite(reviewedAt.getTime()) ||
     completedAt.getTime() > reviewedAt.getTime() ||
     !/^[a-f0-9]{64}$/.test(receipt.signedDocument.contentHash) ||
-    !/^[a-f0-9]{64}$/.test(receipt.auditTrail.contentHash)
+    !/^[a-f0-9]{64}$/.test(receipt.auditTrail.contentHash) ||
+    !["SEPARATE_FILES", "COMBINED_ACROBAT_PACKAGE"].includes(
+      receipt.packageMode,
+    ) ||
+    (
+      receipt.packageMode === "COMBINED_ACROBAT_PACKAGE" &&
+      (
+        receipt.signedDocument.uri !== receipt.auditTrail.uri ||
+        receipt.signedDocument.contentHash !==
+          receipt.auditTrail.contentHash
+      )
+    ) ||
+    (
+      receipt.packageMode === "SEPARATE_FILES" &&
+      receipt.signedDocument.contentHash ===
+        receipt.auditTrail.contentHash
+    )
   ) {
     throw new Error("[ARP_MASTER_AGREEMENT_RECEIPT_INVALID]");
   }
@@ -206,6 +222,7 @@ export async function recordMasterAgreementExecutionWithClient(params: {
     reviewedAt: reviewedAt.toISOString(),
     reviewedByUserId: receipt.reviewedByUserId,
     operatorConfirmedAllSignatures: true,
+    executionPackageMode: receipt.packageMode,
   };
 
   await recordInstrumentEvidenceWithClient({
@@ -213,7 +230,10 @@ export async function recordMasterAgreementExecutionWithClient(params: {
     instrumentReference: receipt.reference,
     evidenceType: INSTRUMENT_EVIDENCE_TYPE.DOCUMENT,
     subjectType: INSTRUMENT_EVIDENCE_SUBJECT.EXECUTION,
-    title: "Externally executed Master Agreement",
+    title:
+      receipt.packageMode === "COMBINED_ACROBAT_PACKAGE"
+        ? "Externally executed Master Agreement — combined Acrobat package"
+        : "Externally executed Master Agreement",
     uri: receipt.signedDocument.uri,
     contentHash: receipt.signedDocument.contentHash,
     metadata: evidenceMetadata,
@@ -226,7 +246,10 @@ export async function recordMasterAgreementExecutionWithClient(params: {
     instrumentReference: receipt.reference,
     evidenceType: INSTRUMENT_EVIDENCE_TYPE.EXTERNAL_RECORD,
     subjectType: INSTRUMENT_EVIDENCE_SUBJECT.EXECUTION,
-    title: "Acrobat execution audit trail",
+    title:
+      receipt.packageMode === "COMBINED_ACROBAT_PACKAGE"
+        ? "Acrobat execution audit trail — contained in combined package"
+        : "Acrobat execution audit trail",
     uri: receipt.auditTrail.uri,
     contentHash: receipt.auditTrail.contentHash,
     metadata: evidenceMetadata,

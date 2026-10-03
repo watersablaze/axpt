@@ -27,6 +27,10 @@ const fieldsSchema = z.object({
   adobeAgreementId: z.string().trim().min(1).max(200),
   completedAt: z.string().datetime({ offset: true }),
   operatorConfirmedAllSignatures: z.literal("true"),
+  executionPackageMode: z.enum([
+    "SEPARATE_FILES",
+    "COMBINED_ACROBAT_PACKAGE",
+  ]),
 }).strict();
 
 function jsonNoStore(body: unknown, status: number) {
@@ -94,6 +98,8 @@ export async function POST(request: Request) {
       completedAt: form.get("completedAt"),
       operatorConfirmedAllSignatures:
         form.get("operatorConfirmedAllSignatures"),
+      executionPackageMode:
+        form.get("executionPackageMode"),
     });
 
     if (!parsed.success) {
@@ -105,23 +111,42 @@ export async function POST(request: Request) {
 
     const signedPdf = form.get("signedPdf");
     const auditPdf = form.get("auditPdf");
-
-    if (!(signedPdf instanceof File) || !(auditPdf instanceof File)) {
-      return jsonNoStore(
-        { ok: false, error: "SIGNED_PDF_AND_AUDIT_REQUIRED" },
-        400,
-      );
-    }
+    const combinedPdf = form.get("combinedPdf");
 
     if (
-      signedPdf.size === 0 ||
-      auditPdf.size === 0 ||
-      signedPdf.size + auditPdf.size > MAX_PDF_BYTES
+      parsed.data.executionPackageMode === "SEPARATE_FILES"
     ) {
-      return jsonNoStore(
-        { ok: false, error: "PDF_PACKAGE_TOO_LARGE" },
-        413,
-      );
+      if (!(signedPdf instanceof File) || !(auditPdf instanceof File)) {
+        return jsonNoStore(
+          { ok: false, error: "SIGNED_PDF_AND_AUDIT_REQUIRED" },
+          400,
+        );
+      }
+
+      if (
+        signedPdf.size === 0 ||
+        auditPdf.size === 0 ||
+        signedPdf.size + auditPdf.size > MAX_PDF_BYTES
+      ) {
+        return jsonNoStore(
+          { ok: false, error: "PDF_PACKAGE_TOO_LARGE" },
+          413,
+        );
+      }
+    } else {
+      if (!(combinedPdf instanceof File) || combinedPdf.size === 0) {
+        return jsonNoStore(
+          { ok: false, error: "COMBINED_ACROBAT_PACKAGE_REQUIRED" },
+          400,
+        );
+      }
+
+      if (combinedPdf.size > MAX_PDF_BYTES) {
+        return jsonNoStore(
+          { ok: false, error: "PDF_PACKAGE_TOO_LARGE" },
+          413,
+        );
+      }
     }
 
     const reference = parsed.data.reference;
@@ -185,8 +210,19 @@ export async function POST(request: Request) {
       reviewedByUserId: principal.userId,
       reviewedAt: new Date(),
       operatorConfirmedAllSignatures: true,
-      signedPdf: new Uint8Array(await signedPdf.arrayBuffer()),
-      auditPdf: new Uint8Array(await auditPdf.arrayBuffer()),
+      packageMode: parsed.data.executionPackageMode,
+      signedPdf:
+        signedPdf instanceof File
+          ? new Uint8Array(await signedPdf.arrayBuffer())
+          : undefined,
+      auditPdf:
+        auditPdf instanceof File
+          ? new Uint8Array(await auditPdf.arrayBuffer())
+          : undefined,
+      combinedPdf:
+        combinedPdf instanceof File
+          ? new Uint8Array(await combinedPdf.arrayBuffer())
+          : undefined,
     });
 
     const result = await recordMasterAgreementExecution({

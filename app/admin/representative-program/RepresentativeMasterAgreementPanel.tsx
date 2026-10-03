@@ -82,6 +82,10 @@ export default function RepresentativeMasterAgreementPanel({
   const [executionBusy, setExecutionBusy] = useState(false);
   const [executionError, setExecutionError] = useState<string | null>(null);
   const [executionMessage, setExecutionMessage] = useState<string | null>(null);
+  const [executionPackageMode, setExecutionPackageMode] =
+    useState<"SEPARATE_FILES" | "COMBINED_ACROBAT_PACKAGE">(
+      "COMBINED_ACROBAT_PACKAGE",
+    );
 
   const [admissionBusy, setAdmissionBusy] = useState(false);
   const [admissionError, setAdmissionError] = useState<string | null>(null);
@@ -215,8 +219,13 @@ export default function RepresentativeMasterAgreementPanel({
         submitted.get("completedAt") ?? "",
       ).trim();
 
+      const packageMode = String(
+        submitted.get("executionPackageMode") ?? "",
+      );
+
       const signedPdf = submitted.get("signedPdf");
       const auditPdf = submitted.get("auditPdf");
+      const combinedPdf = submitted.get("combinedPdf");
 
       const operatorConfirmedAllSignatures =
         submitted.get("operatorConfirmedAllSignatures") === "on";
@@ -228,23 +237,47 @@ export default function RepresentativeMasterAgreementPanel({
         return;
       }
 
-      if (!(signedPdf instanceof File) || !(auditPdf instanceof File)) {
-        setExecutionError(
-          "Both the executed Agreement PDF and Acrobat audit PDF are required.",
-        );
+      if (
+        packageMode !== "SEPARATE_FILES" &&
+        packageMode !== "COMBINED_ACROBAT_PACKAGE"
+      ) {
+        setExecutionError("Select a valid Acrobat execution package format.");
         return;
       }
 
-      if (signedPdf.size === 0 || auditPdf.size === 0) {
-        setExecutionError("Execution evidence files cannot be empty.");
-        return;
-      }
+      if (packageMode === "SEPARATE_FILES") {
+        if (!(signedPdf instanceof File) || !(auditPdf instanceof File)) {
+          setExecutionError(
+            "Both the executed Agreement PDF and Acrobat audit PDF are required.",
+          );
+          return;
+        }
 
-      if (signedPdf.size + auditPdf.size > MAX_EXECUTION_PACKAGE_BYTES) {
-        setExecutionError(
-          "The combined execution evidence package must not exceed 4 MB.",
-        );
-        return;
+        if (signedPdf.size === 0 || auditPdf.size === 0) {
+          setExecutionError("Execution evidence files cannot be empty.");
+          return;
+        }
+
+        if (signedPdf.size + auditPdf.size > MAX_EXECUTION_PACKAGE_BYTES) {
+          setExecutionError(
+            "The combined execution evidence package must not exceed 4 MB.",
+          );
+          return;
+        }
+      } else {
+        if (!(combinedPdf instanceof File) || combinedPdf.size === 0) {
+          setExecutionError(
+            "The combined Acrobat execution package PDF is required.",
+          );
+          return;
+        }
+
+        if (combinedPdf.size > MAX_EXECUTION_PACKAGE_BYTES) {
+          setExecutionError(
+            "The combined Acrobat execution package must not exceed 4 MB.",
+          );
+          return;
+        }
       }
 
       if (!operatorConfirmedAllSignatures) {
@@ -268,8 +301,14 @@ export default function RepresentativeMasterAgreementPanel({
       body.set("adobeAgreementId", adobeAgreementId);
       body.set("completedAt", completedAt.toISOString());
       body.set("operatorConfirmedAllSignatures", "true");
-      body.set("signedPdf", signedPdf);
-      body.set("auditPdf", auditPdf);
+      body.set("executionPackageMode", packageMode);
+
+      if (packageMode === "SEPARATE_FILES") {
+        body.set("signedPdf", signedPdf as File);
+        body.set("auditPdf", auditPdf as File);
+      } else {
+        body.set("combinedPdf", combinedPdf as File);
+      }
 
       const response = await fetch(
         "/api/admin/representative-program/master-agreements/execute",
@@ -544,9 +583,10 @@ export default function RepresentativeMasterAgreementPanel({
 
           <p className="mt-2 text-sm leading-6 text-gray-400">
             Record the externally completed Agreement only after operator
-            review. AXPT stores the executed PDF and the distinct Acrobat audit
-            trail privately, then records their hashes and execution evidence
-            against this instrument.
+            review. AXPT preserves the original Acrobat evidence package
+            privately and records its hash and execution evidence against this
+            instrument. Acrobat may provide either separate Agreement and audit
+            PDFs or one combined execution package containing both.
           </p>
 
           <form onSubmit={recordExecution} className="mt-5 space-y-4">
@@ -592,34 +632,87 @@ export default function RepresentativeMasterAgreementPanel({
 
             <label className="grid gap-2">
               <span className="text-xs text-gray-400">
-                Executed Agreement PDF
+                Acrobat execution package format
               </span>
 
-              <input
-                name="signedPdf"
-                type="file"
-                accept="application/pdf,.pdf"
-                required
-                className="rounded border border-gray-700 bg-black px-3 py-2 text-sm text-gray-300 file:mr-3 file:border-0 file:bg-gray-800 file:px-3 file:py-1.5 file:text-xs file:text-gray-200"
-              />
+              <select
+                name="executionPackageMode"
+                value={executionPackageMode}
+                onChange={(event) =>
+                  setExecutionPackageMode(
+                    event.target.value as
+                      | "SEPARATE_FILES"
+                      | "COMBINED_ACROBAT_PACKAGE",
+                  )
+                }
+                className="rounded border border-gray-700 bg-black px-3 py-2 text-white"
+              >
+                <option value="COMBINED_ACROBAT_PACKAGE">
+                  One combined Acrobat execution package
+                </option>
+                <option value="SEPARATE_FILES">
+                  Separate Agreement and Acrobat audit PDFs
+                </option>
+              </select>
             </label>
 
-            <label className="grid gap-2">
-              <span className="text-xs text-gray-400">Acrobat audit PDF</span>
+            {executionPackageMode === "COMBINED_ACROBAT_PACKAGE" ? (
+              <label className="grid gap-2">
+                <span className="text-xs text-gray-400">
+                  Combined Acrobat execution package PDF
+                </span>
 
-              <input
-                name="auditPdf"
-                type="file"
-                accept="application/pdf,.pdf"
-                required
-                className="rounded border border-gray-700 bg-black px-3 py-2 text-sm text-gray-300 file:mr-3 file:border-0 file:bg-gray-800 file:px-3 file:py-1.5 file:text-xs file:text-gray-200"
-              />
+                <input
+                  name="combinedPdf"
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  required
+                  className="rounded border border-gray-700 bg-black px-3 py-2 text-sm text-gray-300 file:mr-3 file:border-0 file:bg-gray-800 file:px-3 file:py-1.5 file:text-xs file:text-gray-200"
+                />
 
-              <span className="text-xs leading-5 text-gray-500">
-                This must be a distinct audit / execution record, not a
-                duplicate of the signed Agreement. Combined package limit: 4 MB.
-              </span>
-            </label>
+                <span className="text-xs leading-5 text-gray-500">
+                  Use the original Acrobat PDF when the signed Agreement and
+                  execution audit / certificate are delivered together in one
+                  package. AXPT stores this original package once. Limit: 4 MB.
+                </span>
+              </label>
+            ) : (
+              <>
+                <label className="grid gap-2">
+                  <span className="text-xs text-gray-400">
+                    Executed Agreement PDF
+                  </span>
+
+                  <input
+                    name="signedPdf"
+                    type="file"
+                    accept="application/pdf,.pdf"
+                    required
+                    className="rounded border border-gray-700 bg-black px-3 py-2 text-sm text-gray-300 file:mr-3 file:border-0 file:bg-gray-800 file:px-3 file:py-1.5 file:text-xs file:text-gray-200"
+                  />
+                </label>
+
+                <label className="grid gap-2">
+                  <span className="text-xs text-gray-400">
+                    Acrobat audit PDF
+                  </span>
+
+                  <input
+                    name="auditPdf"
+                    type="file"
+                    accept="application/pdf,.pdf"
+                    required
+                    className="rounded border border-gray-700 bg-black px-3 py-2 text-sm text-gray-300 file:mr-3 file:border-0 file:bg-gray-800 file:px-3 file:py-1.5 file:text-xs file:text-gray-200"
+                  />
+
+                  <span className="text-xs leading-5 text-gray-500">
+                    Use this mode only when Acrobat supplies a distinct audit /
+                    execution record separate from the signed Agreement.
+                    Combined package limit: 4 MB.
+                  </span>
+                </label>
+              </>
+            )}
 
             <label className="flex items-start gap-3 rounded border border-amber-800/40 bg-amber-950/10 p-3">
               <input
