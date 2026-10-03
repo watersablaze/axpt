@@ -66,8 +66,26 @@ export default function RepresentativeCommunicationsPanel({
     status === "DRAFT" ||
     status === "RETURNED_FOR_COMPLETION";
 
+  const sentReceipt =
+    communications
+      .filter(
+        (communication) =>
+          communication.type ===
+            "SUBMISSION_RECEIPT" &&
+          communication.status === "SENT",
+      )
+      .sort((left, right) =>
+        left.createdAt.localeCompare(
+          right.createdAt,
+        ),
+      )[0] ?? null;
+
+  const receiptSent =
+    Boolean(sentReceipt);
+
   const receiptEligible =
-    Boolean(submittedAt);
+    Boolean(submittedAt) &&
+    !receiptSent;
 
   async function previewCommunication(
     type: CommunicationType,
@@ -297,23 +315,47 @@ export default function RepresentativeCommunicationsPanel({
             Candidate-specific acknowledgement and continuity message.
           </p>
 
-          <button
-            type="button"
-            disabled={
-              !receiptEligible ||
-              busy
-            }
-            onClick={() =>
-              void previewCommunication(
-                "SUBMISSION_RECEIPT",
-              )
-            }
-            className="mt-3 rounded border border-cyan-700 bg-cyan-950/30 px-3 py-1.5 text-xs font-semibold text-cyan-200 disabled:opacity-40"
-          >
-            Preview Receipt
-          </button>
+          {receiptSent ? (
+            <div className="mt-3 rounded border border-emerald-700/50 bg-emerald-950/20 px-3 py-3">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-emerald-300">
+                Receipt Sent
+              </p>
 
-          {!receiptEligible ? (
+              <p className="mt-2 text-[11px] leading-5 text-gray-400">
+                A submission receipt has already been delivered for this intake.
+                Ordinary resend is withheld to prevent duplicate candidate correspondence.
+              </p>
+
+              {sentReceipt ? (
+                <p className="mt-2 font-mono text-[10px] text-gray-600">
+                  {new Date(
+                    sentReceipt.createdAt,
+                  ).toLocaleString()}
+                  {sentReceipt.messageId
+                    ? ` · ${sentReceipt.messageId}`
+                    : ""}
+                </p>
+              ) : null}
+            </div>
+          ) : (
+            <button
+              type="button"
+              disabled={
+                !receiptEligible ||
+                busy
+              }
+              onClick={() =>
+                void previewCommunication(
+                  "SUBMISSION_RECEIPT",
+                )
+              }
+              className="mt-3 rounded border border-cyan-700 bg-cyan-950/30 px-3 py-1.5 text-xs font-semibold text-cyan-200 disabled:opacity-40"
+            >
+              Preview Receipt
+            </button>
+          )}
+
+          {!submittedAt ? (
             <p className="mt-2 text-[11px] leading-5 text-gray-600">
               Receipt becomes available after candidate submission.
             </p>
