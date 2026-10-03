@@ -88,6 +88,10 @@ export async function POST(
 
         return { admission, binding };
       },
+      {
+        maxWait: 10_000,
+        timeout: 30_000,
+      },
     );
 
     return jsonNoStore({

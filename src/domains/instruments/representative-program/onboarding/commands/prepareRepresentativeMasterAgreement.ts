@@ -213,10 +213,15 @@ export async function prepareRepresentativeMasterAgreement(
     "client"
   > & { client: Runner },
 ) {
-  return params.client.$transaction((tx: Client) =>
-    prepareRepresentativeMasterAgreementWithClient({
-      ...params,
-      client: tx,
-    }),
+  return params.client.$transaction(
+    (tx: Client) =>
+      prepareRepresentativeMasterAgreementWithClient({
+        ...params,
+        client: tx,
+      }),
+    {
+      maxWait: 10_000,
+      timeout: 30_000,
+    },
   );
 }

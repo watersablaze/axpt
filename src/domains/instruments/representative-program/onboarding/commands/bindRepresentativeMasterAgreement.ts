@@ -268,10 +268,15 @@ export async function bindRepresentativeMasterAgreement(params: {
   actorUserId: string;
   occurredAt?: Date;
 }) {
-  return params.client.$transaction((tx: RepresentativeMasterAgreementBindingClient) =>
-    bindRepresentativeMasterAgreementWithClient({
-      ...params,
-      client: tx,
-    }),
+  return params.client.$transaction(
+    (tx: RepresentativeMasterAgreementBindingClient) =>
+      bindRepresentativeMasterAgreementWithClient({
+        ...params,
+        client: tx,
+      }),
+    {
+      maxWait: 10_000,
+      timeout: 30_000,
+    },
   );
 }

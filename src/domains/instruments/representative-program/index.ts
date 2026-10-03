@@ -11,3 +11,4 @@ export * from "./commands/replaceRepresentativeProgramAuthority";
 export * from "./governance/runRepresentativeProgramGovernanceTransaction";
 export * from "./authorityIntegrity";
 export * from "./commands/prepareRepresentativeProgramAppointment";
+export * from "./commands/activateRepresentativeProgramAppointment";

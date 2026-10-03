@@ -266,10 +266,15 @@ export async function recordMasterAgreementExecution(params: {
   client: Runner;
   receipt: MasterAgreementEvidenceReceipt;
 }) {
-  return params.client.$transaction((tx: Client) =>
-    recordMasterAgreementExecutionWithClient({
-      client: tx,
-      receipt: params.receipt,
-    }),
+  return params.client.$transaction(
+    (tx: Client) =>
+      recordMasterAgreementExecutionWithClient({
+        client: tx,
+        receipt: params.receipt,
+      }),
+    {
+      maxWait: 10_000,
+      timeout: 30_000,
+    },
   );
 }

@@ -338,6 +338,7 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
           <Grid>
             <TextArea
               label="Companies / Organizations"
+              density="compact"
               name="companyOrOrganizationAffiliations"
               hint="One per line or comma-separated."
               defaultValue={initialList(
@@ -347,6 +348,7 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
 
             <TextArea
               label="Relevant Markets / Industries"
+              density="compact"
               name="relevantMarketsOrIndustries"
               hint="One per line or comma-separated."
               defaultValue={initialList(
@@ -356,6 +358,7 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
 
             <TextArea
               label="Primary Territories"
+              density="compact"
               name="primaryTerritories"
               hint="Countries, regions, or corridors."
               defaultValue={initialList(
@@ -365,6 +368,7 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
 
             <TextArea
               label="Languages"
+              density="compact"
               name="languages"
               hint="One per line or comma-separated."
               defaultValue={initialList(
@@ -473,7 +477,7 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
             {acknowledgementFields.map(({ key, title, body }) => (
               <label
                 key={key}
-                className="flex gap-3 border border-black/25 bg-white/25 p-3.5 transition focus-within:border-black/50 md:gap-4"
+                className="flex gap-3 border border-black/25 bg-black/[0.025] p-3 transition focus-within:border-black/50 md:gap-4"
               >
                 <input
                   type="checkbox"
@@ -497,7 +501,7 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
           </div>
         </Section>
 
-        <section className="border-t border-black/30 px-5 py-8 md:border-black/20 md:px-9 md:py-9">
+        <section className="border-t border-black/30 px-5 py-5 md:border-black/20 md:px-8 md:py-6">
           <p className="max-w-3xl text-[12px] leading-5 text-black/55 md:text-xs md:leading-6">
             Submission places this candidate intake into French-Ward review. It
             does not itself constitute qualification, admission, appointment,
@@ -540,31 +544,33 @@ function Section({
   return (
     <section
       id={id}
-      className="scroll-mt-32 border-t border-black/20 px-5 py-7 md:px-9 md:py-8"
+      className="scroll-mt-32 border-t border-black/20 px-5 py-4 md:px-8 md:py-5"
     >
-      <div className="mb-5 flex gap-3 md:mb-6 md:gap-4">
-        <span className="font-mono text-[11px] leading-4 text-black/35 md:text-xs">
-          {index}
-        </span>
+      <div className="mb-4 border-b border-black/20 bg-black/[0.025] px-3 py-2 md:mb-5">
+        <div className="flex gap-3 md:gap-4">
+          <span className="font-mono text-[11px] leading-4 text-black/35 md:text-xs">
+            {index}
+          </span>
 
-        <div>
-          <p className="text-[11px] uppercase leading-4 tracking-[0.16em] text-black/45 md:text-xs md:tracking-[0.2em]">
-            {eyebrow}
-          </p>
+          <div>
+            <p className="text-[11px] uppercase leading-4 tracking-[0.16em] text-black/45 md:text-xs md:tracking-[0.2em]">
+              {eyebrow}
+            </p>
 
-          <h2 className="mt-2 max-w-[18rem] font-serif text-[1.35rem] leading-[1.15] text-[#181714] md:max-w-none md:text-2xl md:leading-normal">
-            {title}
-          </h2>
+            <h2 className="mt-1 max-w-[18rem] font-serif text-[1.25rem] leading-[1.15] text-[#181714] md:max-w-none md:text-xl md:leading-normal">
+              {title}
+            </h2>
+          </div>
         </div>
       </div>
 
-      <div className="grid gap-4">{children}</div>
+      <div className="grid gap-3">{children}</div>
     </section>
   );
 }
 
 function Grid({ children }: { children: React.ReactNode }) {
-  return <div className="grid gap-4 md:grid-cols-2 md:gap-5">{children}</div>;
+  return <div className="grid gap-3 md:grid-cols-2 md:gap-4">{children}</div>;
 }
 
 function Field({
@@ -581,7 +587,7 @@ function Field({
   defaultValue?: string;
 }) {
   return (
-    <label className="grid gap-2">
+    <label className="grid gap-1.5">
       <span className="text-[11px] uppercase leading-4 tracking-[0.12em] text-black/50 md:text-xs md:tracking-[0.15em]">
         {label}
       </span>
@@ -603,15 +609,17 @@ function TextArea({
   hint,
   required = false,
   defaultValue,
+  density = "narrative",
 }: {
   label: string;
   name: string;
   hint?: string;
   required?: boolean;
   defaultValue?: string;
+  density?: "compact" | "narrative";
 }) {
   return (
-    <label className="grid gap-2">
+    <label className="grid gap-1.5">
       <span className="text-[11px] uppercase leading-4 tracking-[0.12em] text-black/50 md:text-xs md:tracking-[0.15em]">
         {label}
       </span>
@@ -621,7 +629,12 @@ function TextArea({
         rows={3}
         required={required}
         defaultValue={defaultValue ?? ""}
-        className="min-h-[6.25rem] resize-y border border-black/25 bg-white/25 p-3 text-[15px] leading-6 text-[#181714] outline-none transition focus:border-black/60 focus:bg-white/45 md:min-h-[7rem] md:text-sm"
+        className={[
+          "resize-y border border-black/25 bg-black/[0.025] px-3 py-2 text-[15px] leading-6 text-[#181714] outline-none transition focus:border-black/60 focus:bg-white/45 md:text-sm",
+          density === "compact"
+            ? "min-h-[3rem]"
+            : "min-h-[6rem] md:min-h-[6.5rem]",
+        ].join(" ")}
       />
 
       {hint ? (
