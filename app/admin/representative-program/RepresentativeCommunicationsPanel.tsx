@@ -70,8 +70,9 @@ export default function RepresentativeCommunicationsPanel({
     communications
       .filter(
         (communication) =>
-          communication.type ===
-            "SUBMISSION_RECEIPT" &&
+          communication.type?.startsWith(
+            "ARP_ONBOARDING_SUBMISSION_RECEIPT_",
+          ) === true &&
           communication.status === "SENT",
       )
       .sort((left, right) =>
