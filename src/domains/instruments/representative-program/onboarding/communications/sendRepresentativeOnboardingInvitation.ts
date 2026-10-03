@@ -136,6 +136,12 @@ export function renderRepresentativeOnboardingInvitation(
       ? "This digital intake reconciles your existing French-Ward engagement into the Authorized Representation Program record. Your previously executed Master Agreement remains part of that continuity."
       : "This private intake establishes the candidate record used for French-Ward review before Program admission, appointment, mandate, or authority is established.";
 
+  const workspaceText =
+    continuity.kind ===
+    "EXISTING_EXECUTED_MASTER_AGREEMENT"
+      ? "As this record is completed and reconciled, French-Ward is also preparing your private Representative Workspace within AXPT. That environment will become the continuing point of access for your representative record, applicable instruments, communications, and future program activity as they are made available to you."
+      : null;
+
   const subject =
     "French-Ward — Private Representative Program Intake";
 
@@ -151,6 +157,7 @@ export function renderRepresentativeOnboardingInvitation(
     "French-Ward has prepared your private Authorized Representation Program intake.",
     "",
     continuityText,
+    ...(workspaceText ? ["", workspaceText] : []),
     "",
     "Use your private link below to open and complete the intake:",
     "",
@@ -231,6 +238,16 @@ export function renderRepresentativeOnboardingInvitation(
                 <p style="margin:0;font-family:Arial,sans-serif;font-size:14px;line-height:1.75;color:#514D45;">
                   ${escapeInstitutionalEmailHtml(continuityText)}
                 </p>
+
+                ${
+                  workspaceText
+                    ? `
+                <p style="margin:18px 0 0;font-family:Arial,sans-serif;font-size:14px;line-height:1.75;color:#514D45;">
+                  ${escapeInstitutionalEmailHtml(workspaceText)}
+                </p>
+                `
+                    : ""
+                }
 
                 ${accessMarkup}
 
