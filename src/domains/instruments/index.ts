@@ -40,3 +40,4 @@ export * from "./commands/ensureInstrumentParticipantIdentityWithClient";
 
 export * from "./commands/submitInstrumentResponseWithTokenWithClient";
 export * from "./representative-program";
+export * from "./source-authority";

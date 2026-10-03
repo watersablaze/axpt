@@ -77,6 +77,8 @@ model User {
   instrumentEvidenceRecorded   InstrumentEvidence[]        @relation("InstrumentEvidenceRecorder")
   instrumentRelationsCreated   InstrumentRelation[]        @relation("InstrumentRelationCreator")
 
+  sourceAuthorityRecognitionsActed SourceAuthorityRecognition[] @relation("SourceAuthorityRecognitionActor")
+
   representativeProgramParticipants        RepresentativeProgramParticipant[]        @relation("RepresentativeProgramParticipantUser")
   representativeProgramParticipantsCreated RepresentativeProgramParticipant[]        @relation("RepresentativeProgramParticipantCreator")
   representativeProgramAppointmentsCreated RepresentativeProgramAppointment[]        @relation("RepresentativeProgramAppointmentCreator")
@@ -122,6 +124,7 @@ model InstitutionalInstrument {
   outboundRelations                InstrumentRelation[]              @relation("InstrumentRelationSource")
   inboundRelations                 InstrumentRelation[]              @relation("InstrumentRelationTarget")
   digitalSettlementInstruction     DigitalSettlementInstruction?
+  sourceAuthorityRecord             SourceAuthorityRecord?
   representativeProgramAppointment RepresentativeProgramAppointment?
   representativeOnboardingMasterAgreement RepresentativeOnboardingIntake? @relation("RepresentativeOnboardingMasterAgreement")
 
@@ -202,6 +205,7 @@ model InstrumentVersion {
   draftingDecisions GlobalMotherDraftingDecision[]
 
   digitalSettlementVerifications DigitalSettlementInstruction[] @relation("DigitalSettlementVerificationInstrumentVersion")
+  sourceAuthorityAssertions       SourceAuthorityAssertion[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -422,6 +426,10 @@ model InstrumentEvidence {
   instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
   recordedBy User                    @relation("InstrumentEvidenceRecorder", fields: [recordedByUserId], references: [id])
 
+  sourceAuthorityRecognitionEvidence SourceAuthorityRecognitionEvidence[]
+
+  sourceAuthorityAdmissions SourceAuthorityEvidenceAdmission[]
+
   createdAt DateTime @default(now())
 
   @@index([instrumentId, evidenceType])
@@ -449,6 +457,139 @@ model InstrumentRelation {
   @@index([sourceInstrumentId, relationType])
   @@index([targetInstrumentId, relationType])
   @@index([createdByUserId])
+}
+
+// ============================================================================
+// SOURCE AUTHORITY
+// Specialized persistence for source-side institutional assertions,
+// capabilities, documentary recognition, and recognition lineage.
+//
+// Source Authority records do not confer sovereign authority,
+// transaction authority, commodity availability, allocation, title,
+// regulatory approval, export authorization, or settlement authority.
+// ============================================================================
+
+model SourceAuthorityRecord {
+  id                         String   @id @default(cuid())
+  instrumentId               String   @unique
+  subjectDisplayName         String
+  jurisdiction               String
+  institutionalCapacity      String
+  operatingBase              String?
+  sector                     String?
+  principalCommodityActivity String[]
+
+  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+
+  assertions SourceAuthorityAssertion[]
+
+  evidenceAdmissions SourceAuthorityEvidenceAdmission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([subjectDisplayName])
+  @@index([jurisdiction])
+}
+
+model SourceAuthorityAssertion {
+  id                String                        @id @default(cuid())
+  sourceAuthorityId String
+  versionId         String
+  reference         String
+  assertionClass    SourceAuthorityAssertionClass
+  title             String
+  statement         String
+  scope             String?
+  ordinal           Int
+
+  sourceAuthority SourceAuthorityRecord @relation(fields: [sourceAuthorityId], references: [id], onDelete: Cascade)
+  version         InstrumentVersion     @relation(fields: [versionId], references: [id], onDelete: Restrict)
+
+  capabilities SourceAuthorityCapability[]
+  recognitions SourceAuthorityRecognition[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([versionId, reference])
+  @@unique([versionId, ordinal])
+  @@index([sourceAuthorityId, assertionClass])
+  @@index([sourceAuthorityId, versionId])
+}
+
+model SourceAuthorityCapability {
+  id            String                       @id @default(cuid())
+  assertionId   String
+  capabilityKey SourceAuthorityCapabilityKey
+  title         String
+  description   String
+
+  assertion SourceAuthorityAssertion @relation(fields: [assertionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([assertionId, capabilityKey])
+  @@index([capabilityKey])
+}
+
+model SourceAuthorityRecognition {
+  id                      String                            @id @default(cuid())
+  assertionId             String
+  outcome                 SourceAuthorityRecognitionOutcome
+  limitation              String?
+  reason                  String?
+  actorUserId             String
+  supersedesRecognitionId String?                           @unique
+  currentSlot             SourceAuthorityRecognitionCurrentSlot?
+  occurredAt              DateTime                          @default(now())
+
+  assertion SourceAuthorityAssertion @relation(fields: [assertionId], references: [id], onDelete: Cascade)
+  actor     User                     @relation("SourceAuthorityRecognitionActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  supersedes SourceAuthorityRecognition? @relation("SourceAuthorityRecognitionSupersession", fields: [supersedesRecognitionId], references: [id], onDelete: SetNull)
+  supersededBy SourceAuthorityRecognition? @relation("SourceAuthorityRecognitionSupersession")
+
+  evidenceLinks SourceAuthorityRecognitionEvidence[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([assertionId, currentSlot])
+  @@index([assertionId, occurredAt])
+  @@index([actorUserId, occurredAt])
+  @@index([outcome])
+}
+
+model SourceAuthorityEvidenceAdmission {
+  id                String                      @id @default(cuid())
+  sourceAuthorityId String
+  evidenceRole      String
+  admissionKey      String
+  evidenceId        String?                     @unique
+
+  sourceAuthority SourceAuthorityRecord @relation(fields: [sourceAuthorityId], references: [id], onDelete: Cascade)
+  evidence        InstrumentEvidence?   @relation(fields: [evidenceId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sourceAuthorityId, evidenceRole])
+  @@index([sourceAuthorityId, admissionKey])
+  @@index([sourceAuthorityId, createdAt])
+}
+
+model SourceAuthorityRecognitionEvidence {
+  recognitionId String
+  evidenceId    String
+
+  recognition SourceAuthorityRecognition @relation(fields: [recognitionId], references: [id], onDelete: Cascade)
+  evidence    InstrumentEvidence         @relation(fields: [evidenceId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+
+  @@id([recognitionId, evidenceId])
+  @@index([evidenceId])
 }
 
 // ============================================================================
@@ -807,6 +948,34 @@ enum InstrumentRelationType {
   REFERENCES
 }
 
+enum SourceAuthorityAssertionClass {
+  INSTITUTIONAL_IDENTITY
+  SOURCE_AUTHORITY
+  OPERATIONAL_CAPABILITY
+  COMMERCIAL_RELATIONSHIP
+  SOVEREIGN_CONTEXT
+  INSTRUMENT_BOUNDARY
+}
+
+enum SourceAuthorityCapabilityKey {
+  MINERAL_PRODUCTION_AGGREGATION
+  COMMODITY_PREPARATION_SOURCE_COORDINATION
+  COMMERCIAL_PREPARATION
+  EXPORT_LOGISTICS_COORDINATION
+  COUNTERPARTY_ENGAGEMENT
+  DOCUMENTARY_REGULATORY_SUPPORT
+}
+
+enum SourceAuthorityRecognitionOutcome {
+  RECOGNIZED
+  RECOGNIZED_WITH_LIMITATION
+  NOT_RECOGNIZED
+}
+
+enum SourceAuthorityRecognitionCurrentSlot {
+  CURRENT
+}
+
 enum InstitutionalInstrumentKind {
   ROYAL_CUSTODIAL_FRAMEWORK
   REPRESENTATIVE_MANDATE
@@ -815,6 +984,7 @@ enum InstitutionalInstrumentKind {
   LETTER_OF_INTENT
   COOPERATION_FRAMEWORK
   DIGITAL_SETTLEMENT_INSTRUCTION
+  SOURCE_AUTHORITY
   GENERAL
 }
 
