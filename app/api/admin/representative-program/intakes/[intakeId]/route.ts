@@ -68,7 +68,50 @@ export async function GET(
       return jsonNoStore({ ok: false, error: "INTAKE_NOT_FOUND" }, 404);
     }
 
-    return jsonNoStore({ ok: true, intake }, 200);
+    const communications =
+      await prisma.emailLog.findMany({
+        where: {
+          OR: [
+            {
+              type: {
+                startsWith:
+                  `ARP_ONBOARDING_INVITATION_${intake.id}_`,
+              },
+            },
+            {
+              type: {
+                startsWith:
+                  `ARP_ONBOARDING_SUBMISSION_RECEIPT_${intake.id}_`,
+              },
+            },
+          ],
+        },
+        select: {
+          id: true,
+          type: true,
+          from: true,
+          to: true,
+          subject: true,
+          messageId: true,
+          status: true,
+          createdAt: true,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 20,
+      });
+
+    return jsonNoStore(
+      {
+        ok: true,
+        intake: {
+          ...intake,
+          communications,
+        },
+      },
+      200,
+    );
   } catch (error) {
     console.error("[ARP_ADMIN_INTAKE_LOAD_FAILED]", error);
     return jsonNoStore(

@@ -1,5 +1,6 @@
 "use client";
 
+import { getRepresentativeOnboardingContinuityProfile } from "@/domains/instruments/representative-program/onboarding/continuityProfile";
 import { REPRESENTATIVE_ONBOARDING_SUBMIT_PATH } from "@/domains/instruments/representative-program/onboarding/accessCookie";
 
 import { type FormEvent, useState } from "react";
@@ -93,6 +94,15 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [submitted, setSubmitted] = useState(candidate.status === "SUBMITTED");
 
+  const continuity =
+    getRepresentativeOnboardingContinuityProfile(
+      candidate.reference,
+    );
+
+  const existingEngagementContinuity =
+    continuity.kind ===
+    "EXISTING_EXECUTED_MASTER_AGREEMENT";
+
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -182,6 +192,90 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
   }
 
   if (!editable || submitted) {
+    if (
+      submitted &&
+      existingEngagementContinuity
+    ) {
+      return (
+        <section className="border-t border-black/20">
+          <div className="px-5 py-9 md:px-12 md:py-12">
+            <p className="text-[10px] font-medium uppercase tracking-[0.24em] text-black/45 md:text-xs">
+              Submission Received
+            </p>
+
+            <h2 className="mt-3 max-w-2xl font-serif text-[1.9rem] leading-[1.08] text-[#181714] md:text-[2.35rem]">
+              Your record is now in motion.
+            </h2>
+
+            <p className="mt-5 max-w-2xl text-[13px] leading-6 text-black/65 md:text-sm md:leading-7">
+              Thank you, {candidate.candidateDisplayName.split(" ")[0]}.
+              Your Representative Program information has been received by
+              French-Ward.
+            </p>
+          </div>
+
+          <div className="grid border-y border-black/20 md:grid-cols-2">
+            <div className="border-b border-black/20 bg-[#EAE4D8] px-5 py-7 md:border-b-0 md:border-r md:px-10 md:py-9">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-black/40">
+                Continuity
+              </p>
+
+              <h3 className="mt-3 font-serif text-xl leading-snug text-[#181714]">
+                Your existing engagement is being reconciled into AXPT.
+              </h3>
+
+              <p className="mt-4 text-[13px] leading-6 text-black/65">
+                Because your engagement with French-Ward is already underway
+                and your Master Agreement has previously been executed, our
+                team will now reconcile your submitted information with that
+                existing agreement and corresponding representative record.
+              </p>
+
+              <p className="mt-4 text-[13px] leading-6 text-black/65">
+                No additional agreement action is required from you at this
+                stage unless French-Ward contacts you directly.
+              </p>
+            </div>
+
+            <div className="bg-[#1B1915] px-5 py-7 text-[#F4EFE3] md:px-10 md:py-9">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-[#F4EFE3]/45">
+                Preparing Next
+              </p>
+
+              <h3 className="mt-3 font-serif text-xl leading-snug">
+                Representative / Mandate Workspace
+              </h3>
+
+              <p className="mt-4 text-[13px] leading-6 text-[#F4EFE3]/70">
+                Your private workspace is being prepared. Once activated, it
+                will provide a continuing AXPT environment for your appointment,
+                authorized materials, communications, and representative
+                activity.
+              </p>
+
+              <p className="mt-4 text-[13px] leading-6 text-[#F4EFE3]/70">
+                We will provide your AXPT access instructions when that
+                environment is ready.
+              </p>
+            </div>
+          </div>
+
+          <div className="px-5 py-5 md:px-12 md:py-6">
+            <p className="font-mono text-[10px] text-black/40">
+              Reference: {candidate.reference}
+            </p>
+
+            <p className="mt-3 max-w-2xl text-[11px] leading-5 text-black/45">
+              Submission records receipt of the candidate information supplied
+              here. Program admission, appointment, standing, and authority
+              remain governed by the corresponding French-Ward instruments and
+              recognition process.
+            </p>
+          </div>
+        </section>
+      );
+    }
+
     return (
       <section className="border-t border-black/20 px-5 py-10 md:px-12 md:py-12">
         <p className="text-xs uppercase tracking-[0.24em] text-black/50">
@@ -195,9 +289,9 @@ export default function RepresentativeOnboardingForm({ candidate }: Props) {
         </h2>
 
         <p className="mt-4 max-w-2xl text-[13px] leading-6 text-black/65 md:text-sm md:leading-7">
-          Your candidate record remains under French-Ward governance. Submission
-          does not constitute qualification, Program admission, appointment,
-          mandate, or delegated authority.
+          Your candidate record remains under French-Ward governance.
+          Submission does not constitute qualification, Program admission,
+          appointment, mandate, or delegated authority.
         </p>
       </section>
     );

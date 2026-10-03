@@ -6,6 +6,7 @@ import RepresentativeAccessReissuePanel from "./RepresentativeAccessReissuePanel
 import RepresentativeIntakeDecisionControls from "./RepresentativeIntakeDecisionControls";
 import RepresentativeMasterAgreementPanel from "./RepresentativeMasterAgreementPanel";
 import RepresentativeAppointmentPreparationPanel from "./RepresentativeAppointmentPreparationPanel";
+import RepresentativeCommunicationsPanel from "./RepresentativeCommunicationsPanel";
 
 type Intake = {
   id: string;
@@ -22,6 +23,16 @@ type Intake = {
   admittedAt: string | null;
   admittedParticipantId: string | null;
   masterAgreementInstrumentId: string | null;
+  communications: Array<{
+    id: number;
+    type: string | null;
+    from: string | null;
+    to: string | null;
+    subject: string | null;
+    messageId: string | null;
+    status: string | null;
+    createdAt: string;
+  }>;
 };
 
 type IntakeLookup = Pick<
@@ -419,6 +430,16 @@ export default function RepresentativeIntakeInspector({
                 state that permits them.
               </p>
             </div>
+
+            <RepresentativeCommunicationsPanel
+              key={`${intake.id}-communications`}
+              intakeId={intake.id}
+              status={intake.status}
+              submittedAt={intake.submittedAt}
+              candidateEmail={intake.candidateEmail}
+              communications={intake.communications}
+              onChanged={() => loadIntakeById(intake.id)}
+            />
 
             <RepresentativeAccessReissuePanel
               key={`${intake.id}-access`}
