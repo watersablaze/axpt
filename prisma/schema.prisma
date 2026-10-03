@@ -462,7 +462,7 @@ model RepresentativeProgramDocketSequence {
 model RepresentativeProgramParticipant {
   id              String                        @id @default(cuid())
   docketReference String                        @unique
-  userId          String?
+  userId          String?                       @unique
   displayName     String
   standing        RepresentativeProgramStanding
   admittedAt      DateTime?
@@ -478,7 +478,6 @@ model RepresentativeProgramParticipant {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([userId])
   @@index([standing])
   @@index([createdByUserId])
 }
