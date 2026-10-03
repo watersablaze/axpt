@@ -3,8 +3,10 @@ import { z } from "zod";
 
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { isAdmin } from "@/domains/auth/isAdmin";
+import { linkRepresentativeProgramParticipantUserWithClient } from "@/domains/instruments/representative-program/commands/linkRepresentativeProgramParticipantUserWithClient";
 import { bindRepresentativeMasterAgreementWithClient } from "@/domains/instruments/representative-program/onboarding";
 import { admitRepresentativeOnboardingWithClient } from "@/domains/instruments/representative-program/onboarding/commands/admitRepresentativeOnboarding";
+import { resolveRepresentativeInstitutionalUserWithClient } from "@/domains/instruments/representative-program/onboarding/commands/resolveRepresentativeInstitutionalUserWithClient";
 import { prisma } from "@/infrastructure/db/prisma";
 
 export const runtime = "nodejs";
@@ -17,7 +19,9 @@ const requestSchema = z.object({
 
 type AdmissionBindingClient =
   Parameters<typeof admitRepresentativeOnboardingWithClient>[0]["client"] &
-  Parameters<typeof bindRepresentativeMasterAgreementWithClient>[0]["client"];
+  Parameters<typeof bindRepresentativeMasterAgreementWithClient>[0]["client"] &
+  Parameters<typeof resolveRepresentativeInstitutionalUserWithClient>[0]["client"] &
+  Parameters<typeof linkRepresentativeProgramParticipantUserWithClient>[0]["client"];
 
 function jsonNoStore(body: unknown, status: number) {
   return NextResponse.json(body, {
@@ -73,20 +77,46 @@ export async function POST(
 
     const result = await prisma.$transaction(
       async (tx: AdmissionBindingClient) => {
-        const admission = await admitRepresentativeOnboardingWithClient({
-          client: tx,
-          intakeId,
-          actorUserId: principal.userId,
-        });
+        const identity =
+          await resolveRepresentativeInstitutionalUserWithClient({
+            client: tx,
+            intakeId,
+          });
 
-        const binding = await bindRepresentativeMasterAgreementWithClient({
-          client: tx,
-          intakeId,
-          instrumentReference: parsed.data.instrumentReference,
-          actorUserId: principal.userId,
-        });
+        const admission =
+          await admitRepresentativeOnboardingWithClient({
+            client: tx,
+            intakeId,
+            actorUserId: principal.userId,
+          });
 
-        return { admission, binding };
+        const identityLink =
+          await linkRepresentativeProgramParticipantUserWithClient({
+            client: tx,
+            participantId:
+              admission.participant.id,
+            userId:
+              identity.user.id,
+            actorUserId:
+              principal.userId,
+          });
+
+        const binding =
+          await bindRepresentativeMasterAgreementWithClient({
+            client: tx,
+            intakeId,
+            instrumentReference:
+              parsed.data.instrumentReference,
+            actorUserId:
+              principal.userId,
+          });
+
+        return {
+          admission,
+          identity,
+          identityLink,
+          binding,
+        };
       },
       {
         maxWait: 10_000,
@@ -102,6 +132,14 @@ export async function POST(
         docketReference: result.admission.participant.docketReference,
         standing: result.admission.participant.standing,
         created: result.admission.created,
+      },
+      identity: {
+        userId:
+          result.identity.user.id,
+        created:
+          result.identity.created,
+        linked:
+          result.identityLink.linked,
       },
       agreement: {
         instrumentId: result.binding.instrumentId,
@@ -123,6 +161,8 @@ export async function POST(
         error.message.includes("ARP_ONBOARDING_ADMISSION_") ||
         error.message.includes("ARP_ONBOARDING_STATUS_") ||
         error.message.includes("ARP_ONBOARDING_TRANSITION_CONCURRENT_CHANGE") ||
+        error.message.includes("ARP_REPRESENTATIVE_USER_") ||
+        error.message.includes("ARP_PARTICIPANT_USER_LINK_") ||
         error.message.includes("ARP_MASTER_AGREEMENT_")
       ) {
         return jsonNoStore({ ok: false, error: "ADMISSION_CONFLICT" }, 409);
