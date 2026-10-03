@@ -12,6 +12,7 @@ export type SessionTier =
   | BusinessTier
   | 'platform'
   | 'operations'
+  | 'representative'
 
 export type SessionDocument = 'whitepaper' | 'hemp' | 'chinje'
 

@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import bcrypt from 'bcryptjs'
 import { NextResponse } from 'next/server'
 
-import { isAdmin } from '@/domains/auth/isAdmin'
+import { resolveInstitutionalSignInEligibility } from '@/domains/auth/resolveInstitutionalSignInEligibility'
 import {
   createSessionCookie,
   createSessionToken,
@@ -197,6 +197,11 @@ export async function POST(request: Request) {
           },
         },
       },
+      representativeProgramParticipants: {
+        select: {
+          standing: true,
+        },
+      },
     },
   })
 
@@ -225,12 +230,15 @@ export async function POST(request: Request) {
       )
     )
 
-  if (
-    !isAdmin({
+  const eligibility =
+    resolveInstitutionalSignInEligibility({
       roles,
       permissions,
+      representativeProgramParticipants:
+        user.representativeProgramParticipants,
     })
-  ) {
+
+  if (!eligibility.eligible) {
     return unauthorized()
   }
 
@@ -300,19 +308,29 @@ export async function POST(request: Request) {
   const token = await createSessionToken({
     userId: user.id,
     tokenId,
-    tier: 'operations',
+    tier:
+      eligibility.audience === 'REPRESENTATIVE'
+        ? 'representative'
+        : 'operations',
     roles:
       roles as SessionPayload['roles'],
     displayName:
       user.displayName ??
       user.name ??
-      'Operator',
+      (eligibility.audience === 'REPRESENTATIVE'
+        ? 'Representative'
+        : 'Operator'),
     popupMessage:
-      'AXPT operator session established.',
+      eligibility.audience === 'REPRESENTATIVE'
+        ? 'AXPT representative session established.'
+        : 'AXPT operator session established.',
     greeting: 'Welcome back',
     email: user.email,
     partner: 'AXPT',
-    docs: ['whitepaper'],
+    docs:
+      eligibility.audience === 'REPRESENTATIVE'
+        ? []
+        : ['whitepaper'],
   })
 
   try {
@@ -346,5 +364,6 @@ export async function POST(request: Request) {
 
   return NextResponse.json({
     ok: true,
+    audience: eligibility.audience,
   })
 }

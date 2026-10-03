@@ -24,8 +24,11 @@ function getSafeDestination() {
 
   if (
     requested &&
-    requested.startsWith('/admin') &&
-    !requested.startsWith('//')
+    !requested.startsWith('//') &&
+    (
+      requested.startsWith('/admin') ||
+      requested.startsWith('/representative')
+    )
   ) {
     return requested
   }
@@ -148,14 +151,29 @@ export default function LoginPage() {
         return
       }
 
-      router.replace(
-        getSafeDestination()
-      )
+      const destination =
+        data.audience === 'REPRESENTATIVE'
+          ? (
+              getSafeDestination().startsWith(
+                '/representative'
+              )
+                ? getSafeDestination()
+                : '/representative'
+            )
+          : (
+              getSafeDestination().startsWith(
+                '/admin'
+              )
+                ? getSafeDestination()
+                : '/admin/control-center'
+            )
+
+      router.replace(destination)
 
       router.refresh()
     } catch {
       setError(
-        'Unable to establish the operator session.'
+        'Unable to establish the institutional session.'
       )
     } finally {
       setBusy(false)
@@ -200,7 +218,7 @@ export default function LoginPage() {
               text-[#b99657]
             "
           >
-            AXPT / Operator Access
+            AXPT / Institutional Access
           </p>
 
           <h1
@@ -221,7 +239,7 @@ export default function LoginPage() {
               text-[#8d9798]
             "
           >
-            Authorized operators enter
+            Authorized AXPT participants enter
             through a short-lived
             verification code.
           </p>
@@ -244,7 +262,7 @@ export default function LoginPage() {
                   text-[#aeb4b2]
                 "
               >
-                Operator email
+                Institutional email
               </label>
 
               <input
