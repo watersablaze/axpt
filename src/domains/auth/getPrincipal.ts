@@ -3,6 +3,7 @@ import { getSessionFromCookie } from '@/lib/auth/session'
 
 import type { Principal } from './types'
 import type { PermissionKey } from './permissions'
+import { resolveRepresentativeSessionValidity } from './resolveRepresentativeSessionValidity'
 
 export async function getPrincipal(): Promise<Principal | null> {
   const session = await getSessionFromCookie()
@@ -39,6 +40,11 @@ export async function getPrincipal(): Promise<Principal | null> {
           },
         },
       },
+      representativeProgramParticipants: {
+        select: {
+          standing: true,
+        },
+      },
     },
   })
 
@@ -68,6 +74,28 @@ export async function getPrincipal(): Promise<Principal | null> {
       )
     )
   )
+
+  const sessionRemainsValid =
+    resolveRepresentativeSessionValidity({
+      sessionTier:
+        session.tier,
+      roles,
+      permissions,
+      representativeProgramParticipants:
+        user.representativeProgramParticipants,
+    })
+
+  if (!sessionRemainsValid) {
+    console.log(
+      '[auth/getPrincipal] representative session no longer eligible',
+      {
+        userId:
+          user.id,
+      },
+    )
+
+    return null
+  }
 
   console.log('[auth/getPrincipal] principal resolved', {
     email: user.email,
