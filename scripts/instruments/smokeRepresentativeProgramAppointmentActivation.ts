@@ -22,10 +22,6 @@ import {
 } from "../../src/domains/instruments/representative-program/commands/activateRepresentativeProgramAppointment";
 
 import {
-  linkRepresentativeProgramParticipantUserWithClient,
-} from "../../src/domains/instruments/representative-program/commands/linkRepresentativeProgramParticipantUserWithClient";
-
-import {
   prepareRepresentativeProgramAppointmentWithClient,
 } from "../../src/domains/instruments/representative-program/commands/prepareRepresentativeProgramAppointment";
 
@@ -52,10 +48,6 @@ import {
 import {
   recordMasterAgreementExecutionWithClient,
 } from "../../src/domains/instruments/representative-program/onboarding/commands/recordMasterAgreementExecution";
-
-import {
-  resolveRepresentativeInstitutionalUserWithClient,
-} from "../../src/domains/instruments/representative-program/onboarding/commands/resolveRepresentativeInstitutionalUserWithClient";
 
 const prisma =
   new PrismaClient({
@@ -205,26 +197,39 @@ async function main() {
             },
           });
 
-        const identity =
-          await resolveRepresentativeInstitutionalUserWithClient({
-            client:
-              tx,
-            intakeId:
-              intake.id,
+        const representativeUser =
+          await tx.user.create({
+            data: {
+              username:
+                `appt2a-${randomUUID()}`,
+              passwordHash:
+                `smoke-not-a-login-${randomUUID()}`,
+              email:
+                candidateEmail,
+              isAdmin:
+                false,
+              displayName:
+                candidateDisplayName,
+              tier:
+                "representative",
+              viewedDocs:
+                [],
+              metadata: {
+                smoke:
+                  "APPT-2A",
+                purpose:
+                  "release-compatible activation identity fixture",
+              },
+            },
           });
 
         assert.equal(
-          identity.created,
-          true,
-        );
-
-        assert.equal(
-          identity.user.isAdmin,
+          representativeUser.isAdmin,
           false,
         );
 
         assert.equal(
-          identity.user.tier,
+          representativeUser.tier,
           "representative",
         );
 
@@ -245,23 +250,21 @@ async function main() {
           REPRESENTATIVE_PROGRAM_STANDING.PROVISIONAL,
         );
 
-        const link =
-          await linkRepresentativeProgramParticipantUserWithClient({
-            client:
-              tx,
-            participantId:
-              admission.participant.id,
-            userId:
-              identity.user.id,
-            actorUserId:
-              actor.id,
-            occurredAt:
-              admittedAt,
+        const linked =
+          await tx.representativeProgramParticipant.update({
+            where: {
+              id:
+                admission.participant.id,
+            },
+            data: {
+              userId:
+                representativeUser.id,
+            },
           });
 
         assert.equal(
-          link.linked,
-          true,
+          linked.userId,
+          representativeUser.id,
         );
 
         const agreement =
@@ -353,7 +356,7 @@ async function main() {
 
         assert.equal(
           participant.userId,
-          identity.user.id,
+          representativeUser.id,
         );
 
         assert.equal(
@@ -486,7 +489,7 @@ async function main() {
             "Representative appointment acceptance",
           metadata: {
             acceptedByUserId:
-              identity.user.id,
+              representativeUser.id,
             participantId:
               participant.id,
             appointmentId:
@@ -501,7 +504,7 @@ async function main() {
               "APPT-2A",
           },
           recordedByUserId:
-            identity.user.id,
+            representativeUser.id,
           recordedAt:
             acceptedAt,
         });
