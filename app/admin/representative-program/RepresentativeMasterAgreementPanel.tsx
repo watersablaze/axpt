@@ -215,8 +215,16 @@ export default function RepresentativeMasterAgreementPanel({
         submitted.get("adobeAgreementId") ?? "",
       ).trim();
 
-      const completedAtInput = String(
-        submitted.get("completedAt") ?? "",
+      const completedDate = String(
+        submitted.get("completedDate") ?? "",
+      ).trim();
+
+      const completedTime = String(
+        submitted.get("completedTime") ?? "",
+      ).trim();
+
+      const completionTimezone = String(
+        submitted.get("completionTimezone") ?? "",
       ).trim();
 
       const packageMode = String(
@@ -230,9 +238,14 @@ export default function RepresentativeMasterAgreementPanel({
       const operatorConfirmedAllSignatures =
         submitted.get("operatorConfirmedAllSignatures") === "on";
 
-      if (!adobeAgreementId || !completedAtInput) {
+      if (
+        !adobeAgreementId ||
+        !completedDate ||
+        !completedTime ||
+        completionTimezone !== "GMT"
+      ) {
         setExecutionError(
-          "Adobe Agreement ID and completion time are required.",
+          "Adobe Agreement ID and the exact GMT completion timestamp are required.",
         );
         return;
       }
@@ -287,10 +300,23 @@ export default function RepresentativeMasterAgreementPanel({
         return;
       }
 
-      const completedAt = new Date(completedAtInput);
+      if (
+        !/^\d{4}-\d{2}-\d{2}$/.test(completedDate) ||
+        !/^\d{2}:\d{2}:\d{2}$/.test(completedTime)
+      ) {
+        setExecutionError(
+          "Enter the Acrobat completion date and time exactly, including seconds.",
+        );
+        return;
+      }
+
+      const completedAtIso =
+        `${completedDate}T${completedTime}Z`;
+
+      const completedAt = new Date(completedAtIso);
 
       if (!Number.isFinite(completedAt.getTime())) {
-        setExecutionError("The Acrobat completion time is invalid.");
+        setExecutionError("The Acrobat completion timestamp is invalid.");
         return;
       }
 
@@ -300,6 +326,7 @@ export default function RepresentativeMasterAgreementPanel({
       body.set("signerEmail", expectedSigner);
       body.set("adobeAgreementId", adobeAgreementId);
       body.set("completedAt", completedAt.toISOString());
+      body.set("completionTimezone", completionTimezone);
       body.set("operatorConfirmedAllSignatures", "true");
       body.set("executionPackageMode", packageMode);
 
@@ -612,23 +639,62 @@ export default function RepresentativeMasterAgreementPanel({
               />
             </label>
 
-            <label className="grid gap-2">
-              <span className="text-xs text-gray-400">
-                Acrobat completion date / time
-              </span>
+            <fieldset className="grid gap-3">
+              <legend className="text-xs text-gray-400">
+                Acrobat completion timestamp
+              </legend>
 
-              <input
-                name="completedAt"
-                type="datetime-local"
-                required
-                className="rounded border border-gray-700 bg-black px-3 py-2 text-white"
-              />
+              <div className="grid gap-3 md:grid-cols-3">
+                <label className="grid gap-2">
+                  <span className="text-xs text-gray-500">Date</span>
+
+                  <input
+                    name="completedDate"
+                    type="date"
+                    required
+                    className="rounded border border-gray-700 bg-black px-3 py-2 text-white"
+                  />
+                </label>
+
+                <label className="grid gap-2">
+                  <span className="text-xs text-gray-500">
+                    Time — include seconds
+                  </span>
+
+                  <input
+                    name="completedTime"
+                    type="time"
+                    step="1"
+                    required
+                    className="rounded border border-gray-700 bg-black px-3 py-2 text-white"
+                  />
+                </label>
+
+                <label className="grid gap-2">
+                  <span className="text-xs text-gray-500">
+                    External record timezone
+                  </span>
+
+                  <select
+                    name="completionTimezone"
+                    defaultValue="GMT"
+                    required
+                    className="rounded border border-gray-700 bg-black px-3 py-2 text-white"
+                  >
+                    <option value="GMT">
+                      GMT / UTC+00:00
+                    </option>
+                  </select>
+                </label>
+              </div>
 
               <span className="text-xs leading-5 text-gray-500">
-                Use the completion timestamp shown by the external execution
-                record.
+                Transcribe the completion timestamp exactly as shown by the
+                Acrobat execution record. AXPT normalizes GMT directly to UTC
+                and does not reinterpret it through the operator's browser
+                timezone.
               </span>
-            </label>
+            </fieldset>
 
             <label className="grid gap-2">
               <span className="text-xs text-gray-400">

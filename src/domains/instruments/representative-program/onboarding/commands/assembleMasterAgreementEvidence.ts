@@ -20,6 +20,7 @@ export type MasterAgreementEvidenceReceipt = Readonly<{
   signerEmail: string;
   adobeAgreementId: string;
   completedAt: Date;
+  sourceTimezone: "GMT" | "UNSPECIFIED";
   reviewedByUserId: string;
   reviewedAt: Date;
   packageMode: MasterAgreementExecutionPackageMode;
@@ -81,6 +82,7 @@ export async function assembleMasterAgreementEvidence(input: {
   signerEmail: string;
   adobeAgreementId: string;
   completedAt: Date;
+  sourceTimezone?: "GMT";
   reviewedByUserId: string;
   reviewedAt: Date;
   operatorConfirmedAllSignatures: boolean;
@@ -95,6 +97,8 @@ export async function assembleMasterAgreementEvidence(input: {
   const reviewedByUserId = input.reviewedByUserId.trim();
   const packageMode =
     input.packageMode ?? "SEPARATE_FILES";
+  const sourceTimezone =
+    input.sourceTimezone ?? "UNSPECIFIED";
 
   if (
     !/^[A-Za-z0-9][A-Za-z0-9._-]{2,100}$/.test(reference) ||
@@ -227,6 +231,7 @@ export async function assembleMasterAgreementEvidence(input: {
     signerEmail,
     adobeAgreementId,
     completedAt,
+    sourceTimezone,
     reviewedByUserId,
     reviewedAt,
     packageMode,

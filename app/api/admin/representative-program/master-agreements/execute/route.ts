@@ -26,6 +26,7 @@ const fieldsSchema = z.object({
   signerEmail: z.string().trim().email().max(320),
   adobeAgreementId: z.string().trim().min(1).max(200),
   completedAt: z.string().datetime({ offset: true }),
+  completionTimezone: z.literal("GMT"),
   operatorConfirmedAllSignatures: z.literal("true"),
   executionPackageMode: z.enum([
     "SEPARATE_FILES",
@@ -96,6 +97,7 @@ export async function POST(request: Request) {
       signerEmail: form.get("signerEmail"),
       adobeAgreementId: form.get("adobeAgreementId"),
       completedAt: form.get("completedAt"),
+      completionTimezone: form.get("completionTimezone"),
       operatorConfirmedAllSignatures:
         form.get("operatorConfirmedAllSignatures"),
       executionPackageMode:
@@ -207,6 +209,7 @@ export async function POST(request: Request) {
       signerEmail,
       adobeAgreementId: parsed.data.adobeAgreementId,
       completedAt: new Date(parsed.data.completedAt),
+      sourceTimezone: parsed.data.completionTimezone,
       reviewedByUserId: principal.userId,
       reviewedAt: new Date(),
       operatorConfirmedAllSignatures: true,

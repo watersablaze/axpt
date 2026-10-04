@@ -68,15 +68,18 @@ async function main() {
 
       completedAt:
         new Date(
-          "2026-09-24T10:00:00.000Z",
+          "2026-09-24T21:07:54.000Z",
         ),
+
+      sourceTimezone:
+        "GMT",
 
       reviewedByUserId:
         "admin-1",
 
       reviewedAt:
         new Date(
-          "2026-09-24T11:00:00.000Z",
+          "2026-09-24T22:00:00.000Z",
         ),
 
       operatorConfirmedAllSignatures:
@@ -91,6 +94,16 @@ async function main() {
   assert.equal(
     receipt.packageMode,
     "COMBINED_ACROBAT_PACKAGE",
+  );
+
+  assert.equal(
+    receipt.sourceTimezone,
+    "GMT",
+  );
+
+  assert.equal(
+    receipt.completedAt.toISOString(),
+    "2026-09-24T21:07:54.000Z",
   );
 
   assert.equal(

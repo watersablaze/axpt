@@ -71,6 +71,9 @@ export async function recordMasterAgreementExecutionWithClient(params: {
     !["SEPARATE_FILES", "COMBINED_ACROBAT_PACKAGE"].includes(
       receipt.packageMode,
     ) ||
+    !["GMT", "UNSPECIFIED"].includes(
+      receipt.sourceTimezone,
+    ) ||
     (
       receipt.packageMode === "COMBINED_ACROBAT_PACKAGE" &&
       (
@@ -219,6 +222,7 @@ export async function recordMasterAgreementExecutionWithClient(params: {
     adobeAgreementId: receipt.adobeAgreementId,
     signerEmail: receipt.signerEmail,
     completedAt: completedAt.toISOString(),
+    sourceTimezone: receipt.sourceTimezone,
     reviewedAt: reviewedAt.toISOString(),
     reviewedByUserId: receipt.reviewedByUserId,
     operatorConfirmedAllSignatures: true,
