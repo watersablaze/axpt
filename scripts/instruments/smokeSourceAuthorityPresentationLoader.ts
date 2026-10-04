@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import {
   deriveSourceAuthorityPresentation,
   loadSourceAuthorityCanonicalStateWithClient,
+  loadSourceAuthorityPresentationWithClient,
   type SourceAuthorityPresentationLoaderClient,
 } from "../../src/domains/instruments/source-authority";
 
@@ -389,6 +390,35 @@ async function main() {
 
       canonical,
     });
+
+  /*
+   * ========================================================
+   * 4B.5 APPLICATION-SERVICE COMPOSITION
+   * ========================================================
+   *
+   * The application service must be semantically transparent:
+   *
+   *   LOAD + DERIVE + RETURN
+   *
+   * It must return exactly the same governed projection as the
+   * explicit 4B.4 composition above.
+   */
+  const representativeViaApplicationService =
+    await loadSourceAuthorityPresentationWithClient({
+      client,
+
+      instrumentReference:
+        "BAF-SAI-2026-001",
+
+      audience:
+        "REPRESENTATIVE",
+    });
+
+  assert.deepEqual(
+    representativeViaApplicationService,
+    representative,
+    "SOURCE_AUTHORITY_PRESENTATION_APPLICATION_SERVICE_MUST_PRESERVE_DERIVATION",
+  );
 
   assert.equal(
     operator.assertions.length,

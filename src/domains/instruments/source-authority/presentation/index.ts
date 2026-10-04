@@ -5,3 +5,4 @@ export * from "./standing";
 export * from "./deriveSourceAuthorityPresentation";
 
 export * from "./loadSourceAuthorityCanonicalStateWithClient";
+export * from "./loadSourceAuthorityPresentationWithClient";
