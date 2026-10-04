@@ -120,12 +120,35 @@ async function main() {
         },
       ],
     }),
-    true,
-    "current admin eligibility may sustain institutional session",
+    false,
+    "representative session must not survive on ADMIN eligibility",
+  );
+
+  assert.equal(
+    resolveRepresentativeSessionValidity({
+      sessionTier:
+        "representative",
+
+      roles: [
+        "ADMIN_PLATFORM",
+      ],
+
+      permissions:
+        [],
+
+      representativeProgramParticipants: [
+        {
+          standing:
+            "ACTIVE",
+        },
+      ],
+    }),
+    false,
+    "representative session must retain REPRESENTATIVE audience, not ADMIN priority",
   );
 
   console.log(
-    "AUTH_2B_1_REPRESENTATIVE_SESSION_VALIDITY_OK",
+    "AUTH_2B_2_REPRESENTATIVE_SESSION_AUDIENCE_LOCK_OK",
   );
 }
 

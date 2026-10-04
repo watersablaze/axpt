@@ -54,5 +54,9 @@ export function resolveRepresentativeSessionValidity(
         input.representativeProgramParticipants,
     });
 
-  return eligibility.eligible;
+  return (
+    eligibility.eligible &&
+    eligibility.audience ===
+      "REPRESENTATIVE"
+  );
 }
