@@ -3,6 +3,8 @@ import type { PrismaClient } from "@prisma/client";
 import {
   INSTITUTIONAL_INSTRUMENT_KIND,
   INSTITUTIONAL_INSTRUMENT_STATUS,
+  INSTRUMENT_EVIDENCE_SUBJECT,
+  INSTRUMENT_EVIDENCE_TYPE,
 } from "../../contracts";
 
 import { transitionInstrumentStateWithClient } from "../../commands/transitionInstrumentStateWithClient";
@@ -23,6 +25,7 @@ export type RepresentativeProgramAppointmentActivationClient = Pick<
   | "representativeProgramStandingTransition"
   | "institutionalInstrument"
   | "instrumentAuthority"
+  | "instrumentEvidence"
   | "instrumentStateTransition"
   | "domainEvent"
 >;
@@ -42,7 +45,9 @@ type Runner = Pick<PrismaClient, "$transaction">;
  * - a bound EXECUTED Program Master Agreement;
  * - PROVISIONAL Participant standing;
  * - a DRAFT Appointment Instrument;
- * - an Appointment with no prior effectiveAt or endedAt.
+ * - an Appointment with no prior effectiveAt or endedAt;
+ * - representative acceptance evidence recorded by the exact
+ *   User linked to the admitted Program Participant.
  *
  * Atomically:
  * - transitions the Appointment Instrument DRAFT -> ACTIVE;
@@ -90,7 +95,20 @@ export async function activateRepresentativeProgramAppointmentWithClient(
         id: appointmentId,
       },
       include: {
-        instrument: true,
+        instrument: {
+          include: {
+            evidence: {
+              where: {
+                evidenceType:
+                  INSTRUMENT_EVIDENCE_TYPE.ATTESTATION,
+                subjectType:
+                  INSTRUMENT_EVIDENCE_SUBJECT.EXECUTION,
+                title:
+                  "Representative appointment acceptance",
+              },
+            },
+          },
+        },
         participant: {
           include: {
             onboardingIntake: {
@@ -148,6 +166,77 @@ export async function activateRepresentativeProgramAppointmentWithClient(
   ) {
     throw new Error(
       `[ARP_APPOINTMENT_ACTIVATION_MASTER_AGREEMENT_NOT_EXECUTED] ${intake.masterAgreementInstrument.status}`,
+    );
+  }
+
+  const representativeUserId =
+    participant.userId?.trim();
+
+  if (!representativeUserId) {
+    throw new Error(
+      "[ARP_APPOINTMENT_ACTIVATION_REPRESENTATIVE_IDENTITY_REQUIRED]",
+    );
+  }
+
+  const acceptanceEvidence =
+    appointment.instrument.evidence.find((item: {
+      recordedByUserId: string;
+      subjectId: string | null;
+      metadata: unknown;
+      recordedAt: Date;
+    }) => {
+      if (
+        item.recordedByUserId !== representativeUserId ||
+        item.subjectId !== appointment.id
+      ) {
+        return false;
+      }
+
+      const metadata = item.metadata;
+
+      if (
+        metadata === null ||
+        typeof metadata !== "object" ||
+        Array.isArray(metadata)
+      ) {
+        return false;
+      }
+
+      const fields =
+        metadata as Record<string, unknown>;
+
+      if (
+        fields.acceptedByUserId !== representativeUserId ||
+        fields.participantId !== participant.id ||
+        fields.appointmentId !== appointment.id ||
+        fields.instrumentReference !==
+          appointment.instrument.reference
+      ) {
+        return false;
+      }
+
+      if (typeof fields.acceptedAt !== "string") {
+        return false;
+      }
+
+      const acceptedAt =
+        new Date(fields.acceptedAt);
+
+      if (
+        !Number.isFinite(acceptedAt.getTime()) ||
+        acceptedAt.toISOString() !==
+          item.recordedAt.toISOString() ||
+        acceptedAt.getTime() > occurredAt.getTime()
+      ) {
+        return false;
+      }
+
+      return true;
+    });
+
+  if (!acceptanceEvidence) {
+    throw new Error(
+      "[ARP_APPOINTMENT_ACTIVATION_REPRESENTATIVE_ACCEPTANCE_REQUIRED]",
     );
   }
 
