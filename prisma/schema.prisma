@@ -84,6 +84,12 @@ model User {
 
   representativeOnboardingIntakesCreated   RepresentativeOnboardingIntake[]     @relation("RepresentativeOnboardingIntakeCreator")
   representativeOnboardingTransitionsActed RepresentativeOnboardingTransition[] @relation("RepresentativeOnboardingTransitionActor")
+
+  commercialUtilityPacksCreated           CommercialUtilityPack[]                @relation("CommercialUtilityPackCreator")
+  commercialUtilityPacksReleased          CommercialUtilityPack[]                @relation("CommercialUtilityPackReleaser")
+  commercialUtilityPackModulesReleased    CommercialUtilityPackModuleRelease[]   @relation("CommercialUtilityPackModuleReleaser")
+  commercialUtilityPackResourcesReleased  CommercialUtilityPackResourceRelease[] @relation("CommercialUtilityPackResourceReleaser")
+
   wallets                                  Wallet?
 }
 
@@ -471,9 +477,10 @@ model RepresentativeProgramParticipant {
   user      User? @relation("RepresentativeProgramParticipantUser", fields: [userId], references: [id], onDelete: SetNull)
   createdBy User  @relation("RepresentativeProgramParticipantCreator", fields: [createdByUserId], references: [id])
 
-  appointments        RepresentativeProgramAppointment[]
-  standingTransitions RepresentativeProgramStandingTransition[]
-  onboardingIntake    RepresentativeOnboardingIntake?           @relation("RepresentativeOnboardingAdmission")
+  appointments          RepresentativeProgramAppointment[]
+  standingTransitions   RepresentativeProgramStandingTransition[]
+  onboardingIntake      RepresentativeOnboardingIntake? @relation("RepresentativeOnboardingAdmission")
+  commercialUtilityPacks CommercialUtilityPack[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -527,6 +534,137 @@ model RepresentativeProgramStandingTransition {
   @@index([participantId, occurredAt])
   @@index([participantId, toStanding])
   @@index([actorUserId])
+}
+
+// ============================================================================
+// COMMERCIAL UTILITY PACK
+// Representative-specific governed composition envelope.
+//
+// CUP is not an InstitutionalInstrument and does not own the canonical truth
+// of resources it presents. It persists package identity, module release state,
+// resource release state, and representative-facing permissions.
+// ============================================================================
+
+model CommercialUtilityPack {
+  id               String                            @id @default(cuid())
+  reference        String                            @unique
+  participantId    String
+  version          Int                               @default(1)
+  state            CommercialUtilityPackState        @default(PREPARING)
+  releaseState     CommercialUtilityPackReleaseState @default(WITHHELD)
+  audience         CommercialUtilityPackAudience     @default(REPRESENTATIVE)
+  createdByUserId  String
+  releasedByUserId String?
+  releasedAt       DateTime?
+  withdrawnAt      DateTime?
+  metadata         Json?
+
+  participant RepresentativeProgramParticipant @relation(fields: [participantId], references: [id], onDelete: Restrict)
+  createdBy   User                             @relation("CommercialUtilityPackCreator", fields: [createdByUserId], references: [id])
+  releasedBy  User?                            @relation("CommercialUtilityPackReleaser", fields: [releasedByUserId], references: [id], onDelete: SetNull)
+
+  modules   CommercialUtilityPackModuleRelease[]
+  resources CommercialUtilityPackResourceRelease[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([participantId, version])
+  @@index([participantId, state])
+  @@index([releaseState])
+  @@index([createdByUserId])
+  @@index([releasedByUserId])
+}
+
+model CommercialUtilityPackModuleRelease {
+  id               String                           @id @default(cuid())
+  packageId        String
+  module           CommercialUtilityPackModule
+  state            CommercialUtilityPackModuleState @default(WITHHELD)
+  releasedByUserId String?
+  releasedAt       DateTime?
+  metadata         Json?
+
+  package    CommercialUtilityPack @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  releasedBy User?                 @relation("CommercialUtilityPackModuleReleaser", fields: [releasedByUserId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([packageId, module])
+  @@index([packageId, state])
+  @@index([releasedByUserId])
+}
+
+model CommercialUtilityPackResourceRelease {
+  id               String                              @id @default(cuid())
+  packageId        String
+  module           CommercialUtilityPackModule
+  resourceType     CommercialUtilityPackResourceType
+  resourceId       String
+  state            CommercialUtilityPackResourceState @default(WITHHELD)
+  label            String?
+  canView          Boolean                             @default(true)
+  canDownload      Boolean                             @default(false)
+  canPresent       Boolean                             @default(false)
+  canTransmit      Boolean                             @default(false)
+  releasedByUserId String?
+  releasedAt       DateTime?
+  metadata         Json?
+
+  package    CommercialUtilityPack @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  releasedBy User?                 @relation("CommercialUtilityPackResourceReleaser", fields: [releasedByUserId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([packageId, module, resourceType, resourceId])
+  @@index([packageId, module, state])
+  @@index([resourceType, resourceId])
+  @@index([releasedByUserId])
+}
+
+enum CommercialUtilityPackState {
+  PREPARING
+  CURRENT
+  SUPERSEDED
+  WITHDRAWN
+}
+
+enum CommercialUtilityPackReleaseState {
+  WITHHELD
+  PARTIAL
+  RELEASED
+}
+
+enum CommercialUtilityPackAudience {
+  REPRESENTATIVE
+}
+
+enum CommercialUtilityPackModule {
+  REPRESENTATION
+  COMMERCIAL_PARAMETERS
+  DOCUMENTS
+  OPERATING_BOUNDARIES
+}
+
+enum CommercialUtilityPackModuleState {
+  WITHHELD
+  READY
+  RELEASED
+}
+
+enum CommercialUtilityPackResourceType {
+  INSTITUTIONAL_INSTRUMENT
+  DOCUMENT
+  STRUCTURED_CONTENT
+}
+
+enum CommercialUtilityPackResourceState {
+  WITHHELD
+  RELEASED
+  SUPERSEDED
+  WITHDRAWN
 }
 
 model RepresentativeOnboardingIntake {
