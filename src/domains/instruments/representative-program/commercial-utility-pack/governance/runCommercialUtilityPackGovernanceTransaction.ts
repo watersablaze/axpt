@@ -18,6 +18,14 @@ import type {
   CommercialUtilityPackCompositionPlanClient,
 } from "../composition/resolveCommercialUtilityPackCompositionPlanWithClient";
 
+import type {
+  CommercialUtilityPackResourceReleaseClient,
+} from "../commands/releaseCommercialUtilityPackResourceWithClient";
+
+import type {
+  CommercialUtilityPackReleaseReconciliationClient,
+} from "../commands/reconcileCommercialUtilityPackReleaseStateWithClient";
+
 /**
  * Canonical CUP governance transaction capability surface.
  *
@@ -34,7 +42,9 @@ export type CommercialUtilityPackGovernanceTransactionClient =
   CommercialUtilityPackCreationClient &
   CommercialUtilityPackCompositionPlanClient &
   CommercialUtilityPackCompositionRegistrationClient &
-  CommercialUtilityPackReadinessApplicationClient;
+  CommercialUtilityPackReadinessApplicationClient &
+  CommercialUtilityPackResourceReleaseClient &
+  CommercialUtilityPackReleaseReconciliationClient;
 
 export type CommercialUtilityPackGovernanceTransactionRunner =
   Pick<
