@@ -14,3 +14,4 @@ export * from "./commands/reconcileCommercialUtilityPackReleaseStateWithClient";
 export * from "./composition";
 export * from "./commands/registerCommercialUtilityPackCompositionPlanWithClient";
 export * from "./commands/markCommercialUtilityPackModuleReadyWithClient";
+export * from "./application/applyCommercialUtilityPackComposition";
