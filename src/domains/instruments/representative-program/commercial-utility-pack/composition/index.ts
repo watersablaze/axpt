@@ -5,3 +5,4 @@ export * from "./adaptFrenchWardInstitutionalProfileComposition";
 export * from "./adaptFrenchWardCommercialParametersComposition";
 export * from "./adaptRepresentativeOperatingBoundariesComposition";
 export * from "./resolveCommercialUtilityPackCompositionPlanWithClient";
+export * from "./assessCommercialUtilityPackReadinessWithClient";
