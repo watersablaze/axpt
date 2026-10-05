@@ -12,3 +12,4 @@ export * from "./commands/transitionCommercialUtilityPackModuleWithClient";
 export * from "./commands/reconcileCommercialUtilityPackReleaseStateWithClient";
 
 export * from "./composition";
+export * from "./commands/registerCommercialUtilityPackCompositionPlanWithClient";
