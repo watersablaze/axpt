@@ -2,14 +2,39 @@ import type {
   PrismaClient,
 } from "@prisma/client";
 
+import type {
+  CommercialUtilityPackCreationClient,
+} from "../commands/createCommercialUtilityPackWithClient";
+
+import type {
+  CommercialUtilityPackCompositionRegistrationClient,
+} from "../commands/registerCommercialUtilityPackCompositionPlanWithClient";
+
+import type {
+  CommercialUtilityPackReadinessApplicationClient,
+} from "../commands/markCommercialUtilityPackModuleReadyWithClient";
+
+import type {
+  CommercialUtilityPackCompositionPlanClient,
+} from "../composition/resolveCommercialUtilityPackCompositionPlanWithClient";
+
+/**
+ * Canonical CUP governance transaction capability surface.
+ *
+ * One transaction model serves both:
+ *
+ * - package creation; and
+ * - post-creation composition governance.
+ *
+ * This type grants only the delegate capabilities already demanded by
+ * canonical CUP domain operations. It does not introduce new persistence
+ * authority.
+ */
 export type CommercialUtilityPackGovernanceTransactionClient =
-  Pick<
-    PrismaClient,
-    | "user"
-    | "representativeProgramParticipant"
-    | "commercialUtilityPack"
-    | "domainEvent"
-  >;
+  CommercialUtilityPackCreationClient &
+  CommercialUtilityPackCompositionPlanClient &
+  CommercialUtilityPackCompositionRegistrationClient &
+  CommercialUtilityPackReadinessApplicationClient;
 
 export type CommercialUtilityPackGovernanceTransactionRunner =
   Pick<
@@ -18,14 +43,21 @@ export type CommercialUtilityPackGovernanceTransactionRunner =
   >;
 
 export async function runCommercialUtilityPackGovernanceTransaction<T>(
-  client: CommercialUtilityPackGovernanceTransactionRunner,
+  client:
+    CommercialUtilityPackGovernanceTransactionRunner,
+
   operation: (
-    tx: CommercialUtilityPackGovernanceTransactionClient,
+    tx:
+      CommercialUtilityPackGovernanceTransactionClient,
   ) => Promise<T>,
 ): Promise<T> {
   return client.$transaction(
     async (
-      tx: CommercialUtilityPackGovernanceTransactionClient,
-    ) => operation(tx),
+      tx:
+        CommercialUtilityPackGovernanceTransactionClient,
+    ) =>
+      operation(
+        tx,
+      ),
   );
 }
