@@ -7,8 +7,10 @@ import styles from "./page.module.css";
 import { IssueV4Control } from "./IssueV4Control";
 import { GrantV2Control } from "./GrantV2Control";
 import { RevokeV2Control } from "./RevokeV2Control";
+import { ChamberFollowUpControl } from "./ChamberFollowUpControl";
 import { globalMotherDraftingGate } from "@/domains/instruments/invariants/globalMotherDraftingGate";
 import { DraftingDecisionControl } from "./DraftingDecisionControl";
+import { ResponseWorkspace } from "./ResponseWorkspace";
 
 export const dynamic = "force-dynamic";
 
@@ -153,6 +155,56 @@ export default async function GlobalMotherResponseReviewPage() {
   }
 
   const draftingGate = globalMotherDraftingGate(receipts);
+
+  const activeCurrentGrants = currentGrants.filter((grant) => {
+    const expired = Boolean(grant.expiresAt && grant.expiresAt < new Date());
+
+    return !grant.revokedAt && !expired;
+  });
+
+  const respondedGrantIds = new Set(
+    receipts
+      .map((set) => set.grantId)
+      .filter((grantId): grantId is string => Boolean(grantId)),
+  );
+
+  const respondedCount = activeCurrentGrants.filter((grant) =>
+    respondedGrantIds.has(grant.id),
+  ).length;
+
+  const awaitingCount = Math.max(
+    activeCurrentGrants.length - respondedCount,
+    0,
+  );
+
+  const responsePositions = receipts.flatMap((set) =>
+    positionsFrom(set.positions),
+  );
+
+  const responseStanding = responsePositions.reduce(
+    (standing, position) => {
+      const type =
+        typeof position.responseType === "string" ? position.responseType : "";
+
+      if (type === "AFFIRM") standing.affirm += 1;
+      else if (type === "REVISE") standing.revise += 1;
+      else if (type === "DECLINE") standing.decline += 1;
+      else if (type === "CLARIFY") standing.clarify += 1;
+
+      return standing;
+    },
+    {
+      affirm: 0,
+      revise: 0,
+      decline: 0,
+      clarify: 0,
+    },
+  );
+
+  const collectionComplete =
+    activeCurrentGrants.length > 0 &&
+    respondedCount === activeCurrentGrants.length;
+
   const open = receipts.reduce(
     (count, set) =>
       count +
@@ -162,16 +214,87 @@ export default async function GlobalMotherResponseReviewPage() {
     0,
   );
 
+  const responseIndexEntries = currentGrants.map((grant) => {
+    const response = receipts.find((set) => set.grantId === grant.id) ?? null;
+
+    const expired = Boolean(
+      grant.expiresAt && grant.expiresAt < new Date(),
+    );
+
+    const lifecycle = grant.revokedAt
+      ? "REVOKED"
+      : expired
+        ? "EXPIRED"
+        : response
+          ? "RESPONDED"
+          : grant.lastAccessAt
+            ? "CHAMBER ENTERED"
+            : grant.recipientChallenge
+              ? "VERIFICATION INITIATED"
+              : "ISSUED";
+
+    return {
+      grantId: grant.id,
+      recipientName:
+        grant.recipientName ??
+        grant.recipientUserId ??
+        "Unnamed recipient",
+      representedInstitution:
+        grant.representedInstitution ??
+        "Institution missing",
+      representativeCapacity:
+        grant.representativeCapacity ??
+        "Capacity missing",
+      lifecycle,
+      response: response
+        ? {
+            id: response.id,
+            recordedAt: response.recordedAt.toISOString(),
+            representedInstitution: response.representedInstitution,
+            representativeCapacity: response.representativeCapacity,
+            actor:
+              response.actor.displayName ??
+              response.actor.name ??
+              response.actor.email,
+            positions: positionsFrom(response.positions).map(
+              (position) => ({
+                reference:
+                  typeof position.reference === "string"
+                    ? position.reference
+                    : "",
+                responseType:
+                  typeof position.responseType === "string"
+                    ? position.responseType
+                    : "",
+                note:
+                  typeof position.note === "string" && position.note
+                    ? position.note
+                    : null,
+              }),
+            ),
+          }
+        : null,
+    };
+  });
+
   return (
     <main className={styles.page}>
       <div className={styles.workspace}>
-        <header className={styles.header}>
-          <span>AXPT / Instrument governance</span>
-          <h1>Global Mother · Framework responses</h1>
-          <p>
-            Receipts establish attributable positions. AXPT reviews alignment
-            before any Master Agreement drafting decision.
-          </p>
+        <header className={styles.instrumentBar}>
+          <div className={styles.instrumentIdentity}>
+            <span>Global Mother</span>
+            <strong>{instrument.reference}</strong>
+          </div>
+
+          <div className={styles.instrumentState}>
+            <span>UNDER DELIBERATION</span>
+            <b>V{globalMotherV4Definition.version} · {version?.status ?? "ABSENT"}</b>
+            <b>
+              {respondedCount} / {activeCurrentGrants.length} RESPONSE SETS
+            </b>
+            <b>{awaitingCount} OUTSTANDING</b>
+            <b>FORMATION HOLD</b>
+          </div>
         </header>
 
         <aside className={styles.contextRail}>
@@ -213,31 +336,50 @@ export default async function GlobalMotherResponseReviewPage() {
 
           <nav
             className={styles.operatorRail}
-            aria-label="Global Mother operator sections"
+            aria-label="Global Mother operator workspace"
           >
-            <a href="#gm-access">
-              <span>Access</span>
+            <a href="#gm-overview">
+              <span>Overview</span>
+              <strong>{instrument.status}</strong>
+            </a>
+            <a href="#gm-create-recipient">
+              <span>Create Recipient</span>
+              <strong>ISSUE</strong>
+            </a>
+            <a href="#gm-recipient-registry">
+              <span>Recipient Registry</span>
               <strong>{currentGrants.length}</strong>
             </a>
             <a href="#gm-responses">
               <span>Responses</span>
               <strong>{receipts.length}</strong>
             </a>
-            <a href="#gm-history">
-              <span>History</span>
-              <strong>{historicalReceipts.length}</strong>
-            </a>
             <a href="#gm-drafting">
-              <span>Drafting</span>
-              <strong>{draftingGate.ok ? "READY" : "HOLD"}</strong>
+              <span>Agreement / Formation</span>
+              <strong>
+                {collectionComplete
+                  ? "REVIEW"
+                  : `HOLD · ${awaitingCount}`}
+              </strong>
+            </a>
+            <a href="#gm-history">
+              <span>History / Events</span>
+              <strong>{historicalReceipts.length}</strong>
             </a>
           </nav>
         </aside>
 
         <div className={styles.workGrid}>
           <div className={styles.accessColumn}>
-            <section className={`${styles.section} ${styles.integritySection}`}>
-              <h2>Version integrity</h2>
+            <section
+              id="gm-overview"
+              className={`${styles.section} ${styles.integritySection}`}
+            >
+              <div className={styles.integrityIdentity}>
+                <span>System integrity</span>
+                <h2>Framework source</h2>
+              </div>
+
               <p>
                 {version?.propositions.length ===
                   globalMotherV4Definition.propositions.length &&
@@ -249,9 +391,9 @@ export default async function GlobalMotherResponseReviewPage() {
                       globalMotherV4Definition.propositions[index]?.body,
                 )
                   ? version.status === "ISSUED"
-                    ? "Eight issued positions match the Framework source."
-                    : "Eight draft positions match the Framework source. V4 is ready for issuance."
-                  : "The V3 proposition record does not match the eight-position source. Resolve before issuance or response."}
+                    ? "V4 SOURCE MATCH · 8 / 8"
+                    : "V4 DRAFT MATCH · 8 / 8"
+                  : "SOURCE MISMATCH · REVIEW REQUIRED"}
               </p>
               {version?.status === "DRAFT" &&
               instrument.currentVersion ===
@@ -269,26 +411,59 @@ export default async function GlobalMotherResponseReviewPage() {
               ) : null}
             </section>
 
-            <section id="gm-access" className={styles.section}>
+            <section
+              id="gm-create-recipient"
+              className={`${styles.section} ${styles.createRecipientSection}`}
+            >
               <div className={styles.sectionHeading}>
                 <div>
-                  <span>01 / Access</span>
-                  <h2>Recipient access</h2>
+                  <span>01 / Access issuance</span>
+                  <h2>Create Recipient</h2>
                 </div>
-                <small>
-                  {currentGrants.length} current grant
-                  {currentGrants.length === 1 ? "" : "s"}
-                </small>
+                <small>NEW ACCESS GRANT</small>
               </div>
+
+              <p className={styles.sectionLead}>
+                Issue a version-bound Chamber credential. Creation is separate
+                from inspection of existing recipient records.
+              </p>
+
               {version?.status === "ISSUED" &&
               instrument.currentVersion === globalMotherV4Definition.version ? (
                 <GrantV2Control versionId={version.id} />
               ) : null}
+            </section>
+
+            <section
+              id="gm-recipient-registry"
+              className={`${styles.section} ${styles.registrySection}`}
+            >
+              <div className={styles.sectionHeading}>
+                <div>
+                  <span>02 / Access ledger</span>
+                  <h2>Recipient Registry</h2>
+                </div>
+                <small>
+                  {currentGrants.length} RECORD
+                  {currentGrants.length === 1 ? "" : "S"}
+                </small>
+              </div>
+
               {currentGrants.length === 0 ? (
                 <p>No version-bound recipient grants.</p>
               ) : (
-                <div className={styles.recipientList}>
-                  {currentGrants.map((grant) => {
+                <>
+                  <div
+                    className={styles.registryColumns}
+                    aria-hidden="true"
+                  >
+                    <span>Recipient / Capacity</span>
+                    <span>Access State</span>
+                    <span>Record</span>
+                  </div>
+
+                  <div className={styles.recipientList}>
+                    {currentGrants.map((grant) => {
                     const response = receipts.find(
                       (set) => set.grantId === grant.id,
                     );
@@ -386,88 +561,60 @@ export default async function GlobalMotherResponseReviewPage() {
                           </div>
 
                           {!grant.revokedAt ? (
-                            <RevokeV2Control
-                              grantId={grant.id}
-                              invitationSentAt={sentAt?.toISOString() ?? null}
-                            />
+                            <>
+                              {response &&
+                              !expired &&
+                              grant.recipientName?.includes("Khan-Khan") ? (
+                                <ChamberFollowUpControl grantId={grant.id} />
+                              ) : null}
+
+                              <RevokeV2Control
+                                grantId={grant.id}
+                                invitationSentAt={sentAt?.toISOString() ?? null}
+                              />
+                            </>
                           ) : null}
                         </div>
                       </details>
                     );
-                  })}
-                </div>
+                    })}
+                  </div>
+                </>
               )}
             </section>
           </div>
           <div className={styles.reviewColumn}>
-            <details
+            <section
               id="gm-responses"
-              className={`${styles.section} ${styles.sectionDisclosure}`}
-              open={receipts.length > 0}
+              className={`${styles.section} ${styles.responseDomain}`}
             >
-              <summary className={styles.sectionSummary}>
+              <div className={styles.sectionHeading}>
                 <div>
-                  <span>02 / Responses</span>
-                  <h2>Recorded response sets</h2>
+                  <span>03 / Deliberation record</span>
+                  <h2>Participant Responses</h2>
                 </div>
-                <strong>{receipts.length}</strong>
-              </summary>
-              <div className={styles.sectionBody}>
-                {receipts.length === 0 ? (
-                  <p>No V3 responses recorded.</p>
-                ) : (
-                  receipts.map((set) => {
-                    const positions = positionsFrom(set.positions);
-                    return (
-                      <article key={set.id} className={styles.receipt}>
-                        <header>
-                          <div>
-                            <span>Receipt {set.id}</span>
-                            <h3>{set.representedInstitution}</h3>
-                            <p>
-                              {set.actor.displayName ??
-                                set.actor.name ??
-                                set.actor.email}{" "}
-                              · {set.representativeCapacity}
-                            </p>
-                          </div>
-                          <time dateTime={set.recordedAt.toISOString()}>
-                            {set.recordedAt.toLocaleString()}
-                          </time>
-                        </header>
-                        <ol>
-                          {positions.map((position, index) => (
-                            <li key={String(position.reference ?? index)}>
-                              <div>
-                                <span>{String(position.reference ?? "")}</span>
-                                <strong>
-                                  {String(position.responseType ?? "")}
-                                </strong>
-                              </div>
-                              {typeof position.note === "string" &&
-                              position.note ? (
-                                <p>{position.note}</p>
-                              ) : null}
-                            </li>
-                          ))}
-                        </ol>
-                        <p className={styles.boundary}>
-                          Review the record and authority evidence before
-                          deciding whether to open Master Agreement drafting.
-                        </p>
-                      </article>
-                    );
-                  })
-                )}
+                <small>
+                  {respondedCount} / {activeCurrentGrants.length} RECEIVED
+                </small>
               </div>
-            </details>
+
+              <p className={styles.sectionLead}>
+                Inspect attributable positions individually or open all
+                submitted response sets for deliberative comparison.
+              </p>
+
+              <ResponseWorkspace
+                entries={responseIndexEntries}
+                standing={responseStanding}
+              />
+            </section>
             <details
               id="gm-history"
               className={`${styles.section} ${styles.sectionDisclosure}`}
             >
               <summary className={styles.sectionSummary}>
                 <div>
-                  <span>03 / History</span>
+                  <span>05 / History</span>
                   <h2>Prior-version response history</h2>
                 </div>
                 <strong>{historicalReceipts.length}</strong>
@@ -475,7 +622,8 @@ export default async function GlobalMotherResponseReviewPage() {
               <div className={styles.sectionBody}>
                 <p>
                   Historical receipts remain attributable to their original
-                  version. They do not count toward the V3 drafting threshold.
+                  version. They do not count toward the current V4 formation
+                  review.
                 </p>
                 {historicalReceipts.length === 0 ? (
                   <p>No prior-version responses recorded.</p>
@@ -540,7 +688,7 @@ export default async function GlobalMotherResponseReviewPage() {
             >
               <summary className={styles.sectionSummary}>
                 <div>
-                  <span>04 / Master Agreement domain</span>
+                  <span>04 / Agreement & Formation</span>
                   <h2>Master Agreement formation</h2>
                 </div>
                 <strong>

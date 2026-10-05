@@ -1220,3 +1220,2364 @@
     text-align: left;
   }
 }
+
+
+/* GM-5A.2 — OPERATIONAL FIELD
+   State is expressed through hierarchy, spacing, typography and restrained
+   hairlines rather than boxed dashboard modules.
+*/
+
+.headerStanding {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1.2rem;
+  align-items: baseline;
+  margin-top: 0.8rem;
+  padding-top: 0.65rem;
+  border-top: 1px solid rgba(153, 173, 179, 0.14);
+}
+
+.headerStanding span,
+.headerStanding b {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  line-height: 1.4;
+}
+
+.headerStanding span {
+  color: #c9aa6a;
+}
+
+.headerStanding b {
+  color: #879694;
+}
+
+/* ---------------------------------------------------------
+   CONTEXT RAIL
+   Reference infrastructure, not a boxed dashboard.
+--------------------------------------------------------- */
+
+.contextRail {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.metrics {
+  gap: 0;
+}
+
+.metrics > div {
+  min-height: 0;
+  padding: 0.72rem 0;
+  border: 0;
+  border-bottom: 1px solid rgba(153, 173, 179, 0.13);
+  background: transparent;
+}
+
+.operatorRail {
+  border: 0;
+}
+
+.operatorRail a {
+  border-color: rgba(153, 173, 179, 0.12);
+  background: transparent;
+}
+
+/* ---------------------------------------------------------
+   PRIMARY WORK FIELD
+--------------------------------------------------------- */
+
+.workGrid {
+  gap: clamp(1.5rem, 3vw, 2.75rem);
+}
+
+.accessColumn,
+.reviewColumn {
+  gap: 1.35rem;
+}
+
+/* Sections no longer read as cards. */
+.workGrid .section {
+  width: 100%;
+  margin: 0;
+  padding: 0 0 1.15rem;
+  border: 0;
+  border-bottom: 1px solid rgba(153, 173, 179, 0.14);
+  background: transparent;
+  box-shadow: none;
+}
+
+/* Version integrity is a status line. */
+.integritySection {
+  display: grid;
+  grid-template-columns: minmax(10rem, 0.34fr) minmax(0, 1fr);
+  gap: 1.15rem;
+  align-items: baseline;
+  border-left: 0;
+}
+
+.integritySection > p {
+  margin: 0;
+  color: #ccb477;
+  text-align: right;
+}
+
+/* ---------------------------------------------------------
+   ACCESS DOMAIN
+--------------------------------------------------------- */
+
+.grantDisclosure {
+  border: 0 !important;
+  border-top: 1px solid rgba(153, 173, 179, 0.14) !important;
+  border-bottom: 1px solid rgba(153, 173, 179, 0.14) !important;
+  background: transparent !important;
+}
+
+.grantDisclosure > summary {
+  padding-inline: 0;
+}
+
+.grantDisclosure[open] > summary {
+  border-bottom: 1px solid rgba(153, 173, 179, 0.12);
+}
+
+.grantDisclosure .grantControl {
+  padding-inline: 0;
+  background: transparent;
+}
+
+/* Existing grants become ledger rows. */
+.recipientList {
+  display: grid;
+  gap: 0;
+  margin-top: 0.75rem;
+  border-top: 1px solid rgba(153, 173, 179, 0.14);
+}
+
+.recipientItem {
+  display: grid;
+  gap: 0;
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid rgba(153, 173, 179, 0.13);
+  background: transparent;
+  box-shadow: none;
+}
+
+.recipientIdentity {
+  padding: 0.78rem 0;
+}
+
+.recipientBody {
+  padding: 0 0 1rem;
+}
+
+.lifecycle {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #c9aa6a;
+}
+
+/* ---------------------------------------------------------
+   DELIBERATION RECORD
+--------------------------------------------------------- */
+
+.sectionDisclosure {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.sectionSummary {
+  padding: 0 0 0.75rem !important;
+  border: 0 !important;
+}
+
+.sectionBody {
+  padding: 0 !important;
+}
+
+.responseStanding {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1.15rem;
+  margin-bottom: 0.25rem;
+  padding: 0 0 0.72rem;
+  color: #879694;
+}
+
+.responseStanding span {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+/* A response is a record, not a card. */
+.workGrid .receipt {
+  margin: 0;
+  padding: 1rem 0 1.15rem;
+  border: 0;
+  border-bottom: 1px solid rgba(153, 173, 179, 0.14);
+  background: transparent;
+  box-shadow: none;
+}
+
+.workGrid .receipt:first-of-type {
+  border-top: 1px solid rgba(153, 173, 179, 0.14);
+}
+
+.receipt ol {
+  margin: 0.9rem 0 0;
+  border-top: 1px solid rgba(153, 173, 179, 0.11);
+}
+
+.receipt li {
+  padding: 0.68rem 0;
+  border-bottom: 1px solid rgba(153, 173, 179, 0.1);
+}
+
+.receipt .boundary {
+  margin-top: 0.9rem;
+  padding-top: 0.7rem;
+  border-top: 1px dashed rgba(153, 173, 179, 0.16);
+  color: #82908e;
+}
+
+/* ---------------------------------------------------------
+   FORMATION DOMAIN
+--------------------------------------------------------- */
+
+.draftingControl {
+  margin-top: 0.8rem;
+  padding: 0.9rem 0 0;
+  border: 0;
+  border-top: 1px solid rgba(153, 173, 179, 0.14);
+  background: transparent;
+}
+
+/* ---------------------------------------------------------
+   SMALLER VIEWPORTS
+--------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  .headerStanding {
+    gap: 0.4rem 0.8rem;
+  }
+
+  .integritySection {
+    grid-template-columns: 1fr;
+  }
+
+  .integritySection > p {
+    text-align: left;
+  }
+}
+
+/* =========================================================
+   GM-5B.1 — PERSISTENT OPERATOR WORKSPACE
+   Presentation architecture only.
+   ========================================================= */
+
+.page {
+  --gm-bar-height: 3.25rem;
+  padding-top: 0;
+}
+
+/* Thin instrument state strip beneath the Control Center crown. */
+.instrumentBar {
+  position: sticky;
+  top: var(--cc-crown-height, 76px);
+  z-index: 30;
+
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  align-items: center;
+
+  grid-area: instrument;
+  width: 100%;
+  min-height: var(--gm-bar-height);
+  margin: 0;
+  padding: .62rem clamp(.85rem, 1.4vw, 1.25rem);
+
+  border-top: 1px solid rgba(204, 181, 129, .18);
+  border-bottom: 1px solid rgba(157, 181, 193, .18);
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(11, 26, 37, .98),
+      rgba(9, 19, 28, .98)
+    );
+
+  backdrop-filter: blur(14px);
+}
+
+.instrumentIdentity {
+  display: flex;
+  gap: .75rem;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.instrumentIdentity span {
+  color: var(--gm-admin-gold);
+  font-family: Baskerville, Georgia, serif;
+  font-size: .98rem;
+  white-space: nowrap;
+}
+
+.instrumentIdentity strong {
+  color: #90a3ad;
+  font-size: .57rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.instrumentState {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: .35rem 1rem;
+  align-items: center;
+}
+
+.instrumentState span,
+.instrumentState b {
+  font-size: .54rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  line-height: 1.35;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.instrumentState span {
+  color: var(--gm-admin-gold);
+}
+
+.instrumentState b {
+  color: #899ba4;
+}
+
+/*
+ * Desktop workspace:
+ * fixed instrument bar
+ * fixed operator directory
+ * scrollable work stage
+ */
+.workspace {
+  max-width: none;
+  display: grid;
+  grid-template-columns: minmax(16.5rem, 18.5rem) minmax(0, 1fr);
+  grid-template-areas:
+    "instrument instrument"
+    "context work";
+  column-gap: clamp(1.5rem, 2.6vw, 2.8rem);
+  align-items: start;
+}
+
+.contextRail {
+  grid-area: context;
+
+  top:
+    calc(
+      var(--cc-crown-height, 76px) +
+      var(--gm-bar-height) +
+      .8rem
+    ) !important;
+
+  max-height:
+    calc(
+      100dvh -
+      var(--cc-crown-height, 76px) -
+      var(--gm-bar-height) -
+      1.6rem
+    ) !important;
+
+  padding: .25rem .9rem 1rem 0 !important;
+}
+
+.contextRail .metrics {
+  border-top: 0;
+}
+
+.contextRail .operatorRail {
+  margin-top: 1rem;
+}
+
+.contextRail .operatorRail a {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: .75rem;
+  align-items: baseline;
+}
+
+.contextRail .operatorRail span {
+  min-width: 0;
+}
+
+.contextRail .operatorRail strong {
+  max-width: 8rem;
+  overflow: hidden;
+  text-align: right;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workGrid {
+  grid-area: work;
+  padding: 1rem 0 3rem;
+}
+
+/* Creation and inspection are intentionally separate operator concerns. */
+.createRecipientSection {
+  padding-bottom: 1.35rem !important;
+}
+
+.registrySection {
+  padding-top: .1rem !important;
+}
+
+.sectionLead {
+  max-width: 38rem;
+  margin: .45rem 0 .8rem !important;
+  color: #8fa1aa !important;
+  font-size: .72rem !important;
+  line-height: 1.5 !important;
+}
+
+#gm-overview,
+#gm-create-recipient,
+#gm-recipient-registry,
+#gm-responses,
+#gm-drafting,
+#gm-history {
+  scroll-margin-top:
+    calc(
+      var(--cc-crown-height, 76px) +
+      var(--gm-bar-height) +
+      1rem
+    );
+}
+
+@media (max-width: 1000px) {
+  .page {
+    padding-top: 0;
+  }
+
+  .workspace {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "instrument"
+      "context"
+      "work";
+    gap: 1rem;
+  }
+
+  .instrumentBar {
+    top: var(--cc-crown-height, 76px);
+    align-items: flex-start;
+  }
+
+  .instrumentState {
+    max-width: 32rem;
+  }
+
+  .contextRail {
+    position: static !important;
+    max-height: none !important;
+    padding: .5rem 0 0 !important;
+  }
+
+  .contextRail .operatorRail {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .instrumentBar {
+    position: relative;
+    top: auto;
+    flex-direction: column;
+    gap: .45rem;
+  }
+
+  .instrumentState {
+    justify-content: flex-start;
+  }
+
+  .contextRail .operatorRail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .instrumentIdentity {
+    display: grid;
+    gap: .18rem;
+  }
+
+  .instrumentState {
+    gap: .3rem .65rem;
+  }
+
+  .contextRail .operatorRail {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================
+   GM-5B.2 — RESPONSE INDEX / DELIBERATION DISCLOSURES
+   ========================================================= */
+
+.responseDomain {
+  padding-top: .15rem !important;
+}
+
+.responseWorkspace {
+  margin-top: .85rem;
+}
+
+.responseWorkspaceHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  padding: .62rem 0;
+  border-top: 1px solid rgba(153, 173, 179, .14);
+  border-bottom: 1px solid rgba(153, 173, 179, .14);
+}
+
+.responseWorkspaceHeader .responseStanding {
+  margin: 0;
+  padding: 0;
+}
+
+.responseDisclosureActions {
+  display: flex;
+  gap: .4rem;
+  flex-wrap: wrap;
+}
+
+.responseDisclosureActions button {
+  padding: .34rem .52rem;
+  border: 1px solid rgba(149, 169, 178, .28);
+  background: transparent;
+  color: #aebdc5;
+  font: inherit;
+  font-size: .62rem;
+  font-weight: 700;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.responseDisclosureActions button:hover,
+.responseDisclosureActions button:focus-visible {
+  border-color: rgba(204, 181, 129, .5);
+  color: #ded2b5;
+}
+
+.responseDisclosureActions button:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+.responseIndex {
+  display: grid;
+}
+
+.responseIndexItem {
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid rgba(153, 173, 179, .14);
+  background: transparent;
+}
+
+.responseIndexItem > summary {
+  list-style: none;
+}
+
+.responseIndexItem > summary::-webkit-details-marker {
+  display: none;
+}
+
+.responseIndexSummary {
+  position: relative;
+  padding: .88rem 1.6rem .88rem 0;
+  cursor: pointer;
+}
+
+.responseIndexSummary::after {
+  content: "+";
+  position: absolute;
+  top: 50%;
+  right: .15rem;
+  transform: translateY(-50%);
+  color: #84959d;
+  font-size: 1rem;
+}
+
+.responseIndexItem[open] > .responseIndexSummary::after {
+  content: "−";
+  color: var(--gm-admin-gold);
+}
+
+.responseIndexIdentity {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.responseIndexIdentity > div {
+  display: grid;
+  gap: .18rem;
+  min-width: 0;
+}
+
+.responseIndexIdentity strong {
+  color: var(--gm-admin-cream);
+  font-family: Baskerville, Georgia, serif;
+  font-size: .98rem;
+  font-weight: 400;
+}
+
+.responseIndexIdentity span {
+  color: #899ba4;
+  font-size: .67rem;
+  line-height: 1.4;
+}
+
+.responseIndexIdentity small {
+  flex: none;
+  color: #c5ad78;
+  font-size: .56rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-align: right;
+}
+
+.responsePending {
+  padding: .88rem 0;
+  opacity: .7;
+}
+
+.responsePending p {
+  max-width: 44rem;
+  margin: .42rem 0 0;
+  color: #74858d;
+  font-size: .68rem;
+  line-height: 1.45;
+}
+
+.responseRecordBody {
+  padding: .15rem 0 1rem;
+}
+
+.responseReceiptHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .7rem 0;
+  border-top: 1px solid rgba(153, 173, 179, .1);
+}
+
+.responseReceiptHeader > div {
+  display: grid;
+  gap: .18rem;
+}
+
+.responseReceiptHeader span {
+  color: #83969f;
+  font-size: .54rem;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+
+.responseReceiptHeader strong {
+  color: #dce2e2;
+  font-size: .76rem;
+  font-weight: 600;
+}
+
+.responseReceiptHeader small,
+.responseReceiptHeader time {
+  color: #778991;
+  font-size: .63rem;
+}
+
+.responseReceiptHeader time {
+  flex: none;
+  text-align: right;
+}
+
+.responsePositions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid rgba(153, 173, 179, .11);
+}
+
+.responsePositions li {
+  padding: .67rem 0;
+  border-bottom: 1px solid rgba(153, 173, 179, .1);
+}
+
+.responsePositions li > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+}
+
+.responsePositions li span {
+  color: #c5ad78;
+  font-size: .63rem;
+}
+
+.responsePositions li strong {
+  color: #d3dbdc;
+  font-size: .66rem;
+  letter-spacing: .05em;
+}
+
+.responsePositions li p {
+  max-width: 48rem;
+  margin: .42rem 0 0;
+  color: #9aa9af;
+  font-size: .72rem;
+  line-height: 1.55;
+}
+
+.responseBoundary {
+  max-width: 50rem;
+  margin: .85rem 0 0;
+  padding-top: .68rem;
+  border-top: 1px dashed rgba(153, 173, 179, .16);
+  color: #75868d;
+  font-size: .66rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+  .responseWorkspaceHeader,
+  .responseIndexIdentity,
+  .responseReceiptHeader {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .responseIndexIdentity small,
+  .responseReceiptHeader time {
+    text-align: left;
+  }
+}
+
+/* =========================================================
+   GM-5B.3 — VISUAL FIELD CORRECTION
+
+   The persistent workspace remains.
+   The legacy "blue panels inside a blue page" treatment does not.
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   ROOT FIELD
+   --------------------------------------------------------- */
+
+.page {
+  --gm-field-0: #070b0e;
+  --gm-field-1: #0a1116;
+  --gm-field-2: #0d1820;
+
+  --gm-line-soft: rgba(154, 174, 184, .11);
+  --gm-line: rgba(154, 174, 184, .18);
+  --gm-line-strong: rgba(175, 194, 202, .26);
+
+  --gm-gold-soft: #a99569;
+  --gm-gold: #cbb47d;
+  --gm-cream: #e8e2d7;
+  --gm-text: #bac5ca;
+  --gm-muted: #74848c;
+
+  min-height: calc(100vh - 9rem);
+
+  background:
+    radial-gradient(
+      ellipse at 80% -8%,
+      rgba(39, 66, 82, .12),
+      transparent 42rem
+    ),
+    linear-gradient(
+      180deg,
+      var(--gm-field-1) 0%,
+      var(--gm-field-0) 100%
+    ) !important;
+}
+
+/* ---------------------------------------------------------
+   INSTRUMENT BAR
+   --------------------------------------------------------- */
+
+.instrumentBar {
+  border-top: 0;
+  border-bottom: 1px solid var(--gm-line) !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(7, 13, 17, .985),
+      rgba(9, 17, 22, .985)
+    ) !important;
+
+  box-shadow:
+    0 12px 32px rgba(0, 0, 0, .18);
+}
+
+/* ---------------------------------------------------------
+   LEFT OPERATOR RAIL
+   Infrastructure should recede behind the work.
+   --------------------------------------------------------- */
+
+.contextRail {
+  border-right: 1px solid var(--gm-line-soft) !important;
+  padding-right: 1.35rem !important;
+}
+
+.contextRail .metrics {
+  border: 0 !important;
+}
+
+.contextRail .metrics > div {
+  padding: .78rem 0 !important;
+
+  border: 0 !important;
+  border-bottom: 1px solid var(--gm-line-soft) !important;
+
+  background: transparent !important;
+}
+
+.contextRail .metrics span {
+  color: var(--gm-gold-soft) !important;
+}
+
+.contextRail .metrics strong {
+  color: var(--gm-cream) !important;
+}
+
+.contextRail .metrics small {
+  color: var(--gm-muted) !important;
+}
+
+.contextRail .operatorRail {
+  border: 0 !important;
+  background: transparent !important;
+}
+
+.contextRail .operatorRail a {
+  position: relative;
+
+  padding: .72rem 0 !important;
+
+  border: 0 !important;
+  border-bottom: 1px solid var(--gm-line-soft) !important;
+
+  background: transparent !important;
+  color: #9baab1 !important;
+}
+
+.contextRail .operatorRail a::before {
+  content: "";
+  position: absolute;
+  left: -.8rem;
+  top: 50%;
+  width: 2px;
+  height: 0;
+  transform: translateY(-50%);
+
+  background: var(--gm-gold);
+  transition: height .16s ease;
+}
+
+.contextRail .operatorRail a:hover,
+.contextRail .operatorRail a:focus-visible {
+  color: var(--gm-cream) !important;
+}
+
+.contextRail .operatorRail a:hover::before,
+.contextRail .operatorRail a:focus-visible::before {
+  height: 54%;
+}
+
+.contextRail .operatorRail strong {
+  color: var(--gm-gold-soft) !important;
+}
+
+/* ---------------------------------------------------------
+   ACTIVE WORK STAGE
+   --------------------------------------------------------- */
+
+.workGrid {
+  padding-top: 1.35rem;
+}
+
+/*
+ * Critical correction:
+ * override the legacy !important card surfaces.
+ */
+.workGrid .section {
+  margin: 0 !important;
+  padding: 0 0 1.65rem !important;
+
+  border: 0 !important;
+  border-bottom: 1px solid var(--gm-line-soft) !important;
+
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.workGrid .section + .section {
+  margin-top: 1.55rem !important;
+}
+
+/* Section identity is typographic, not boxed. */
+
+.sectionHeading,
+.sectionSummary {
+  padding: 0 !important;
+}
+
+.sectionHeading span,
+.sectionSummary span {
+  color: var(--gm-gold-soft) !important;
+  font-size: .54rem !important;
+  letter-spacing: .14em !important;
+}
+
+.sectionHeading h2,
+.sectionSummary h2,
+.workGrid .section > h2 {
+  color: var(--gm-cream) !important;
+
+  font-family:
+    Baskerville,
+    Georgia,
+    "Times New Roman",
+    serif !important;
+
+  font-size: clamp(1.15rem, 1.45vw, 1.42rem) !important;
+  font-weight: 400 !important;
+  letter-spacing: -.012em;
+}
+
+.sectionHeading small,
+.sectionSummary > strong {
+  color: var(--gm-gold-soft) !important;
+}
+
+.sectionLead {
+  max-width: 42rem;
+
+  margin-top: .5rem !important;
+  margin-bottom: 1.05rem !important;
+
+  color: #8b9aa1 !important;
+}
+
+/* ---------------------------------------------------------
+   VERSION INTEGRITY
+   A status datum, not a panel.
+   --------------------------------------------------------- */
+
+.integritySection {
+  display: grid !important;
+  grid-template-columns: minmax(10rem, .34fr) minmax(0, 1fr);
+
+  padding: 0 0 1rem !important;
+
+  border: 0 !important;
+  border-bottom: 1px solid rgba(203, 180, 125, .18) !important;
+
+  background: transparent !important;
+}
+
+.integritySection h2 {
+  color: #d9d2c4 !important;
+  font-size: 1rem !important;
+}
+
+.integritySection > p {
+  margin: 0 !important;
+
+  color: var(--gm-gold) !important;
+  text-align: right;
+}
+
+/* ---------------------------------------------------------
+   CREATE RECIPIENT
+   Remove the "panel containing a form" effect.
+   --------------------------------------------------------- */
+
+.createRecipientSection {
+  padding-top: .25rem !important;
+}
+
+.grantDisclosure {
+  margin-top: .8rem !important;
+
+  border: 0 !important;
+  border-top: 1px solid var(--gm-line-soft) !important;
+  border-bottom: 0 !important;
+
+  background: transparent !important;
+}
+
+.grantDisclosure > summary {
+  padding: .72rem 0 !important;
+
+  border: 0 !important;
+
+  color: #c9b27d !important;
+}
+
+.grantDisclosure[open] > summary {
+  border-bottom: 1px solid var(--gm-line-soft) !important;
+}
+
+.grantDisclosure .grantControl,
+.grantControl {
+  padding: 1rem 0 0 !important;
+
+  border: 0 !important;
+
+  background: transparent !important;
+}
+
+/* Inputs become recessed operator channels, not bright rectangles. */
+
+.grantFields {
+  gap: .85rem !important;
+}
+
+.grantFields label {
+  color: #8c9aa1 !important;
+  font-size: .72rem;
+}
+
+.grantFields input,
+.privateLink input {
+  min-height: 2.7rem;
+
+  padding: .58rem .7rem !important;
+
+  border: 1px solid rgba(144, 163, 171, .25) !important;
+  border-bottom-color: rgba(203, 180, 125, .36) !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(4, 8, 10, .86),
+      rgba(7, 12, 15, .92)
+    ) !important;
+
+  color: #e1e5e4 !important;
+
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.018);
+}
+
+.grantFields input:focus,
+.privateLink input:focus {
+  outline: none;
+
+  border-color: rgba(203, 180, 125, .52) !important;
+
+  box-shadow:
+    0 0 0 1px rgba(203, 180, 125, .08);
+}
+
+/* ---------------------------------------------------------
+   RECIPIENT REGISTRY
+   Institutional ledger, not four cards.
+   --------------------------------------------------------- */
+
+.registrySection {
+  padding-top: .15rem !important;
+}
+
+.recipientList {
+  gap: 0 !important;
+
+  margin-top: .8rem !important;
+
+  border-top: 1px solid var(--gm-line) !important;
+}
+
+.recipientItem {
+  overflow: visible !important;
+
+  border: 0 !important;
+  border-bottom: 1px solid var(--gm-line-soft) !important;
+
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+.recipientItem > summary {
+  padding: .9rem 0 !important;
+
+  border: 0 !important;
+
+  background: transparent !important;
+}
+
+.recipientIdentity strong {
+  color: var(--gm-cream) !important;
+  font-size: .94rem !important;
+}
+
+.recipientIdentity span:not(.lifecycle) {
+  color: #7d8f97 !important;
+}
+
+.lifecycle {
+  border: 0 !important;
+  background: transparent !important;
+
+  color: var(--gm-gold) !important;
+}
+
+.recipientBody {
+  padding: .1rem 0 1rem !important;
+
+  border-top: 0 !important;
+
+  background: transparent !important;
+}
+
+.recipientMeta {
+  margin-top: .2rem !important;
+
+  border-top: 1px solid var(--gm-line-soft) !important;
+  border-bottom: 1px solid var(--gm-line-soft) !important;
+}
+
+.accessActions {
+  border-top-color: var(--gm-line-soft) !important;
+}
+
+/* ---------------------------------------------------------
+   RESPONSES
+   Let the indexed rows carry the rhythm.
+   --------------------------------------------------------- */
+
+.responseDomain {
+  padding-top: .2rem !important;
+}
+
+.responseWorkspace {
+  margin-top: 1rem;
+}
+
+.responseWorkspaceHeader {
+  border-color: var(--gm-line-soft) !important;
+}
+
+.responseIndexItem {
+  border-bottom-color: var(--gm-line-soft) !important;
+}
+
+.responseIndexSummary {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+}
+
+.responseIndexIdentity strong {
+  color: var(--gm-cream) !important;
+}
+
+.responseRecordBody {
+  margin-left: 1rem;
+  padding-left: 1rem;
+
+  border-left: 1px solid rgba(203, 180, 125, .18);
+}
+
+/* ---------------------------------------------------------
+   FORMATION DOMAIN
+   Distinct atmosphere without becoming another card.
+   --------------------------------------------------------- */
+
+.draftingDomain {
+  margin-top: 2.15rem !important;
+
+  padding-top: 1.15rem !important;
+
+  border: 0 !important;
+  border-top: 1px solid rgba(141, 116, 151, .28) !important;
+  border-bottom: 1px solid rgba(141, 116, 151, .18) !important;
+
+  background:
+    radial-gradient(
+      ellipse at 92% 0,
+      rgba(89, 65, 101, .09),
+      transparent 30rem
+    ) !important;
+}
+
+.draftingDomain .sectionSummary {
+  padding: 0 0 .8rem !important;
+}
+
+.draftingDomain .sectionBody {
+  padding: .8rem 0 0 !important;
+
+  border-top: 1px solid rgba(141, 116, 151, .14) !important;
+}
+
+.draftingDormant {
+  opacity: .7;
+}
+
+/* ---------------------------------------------------------
+   DESKTOP PROPORTIONS
+   Give active work more authority than reference rail.
+   --------------------------------------------------------- */
+
+@media (min-width: 1100px) {
+  .workspace {
+    grid-template-columns:
+      minmax(15rem, 17rem)
+      minmax(0, 1fr) !important;
+
+    column-gap: clamp(2.2rem, 3.3vw, 4rem) !important;
+  }
+
+  .workGrid {
+    max-width: 72rem;
+  }
+}
+
+/* ---------------------------------------------------------
+   TABLET / MOBILE
+   --------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .contextRail {
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--gm-line-soft) !important;
+
+    padding-right: 0 !important;
+    padding-bottom: 1rem !important;
+  }
+}
+
+@media (max-width: 640px) {
+  .integritySection {
+    grid-template-columns: 1fr !important;
+  }
+
+  .integritySection > p {
+    text-align: left !important;
+  }
+
+  .responseRecordBody {
+    margin-left: 0;
+    padding-left: 0;
+
+    border-left: 0;
+  }
+}
+
+/* =========================================================
+   GM-5B.4 — OPERATOR PRIORITY
+   Issuance is a tool, not the default work surface.
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   VERSION INTEGRITY — SYSTEM STATUS STRIP
+   --------------------------------------------------------- */
+
+.integritySection {
+  min-height: auto !important;
+
+  grid-template-columns:
+    minmax(10rem, 1fr)
+    auto !important;
+
+  gap: 1.5rem !important;
+  align-items: center !important;
+
+  padding: .68rem 0 !important;
+}
+
+.integrityIdentity {
+  display: flex;
+  gap: .75rem;
+  align-items: baseline;
+  min-width: 0;
+}
+
+.integrityIdentity span {
+  color: #778890;
+  font-size: .52rem;
+  font-weight: 700;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.integrityIdentity h2 {
+  margin: 0 !important;
+
+  color: #c9d0d1 !important;
+
+  font-family:
+    Arial,
+    sans-serif !important;
+
+  font-size: .72rem !important;
+  font-weight: 600 !important;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+
+.integritySection > p {
+  color: var(--gm-gold) !important;
+
+  font-size: .58rem !important;
+  font-weight: 700;
+  letter-spacing: .1em;
+  line-height: 1.3 !important;
+  text-transform: uppercase;
+
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------
+   CREATE RECIPIENT — CLOSED OPERATOR TOOL
+   --------------------------------------------------------- */
+
+.createRecipientSection {
+  padding-bottom: 1.05rem !important;
+}
+
+.createRecipientSection > .sectionLead {
+  max-width: 34rem;
+
+  margin-bottom: .65rem !important;
+}
+
+.grantDisclosure {
+  margin-top: .45rem !important;
+
+  border-top: 1px solid var(--gm-line-soft) !important;
+  border-bottom: 1px solid var(--gm-line-soft) !important;
+}
+
+.grantDisclosure > summary {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+
+  padding: .66rem 0 !important;
+
+  cursor: pointer;
+  list-style: none;
+}
+
+.grantDisclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.grantDisclosure > summary > span {
+  color: #c4b17e;
+
+  font-size: .67rem;
+  font-weight: 700;
+  letter-spacing: .035em;
+}
+
+.grantDisclosure > summary > small {
+  color: #71828a;
+
+  font-size: .52rem;
+  font-weight: 700;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+}
+
+.grantDisclosure > summary::after {
+  content: "+";
+
+  flex: none;
+
+  margin-left: .35rem;
+
+  color: #7e8e95;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.grantDisclosure[open] > summary::after {
+  content: "−";
+  color: var(--gm-gold);
+}
+
+.grantDisclosure[open] > summary > small {
+  color: var(--gm-gold-soft);
+}
+
+/*
+ * Only the open state creates substantial vertical work.
+ * Closed state should occupy approximately one ledger row.
+ */
+.grantDisclosure:not([open]) {
+  margin-bottom: 0 !important;
+}
+
+.grantDisclosure[open] .grantControl {
+  padding-bottom: .45rem !important;
+}
+
+/* ---------------------------------------------------------
+   REGISTRY — PROMOTE THE DAILY OPERATOR FIELD
+   --------------------------------------------------------- */
+
+.registrySection {
+  margin-top: .65rem !important;
+  padding-top: .35rem !important;
+}
+
+.registrySection .sectionHeading {
+  padding-bottom: .2rem !important;
+}
+
+.registrySection .recipientList {
+  margin-top: .65rem !important;
+}
+
+/* ---------------------------------------------------------
+   SMALL VIEWPORT
+   --------------------------------------------------------- */
+
+@media (max-width: 640px) {
+  .integritySection {
+    grid-template-columns: 1fr !important;
+    gap: .3rem !important;
+  }
+
+  .integrityIdentity {
+    display: grid;
+    gap: .15rem;
+  }
+
+  .integritySection > p {
+    white-space: normal;
+  }
+}
+
+/* =========================================================
+   GM-5B.5 — DEPTH / DOMAIN CONTRAST
+   Separate authority, navigation, and active work planes.
+   ========================================================= */
+
+.page {
+  --gm-shell-black: #05080a;
+  --gm-rail-deep: #09131a;
+  --gm-stage-deep: #0c151b;
+  --gm-stage-soft: #101d25;
+
+  --gm-access: #6f9eae;
+  --gm-access-soft: rgba(111, 158, 174, .16);
+  --gm-access-line: rgba(111, 158, 174, .28);
+
+  --gm-response: #8799a5;
+  --gm-response-soft: rgba(135, 153, 165, .14);
+
+  background:
+    linear-gradient(
+      90deg,
+      var(--gm-rail-deep) 0,
+      var(--gm-rail-deep) 19rem,
+      var(--gm-stage-deep) 19rem,
+      var(--gm-stage-deep) 100%
+    ) !important;
+}
+
+/* ---------------------------------------------------------
+   INSTRUMENT BAR
+   Highest-authority plane.
+   --------------------------------------------------------- */
+
+.instrumentBar {
+  background:
+    linear-gradient(
+      90deg,
+      #05090c 0%,
+      #071017 55%,
+      #080d11 100%
+    ) !important;
+
+  border-bottom:
+    1px solid rgba(203, 180, 125, .34) !important;
+
+  box-shadow:
+    0 10px 26px rgba(0, 0, 0, .28),
+    inset 0 -1px rgba(255, 255, 255, .015);
+}
+
+.instrumentIdentity span {
+  color: #d2bb82 !important;
+}
+
+.instrumentIdentity strong {
+  color: #82939c !important;
+}
+
+.instrumentState span {
+  color: #d2bb82 !important;
+}
+
+.instrumentState b {
+  color: #87979f !important;
+}
+
+/* ---------------------------------------------------------
+   LEFT RAIL
+   Distinct navigational infrastructure plane.
+   --------------------------------------------------------- */
+
+.contextRail {
+  position: sticky;
+
+  margin-left: -1rem;
+  padding:
+    1.15rem
+    1.35rem
+    1.35rem
+    1rem !important;
+
+  border-right:
+    1px solid rgba(111, 158, 174, .17) !important;
+
+  background:
+    radial-gradient(
+      ellipse at 0 0,
+      rgba(56, 91, 108, .12),
+      transparent 24rem
+    ),
+    linear-gradient(
+      180deg,
+      #09151d,
+      #081117 72%
+    ) !important;
+
+  box-shadow:
+    14px 0 34px rgba(0, 0, 0, .11);
+}
+
+.contextRail .metrics > div {
+  border-bottom-color:
+    rgba(119, 148, 160, .13) !important;
+}
+
+.contextRail .metrics span {
+  color: #b7a36f !important;
+}
+
+.contextRail .metrics strong {
+  color: #e2dfd6 !important;
+}
+
+.contextRail .metrics small {
+  color: #71858e !important;
+}
+
+.contextRail .operatorRail {
+  margin-top: 1.1rem;
+}
+
+.contextRail .operatorRail a {
+  margin: 0 -.4rem;
+
+  padding:
+    .72rem
+    .4rem !important;
+
+  border-bottom-color:
+    rgba(119, 148, 160, .12) !important;
+
+  color: #97aab3 !important;
+}
+
+.contextRail .operatorRail a:hover,
+.contextRail .operatorRail a:focus-visible {
+  background:
+    rgba(111, 158, 174, .07) !important;
+
+  color: #edf0ec !important;
+}
+
+.contextRail .operatorRail strong {
+  color: #c8b277 !important;
+}
+
+/* ---------------------------------------------------------
+   MAIN STAGE
+   Bring working surface slightly forward.
+   --------------------------------------------------------- */
+
+.workGrid {
+  position: relative;
+
+  margin-right: -1rem;
+
+  padding:
+    1.5rem
+    1rem
+    4rem
+    1.5rem !important;
+
+  background:
+    radial-gradient(
+      ellipse at 78% 0,
+      rgba(44, 74, 89, .08),
+      transparent 38rem
+    ),
+    linear-gradient(
+      180deg,
+      #0d171d,
+      #0b1419 68%
+    );
+}
+
+/*
+ * Subtle stage edge:
+ * reinforces that the rail and work plane are different systems.
+ */
+.workGrid::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+
+  width: 1px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(111, 158, 174, .24),
+      rgba(111, 158, 174, .06) 65%,
+      transparent
+    );
+}
+
+/* ---------------------------------------------------------
+   ACCESS CHAMBER
+   Create Recipient + Recipient Registry share a domain language.
+   --------------------------------------------------------- */
+
+.createRecipientSection,
+.registrySection {
+  position: relative;
+
+  padding-left: 1rem !important;
+}
+
+.createRecipientSection::before,
+.registrySection::before {
+  content: "";
+
+  position: absolute;
+  top: .1rem;
+  left: 0;
+  bottom: 1.1rem;
+
+  width: 2px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(111, 158, 174, .7),
+      rgba(111, 158, 174, .12)
+    );
+}
+
+.createRecipientSection .sectionHeading span,
+.registrySection .sectionHeading span {
+  color: var(--gm-access) !important;
+}
+
+.createRecipientSection .sectionHeading small,
+.registrySection .sectionHeading small {
+  color: #a9c3cc !important;
+}
+
+.createRecipientSection .sectionHeading h2,
+.registrySection .sectionHeading h2 {
+  color: #ece9df !important;
+}
+
+.createRecipientSection > .sectionLead {
+  color: #8da2ab !important;
+}
+
+/* Closed issuance tool becomes a deliberate access console trigger. */
+
+.createRecipientSection .grantDisclosure {
+  border-top:
+    1px solid var(--gm-access-line) !important;
+
+  border-bottom:
+    1px solid rgba(111, 158, 174, .16) !important;
+}
+
+.createRecipientSection .grantDisclosure > summary {
+  padding:
+    .72rem
+    .65rem !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(111, 158, 174, .08),
+      transparent 58%
+    ) !important;
+}
+
+.createRecipientSection .grantDisclosure > summary > span {
+  color: #b8d0d8 !important;
+}
+
+.createRecipientSection .grantDisclosure > summary > small {
+  color: #78939f !important;
+}
+
+.createRecipientSection .grantDisclosure[open] {
+  border-bottom-color:
+    var(--gm-access-line) !important;
+}
+
+.createRecipientSection .grantDisclosure[open] > summary {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(111, 158, 174, .12),
+      rgba(111, 158, 174, .025) 72%
+    ) !important;
+}
+
+/* ---------------------------------------------------------
+   ACCESS REGISTRY
+   Ledger rows get stronger differentiation without cards.
+   --------------------------------------------------------- */
+
+.registrySection .recipientList {
+  border-top:
+    1px solid var(--gm-access-line) !important;
+}
+
+.registrySection .recipientItem {
+  transition:
+    background .15s ease,
+    border-color .15s ease;
+}
+
+.registrySection .recipientItem:hover {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(111, 158, 174, .065),
+      transparent 68%
+    ) !important;
+}
+
+.registrySection .recipientItem > summary {
+  padding:
+    .92rem
+    .6rem !important;
+}
+
+.registrySection .recipientItem[open] {
+  background:
+    rgba(111, 158, 174, .045) !important;
+
+  border-bottom-color:
+    var(--gm-access-line) !important;
+}
+
+.registrySection .recipientItem[open] > summary {
+  border-bottom:
+    1px solid rgba(111, 158, 174, .12) !important;
+}
+
+.registrySection .recipientIdentity strong {
+  color: #e7e5dd !important;
+}
+
+.registrySection .recipientIdentity span:not(.lifecycle) {
+  color: #7e949e !important;
+}
+
+.registrySection .lifecycle {
+  color: #d2b979 !important;
+}
+
+/* Plus/minus disclosure controls become more visible. */
+
+.registrySection .recipientItem > summary::after {
+  color: #718b96 !important;
+}
+
+.registrySection .recipientItem[open] > summary::after {
+  color: #cdb477 !important;
+}
+
+/* ---------------------------------------------------------
+   RESPONSES
+   Different domain family from Access.
+   --------------------------------------------------------- */
+
+.responseDomain {
+  position: relative;
+
+  padding-left: 1rem !important;
+}
+
+.responseDomain::before {
+  content: "";
+
+  position: absolute;
+  top: .1rem;
+  left: 0;
+  bottom: 1.1rem;
+
+  width: 2px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(135, 153, 165, .58),
+      rgba(135, 153, 165, .08)
+    );
+}
+
+.responseDomain .sectionHeading span {
+  color: #8fa4af !important;
+}
+
+.responseWorkspaceHeader {
+  border-top-color:
+    rgba(135, 153, 165, .2) !important;
+
+  border-bottom-color:
+    rgba(135, 153, 165, .16) !important;
+}
+
+.responseIndexItem:hover {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(135, 153, 165, .045),
+      transparent 70%
+    );
+}
+
+/* ---------------------------------------------------------
+   FORMATION
+   Preserve distinct violet domain.
+   --------------------------------------------------------- */
+
+.draftingDomain {
+  padding-left: 1rem !important;
+
+  border-top-color:
+    rgba(141, 116, 151, .3) !important;
+}
+
+.draftingDomain::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 1rem;
+
+  width: 2px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(141, 116, 151, .58),
+      rgba(141, 116, 151, .08)
+    );
+}
+
+/* ---------------------------------------------------------
+   DESKTOP BALANCE
+   --------------------------------------------------------- */
+
+@media (min-width: 1100px) {
+  .workspace {
+    column-gap: 0 !important;
+  }
+
+  .contextRail {
+    width: auto;
+  }
+
+  .workGrid {
+    padding-left:
+      clamp(2.3rem, 3vw, 3.6rem) !important;
+
+    padding-right:
+      clamp(1.5rem, 2.5vw, 2.8rem) !important;
+  }
+}
+
+/* ---------------------------------------------------------
+   MOBILE / TABLET
+   Remove hard side-plane treatment when stacked.
+   --------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .page {
+    background:
+      linear-gradient(
+        180deg,
+        var(--gm-stage-deep),
+        var(--gm-shell-black)
+      ) !important;
+  }
+
+  .contextRail {
+    margin-left: 0;
+
+    padding:
+      .8rem
+      0
+      1rem !important;
+
+    border-right: 0 !important;
+
+    background: transparent !important;
+    box-shadow: none;
+  }
+
+  .workGrid {
+    margin-right: 0;
+
+    padding:
+      1rem
+      0
+      3rem !important;
+
+    background: transparent;
+  }
+
+  .workGrid::before {
+    display: none;
+  }
+}
+
+/* =========================================================
+   GM-5B.6 — INSTITUTIONAL LEDGER + TRUE FIXED BAR
+   ========================================================= */
+
+/* ---------------------------------------------------------
+   TRUE FIXED INSTRUMENT BAR
+
+   Unlike sticky, fixed positioning is not constrained by the
+   GM workspace's containing block.
+   --------------------------------------------------------- */
+
+.page {
+  --gm-fixed-inline:
+    clamp(1rem, 2vw, 2rem);
+
+  --gm-bar-height:
+    3.35rem;
+}
+
+.instrumentBar {
+  position: fixed !important;
+
+  top: var(--cc-crown-height, 76px) !important;
+  left: var(--gm-fixed-inline);
+  right: var(--gm-fixed-inline);
+
+  width: auto !important;
+  height: var(--gm-bar-height);
+  min-height: var(--gm-bar-height);
+
+  margin: 0 !important;
+
+  z-index: 60;
+}
+
+/*
+ * The fixed bar has left document flow.
+ * Reserve its physical space explicitly.
+ */
+.workspace {
+  padding-top:
+    calc(
+      var(--gm-bar-height) +
+      1rem
+    );
+}
+
+/*
+ * Left operator rail must always begin below the fixed
+ * instrument bar.
+ */
+.contextRail {
+  top:
+    calc(
+      var(--cc-crown-height, 76px) +
+      var(--gm-bar-height) +
+      1rem
+    ) !important;
+
+  max-height:
+    calc(
+      100dvh -
+      var(--cc-crown-height, 76px) -
+      var(--gm-bar-height) -
+      2rem
+    ) !important;
+}
+
+/* Anchored navigation also clears both fixed layers. */
+#gm-overview,
+#gm-create-recipient,
+#gm-recipient-registry,
+#gm-responses,
+#gm-drafting,
+#gm-history {
+  scroll-margin-top:
+    calc(
+      var(--cc-crown-height, 76px) +
+      var(--gm-bar-height) +
+      1.25rem
+    ) !important;
+}
+
+/* ---------------------------------------------------------
+   REGISTRY — ACTUAL LEDGER ARCHITECTURE
+   --------------------------------------------------------- */
+
+.registryColumns {
+  display: grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    11.5rem
+    2rem;
+
+  gap: 1.15rem;
+  align-items: center;
+
+  margin-top: .8rem;
+  padding:
+    .45rem
+    .6rem;
+
+  border-top:
+    1px solid var(--gm-access-line);
+
+  border-bottom:
+    1px solid rgba(111, 158, 174, .13);
+
+  color: #6f8995;
+
+  font-size: .5rem;
+  font-weight: 700;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.registryColumns span:nth-child(2) {
+  text-align: left;
+}
+
+.registryColumns span:last-child {
+  text-align: center;
+}
+
+.registrySection .recipientList {
+  margin-top: 0 !important;
+  border-top: 0 !important;
+}
+
+/*
+ * Each recipient summary uses exactly the same three-column
+ * ledger geometry:
+ *
+ * identity | lifecycle | disclosure
+ */
+.registrySection .recipientIdentity {
+  display: grid !important;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    11.5rem
+    2rem;
+
+  gap: 1.15rem;
+  align-items: center !important;
+
+  width: 100%;
+}
+
+.registrySection .recipientIdentity > div {
+  grid-column: 1;
+
+  min-width: 0;
+}
+
+.registrySection .lifecycle {
+  grid-column: 2;
+
+  justify-self: start;
+
+  min-width: 0;
+
+  text-align: left;
+
+  white-space: nowrap;
+}
+
+/*
+ * The existing disclosure marker is the third ledger column.
+ */
+.registrySection .recipientItem > summary::after {
+  grid-column: 3;
+
+  justify-self: center;
+
+  margin: 0 !important;
+
+  text-align: center;
+}
+
+/* Consistent row rhythm. */
+
+.registrySection .recipientItem > summary {
+  min-height: 4.35rem;
+
+  padding:
+    .82rem
+    .6rem !important;
+}
+
+.registrySection .recipientIdentity strong {
+  line-height: 1.28;
+}
+
+.registrySection .recipientIdentity span:not(.lifecycle) {
+  margin-top: .18rem;
+
+  line-height: 1.35;
+}
+
+/* Access state gains hierarchy without becoming a pill. */
+
+.registrySection .lifecycle {
+  position: relative;
+
+  padding-left: .8rem !important;
+
+  font-size: .58rem !important;
+  font-weight: 700;
+  letter-spacing: .085em;
+}
+
+.registrySection .lifecycle::before {
+  content: "";
+
+  position: absolute;
+  left: 0;
+  top: 50%;
+
+  width: .3rem;
+  height: .3rem;
+
+  transform: translateY(-50%);
+
+  border-radius: 50%;
+
+  background: currentColor;
+
+  opacity: .72;
+}
+
+/* ---------------------------------------------------------
+   EXPANDED RECIPIENT RECORD
+
+   Expanded data remains aligned to the identity field rather
+   than spanning chaotically across the entire ledger.
+   --------------------------------------------------------- */
+
+.registrySection .recipientBody {
+  margin-left: 0;
+
+  padding:
+    .2rem
+    14.65rem
+    1.1rem
+    .6rem !important;
+}
+
+/* ---------------------------------------------------------
+   RESPONSIVE LEDGER
+   --------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .registryColumns {
+    display: none;
+  }
+
+  .registrySection .recipientIdentity {
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto
+      1.5rem;
+
+    gap: .7rem;
+  }
+
+  .registrySection .lifecycle {
+    justify-self: end;
+
+    text-align: right;
+  }
+
+  .registrySection .recipientBody {
+    padding:
+      .15rem
+      .6rem
+      1rem !important;
+  }
+}
+
+@media (max-width: 620px) {
+  .instrumentBar {
+    left: .75rem;
+    right: .75rem;
+  }
+
+  .workspace {
+    padding-top:
+      calc(
+        var(--gm-bar-height) +
+        .75rem
+      );
+  }
+
+  .registrySection .recipientIdentity {
+    grid-template-columns:
+      minmax(0, 1fr)
+      1.5rem;
+  }
+
+  .registrySection .lifecycle {
+    grid-column: 1;
+
+    justify-self: start;
+
+    margin-top: .4rem;
+  }
+
+  .registrySection .recipientItem > summary::after {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+}
+
+/* =========================================================
+   GM-5B.6C — CONTROL CENTER STACK CORRECTION
+
+   The Control Center constitutional crown is already sticky
+   at top: 0 inside the Control Center scrollport.
+
+   GM belongs directly beneath that crown as the second
+   sticky layer. It must not be viewport-fixed.
+   ========================================================= */
+
+.instrumentBar {
+  position: sticky !important;
+
+  top: var(--cc-crown-height, 76px) !important;
+
+  left: auto !important;
+  right: auto !important;
+
+  width: 100% !important;
+
+  margin: 0 !important;
+
+  z-index: 35;
+}
+
+/*
+ * Fixed positioning previously removed the bar from document flow.
+ * Sticky remains in flow, so no compensating workspace padding is needed.
+ */
+.workspace {
+  padding-top: 0 !important;
+}
+
+/*
+ * Operator rail begins immediately beneath both sticky layers.
+ */
+.contextRail {
+  top:
+    calc(
+      var(--cc-crown-height, 76px) +
+      var(--gm-bar-height) +
+      .75rem
+    ) !important;
+
+  max-height:
+    calc(
+      100dvh -
+      var(--cc-crown-height, 76px) -
+      var(--gm-bar-height) -
+      1.5rem
+    ) !important;
+}
+
+/*
+ * Anchored work domains must clear crown + GM bar.
+ */
+#gm-overview,
+#gm-create-recipient,
+#gm-recipient-registry,
+#gm-responses,
+#gm-drafting,
+#gm-history {
+  scroll-margin-top:
+    calc(
+      var(--cc-crown-height, 76px) +
+      var(--gm-bar-height) +
+      .75rem
+    ) !important;
+}
+
+@media (max-width: 700px) {
+  .instrumentBar {
+    position: relative !important;
+    top: auto !important;
+  }
+}
