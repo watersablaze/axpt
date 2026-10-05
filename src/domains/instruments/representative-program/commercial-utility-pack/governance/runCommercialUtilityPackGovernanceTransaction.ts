@@ -69,5 +69,9 @@ export async function runCommercialUtilityPackGovernanceTransaction<T>(
       operation(
         tx,
       ),
+    {
+      maxWait: 10000,
+      timeout: 30000,
+    },
   );
 }
