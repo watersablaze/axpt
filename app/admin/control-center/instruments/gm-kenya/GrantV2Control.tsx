@@ -173,8 +173,11 @@ export function GrantV2Control({ versionId }: { versionId: string }) {
   }
 
   return (
-    <details className={styles.grantDisclosure} open>
-      <summary>Create recipient access</summary>
+    <details className={styles.grantDisclosure}>
+      <summary>
+        <span>Create recipient access</span>
+        <small>Open tool</small>
+      </summary>
 
       <div className={styles.grantControl}>
         <p>

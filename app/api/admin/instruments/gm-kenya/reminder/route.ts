@@ -4,16 +4,19 @@ import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { isAdmin } from "@/domains/auth/isAdmin";
 import { hashInstrumentAccessToken } from "@/domains/instruments/access/accessToken";
 import {
-  renderGlobalMotherChamberFollowUp,
-  sendGlobalMotherChamberFollowUp,
-} from "@/domains/instruments/communications/globalMotherChamberFollowUp";
-import { globalMotherV4Definition } from "@/domains/instruments/definitions/globalMotherV4Definition";
+  renderGlobalMotherChamberReminder,
+  sendGlobalMotherChamberReminder,
+  type GlobalMotherReminderKind,
+} from "@/domains/instruments/communications/globalMotherChamberReminder";
 import { getDigitalSettlementSender } from "@/domains/instruments/communications/digitalSettlementSender";
+import { globalMotherV4Definition } from "@/domains/instruments/definitions/globalMotherV4Definition";
 import { prisma } from "@/infrastructure/db/prisma";
 
-const DELIVERY_KEY = "RESPONSE_DELIBERATION_20261005";
-
 const ACCESS_PREFIX = "/french-ward/instruments/gm-kenya/access/";
+
+const EMPRESS_EMAIL = "awulahnaanii@gmail.com";
+const EMPRESS_CC = "info@ndministry.com";
+const NAMA_EMAIL = "ahmaolmectartarian@gmail.com";
 
 function reply(body: Record<string, unknown>, status = 200) {
   return NextResponse.json(body, {
@@ -22,6 +25,31 @@ function reply(body: Record<string, unknown>, status = 200) {
       "Cache-Control": "no-store",
     },
   });
+}
+
+function reminderIdentity(email: string): {
+  kind: GlobalMotherReminderKind;
+  cc?: string;
+  deliveryKey: string;
+} | null {
+  const normalized = email.trim().toLowerCase();
+
+  if (normalized === EMPRESS_EMAIL) {
+    return {
+      kind: "EMPRESS",
+      cc: EMPRESS_CC,
+      deliveryKey: "PENDING_DELIBERATION_20261006_EMPRESS",
+    };
+  }
+
+  if (normalized === NAMA_EMAIL) {
+    return {
+      kind: "NAMA",
+      deliveryKey: "PENDING_DELIBERATION_20261006_NAMA",
+    };
+  }
+
+  return null;
 }
 
 export async function POST(request: Request) {
@@ -58,10 +86,10 @@ export async function POST(request: Request) {
     typeof input.accessUrl === "string" ? input.accessUrl.trim() : "";
 
   if (!action || !/^[a-z0-9]{10,40}$/.test(grantId) || !submittedAccessUrl) {
-    return reply({ error: "FOLLOW_UP_INPUT_REQUIRED" }, 400);
+    return reply({ error: "REMINDER_INPUT_REQUIRED" }, 400);
   }
 
-  if (action === "send" && input.confirmation !== "SEND CHAMBER FOLLOW-UP") {
+  if (action === "send" && input.confirmation !== "SEND CHAMBER REMINDER") {
     return reply({ error: "CONFIRMATION_REQUIRED" }, 400);
   }
 
@@ -88,6 +116,15 @@ export async function POST(request: Request) {
         select: {
           reference: true,
           currentVersion: true,
+          responseSets: {
+            where: {
+              grantId,
+            },
+            select: {
+              id: true,
+            },
+            take: 1,
+          },
         },
       },
       instrumentVersion: {
@@ -115,8 +152,24 @@ export async function POST(request: Request) {
     return reply({ error: "ACTIVE_GRANT_REQUIRED" }, 409);
   }
 
-  if (!grant.recipientName?.includes("Khan-Khan")) {
-    return reply({ error: "RESPONSE_FOLLOW_UP_RECIPIENT_MISMATCH" }, 409);
+  if (grant.instrument.responseSets.length > 0) {
+    return reply(
+      {
+        error: "DELIBERATION_ALREADY_RECEIVED",
+      },
+      409,
+    );
+  }
+
+  const identity = reminderIdentity(grant.recipientUser.email);
+
+  if (!identity) {
+    return reply(
+      {
+        error: "DELIBERATION_REMINDER_RECIPIENT_MISMATCH",
+      },
+      409,
+    );
   }
 
   let accessUrl: URL;
@@ -124,7 +177,12 @@ export async function POST(request: Request) {
   try {
     accessUrl = new URL(submittedAccessUrl);
   } catch {
-    return reply({ error: "PRIVATE_ACCESS_URL_INVALID" }, 400);
+    return reply(
+      {
+        error: "PRIVATE_ACCESS_URL_INVALID",
+      },
+      400,
+    );
   }
 
   const requestOrigin = new URL(request.url).origin;
@@ -143,7 +201,12 @@ export async function POST(request: Request) {
     accessUrl.search ||
     accessUrl.hash
   ) {
-    return reply({ error: "PRIVATE_ACCESS_URL_INVALID" }, 400);
+    return reply(
+      {
+        error: "PRIVATE_ACCESS_URL_INVALID",
+      },
+      400,
+    );
   }
 
   const token = decodeURIComponent(
@@ -155,7 +218,12 @@ export async function POST(request: Request) {
     token.includes("/") ||
     hashInstrumentAccessToken(token) !== grant.codeHash
   ) {
-    return reply({ error: "PRIVATE_ACCESS_DOES_NOT_MATCH_GRANT" }, 409);
+    return reply(
+      {
+        error: "PRIVATE_ACCESS_DOES_NOT_MATCH_GRANT",
+      },
+      409,
+    );
   }
 
   const recipientName =
@@ -172,29 +240,32 @@ export async function POST(request: Request) {
 
   const message = {
     grantId: grant.id,
+    kind: identity.kind,
     recipientName,
     recipientEmail: grant.recipientUser.email,
+    ...(identity.cc ? { cc: identity.cc } : {}),
     representedInstitution,
     representativeCapacity,
     accessUrl: accessUrl.toString(),
   };
 
   if (action === "preview") {
-    const rendered = renderGlobalMotherChamberFollowUp(message);
+    const rendered = renderGlobalMotherChamberReminder(message);
 
     return reply({
       ok: true,
       from: getDigitalSettlementSender(),
       to: message.recipientEmail,
+      cc: identity.cc ?? null,
       subject: rendered.subject,
       text: rendered.text,
       html: rendered.html,
     });
   }
 
-  const delivery = await sendGlobalMotherChamberFollowUp({
+  const delivery = await sendGlobalMotherChamberReminder({
     ...message,
-    deliveryKey: DELIVERY_KEY,
+    deliveryKey: identity.deliveryKey,
   });
 
   return reply({

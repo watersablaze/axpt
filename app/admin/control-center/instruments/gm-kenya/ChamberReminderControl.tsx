@@ -7,12 +7,13 @@ import styles from "./page.module.css";
 type Preview = {
   from: string;
   to: string;
+  cc: string | null;
   subject: string;
   text: string;
   html: string;
 };
 
-export function ChamberFollowUpControl({ grantId }: { grantId: string }) {
+export function ChamberReminderControl({ grantId }: { grantId: string }) {
   const [accessUrl, setAccessUrl] = useState("");
   const [preview, setPreview] = useState<Preview | null>(null);
   const [busy, setBusy] = useState<"preview" | "send" | null>(null);
@@ -31,27 +32,24 @@ export function ChamberFollowUpControl({ grantId }: { grantId: string }) {
     setMessage("");
 
     try {
-      const response = await fetch(
-        "/api/admin/instruments/gm-kenya/follow-up",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            action,
-            grantId,
-            accessUrl: privateUrl,
-            confirmation:
-              action === "send" ? "SEND CHAMBER FOLLOW-UP" : undefined,
-          }),
+      const response = await fetch("/api/admin/instruments/gm-kenya/reminder", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
+        body: JSON.stringify({
+          action,
+          grantId,
+          accessUrl: privateUrl,
+          confirmation: action === "send" ? "SEND CHAMBER REMINDER" : undefined,
+        }),
+      });
 
       const result = (await response.json()) as {
         ok?: boolean;
         from?: string;
         to?: string;
+        cc?: string | null;
         subject?: string;
         text?: string;
         html?: string;
@@ -63,7 +61,7 @@ export function ChamberFollowUpControl({ grantId }: { grantId: string }) {
       };
 
       if (!response.ok || !result.ok) {
-        throw new Error(result.error ?? "Chamber follow-up failed");
+        throw new Error(result.error ?? "Chamber reminder failed");
       }
 
       if (action === "preview") {
@@ -74,12 +72,13 @@ export function ChamberFollowUpControl({ grantId }: { grantId: string }) {
           !result.text ||
           !result.html
         ) {
-          throw new Error("Follow-up preview incomplete");
+          throw new Error("Reminder preview incomplete");
         }
 
         setPreview({
           from: result.from,
           to: result.to,
+          cc: result.cc ?? null,
           subject: result.subject,
           text: result.text,
           html: result.html,
@@ -91,13 +90,13 @@ export function ChamberFollowUpControl({ grantId }: { grantId: string }) {
       setMessage(
         result.delivery?.mode === "send"
           ? result.delivery.alreadyDelivered
-            ? "Follow-up was already delivered. No duplicate email sent."
-            : "Chamber follow-up sent and recorded."
-          : "Follow-up recorded only. Outbound email mode is not enabled.",
+            ? "Reminder was already delivered. No duplicate email sent."
+            : "Chamber reminder sent and recorded."
+          : "Reminder recorded only. Outbound email mode is not enabled.",
       );
     } catch (cause) {
       setError(
-        cause instanceof Error ? cause.message : "Chamber follow-up failed",
+        cause instanceof Error ? cause.message : "Chamber reminder failed",
       );
     } finally {
       setBusy(null);
@@ -106,13 +105,12 @@ export function ChamberFollowUpControl({ grantId }: { grantId: string }) {
 
   return (
     <details className={styles.grantDisclosure}>
-      <summary>Prepare response follow-up</summary>
+      <summary>Prepare deliberation reminder</summary>
 
       <div className={styles.grantControl}>
         <p>
-          Reuse the recipient&apos;s existing private Chamber credential. The
-          credential is validated against this active grant and is not stored in
-          EmailLog metadata.
+          Reuse this recipient&apos;s existing private Chamber credential. No
+          new access grant is created.
         </p>
 
         <label
@@ -141,12 +139,12 @@ export function ChamberFollowUpControl({ grantId }: { grantId: string }) {
           disabled={!accessUrl.trim() || Boolean(busy)}
           onClick={() => request("preview")}
         >
-          {busy === "preview" ? "Preparing…" : "Preview response follow-up"}
+          {busy === "preview" ? "Preparing…" : "Preview deliberation reminder"}
         </button>
 
         {preview ? (
           <section
-            aria-label="Chamber response follow-up review"
+            aria-label="Chamber deliberation reminder review"
             style={{
               marginTop: ".7rem",
               border: "1px solid rgba(203,180,128,.42)",
@@ -162,16 +160,22 @@ export function ChamberFollowUpControl({ grantId }: { grantId: string }) {
               <strong>To:</strong> {preview.to}
             </p>
 
+            {preview.cc ? (
+              <p>
+                <strong>Cc:</strong> {preview.cc}
+              </p>
+            ) : null}
+
             <p>
               <strong>Subject:</strong> {preview.subject}
             </p>
 
             <iframe
-              title="Chamber follow-up preview"
+              title="Chamber deliberation reminder preview"
               srcDoc={preview.html}
               style={{
                 width: "100%",
-                minHeight: "760px",
+                minHeight: "650px",
                 border: "1px solid rgba(154,181,198,.45)",
                 background: "#0a1926",
               }}
@@ -187,7 +191,7 @@ export function ChamberFollowUpControl({ grantId }: { grantId: string }) {
             >
               {busy === "send"
                 ? "Sending…"
-                : "Approve & send response follow-up"}
+                : "Approve & send deliberation reminder"}
             </button>
           </section>
         ) : null}

@@ -8,6 +8,7 @@ import { IssueV4Control } from "./IssueV4Control";
 import { GrantV2Control } from "./GrantV2Control";
 import { RevokeV2Control } from "./RevokeV2Control";
 import { ChamberFollowUpControl } from "./ChamberFollowUpControl";
+import { ChamberReminderControl } from "./ChamberReminderControl";
 import { globalMotherDraftingGate } from "@/domains/instruments/invariants/globalMotherDraftingGate";
 import { DraftingDecisionControl } from "./DraftingDecisionControl";
 import { ResponseWorkspace } from "./ResponseWorkspace";
@@ -217,9 +218,7 @@ export default async function GlobalMotherResponseReviewPage() {
   const responseIndexEntries = currentGrants.map((grant) => {
     const response = receipts.find((set) => set.grantId === grant.id) ?? null;
 
-    const expired = Boolean(
-      grant.expiresAt && grant.expiresAt < new Date(),
-    );
+    const expired = Boolean(grant.expiresAt && grant.expiresAt < new Date());
 
     const lifecycle = grant.revokedAt
       ? "REVOKED"
@@ -236,15 +235,11 @@ export default async function GlobalMotherResponseReviewPage() {
     return {
       grantId: grant.id,
       recipientName:
-        grant.recipientName ??
-        grant.recipientUserId ??
-        "Unnamed recipient",
+        grant.recipientName ?? grant.recipientUserId ?? "Unnamed recipient",
       representedInstitution:
-        grant.representedInstitution ??
-        "Institution missing",
+        grant.representedInstitution ?? "Institution missing",
       representativeCapacity:
-        grant.representativeCapacity ??
-        "Capacity missing",
+        grant.representativeCapacity ?? "Capacity missing",
       lifecycle,
       response: response
         ? {
@@ -256,22 +251,20 @@ export default async function GlobalMotherResponseReviewPage() {
               response.actor.displayName ??
               response.actor.name ??
               response.actor.email,
-            positions: positionsFrom(response.positions).map(
-              (position) => ({
-                reference:
-                  typeof position.reference === "string"
-                    ? position.reference
-                    : "",
-                responseType:
-                  typeof position.responseType === "string"
-                    ? position.responseType
-                    : "",
-                note:
-                  typeof position.note === "string" && position.note
-                    ? position.note
-                    : null,
-              }),
-            ),
+            positions: positionsFrom(response.positions).map((position) => ({
+              reference:
+                typeof position.reference === "string"
+                  ? position.reference
+                  : "",
+              responseType:
+                typeof position.responseType === "string"
+                  ? position.responseType
+                  : "",
+              note:
+                typeof position.note === "string" && position.note
+                  ? position.note
+                  : null,
+            })),
           }
         : null,
     };
@@ -288,7 +281,10 @@ export default async function GlobalMotherResponseReviewPage() {
 
           <div className={styles.instrumentState}>
             <span>UNDER DELIBERATION</span>
-            <b>V{globalMotherV4Definition.version} · {version?.status ?? "ABSENT"}</b>
+            <b>
+              V{globalMotherV4Definition.version} ·{" "}
+              {version?.status ?? "ABSENT"}
+            </b>
             <b>
               {respondedCount} / {activeCurrentGrants.length} RESPONSE SETS
             </b>
@@ -357,9 +353,7 @@ export default async function GlobalMotherResponseReviewPage() {
             <a href="#gm-drafting">
               <span>Agreement / Formation</span>
               <strong>
-                {collectionComplete
-                  ? "REVIEW"
-                  : `HOLD · ${awaitingCount}`}
+                {collectionComplete ? "REVIEW" : `HOLD · ${awaitingCount}`}
               </strong>
             </a>
             <a href="#gm-history">
@@ -453,10 +447,7 @@ export default async function GlobalMotherResponseReviewPage() {
                 <p>No version-bound recipient grants.</p>
               ) : (
                 <>
-                  <div
-                    className={styles.registryColumns}
-                    aria-hidden="true"
-                  >
+                  <div className={styles.registryColumns} aria-hidden="true">
                     <span>Recipient / Capacity</span>
                     <span>Access State</span>
                     <span>Record</span>
@@ -464,119 +455,133 @@ export default async function GlobalMotherResponseReviewPage() {
 
                   <div className={styles.recipientList}>
                     {currentGrants.map((grant) => {
-                    const response = receipts.find(
-                      (set) => set.grantId === grant.id,
-                    );
-                    const expired = Boolean(
-                      grant.expiresAt && grant.expiresAt < new Date(),
-                    );
-                    const lifecycle = grant.revokedAt
-                      ? "REVOKED"
-                      : expired
-                        ? "EXPIRED"
-                        : response
-                          ? "RESPONDED"
-                          : grant.lastAccessAt
-                            ? "CHAMBER ENTERED"
-                            : grant.recipientChallenge
-                              ? "VERIFICATION INITIATED"
-                              : "ISSUED";
-                    const sentAt = invitationSentAt.get(grant.id) ?? null;
-                    return (
-                      <details key={grant.id} className={styles.recipientItem}>
-                        <summary className={styles.recipientIdentity}>
-                          <div>
-                            <strong>
-                              {grant.recipientName ??
-                                grant.recipientUserId ??
-                                "Unnamed recipient"}
-                            </strong>
-                            <span>
-                              {grant.representedInstitution ??
-                                "Institution missing"}{" "}
-                              ·{" "}
-                              {grant.representativeCapacity ??
-                                "Capacity missing"}
+                      const response = receipts.find(
+                        (set) => set.grantId === grant.id,
+                      );
+                      const expired = Boolean(
+                        grant.expiresAt && grant.expiresAt < new Date(),
+                      );
+                      const lifecycle = grant.revokedAt
+                        ? "REVOKED"
+                        : expired
+                          ? "EXPIRED"
+                          : response
+                            ? "RESPONDED"
+                            : grant.lastAccessAt
+                              ? "CHAMBER ENTERED"
+                              : grant.recipientChallenge
+                                ? "VERIFICATION INITIATED"
+                                : "ISSUED";
+                      const sentAt = invitationSentAt.get(grant.id) ?? null;
+                      return (
+                        <details
+                          key={grant.id}
+                          className={styles.recipientItem}
+                        >
+                          <summary className={styles.recipientIdentity}>
+                            <div>
+                              <strong>
+                                {grant.recipientName ??
+                                  grant.recipientUserId ??
+                                  "Unnamed recipient"}
+                              </strong>
+                              <span>
+                                {grant.representedInstitution ??
+                                  "Institution missing"}{" "}
+                                ·{" "}
+                                {grant.representativeCapacity ??
+                                  "Capacity missing"}
+                              </span>
+                            </div>
+                            <span className={styles.lifecycle}>
+                              {lifecycle}
                             </span>
+                          </summary>
+
+                          <div className={styles.recipientBody}>
+                            <dl className={styles.recipientMeta}>
+                              <div>
+                                <dt>Issued</dt>
+                                <dd>{grant.issuedAt.toLocaleString()}</dd>
+                              </div>
+                              <div>
+                                <dt>Expires</dt>
+                                <dd>
+                                  {grant.expiresAt?.toLocaleString() ??
+                                    "No expiry"}
+                                </dd>
+                              </div>
+                              <div>
+                                <dt>First chamber access</dt>
+                                <dd>
+                                  {grant.firstAccessAt?.toLocaleString() ?? "—"}
+                                </dd>
+                              </div>
+                              <div>
+                                <dt>Last chamber access</dt>
+                                <dd>
+                                  {grant.lastAccessAt?.toLocaleString() ?? "—"}
+                                </dd>
+                              </div>
+                            </dl>
+
+                            <div className={styles.recipientStanding}>
+                              <span>
+                                {grant.recipientRole} · {grant.accessLevel}
+                              </span>
+                              {response ? (
+                                <small>
+                                  Response recorded{" "}
+                                  {response.recordedAt.toLocaleString()}
+                                </small>
+                              ) : grant.recipientChallenge ? (
+                                <small>
+                                  Verification requested{" "}
+                                  {grant.recipientChallenge.sentAt.toLocaleString()}{" "}
+                                  · {grant.recipientChallenge.sendCount} code
+                                  request
+                                  {grant.recipientChallenge.sendCount === 1
+                                    ? ""
+                                    : "s"}{" "}
+                                  · {grant.recipientChallenge.attemptCount}{" "}
+                                  failed attempt
+                                  {grant.recipientChallenge.attemptCount === 1
+                                    ? ""
+                                    : "s"}
+                                </small>
+                              ) : (
+                                <small>
+                                  Verification has not been initiated.
+                                </small>
+                              )}
+                            </div>
+
+                            {!grant.revokedAt ? (
+                              <>
+                                {response &&
+                                !expired &&
+                                grant.recipientName?.includes("Khan-Khan") ? (
+                                  <ChamberFollowUpControl grantId={grant.id} />
+                                ) : null}
+
+                                {!response &&
+                                !expired &&
+                                (grant.recipientName?.includes("Empress") ||
+                                  grant.recipientName?.includes("Nama")) ? (
+                                  <ChamberReminderControl grantId={grant.id} />
+                                ) : null}
+
+                                <RevokeV2Control
+                                  grantId={grant.id}
+                                  invitationSentAt={
+                                    sentAt?.toISOString() ?? null
+                                  }
+                                />
+                              </>
+                            ) : null}
                           </div>
-                          <span className={styles.lifecycle}>{lifecycle}</span>
-                        </summary>
-
-                        <div className={styles.recipientBody}>
-                          <dl className={styles.recipientMeta}>
-                            <div>
-                              <dt>Issued</dt>
-                              <dd>{grant.issuedAt.toLocaleString()}</dd>
-                            </div>
-                            <div>
-                              <dt>Expires</dt>
-                              <dd>
-                                {grant.expiresAt?.toLocaleString() ??
-                                  "No expiry"}
-                              </dd>
-                            </div>
-                            <div>
-                              <dt>First chamber access</dt>
-                              <dd>
-                                {grant.firstAccessAt?.toLocaleString() ?? "—"}
-                              </dd>
-                            </div>
-                            <div>
-                              <dt>Last chamber access</dt>
-                              <dd>
-                                {grant.lastAccessAt?.toLocaleString() ?? "—"}
-                              </dd>
-                            </div>
-                          </dl>
-
-                          <div className={styles.recipientStanding}>
-                            <span>
-                              {grant.recipientRole} · {grant.accessLevel}
-                            </span>
-                            {response ? (
-                              <small>
-                                Response recorded{" "}
-                                {response.recordedAt.toLocaleString()}
-                              </small>
-                            ) : grant.recipientChallenge ? (
-                              <small>
-                                Verification requested{" "}
-                                {grant.recipientChallenge.sentAt.toLocaleString()}{" "}
-                                · {grant.recipientChallenge.sendCount} code
-                                request
-                                {grant.recipientChallenge.sendCount === 1
-                                  ? ""
-                                  : "s"}{" "}
-                                · {grant.recipientChallenge.attemptCount} failed
-                                attempt
-                                {grant.recipientChallenge.attemptCount === 1
-                                  ? ""
-                                  : "s"}
-                              </small>
-                            ) : (
-                              <small>
-                                Verification has not been initiated.
-                              </small>
-                            )}
-                          </div>
-
-                          {!grant.revokedAt ? (
-                            <>
-                              {response &&
-                              !expired &&
-                              grant.recipientName?.includes("Khan-Khan") ? (
-                                <ChamberFollowUpControl grantId={grant.id} />
-                              ) : null}
-
-                              <RevokeV2Control
-                                grantId={grant.id}
-                                invitationSentAt={sentAt?.toISOString() ?? null}
-                              />
-                            </>
-                          ) : null}
-                        </div>
-                      </details>
-                    );
+                        </details>
+                      );
                     })}
                   </div>
                 </>
