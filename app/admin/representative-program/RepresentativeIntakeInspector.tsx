@@ -6,6 +6,7 @@ import RepresentativeAccessReissuePanel from "./RepresentativeAccessReissuePanel
 import RepresentativeIntakeDecisionControls from "./RepresentativeIntakeDecisionControls";
 import RepresentativeMasterAgreementPanel from "./RepresentativeMasterAgreementPanel";
 import RepresentativeAppointmentPreparationPanel from "./RepresentativeAppointmentPreparationPanel";
+import RepresentativeCommercialUtilityPackPanel from "./RepresentativeCommercialUtilityPackPanel";
 import RepresentativeCommunicationsPanel from "./RepresentativeCommunicationsPanel";
 
 type Intake = {
@@ -848,11 +849,19 @@ export default function RepresentativeIntakeInspector({
             )}
 
             {intake.status === "ADMITTED" && intake.admittedParticipantId ? (
-              <RepresentativeAppointmentPreparationPanel
-                key={`${intake.id}-appointment`}
-                participantId={intake.admittedParticipantId}
-                candidateDisplayName={intake.candidateDisplayName}
-              />
+              <>
+                <RepresentativeCommercialUtilityPackPanel
+                  key={`${intake.id}-cup`}
+                  participantId={intake.admittedParticipantId}
+                  candidateDisplayName={intake.candidateDisplayName}
+                />
+
+                <RepresentativeAppointmentPreparationPanel
+                  key={`${intake.id}-appointment`}
+                  participantId={intake.admittedParticipantId}
+                  candidateDisplayName={intake.candidateDisplayName}
+                />
+              </>
             ) : null}
           </aside>
         </div>
