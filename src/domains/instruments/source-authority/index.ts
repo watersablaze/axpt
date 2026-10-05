@@ -9,3 +9,4 @@ export * from "./commands/recordSourceAuthorityCapabilityWithClient";
 export * from "./commands/recordSourceAuthorityRecognitionWithClient";
 
 export * from "./presentation";
+export * from "./commands/recordSourceAuthorityProfileParticularsWithClient";

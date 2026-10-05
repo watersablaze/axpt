@@ -212,3 +212,30 @@ export const SOURCE_AUTHORITY_PRESENTATION_STANDING = {
 
 export type SourceAuthorityPresentationStanding =
   (typeof SOURCE_AUTHORITY_PRESENTATION_STANDING)[keyof typeof SOURCE_AUTHORITY_PRESENTATION_STANDING];
+
+/**
+ * Version-bound institutional particulars presented by a Source
+ * Authority profile.
+ *
+ * These values describe the source profile associated with one
+ * InstrumentVersion. They are not evidence, recognition, or authority.
+ */
+export type SourceAuthorityProfileParticulars =
+  Readonly<{
+    documentReference: string;
+    documentVersion: string;
+    documentStatus: string;
+
+    registrationReference: string | null;
+    registrationStanding: string;
+
+    registeredAddress: string | null;
+
+    authorizedRepresentativeName:
+      string | null;
+
+    authorizedRepresentativeCapacity:
+      string | null;
+
+    officialContact: string | null;
+  }>;

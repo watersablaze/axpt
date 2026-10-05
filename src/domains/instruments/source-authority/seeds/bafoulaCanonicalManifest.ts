@@ -26,6 +26,18 @@ export const BAFOULA_SOURCE_AUTHORITY_MANIFEST = {
 
     registrationStanding:
       "PENDING_DOCUMENTARY_COMPLETION",
+
+    registeredAddress:
+      "Rue 527 · Porte 31 · Bafoula · Bamako · République du Mali",
+
+    authorizedRepresentativeName:
+      "Mr. Amadou Touré",
+
+    authorizedRepresentativeCapacity:
+      "Commercial Director",
+
+    officialContact:
+      "associatedgoldminers@gmail.com",
   },
 
   subject: {

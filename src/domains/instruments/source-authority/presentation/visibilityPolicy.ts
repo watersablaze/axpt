@@ -26,17 +26,15 @@ export type SourceAuthorityPresentationVisibilityInput =
   }>;
 
 /**
- * A006 is the internal boundary assertion in the canonical Bafoula
- * Source Authority manifest.
+ * Instrument-boundary assertions are internal governance material.
  *
  * External surfaces still receive the permanent presentation boundary
- * object, but do not need the internal governance assertion itself.
+ * object, but do not receive the internal INSTRUMENT_BOUNDARY
+ * assertion itself.
+ *
+ * Visibility is governed by assertion semantics rather than by one
+ * instrument-specific assertion reference.
  */
-const OPERATOR_ONLY_ASSERTION_REFERENCES =
-  new Set<string>([
-    "BAF-SAI-2026-001:A006",
-  ]);
-
 export function isSourceAuthorityAssertionVisible(
   input:
     SourceAuthorityPresentationVisibilityInput,
@@ -46,9 +44,8 @@ export function isSourceAuthorityAssertionVisible(
   }
 
   if (
-    OPERATOR_ONLY_ASSERTION_REFERENCES.has(
-      input.assertionReference,
-    )
+    input.assertionClass ===
+      "INSTRUMENT_BOUNDARY"
   ) {
     return false;
   }

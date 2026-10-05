@@ -206,6 +206,7 @@ model InstrumentVersion {
 
   digitalSettlementVerifications DigitalSettlementInstruction[] @relation("DigitalSettlementVerificationInstrumentVersion")
   sourceAuthorityAssertions       SourceAuthorityAssertion[]
+  sourceAuthorityProfileParticulars SourceAuthorityProfileParticulars[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -483,6 +484,8 @@ model SourceAuthorityRecord {
 
   assertions SourceAuthorityAssertion[]
 
+  profileParticulars SourceAuthorityProfileParticulars[]
+
   evidenceAdmissions SourceAuthorityEvidenceAdmission[]
 
   createdAt DateTime @default(now())
@@ -490,6 +493,34 @@ model SourceAuthorityRecord {
 
   @@index([subjectDisplayName])
   @@index([jurisdiction])
+}
+
+model SourceAuthorityProfileParticulars {
+  id                String @id @default(cuid())
+  sourceAuthorityId String
+  versionId         String
+
+  documentReference String
+  documentVersion   String
+  documentStatus    String
+
+  registrationReference String?
+  registrationStanding  String
+
+  registeredAddress                 String?
+  authorizedRepresentativeName      String?
+  authorizedRepresentativeCapacity  String?
+  officialContact                   String?
+
+  sourceAuthority SourceAuthorityRecord @relation(fields: [sourceAuthorityId], references: [id], onDelete: Restrict)
+  version         InstrumentVersion     @relation(fields: [versionId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sourceAuthorityId, versionId])
+  @@index([versionId])
+  @@index([documentReference])
 }
 
 model SourceAuthorityAssertion {

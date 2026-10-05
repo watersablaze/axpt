@@ -22,6 +22,7 @@ import {
 import type {
   SourceAuthorityPresentationAudience,
   SourceAuthorityPresentationBoundary,
+  SourceAuthorityPresentationProfileParticulars,
   SourceAuthorityPresentationProjection,
 } from "./contracts";
 
@@ -110,6 +111,9 @@ export type CanonicalSourceAuthorityPresentationState =
       versionId: string;
       versionNumber: number;
       subject: SourceAuthoritySubject;
+
+      profileParticulars:
+        SourceAuthorityPresentationProfileParticulars;
     }>;
 
     assertions:

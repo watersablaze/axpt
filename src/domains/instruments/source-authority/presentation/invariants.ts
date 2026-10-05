@@ -84,6 +84,29 @@ export function assertSourceAuthorityPresentationProjection(
     );
   }
 
+  const profileParticulars =
+    projection.identity.profileParticulars;
+
+  assertNonEmpty(
+    profileParticulars.documentReference,
+    "SOURCE_AUTHORITY_PRESENTATION_PROFILE_DOCUMENT_REFERENCE_REQUIRED",
+  );
+
+  assertNonEmpty(
+    profileParticulars.documentVersion,
+    "SOURCE_AUTHORITY_PRESENTATION_PROFILE_DOCUMENT_VERSION_REQUIRED",
+  );
+
+  assertNonEmpty(
+    profileParticulars.documentStatus,
+    "SOURCE_AUTHORITY_PRESENTATION_PROFILE_DOCUMENT_STATUS_REQUIRED",
+  );
+
+  assertNonEmpty(
+    profileParticulars.registrationStanding,
+    "SOURCE_AUTHORITY_PRESENTATION_PROFILE_REGISTRATION_STANDING_REQUIRED",
+  );
+
   const assertionReferences =
     new Set<string>();
 

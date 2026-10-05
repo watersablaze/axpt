@@ -46,6 +46,26 @@ export type SourceAuthorityPresentationBoundary =
     statement: string;
   }>;
 
+export type SourceAuthorityPresentationProfileParticulars =
+  Readonly<{
+    documentReference: string;
+    documentVersion: string;
+    documentStatus: string;
+
+    registrationReference: string | null;
+    registrationStanding: string;
+
+    registeredAddress: string | null;
+
+    authorizedRepresentativeName:
+      string | null;
+
+    authorizedRepresentativeCapacity:
+      string | null;
+
+    officialContact: string | null;
+  }>;
+
 export type SourceAuthorityPresentationIdentity =
   Readonly<{
     sourceAuthorityId: string;
@@ -55,6 +75,9 @@ export type SourceAuthorityPresentationIdentity =
     versionId: string;
     versionNumber: number;
     subject: SourceAuthoritySubject;
+
+    profileParticulars:
+      SourceAuthorityPresentationProfileParticulars;
   }>;
 
 /**

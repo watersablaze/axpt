@@ -28,6 +28,7 @@ type TransactionClient =
     | "institutionalInstrument"
     | "instrumentVersion"
     | "sourceAuthorityRecord"
+    | "sourceAuthorityProfileParticulars"
     | "sourceAuthorityAssertion"
     | "sourceAuthorityCapability"
     | "sourceAuthorityRecognition"

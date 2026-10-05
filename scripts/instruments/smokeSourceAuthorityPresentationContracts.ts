@@ -37,6 +37,36 @@ const projection:
           "Gold Doré",
         ],
       },
+
+      profileParticulars: {
+        documentReference:
+          "BAF-PROFILE-MALI-2026-002",
+
+        documentVersion:
+          "v4 · 2026",
+
+        documentStatus:
+          "External Reference",
+
+        registrationReference:
+          null,
+
+        registrationStanding:
+          "PENDING_DOCUMENTARY_COMPLETION",
+
+        registeredAddress:
+          "Rue 527 · Porte 31 · Bafoula · Bamako · République du Mali",
+
+        authorizedRepresentativeName:
+          "Mr. Amadou Touré",
+
+        authorizedRepresentativeCapacity:
+          "Commercial Director",
+
+        officialContact:
+          "associatedgoldminers@gmail.com",
+      },
+
     },
 
     standing:

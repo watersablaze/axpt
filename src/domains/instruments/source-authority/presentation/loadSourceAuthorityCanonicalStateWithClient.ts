@@ -17,6 +17,7 @@ export type SourceAuthorityPresentationLoaderClient =
     | "institutionalInstrument"
     | "instrumentVersion"
     | "sourceAuthorityRecord"
+    | "sourceAuthorityProfileParticulars"
   >;
 
 type LoadedSourceAuthorityRecognition =
@@ -520,6 +521,57 @@ export async function loadSourceAuthorityCanonicalStateWithClient(
     );
   }
 
+  const profileParticulars =
+    await params.client
+      .sourceAuthorityProfileParticulars
+      .findUnique({
+        where: {
+          sourceAuthorityId_versionId: {
+            sourceAuthorityId:
+              sourceAuthority.id,
+
+            versionId:
+              version.id,
+          },
+        },
+
+        select: {
+          documentReference:
+            true,
+
+          documentVersion:
+            true,
+
+          documentStatus:
+            true,
+
+          registrationReference:
+            true,
+
+          registrationStanding:
+            true,
+
+          registeredAddress:
+            true,
+
+          authorizedRepresentativeName:
+            true,
+
+          authorizedRepresentativeCapacity:
+            true,
+
+          officialContact:
+            true,
+        },
+      });
+
+  if (!profileParticulars) {
+    throw new Error(
+      "[SOURCE_AUTHORITY_PRESENTATION_PROFILE_PARTICULARS_NOT_FOUND]",
+    );
+  }
+
+
   if (
     sourceAuthority.instrumentId !==
     instrument.id
@@ -738,6 +790,9 @@ export async function loadSourceAuthorityCanonicalStateWithClient(
               .principalCommodityActivity,
           ],
       },
+
+      profileParticulars,
+
     },
 
     assertions,

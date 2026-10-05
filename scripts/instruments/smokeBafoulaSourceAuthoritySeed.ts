@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { randomUUID } from "node:crypto";
 
 import {
   PrismaClient,
@@ -21,6 +22,7 @@ type SeedTransactionClient =
     | "institutionalInstrument"
     | "instrumentVersion"
     | "sourceAuthorityRecord"
+    | "sourceAuthorityProfileParticulars"
     | "sourceAuthorityAssertion"
     | "sourceAuthorityCapability"
     | "sourceAuthorityRecognition"
@@ -67,17 +69,20 @@ async function main() {
       "── CREATE SEED OPERATOR ──",
     );
 
+    const actorSuffix =
+      randomUUID();
+
     const actor =
       await prisma.user.create({
         data: {
           username:
-            "bafoula-sai-seed-operator",
+            `bafoula-sai-seed-operator-${actorSuffix}`,
 
           passwordHash:
             "SMOKE_ONLY_NOT_A_REAL_CREDENTIAL",
 
           email:
-            "bafoula-sai-seed@example.invalid",
+            `bafoula-sai-seed-${actorSuffix}@example.invalid`,
 
           isAdmin:
             true,
@@ -164,8 +169,14 @@ async function main() {
       "SECOND_SEED_MUST_RETURN_SAME_SOURCE_AUTHORITY_RECORD",
     );
 
+    assert.equal(
+      second.profileParticulars.id,
+      first.profileParticulars.id,
+      "SECOND_SEED_MUST_RETURN_SAME_PROFILE_PARTICULARS_RECORD",
+    );
+
     console.log(
-      "✓ second seed resolved to same canonical instrument",
+      "✓ second seed resolved to same canonical instrument and profile particulars",
     );
 
     /*
@@ -279,6 +290,105 @@ async function main() {
 
     console.log(
       "✓ canonical root graph exact",
+    );
+
+    /*
+     * ========================================================
+     * VERSION-BOUND SOURCE PROFILE PARTICULARS
+     * ========================================================
+     */
+
+    console.log("");
+    console.log(
+      "── VERIFY VERSION-BOUND SOURCE PROFILE PARTICULARS ──",
+    );
+
+    const particulars =
+      await prisma
+        .sourceAuthorityProfileParticulars
+        .findMany({
+          where: {
+            sourceAuthorityId:
+              root.id,
+
+            versionId:
+              versions[0].id,
+          },
+        });
+
+    assert.equal(
+      particulars.length,
+      1,
+      "BAFOULA_PROFILE_PARTICULARS_CARDINALITY_MUST_BE_ONE",
+    );
+
+    const profileParticulars =
+      particulars[0];
+
+    assert.equal(
+      profileParticulars.id,
+      first.profileParticulars.id,
+      "BAFOULA_PROFILE_PARTICULARS_SEED_RESULT_MUST_MATCH_PERSISTENCE",
+    );
+
+    assert.equal(
+      profileParticulars.sourceAuthorityId,
+      root.id,
+    );
+
+    assert.equal(
+      profileParticulars.versionId,
+      versions[0].id,
+    );
+
+    assert.equal(
+      profileParticulars.documentReference,
+      manifest.sourceProfile.documentReference,
+    );
+
+    assert.equal(
+      profileParticulars.documentVersion,
+      manifest.sourceProfile.version,
+    );
+
+    assert.equal(
+      profileParticulars.documentStatus,
+      manifest.sourceProfile.status,
+    );
+
+    assert.equal(
+      profileParticulars.registrationReference,
+      null,
+      "BAFOULA_REGISTRATION_REFERENCE_MUST_REMAIN_UNRESOLVED",
+    );
+
+    assert.equal(
+      profileParticulars.registrationStanding,
+      manifest.sourceProfile.registrationStanding,
+    );
+
+    assert.equal(
+      profileParticulars.registeredAddress,
+      manifest.sourceProfile.registeredAddress,
+    );
+
+    assert.equal(
+      profileParticulars.authorizedRepresentativeName,
+      manifest.sourceProfile.authorizedRepresentativeName,
+    );
+
+    assert.equal(
+      profileParticulars.authorizedRepresentativeCapacity,
+      manifest.sourceProfile.authorizedRepresentativeCapacity,
+    );
+
+    assert.equal(
+      profileParticulars.officialContact,
+      manifest.sourceProfile.officialContact,
+    );
+
+    console.log(
+      "✓ one exact version-bound Source Profile particulars record persisted",
     );
 
     /*

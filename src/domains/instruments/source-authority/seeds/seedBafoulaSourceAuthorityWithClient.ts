@@ -11,6 +11,10 @@ import {
 } from "../commands/recordSourceAuthorityAssertionWithClient";
 
 import {
+  recordSourceAuthorityProfileParticularsWithClient,
+} from "../commands/recordSourceAuthorityProfileParticularsWithClient";
+
+import {
   recordSourceAuthorityCapabilityWithClient,
 } from "../commands/recordSourceAuthorityCapabilityWithClient";
 
@@ -24,6 +28,7 @@ export type BafoulaSourceAuthoritySeedClient =
     | "institutionalInstrument"
     | "instrumentVersion"
     | "sourceAuthorityRecord"
+    | "sourceAuthorityProfileParticulars"
     | "sourceAuthorityAssertion"
     | "sourceAuthorityCapability"
     | "sourceAuthorityRecognition"
@@ -63,6 +68,48 @@ export async function seedBafoulaSourceAuthorityWithClient(
         manifest.subject,
 
       actorUserId,
+    });
+
+  const profileParticulars =
+    await recordSourceAuthorityProfileParticularsWithClient({
+      client,
+
+      instrumentReference:
+        manifest.instrument.reference,
+
+      versionNumber:
+        1,
+
+      particulars: {
+        documentReference:
+          manifest.sourceProfile.documentReference,
+
+        documentVersion:
+          manifest.sourceProfile.version,
+
+        documentStatus:
+          manifest.sourceProfile.status,
+
+        registrationReference:
+          manifest.sourceProfile.registrationReference,
+
+        registrationStanding:
+          manifest.sourceProfile.registrationStanding,
+
+        registeredAddress:
+          manifest.sourceProfile.registeredAddress,
+
+        authorizedRepresentativeName:
+          manifest.sourceProfile
+            .authorizedRepresentativeName,
+
+        authorizedRepresentativeCapacity:
+          manifest.sourceProfile
+            .authorizedRepresentativeCapacity,
+
+        officialContact:
+          manifest.sourceProfile.officialContact,
+      },
     });
 
   const assertionIds =
@@ -148,6 +195,9 @@ export async function seedBafoulaSourceAuthorityWithClient(
 
     sourceAuthority:
       established.record,
+
+    profileParticulars:
+      profileParticulars.particulars,
 
     assertionIds:
       Object.fromEntries(

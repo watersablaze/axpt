@@ -117,6 +117,38 @@ const client = {
       }),
   },
 
+  sourceAuthorityProfileParticulars: {
+    findUnique:
+      async () => ({
+        documentReference:
+          "BAF-PROFILE-MALI-2026-002",
+
+        documentVersion:
+          "v4 · 2026",
+
+        documentStatus:
+          "External Reference",
+
+        registrationReference:
+          null,
+
+        registrationStanding:
+          "PENDING_DOCUMENTARY_COMPLETION",
+
+        registeredAddress:
+          "Rue 527 · Porte 31 · Bafoula · Bamako · République du Mali",
+
+        authorizedRepresentativeName:
+          "Mr. Amadou Touré",
+
+        authorizedRepresentativeCapacity:
+          "Commercial Director",
+
+        officialContact:
+          "associatedgoldminers@gmail.com",
+      }),
+  },
+
   sourceAuthorityRecord: {
     findUnique:
       async () => ({
@@ -231,7 +263,7 @@ const client = {
               "version-1",
 
             reference:
-              "BAF-SAI-2026-001:A006",
+              "A006",
 
             assertionClass:
               "INSTRUMENT_BOUNDARY",
@@ -312,6 +344,61 @@ async function main() {
     canonical.identity.versionNumber,
     1,
   );
+
+  assert.equal(
+    canonical.identity.profileParticulars
+      .documentReference,
+    "BAF-PROFILE-MALI-2026-002",
+  );
+
+  assert.equal(
+    canonical.identity.profileParticulars
+      .documentVersion,
+    "v4 · 2026",
+  );
+
+  assert.equal(
+    canonical.identity.profileParticulars
+      .documentStatus,
+    "External Reference",
+  );
+
+  assert.equal(
+    canonical.identity.profileParticulars
+      .registrationReference,
+    null,
+  );
+
+  assert.equal(
+    canonical.identity.profileParticulars
+      .registrationStanding,
+    "PENDING_DOCUMENTARY_COMPLETION",
+  );
+
+  assert.equal(
+    canonical.identity.profileParticulars
+      .registeredAddress,
+    "Rue 527 · Porte 31 · Bafoula · Bamako · République du Mali",
+  );
+
+  assert.equal(
+    canonical.identity.profileParticulars
+      .authorizedRepresentativeName,
+    "Mr. Amadou Touré",
+  );
+
+  assert.equal(
+    canonical.identity.profileParticulars
+      .authorizedRepresentativeCapacity,
+    "Commercial Director",
+  );
+
+  assert.equal(
+    canonical.identity.profileParticulars
+      .officialContact,
+    "associatedgoldminers@gmail.com",
+  );
+
 
   assert.equal(
     canonical.assertions.length,
@@ -444,7 +531,7 @@ async function main() {
     representative.assertions.some(
       (assertion) =>
         assertion.reference ===
-        "BAF-SAI-2026-001:A006",
+        "A006",
     ),
     false,
   );
