@@ -18,3 +18,5 @@ export * from "./application/applyCommercialUtilityPackComposition";
 export * from "./application/prepareAndApplyCommercialUtilityPackComposition";
 
 export * from "./application/releaseCommercialUtilityPackModule";
+
+export * from "./application/loadCommercialUtilityPackOperatorState";
