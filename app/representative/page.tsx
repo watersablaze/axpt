@@ -195,7 +195,7 @@ export default async function RepresentativeWorkspacePage() {
                                   (resource.resourceType === "INSTITUTIONAL_INSTRUMENT" &&
                                     entry.module === "DOCUMENTS")) ? (
                                   <Link href={resource.resourceType === "INSTITUTIONAL_INSTRUMENT"
-                                    ? `/api/representative/commercial-utility-packs/resources/${encodeURIComponent(resource.id)}/document`
+                                    ? `/representative/resources/${encodeURIComponent(resource.id)}/institutional`
                                     : `/representative/resources/${encodeURIComponent(resource.id)}`} prefetch={false} className="mt-3 inline-flex rounded-lg border border-[#527f8a]/50 bg-[#527f8a]/10 px-4 py-2 text-xs font-medium text-[#a7c6cf]">Read Resource</Link>
                                 ) : null}
                                 <p className="mt-3 text-xs leading-6 text-white/45">
