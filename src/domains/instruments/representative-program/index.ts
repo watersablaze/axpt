@@ -13,3 +13,4 @@ export * from "./authorityIntegrity";
 export * from "./commands/prepareRepresentativeProgramAppointment";
 export * from "./commands/activateRepresentativeProgramAppointment";
 export * from "./operating-boundaries";
+export * from "./applicability";
