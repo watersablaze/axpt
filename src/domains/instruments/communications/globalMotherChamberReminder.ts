@@ -99,8 +99,6 @@ export function renderGlobalMotherChamberReminder(input: RenderInput) {
     "Return to Private Chamber:",
     input.accessUrl,
     "",
-    "If verification is requested, use the one-time code sent to your authorized email address.",
-    "",
     "With respect,",
     "",
     "French-Ward, Inc.",
@@ -164,10 +162,6 @@ export function renderGlobalMotherChamberReminder(input: RenderInput) {
       </td>
     </tr>
   </table>
-
-  <p style="margin:10px 0 24px;color:#657d8b;font-size:11px;line-height:1.65;">
-    If verification is requested, use the one-time code sent to your authorized email address.
-  </p>
 
   <p style="margin:0;color:#294b60;font-size:14px;line-height:1.72;">
     With respect,
