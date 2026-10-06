@@ -4,6 +4,9 @@ import { redirect } from "next/navigation";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { loadRepresentativeWorkspace } from "@/domains/instruments/representative-program/application/loadRepresentativeWorkspace";
 
+import { prisma } from "@/infrastructure/db/prisma";
+import { loadRepresentativeCommercialUtilityPackWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/application/loadRepresentativeCommercialUtilityPackWithClient";
+
 export const dynamic = "force-dynamic";
 
 function displayDate(
@@ -75,201 +78,134 @@ export default async function RepresentativeWorkspacePage() {
   const appointment =
     workspace.appointment;
 
+  const commercialUtilityPack =
+    await loadRepresentativeCommercialUtilityPackWithClient({
+      client: prisma,
+      userId: principal.userId,
+    });
+
   return (
-    <main className="min-h-screen bg-[#120f0c] text-[#eee7da]">
-      <header className="border-b border-[#342b23] bg-[#16110d] px-6 py-5">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-6">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[#b99657]">
-              French-Ward, Inc.
-            </p>
-            <p className="mt-1 text-sm text-[#b8aea1]">
-              Authorized Representation Program
-            </p>
-          </div>
+    <main
+      className="min-h-screen bg-[#071015] text-[#e9edf0]"
+      style={{
+        backgroundImage: "radial-gradient(circle at 18% 8%, rgba(32,92,113,0.16), transparent 30%), radial-gradient(circle at 72% 18%, rgba(97,73,35,0.12), transparent 26%), linear-gradient(180deg, #091116 0%, #071015 60%, #060d11 100%)",
+      }}
+    >
+      <div className="mx-auto max-w-[1600px] px-3 py-3 md:px-5 md:py-5">
+        <div className="grid min-h-[calc(100vh-40px)] rounded-[24px] border border-white/[0.06] bg-[#0b1318]/90 shadow-[0_30px_120px_rgba(0,0,0,0.45)] lg:grid-cols-[minmax(0,1fr)_286px]">
+          <section className="min-w-0">
+            <header className="sticky top-3 z-40 mx-3 mt-3 rounded-[16px] border border-white/[0.065] bg-[#091116]/95 px-5 py-4 shadow-xl backdrop-blur-2xl md:mx-4 md:px-6">
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div>
+                  <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#b9985b]">French-Ward, Inc.</p>
+                  <p className="mt-1 text-xs text-white/45">Authorized Representation Program</p>
+                </div>
+                <div>
+                  <p className="text-sm font-medium">{workspace.displayName}</p>
+                  <p className="mt-1 font-mono text-xs text-white/40">{workspace.docketReference}</p>
+                </div>
+                <div className="rounded-full border border-[#c5a25f]/25 bg-[#c5a25f]/[0.07] px-4 py-2 text-xs text-[#d7b269]">
+                  {humanize(workspace.standing)}
+                </div>
+              </div>
+            </header>
 
-          <div className="text-right">
-            <p className="text-xs text-[#887e72]">
-              Representative Workspace
-            </p>
-            <p className="mt-1 text-sm">
-              {workspace.displayName}
-            </p>
-          </div>
-        </div>
-      </header>
-
-      <div className="mx-auto max-w-6xl px-6 py-10">
-        <section className="border border-[#453a30] bg-[#19140f] p-8 shadow-xl">
-          <div className="flex flex-col justify-between gap-8 md:flex-row md:items-start">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#b99657]">
-                Program Record
-              </p>
-
-              <h1 className="mt-3 text-3xl font-medium tracking-[-0.03em]">
-                {workspace.displayName}
-              </h1>
-
-              <p className="mt-3 font-mono text-xs text-[#8d8377]">
-                {workspace.docketReference}
-              </p>
-            </div>
-
-            <div className="border border-[#594937] px-5 py-4 md:min-w-52">
-              <p className="text-[10px] uppercase tracking-[0.16em] text-[#8e8376]">
-                Program standing
-              </p>
-
-              <p className="mt-2 text-lg text-[#d8c39b]">
-                {humanize(
-                  workspace.standing,
-                )}
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-8 grid gap-4 border-t border-[#392f27] pt-7 md:grid-cols-3">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.15em] text-[#7f766b]">
-                Admission
-              </p>
-              <p className="mt-2 text-sm">
-                {displayDate(
-                  workspace.admittedAt,
-                )}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.15em] text-[#7f766b]">
-                Intake reference
-              </p>
-              <p className="mt-2 font-mono text-xs">
-                {workspace.intakeReference ??
-                  "—"}
-              </p>
-            </div>
-
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.15em] text-[#7f766b]">
-                Participant ID
-              </p>
-              <p className="mt-2 font-mono text-xs text-[#aaa093]">
-                {workspace.participantId}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className="mt-7 grid gap-7 lg:grid-cols-2">
-          <article className="border border-[#40362d] bg-[#17120e] p-7">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#b99657]">
-              Appointment Instrument
-            </p>
-
-            {appointment ? (
-              <>
-                <h2 className="mt-4 text-xl font-medium">
-                  {appointment.instrument.title}
-                </h2>
-
-                <dl className="mt-6 space-y-4 text-sm">
-                  <div className="flex justify-between gap-5 border-b border-[#302820] pb-3">
-                    <dt className="text-[#81786e]">
-                      Reference
-                    </dt>
-                    <dd className="font-mono text-xs text-right">
-                      {appointment.instrument.reference}
-                    </dd>
-                  </div>
-
-                  <div className="flex justify-between gap-5 border-b border-[#302820] pb-3">
-                    <dt className="text-[#81786e]">
-                      Instrument status
-                    </dt>
-                    <dd>
-                      {humanize(
-                        appointment.instrument.status,
-                      )}
-                    </dd>
-                  </div>
-
-                  <div className="flex justify-between gap-5 border-b border-[#302820] pb-3">
-                    <dt className="text-[#81786e]">
-                      Appointment class
-                    </dt>
-                    <dd className="text-right">
-                      {humanize(
-                        appointment.appointmentClass,
-                      )}
-                    </dd>
-                  </div>
-
-                  <div className="flex justify-between gap-5 border-b border-[#302820] pb-3">
-                    <dt className="text-[#81786e]">
-                      Effective
-                    </dt>
-                    <dd>
-                      {displayDate(
-                        appointment.effectiveAt,
-                      )}
-                    </dd>
-                  </div>
-                </dl>
-
-                <Link
-                  href={`/representative/appointments/${appointment.id}`}
-                  className="mt-7 inline-flex border border-[#9d814d] px-5 py-3 text-xs font-semibold uppercase tracking-[0.14em] text-[#d9c397]"
-                >
-                  Review Appointment
-                </Link>
-              </>
-            ) : (
-              <>
-                <h2 className="mt-4 text-xl font-medium">
-                  No appointment issued
-                </h2>
-
-                <p className="mt-4 text-sm leading-7 text-[#9d9387]">
-                  Your Program record is established, but no Appointment
-                  Instrument is presently available in this workspace.
+            <div className="space-y-6 px-5 py-8 md:px-9">
+              <section id="program-record" className="rounded-[20px] border border-white/[0.06] bg-gradient-to-br from-[#10232c] to-[#0a141a] p-6 md:p-8">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-[#b9985b]">Representative Field</p>
+                <h1 className="mt-4 text-3xl font-medium tracking-tight md:text-4xl">Your institutional workspace</h1>
+                <p className="mt-4 max-w-2xl text-sm leading-7 text-white/55">
+                  Review your Program record, appointment, and released field resources.
                 </p>
-              </>
-            )}
-          </article>
+                <dl className="mt-7 grid gap-5 border-t border-white/[0.06] pt-6 sm:grid-cols-3">
+                  <div><dt className="text-xs text-white/40">Admission</dt><dd className="mt-2 text-sm">{displayDate(workspace.admittedAt)}</dd></div>
+                  <div><dt className="text-xs text-white/40">Program standing</dt><dd className="mt-2 text-sm text-[#d7b269]">{humanize(workspace.standing)}</dd></div>
+                  <div><dt className="text-xs text-white/40">Intake record</dt><dd className="mt-2 break-words font-mono text-xs">{workspace.intakeReference ?? "—"}</dd></div>
+                </dl>
+              </section>
 
-          <article className="border border-[#40362d] bg-[#17120e] p-7">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#b99657]">
-              Authority
-            </p>
+              <section id="appointment" className="rounded-[20px] border border-white/[0.06] bg-[#091a20]/65 p-6 md:p-8">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-[#719baa]">Appointment Record</p>
+                {appointment ? (
+                  <>
+                    <h2 className="mt-4 text-2xl font-medium">{appointment.instrument.title}</h2>
+                    <p className="mt-3 break-words font-mono text-xs text-white/45">{appointment.instrument.reference}</p>
+                    <dl className="mt-6 grid gap-5 sm:grid-cols-3">
+                      <div><dt className="text-xs text-white/40">Instrument status</dt><dd className="mt-2 text-sm">{humanize(appointment.instrument.status)}</dd></div>
+                      <div><dt className="text-xs text-white/40">Appointment class</dt><dd className="mt-2 text-sm">{humanize(appointment.appointmentClass)}</dd></div>
+                      <div><dt className="text-xs text-white/40">Effective date</dt><dd className="mt-2 text-sm">{displayDate(appointment.effectiveAt)}</dd></div>
+                    </dl>
+                    <Link href={`/representative/appointments/${appointment.id}`} className="mt-6 inline-flex rounded-lg border border-[#c5a25f]/40 bg-[#c5a25f]/[0.07] px-5 py-3 text-xs font-semibold text-[#d7b269]">Review Appointment</Link>
+                  </>
+                ) : (
+                  <>
+                    <h2 className="mt-4 text-2xl font-medium">No appointment available</h2>
+                    <p className="mt-4 text-sm leading-7 text-white/50">Your Program record is established. An Appointment Instrument has not yet been made available in this workspace.</p>
+                  </>
+                )}
+              </section>
 
-            <h2 className="mt-4 text-xl font-medium">
-              Authority presentation
-            </h2>
-
-            <p className="mt-4 text-sm leading-7 text-[#9d9387]">
-              Authority will be presented separately from Program
-              standing and appointment status. Appointment does not
-              itself establish unlimited or unrecorded authority.
-            </p>
-
-            <div className="mt-6 border-t border-[#302820] pt-5">
-              <p className="text-xs leading-6 text-[#766e65]">
-                AUTHORITY RECORDED ≠ AUTHORITY EXERCISABLE
-              </p>
+              <section id="field-resources" className="rounded-[20px] border border-[#17323c]/80 bg-[linear-gradient(135deg,#0e1c22,#091419)] p-6 md:p-8">
+                <p className="text-[10px] uppercase tracking-[0.2em] text-[#719baa]">Representative Field Resources</p>
+                <h2 className="mt-4 text-2xl font-medium">Commercial Utility Pack</h2>
+                {commercialUtilityPack ? (
+                  <>
+                    <p className="mt-3 break-words font-mono text-xs text-white/40">{commercialUtilityPack.reference} · Version {commercialUtilityPack.version}</p>
+                    <div className="mt-6 grid gap-4 xl:grid-cols-2">
+                      {commercialUtilityPack.modules.map(entry => (
+                        <article key={entry.module} className="rounded-[16px] border border-white/[0.06] bg-[#071319]/80 p-5">
+                          <h3 className="text-sm font-medium text-[#d7b269]">{humanize(entry.module)}</h3>
+                          <ul className="mt-4 space-y-5">
+                            {entry.resources.map(resource => (
+                              <li key={resource.id} className="border-t border-white/[0.06] pt-4">
+                                <p className="text-sm">{resource.label || humanize(resource.resourceType)}</p>
+                                {((resource.resourceType === "STRUCTURED_CONTENT" &&
+                                    (entry.module === "REPRESENTATION" ||
+                                      entry.module === "OPERATING_BOUNDARIES")) ||
+                                  (resource.resourceType === "INSTITUTIONAL_INSTRUMENT" &&
+                                    entry.module === "DOCUMENTS")) ? (
+                                  <Link href={resource.resourceType === "INSTITUTIONAL_INSTRUMENT"
+                                    ? `/api/representative/commercial-utility-packs/resources/${encodeURIComponent(resource.id)}/document`
+                                    : `/representative/resources/${encodeURIComponent(resource.id)}`} prefetch={false} className="mt-3 inline-flex rounded-lg border border-[#527f8a]/50 bg-[#527f8a]/10 px-4 py-2 text-xs font-medium text-[#a7c6cf]">Read Resource</Link>
+                                ) : null}
+                                <p className="mt-3 text-xs leading-6 text-white/45">
+                                  View: Permitted · Download: {resource.canDownload ? "Permitted" : "Withheld"} ·
+                                  Present: {resource.canPresent ? "Permitted" : "Withheld"} ·
+                                  Transmit: {resource.canTransmit ? "Permitted" : "Withheld"}
+                                </p>
+                              </li>
+                            ))}
+                          </ul>
+                        </article>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <p className="mt-4 text-sm leading-7 text-white/50">No Commercial Utility Pack resources are currently released for viewing in your workspace.</p>
+                )}
+              </section>
             </div>
-          </article>
-        </section>
+          </section>
 
-        <section className="mt-7 border border-[#342c24] bg-[#15110d] p-6">
-          <p className="text-xs leading-6 text-[#867d72]">
-            This workspace presents the canonical Program record
-            associated with your authenticated AXPT identity.
-            Authentication does not independently create, expand, or
-            modify appointment, standing, mandate, or authority.
-          </p>
-        </section>
+          <aside className="min-w-0 border-t border-[#17323c]/70 p-4 lg:border-l lg:border-t-0">
+            <div className="sticky top-4 space-y-5 rounded-[20px] border border-[#17323c]/80 bg-[linear-gradient(180deg,#071117,#050d12)] p-5">
+              <p className="text-[10px] uppercase tracking-[0.2em] text-[#719baa]">Field Navigation</p>
+              <nav aria-label="Representative workspace" className="flex flex-col gap-2 text-sm">
+                <a href="#program-record" className="rounded-lg px-3 py-3 text-white/70 hover:bg-white/[0.04]">Program Record</a>
+                <a href="#appointment" className="rounded-lg px-3 py-3 text-white/70 hover:bg-white/[0.04]">Appointment</a>
+                <a href="#field-resources" className="rounded-lg px-3 py-3 text-white/70 hover:bg-white/[0.04]">Field Resources</a>
+              </nav>
+              <div className="border-t border-white/[0.06] pt-5">
+                <p className="text-xs font-medium text-[#d7b269]">Authority</p>
+                <p className="mt-3 text-xs leading-6 text-white/50">Program standing, appointment status, and resource access do not establish unlimited or unrecorded authority. Authority remains separately governed.</p>
+              </div>
+              <div className="border-t border-white/[0.06] pt-5">
+                <p className="text-xs text-white/40">Program reference</p>
+                <p className="mt-2 break-words font-mono text-xs text-white/65">{workspace.docketReference}</p>
+              </div>
+            </div>
+          </aside>
+        </div>
       </div>
     </main>
   );

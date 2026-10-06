@@ -71,6 +71,27 @@ export default function LoginPage() {
   ) {
     event.preventDefault()
 
+    if (busy) return
+
+    const emailField =
+      event.currentTarget.elements.namedItem('email')
+
+    if (!(emailField instanceof HTMLInputElement)) {
+      setError('Please enter your email address.')
+      return
+    }
+
+    const submittedEmail =
+      emailField.value.trim().toLowerCase()
+
+    if (!submittedEmail || !emailField.checkValidity()) {
+      setError('Please enter a valid email address.')
+      emailField.focus()
+      return
+    }
+
+    setEmail(submittedEmail)
+
     setBusy(true)
     setError('')
     setMessage('')
@@ -88,7 +109,7 @@ export default function LoginPage() {
             },
             body: JSON.stringify({
               email:
-                normalizedEmail,
+                submittedEmail,
             }),
           }
         )
@@ -267,6 +288,7 @@ export default function LoginPage() {
 
               <input
                 id="email"
+                name="email"
                 type="email"
                 autoComplete="email"
                 value={email}
