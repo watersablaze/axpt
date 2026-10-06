@@ -1,32 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-type PreparationResponse =
-  | {
-      ok: true;
-      appointment: {
-        instrumentId: string;
-        appointmentId: string;
-        reference: string;
-        appointmentClass: string;
-        appointmentForm: string;
-        masterAgreementInstrumentId: string;
-        masterAgreementReference: string;
-        created: boolean;
-      };
-      authority: {
-        created: false;
-        status: "NOT_CREATED";
-      };
-      activation: {
-        performed: false;
-      };
-    }
-  | {
-      ok: false;
-      error: string;
-    };
+type AppointmentState = {
+  appointmentId: string;
+  reference: string;
+  status: string;
+  standing: string;
+  effectiveAt: string | null;
+  acceptedAt: string | null;
+  canActivate: boolean;
+};
 
 export default function RepresentativeAppointmentPreparationPanel({
   participantId,
@@ -35,172 +19,194 @@ export default function RepresentativeAppointmentPreparationPanel({
   participantId: string;
   candidateDisplayName: string;
 }) {
-  const [confirmed, setConfirmed] = useState(false);
+  const [appointment, setAppointment] = useState<AppointmentState | null>(null);
+  const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [confirmed, setConfirmed] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [result, setResult] = useState<
-    Extract<PreparationResponse, { ok: true }>["appointment"] | null
-  >(null);
+  const actionInFlight = useRef(false);
+  const requestSequence = useRef(0);
 
-  async function prepareAppointment() {
+  const reload = useCallback(async () => {
+    const sequence = ++requestSequence.current;
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await fetch(
+        `/api/admin/representative-program/appointments/state?participantId=${encodeURIComponent(participantId)}`,
+        { cache: "no-store" },
+      );
+      const payload = await response.json() as {
+        ok: boolean;
+        appointment?: AppointmentState | null;
+      };
+      if (!response.ok || !payload.ok || !("appointment" in payload)) {
+        throw new Error("Unable to load the persisted appointment state.");
+      }
+      if (sequence === requestSequence.current) {
+        setAppointment(payload.appointment ?? null);
+        setConfirmed(false);
+      }
+    } catch {
+      if (sequence === requestSequence.current) {
+        setError("Unable to load the persisted appointment state. Refresh the record.");
+      }
+    } finally {
+      if (sequence === requestSequence.current) setLoading(false);
+    }
+  }, [participantId]);
+
+  useEffect(() => {
+    setAppointment(null);
+    setConfirmed(false);
+    void reload();
+    return () => { requestSequence.current += 1; };
+  }, [reload]);
+
+  async function performAction() {
+    if (
+      actionInFlight.current || loading || error || !confirmed ||
+      (appointment && !appointment.canActivate)
+    ) return;
+
+    actionInFlight.current = true;
     setBusy(true);
     setError(null);
+    const activating = Boolean(appointment);
 
     try {
       const response = await fetch(
-        "/api/admin/representative-program/appointments/prepare",
+        activating
+          ? "/api/admin/representative-program/appointments/activate"
+          : "/api/admin/representative-program/appointments/prepare",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           cache: "no-store",
-          body: JSON.stringify({
-            participantId,
-          }),
+          body: JSON.stringify(
+            appointment
+              ? { appointmentId: appointment.appointmentId }
+              : { participantId },
+          ),
         },
       );
-
-      const payload = (await response.json()) as PreparationResponse;
-
+      const payload = await response.json() as { ok: boolean };
       if (!response.ok || !payload.ok) {
-        setError(
-          payload.ok
-            ? "Unable to prepare the Appointment Instrument."
-            : payload.error,
-        );
+        await reload();
+        setError(activating
+          ? "Activation was not confirmed. Refresh and review the current record."
+          : "Preparation was not confirmed. Refresh and review the current record.");
         return;
       }
-
-      setResult(payload.appointment);
-    } catch (cause) {
-      setError(
-        cause instanceof Error
-          ? cause.message
-          : "Appointment preparation failed.",
-      );
+      await reload();
+    } catch {
+      await reload();
+      setError("The action could not be confirmed. Refresh the record before retrying.");
     } finally {
+      setConfirmed(false);
+      actionInFlight.current = false;
       setBusy(false);
     }
   }
 
+  const available = !appointment || appointment.canActivate;
+
   return (
     <section className="rounded border border-gray-800 bg-black p-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
-            Appointment Instrument
-          </p>
-
-          <h3 className="mt-2 text-base font-semibold text-white">
-            Prepare Draft Appointment
-          </h3>
-        </div>
-
-        <span className="rounded border border-gray-700 bg-gray-950 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-gray-400">
-          Preparation Only
-        </span>
-      </div>
-
-      <p className="mt-3 text-sm leading-5 text-gray-400">
-        Prepare the draft appointment instrument for{" "}
-        <strong className="text-gray-200">{candidateDisplayName}</strong>.
-        Preparation does not activate the appointment or create delegated
-        authority.
+      <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
+        Appointment Instrument
       </p>
+      <h3 className="mt-2 text-base font-semibold text-white">
+        {appointment ? "Appointment Record" : "Prepare Draft Appointment"}
+      </h3>
+      <p className="mt-3 text-sm text-gray-400">{candidateDisplayName}</p>
 
-      <dl className="mt-4 grid gap-2 text-xs sm:grid-cols-2">
-        <div className="rounded border border-gray-800 bg-gray-950 p-3">
-          <dt className="text-gray-500">Appointment Form</dt>
-          <dd className="mt-1 font-mono text-gray-200">
-            INDIVIDUAL_REPRESENTATION
-          </dd>
-        </div>
+      {loading ? <p className="mt-4 text-sm text-gray-400">Loading persisted record…</p> : null}
 
-        <div className="rounded border border-gray-800 bg-gray-950 p-3">
-          <dt className="text-gray-500">Appointment Class</dt>
-          <dd className="mt-1 font-mono text-gray-200">
-            AUTHORIZED_COMMERCIAL_REPRESENTATIVE
-          </dd>
-        </div>
-      </dl>
-
-      <div className="mt-4 rounded border border-gray-800 bg-gray-950 p-3">
-        <p className="text-xs leading-5 text-gray-500">
-          Participant remains{" "}
-          <strong className="text-gray-300">PROVISIONAL</strong>. The server
-          requires the bound Master Agreement to be EXECUTED before preparation
-          can succeed.
-        </p>
-      </div>
-
-      <label className="mt-4 flex items-start gap-3 rounded border border-amber-800/40 bg-amber-950/10 p-3">
-        <input
-          type="checkbox"
-          checked={confirmed}
-          onChange={(event) => setConfirmed(event.target.checked)}
-          disabled={busy}
-          className="mt-1 h-4 w-4 accent-amber-500"
-        />
-
-        <span className="text-xs leading-5 text-amber-100/80">
-          I understand this action prepares a DRAFT appointment only. It does
-          not activate the appointment or create authority.
-        </span>
-      </label>
-
-      {error ? (
-        <p
-          role="alert"
-          className="mt-3 rounded border border-red-900/50 bg-red-950/20 p-3 text-sm text-red-300"
-        >
-          {error}
-        </p>
-      ) : null}
-
-      {result ? (
-        <div className="mt-4 rounded border border-blue-800/50 bg-blue-950/20 p-3">
-          <p className="text-xs uppercase tracking-[0.16em] text-blue-400/70">
-            {result.created
-              ? "Appointment Prepared"
-              : "Existing Draft Returned"}
-          </p>
-
-          <p className="mt-2 font-mono text-xs text-blue-100">
-            {result.reference}
-          </p>
-
-          <dl className="mt-3 grid gap-2 text-xs sm:grid-cols-3">
+      {!loading && appointment ? (
+        <div className="mt-4 rounded border border-blue-800/50 bg-blue-950/20 p-4">
+          <p className="break-words font-mono text-xs text-blue-100">{appointment.reference}</p>
+          <dl className="mt-4 grid gap-4 text-xs sm:grid-cols-2">
             <div>
-              <dt className="text-blue-300/50">State</dt>
-              <dd className="mt-1 text-blue-100">DRAFT</dd>
+              <dt className="text-gray-500">Instrument status</dt>
+              <dd className="mt-1 text-gray-200">{appointment.status}</dd>
             </div>
-
             <div>
-              <dt className="text-blue-300/50">Authority</dt>
-              <dd className="mt-1 text-blue-100">NOT CREATED</dd>
+              <dt className="text-gray-500">Program standing</dt>
+              <dd className="mt-1 text-gray-200">{appointment.standing}</dd>
             </div>
-
             <div>
-              <dt className="text-blue-300/50">Activation</dt>
-              <dd className="mt-1 text-blue-100">NOT PERFORMED</dd>
+              <dt className="text-gray-500">Representative acceptance</dt>
+              <dd className="mt-1 text-amber-200">
+                {appointment.acceptedAt ? "Recorded" : "Pending"}
+              </dd>
+              {appointment.acceptedAt ? (
+                <dd className="mt-1 break-words font-mono text-gray-300">{appointment.acceptedAt}</dd>
+              ) : null}
+            </div>
+            <div>
+              <dt className="text-gray-500">Effective date</dt>
+              <dd className="mt-1 text-gray-200">{appointment.effectiveAt ?? "Not established"}</dd>
             </div>
           </dl>
+          {appointment.canActivate ? (
+            <p className="mt-4 text-xs text-amber-200">Awaiting operator activation.</p>
+          ) : null}
         </div>
       ) : null}
 
-      <button
-        type="button"
-        disabled={busy || !confirmed}
-        onClick={() => void prepareAppointment()}
-        className="mt-4 rounded border border-blue-500/40 bg-blue-500/10 px-4 py-2.5 text-sm font-medium text-blue-200 hover:bg-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50"
-      >
-        {busy
-          ? "Preparing Appointment…"
-          : result
-            ? "Prepare / Verify Draft Again"
-            : "Prepare Appointment Instrument"}
-      </button>
+      {!loading && !appointment && !error ? (
+        <p className="mt-4 text-xs leading-6 text-gray-400">
+          No appointment has been prepared. Preparation requires a bound,
+          executed Master Agreement and provisional Program standing.
+        </p>
+      ) : null}
+
+      <p className="mt-4 text-xs leading-6 text-gray-500">
+        Preparation and representative acceptance precede operator activation.
+        Activation establishes the appointment effective date and Active Program
+        standing. Delegated authority remains separately governed.
+      </p>
+
+      {!loading && !error && available ? (
+        <label className="mt-4 flex items-start gap-3 rounded border border-amber-800/40 p-3">
+          <input
+            type="checkbox"
+            checked={confirmed}
+            onChange={event => setConfirmed(event.target.checked)}
+            disabled={busy}
+            className="mt-1 h-4 w-4 accent-amber-500"
+          />
+          <span className="text-xs leading-5 text-amber-100/80">
+            {appointment
+              ? "I confirm operator activation of this accepted appointment and the transition to Active Program standing. This action creates no delegated authority."
+              : "I confirm preparation of a draft appointment. Preparation does not activate the appointment or create authority."}
+          </span>
+        </label>
+      ) : null}
+
+      {error ? <p role="alert" className="mt-4 text-sm text-red-300">{error}</p> : null}
+
+      <div className="mt-4 flex flex-wrap gap-3">
+        {!loading && !error && available ? (
+          <button
+            type="button"
+            disabled={busy || !confirmed}
+            onClick={() => void performAction()}
+            className="rounded border border-blue-500/40 px-4 py-3 text-sm text-blue-200 disabled:opacity-50"
+          >
+            {busy ? "Recording…" : appointment ? "Activate Appointment" : "Prepare Appointment Instrument"}
+          </button>
+        ) : null}
+        <button
+          type="button"
+          disabled={busy || loading}
+          onClick={() => void reload()}
+          className="rounded border border-gray-700 px-4 py-3 text-sm text-gray-300 disabled:opacity-50"
+        >
+          Refresh Record
+        </button>
+      </div>
     </section>
   );
 }

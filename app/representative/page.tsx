@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { loadRepresentativeAppointmentReview } from "@/domains/instruments/representative-program/application/representativeAppointmentAcceptance";
 import { redirect } from "next/navigation";
 
 import { getPrincipal } from "@/domains/auth/getPrincipal";
@@ -78,6 +79,14 @@ export default async function RepresentativeWorkspacePage() {
   const appointment =
     workspace.appointment;
 
+  const appointmentReview = appointment
+    ? await loadRepresentativeAppointmentReview({
+        client: prisma,
+        userId: principal.userId,
+        appointmentId: appointment.id,
+      })
+    : null;
+
   const commercialUtilityPack =
     await loadRepresentativeCommercialUtilityPackWithClient({
       client: prisma,
@@ -135,6 +144,15 @@ export default async function RepresentativeWorkspacePage() {
                       <div><dt className="text-xs text-white/40">Appointment class</dt><dd className="mt-2 text-sm">{humanize(appointment.appointmentClass)}</dd></div>
                       <div><dt className="text-xs text-white/40">Effective date</dt><dd className="mt-2 text-sm">{displayDate(appointment.effectiveAt)}</dd></div>
                     </dl>
+                    <p className="mt-5 rounded-lg border border-[#c5a25f]/25 bg-[#c5a25f]/[0.05] p-4 text-xs leading-6 text-[#d7b269]">
+                      {appointmentReview?.acceptedAt
+                        ? `Acceptance recorded · ${appointmentReview.acceptedAt}${
+                            appointmentReview.status === "DRAFT"
+                              ? " · Awaiting operator activation"
+                              : ""
+                          }`
+                        : "Representative acceptance pending"}
+                    </p>
                     <Link href={`/representative/appointments/${appointment.id}`} className="mt-6 inline-flex rounded-lg border border-[#c5a25f]/40 bg-[#c5a25f]/[0.07] px-5 py-3 text-xs font-semibold text-[#d7b269]">Review Appointment</Link>
                   </>
                 ) : (

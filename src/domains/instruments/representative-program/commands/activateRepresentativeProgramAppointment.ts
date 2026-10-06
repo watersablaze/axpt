@@ -1,4 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
+import { loadRepresentativeAppointmentReview } from "../application/representativeAppointmentAcceptance";
 
 import {
   INSTITUTIONAL_INSTRUMENT_KIND,
@@ -240,6 +241,33 @@ export async function activateRepresentativeProgramAppointmentWithClient(
     );
   }
 
+  // Validate the exact configuration accepted by the representative.
+  let acceptedReview;
+  try {
+    acceptedReview = await loadRepresentativeAppointmentReview({
+      client: params.client,
+      userId: representativeUserId,
+      appointmentId: appointment.id,
+    });
+  } catch {
+    throw new Error("[ARP_APPOINTMENT_ACTIVATION_ACCEPTED_CONFIGURATION_CONFLICT]");
+  }
+
+  if (
+    !acceptedReview?.acceptedAt ||
+    acceptedReview.participantId !== participant.id ||
+    new Date(acceptedReview.acceptedAt).getTime() > occurredAt.getTime()
+  ) {
+    throw new Error("[ARP_APPOINTMENT_ACTIVATION_ACCEPTED_CONFIGURATION_REQUIRED]");
+  }
+
+  if (
+    appointment.expiresAt &&
+    appointment.expiresAt.getTime() <= occurredAt.getTime()
+  ) {
+    throw new Error("[ARP_APPOINTMENT_ACTIVATION_APPOINTMENT_EXPIRED]");
+  }
+
   /*
    * Idempotent convergence.
    *
@@ -374,6 +402,7 @@ export async function activateRepresentativeProgramAppointment(
         client: tx,
       }),
     {
+      isolationLevel: "Serializable",
       maxWait: 10_000,
       timeout: 30_000,
     },
