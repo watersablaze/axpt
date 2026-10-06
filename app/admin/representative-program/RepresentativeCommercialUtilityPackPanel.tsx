@@ -117,10 +117,18 @@ export default function RepresentativeCommercialUtilityPackPanel({
   const [loading, setLoading] = useState(true);
   const [stateError, setStateError] = useState<string | null>(null);
   const generation = useRef(0);
+  const actionInFlight = useRef(false);
+  const [pendingModule, setPendingModule] = useState<string | null>(null);
+  const [releasingModule, setReleasingModule] = useState<string | null>(null);
+  const [releaseNotice, setReleaseNotice] = useState<string | null>(null);
 
   useEffect(() => {
     const current = ++generation.current;
     const controller = new AbortController();
+    actionInFlight.current = false;
+    setPendingModule(null);
+    setReleasingModule(null);
+    setReleaseNotice(null);
     setPack(null);
     setResult(null);
     setError(null);
@@ -151,6 +159,7 @@ export default function RepresentativeCommercialUtilityPackPanel({
 
   async function reloadPack() {
     const current = generation.current;
+    setPendingModule(null);
     setLoading(true);
     setStateError(null);
     try {
@@ -169,6 +178,10 @@ export default function RepresentativeCommercialUtilityPackPanel({
   }
 
   async function preparePack() {
+    if (actionInFlight.current || loading || stateError) return;
+    actionInFlight.current = true;
+    setPendingModule(null);
+    setReleaseNotice(null);
     const current = generation.current;
     setBusy(
       true,
@@ -250,9 +263,72 @@ export default function RepresentativeCommercialUtilityPackPanel({
       );
     } finally {
       if (generation.current !== current) return;
+      actionInFlight.current = false;
       setBusy(
         false,
       );
+    }
+  }
+
+  async function releaseModule(module: string) {
+    if (
+      actionInFlight.current || loading || stateError || !pack ||
+      pack.participantId !== participantId ||
+      pendingModule !== module ||
+      pack.state === "SUPERSEDED" || pack.state === "WITHDRAWN" ||
+      !pack.modules.some(entry =>
+        entry.module === module && entry.state === "READY" &&
+        entry.currentResources.length > 0
+      )
+    ) return;
+
+    const current = generation.current;
+    const packageId = pack.id;
+    actionInFlight.current = true;
+    setBusy(true);
+    setReleasingModule(module);
+    setPendingModule(null);
+    setReleaseNotice(null);
+    setError(null);
+    setResult(null);
+
+    try {
+      const response = await fetch(
+        "/api/admin/representative-program/commercial-utility-packs/release-module",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          cache: "no-store",
+          body: JSON.stringify({
+            packageId,
+            module,
+            confirmRelease: true,
+          }),
+        },
+      );
+      const payload = await response.json();
+      if (generation.current !== current) return;
+      if (!response.ok || payload.ok !== true) {
+        throw new Error(payload.error || "Module release was not confirmed.");
+      }
+      setReleaseNotice(
+        moduleLabel(module) + " release confirmed. Persisted state is shown below.",
+      );
+    } catch (cause) {
+      if (generation.current !== current) return;
+      setError(
+        (cause instanceof Error ? cause.message : "Module release was not confirmed.") +
+        " Review the reloaded persisted state before retrying.",
+      );
+    } finally {
+      if (generation.current === current) {
+        await reloadPack();
+        if (generation.current === current) {
+          actionInFlight.current = false;
+          setReleasingModule(null);
+          setBusy(false);
+        }
+      }
     }
   }
 
@@ -265,12 +341,12 @@ export default function RepresentativeCommercialUtilityPackPanel({
           </p>
 
           <h3 className="mt-2 text-base font-semibold text-white">
-            Prepare Representative Field Resources
+            Govern Representative Field Resources
           </h3>
         </div>
 
         <span className="rounded border border-cyan-900/60 bg-black px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-cyan-300/70">
-          Preparation Only
+          Preparation & Module Release
         </span>
       </div>
 
@@ -279,9 +355,10 @@ export default function RepresentativeCommercialUtilityPackPanel({
         <strong className="text-gray-200">
           {candidateDisplayName}
         </strong>
-        . This operation composes currently available representative-safe
-        resources and evaluates module readiness. It does not release resources,
-        release modules, or deliver material to the representative.
+        . Preparation composes currently available representative-safe
+        resources and evaluates readiness. Each READY module requires a separate
+        confirmed release decision. Resource permissions remain governed;
+        release does not grant appointment authority or send a notification.
       </p>
 
       <div className="mt-4 rounded border border-gray-800 bg-black p-3">
@@ -297,6 +374,12 @@ export default function RepresentativeCommercialUtilityPackPanel({
           className="mt-3 rounded border border-red-900/50 bg-red-950/20 p-3 text-sm text-red-300"
         >
           {error}
+        </p>
+      ) : null}
+
+      {releaseNotice ? (
+        <p role="status" className="mt-3 text-sm text-emerald-300">
+          {releaseNotice}
         </p>
       ) : null}
 
@@ -330,6 +413,50 @@ export default function RepresentativeCommercialUtilityPackPanel({
                 <p className="text-sm text-gray-200">
                   {moduleLabel(entry.module)} · {entry.state}
                 </p>
+                {entry.state === "READY" &&
+                 entry.currentResources.length > 0 &&
+                 pack.state !== "SUPERSEDED" &&
+                 pack.state !== "WITHDRAWN" ? (
+                  pendingModule === entry.module ? (
+                    <div className="mt-3 rounded border border-amber-900/60 bg-amber-950/20 p-3">
+                      <p className="text-xs leading-5 text-amber-200">
+                        Release {moduleLabel(entry.module)} for {candidateDisplayName}?
+                        This releases all {entry.currentResources.length} current
+                        resources in this module under their existing permissions.
+                      </p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <button
+                          type="button"
+                          disabled={busy || loading || Boolean(stateError)}
+                          onClick={() => void releaseModule(entry.module)}
+                          className="rounded border border-amber-700 px-3 py-2 text-xs text-amber-200 disabled:opacity-50"
+                        >
+                          Confirm Module Release
+                        </button>
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() => setPendingModule(null)}
+                          className="rounded border border-gray-700 px-3 py-2 text-xs text-gray-300 disabled:opacity-50"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={busy || loading || Boolean(stateError)}
+                      onClick={() => {
+                        setReleaseNotice(null);
+                        setPendingModule(entry.module);
+                      }}
+                      className="mt-3 rounded border border-emerald-800 px-3 py-2 text-xs text-emerald-300 disabled:opacity-50"
+                    >
+                      Review Release · {moduleLabel(entry.module)}
+                    </button>
+                  )
+                ) : null}
                 {entry.currentResources.length === 0 ? (
                   <p className="mt-2 text-xs text-gray-500">No current resources.</p>
                 ) : entry.currentResources.map((resource) => (
@@ -463,7 +590,9 @@ export default function RepresentativeCommercialUtilityPackPanel({
         className="mt-4 rounded border border-cyan-700/60 bg-cyan-950/30 px-4 py-2.5 text-sm font-medium text-cyan-200 hover:bg-cyan-950/50 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {busy
-          ? "Preparing CUP…"
+          ? releasingModule
+            ? "Releasing " + moduleLabel(releasingModule) + "…"
+            : "Preparing CUP…"
           : result
             ? "Prepare / Refresh CUP Again"
             : "Prepare Commercial Utility Pack"}

@@ -131,11 +131,11 @@ console.log(
 );
 
 console.log(
-  "✓ panel exposes preparation/readiness summary only",
+  "✓ panel exposes preparation/readiness and persisted module state",
 );
 
 console.log(
-  "✓ panel performs no release or reconciliation action",
+  "✓ panel invokes no direct resource release or reconciliation command",
 );
 
 console.log(
@@ -153,3 +153,13 @@ console.log(
 console.log(
   "CUP_1F_OPERATOR_PANEL_CONTRACT_OK",
 );
+
+assert.match(panel, /commercial-utility-packs\/release-module/);
+assert.match(panel, /confirmRelease: true/);
+assert.match(panel, /pendingModule !== module/);
+assert.match(panel, /entry.state === "READY"/);
+assert.match(panel, /Confirm Module Release/);
+assert.match(panel, /actionInFlight.current/);
+assert.match(panel, /await reloadPack\(\)/);
+assert.match(panel, /setPendingModule\(null\)/);
+console.log("CUP_1G_MODULE_RELEASE_PANEL_CONTRACT_OK");
