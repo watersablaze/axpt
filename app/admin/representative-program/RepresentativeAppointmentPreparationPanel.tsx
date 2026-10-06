@@ -1,4 +1,5 @@
 "use client";
+import RepresentativeAuthorityPanel from "./RepresentativeAuthorityPanel";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -207,6 +208,12 @@ export default function RepresentativeAppointmentPreparationPanel({
           Refresh Record
         </button>
       </div>
+      {appointment ? (
+        <RepresentativeAuthorityPanel
+          key={appointment.appointmentId + appointment.status}
+          appointmentId={appointment.appointmentId}
+        />
+      ) : null}
     </section>
   );
 }

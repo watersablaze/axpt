@@ -1,4 +1,6 @@
 import Link from "next/link";
+import AuthorityRegister from "./AuthorityRegister";
+import { loadRepresentativeAuthorityRegister } from "@/domains/instruments/representative-program/application/loadRepresentativeAuthorityRegister";
 import { loadRepresentativeAppointmentReview } from "@/domains/instruments/representative-program/application/representativeAppointmentAcceptance";
 import { redirect } from "next/navigation";
 
@@ -87,6 +89,14 @@ export default async function RepresentativeWorkspacePage() {
       })
     : null;
 
+  const authorityRegister = appointment
+    ? await loadRepresentativeAuthorityRegister({
+        client: prisma,
+        appointmentId: appointment.id,
+        userId: principal.userId,
+      })
+    : null;
+
   const commercialUtilityPack =
     await loadRepresentativeCommercialUtilityPackWithClient({
       client: prisma,
@@ -162,6 +172,8 @@ export default async function RepresentativeWorkspacePage() {
                   </>
                 )}
               </section>
+
+              {authorityRegister ? <AuthorityRegister register={authorityRegister} /> : null}
 
               <section id="field-resources" className="rounded-[20px] border border-[#17323c]/80 bg-[linear-gradient(135deg,#0e1c22,#091419)] p-6 md:p-8">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-[#719baa]">Representative Field Resources</p>
