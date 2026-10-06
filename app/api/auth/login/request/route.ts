@@ -3,7 +3,7 @@ import { randomInt } from 'node:crypto'
 import bcrypt from 'bcryptjs'
 import { NextResponse } from 'next/server'
 
-import { isAdmin } from '@/domains/auth/isAdmin'
+import { resolveInstitutionalSignInEligibility } from '@/domains/auth/resolveInstitutionalSignInEligibility'
 import { sendLoginPin } from '@/domains/auth/sendLoginPin'
 import { prisma } from '@/infrastructure/db/prisma'
 
@@ -112,6 +112,11 @@ export async function POST(request: Request) {
           },
         },
       },
+      representativeProgramParticipants: {
+        select: {
+          standing: true,
+        },
+      },
     },
   })
 
@@ -145,12 +150,15 @@ export async function POST(request: Request) {
       )
     )
 
-  if (
-    !isAdmin({
+  const eligibility =
+    resolveInstitutionalSignInEligibility({
       roles,
       permissions,
+      representativeProgramParticipants:
+        user.representativeProgramParticipants,
     })
-  ) {
+
+  if (!eligibility.eligible) {
     await genericDelay()
 
     return NextResponse.json(

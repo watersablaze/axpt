@@ -77,6 +77,8 @@ model User {
   instrumentEvidenceRecorded   InstrumentEvidence[]        @relation("InstrumentEvidenceRecorder")
   instrumentRelationsCreated   InstrumentRelation[]        @relation("InstrumentRelationCreator")
 
+  sourceAuthorityRecognitionsActed SourceAuthorityRecognition[] @relation("SourceAuthorityRecognitionActor")
+
   representativeProgramParticipants        RepresentativeProgramParticipant[]        @relation("RepresentativeProgramParticipantUser")
   representativeProgramParticipantsCreated RepresentativeProgramParticipant[]        @relation("RepresentativeProgramParticipantCreator")
   representativeProgramAppointmentsCreated RepresentativeProgramAppointment[]        @relation("RepresentativeProgramAppointmentCreator")
@@ -84,6 +86,12 @@ model User {
 
   representativeOnboardingIntakesCreated   RepresentativeOnboardingIntake[]     @relation("RepresentativeOnboardingIntakeCreator")
   representativeOnboardingTransitionsActed RepresentativeOnboardingTransition[] @relation("RepresentativeOnboardingTransitionActor")
+
+  commercialUtilityPacksCreated           CommercialUtilityPack[]                @relation("CommercialUtilityPackCreator")
+  commercialUtilityPacksReleased          CommercialUtilityPack[]                @relation("CommercialUtilityPackReleaser")
+  commercialUtilityPackModulesReleased    CommercialUtilityPackModuleRelease[]   @relation("CommercialUtilityPackModuleReleaser")
+  commercialUtilityPackResourcesReleased  CommercialUtilityPackResourceRelease[] @relation("CommercialUtilityPackResourceReleaser")
+
   wallets                                  Wallet?
 }
 
@@ -116,7 +124,9 @@ model InstitutionalInstrument {
   outboundRelations                InstrumentRelation[]              @relation("InstrumentRelationSource")
   inboundRelations                 InstrumentRelation[]              @relation("InstrumentRelationTarget")
   digitalSettlementInstruction     DigitalSettlementInstruction?
+  sourceAuthorityRecord             SourceAuthorityRecord?
   representativeProgramAppointment RepresentativeProgramAppointment?
+  representativeOnboardingMasterAgreement RepresentativeOnboardingIntake? @relation("RepresentativeOnboardingMasterAgreement")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -195,6 +205,8 @@ model InstrumentVersion {
   draftingDecisions GlobalMotherDraftingDecision[]
 
   digitalSettlementVerifications DigitalSettlementInstruction[] @relation("DigitalSettlementVerificationInstrumentVersion")
+  sourceAuthorityAssertions       SourceAuthorityAssertion[]
+  sourceAuthorityProfileParticulars SourceAuthorityProfileParticulars[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -415,6 +427,10 @@ model InstrumentEvidence {
   instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
   recordedBy User                    @relation("InstrumentEvidenceRecorder", fields: [recordedByUserId], references: [id])
 
+  sourceAuthorityRecognitionEvidence SourceAuthorityRecognitionEvidence[]
+
+  sourceAuthorityAdmissions SourceAuthorityEvidenceAdmission[]
+
   createdAt DateTime @default(now())
 
   @@index([instrumentId, evidenceType])
@@ -445,6 +461,169 @@ model InstrumentRelation {
 }
 
 // ============================================================================
+// SOURCE AUTHORITY
+// Specialized persistence for source-side institutional assertions,
+// capabilities, documentary recognition, and recognition lineage.
+//
+// Source Authority records do not confer sovereign authority,
+// transaction authority, commodity availability, allocation, title,
+// regulatory approval, export authorization, or settlement authority.
+// ============================================================================
+
+model SourceAuthorityRecord {
+  id                         String   @id @default(cuid())
+  instrumentId               String   @unique
+  subjectDisplayName         String
+  jurisdiction               String
+  institutionalCapacity      String
+  operatingBase              String?
+  sector                     String?
+  principalCommodityActivity String[]
+
+  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+
+  assertions SourceAuthorityAssertion[]
+
+  profileParticulars SourceAuthorityProfileParticulars[]
+
+  evidenceAdmissions SourceAuthorityEvidenceAdmission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([subjectDisplayName])
+  @@index([jurisdiction])
+}
+
+model SourceAuthorityProfileParticulars {
+  id                String @id @default(cuid())
+  sourceAuthorityId String
+  versionId         String
+
+  documentReference String
+  documentVersion   String
+  documentStatus    String
+
+  registrationReference String?
+  registrationStanding  String
+
+  registeredAddress                 String?
+  authorizedRepresentativeName      String?
+  authorizedRepresentativeCapacity  String?
+  officialContact                   String?
+
+  sourceAuthority SourceAuthorityRecord @relation(fields: [sourceAuthorityId], references: [id], onDelete: Restrict)
+  version         InstrumentVersion     @relation(fields: [versionId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sourceAuthorityId, versionId])
+  @@index([versionId])
+  @@index([documentReference])
+}
+
+model SourceAuthorityAssertion {
+  id                String                        @id @default(cuid())
+  sourceAuthorityId String
+  versionId         String
+  reference         String
+  assertionClass    SourceAuthorityAssertionClass
+  title             String
+  statement         String
+  scope             String?
+  ordinal           Int
+
+  sourceAuthority SourceAuthorityRecord @relation(fields: [sourceAuthorityId], references: [id], onDelete: Cascade)
+  version         InstrumentVersion     @relation(fields: [versionId], references: [id], onDelete: Restrict)
+
+  capabilities SourceAuthorityCapability[]
+  recognitions SourceAuthorityRecognition[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([versionId, reference])
+  @@unique([versionId, ordinal])
+  @@index([sourceAuthorityId, assertionClass])
+  @@index([sourceAuthorityId, versionId])
+}
+
+model SourceAuthorityCapability {
+  id            String                       @id @default(cuid())
+  assertionId   String
+  capabilityKey SourceAuthorityCapabilityKey
+  title         String
+  description   String
+
+  assertion SourceAuthorityAssertion @relation(fields: [assertionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([assertionId, capabilityKey])
+  @@index([capabilityKey])
+}
+
+model SourceAuthorityRecognition {
+  id                      String                            @id @default(cuid())
+  assertionId             String
+  outcome                 SourceAuthorityRecognitionOutcome
+  limitation              String?
+  reason                  String?
+  actorUserId             String
+  supersedesRecognitionId String?                           @unique
+  currentSlot             SourceAuthorityRecognitionCurrentSlot?
+  occurredAt              DateTime                          @default(now())
+
+  assertion SourceAuthorityAssertion @relation(fields: [assertionId], references: [id], onDelete: Cascade)
+  actor     User                     @relation("SourceAuthorityRecognitionActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  supersedes SourceAuthorityRecognition? @relation("SourceAuthorityRecognitionSupersession", fields: [supersedesRecognitionId], references: [id], onDelete: SetNull)
+  supersededBy SourceAuthorityRecognition? @relation("SourceAuthorityRecognitionSupersession")
+
+  evidenceLinks SourceAuthorityRecognitionEvidence[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([assertionId, currentSlot])
+  @@index([assertionId, occurredAt])
+  @@index([actorUserId, occurredAt])
+  @@index([outcome])
+}
+
+model SourceAuthorityEvidenceAdmission {
+  id                String                      @id @default(cuid())
+  sourceAuthorityId String
+  evidenceRole      String
+  admissionKey      String
+  evidenceId        String?                     @unique
+
+  sourceAuthority SourceAuthorityRecord @relation(fields: [sourceAuthorityId], references: [id], onDelete: Cascade)
+  evidence        InstrumentEvidence?   @relation(fields: [evidenceId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sourceAuthorityId, evidenceRole])
+  @@index([sourceAuthorityId, admissionKey])
+  @@index([sourceAuthorityId, createdAt])
+}
+
+model SourceAuthorityRecognitionEvidence {
+  recognitionId String
+  evidenceId    String
+
+  recognition SourceAuthorityRecognition @relation(fields: [recognitionId], references: [id], onDelete: Cascade)
+  evidence    InstrumentEvidence         @relation(fields: [evidenceId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+
+  @@id([recognitionId, evidenceId])
+  @@index([evidenceId])
+}
+
+// ============================================================================
 // AUTHORIZED REPRESENTATION PROGRAM
 // Program participant identity, docket, appointment and standing spine.
 // Program Standing is intentionally distinct from InstitutionalInstrumentStatus.
@@ -461,7 +640,7 @@ model RepresentativeProgramDocketSequence {
 model RepresentativeProgramParticipant {
   id              String                        @id @default(cuid())
   docketReference String                        @unique
-  userId          String?
+  userId          String?                       @unique
   displayName     String
   standing        RepresentativeProgramStanding
   admittedAt      DateTime?
@@ -470,14 +649,14 @@ model RepresentativeProgramParticipant {
   user      User? @relation("RepresentativeProgramParticipantUser", fields: [userId], references: [id], onDelete: SetNull)
   createdBy User  @relation("RepresentativeProgramParticipantCreator", fields: [createdByUserId], references: [id])
 
-  appointments        RepresentativeProgramAppointment[]
-  standingTransitions RepresentativeProgramStandingTransition[]
-  onboardingIntake    RepresentativeOnboardingIntake?           @relation("RepresentativeOnboardingAdmission")
+  appointments          RepresentativeProgramAppointment[]
+  standingTransitions   RepresentativeProgramStandingTransition[]
+  onboardingIntake      RepresentativeOnboardingIntake? @relation("RepresentativeOnboardingAdmission")
+  commercialUtilityPacks CommercialUtilityPack[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([userId])
   @@index([standing])
   @@index([createdByUserId])
 }
@@ -529,6 +708,137 @@ model RepresentativeProgramStandingTransition {
   @@index([actorUserId])
 }
 
+// ============================================================================
+// COMMERCIAL UTILITY PACK
+// Representative-specific governed composition envelope.
+//
+// CUP is not an InstitutionalInstrument and does not own the canonical truth
+// of resources it presents. It persists package identity, module release state,
+// resource release state, and representative-facing permissions.
+// ============================================================================
+
+model CommercialUtilityPack {
+  id               String                            @id @default(cuid())
+  reference        String                            @unique
+  participantId    String
+  version          Int                               @default(1)
+  state            CommercialUtilityPackState        @default(PREPARING)
+  releaseState     CommercialUtilityPackReleaseState @default(WITHHELD)
+  audience         CommercialUtilityPackAudience     @default(REPRESENTATIVE)
+  createdByUserId  String
+  releasedByUserId String?
+  releasedAt       DateTime?
+  withdrawnAt      DateTime?
+  metadata         Json?
+
+  participant RepresentativeProgramParticipant @relation(fields: [participantId], references: [id], onDelete: Restrict)
+  createdBy   User                             @relation("CommercialUtilityPackCreator", fields: [createdByUserId], references: [id])
+  releasedBy  User?                            @relation("CommercialUtilityPackReleaser", fields: [releasedByUserId], references: [id], onDelete: SetNull)
+
+  modules   CommercialUtilityPackModuleRelease[]
+  resources CommercialUtilityPackResourceRelease[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([participantId, version])
+  @@index([participantId, state])
+  @@index([releaseState])
+  @@index([createdByUserId])
+  @@index([releasedByUserId])
+}
+
+model CommercialUtilityPackModuleRelease {
+  id               String                           @id @default(cuid())
+  packageId        String
+  module           CommercialUtilityPackModule
+  state            CommercialUtilityPackModuleState @default(WITHHELD)
+  releasedByUserId String?
+  releasedAt       DateTime?
+  metadata         Json?
+
+  package    CommercialUtilityPack @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  releasedBy User?                 @relation("CommercialUtilityPackModuleReleaser", fields: [releasedByUserId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([packageId, module])
+  @@index([packageId, state])
+  @@index([releasedByUserId])
+}
+
+model CommercialUtilityPackResourceRelease {
+  id               String                              @id @default(cuid())
+  packageId        String
+  module           CommercialUtilityPackModule
+  resourceType     CommercialUtilityPackResourceType
+  resourceId       String
+  state            CommercialUtilityPackResourceState @default(WITHHELD)
+  label            String?
+  canView          Boolean                             @default(true)
+  canDownload      Boolean                             @default(false)
+  canPresent       Boolean                             @default(false)
+  canTransmit      Boolean                             @default(false)
+  releasedByUserId String?
+  releasedAt       DateTime?
+  metadata         Json?
+
+  package    CommercialUtilityPack @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  releasedBy User?                 @relation("CommercialUtilityPackResourceReleaser", fields: [releasedByUserId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([packageId, module, resourceType, resourceId])
+  @@index([packageId, module, state])
+  @@index([resourceType, resourceId])
+  @@index([releasedByUserId])
+}
+
+enum CommercialUtilityPackState {
+  PREPARING
+  CURRENT
+  SUPERSEDED
+  WITHDRAWN
+}
+
+enum CommercialUtilityPackReleaseState {
+  WITHHELD
+  PARTIAL
+  RELEASED
+}
+
+enum CommercialUtilityPackAudience {
+  REPRESENTATIVE
+}
+
+enum CommercialUtilityPackModule {
+  REPRESENTATION
+  COMMERCIAL_PARAMETERS
+  DOCUMENTS
+  OPERATING_BOUNDARIES
+}
+
+enum CommercialUtilityPackModuleState {
+  WITHHELD
+  READY
+  RELEASED
+}
+
+enum CommercialUtilityPackResourceType {
+  INSTITUTIONAL_INSTRUMENT
+  DOCUMENT
+  STRUCTURED_CONTENT
+}
+
+enum CommercialUtilityPackResourceState {
+  WITHHELD
+  RELEASED
+  SUPERSEDED
+  WITHDRAWN
+}
+
 model RepresentativeOnboardingIntake {
   id        String @id @default(cuid())
   reference String @unique
@@ -555,9 +865,11 @@ model RepresentativeOnboardingIntake {
   admittedAt      DateTime?
 
   admittedParticipantId String? @unique
+  masterAgreementInstrumentId String? @unique
   createdByUserId       String?
 
   admittedParticipant RepresentativeProgramParticipant? @relation("RepresentativeOnboardingAdmission", fields: [admittedParticipantId], references: [id], onDelete: Restrict)
+  masterAgreementInstrument InstitutionalInstrument? @relation("RepresentativeOnboardingMasterAgreement", fields: [masterAgreementInstrumentId], references: [id], onDelete: Restrict)
 
   createdBy User? @relation("RepresentativeOnboardingIntakeCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
 
@@ -667,13 +979,43 @@ enum InstrumentRelationType {
   REFERENCES
 }
 
+enum SourceAuthorityAssertionClass {
+  INSTITUTIONAL_IDENTITY
+  SOURCE_AUTHORITY
+  OPERATIONAL_CAPABILITY
+  COMMERCIAL_RELATIONSHIP
+  SOVEREIGN_CONTEXT
+  INSTRUMENT_BOUNDARY
+}
+
+enum SourceAuthorityCapabilityKey {
+  MINERAL_PRODUCTION_AGGREGATION
+  COMMODITY_PREPARATION_SOURCE_COORDINATION
+  COMMERCIAL_PREPARATION
+  EXPORT_LOGISTICS_COORDINATION
+  COUNTERPARTY_ENGAGEMENT
+  DOCUMENTARY_REGULATORY_SUPPORT
+}
+
+enum SourceAuthorityRecognitionOutcome {
+  RECOGNIZED
+  RECOGNIZED_WITH_LIMITATION
+  NOT_RECOGNIZED
+}
+
+enum SourceAuthorityRecognitionCurrentSlot {
+  CURRENT
+}
+
 enum InstitutionalInstrumentKind {
   ROYAL_CUSTODIAL_FRAMEWORK
   REPRESENTATIVE_MANDATE
+  REPRESENTATIVE_PROGRAM_AGREEMENT
   REPRESENTATIVE_APPOINTMENT
   LETTER_OF_INTENT
   COOPERATION_FRAMEWORK
   DIGITAL_SETTLEMENT_INSTRUCTION
+  SOURCE_AUTHORITY
   GENERAL
 }
 

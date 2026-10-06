@@ -3,7 +3,9 @@ import { NextResponse } from "next/server";
 
 import { REPRESENTATIVE_ONBOARDING_ACCESS_COOKIE } from "@/domains/instruments/representative-program/onboarding/accessCookie";
 import { submitRepresentativeOnboardingCandidate } from "@/domains/instruments/representative-program/onboarding/application/submitRepresentativeOnboardingCandidate";
+import { getRepresentativeOnboardingContinuityProfile } from "@/domains/instruments/representative-program/onboarding/continuityProfile";
 import { representativeCandidateSubmissionSchema } from "@/domains/instruments/representative-program/onboarding/http/candidateSubmissionSchema";
+import { sendRepresentativeOnboardingSubmissionReceipt } from "@/domains/instruments/representative-program/onboarding/communications/sendRepresentativeOnboardingSubmissionReceipt";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -47,7 +49,10 @@ export async function POST(request: Request) {
     );
   }
 
-  const parsed = representativeCandidateSubmissionSchema.safeParse(body);
+  const parsed =
+    representativeCandidateSubmissionSchema.safeParse(
+      body,
+    );
 
   if (!parsed.success) {
     return response(
@@ -61,17 +66,64 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await submitRepresentativeOnboardingCandidate({
-      rawAccessToken,
-      submission: parsed.data,
-    });
+    const result =
+      await submitRepresentativeOnboardingCandidate({
+        rawAccessToken,
+        submission: parsed.data,
+      });
+
+    const continuity =
+      getRepresentativeOnboardingContinuityProfile(
+        result.intake.reference,
+      );
+
+    let receiptEmail:
+      | {
+          ok: boolean;
+          mode?: string;
+          status: string;
+        }
+      | null = null;
+
+    try {
+      receiptEmail =
+        await sendRepresentativeOnboardingSubmissionReceipt({
+          intakeId:
+            result.intake.id,
+          reference:
+            result.intake.reference,
+          candidateDisplayName:
+            parsed.data.identity.fullLegalName,
+          candidateEmail:
+            parsed.data.identity.email,
+          submittedAt:
+            result.intake.submittedAt,
+          deliveryKey:
+            "AUTO_SUBMISSION",
+        });
+    } catch (emailError) {
+      console.error(
+        "[ARP_SUBMISSION_RECEIPT_EMAIL_FAILED]",
+        emailError,
+      );
+
+      receiptEmail = {
+        ok: false,
+        status: "FAILED",
+      };
+    }
 
     return response({
       ok: true,
       result: {
-        reference: result.intake.reference,
-        status: result.intake.status,
-        submittedAt: result.intake.submittedAt,
+        reference:
+          result.intake.reference,
+        status:
+          result.intake.status,
+        submittedAt:
+          result.intake.submittedAt,
+        continuity,
+        receiptEmail,
       },
     });
   } catch (error) {
@@ -80,12 +132,18 @@ export async function POST(request: Request) {
         ? error.message
         : "REPRESENTATIVE_ONBOARDING_SUBMISSION_FAILED";
 
-    console.error("[ARP_CANDIDATE_SUBMISSION_FAILED]", error);
+    console.error(
+      "[ARP_CANDIDATE_SUBMISSION_FAILED]",
+      error,
+    );
 
     const status =
-      message === "[ARP_ONBOARDING_CANDIDATE_ACCESS_DENIED]"
+      message ===
+      "[ARP_ONBOARDING_CANDIDATE_ACCESS_DENIED]"
         ? 401
-        : message.includes("STATUS_TRANSITION_INVALID") ||
+        : message.includes(
+              "STATUS_TRANSITION_INVALID",
+            ) ||
             message.includes("STATUS_NOOP")
           ? 409
           : 500;

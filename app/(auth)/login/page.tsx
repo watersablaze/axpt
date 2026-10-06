@@ -24,8 +24,11 @@ function getSafeDestination() {
 
   if (
     requested &&
-    requested.startsWith('/admin') &&
-    !requested.startsWith('//')
+    !requested.startsWith('//') &&
+    (
+      requested.startsWith('/admin') ||
+      requested.startsWith('/representative')
+    )
   ) {
     return requested
   }
@@ -68,6 +71,27 @@ export default function LoginPage() {
   ) {
     event.preventDefault()
 
+    if (busy) return
+
+    const emailField =
+      event.currentTarget.elements.namedItem('email')
+
+    if (!(emailField instanceof HTMLInputElement)) {
+      setError('Please enter your email address.')
+      return
+    }
+
+    const submittedEmail =
+      emailField.value.trim().toLowerCase()
+
+    if (!submittedEmail || !emailField.checkValidity()) {
+      setError('Please enter a valid email address.')
+      emailField.focus()
+      return
+    }
+
+    setEmail(submittedEmail)
+
     setBusy(true)
     setError('')
     setMessage('')
@@ -85,7 +109,7 @@ export default function LoginPage() {
             },
             body: JSON.stringify({
               email:
-                normalizedEmail,
+                submittedEmail,
             }),
           }
         )
@@ -148,14 +172,29 @@ export default function LoginPage() {
         return
       }
 
-      router.replace(
-        getSafeDestination()
-      )
+      const destination =
+        data.audience === 'REPRESENTATIVE'
+          ? (
+              getSafeDestination().startsWith(
+                '/representative'
+              )
+                ? getSafeDestination()
+                : '/representative'
+            )
+          : (
+              getSafeDestination().startsWith(
+                '/admin'
+              )
+                ? getSafeDestination()
+                : '/admin/control-center'
+            )
+
+      router.replace(destination)
 
       router.refresh()
     } catch {
       setError(
-        'Unable to establish the operator session.'
+        'Unable to establish the institutional session.'
       )
     } finally {
       setBusy(false)
@@ -200,7 +239,7 @@ export default function LoginPage() {
               text-[#b99657]
             "
           >
-            AXPT / Operator Access
+            AXPT / Institutional Access
           </p>
 
           <h1
@@ -221,7 +260,7 @@ export default function LoginPage() {
               text-[#8d9798]
             "
           >
-            Authorized operators enter
+            Authorized AXPT participants enter
             through a short-lived
             verification code.
           </p>
@@ -244,11 +283,12 @@ export default function LoginPage() {
                   text-[#aeb4b2]
                 "
               >
-                Operator email
+                Institutional email
               </label>
 
               <input
                 id="email"
+                name="email"
                 type="email"
                 autoComplete="email"
                 value={email}

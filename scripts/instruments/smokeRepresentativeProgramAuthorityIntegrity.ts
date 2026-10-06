@@ -43,7 +43,12 @@ type SmokeClient = Pick<
   | "domainEvent"
 >;
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  transactionOptions: {
+    maxWait: 10_000,
+    timeout: 60_000,
+  },
+});
 
 const ROLLBACK = "ARP_2D_AUTHORITY_INTEGRITY_SMOKE_ROLLBACK";
 
@@ -70,13 +75,20 @@ async function main() {
     authorities: await prisma.instrumentAuthority.count(),
   };
 
-  assert.deepEqual(baseline, {
-    participants: 0,
-    appointments: 0,
-    standingTransitions: 0,
-    docketSequences: 0,
-    authorities: 0,
-  });
+  const baselineDocketSequence =
+    await prisma.representativeProgramDocketSequence.findUnique({
+      where: {
+        year: 2026,
+      },
+    });
+
+  console.log(
+    `✓ captured durable baseline: participants=${baseline.participants} appointments=${baseline.appointments} standingTransitions=${baseline.standingTransitions} docketSequences=${baseline.docketSequences} authorities=${baseline.authorities}`,
+  );
+
+  console.log(
+    `✓ captured 2026 docket sequence baseline: ${baselineDocketSequence?.nextNumber ?? "none"}`,
+  );
 
   let instrumentId: string | null = null;
 
@@ -96,14 +108,18 @@ async function main() {
           occurredAt: appointmentStart,
         });
 
-      assert.equal(participant.docketReference, "FWI-26-RP-001");
+      assert.match(participant.docketReference, /^FWI-26-RP-\d{3}$/);
+
+      console.log(
+        `✓ rollback fixture received temporary docket ${participant.docketReference}`,
+      );
 
       const instrument = await tx.institutionalInstrument.create({
         data: {
           reference: `SMOKE-${participant.docketReference}-INTEGRITY`,
           kind: INSTITUTIONAL_INSTRUMENT_KIND.REPRESENTATIVE_APPOINTMENT,
           title: "ARP-2D Authority Integrity Smoke Appointment",
-          status: INSTITUTIONAL_INSTRUMENT_STATUS.DRAFT,
+          status: INSTITUTIONAL_INSTRUMENT_STATUS.ACTIVE,
           currentVersion: 1,
           createdByUserId: actor.id,
         },
@@ -499,7 +515,7 @@ async function main() {
   assert.equal(instruments, 0);
   assert.equal(authorities, 0);
   assert.equal(events, 0);
-  assert.equal(docketSequence, null);
+  assert.deepEqual(docketSequence, baselineDocketSequence);
 
   const finalCounts = {
     participants: await prisma.representativeProgramParticipant.count(),
@@ -517,8 +533,8 @@ async function main() {
   console.log("✓ instrument rolled back");
   console.log("✓ authority fixtures rolled back");
   console.log("✓ authority events rolled back");
-  console.log("✓ docket sequence rolled back");
-  console.log("✓ FWI-26-RP-001 remains available");
+  console.log("✓ docket sequence restored to durable baseline");
+  console.log("✓ existing Program participants and dockets preserved");
 
   console.log("ARP_2D_AUTHORITY_INTEGRITY_OK");
 }
