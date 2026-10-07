@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import canvas from "./workspace-canvas.module.css";
 
 const directory = [
@@ -15,8 +15,9 @@ const directory = [
 type View = (typeof directory)[number][0];
 
 export default function WorkspaceStage({
-  identity, overview, cup, appointment, authority, program, position, guide,
+  identity, overview, cup, appointment, authority, program, position, guide, storageKey,
 }: {
+  storageKey: string;
   guide: ReactNode;
   identity: ReactNode;
   overview: ReactNode;
@@ -27,10 +28,26 @@ export default function WorkspaceStage({
   position: ReactNode;
 }) {
   const [view, setView] = useState<View>("overview");
+
+  useEffect(() => {
+    let next: View = "overview";
+    try {
+      const saved = sessionStorage.getItem(storageKey);
+      next = directory.find(([key]) => key === saved)?.[0] ?? "overview";
+    } catch {
+      // Browser storage is optional.
+    }
+    setView(next);
+  }, [storageKey]);
   const stage = useRef<HTMLDivElement>(null);
   const views = { overview, cup, appointment, authority, program, guide };
 
   function select(next: View) {
+    try {
+      sessionStorage.setItem(storageKey, next);
+    } catch {
+      // Navigation remains available without storage.
+    }
     setView(next);
     stage.current?.focus({ preventScroll: true });
   }

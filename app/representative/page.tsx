@@ -155,6 +155,7 @@ export default async function RepresentativeWorkspacePage() {
   return (
     <main className={canvas.workspace}>
       <WorkspaceStage
+        storageKey={`arp-workspace:${principal.userId}:view:v1`}
         guide={<WorkspaceGuide position={currentStepCopy} />}
         identity={
           <header className={canvas.identity}>
@@ -207,7 +208,7 @@ export default async function RepresentativeWorkspacePage() {
                       <summary>Package record</summary>
                       <p className={canvas.packReference}>{commercialUtilityPack.reference} · Version {commercialUtilityPack.version}</p>
                     </details>
-                    <CupWorkingSet categories={commercialUtilityPack.modules.flatMap(entry =>
+                    <CupWorkingSet storageKey={`arp-workspace:${principal.userId}:cup:${commercialUtilityPack.reference}:v${commercialUtilityPack.version}`} resourceIds={commercialUtilityPack.modules.flatMap(entry => entry.resources.map(resource => resource.id))} categories={commercialUtilityPack.modules.flatMap(entry =>
                       entry.resources.map(() => humanize(entry.module))
                     )} labels={commercialUtilityPack.modules.flatMap(entry =>
                       entry.resources.map(resource =>

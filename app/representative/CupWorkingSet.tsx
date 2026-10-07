@@ -1,13 +1,17 @@
 "use client";
 
-import { Children, useState, type ReactNode } from "react";
+import { Children, useEffect, useState, type ReactNode } from "react";
 import canvas from "./workspace-canvas.module.css";
 
 export default function CupWorkingSet({
+  storageKey,
+  resourceIds,
   labels,
   categories,
   children,
 }: {
+  storageKey: string;
+  resourceIds: string[];
   labels: string[];
   categories: string[];
   children: ReactNode;
@@ -27,6 +31,30 @@ export default function CupWorkingSet({
 
   const materials = Children.toArray(children);
   const [selected, setSelected] = useState(0);
+  const resourceIdentity = JSON.stringify(resourceIds);
+
+  useEffect(() => {
+    let index = -1;
+    try {
+      const saved = sessionStorage.getItem(storageKey);
+      const ids: string[] = JSON.parse(resourceIdentity);
+      index = saved === null ? -1 : ids.indexOf(saved);
+    } catch {
+      // Browser storage is optional.
+    }
+    setSelected(index >= 0 ? index : 0);
+  }, [storageKey, resourceIdentity]);
+
+  function selectMaterial(index: number) {
+    if (index < 0 || index >= materials.length) return;
+    try {
+      const id = resourceIds[index];
+      if (id) sessionStorage.setItem(storageKey, id);
+    } catch {
+      // Selection remains available without storage.
+    }
+    setSelected(index);
+  }
   const current = Math.min(selected, Math.max(0, materials.length - 1));
 
   if (!materials.length) return null;
@@ -42,7 +70,7 @@ export default function CupWorkingSet({
             type="button"
             aria-current={current === index ? "true" : undefined}
             aria-controls="cup-focused-material"
-            onClick={() => setSelected(index)}
+            onClick={() => selectMaterial(index)}
           >
             <span>{String(index + 1).padStart(2, "0")}</span>
             {directoryLabel(labels[index] || "Released resource", categories[index] || "")}
@@ -66,11 +94,11 @@ export default function CupWorkingSet({
 
         <div className={canvas.materialControls}>
           <button type="button" disabled={current === 0}
-            onClick={() => setSelected(current - 1)}>
+            onClick={() => selectMaterial(current - 1)}>
             ← Previous material
           </button>
           <button type="button" disabled={current === materials.length - 1}
-            onClick={() => setSelected(current + 1)}>
+            onClick={() => selectMaterial(current + 1)}>
             Next material →
           </button>
         </div>
