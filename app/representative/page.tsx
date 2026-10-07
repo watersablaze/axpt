@@ -295,7 +295,7 @@ export default async function RepresentativeWorkspacePage() {
           </section>
         }
         position={
-          <aside className={canvas.position}>
+          <aside key="institutional-position" className={canvas.position}>
             <p className={canvas.kicker}>Institutional Position</p>
             <p className={canvas.authorityConclusion}>
               {operativeDelegation ? "Delegated authority exercisable within recorded conditions" : "No delegated authority currently exercisable"}

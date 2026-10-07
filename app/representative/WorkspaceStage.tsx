@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { Children, useEffect, useRef, useState, type ReactNode  } from "react";
 import canvas from "./workspace-canvas.module.css";
 
 const directory = [
@@ -54,6 +54,26 @@ export default function WorkspaceStage({
 
   return (
     <div className={canvas.shell}>
+      <div className={canvas.mobileDirectory}>
+        <label>
+          <span className={canvas.kicker}>Workspace</span>
+          <select value={view} onChange={event => {
+            const match = directory.find(([key]) => key === event.target.value);
+            if (match) select(match[0]);
+          }}>
+            {directory.filter(([key]) => key !== "guide").map(([key, label]) => (
+              <option key={key} value={key}>{label}</option>
+            ))}
+            <option value="guide">Guide · Orientation</option>
+          </select>
+        </label>
+        <button type="button" onClick={() => select("guide")}
+          aria-current={view === "guide" ? "page" : undefined}
+          aria-controls="workspace-stage">
+          <span aria-hidden="true">✧</span> Guide
+        </button>
+      </div>
+
       <aside className={canvas.directory}>
         <p className={canvas.kicker}>Workspace Directory</p>
         <nav aria-label="Workspace views">
@@ -84,7 +104,7 @@ export default function WorkspaceStage({
       </aside>
 
       <div className={canvas.center}>
-        {identity}
+        {Children.toArray(identity)}
         <div
           id="workspace-stage"
           ref={stage}
@@ -105,7 +125,7 @@ export default function WorkspaceStage({
           }}
         >
           <div key={view} className={canvas.stageArrival}>
-            {views[view]}
+            {Children.toArray(views[view])}
             {view !== "overview" ? (
               <button
                 type="button"
@@ -119,7 +139,7 @@ export default function WorkspaceStage({
         </div>
       </div>
 
-      {position}
+      {Children.toArray(position)}
     </div>
   );
 }

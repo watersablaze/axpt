@@ -478,3 +478,92 @@
   .materialStage .resource { padding: 24px 18px 18px; }
   .materialStage .resourceTitle { font-size: 18px; }
 }
+
+/* Mobile navigation serves the stage without occupying it. */
+.mobileDirectory, .mobileMaterials { display: none; }
+
+@media (max-width: 1099px) {
+  .shell { gap: 20px; padding: 20px 18px 32px; }
+  .directory { display: none; }
+  .mobileDirectory {
+    display: flex;
+    align-items: flex-end;
+    gap: 14px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #253a45;
+  }
+  .mobileDirectory label { flex: 1; min-width: 0; }
+  .mobileDirectory label > span { display: block; }
+  .mobileDirectory select, .mobileMaterials select {
+    display: block;
+    width: 100%;
+    min-height: 44px;
+    margin-top: 8px;
+    padding: 10px 30px 10px 12px;
+    border: 1px solid #36505b;
+    border-radius: 3px;
+    color: #deeaef;
+    background: #10212a;
+    font: inherit;
+    font-size: 13px;
+  }
+  .mobileDirectory button {
+    min-height: 44px;
+    padding: 10px;
+    color: #bad3df;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .mobileDirectory button span { margin-right: 5px; }
+  .identity { gap: 12px; padding-bottom: 16px; }
+  .identity .kicker { max-width: 380px; line-height: 1.8; font-size: 8px; }
+  .stage { min-height: 0; padding-top: 22px; }
+  .position { padding-top: 24px; margin-top: 12px; }
+  .position .plaque { max-width: 340px; margin: 24px auto 0; }
+  .returnOverview { margin-top: 22px; min-height: 44px; }
+  .mobileDirectory select:focus-visible,
+  .mobileDirectory button:focus-visible,
+  .mobileMaterials select:focus-visible {
+    outline: 2px solid #d4bd87;
+    outline-offset: 3px;
+  }
+}
+
+@media (max-width: 759px) {
+  .materialDirectory { display: none; }
+  .mobileMaterials { display: block; min-width: 0; }
+  .workingSet { gap: 22px; margin-top: 24px; }
+  .materialStage { max-width: none; }
+  .materialControls button { min-height: 44px; }
+  .materialPosition { margin-bottom: 18px; }
+  .cupHeader { align-items: flex-start; gap: 12px; }
+  .glyph { width: 36px; height: 36px; margin-top: 8px; }
+  .cupTitle { font-size: 21px; line-height: 1.35; }
+  .cupIntro { font-size: 12px; }
+  .guide { padding: 16px 8px 24px; }
+  .guideCopy { font-size: 13px; }
+  .guideActions button, .guideActions a { min-height: 44px; }
+}
+
+@media (max-width: 480px) {
+  .stage :global(#current-step) { padding: 18px 16px; }
+  .stage :global(#current-step-title) { font-size: 22px; gap: 10px; }
+  .orientation { margin: 22px 0; }
+  .standing { width: 100%; }
+}
+
+/* Mobile navigation remains available while the workspace scrolls. */
+@media (max-width: 1099px) {
+  .mobileDirectory {
+    position: sticky;
+    top: 0;
+    z-index: 60;
+    margin: -20px -18px 0;
+    padding: calc(12px + env(safe-area-inset-top, 0px)) 18px 12px;
+    background: #09151c;
+    box-shadow: 0 8px 18px rgba(0,0,0,.16);
+  }
+  .stage {
+    scroll-margin-top: 110px;
+  }
+}

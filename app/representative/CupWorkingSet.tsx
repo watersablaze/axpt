@@ -61,6 +61,17 @@ export default function CupWorkingSet({
 
   return (
     <div className={canvas.workingSet}>
+      <label className={canvas.mobileMaterials}>
+        <span className={canvas.kicker}>Released Materials</span>
+        <select value={current} onChange={event => selectMaterial(Number(event.target.value))}>
+          {materials.map((_, index) => (
+            <option key={resourceIds[index] || index} value={index}>
+              {String(index + 1).padStart(2, "0")} · {directoryLabel(labels[index] || "Released resource", categories[index] || "")}
+            </option>
+          ))}
+        </select>
+      </label>
+
       <nav className={canvas.materialDirectory} aria-label="Released CUP materials">
         <p className={canvas.kicker}>Released Materials</p>
         {materials.map((material, index) => (
