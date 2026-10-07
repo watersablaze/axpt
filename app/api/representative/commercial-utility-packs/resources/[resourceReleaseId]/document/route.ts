@@ -1,3 +1,5 @@
+import { resolveRepresentativeCommercialUtilityPackConsumptionWithClient } from
+  "@/domains/instruments/representative-program/commercial-utility-pack/application/resolveRepresentativeCommercialUtilityPackConsumptionWithClient";
 import { NextResponse, type NextRequest } from "next/server";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { prisma } from "@/infrastructure/db/prisma";
@@ -29,7 +31,28 @@ export async function GET(
   const blobHostname = "zjlswvetvtzvn453.private.blob.vercel-storage.com";
   const bucket = process.env.AXPT_TRANSACTION_DOCUMENT_BUCKET?.trim() || "";
 
+  const mode = request.nextUrl.searchParams.get("mode");
+  if (mode !== null && mode !== "download" && mode !== "inline") {
+    return new NextResponse(null, { status: 400, headers });
+  }
+  const download = mode === "download";
+
   try {
+    const consumption =
+      await resolveRepresentativeCommercialUtilityPackConsumptionWithClient({
+        client: prisma,
+        userId: principal.userId,
+        resourceReleaseId,
+        action: download ? "DOWNLOAD" : "VIEW",
+      });
+
+    if (!consumption.allowed) {
+      return new NextResponse(null, {
+        status: consumption.reason === "RESOURCE_UNAVAILABLE" ? 404 : 403,
+        headers,
+      });
+    }
+
     const agreement =
       await loadRepresentativeCommercialUtilityPackAgreementWithClient({
         client: prisma,
@@ -82,7 +105,7 @@ export async function GET(
       return new NextResponse(null, { status: 404, headers });
     }
 
-    const download = request.nextUrl.searchParams.get("mode") === "download";
+    // Preserve the content loader's permission check as well.
     if (download && !agreement.canDownload) {
       return new NextResponse(null, { status: 403, headers });
     }

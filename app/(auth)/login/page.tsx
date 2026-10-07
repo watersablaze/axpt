@@ -202,296 +202,94 @@ export default function LoginPage() {
   }
 
   return (
-    <main
-      className="
-        flex min-h-screen items-center
-        justify-center
-        bg-[#07151c]
-        px-6
-        text-[#ebe7dd]
-      "
-    >
-      <section
-        className="
-          w-full max-w-[430px]
-          border
-          border-[#394952]
-          bg-[#0a1b23]
-          p-8
-          shadow-2xl
-        "
-      >
-        <div
-          className="
-            mb-8
-            border-b
-            border-[#31424b]
-            pb-6
-          "
-        >
-          <p
-            className="
-              mb-3
-              text-[10px]
-              font-semibold
-              uppercase
-              tracking-[0.22em]
-              text-[#b99657]
-            "
-          >
-            AXPT / Institutional Access
+    <main className="flex min-h-screen items-center justify-center bg-[#071218] px-5 py-10 text-[#e8edf0]"
+      style={{ backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(43,87,109,0.16), transparent 65%)' }}>
+      <section aria-labelledby="access-title"
+        className="w-full max-w-[480px] overflow-hidden rounded-xl border border-[#32444e] bg-[#0b1a22] shadow-[0_24px_80px_rgba(0,0,0,0.3)]">
+        <header className="border-b border-[#32444e] bg-[#10232c] px-7 pb-7 pt-8 sm:px-9">
+          <div className="flex items-center justify-between gap-5 border-b border-[#b99657]/20 pb-5">
+            <p className="text-sm font-semibold tracking-[0.24em] text-[#d6b77f]">AXPT</p>
+            <p className="text-[10px] uppercase tracking-[0.14em] text-[#9fb9c5]">Institutional Access</p>
+          </div>
+          <p className="mt-6 text-[10px] font-semibold uppercase tracking-[0.17em] text-[#9fb9c5]">
+            {phase === 'email' ? 'Private Access Gateway' : 'Identity Verification'}
           </p>
-
-          <h1
-            className="
-              text-2xl
-              font-medium
-              tracking-[-0.025em]
-            "
-          >
-            Establish session
+          <h1 id="access-title" className="mt-3 font-serif text-[30px] leading-tight tracking-[-0.02em] text-[#eee6d7]">
+            {phase === 'email' ? 'Institutional Access' : 'Verify Your Identity'}
           </h1>
-
-          <p
-            className="
-              mt-3
-              text-sm
-              leading-6
-              text-[#8d9798]
-            "
-          >
-            Authorized AXPT participants enter
-            through a short-lived
-            verification code.
+          <p className="mt-4 text-sm leading-7 text-[#b7c9d2]">
+            {phase === 'email'
+              ? 'Authenticate your institutional identity to continue into your assigned environment.'
+              : 'Enter the six-digit access code to establish your institutional session.'}
           </p>
-        </div>
+        </header>
 
-        {phase === 'email' ? (
-          <form
-            onSubmit={requestPin}
-            className="space-y-5"
-          >
-            <div>
-              <label
-                htmlFor="email"
-                className="
-                  block
-                  text-[11px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.14em]
-                  text-[#aeb4b2]
-                "
-              >
-                Institutional email
-              </label>
+        <div className="px-7 py-7 sm:px-9">
+          <ol aria-label="Access progress" className="mb-7 grid grid-cols-2 gap-3 text-[10px] uppercase tracking-[0.12em]">
+            <li className={phase === 'email'
+              ? 'border-b border-[#c5a16b] pb-3 text-[#dec597]'
+              : 'border-b border-[#476574] pb-3 text-[#a9c2cd]'}
+              aria-current={phase === 'email' ? 'step' : undefined}>01 · Identity</li>
+            <li className={phase === 'pin'
+              ? 'border-b border-[#c5a16b] pb-3 text-[#dec597]'
+              : 'border-b border-[#2b414d] pb-3 text-[#91a8b4]'}
+              aria-current={phase === 'pin' ? 'step' : undefined}>02 · Verification</li>
+          </ol>
 
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(event) =>
-                  setEmail(
-                    event.target.value
-                  )
-                }
-                required
-                className="
-                  mt-2
-                  w-full
-                  border
-                  border-[#3b4b53]
-                  bg-[#07141a]
-                  px-3
-                  py-3
-                  text-sm
-                  text-white
-                  outline-none
-                  transition
-                  focus:border-[#9d814d]
-                "
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={busy}
-              className="
-                w-full
-                border
-                border-[#9d814d]
-                bg-[#9d814d]
-                px-4
-                py-3
-                text-xs
-                font-semibold
-                uppercase
-                tracking-[0.14em]
-                text-[#07151c]
-                transition
-                hover:bg-[#b09157]
-                disabled:cursor-wait
-                disabled:opacity-60
-              "
-            >
-              {busy
-                ? 'Requesting…'
-                : 'Request access code'}
-            </button>
-          </form>
-        ) : (
-          <form
-            onSubmit={verifyPin}
-            className="space-y-5"
-          >
-            <div>
-              <p
-                className="
-                  mb-4
-                  text-sm
-                  leading-6
-                  text-[#8d9798]
-                "
-              >
-                {message}
-              </p>
-
-              <label
-                htmlFor="pin"
-                className="
-                  block
-                  text-[11px]
-                  font-semibold
-                  uppercase
-                  tracking-[0.14em]
-                  text-[#aeb4b2]
-                "
-              >
-                Six-digit code
-              </label>
-
-              <input
-                id="pin"
-                type="text"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                pattern="[0-9]{6}"
-                maxLength={6}
-                value={pin}
-                onChange={(event) =>
-                  setPin(
-                    event.target.value
-                      .replace(
-                        /\D/g,
-                        ''
-                      )
-                      .slice(0, 6)
-                  )
-                }
-                required
-                autoFocus
-                className="
-                  mt-2
-                  w-full
-                  border
-                  border-[#3b4b53]
-                  bg-[#07141a]
-                  px-3
-                  py-4
-                  font-mono
-                  text-2xl
-                  tracking-[0.28em]
-                  text-white
-                  outline-none
-                  transition
-                  focus:border-[#9d814d]
-                "
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={
-                busy ||
-                pin.length !== 6
-              }
-              className="
-                w-full
-                border
-                border-[#9d814d]
-                bg-[#9d814d]
-                px-4
-                py-3
-                text-xs
-                font-semibold
-                uppercase
-                tracking-[0.14em]
-                text-[#07151c]
-                transition
-                hover:bg-[#b09157]
-                disabled:cursor-wait
-                disabled:opacity-60
-              "
-            >
-              {busy
-                ? 'Verifying…'
-                : 'Establish session'}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => {
+          {phase === 'email' ? (
+            <form onSubmit={requestPin} className="space-y-5" aria-busy={busy}>
+              <div>
+                <label htmlFor="email" className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-[#a9c0cc]">
+                  Institutional Email
+                </label>
+                <input id="email" name="email" type="email" autoComplete="email"
+                  value={email} onChange={event => setEmail(event.target.value)} required
+                  className="mt-3 w-full rounded border border-[#405866] bg-[#07141b] px-4 py-3.5 text-base text-[#e8edf0] outline-none transition focus:border-[#d1b17a] focus:ring-1 focus:ring-[#d1b17a]" />
+              </div>
+              <button type="submit" disabled={busy}
+                className="w-full rounded border border-[#d1b17a] bg-[#c2a16b] px-4 py-3.5 text-[11px] font-bold uppercase tracking-[0.1em] text-[#0b1720] transition hover:bg-[#d3b780] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d1b17a] disabled:cursor-wait disabled:opacity-60">
+                {busy ? 'Requesting…' : 'Request Access Code'}
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={verifyPin} className="space-y-5" aria-busy={busy}>
+              <div className="border-l-2 border-[#719baa] bg-[#10232b] px-4 py-3">
+                <p className="text-[10px] uppercase tracking-[0.1em] text-[#9fb9c5]">Requested For</p>
+                <p className="mt-1 break-all text-sm text-[#d7e3e9]">{normalizedEmail}</p>
+                <p role="status" className="mt-2 text-xs leading-6 text-[#a9c0cb]">{message}</p>
+              </div>
+              <div>
+                <label htmlFor="pin" className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-[#a9c0cc]">Six-Digit Code</label>
+                <input id="pin" type="text" inputMode="numeric" autoComplete="one-time-code"
+                  pattern="[0-9]{6}" maxLength={6} value={pin}
+                  onChange={event => setPin(event.target.value.replace(/\D/g, '').slice(0, 6))}
+                  required autoFocus
+                  className="mt-3 w-full rounded border border-[#405866] bg-[#07141b] px-4 py-4 text-center font-mono text-2xl tracking-[0.35em] text-[#e8edf0] outline-none transition focus:border-[#d1b17a] focus:ring-1 focus:ring-[#d1b17a]" />
+              </div>
+              <button type="submit" disabled={busy || pin.length !== 6}
+                className="w-full rounded border border-[#d1b17a] bg-[#c2a16b] px-4 py-3.5 text-[11px] font-bold uppercase tracking-[0.1em] text-[#0b1720] transition hover:bg-[#d3b780] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d1b17a] disabled:cursor-wait disabled:opacity-60">
+                {busy ? 'Verifying…' : 'Continue to Workspace'}
+              </button>
+              <button type="button" disabled={busy} onClick={() => {
                 setPhase('email')
                 setPin('')
                 setError('')
                 setMessage('')
               }}
-              className="
-                w-full
-                py-2
-                text-xs
-                uppercase
-                tracking-[0.12em]
-                text-[#778487]
-                hover:text-[#b9c0bd]
-              "
-            >
-              Use another address
-            </button>
-          </form>
-        )}
+                className="w-full rounded py-2 text-xs text-[#a9c0cb] underline underline-offset-4 hover:text-[#e0c490] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#d1b17a] disabled:opacity-50">
+                Use Another Address
+              </button>
+            </form>
+          )}
 
-        {error ? (
-          <p
-            className="
-              mt-5
-              border-t
-              border-[#573735]
-              pt-4
-              text-sm
-              text-[#dc8c84]
-            "
-          >
-            {error}
-          </p>
-        ) : null}
+          {error ? (
+            <p role="alert" className="mt-5 rounded border border-[#75524f] bg-[#291d21]/40 px-4 py-3 text-sm leading-6 text-[#f0b4aa]">{error}</p>
+          ) : null}
+        </div>
 
-        <p
-          className="
-            mt-8
-            border-t
-            border-[#26373f]
-            pt-5
-            text-[10px]
-            uppercase
-            tracking-[0.13em]
-            text-[#536166]
-          "
-        >
-          Governed institutional access
-        </p>
+        <footer className="border-t border-[#293f4b] px-7 py-4 text-[10px] leading-6 text-[#9bb1bc] sm:px-9">
+          Private institutional access · Assigned environments remain governed.
+        </footer>
       </section>
     </main>
   )

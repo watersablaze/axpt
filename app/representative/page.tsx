@@ -103,6 +103,35 @@ export default async function RepresentativeWorkspacePage() {
       userId: principal.userId,
     });
 
+  const reviewAvailable = Boolean(appointmentReview?.canAccept);
+  const awaitingActivation = Boolean(
+    appointmentReview?.acceptedAt && appointmentReview.status === "DRAFT"
+  );
+  const appointmentActive = appointment?.instrument.status === "ACTIVE";
+  const operativeDelegation = Boolean(
+    authorityRegister?.entries.some(entry =>
+      entry.authority?.authorityClass === "DELEGATED"
+    )
+  );
+  const currentStepTitle = reviewAvailable
+    ? "Representative Appointment Review"
+    : awaitingActivation
+      ? "Awaiting French-Ward Activation"
+      : appointmentActive
+        ? "Active Appointment"
+        : appointment
+          ? "Appointment Record"
+          : "Appointment Preparation";
+  const currentStepCopy = reviewAvailable
+    ? "Your Appointment Instrument has been prepared. Review and record your acceptance to continue."
+    : awaitingActivation
+      ? "Your acceptance is recorded. Representative action is complete; French-Ward activation follows separately."
+      : appointmentActive
+        ? "Your appointment is active. Consult the Authority Register and released resources before undertaking an action."
+        : appointment
+          ? "Consult your appointment record for its current institutional state."
+          : "Your Program record is established. Appointment preparation is the next institutional step.";
+
   return (
     <main
       className="min-h-screen bg-[#071015] text-[#e9edf0]"
@@ -113,7 +142,7 @@ export default async function RepresentativeWorkspacePage() {
       <div className="mx-auto max-w-[1600px] px-3 py-3 md:px-5 md:py-5">
         <div className="grid min-h-[calc(100vh-40px)] rounded-[24px] border border-white/[0.06] bg-[#0b1318]/90 shadow-[0_30px_120px_rgba(0,0,0,0.45)] lg:grid-cols-[minmax(0,1fr)_286px]">
           <section className="min-w-0">
-            <header className="sticky top-3 z-40 mx-3 mt-3 rounded-[16px] border border-white/[0.065] bg-[#091116]/95 px-5 py-4 shadow-xl backdrop-blur-2xl md:mx-4 md:px-6">
+            <header className="relative z-40 lg:sticky lg:top-3 mx-3 mt-3 rounded-[16px] border border-white/[0.065] bg-[#091116]/95 px-5 py-4 shadow-xl backdrop-blur-2xl md:mx-4 md:px-6">
               <div className="flex flex-wrap items-center justify-between gap-4">
                 <div>
                   <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#b9985b]">French-Ward, Inc.</p>
@@ -129,30 +158,56 @@ export default async function RepresentativeWorkspacePage() {
               </div>
             </header>
 
-            <div className="space-y-6 px-5 py-8 md:px-9">
-              <section id="program-record" className="rounded-[20px] border border-white/[0.06] bg-gradient-to-br from-[#10232c] to-[#0a141a] p-6 md:p-8">
+            <div className="space-y-5 px-5 py-6 md:px-8">
+              <section id="current-step" aria-labelledby="current-step-title"
+                className="scroll-mt-36 border border-[#8c7855]/40 border-l-2 border-l-[#c5a25f] bg-[#13232a] px-5 py-5 md:px-6">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d7b269]">Current Step</p>
+                <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h1 id="current-step-title" className="font-serif text-2xl leading-tight text-[#eee6d7]">{currentStepTitle}</h1>
+                    <p className="mt-3 max-w-2xl text-sm leading-6 text-[#b7c9d2]">{currentStepCopy}</p>
+                  </div>
+                  {reviewAvailable && appointment ? (
+                    <Link href={`/representative/appointments/${appointment.id}`}
+                      className="inline-flex shrink-0 items-center justify-center rounded border border-[#c5a25f]/60 bg-[#c5a25f]/10 px-4 py-3 text-xs font-semibold text-[#e0c490] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d7b269]">
+                      Review Prepared Appointment
+                    </Link>
+                  ) : null}
+                </div>
+              </section>
+              <section id="program-record" className="scroll-mt-36 rounded-[12px] border border-white/[0.06] bg-gradient-to-br from-[#10232c] to-[#0a141a] p-5 md:p-6">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-[#b9985b]">Representative Field</p>
-                <h1 className="mt-4 text-3xl font-medium tracking-tight md:text-4xl">Your institutional workspace</h1>
+                <h2 className="mt-3 text-2xl font-medium tracking-tight">Program Record</h2>
                 <p className="mt-4 max-w-2xl text-sm leading-7 text-white/55">
                   Review your Program record, appointment, and released field resources.
                 </p>
-                <dl className="mt-7 grid gap-5 border-t border-white/[0.06] pt-6 sm:grid-cols-3">
+                <dl className="mt-5 grid gap-4 border-t border-white/[0.06] pt-6 sm:grid-cols-3">
                   <div><dt className="text-xs text-white/40">Admission</dt><dd className="mt-2 text-sm">{displayDate(workspace.admittedAt)}</dd></div>
                   <div><dt className="text-xs text-white/40">Program standing</dt><dd className="mt-2 text-sm text-[#d7b269]">{humanize(workspace.standing)}</dd></div>
                   <div><dt className="text-xs text-white/40">Intake record</dt><dd className="mt-2 break-words font-mono text-xs">{workspace.intakeReference ?? "—"}</dd></div>
                 </dl>
               </section>
 
-              <section id="appointment" className="rounded-[20px] border border-white/[0.06] bg-[#091a20]/65 p-6 md:p-8">
+              <section id="appointment" className="scroll-mt-36 rounded-[12px] border border-white/[0.06] bg-[#091a20]/65 p-5 md:p-6">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-[#719baa]">Appointment Record</p>
                 {appointment ? (
                   <>
-                    <h2 className="mt-4 text-2xl font-medium">{appointment.instrument.title}</h2>
+                    <h2 className="mt-3 font-serif text-2xl text-[#eee6d7]">
+                      {appointment.instrument.status === "DRAFT" ? "Prepared Appointment" : "Appointment Record"}
+                    </h2>
+                    <p className="mt-2 text-xs leading-6 text-[#a9bec9]">{appointment.instrument.title}</p>
                     <p className="mt-3 break-words font-mono text-xs text-white/45">{appointment.instrument.reference}</p>
-                    <dl className="mt-6 grid gap-5 sm:grid-cols-3">
-                      <div><dt className="text-xs text-white/40">Instrument status</dt><dd className="mt-2 text-sm">{humanize(appointment.instrument.status)}</dd></div>
+                    <dl className="mt-5 grid gap-4 sm:grid-cols-3">
+                      <div><dt className="text-xs text-white/40">Instrument status</dt><dd className="mt-2 text-sm">{appointment.instrument.status === "DRAFT"
+                        ? awaitingActivation
+                          ? "Awaiting French-Ward Activation"
+                          : reviewAvailable
+                            ? "Prepared for Representative Review"
+                            : "Draft"
+                        : humanize(appointment.instrument.status)}</dd></div>
                       <div><dt className="text-xs text-white/40">Appointment class</dt><dd className="mt-2 text-sm">{humanize(appointment.appointmentClass)}</dd></div>
-                      <div><dt className="text-xs text-white/40">Effective date</dt><dd className="mt-2 text-sm">{displayDate(appointment.effectiveAt)}</dd></div>
+                      <div><dt className="text-xs text-white/40">Appointment form</dt><dd className="mt-2 text-sm">{appointmentReview ? humanize(appointmentReview.appointmentForm) : "Unavailable"}</dd></div>
+                      <div><dt className="text-xs text-white/40">Effective date</dt><dd className="mt-2 text-sm">{appointment.effectiveAt ? displayDate(appointment.effectiveAt) : "Established upon activation"}</dd></div>
                     </dl>
                     <p className="mt-5 rounded-lg border border-[#c5a25f]/25 bg-[#c5a25f]/[0.05] p-4 text-xs leading-6 text-[#d7b269]">
                       {appointmentReview?.acceptedAt
@@ -161,9 +216,9 @@ export default async function RepresentativeWorkspacePage() {
                               ? " · Awaiting operator activation"
                               : ""
                           }`
-                        : "Representative acceptance pending"}
+                        : reviewAvailable ? "Prepared for your review and acceptance" : "No representative acceptance recorded"}
                     </p>
-                    <Link href={`/representative/appointments/${appointment.id}`} className="mt-6 inline-flex rounded-lg border border-[#c5a25f]/40 bg-[#c5a25f]/[0.07] px-5 py-3 text-xs font-semibold text-[#d7b269]">Review Appointment</Link>
+                    <Link href={`/representative/appointments/${appointment.id}`} className="mt-6 inline-flex rounded-lg border border-[#c5a25f]/40 bg-[#c5a25f]/[0.07] px-5 py-3 text-xs font-semibold text-[#d7b269]">{reviewAvailable ? "Review and Accept Appointment" : "View Appointment Record"}</Link>
                   </>
                 ) : (
                   <>
@@ -173,9 +228,13 @@ export default async function RepresentativeWorkspacePage() {
                 )}
               </section>
 
-              {authorityRegister ? <AuthorityRegister register={authorityRegister} /> : null}
+              {authorityRegister ? (
+                <div id="authority-register" className="scroll-mt-36">
+                  <AuthorityRegister register={authorityRegister} />
+                </div>
+              ) : null}
 
-              <section id="field-resources" className="rounded-[20px] border border-[#17323c]/80 bg-[linear-gradient(135deg,#0e1c22,#091419)] p-6 md:p-8">
+              <section id="field-resources" className="scroll-mt-36 rounded-[12px] border border-[#17323c]/80 bg-[linear-gradient(135deg,#0e1c22,#091419)] p-5 md:p-6">
                 <p className="text-[10px] uppercase tracking-[0.2em] text-[#719baa]">Representative Field Resources</p>
                 <h2 className="mt-4 text-2xl font-medium">Commercial Utility Pack</h2>
                 {commercialUtilityPack ? (
@@ -200,8 +259,8 @@ export default async function RepresentativeWorkspacePage() {
                                 ) : null}
                                 <p className="mt-3 text-xs leading-6 text-white/45">
                                   View: Permitted · Download: {resource.canDownload ? "Permitted" : "Withheld"} ·
-                                  Present: {resource.canPresent ? "Permitted" : "Withheld"} ·
-                                  Transmit: {resource.canTransmit ? "Permitted" : "Withheld"}
+                                  Present: {resource.canPresent ? "Requires authority and context evaluation" : "Withheld"} ·
+                                  Transmit: {resource.canTransmit ? "Requires authority and context evaluation" : "Withheld"}
                                 </p>
                               </li>
                             ))}
@@ -211,23 +270,34 @@ export default async function RepresentativeWorkspacePage() {
                     </div>
                   </>
                 ) : (
-                  <p className="mt-4 text-sm leading-7 text-white/50">No Commercial Utility Pack resources are currently released for viewing in your workspace.</p>
+                  <div className="mt-5 border-l-2 border-[#527f8a]/60 bg-[#0b1920] px-4 py-4">
+                    <p className="text-sm font-medium text-[#b9cfd8]">Field resources pending release</p>
+                    <p className="mt-2 max-w-2xl text-xs leading-6 text-[#9fb5c0]">
+                      Resources will appear here when released for your account.
+                      No Commercial Utility Pack resources are currently available for viewing.
+                    </p>
+                  </div>
                 )}
               </section>
             </div>
           </section>
 
           <aside className="min-w-0 border-t border-[#17323c]/70 p-4 lg:border-l lg:border-t-0">
-            <div className="sticky top-4 space-y-5 rounded-[20px] border border-[#17323c]/80 bg-[linear-gradient(180deg,#071117,#050d12)] p-5">
+            <div className="lg:sticky lg:top-4 space-y-5 rounded-[12px] border border-[#17323c]/80 bg-[linear-gradient(180deg,#071117,#050d12)] p-5">
               <p className="text-[10px] uppercase tracking-[0.2em] text-[#719baa]">Field Navigation</p>
               <nav aria-label="Representative workspace" className="flex flex-col gap-2 text-sm">
+                <a href="#current-step" className="rounded-lg px-3 py-2 text-[#d7b269] hover:bg-white/[0.04]">Current Step</a>
                 <a href="#program-record" className="rounded-lg px-3 py-3 text-white/70 hover:bg-white/[0.04]">Program Record</a>
                 <a href="#appointment" className="rounded-lg px-3 py-3 text-white/70 hover:bg-white/[0.04]">Appointment</a>
+                {authorityRegister ? <a href="#authority-register" className="rounded-lg px-3 py-2 text-white/70 hover:bg-white/[0.04]">Authority Register</a> : null}
                 <a href="#field-resources" className="rounded-lg px-3 py-3 text-white/70 hover:bg-white/[0.04]">Field Resources</a>
               </nav>
               <div className="border-t border-white/[0.06] pt-5">
-                <p className="text-xs font-medium text-[#d7b269]">Authority</p>
-                <p className="mt-3 text-xs leading-6 text-white/50">Program standing, appointment status, and resource access do not establish unlimited or unrecorded authority. Authority remains separately governed.</p>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[#719baa]">Authority Status</p>
+                <p className="mt-3 text-sm font-medium leading-6 text-[#d7b269]">
+                  {operativeDelegation ? "Delegated authority recorded" : "No operative delegated authority"}
+                </p>
+                <p className="mt-3 text-xs leading-6 text-white/50">Appointment access and Program standing do not independently establish authority. Consult each recorded authority and its conditions.</p>
               </div>
               <div className="border-t border-white/[0.06] pt-5">
                 <p className="text-xs text-white/40">Program reference</p>

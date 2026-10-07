@@ -1,3 +1,5 @@
+import { resolveRepresentativeCommercialUtilityPackConsumptionWithClient } from
+  "@/domains/instruments/representative-program/commercial-utility-pack/application/resolveRepresentativeCommercialUtilityPackConsumptionWithClient";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
@@ -37,6 +39,16 @@ export default async function RepresentativeResourcePage({
     const next = `/representative/resources/${encodeURIComponent(resourceReleaseId)}`;
     redirect(`/login?next=${encodeURIComponent(next)}`);
   }
+
+  const consumption =
+    await resolveRepresentativeCommercialUtilityPackConsumptionWithClient({
+      client: prisma,
+      userId: principal.userId,
+      resourceReleaseId,
+      action: "VIEW",
+    });
+
+  if (!consumption.allowed) notFound();
 
   const resource =
     await loadRepresentativeCommercialUtilityPackResourceWithClient({
