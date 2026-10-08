@@ -6,6 +6,8 @@ import {
   acceptRepresentativeAppointment,
   loadRepresentativeAppointmentReview,
 } from "@/domains/instruments/representative-program/application/representativeAppointmentAcceptance";
+import { loadOwnedIssuedAppointmentCertificate } from
+  "@/domains/instruments/representative-program/application/issueRepresentativeAppointmentCredential";
 import AcceptanceForm from "./AcceptanceForm";
 import styles from "./appointment.module.css";
 
@@ -47,6 +49,10 @@ export default async function AppointmentPage({
     appointmentId,
   });
   if (!review) notFound();
+
+  const issuedCertificate = await loadOwnedIssuedAppointmentCertificate({
+    client: prisma, userId: principal.userId, appointmentId,
+  });
 
   const { error } = await searchParams;
   const reviewHash = review.reviewHash;
@@ -188,6 +194,17 @@ export default async function AppointmentPage({
                 >
                   Download Certificate · PDF
                 </a>
+                {issuedCertificate ? (
+                  <p style={{ marginTop: 16 }}>
+                    <Link
+                      href={`/french-ward/representative-program/verify/appointments/${issuedCertificate.contentHash}`}
+                      prefetch={false}
+                      className={styles.back}
+                    >
+                      Open Shareable Verification ↗
+                    </Link>
+                  </p>
+                ) : null}
               </section>
             ) : null}
 

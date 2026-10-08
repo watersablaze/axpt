@@ -9,6 +9,9 @@ import {
   loadOwnedIssuedAppointmentCertificate,
 } from "../../src/domains/instruments/representative-program/application/issueRepresentativeAppointmentCredential";
 
+import { verifyRepresentativeAppointmentCertificate } from
+  "../../src/domains/instruments/representative-program/application/verifyRepresentativeAppointmentCertificate";
+
 async function main() {
   const acceptance: any[] = [];
   const certificates: any[] = [];
@@ -77,7 +80,9 @@ async function main() {
       }),
     },
     instrumentEvidence: {
-      findMany: async () => certificates,
+      findMany: async ({ where }: any) => certificates.filter(item =>
+        !where.contentHash || item.contentHash === where.contentHash
+      ),
       findUnique: async ({ where }: any) =>
         certificates.find(item => item.id === where.id) ?? null,
       create: async ({ data }: any) => {
@@ -219,6 +224,69 @@ async function main() {
   assert.equal(appointment.instrument.status, "ACTIVE");
   assert.equal(appointment.participant.standing, "ACTIVE");
   console.log("✓ issuance preserves acceptance, appointment status, and standing");
+  const verify = (certificateHash = certificates[0].contentHash) =>
+    verifyRepresentativeAppointmentCertificate({
+      client: fake, certificateHash,
+    });
+
+  let verified = await verify();
+  assert.equal(verified?.issuanceRecognized, true);
+  assert.equal(verified?.appointmentCurrentlyEligible, true);
+  assert.equal(await verify("invalid"), null);
+  assert.equal(await verify("0".repeat(64)), null);
+
+  const disclosed = JSON.stringify(verified);
+  for (const value of [
+    "owner-a", "participant-a", "appointment-a", "instrument-a",
+    certificates[0].uri,
+  ]) assert.equal(disclosed.includes(value), false);
+  console.log("✓ recognized issuance exposes only the public appointment projection");
+
+  appointment.participant.standing = "SUSPENDED";
+  verified = await verify();
+  assert.equal(verified?.issuanceRecognized, true);
+  assert.equal(verified?.appointmentCurrentlyEligible, false);
+  appointment.participant.standing = "ACTIVE";
+
+  appointment.endedAt = new Date() as any;
+  assert.equal((await verify())?.appointmentCurrentlyEligible, false);
+  appointment.endedAt = null;
+
+  const effectiveAt = appointment.effectiveAt;
+  appointment.effectiveAt = new Date(Date.now() + 86400000);
+  assert.equal((await verify())?.appointmentCurrentlyEligible, false);
+  appointment.effectiveAt = effectiveAt;
+
+  appointment.instrument.title = "Changed Appointment";
+  assert.equal((await verify())?.appointmentCurrentlyEligible, false);
+  appointment.instrument.title = "Test Appointment";
+
+  const removedAcceptance = acceptance.pop();
+  assert.equal((await verify())?.appointmentCurrentlyEligible, false);
+  acceptance.push(removedAcceptance);
+  console.log("✓ suspension, termination, future effect, and changed acceptance block eligibility");
+
+  const metadata = certificates[0].metadata;
+  certificates[0].metadata = { ...metadata, signatoryTitle: "Different" };
+  await assert.rejects(verify, /VERIFICATION_EVIDENCE_CONFLICT/);
+  certificates[0].metadata = metadata;
+  certificates.push({ ...certificates[0], id: "duplicate" });
+  await assert.rejects(verify, /VERIFICATION_EVIDENCE_CONFLICT/);
+  certificates.pop();
+
+  const findAppointment = fake.representativeProgramAppointment.findUnique;
+  fake.representativeProgramAppointment.findUnique = async () => {
+    throw new Error("TEST_DATABASE_UNAVAILABLE");
+  };
+  await assert.rejects(verify, /TEST_DATABASE_UNAVAILABLE/);
+  fake.representativeProgramAppointment.findUnique = findAppointment;
+
+  assert.equal((await verify())?.appointmentCurrentlyEligible, true);
+  assert.equal(certificates.length, 1);
+  assert.equal(events.length, 1);
+  assert.deepEqual({ renders, stores }, beforeReplay);
+  console.log("✓ conflicting records and database outages fail closed without mutation");
+  console.log("ARP_APPOINTMENT_CERTIFICATE_VERIFICATION_OK");
   console.log("ARP_APPOINTMENT_CERTIFICATE_ISSUANCE_OK");
 }
 
