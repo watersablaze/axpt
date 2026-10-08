@@ -1,3 +1,4 @@
+import type { InstrumentAuthority } from "../../contracts";
 import type { PrismaClient } from "@prisma/client";
 import {
   REPRESENTATIVE_AUTHORITY_KEY,
@@ -20,21 +21,81 @@ export async function loadRepresentativeAuthorityRegister(params: {
   const userId = params.userId.trim();
   if (!userId || !appointmentId || appointmentId.length > 191) return null;
 
-  const appointment: {
-    participant: { userId: string | null };
-  } | null = await params.client.representativeProgramAppointment.findUnique({
-    where: { id: appointmentId },
-    select: { participant: { select: { userId: true } } },
-  });
+  const appointment =
+    await params.client.representativeProgramAppointment.findUnique({
+      where: { id: appointmentId },
+      include: {
+        participant: true,
+        instrument: true,
+        instrumentParty: true,
+      },
+    });
 
   if (!appointment || appointment.participant.userId !== userId) return null;
 
   const at = new Date();
+  const candidates: InstrumentAuthority[] = await params.client.instrumentAuthority.findMany({
+    where: {
+      instrumentId: appointment.instrumentId,
+      authorityKey: { in: Object.values(REPRESENTATIVE_AUTHORITY_KEY) },
+      revokedAt: null,
+    },
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      instrumentId: true,
+      authorityKey: true,
+      title: true,
+      authorityClass: true,
+      holderPartyId: true,
+      action: true,
+      conditions: true,
+      effectiveAt: true,
+      expiresAt: true,
+      revokedAt: true,
+      createdByUserId: true,
+    },
+  });
+
+  // Request-local read adapter. The canonical resolver retains every
+  // integrity, lifecycle, standing, and authority decision.
+  // These delegates support only the resolver's two known read shapes.
+  const resolutionClient = {
+    representativeProgramAppointment: {
+      findUnique: async (query: { where: { id?: string } }) => {
+        if (query.where.id !== appointmentId) {
+          throw new Error("[ARP_AUTHORITY_REGISTER_READ_SCOPE_CONFLICT]");
+        }
+        return appointment;
+      },
+    },
+    instrumentAuthority: {
+      findMany: async (query: {
+        where: {
+          instrumentId?: string;
+          authorityKey?: string;
+          revokedAt?: null;
+        };
+      }) => {
+        if (
+          query.where.instrumentId !== appointment.instrumentId ||
+          typeof query.where.authorityKey !== "string" ||
+          query.where.revokedAt !== null
+        ) {
+          throw new Error("[ARP_AUTHORITY_REGISTER_READ_SCOPE_CONFLICT]");
+        }
+        return candidates.filter(candidate =>
+          candidate.authorityKey === query.where.authorityKey
+        );
+      },
+    },
+  } as unknown as Client;
+
   const entries = await Promise.all(
     Object.values(REPRESENTATIVE_AUTHORITY_KEY).map(async authorityKey => {
       const result =
         await resolveRepresentativeProgramAuthorityExercisabilityWithClient({
-          client: params.client,
+          client: resolutionClient,
           appointmentId,
           authorityKey,
           at,
