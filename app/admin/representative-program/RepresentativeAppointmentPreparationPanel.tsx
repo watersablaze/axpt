@@ -1,5 +1,6 @@
 "use client";
 import RepresentativeAuthorityPanel from "./RepresentativeAuthorityPanel";
+import RepresentativeAppointmentCertificatePanel from "./RepresentativeAppointmentCertificatePanel";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
@@ -208,6 +209,12 @@ export default function RepresentativeAppointmentPreparationPanel({
           Refresh Record
         </button>
       </div>
+      {!loading && !error && appointment?.status === "ACTIVE" ? (
+        <RepresentativeAppointmentCertificatePanel
+          key={appointment.appointmentId}
+          appointmentId={appointment.appointmentId}
+        />
+      ) : null}
       {appointment ? (
         <RepresentativeAuthorityPanel
           key={appointment.appointmentId + appointment.status}

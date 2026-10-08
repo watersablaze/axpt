@@ -164,6 +164,33 @@ export default async function AppointmentPage({
               </div>
             </dl>
 
+            {review.status === "ACTIVE" &&
+              review.standing === "ACTIVE" &&
+              review.acceptedAt &&
+              review.effectiveAt &&
+              review.effectiveAt.getTime() <= Date.now() &&
+              review.endedAt === null &&
+              (!review.expiresAt ||
+                new Date(review.expiresAt).getTime() > Date.now()) ? (
+              <section className={styles.basis} aria-labelledby="appointment-certificate">
+                <p className={styles.overline}>Presentable Record</p>
+                <h2 id="appointment-certificate" className={styles.sectionTitle}>
+                  Certificate of Appointment
+                </h2>
+                <p className={styles.prose}>
+                  A documentary copy of your recorded appointment.
+                  Delegated authority remains separately governed.
+                </p>
+                <a
+                  href={`/api/representative/appointments/${encodeURIComponent(appointmentId)}/credential`}
+                  className={styles.back}
+                  style={{ display: "inline-flex", marginTop: 18 }}
+                >
+                  Download Certificate · PDF
+                </a>
+              </section>
+            ) : null}
+
             <section className={styles.basis} aria-labelledby="appointment-basis">
               <p className={styles.overline}>Appointment Basis</p>
               <h2 id="appointment-basis" className={styles.sectionTitle}>
