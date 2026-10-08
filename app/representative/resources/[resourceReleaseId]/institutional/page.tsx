@@ -1,3 +1,5 @@
+import { resolveRepresentativeCommercialUtilityPackConsumptionWithClient } from
+  "@/domains/instruments/representative-program/commercial-utility-pack/application/resolveRepresentativeCommercialUtilityPackConsumptionWithClient";
 import Link from "next/link";
 import {
   notFound,
@@ -60,6 +62,16 @@ export default async function RepresentativeInstitutionalResourcePage({
       `/login?next=${encodeURIComponent(next)}`,
     );
   }
+
+  const consumption =
+    await resolveRepresentativeCommercialUtilityPackConsumptionWithClient({
+      client: prisma,
+      userId: principal.userId,
+      resourceReleaseId,
+      action: "VIEW",
+    });
+
+  if (!consumption.allowed) notFound();
 
   const resource =
     await loadRepresentativeCommercialUtilityPackInstitutionalResourceWithClient({
@@ -241,11 +253,16 @@ export default async function RepresentativeInstitutionalResourcePage({
                     ) : null}
 
                     <p className="mt-4 text-xs text-[#d8c39b]">
-                      Recognition:{" "}
+                      Assertion recognition:{" "}
                       {assertion.recognition
                         ? humanize(assertion.recognition.outcome)
                         : "No current recognition recorded"}
                     </p>
+                    {assertion.recognition?.limitation ? (
+                      <p className="mt-3 text-sm leading-7 text-[#d8c39b]">
+                        Recorded limitation: {assertion.recognition.limitation}
+                      </p>
+                    ) : null}
                   </section>
                 ))}
               </div>
@@ -313,6 +330,13 @@ export default async function RepresentativeInstitutionalResourcePage({
 
             <p className="mt-4 text-sm leading-7 text-[#b9b0a3]">
               {boundary.statement}
+            </p>
+
+            <p className="mt-4 text-sm leading-7 text-[#d8c39b]">
+              This record concerns source-side institutional assertions.
+              It does not delegate source authority to you. Your authority
+              to present or transmit this material requires a separate
+              Authorized Representation Program decision for the intended use.
             </p>
 
             <p className="mt-4 text-xs leading-6 text-[#8d8377]">
