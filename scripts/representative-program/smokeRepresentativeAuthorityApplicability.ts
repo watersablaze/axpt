@@ -389,11 +389,27 @@ async function main() {
 
   assert.equal(
     approved.applicable,
+    false,
+  );
+
+  assert.equal(
+    approved.reason,
+    REPRESENTATIVE_AUTHORITY_APPLICABILITY_REASON
+      .PRIOR_APPROVAL_REQUIRED,
+  );
+
+  assert.equal(
+    approved.approvalRequired,
     true,
   );
 
+  assert.equal(
+    approved.approvalAuthority,
+    "French-Ward Administration",
+  );
+
   console.log(
-    "✓ opaque approval reference satisfies V1 approval-presence gate",
+    "✓ opaque approval reference cannot satisfy verified prior approval",
   );
 
   const monetary =

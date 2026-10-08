@@ -90,7 +90,7 @@ function main() {
 
   assert.ok(
     projection.operatingContinuum.includes(
-      "Passage",
+      "Delivery & Passage",
     ),
   );
 

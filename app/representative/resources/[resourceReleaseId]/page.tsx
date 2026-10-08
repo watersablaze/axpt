@@ -27,6 +27,53 @@ function ContentList({
   );
 }
 
+function ProfileDefinition({ items }: { items: readonly string[] }) {
+  return (
+    <section className="mt-8 border-t border-[#392f27] pt-6">
+      <h2 className="text-lg font-medium text-[#d8c39b]">Institutional Identity</h2>
+      <div className="mt-4 space-y-4 text-sm leading-7 text-[#c9c0b3]">
+        {items.map((item, index) => <p key={index}>{item}</p>)}
+      </div>
+    </section>
+  );
+}
+
+function ProfileDomains({ items }: { items: readonly string[] }) {
+  return (
+    <section className="mt-8 border-t border-[#392f27] pt-6">
+      <h2 className="text-lg font-medium text-[#d8c39b]">Fields of Activity</h2>
+      <ul className="mt-4 flex flex-wrap gap-2">
+        {items.map((item, index) => (
+          <li key={index} className="border border-[#40362d] bg-[#211a13] px-3 py-2 text-sm text-[#d8c39b]">
+            {item}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function ProfileContinuum({ items }: { items: readonly string[] }) {
+  return (
+    <section className="mt-8 border-t border-[#392f27] pt-6">
+      <h2 className="text-lg font-medium text-[#d8c39b]">Operating Sequence</h2>
+      <p className="mt-3 text-sm leading-6 text-[#b9b0a3]">
+        A working sequence shaped by the requirements of each transaction.
+      </p>
+      <ol className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((item, index) => (
+          <li key={index} className="flex items-center gap-3 border-l border-[#6b5535] py-2 pl-3">
+            <span aria-hidden="true" className="font-mono text-xs text-[#b99657]">
+              {String(index + 1).padStart(2, "0")}
+            </span>
+            <span className="text-sm text-[#eee7da]">{item}</span>
+          </li>
+        ))}
+      </ol>
+    </section>
+  );
+}
+
 export default async function RepresentativeResourcePage({
   params,
 }: {
@@ -59,6 +106,15 @@ export default async function RepresentativeResourcePage({
 
   if (!resource) notFound();
 
+  const profileDownload = resource.kind === "INSTITUTIONAL_PROFILE"
+    ? await resolveRepresentativeCommercialUtilityPackConsumptionWithClient({
+        client: prisma,
+        userId: principal.userId,
+        resourceReleaseId,
+        action: "DOWNLOAD",
+      })
+    : null;
+
   return (
     <main className="min-h-screen bg-[#120f0c] px-6 py-10 text-[#eee7da]">
       <div className="mx-auto max-w-4xl">
@@ -79,6 +135,14 @@ export default async function RepresentativeResourcePage({
 
           {resource.kind === "INSTITUTIONAL_PROFILE" ? (
             <>
+              {profileDownload?.allowed && (
+                <a
+                  href={`/api/representative/commercial-utility-packs/resources/${encodeURIComponent(resourceReleaseId)}/profile`}
+                  className="mt-5 inline-block border border-[#6b5535] px-4 py-2 text-sm text-[#d8c39b]"
+                >
+                  Download Profile · HTML
+                </a>
+              )}
               <h1 className="mt-5 text-3xl font-medium tracking-[-0.03em]">
                 {resource.content.displayName} Institutional Profile
               </h1>
@@ -94,11 +158,11 @@ export default async function RepresentativeResourcePage({
               <p className="mt-4 text-sm leading-7 text-[#b9b0a3]">
                 {resource.content.orientation}
               </p>
-              <ContentList title="Institutional Definition" items={resource.content.institutionalDefinition} />
-              <ContentList title="Domains" items={resource.content.domains} />
+              <ProfileDefinition items={resource.content.institutionalDefinition} />
+              <ProfileDomains items={resource.content.domains} />
               <ContentList title="Practice Areas" items={resource.content.practiceAreas} />
               <ContentList title="Operating Principles" items={resource.content.operatingPrinciples} />
-              <ContentList title="Operating Continuum" items={resource.content.operatingContinuum} />
+              <ProfileContinuum items={resource.content.operatingContinuum} />
             </>
           ) : (
             <>

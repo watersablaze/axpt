@@ -301,8 +301,7 @@ export async function resolveRepresentativeProgramAuthorityApplicabilityWithClie
 
   if (
     conditions.requiresPriorApproval ===
-      true &&
-    !context.approvalReference
+      true
   ) {
     return result(
       false,
@@ -341,14 +340,5 @@ export async function resolveRepresentativeProgramAuthorityApplicabilityWithClie
     true,
     REPRESENTATIVE_AUTHORITY_APPLICABILITY_REASON
       .APPLICABLE,
-    conditions.requiresPriorApproval === true
-      ? {
-          approvalRequired:
-            true,
-
-          approvalAuthority:
-            conditions.approvalAuthority,
-        }
-      : undefined,
   );
 }

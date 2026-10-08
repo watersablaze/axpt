@@ -39,49 +39,53 @@ export const FRENCH_WARD_INSTITUTIONAL_PROFILE:
       "French-Ward",
 
     classification:
-      "Trade, Authority & Passage",
+      "International Trade & Commercial Operations",
 
     publicDescription:
-      "French-Ward coordinates source-side relationships, commercial documentation, institutional readiness, and responsible cross-border trade.",
+      "French-Ward, Inc. develops and conducts international commercial relationships, bringing source engagement, transaction documentation, delivery coordination, and settlement preparation into a governed process.",
 
     orientation:
-      "French-Ward studies and coordinates the conditions that allow high-value trade to move with attributable authority, documentary continuity, lawful passage, and settlement integrity.",
+      "French-Ward works to turn commercial opportunities into executable transactions through clear responsibilities, documented authority, agreed terms, and coordinated performance.",
 
     institutionalDefinition: [
-      "French-Ward operates where source authority, commercial passage, documentary governance, and field intelligence meet.",
+      "French-Ward, Inc. is a Florida corporation engaged in international trade and commercial operations. Its work connects source relationships and counterparties with the documentation, decisions, and practical arrangements required to advance a transaction.",
 
-      "Within AXPT, French-Ward grounds institutional architecture in real trade corridors, counterparties, evidence, and execution conditions.",
+      "French-Ward’s capacity in a particular relationship—including appointed reseller, contracting seller, or custodian—is established by the applicable agreements and authority records. Those records define the scope and conditions of its role.",
+
+      "French-Ward uses AXPT to organize institutional records, controlled access, commercial workflows, and transaction continuity.",
     ],
 
     domains: [
-      "Trade",
-      "Commodity Architecture",
-      "Source-Side Coordination",
-      "Institutional Readiness",
-      "Settlement & Passage",
+      "International Trade",
+      "Commodity Commerce",
+      "Source Relationships",
+      "Commercial Governance",
+      "Transaction Execution",
     ],
 
     practiceAreas: [
-      "Source & Authority",
-      "Commercial Documentation",
-      "Transaction Readiness",
-      "Delivery & Passage",
-      "Settlement Coordination",
+      "Establishing source and counterparty relationships",
+      "Preparing and maintaining commercial documentation",
+      "Assessing transaction readiness and outstanding requirements",
+      "Coordinating delivery and cross-border arrangements",
+      "Preparing settlement instructions and coordinating performance",
     ],
 
     operatingPrinciples: [
       "Authority must be attributable.",
-      "Evidence must remain current.",
-      "Movement requires more than possession.",
-      "Settlement requires more than access to a rail.",
+      "Commercial roles and authority must be documented.",
+      "Statements and commitments must remain within approved terms and authority.",
+      "Evidence must be current and sufficient for the decision it supports.",
+      "Transaction readiness requires alignment between documentation and practical execution conditions.",
+      "Delivery and settlement responsibilities must be clear before execution.",
     ],
 
     operatingContinuum: [
-      "Source",
+      "Source Engagement",
       "Authority",
-      "Custodianship",
+      "Commercial Terms",
       "Documentation",
-      "Passage",
+      "Delivery & Passage",
       "Settlement",
     ],
   };
