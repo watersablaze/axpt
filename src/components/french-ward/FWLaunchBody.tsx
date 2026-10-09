@@ -1,6 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import type { PublicFrenchWardProfile } from "@/domains/institutions/french-ward/projectPublicFrenchWardProfile";
+
 import styles from "./FWLaunchBody.module.css";
 
 const practiceAreas = [
@@ -18,15 +20,11 @@ const operatingArticles = [
   ["IV", "Settlement requires more than access to a rail."],
 ];
 
-const progression = [
-  ["01", "Intake"],
-  ["02", "Review"],
-  ["03", "Qualification"],
-  ["04", "Dossier"],
-  ["05", "Execution"],
-];
-
-export default function FWLaunchBody() {
+export default function FWLaunchBody({
+  profile,
+}: {
+  profile: PublicFrenchWardProfile;
+}) {
   return (
     <div className={styles.surface}>
       {/* ─────────────────────────────
@@ -41,25 +39,21 @@ export default function FWLaunchBody() {
         <div className={styles.titleLeafInner}>
           <div className={styles.titleRegister}>
             <span>Institutional Folio / 2026</span>
-            <span>Secure Commodity Management</span>
+            <span>{profile.classification}</span>
           </div>
 
           <div className={styles.titleComposition}>
             <div className={styles.titleInscription}>
               <h1 id="fw-title">
-                FRENCH-WARD, INC.
+                {profile.displayName}
               </h1>
 
               <p className={styles.custodialThesis}>
-                Custodianship for sovereign wealth in passage.
+                {profile.custodianshipThesis}
               </p>
 
               <p className={styles.constitution}>
-                French-Ward coordinates the authority,
-                documentary continuity, institutional
-                readiness, lawful passage, and settlement
-                conditions required to move high-value trade
-                from source toward receiving institutions.
+                {profile.publicDescription}
               </p>
 
               <p className={styles.custodialStatement}>
@@ -220,17 +214,17 @@ export default function FWLaunchBody() {
             </header>
 
             <div className={styles.progression}>
-              {progression.map(
-                ([number, stage], index) => (
+              {profile.transactionPreparation.map(
+                (stage, index) => (
                   <div
                     className={styles.stage}
-                    key={number}
+                    key={stage}
                   >
-                    <span>{number}</span>
+                    <span>{String(index + 1).padStart(2, "0")}</span>
                     <strong>{stage}</strong>
 
                     {index <
-                      progression.length - 1 && (
+                      profile.transactionPreparation.length - 1 && (
                       <i aria-hidden="true">→</i>
                     )}
                   </div>

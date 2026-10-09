@@ -32,6 +32,15 @@ export type FrenchWardInstitutionalProfile =
     orientation:
       string;
 
+    custodianshipThesis:
+      string;
+
+    transactionPreparation:
+      readonly string[];
+
+    establishedSourceRelationships:
+      readonly string[];
+
     institutionalDefinition:
       readonly string[];
 
@@ -61,7 +70,13 @@ export function assertFrenchWardInstitutionalProfile(
     !profile.legalName.trim() ||
     !profile.displayName.trim() ||
     !profile.publicDescription.trim() ||
-    !profile.orientation.trim()
+    !profile.orientation.trim() ||
+    !profile.custodianshipThesis.trim() ||
+    profile.transactionPreparation.length !== 5 ||
+    profile.establishedSourceRelationships.length === 0 ||
+    profile.establishedSourceRelationships.some(
+      statement => !statement.trim(),
+    )
   ) {
     throw new Error(
       "[FRENCH_WARD_INSTITUTIONAL_PROFILE_IDENTITY_REQUIRED]",

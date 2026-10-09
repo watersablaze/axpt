@@ -10,7 +10,7 @@ import {
 /**
  * Representative-safe projection of the canonical French-Ward profile.
  *
- * V1 intentionally projects only stable institutional identity.
+ * Projects the operative institutional publication without granting authority.
  *
  * It does not project:
  * - representative authority;
@@ -29,6 +29,16 @@ export function projectFrenchWardInstitutionalProfile():
     institutionalDefinition: [
       ...FRENCH_WARD_INSTITUTIONAL_PROFILE
         .institutionalDefinition,
+    ],
+
+    transactionPreparation: [
+      ...FRENCH_WARD_INSTITUTIONAL_PROFILE
+        .transactionPreparation,
+    ],
+
+    establishedSourceRelationships: [
+      ...FRENCH_WARD_INSTITUTIONAL_PROFILE
+        .establishedSourceRelationships,
     ],
 
     domains: [

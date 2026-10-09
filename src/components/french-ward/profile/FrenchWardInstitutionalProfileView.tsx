@@ -18,6 +18,9 @@ export type FrenchWardProfileContent = {
   practiceAreas: readonly string[];
   operatingPrinciples: readonly string[];
   operatingContinuum: readonly string[];
+  custodianshipThesis?: string;
+  transactionPreparation?: readonly string[];
+  establishedSourceRelationships?: readonly string[];
 };
 
 type Props = {
@@ -26,48 +29,16 @@ type Props = {
   downloadHref?: string;
 };
 
-function Register({
-  title,
-  items,
-}: {
+function FolioHeading({ number, title, note }: {
+  number: string;
   title: string;
-  items: readonly string[];
+  note: string;
 }) {
   return (
-    <div className={styles.register}>
-      <h2>{title}</h2>
-      <ul>
-        {items.map((item, index) => (
-          <li key={index}>{item}</li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function NumberedRegister({
-  title,
-  items,
-  ordered = false,
-}: {
-  title: string;
-  items: readonly string[];
-  ordered?: boolean;
-}) {
-  const entries = items.map((item, index) => (
-    <li key={index}>
-      <span className={styles.number}>
-        {String(index + 1).padStart(2, "0")}
-      </span>
-      <span>{item}</span>
-    </li>
-  ));
-
-  return (
-    <div className={styles.register}>
-      <h2>{title}</h2>
-      {ordered ? <ol>{entries}</ol> : <ul>{entries}</ul>}
-    </div>
+    <header className={styles.folioHeading}>
+      <span className={styles.folioNumber}>{number}</span>
+      <div><h2>{title}</h2><p>{note}</p></div>
+    </header>
   );
 }
 
@@ -113,28 +84,88 @@ export function FrenchWardInstitutionalProfileView({
           </div>
         </div>
 
-        <div className={styles.practicePair}>
-          <Register
-            title="Fields of Activity"
-            items={profile.domains}
-          />
-          <Register
-            title="Practice Areas"
-            items={profile.practiceAreas}
-          />
-        </div>
+        {profile.custodianshipThesis && (
+          <p className={styles.custodianshipThesis}>
+            {profile.custodianshipThesis}
+          </p>
+        )}
 
-        <div className={styles.operatingPair}>
-          <NumberedRegister
-            title="Operating Principles"
-            items={profile.operatingPrinciples}
-          />
-          <NumberedRegister
-            title="Operating Sequence"
-            items={profile.operatingContinuum}
-            ordered
-          />
-        </div>
+        {profile.establishedSourceRelationships &&
+          profile.establishedSourceRelationships.length > 0 && (
+            <section
+              className={styles.sourceRelationships}
+              aria-label="Established source relationships"
+            >
+              <h2>Established Source Relationships</h2>
+              <div className={styles.definition}>
+                {profile.establishedSourceRelationships.map((statement, index) => (
+                  <p key={index}>{statement}</p>
+                ))}
+              </div>
+            </section>
+          )}
+
+        <section className={styles.fieldsSection} aria-label="Fields of activity">
+          <FolioHeading number="01" title="Fields of Activity" note="Institutional scope" />
+          <div className={styles.fieldText}>
+            {profile.domains.map((field, index) => (
+              <span key={index}>{field}</span>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.practiceSection} aria-label="Practice areas">
+          <FolioHeading number="02" title="Practice Areas" note="Commercial responsibilities" />
+          <div className={styles.practiceNarrative}>
+            {profile.practiceAreas.map((area, index) => (
+              <p key={index}><span>{String(index + 1).padStart(2, "0")}</span>{area}</p>
+            ))}
+          </div>
+        </section>
+
+        <section className={styles.principlesSection} aria-label="Operating principles">
+          <FolioHeading number="03" title="Operating Principles" note="The discipline of execution" />
+          <ol className={styles.principleArticles}>
+            {profile.operatingPrinciples.map((principle, index) => (
+              <li key={index}>
+                <span className={styles.principleIndex}>{String(index + 1).padStart(2, "0")}</span>
+                <p>{principle}</p>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        <section className={styles.sequenceSection} aria-label="Operating sequence">
+          <FolioHeading number="04" title="Operating Sequence" note="From source engagement to settlement" />
+          <ol className={styles.sequenceFlow}>
+            {profile.operatingContinuum.map((stage, index) => (
+              <li key={index}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <strong>{stage}</strong>
+              </li>
+            ))}
+          </ol>
+        </section>
+
+        {profile.transactionPreparation &&
+          profile.transactionPreparation.length > 0 && (
+            <section
+              className={styles.preparation}
+              aria-label="Transaction preparation"
+            >
+              <h2>Transaction Preparation</h2>
+              <ol className={styles.preparationStages}>
+                {profile.transactionPreparation.map((stage, index) => (
+                  <li key={index}>
+                    <span className={styles.number}>
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <span>{stage}</span>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
 
         <footer className={styles.colophon}>
           <div className={styles.details}>

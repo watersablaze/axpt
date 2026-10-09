@@ -1,31 +1,20 @@
-import type { Metadata } from 'next'
+import type { Metadata } from "next";
 
-import FWThreshold from '@/components/french-ward/FWThreshold'
-import FWLaunchBody from '@/components/french-ward/FWLaunchBody'
-import FWFooter from '@/components/french-ward/FWFooter'
-
-import styles from './FrenchWardPage.module.css'
+import { projectFrenchWardInstitutionalProfile } from "@/domains/institutions/french-ward/projectFrenchWardInstitutionalProfile";
+import FWCorporateHome from "@/components/french-ward/FWCorporateHome";
 
 export const metadata: Metadata = {
-  title: 'French-Ward — Trade, Authority & Passage',
+  title: "French-Ward — International Trade & Commercial Operations",
   description:
-    'French-Ward coordinates source-side relationships, commercial documentation, institutional readiness, and responsible cross-border trade.',
+    "French-Ward, Inc. — international trade, source relationships, commercial documentation, delivery coordination, and settlement preparation.",
   openGraph: {
-    title: 'French-Ward',
-    description:
-      'Trade, authority, documentation, passage, and institutional coordination.',
-    type: 'website',
+    title: "French-Ward, Inc.",
+    description: "International Trade & Commercial Operations",
+    type: "website",
   },
-}
+};
 
+/** Corporate presence, not a second rendering of the official publication. */
 export default function FrenchWardPage() {
-  return (
-    <main className={styles.page} id="french-ward">
-      <FWThreshold />
-
-      <FWLaunchBody />
-
-      <FWFooter />
-    </main>
-  )
+  return <FWCorporateHome profile={projectFrenchWardInstitutionalProfile()} />;
 }

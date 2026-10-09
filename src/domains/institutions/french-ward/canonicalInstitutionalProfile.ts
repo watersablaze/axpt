@@ -26,7 +26,7 @@ export const FRENCH_WARD_INSTITUTIONAL_PROFILE:
       "FW-PROFILE-2026-001",
 
     version:
-      1,
+      2,
 
     status:
       FRENCH_WARD_INSTITUTIONAL_PROFILE_STATUS
@@ -42,17 +42,32 @@ export const FRENCH_WARD_INSTITUTIONAL_PROFILE:
       "International Trade & Commercial Operations",
 
     publicDescription:
-      "French-Ward, Inc. develops and conducts international commercial relationships, bringing source engagement, transaction documentation, delivery coordination, and settlement preparation into a governed process.",
+      "French-Ward, Inc. undertakes international trade and commercial operations through an integrated practice of custodianship and commercial responsibility, developing source and counterparty relationships while coordinating documented authority, commercial commitments, delivery arrangements, and settlement preparation.",
 
     orientation:
-      "French-Ward works to turn commercial opportunities into executable transactions through clear responsibilities, documented authority, agreed terms, and coordinated performance.",
+      "French-Ward brings institutional direction and commercial execution into one governed practice. Its objective is the responsible advancement of commerce through attributable authority, documentary continuity, accountable relationships, and conditions sufficient for performance.",
+
+    custodianshipThesis:
+      "Custodianship, commercial responsibility, and the governed passage of wealth.",
+
+    transactionPreparation: [
+      "Intake",
+      "Review",
+      "Qualification",
+      "Dossier",
+      "Execution",
+    ],
+
+    establishedSourceRelationships: [
+      "French-Ward's institutional practice includes its established relationship with Coopérative de Bafoula in the Republic of Mali, encompassing source-side commercial engagement, authorized resale activities, and international commercial coordination under the applicable governing instruments.",
+      "The relationship reflects French-Ward's integrated approach to custodianship and commercial responsibility, in which stewardship of source relationships, documentary continuity, commercial commitments, and accountable passage forms part of one institutional practice.",
+      "The relationship's custodial arrangements, reseller appointment, exclusivity, territorial reach, and specific commercial authorities are established and governed by their respective instruments. This Institutional Profile describes the relationship without independently enlarging or substituting for those authorities.",
+    ],
 
     institutionalDefinition: [
-      "French-Ward, Inc. is a Florida corporation engaged in international trade and commercial operations. Its work connects source relationships and counterparties with the documentation, decisions, and practical arrangements required to advance a transaction.",
-
-      "French-Ward’s capacity in a particular relationship—including appointed reseller, contracting seller, or custodian—is established by the applicable agreements and authority records. Those records define the scope and conditions of its role.",
-
-      "French-Ward uses AXPT to organize institutional records, controlled access, commercial workflows, and transaction continuity.",
+      "French-Ward, Inc. is a Florida corporation engaged in international trade and commercial operations. Its custodial discipline is expressed through the commercial responsibilities it undertakes, including the stewardship of relationships, commitments, records, and the conditions required for accountable passage.",
+      "French-Ward's capacity in any particular relationship—including appointed reseller, contracting seller, or custodian—is established by applicable agreements and authority records. Its institutional discipline does not independently confer legal custody or transaction-specific authority.",
+      "French-Ward uses AXPT to organize institutional records, controlled access, commercial workflows, and transaction continuity. Digital systems support the institution's work without independently establishing or enlarging its commercial authority.",
     ],
 
     domains: [
@@ -72,12 +87,12 @@ export const FRENCH_WARD_INSTITUTIONAL_PROFILE:
     ],
 
     operatingPrinciples: [
-      "Authority must be attributable.",
-      "Commercial roles and authority must be documented.",
-      "Statements and commitments must remain within approved terms and authority.",
-      "Evidence must be current and sufficient for the decision it supports.",
-      "Transaction readiness requires alignment between documentation and practical execution conditions.",
-      "Delivery and settlement responsibilities must be clear before execution.",
+      "Authority must be attributable to an identifiable source and supported by appropriate records.",
+      "Commercial roles, responsibilities, and authority must be documented, with their scope clear.",
+      "Statements and commitments must remain within approved terms and established authority.",
+      "Evidence must remain current and sufficient for the decision it supports.",
+      "Transaction readiness requires alignment between agreed documentation and practical execution conditions.",
+      "Delivery and settlement responsibilities must be identified before execution.",
     ],
 
     operatingContinuum: [

@@ -14,7 +14,7 @@ function main() {
 
   assert.equal(
     FRENCH_WARD_INSTITUTIONAL_PROFILE.version,
-    1,
+    2,
   );
 
   assert.equal(
@@ -64,7 +64,6 @@ function main() {
     "BAF-PROFILE-MALI-2026-002",
     "Inderaksh",
     "FWI-26-RP-001",
-    "authorized reseller",
     "commodity allocation",
     "LBMA",
     "USDT",
@@ -78,13 +77,28 @@ function main() {
     );
   }
 
+  assert.equal(
+    projection.establishedSourceRelationships.length,
+    3,
+  );
+
+  assert.match(
+    projection.establishedSourceRelationships[0],
+    /Coopérative de Bafoula/,
+  );
+
+  assert.match(
+    projection.establishedSourceRelationships[2],
+    /governed by their respective instruments/,
+  );
+
   console.log(
-    "✓ relationship-specific and transaction-specific truth excluded",
+    "✓ qualified source relationship disclosed without instrument-specific authority or transaction terms",
   );
 
   assert.ok(
     projection.operatingPrinciples.includes(
-      "Authority must be attributable.",
+      "Authority must be attributable to an identifiable source and supported by appropriate records.",
     ),
   );
 

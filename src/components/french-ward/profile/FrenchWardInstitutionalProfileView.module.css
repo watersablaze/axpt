@@ -148,60 +148,27 @@
   margin: 0;
 }
 
-.practicePair,
-.operatingPair {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: clamp(25px, 5vw, 52px);
-  border-top: 1px solid var(--rule);
-}
-
-.practicePair {
-  padding: 25px 0 30px;
-}
-
-.operatingPair {
-  padding: 26px 0 28px;
-}
-
-.register {
-  min-width: 0;
-}
-
-.register h2 {
-  margin: 0 0 15px;
-  color: #26373b;
-  font: 700 13px/1.4 Arial, Helvetica, sans-serif;
-  letter-spacing: -.008em;
-}
-
-.register ul,
-.register ol {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.practicePair .register li {
-  padding: 10px 0;
-  border-top: 1px solid var(--rule);
-  font: 500 13px/1.48 Arial, Helvetica, sans-serif;
-}
-
-.operatingPair .register li {
-  display: grid;
-  grid-template-columns: 26px minmax(0, 1fr);
-  gap: 10px;
-  padding: 10px 0;
-  border-top: 1px solid var(--rule);
-  font: 500 13px/1.48 Arial, Helvetica, sans-serif;
-}
-
-.number {
-  color: #867052;
-  font: 600 10px/1.8 Arial, Helvetica, sans-serif;
-  font-variant-numeric: tabular-nums;
-}
+/* VIS-2: unfolded institutional sections, not four tabular registers. */
+.number {font:600 10px/1.6 Arial,Helvetica,sans-serif;color:#897456;font-variant-numeric:tabular-nums;}
+.folioHeading {display:grid;grid-template-columns:31px 1fr;gap:15px;align-items:baseline;margin-bottom:20px;}
+.folioNumber {font:600 11px/1.5 Arial,sans-serif;color:#887052;}
+.folioHeading h2 {margin:0;color:var(--ink);font:500 21px/1.3 Georgia,"Times New Roman",serif;letter-spacing:-.015em;}
+.folioHeading p {font:400 11px/1.5 Arial,sans-serif;color:#687371;margin:5px 0 0;}
+.fieldsSection,.practiceSection,.principlesSection,.sequenceSection {border-top:1px solid var(--rule);padding:25px 0 28px;}
+.fieldText {display:flex;gap:10px 26px;flex-wrap:wrap;margin:0 0 0 46px;}
+.fieldText span {font:500 14px/1.55 Georgia,"Times New Roman",serif;color:#27404a;}
+.fieldText span:not(:last-child)::after {content:"·";padding-left:24px;color:#a18b6b;}
+.practiceNarrative {margin-left:46px;columns:2;column-gap:34px;}
+.practiceNarrative p {display:grid;grid-template-columns:24px 1fr;gap:8px;break-inside:avoid;margin:0 0 17px;color:#33494e;font:400 13px/1.55 Arial,sans-serif;}
+.practiceNarrative p span,.principleIndex {font:600 10px/1.7 Arial,sans-serif;color:#8a765a;}
+.principleArticles {list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 30px;margin:0 0 0 46px;padding:0;}
+.principleArticles li {display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;padding:12px 0;align-content:start;}
+.principleArticles li p {font:400 13px/1.58 Georgia,"Times New Roman",serif;color:#263c44;margin:0;}
+.sequenceFlow {list-style:none;display:flex;flex-wrap:wrap;align-items:baseline;gap:12px 0;margin:0 0 0 46px;padding:0;}
+.sequenceFlow li {display:flex;align-items:baseline;gap:7px;font:500 12px/1.5 Arial,sans-serif;color:#243c45;}
+.sequenceFlow li span {font-size:9px;color:#9a8665;}
+.sequenceFlow li:not(:last-child)::after {content:"/";padding:0 12px;color:#a6a092;}
+.sequenceFlow li strong {font-weight:500;}
 
 .colophon {
   padding-top: 18px;
@@ -258,11 +225,6 @@
     padding: 26px 22px;
   }
 
-  .practicePair,
-  .operatingPair {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
 
   .orientation {
     font-size: 19px;
@@ -280,12 +242,80 @@
     break-inside: avoid;
   }
 
-  .practicePair,
-  .operatingPair {
-    break-inside: avoid;
-  }
 
   .download {
     display: none;
   }
 }
+
+/* FW-PROFILE-CONVERGENCE-1C.4A
+   Optional Edition 2 presentation; Edition 1 unaffected.
+*/
+
+.custodianshipThesis {
+  margin: 0 0 27px;
+  padding: 16px 0 17px;
+  border-top: 1px solid var(--rule);
+  color: #253c43;
+  font: 600 clamp(15px, 2vw, 18px)/1.5
+    Georgia, "Times New Roman", serif;
+  letter-spacing: -.012em;
+}
+
+.preparation {
+  padding: 23px 0 28px;
+  border-top: 1px solid var(--rule);
+}
+
+.preparation h2 {
+  margin: 0 0 16px;
+  font: 700 13px/1.4 Arial, Helvetica, sans-serif;
+}
+
+.preparationStages {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.preparationStages li {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+  font: 500 12px/1.45 Arial, Helvetica, sans-serif;
+}
+
+@media (max-width: 600px) {
+  .preparationStages {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 15px 20px;
+  }
+}
+
+@media print {
+  .preparation {
+    break-inside: avoid;
+  }
+}
+
+/* FW-PROFILE-RELEASE-2A — Qualified full-publication relationship */
+
+.sourceRelationships {
+  margin: 0 0 25px;
+  padding-top: 18px;
+  border-top: 1px solid rgba(43, 64, 71, 0.18);
+}
+
+.sourceRelationships h2 {
+  margin: 0 0 15px;
+  color: #253c43;
+  font: 600 15px/1.45 Georgia, "Times New Roman", serif;
+}
+
+@media(max-width:600px){.practiceNarrative{columns:1}.principleArticles{grid-template-columns:1fr}.fieldText,.practiceNarrative,.principleArticles,.sequenceFlow{margin-left:0}.fieldText{gap:7px 14px}.fieldText span:not(:last-child)::after{padding-left:13px}}
