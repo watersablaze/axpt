@@ -10,7 +10,7 @@ export default function DonginCorrespondencePage() {
   return (
     <div className="min-h-screen bg-[#090d0c] text-stone-100">
       <header className="sticky top-0 z-30 border-b border-stone-800 bg-[#090d0c]/95 backdrop-blur">
-        <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6">
+        <div className="mx-auto max-w-[1500px] px-4 py-4 sm:px-6">
           <p className="text-[9px] uppercase tracking-[0.2em] text-amber-300">
             French-Ward · Communications Control
           </p>
@@ -33,7 +33,7 @@ export default function DonginCorrespondencePage() {
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl space-y-5 px-4 py-6 sm:px-6">
+      <main className="mx-auto max-w-[1500px] space-y-5 px-4 py-6 sm:px-6">
         <section className="border-b border-stone-800 pb-5">
           <p className="text-[10px] uppercase tracking-[0.18em] text-stone-500">
             Current Correspondence
