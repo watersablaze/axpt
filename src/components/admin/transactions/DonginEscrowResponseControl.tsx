@@ -249,13 +249,17 @@ export function DonginEscrowResponseControl() {
               </p>
             </div>
 
-            <div className="overflow-x-auto bg-[#07110d] px-4 py-6 sm:px-6 lg:px-8">
-              <div className="mx-auto w-full max-w-[1120px]">
+            <div className="overflow-x-auto bg-[#07110d] px-4 py-8 sm:px-8">
+              <div className="mx-auto w-full max-w-[760px]">
                 <iframe
                   title="Rendered DONGIN escrow response email"
                   srcDoc={preview.html}
                   sandbox=""
-                  className="h-[1800px] w-full rounded border-0 bg-[#07110d]"
+                  className="block w-full rounded border-0 bg-[#efe6d5]"
+                  style={{
+                    height: "2200px",
+                    minHeight: "2200px",
+                  }}
                 />
               </div>
             </div>
