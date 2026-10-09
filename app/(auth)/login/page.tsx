@@ -172,22 +172,33 @@ export default function LoginPage() {
         return
       }
 
+      const requestedDestination = getSafeDestination()
+      const requestedPath = requestedDestination.split(/[?#]/)[0]
+
+      const visitorDestination = [
+        '/french-ward',
+        '/french-ward/transaction-intake',
+        '/transaction-intake',
+      ].includes(requestedPath)
+        ? requestedDestination
+        : '/french-ward'
+
       const destination =
         data.audience === 'REPRESENTATIVE'
           ? (
-              getSafeDestination().startsWith(
-                '/representative'
-              )
-                ? getSafeDestination()
+              requestedDestination.startsWith('/representative')
+                ? requestedDestination
                 : '/representative'
             )
-          : (
-              getSafeDestination().startsWith(
-                '/admin'
-              )
-                ? getSafeDestination()
-                : '/admin/control-center'
-            )
+          : data.audience === 'INSTITUTIONAL_VISITOR'
+            ? visitorDestination
+            : data.audience === 'ADMIN'
+              ? (
+                  requestedDestination.startsWith('/admin')
+                    ? requestedDestination
+                    : '/admin/control-center'
+                )
+              : '/french-ward'
 
       router.replace(destination)
 

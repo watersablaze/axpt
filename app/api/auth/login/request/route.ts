@@ -3,7 +3,7 @@ import { randomInt } from 'node:crypto'
 import bcrypt from 'bcryptjs'
 import { NextResponse } from 'next/server'
 
-import { resolveInstitutionalSignInEligibility } from '@/domains/auth/resolveInstitutionalSignInEligibility'
+import { resolveInstitutionalVisitorSignInWithClient } from '@/domains/institutional-access/resolveInstitutionalVisitorSignInWithClient'
 import { sendLoginPin } from '@/domains/auth/sendLoginPin'
 import { prisma } from '@/infrastructure/db/prisma'
 
@@ -151,7 +151,10 @@ export async function POST(request: Request) {
     )
 
   const eligibility =
-    resolveInstitutionalSignInEligibility({
+    await resolveInstitutionalVisitorSignInWithClient({
+      client: prisma,
+      userId: user.id,
+      email,
       roles,
       permissions,
       representativeProgramParticipants:

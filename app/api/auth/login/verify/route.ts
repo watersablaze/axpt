@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import bcrypt from 'bcryptjs'
 import { NextResponse } from 'next/server'
 
-import { resolveInstitutionalSignInEligibility } from '@/domains/auth/resolveInstitutionalSignInEligibility'
+import { resolveInstitutionalVisitorSignInWithClient } from '@/domains/institutional-access/resolveInstitutionalVisitorSignInWithClient'
 import {
   createSessionCookie,
   createSessionToken,
@@ -231,7 +231,10 @@ export async function POST(request: Request) {
     )
 
   const eligibility =
-    resolveInstitutionalSignInEligibility({
+    await resolveInstitutionalVisitorSignInWithClient({
+      client: prisma,
+      userId: user.id,
+      email,
       roles,
       permissions,
       representativeProgramParticipants:
@@ -311,7 +314,9 @@ export async function POST(request: Request) {
     tier:
       eligibility.audience === 'REPRESENTATIVE'
         ? 'representative'
-        : 'operations',
+        : eligibility.audience === 'INSTITUTIONAL_VISITOR'
+          ? 'institutional-visitor'
+          : 'operations',
     roles:
       roles as SessionPayload['roles'],
     displayName:
@@ -319,18 +324,22 @@ export async function POST(request: Request) {
       user.name ??
       (eligibility.audience === 'REPRESENTATIVE'
         ? 'Representative'
-        : 'Operator'),
+        : eligibility.audience === 'INSTITUTIONAL_VISITOR'
+          ? 'Institutional Visitor'
+          : 'Operator'),
     popupMessage:
       eligibility.audience === 'REPRESENTATIVE'
         ? 'AXPT representative session established.'
-        : 'AXPT operator session established.',
+        : eligibility.audience === 'INSTITUTIONAL_VISITOR'
+          ? 'AXPT institutional visitor session established.'
+          : 'AXPT operator session established.',
     greeting: 'Welcome back',
     email: user.email,
     partner: 'AXPT',
     docs:
-      eligibility.audience === 'REPRESENTATIVE'
-        ? []
-        : ['whitepaper'],
+      eligibility.audience === 'ADMIN'
+        ? ['whitepaper']
+        : [],
   })
 
   try {

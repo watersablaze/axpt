@@ -13,6 +13,7 @@ export type SessionTier =
   | 'platform'
   | 'operations'
   | 'representative'
+  | 'institutional-visitor'
 
 export type SessionDocument = 'whitepaper' | 'hemp' | 'chinje'
 

@@ -1,3 +1,4 @@
+import { resolveInstitutionalVisitorSignInWithClient } from '../institutional-access/resolveInstitutionalVisitorSignInWithClient'
 import { prisma } from '@/infrastructure/db/prisma'
 import { getSessionFromCookie } from '@/lib/auth/session'
 
@@ -84,6 +85,19 @@ export async function getPrincipal(): Promise<Principal | null> {
       representativeProgramParticipants:
         user.representativeProgramParticipants,
     })
+
+
+  if (session.tier === 'institutional-visitor') {
+    const visitorEligibility = await resolveInstitutionalVisitorSignInWithClient({
+      client: prisma,
+      userId: user.id,
+      email: user.email,
+      roles,
+      permissions,
+      representativeProgramParticipants: user.representativeProgramParticipants,
+    })
+    if (!visitorEligibility.eligible) return null
+  }
 
   if (!sessionRemainsValid) {
     console.log(
