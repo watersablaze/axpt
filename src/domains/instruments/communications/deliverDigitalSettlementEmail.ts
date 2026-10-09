@@ -8,6 +8,7 @@ import { assertSafeDigitalSettlementDeliveryRawPayload } from "./digitalSettleme
 export type DigitalSettlementDeliveryInput = Readonly<{
   type: string;
   to: string | readonly string[];
+  cc?: string | readonly string[];
   subject: string;
   text: string;
   html: string;
@@ -27,6 +28,22 @@ export type DigitalSettlementDeliveryResult =
       alreadyDelivered?: boolean;
       messageId: string | null;
     }>;
+
+function normalizeRecipients(
+  value: string | readonly string[] | undefined,
+) {
+  if (!value) {
+    return [];
+  }
+
+  return (
+    Array.isArray(value)
+      ? [...value]
+      : [value]
+  )
+    .map((recipient) => recipient.trim())
+    .filter(Boolean);
+}
 
 function extractResendError(response: unknown) {
   if (
@@ -56,7 +73,6 @@ function extractResendMessageId(response: unknown) {
   return null;
 }
 
-
 /*
  * Infrastructure-level delivery primitive.
  *
@@ -67,7 +83,7 @@ function extractResendMessageId(response: unknown) {
  * - performs one external delivery attempt only;
  * - records delivery evidence in EmailLog;
  * - treats a prior successful delivery with the same
- *   type + recipient + subject as idempotently complete.
+ *   type + primary recipient + subject as idempotently complete.
  *
  * Callers are responsible for ensuring rawPayload contains no
  * private bearer token, access URL, rendered HTML, or message text.
@@ -77,14 +93,13 @@ export async function deliverDigitalSettlementEmail(
 ): Promise<DigitalSettlementDeliveryResult> {
   const type = input.type.trim();
   const subject = input.subject.trim();
-
-  const recipients = (
-    Array.isArray(input.to)
-      ? [...input.to]
-      : [input.to]
-  )
-    .map((recipient) => recipient.trim())
-    .filter(Boolean);
+  const recipients = normalizeRecipients(input.to);
+  const primarySet = new Set(recipients.map((value) => value.toLowerCase()));
+  const copiedRecipients = normalizeRecipients(input.cc)
+    .filter(
+      (recipient) =>
+        !primarySet.has(recipient.toLowerCase()),
+    );
 
   if (!type) {
     throw new Error(
@@ -173,6 +188,7 @@ export async function deliverDigitalSettlementEmail(
         status: "LOGGED_ONLY",
         rawPayload: {
           mode: "log",
+          cc: copiedRecipients,
           ...input.rawPayload,
         },
       },
@@ -188,6 +204,9 @@ export async function deliverDigitalSettlementEmail(
     await resend.emails.send({
       from,
       to: recipients,
+      ...(copiedRecipients.length > 0
+        ? { cc: copiedRecipients }
+        : {}),
       replyTo:
         process.env.DSI_REPLY_TO_EMAIL ||
         "french-ward@axpt.io",
@@ -213,6 +232,7 @@ export async function deliverDigitalSettlementEmail(
       rawPayload: {
         response,
         error,
+        cc: copiedRecipients,
         ...input.rawPayload,
       },
     },
