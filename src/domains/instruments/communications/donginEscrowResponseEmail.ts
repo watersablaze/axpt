@@ -43,7 +43,7 @@ export const DONGIN_ESCROW_RESPONSE_RECIPIENTS = {
 } as const;
 
 export const DONGIN_ESCROW_RESPONSE_SUBJECT =
-  "DONGIN TRADE HOLDINGS | Escrow Structure & Transaction Activation" as const;
+  "DONGIN TRADE HOLDINGS | U.S. Escrow Structure & Transaction Activation" as const;
 
 const englishLines = [
   "Dear Mr. Bang and DONGIN Team,",
