@@ -92,6 +92,12 @@ model User {
   commercialUtilityPackModulesReleased    CommercialUtilityPackModuleRelease[]   @relation("CommercialUtilityPackModuleReleaser")
   commercialUtilityPackResourcesReleased  CommercialUtilityPackResourceRelease[] @relation("CommercialUtilityPackResourceReleaser")
 
+
+  institutionalAccessGrantsReceived InstitutionalAccessGrant[] @relation("InstitutionalAccessRecipient")
+  institutionalAccessGrantsIssued   InstitutionalAccessGrant[] @relation("InstitutionalAccessIssuer")
+  institutionalAccessRequestsDecided InstitutionalAccessRequest[] @relation("InstitutionalAccessDecisionActor")
+  institutionalAccessEventsActed    InstitutionalAccessEvent[] @relation("InstitutionalAccessEventActor")
+
   wallets                                  Wallet?
 }
 
@@ -3667,4 +3673,101 @@ model GlobalMotherRecipientChallenge {
   grant InstrumentAccessGrant @relation(fields: [grantId], references: [id], onDelete: Cascade)
 
   @@index([expiresAt])
+}
+
+
+ // ============================================================================
+ // FRENCH-WARD INSTITUTIONAL ACCESS
+ // Publication and commercial intake access; independent of ARP authority.
+ // ============================================================================
+
+enum InstitutionalAccessScope {
+  PROFILE_VIEW
+  LOI_INTAKE_ACCESS
+}
+
+enum InstitutionalAccessRequestStatus {
+  PENDING
+  APPROVED
+  DECLINED
+  WITHDRAWN
+}
+
+enum InstitutionalAccessEventType {
+  REQUESTED
+  APPROVED
+  DECLINED
+  WITHDRAWN
+  GRANTED
+  REVOKED
+  VIEWED
+  INTAKE_SUBMITTED
+}
+
+model InstitutionalAccessRequest {
+  id                   String @id @default(cuid())
+  requesterName        String
+  requesterEmail       String
+  institutionalAffiliation String
+  requesterCapacity    String
+  purpose              String
+  scope                InstitutionalAccessScope
+  resourceReference    String
+  resourceVersion      Int
+  status               InstitutionalAccessRequestStatus @default(PENDING)
+  decisionPolicy       String?
+  decisionReason       String?
+  decidedByUserId      String?
+  decidedAt            DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  decidedBy User? @relation("InstitutionalAccessDecisionActor", fields: [decidedByUserId], references: [id], onDelete: Restrict)
+  grant     InstitutionalAccessGrant?
+  events    InstitutionalAccessEvent[]
+
+  @@index([status, createdAt])
+  @@index([requesterEmail, scope])
+}
+
+model InstitutionalAccessGrant {
+  id                String @id @default(cuid())
+  requestId         String @unique
+  recipientUserId   String
+  recipientEmail    String
+  scope             InstitutionalAccessScope
+  resourceReference String
+  resourceVersion   Int
+  issuedByUserId    String
+  issuedAt          DateTime @default(now())
+  expiresAt         DateTime
+  revokedAt         DateTime?
+  firstAccessAt     DateTime?
+  lastAccessAt      DateTime?
+
+  request   InstitutionalAccessRequest @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  recipient User @relation("InstitutionalAccessRecipient", fields: [recipientUserId], references: [id], onDelete: Restrict)
+  issuedBy  User @relation("InstitutionalAccessIssuer", fields: [issuedByUserId], references: [id], onDelete: Restrict)
+  events    InstitutionalAccessEvent[]
+
+  @@index([recipientUserId, scope, expiresAt])
+  @@index([resourceReference, resourceVersion])
+}
+
+model InstitutionalAccessEvent {
+  id          String @id @default(cuid())
+  requestId   String
+  grantId     String?
+  type        InstitutionalAccessEventType
+  actorUserId String?
+  reason      String?
+  metadata    Json?
+  occurredAt  DateTime @default(now())
+
+  request InstitutionalAccessRequest @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  grant   InstitutionalAccessGrant? @relation(fields: [grantId], references: [id], onDelete: Restrict)
+  actor   User? @relation("InstitutionalAccessEventActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([requestId, occurredAt])
+  @@index([grantId, occurredAt])
 }
