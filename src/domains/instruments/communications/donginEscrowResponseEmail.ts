@@ -28,6 +28,10 @@ export const DONGIN_ESCROW_RESPONSE_RECIPIENTS = {
       role: "REPRESENTATIVE_INTERMEDIARY",
       email: "colorchoi@gmail.com",
     },
+    {
+      role: "REPRESENTATIVE_INTERMEDIARY",
+      email: "onesimuskufazvineyi4@gmail.com",
+    },
   ],
   internal: [
     {
