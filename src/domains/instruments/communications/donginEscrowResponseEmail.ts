@@ -147,6 +147,7 @@ function renderEmail() {
                 style="
                   padding:28px 30px 18px;
                   border-top:3px solid #9f7837;
+                  background:#eadcc4;
                 "
               >
                 <p
@@ -189,7 +190,7 @@ function renderEmail() {
             </tr>
 
             <tr>
-              <td style="padding:8px 30px 0;">
+              <td style="padding:8px 30px 0;background:#f0e5d3;">
                 <table
                   role="presentation"
                   width="100%"
@@ -275,6 +276,7 @@ function renderEmail() {
                 style="
                   border-top:1px solid #c8b79f;
                   padding:18px 30px 22px;
+                  background:#dce4dc;
                 "
               >
                 <p
