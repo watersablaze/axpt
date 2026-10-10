@@ -5,7 +5,7 @@ import { GlobalMotherIntermission } from "@/components/french-ward/gm/GlobalMoth
 export const dynamic = "force-dynamic";
 
 export default function GlobalMotherIntermissionPreviewPage() {
-  if (process.env.VERCEL_ENV === "production") {
+  if (process.env.NODE_ENV === "production" && process.env.VERCEL_ENV === "production") {
     notFound();
   }
 
