@@ -46,7 +46,7 @@ export function GlobalMotherIntermission({
         <div className={styles.notices}>
           <article className={styles.notice}>
             <span className={styles.icon} aria-hidden="true">
-              ⏳
+              ⧖
             </span>
             <div>
               <h2>Deliberative Pause</h2>
@@ -73,7 +73,7 @@ export function GlobalMotherIntermission({
 
           <article className={styles.notice}>
             <span className={styles.icon} aria-hidden="true">
-              ↻
+              ↺
             </span>
             <div>
               <h2>Next Chamber in Preparation</h2>
