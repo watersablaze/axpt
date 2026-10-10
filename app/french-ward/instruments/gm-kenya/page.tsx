@@ -31,6 +31,7 @@ import { DeliberationField } from "@/components/french-ward/gm/DeliberationField
 import { GlobalMotherDeliberationFrameV2 } from "@/components/french-ward/gm/GlobalMotherDeliberationFrameV2";
 import { GlobalMotherExperience } from "@/components/french-ward/gm/GlobalMotherExperience";
 import { GlobalMotherConstitutionalShell } from "@/components/french-ward/gm/GlobalMotherConstitutionalShell";
+import { GlobalMotherIntermission } from "@/components/french-ward/gm/GlobalMotherIntermission";
 
 const v1Movements = [
   { index: "01", label: "Relationship", active: true },
@@ -148,6 +149,29 @@ export default async function GreatMotherInstrumentPage({
       !recipientAccess.grant.instrumentVersionId && !internalInspectionAllowed)
   ) {
     notFound();
+  }
+
+  /*
+   * Chamber V1 is closed for external deliberation.
+   * Existing recipient grants remain attributable and resolve
+   * to a controlled intermission surface; the historical record
+   * remains available to internal inspection.
+   *
+   * An admin may still inspect the preserved issued presentation
+   * through an explicit previewVersion request.
+   */
+  if (
+    recipientAccess !== null &&
+    requestedPreviewVersion === null
+  ) {
+    return (
+      <GlobalMotherIntermission
+        recipientName={
+          recipientAccess.grant.recipientName ??
+          "Institutional participant"
+        }
+      />
+    );
   }
 
   const deliberationActorUserId =
