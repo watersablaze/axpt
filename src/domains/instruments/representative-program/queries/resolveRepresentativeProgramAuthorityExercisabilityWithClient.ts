@@ -2,6 +2,7 @@ import type { PrismaClient } from "@prisma/client";
 
 import {
   INSTITUTIONAL_INSTRUMENT_KIND,
+  INSTITUTIONAL_INSTRUMENT_STATUS,
   INSTRUMENT_AUTHORITY_CLASS,
   isInstrumentAuthorityActive,
   type InstrumentAuthority,
@@ -140,6 +141,15 @@ export async function resolveRepresentativeProgramAuthorityExercisabilityWithCli
     holderPartyId: authority.holderPartyId,
     appointmentInstrumentPartyId: appointment.instrumentPartyId,
   });
+
+  if (
+    appointment.instrument.status !== INSTITUTIONAL_INSTRUMENT_STATUS.ACTIVE
+  ) {
+    return result(
+      false,
+      REPRESENTATIVE_AUTHORITY_EXERCISABILITY_REASON.APPOINTMENT_INSTRUMENT_NOT_ACTIVE,
+    );
+  }
 
   if (
     appointment.effectiveAt &&
