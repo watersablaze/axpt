@@ -46,6 +46,20 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  return NextResponse.json(
+    {
+      ok: false,
+      error: "CHAMBER_INTERMISSION",
+      message: "This Chamber cycle is closed to further response.",
+    },
+    {
+      status: 409,
+      headers: {
+        "Cache-Control": "no-store",
+      },
+    },
+  );
+
   const token = await accessToken();
   if (!token) return NextResponse.json({ ok: false, error: "ACCESS_REQUIRED" }, { status: 401 });
   if (request.headers.get("origin") !== new URL(request.url).origin)
