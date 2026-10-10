@@ -61,6 +61,20 @@ function asOptionalNote(
 export async function POST(
   request: Request,
 ) {
+  return NextResponse.json(
+    {
+      ok: false,
+      error: "CHAMBER_INTERMISSION",
+      message: "This Chamber cycle is closed to further response.",
+    },
+    {
+      status: 409,
+      headers: {
+        "Cache-Control": "no-store",
+      },
+    },
+  );
+
   const cookieStore =
     await cookies();
 
