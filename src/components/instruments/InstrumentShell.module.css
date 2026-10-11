@@ -306,3 +306,256 @@
     padding: 0.75rem 0 3rem;
   }
 }
+
+/* =========================================================
+   ARCHIVAL INSTRUMENT SURFACE
+   Opt-in only. Default instrument shell remains unchanged.
+   ========================================================= */
+
+.archival {
+  --ink: #30271f;
+  --muted: rgba(74, 60, 47, 0.62);
+  --line: rgba(91, 72, 51, 0.16);
+  --panel: rgba(255, 255, 255, 0.18);
+
+  background:
+    radial-gradient(
+      circle at 15% 8%,
+      rgba(255, 255, 255, 0.42),
+      transparent 28rem
+    ),
+    radial-gradient(
+      circle at 86% 34%,
+      rgba(154, 117, 66, 0.06),
+      transparent 30rem
+    ),
+    linear-gradient(
+      180deg,
+      #e7dfd2 0%,
+      #ded5c6 48%,
+      #d7cdbc 100%
+    );
+  color: var(--ink);
+}
+
+.archival .field {
+  opacity: 0.42;
+  background-image:
+    linear-gradient(
+      rgba(87, 68, 48, 0.026) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(87, 68, 48, 0.026) 1px,
+      transparent 1px
+    );
+  background-size: 56px 56px;
+  mask-image:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.72),
+      transparent 82%
+    );
+}
+
+.archival.withoutHero .content {
+  padding-top: 1.5rem;
+}
+
+@media (max-width: 620px) {
+  .archival.withoutHero .content {
+    padding-top: 0.75rem;
+  }
+}
+
+/* =========================================================
+   SAI-4C.1H — ARCHIVAL FIELD DEEPENING
+
+   The outer institutional environment recedes so the
+   Source Authority folio remains the illuminated record.
+   ========================================================= */
+
+.archival {
+  background:
+    linear-gradient(
+      145deg,
+      #c9baa4 0%,
+      #d2c5b2 42%,
+      #c5b59f 100%
+    );
+}
+
+.archival .field {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(105, 83, 58, 0.045),
+      rgba(255, 255, 255, 0.035) 38%,
+      rgba(83, 66, 47, 0.055)
+    ),
+    #cec0ac;
+}
+
+/* =========================================================
+   SAI-4C.FINAL.2E.R1 — ARCHIVAL TERRAIN FIELD
+
+   Outer darker-beige environment only.
+
+   Atmospheric references:
+   - terrain / contour memory
+   - trade-route passage
+   - mineral earth
+   - institutional restraint
+
+   The folio remains the illuminated reading plane.
+   ========================================================= */
+
+
+/* ---------------------------------------------------------
+   ARCHIVAL OUTER FIELD
+   --------------------------------------------------------- */
+
+.archival .field {
+  opacity: 0.82;
+
+  background:
+    /* left terrain mass */
+    radial-gradient(
+      ellipse at -12% 24%,
+      rgba(111, 87, 59, 0.16) 0%,
+      rgba(111, 87, 59, 0.095) 22%,
+      rgba(111, 87, 59, 0.00) 48%
+    ),
+
+    /* right terrain mass */
+    radial-gradient(
+      ellipse at 112% 68%,
+      rgba(91, 78, 58, 0.13) 0%,
+      rgba(91, 78, 58, 0.070) 23%,
+      rgba(91, 78, 58, 0.00) 49%
+    ),
+
+    /* subtle mineral warmth */
+    radial-gradient(
+      ellipse at 17% 72%,
+      rgba(167, 121, 62, 0.080) 0%,
+      rgba(167, 121, 62, 0.025) 26%,
+      transparent 50%
+    ),
+
+    /* broad contour memory */
+    repeating-radial-gradient(
+      ellipse at -8% 50%,
+      rgba(103, 84, 61, 0.050) 0 1px,
+      transparent 1px 38px
+    ),
+
+    repeating-radial-gradient(
+      ellipse at 108% 36%,
+      rgba(103, 84, 61, 0.040) 0 1px,
+      transparent 1px 46px
+    ),
+
+    /* faint trade vectors */
+    linear-gradient(
+      103deg,
+      transparent 0%,
+      transparent 15.8%,
+      rgba(156, 115, 62, 0.055) 16.0%,
+      transparent 16.25%,
+      transparent 53.0%,
+      rgba(100, 118, 96, 0.045) 53.2%,
+      transparent 53.45%,
+      transparent 100%
+    ),
+
+    linear-gradient(
+      78deg,
+      transparent 0%,
+      transparent 31.3%,
+      rgba(153, 112, 61, 0.042) 31.5%,
+      transparent 31.72%,
+      transparent 74.2%,
+      rgba(153, 112, 61, 0.034) 74.4%,
+      transparent 74.62%,
+      transparent 100%
+    ),
+
+    /* archival base */
+    linear-gradient(
+      145deg,
+      rgba(105, 83, 58, 0.035),
+      rgba(255, 255, 255, 0.024) 38%,
+      rgba(83, 66, 47, 0.050)
+    ),
+
+    #cec0ac;
+
+  background-size:
+    auto,
+    auto,
+    auto,
+    auto,
+    auto,
+    auto,
+    auto,
+    auto,
+    auto;
+
+  mask-image:
+    linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.96),
+      rgba(0, 0, 0, 0.88) 72%,
+      rgba(0, 0, 0, 0.72)
+    );
+}
+
+
+/* ---------------------------------------------------------
+   ARCHIVAL SHELL — VERY SUBTLE DEPTH UNDER FIELD
+   --------------------------------------------------------- */
+
+.archival {
+  background:
+    radial-gradient(
+      ellipse at 8% 42%,
+      rgba(104, 82, 57, 0.070),
+      transparent 34%
+    ),
+    radial-gradient(
+      ellipse at 91% 61%,
+      rgba(95, 78, 57, 0.060),
+      transparent 36%
+    ),
+    linear-gradient(
+      145deg,
+      #c9baa4 0%,
+      #d2c5b2 42%,
+      #c5b59f 100%
+    );
+}
+
+
+/* ---------------------------------------------------------
+   MOBILE — ATMOSPHERE RECEDES
+   --------------------------------------------------------- */
+
+@media (max-width: 620px) {
+
+  .archival .field {
+    opacity: 0.58;
+
+    background-size:
+      auto,
+      auto,
+      auto,
+      auto,
+      auto,
+      auto,
+      auto,
+      auto,
+      auto;
+  }
+}

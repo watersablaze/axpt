@@ -26,9 +26,11 @@ type InstrumentShellProps = {
     current: boolean;
   }[];
   classificationLabel?: string;
+  brandLabel?: string;
   showStatusRail?: boolean;
   hideHero?: boolean;
   density?: "standard" | "compact" | "document";
+  surface?: "default" | "archival";
   children: ReactNode;
 };
 
@@ -41,9 +43,11 @@ export function InstrumentShell({
   status,
   movements,
   classificationLabel = "Private Institutional Instrument",
+  brandLabel = "FRENCH-WARD",
   showStatusRail = true,
   hideHero = false,
   density = "standard",
+  surface = "default",
   children,
 }: InstrumentShellProps) {
   return (
@@ -54,7 +58,9 @@ export function InstrumentShell({
           : density === "document"
             ? styles.document
             : ""
-      } ${hideHero ? styles.withoutHero : ""}`}
+      } ${hideHero ? styles.withoutHero : ""} ${
+        surface === "archival" ? styles.archival : ""
+      }`}
     >
       <div className={styles.field} aria-hidden="true" />
 
@@ -66,7 +72,7 @@ export function InstrumentShell({
           </div>
 
           <div className={styles.identity}>
-            <p className={styles.brand}>FRENCH-WARD</p>
+            <p className={styles.brand}>{brandLabel}</p>
 
             <div className={styles.titleGroup}>
               <h1>{title}</h1>
