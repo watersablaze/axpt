@@ -2,6 +2,7 @@ import { resolveRepresentativeCommercialUtilityPackConsumptionWithClient } from
   "@/domains/instruments/representative-program/commercial-utility-pack/application/resolveRepresentativeCommercialUtilityPackConsumptionWithClient";
 import { FrenchWardInstitutionalProfileView } from "@/components/french-ward/profile/FrenchWardInstitutionalProfileView";
 import Link from "next/link";
+import ProfileUseControls from "../../ProfileUseControls";
 import boundaries from "./operating-boundaries.module.css";
 import { notFound, redirect } from "next/navigation";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
@@ -90,6 +91,7 @@ export default async function RepresentativeResourcePage({
           </p>
 
           {resource.kind === "INSTITUTIONAL_PROFILE" ? (
+            <>
             <FrenchWardInstitutionalProfileView
               profile={resource.content}
               packageReference={resource.packageReference}
@@ -99,6 +101,8 @@ export default async function RepresentativeResourcePage({
                   : undefined
               }
             />
+              <ProfileUseControls resourceReleaseId={resourceReleaseId} />
+            </>
           ) : (
             <>
               <h1 className={boundaries.title}>
