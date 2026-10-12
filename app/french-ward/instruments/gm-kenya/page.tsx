@@ -17,6 +17,9 @@ import {
 import {
   globalMotherV4Definition,
 } from "@/domains/instruments/definitions/globalMotherV4Definition";
+import {
+  globalMotherV5Definition,
+} from "@/domains/instruments/definitions/globalMotherV5Definition";
 import { InstrumentShell } from "@/components/instruments/InstrumentShell";
 import { RoyalRelationshipMap } from "@/components/french-ward/gm/RoyalRelationshipMap";
 import { RelationshipUnderstanding } from "@/components/french-ward/gm/RelationshipUnderstanding";
@@ -143,6 +146,26 @@ export default async function GreatMotherInstrumentPage({
   const recipientAccess = access && principal?.userId === access.grant.recipientUserId
     ? access : null;
 
+  const recipientVersion =
+    recipientAccess?.grant.instrumentVersionId
+      ? await prisma.instrumentVersion.findUnique({
+          where: {
+            id: recipientAccess.grant.instrumentVersionId,
+          },
+          select: {
+            id: true,
+            number: true,
+            status: true,
+          },
+        })
+      : null;
+
+  const participantChamberV2 =
+    recipientAccess !== null &&
+    recipientVersion?.number === globalMotherV5Definition.version &&
+    recipientVersion.status === "ISSUED" &&
+    recipientAccess.instrument.currentVersion === globalMotherV5Definition.version;
+
   if (
     (!recipientAccess && !internalInspectionAllowed) ||
     (recipientAccess !== null && recipientAccess.instrument.currentVersion >= 2 &&
@@ -162,7 +185,8 @@ export default async function GreatMotherInstrumentPage({
    */
   if (
     recipientAccess !== null &&
-    requestedPreviewVersion === null
+    requestedPreviewVersion === null &&
+    !participantChamberV2
   ) {
     return (
       <GlobalMotherIntermission
@@ -241,10 +265,10 @@ export default async function GreatMotherInstrumentPage({
 
   const participantV2 =
     !internalV2Preview &&
-    recipientAccess !== null &&
-    deliberation.version.number === globalMotherV4Definition.version &&
+    participantChamberV2 &&
+    deliberation.version.number === globalMotherV5Definition.version &&
     deliberation.version.status === "ISSUED" &&
-    recipientAccess.grant.instrumentVersionId === deliberation.version.id;
+    recipientAccess?.grant.instrumentVersionId === deliberation.version.id;
 
   const v2Presentation = internalV2Preview || participantV2;
 
@@ -397,14 +421,18 @@ export default async function GreatMotherInstrumentPage({
           : "French-Ward / Controlled Instrument"
       }
       title={
-        v2Presentation
-          ? globalMotherV4Definition.title
-          : "Framework of Royal Custodianship"
+        participantV2
+          ? globalMotherV5Definition.title
+          : v2Presentation
+            ? globalMotherV4Definition.title
+            : "Framework of Royal Custodianship"
       }
       subtitle={
-        v2Presentation
-          ? globalMotherV4Definition.subtitle
-          : "Ancestral Restoration & Global Trade"
+        participantV2
+          ? globalMotherV5Definition.subtitle
+          : v2Presentation
+            ? globalMotherV4Definition.subtitle
+            : "Ancestral Restoration & Global Trade"
       }
       reference="GM-KENYA-RCF-001"
       version={
