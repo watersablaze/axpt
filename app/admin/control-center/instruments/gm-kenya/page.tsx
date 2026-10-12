@@ -337,7 +337,7 @@ export default async function GlobalMotherResponseReviewPage() {
           >
             <a href="#gm-overview">
               <span>Overview</span>
-              <strong>{instrument.status}</strong>
+              <strong>V{instrument.currentVersion} · LIVE</strong>
             </a>
             <a href="#gm-create-recipient">
               <span>Create Recipient</span>
