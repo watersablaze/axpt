@@ -1,5 +1,7 @@
 "use client";
 
+import ResourcePermissionDecision from "./ResourcePermissionDecision";
+
 import {
   useEffect,
   useRef,
@@ -469,6 +471,17 @@ export default function RepresentativeCommercialUtilityPackPanel({
                       Present: {resource.canPresent ? "Permitted" : "Withheld"} ·
                       Transmit: {resource.canTransmit ? "Permitted" : "Withheld"}
                     </p>
+                    {resource.state === "RELEASED" &&
+                      entry.state === "RELEASED" &&
+                      ["PREPARING", "CURRENT"].includes(pack.state) ? (
+                      <ResourcePermissionDecision
+                        key={participantId + ":" + resource.id}
+                        resourceReleaseId={resource.id}
+                        participantId={participantId}
+                        disabled={busy || loading || Boolean(stateError)}
+                        onDecision={reloadPack}
+                      />
+                    ) : null}
                   </div>
                 ))}
               </div>
