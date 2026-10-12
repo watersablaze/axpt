@@ -5,6 +5,7 @@ import { resend } from "@/infrastructure/email/client";
 
 import { getDigitalSettlementEmailMode } from "./emailMode";
 import { getDigitalSettlementSender } from "./digitalSettlementSender";
+import { buildGlobalMotherChamberOrientationPdf } from "./globalMotherChamberOrientation";
 import { globalMotherV4Definition } from "../definitions/globalMotherV4Definition";
 
 export const GLOBAL_MOTHER_V2_CONTINUATION_DELIVERY_KEY =
@@ -75,7 +76,7 @@ export function renderGlobalMotherChamberV2Continuation(
     "Your prior positions remain preserved in the record and will continue to inform the next cycle.",
     "",
     "Respectfully,",
-    "Jamal James Ward",
+    "Jamal Ward",
     "Chief Strategic Officer",
     "French-Ward, Inc.",
   ].join("\n");
@@ -92,7 +93,7 @@ export function renderGlobalMotherChamberV2Continuation(
   <h1 style="margin:0;color:#f1eee6;font-family:Georgia,'Times New Roman',serif;font-size:24px;line-height:1.28;font-weight:400;">Chamber V1 Conclusion &amp; Continuation into Chamber V2</h1>
 </td></tr>
 <tr><td style="padding:28px 34px 32px;color:#294b60;font-size:14px;line-height:1.68;">
-  <p style="margin:0 0 18px;">Your Imperial Majesty Khan-Khan,</p>
+  <p style="margin:0 0 20px;color:#8c733d;font-family:Georgia,'Times New Roman',serif;font-size:18px;line-height:1.45;font-weight:400;">Your Imperial Majesty Khan-Khan,</p>
   <p style="margin:0 0 18px;">French-Ward has concluded Chamber V1 and placed the first deliberative cycle into Intermission while the record, responses, follow-up questions, subsequent clarifications, and practical developments are incorporated into Chamber V2.</p>
   <p style="margin:0 0 18px;">Your recent communication styled as a <strong>“rebuttal”</strong> was received and reviewed thoroughly.</p>
   <p style="margin:0 0 18px;">That framing is not consistent with the Chamber’s rules or doctrine. The Chamber is a protected deliberative environment intended for <strong>clarification, refinement, objection, revision, alignment, and harmony</strong>. It is not structured as an adversarial forum in which one participant rebuts another.</p>
@@ -104,7 +105,7 @@ export function renderGlobalMotherChamberV2Continuation(
   <p style="margin:0 0 18px;">It is also part of the Chamber record that the follow-up questions issued after your V1 deliberation responses did not receive a response. Those questions were intended to clarify your positions and strengthen the record. We encourage your full participation in Chamber V2 so those points can be addressed directly and constructively.</p>
   <p style="margin:0 0 18px;"><strong>Within the next 48 hours, you will receive updated private access to Chamber V2.</strong> This follows clarification of the appropriate channel for the Empress’s review and the additional institutional and operational clarity developed since Chamber V1.</p>
   <p style="margin:0 0 24px;">Your prior positions remain preserved in the record and will continue to inform the next cycle.</p>
-  <p style="margin:0;">Respectfully,<br /><strong>Jamal James Ward</strong><br />Chief Strategic Officer<br /><strong>French-Ward, Inc.</strong></p>
+  <p style="margin:0;">Respectfully,<br /><strong>Jamal Ward</strong><br />Chief Strategic Officer<br /><strong>French-Ward, Inc.</strong></p>
 </td></tr>
 </table>
 </td></tr>
@@ -152,6 +153,8 @@ export async function sendGlobalMotherChamberV2Continuation(
     representedInstitution: input.representedInstitution,
     representativeCapacity: input.representativeCapacity,
     privateCredentialIncluded: false,
+    attachment:
+      "Chamber-Orientation-GM-KENYA-RCF-001-Chamber-V2.pdf",
   };
 
   if (mode === "log") {
@@ -175,6 +178,8 @@ export async function sendGlobalMotherChamberV2Continuation(
     };
   }
 
+  const pdf = await buildGlobalMotherChamberOrientationPdf();
+
   const response = await resend.emails.send({
     from,
     to: input.recipientEmail,
@@ -182,6 +187,12 @@ export async function sendGlobalMotherChamberV2Continuation(
     subject: rendered.subject,
     text: rendered.text,
     html: rendered.html,
+    attachments: [
+      {
+        filename: "Chamber-Orientation-GM-KENYA-RCF-001-Chamber-V2.pdf",
+        content: pdf,
+      },
+    ],
   });
 
   const error = extractResendError(response);
