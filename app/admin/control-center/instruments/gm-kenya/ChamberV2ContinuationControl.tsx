@@ -34,6 +34,17 @@ export function ChamberV2ContinuationControl({
     setError("");
     setMessage("");
 
+    const attachmentWindow =
+      action === "attachment" ? window.open("", "_blank") : null;
+
+    if (action === "attachment" && !attachmentWindow) {
+      setBusy(null);
+      setError(
+        "The browser blocked the attachment preview window. Allow pop-ups for localhost:3010 and try again.",
+      );
+      return;
+    }
+
     try {
       const attachmentPreview = action === "attachment";
 
@@ -74,7 +85,12 @@ export function ChamberV2ContinuationControl({
 
         const blob = await response.blob();
         const url = URL.createObjectURL(blob);
-        window.open(url, "_blank", "noopener,noreferrer");
+
+        if (attachmentWindow) {
+          attachmentWindow.location.href = url;
+          attachmentWindow.opener = null;
+        }
+
         window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
         return;
       }
@@ -131,6 +147,10 @@ export function ChamberV2ContinuationControl({
           : "Continuation recorded only. Outbound email mode is not enabled.",
       );
     } catch (cause) {
+      if (attachmentWindow && !attachmentWindow.closed) {
+        attachmentWindow.close();
+      }
+
       setError(
         cause instanceof Error
           ? cause.message
