@@ -46,32 +46,21 @@ export function ChamberV2ContinuationControl({
     }
 
     try {
-      const attachmentPreview = action === "attachment";
-
       const response = await fetch(
-        attachmentPreview
-          ? "/api/admin/instruments/gm-kenya/orientation"
-          : "/api/admin/instruments/gm-kenya/v2-continuation",
+        "/api/admin/instruments/gm-kenya/v2-continuation",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(
-            attachmentPreview
-              ? {
-                  action: "attachment",
-                  recipientEmail: preview?.to,
-                }
-              : {
-                  action,
-                  grantId,
-                  confirmation:
-                    action === "send"
-                      ? "SEND CHAMBER V2 CONTINUATION"
-                      : undefined,
-                },
-          ),
+          body: JSON.stringify({
+            action,
+            grantId,
+            confirmation:
+              action === "send"
+                ? "SEND CHAMBER V2 CONTINUATION"
+                : undefined,
+          }),
         },
       );
 
@@ -173,7 +162,8 @@ export function ChamberV2ContinuationControl({
           Concludes Chamber V1, addresses the submitted rebuttal posture and
           refinery sequencing, records the unanswered follow-up questions, and
           forecasts refreshed Chamber V2 access within 48 hours, and attaches
-          the Chamber Orientation. No private credential is included.
+          a tailored Chamber V2 Orientation for Khan-Khan. No private credential
+          is included.
         </p>
 
         <button
@@ -208,7 +198,7 @@ export function ChamberV2ContinuationControl({
 
             <p>
               <strong>Attachment:</strong>{" "}
-              Chamber-Orientation-GM-KENYA-RCF-001-Chamber-V2.pdf
+              Chamber-V2-Orientation-Khan-Khan-GM-KENYA-RCF-001.pdf
             </p>
 
             <button
