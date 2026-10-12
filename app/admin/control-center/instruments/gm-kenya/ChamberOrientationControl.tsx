@@ -121,7 +121,7 @@ export function ChamberOrientationControl() {
     <details className={styles.grantDisclosure}>
       <summary>
         <span>Prepare Jacqueline introduction</span>
-        <small>PRE-CHAMBER COMMUNICATION</small>
+        <small>INTRODUCTION + ORIENTATION</small>
       </summary>
 
       <div className={styles.grantControl}>
