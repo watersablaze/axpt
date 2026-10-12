@@ -6,7 +6,7 @@ import { ChamberOrientationControl } from "./ChamberOrientationControl";
 
 export function CycleV2PreparationPanel() {
   return (
-    <section className={styles.section}>
+    <section className={`${styles.section} ${styles.cyclePreparationSection}`}>
       <div className={styles.sectionHeading}>
         <div>
           <span>00 / Next cycle</span>
