@@ -3875,3 +3875,64 @@
     gap: .2rem;
   }
 }
+
+
+/* =========================================================
+   GM-5B.9 — QUIET PREPARATION / CURRENT-V4 RE-ENTRY
+   Final balance pass after V2 compression.
+   ========================================================= */
+
+.cyclePreparationSection {
+  margin-bottom: .1rem !important;
+}
+
+.cyclePreparationSection .sectionHeading {
+  margin-bottom: .3rem;
+}
+
+.cycleStatusStrip {
+  margin-bottom: .42rem;
+  padding: .36rem 0;
+}
+
+.cyclePreparationSection .sectionLead {
+  margin-bottom: .5rem !important;
+}
+
+.cycleRoster {
+  margin-top: .4rem;
+}
+
+.cycleRosterItem {
+  padding-top: .5rem;
+  padding-bottom: .52rem;
+}
+
+.cycleBoundary {
+  margin-top: .5rem !important;
+}
+
+.preChamberLabel {
+  margin-top: .62rem;
+  padding-top: .48rem;
+}
+
+.cyclePreparationSection > .grantDisclosure > summary {
+  padding: .52rem 0 !important;
+}
+
+.currentInstrumentMarker {
+  margin-top: .25rem;
+  margin-bottom: .72rem;
+  padding-top: .62rem;
+  border-top: 1px solid rgba(154, 174, 184, .08);
+  border-bottom-color: rgba(203, 180, 125, .15);
+}
+
+.currentInstrumentMarker span {
+  color: #b39d67;
+}
+
+.contextRail .operatorRail strong {
+  max-width: 6rem;
+}
