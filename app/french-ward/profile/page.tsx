@@ -1,35 +1,64 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { resolveInstitutionalAccessWithClient } from "@/domains/institutional-access/resolveInstitutionalAccessWithClient";
+import { prisma } from "@/infrastructure/db/prisma";
 import { projectFrenchWardInstitutionalProfile } from "@/domains/institutions/french-ward/projectFrenchWardInstitutionalProfile";
 import { FrenchWardInstitutionalProfileView } from "@/components/french-ward/profile/FrenchWardInstitutionalProfileView";
-
+import ProfileAccessRequest from "@/components/french-ward/profile/ProfileAccessRequest";
 import styles from "./page.module.css";
 
+export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "French-Ward — Official Institutional Profile",
-  description: "French-Ward, Inc. — Official Institutional Profile, Edition 02.",
+  description: "French-Ward, Inc. — Institutional Profile access and official publication.",
 };
 
-/** Public presentation of the identical publication issued via representative CUP. */
-export default function PublicFrenchWardProfilePage() {
+/** Public reception and permission-checked consumption of the canonical CUP publication. */
+export default async function PublicFrenchWardProfilePage() {
   const profile = projectFrenchWardInstitutionalProfile();
+  const principal = await getPrincipal();
+  const access = principal
+    ? await resolveInstitutionalAccessWithClient({
+        client: prisma,
+        identity: { userId: principal.userId, email: principal.email },
+        scope: "PROFILE_VIEW",
+        action: "VIEW",
+        resourceReference: profile.reference,
+        resourceVersion: profile.version,
+      })
+    : { allowed: false } as const;
+
   return (
     <main className={styles.page}>
-      <header className={styles.topBar}>
-        <Link href="/french-ward" className={styles.brand}>French-Ward</Link>
-        <nav aria-label="Profile navigation">
-          <Link href="/french-ward">Corporate home</Link>
-          <Link href="/french-ward/transaction-intake">Commercial intake</Link>
-        </nav>
-      </header>
+      {access.allowed && (
+        <header className={styles.topBar}>
+          <Link href="/french-ward" className={styles.brand}>FRENCH-WARD</Link>
+          <nav aria-label="Profile navigation">
+            <Link href="/french-ward">Corporate home</Link>
+            <Link href="/french-ward/transaction-intake">Commercial intake</Link>
+          </nav>
+        </header>
+      )}
       <div className={styles.documentFrame}>
-        <div className={styles.context}>
-          <span>Official institutional publication</span>
-          <span>Edition {String(profile.version).padStart(2, "0")}</span>
-        </div>
-        <FrenchWardInstitutionalProfileView profile={profile} />
-        <p className={styles.afterword}>For institutional correspondence: <a href="mailto:connect@axpt.io">connect@axpt.io</a></p>
+        {access.allowed ? (
+          <>
+            <div className={styles.context}>
+              <span>Official institutional publication</span>
+              <span>Edition {String(profile.version).padStart(2, "0")}</span>
+            </div>
+            <FrenchWardInstitutionalProfileView profile={profile} />
+            <p className={styles.afterword}>
+              For institutional correspondence: <a href="mailto:french-ward@axpt.io">french-ward@axpt.io</a>
+            </p>
+          </>
+        ) : (
+          <ProfileAccessRequest
+            initialName={principal?.displayName ?? ""}
+            initialEmail={principal?.email ?? ""}
+          />
+        )}
       </div>
     </main>
   );

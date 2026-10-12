@@ -1,0 +1,272 @@
+/* FW-PROFILE-ACCESS-1.1 — compact institutional gateway reception */
+.reception{
+  box-sizing:border-box;
+  width:min(100%,1080px);
+  max-width:1080px;
+  margin:0 auto;
+  padding:clamp(1.2rem,2.4vh,2rem) clamp(1.1rem,3.8vw,3rem) 1.1rem;
+  color:#dce5e9;
+  font-family:Arial,Helvetica,sans-serif;
+  position:relative;
+  isolation:isolate;
+}
+.reception::before{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  inset:0 0 auto; height:200px;
+  background:radial-gradient(ellipse at 72% 0%,rgba(32,112,156,.17),transparent 65%);
+}
+.head{border-top:1px solid rgba(89,154,187,.62);padding-top:clamp(.65rem,1.8vh,1rem);max-width:none}
+.kicker{margin:0;color:#c5a77b;font-size:.64rem;font-weight:600;letter-spacing:.22em;text-transform:uppercase}
+.head h1{margin:.55rem 0 .45rem;color:#eff4f4;font-size:clamp(1.5rem,2.65vw,2.45rem);font-weight:500;line-height:1.16;letter-spacing:.075em;text-wrap:balance}
+.head h1 span{font-weight:300;color:#79b9d5}
+.head>p:last-child{max-width:74ch;margin:0;color:#b8c9d3;font-size:.89rem;line-height:1.5}
+.signin{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.45rem 1rem;margin:clamp(.85rem,2.5vh,1.45rem) 0 .95rem;padding:.65rem 0;border-top:1px solid rgba(99,141,164,.34);border-bottom:1px solid rgba(99,141,164,.34);font-size:.77rem}
+.signin span{color:#aebfc8}.signin a{color:#a5d7ee;text-decoration:none}.signin a:hover,.signin a:focus-visible{text-decoration:underline;text-underline-offset:3px}
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.85rem 1.15rem}
+.form label{display:flex;flex-direction:column;gap:.32rem;color:#c5ab84;font-size:.64rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase}
+.form input,.form textarea{box-sizing:border-box;width:100%;min-width:0;margin:0;padding:.66rem .8rem;border:1px solid #334c5e;border-radius:0;background:#0d1a23;color:#eaf1f3;font:400 .86rem/1.35 Arial,Helvetica,sans-serif;letter-spacing:normal;outline-offset:2px}
+.form input{min-height:39px}.form textarea{min-height:70px;resize:vertical}
+.form input:focus,.form textarea:focus{outline:1px solid #80c4e3}
+.form input::placeholder,.form textarea::placeholder{color:#98aab7;opacity:1}
+.full{grid-column:1/-1}
+.form button{width:fit-content;min-height:39px;padding:.65rem 1.1rem;border:1px solid #6899af;border-radius:0;background:#163e55;color:#f0f6f8;font:600 .68rem/1.2 Arial,Helvetica,sans-serif;letter-spacing:.13em;cursor:pointer;transition:background .15s ease,border-color .15s ease}
+.form button:hover,.form button:focus-visible{background:#205575;border-color:#a6d6ed}
+.form button:disabled{opacity:.6;cursor:wait}
+.error{grid-column:1/-1;color:#ffc8ba}
+.notice{max-width:94ch;margin:.85rem 0 0;color:#a4b6c1;font-size:.71rem;line-height:1.45}
+.success{margin:1.1rem 0;padding:1rem 0;border-top:1px solid #4e7890;border-bottom:1px solid #233d4d}
+.success strong{color:#a8d6eb}.success p{max-width:70ch;line-height:1.5}
+@media(max-width:700px){.reception{padding:1.25rem 1rem 2rem}.form{grid-template-columns:1fr;gap:.8rem}.head h1{letter-spacing:.045em}.head h1 span{display:block}.signin{align-items:flex-start}.form textarea{min-height:84px}}
+@media(max-height:740px) and (min-width:701px){.reception{padding-top:.7rem}.head h1{font-size:1.9rem}.form{gap:.62rem 1rem}.form textarea{min-height:58px}.notice{margin-top:.55rem}}
+@media(prefers-reduced-motion:reduce){.form button{transition:none}}
+
+/* FW-PROFILE-ACCESS-1.2 — continuous institutional visitor register */
+.reception{
+  background:radial-gradient(ellipse 36% 16% at 50% 57%,rgba(38,106,145,.075),transparent 100%);
+}
+.head{border-top-color:rgba(120,173,198,.48)}
+.head h1{font-weight:450;letter-spacing:.087em}
+.signin{margin-bottom:.7rem;border-bottom:0;padding-bottom:.35rem}
+.registerIndex{
+  display:flex;justify-content:space-between;align-items:center;gap:1rem;
+  margin:0 0 .65rem;padding-top:.65rem;
+  border-top:1px solid rgba(77,127,154,.32);
+  font:500 .59rem/1.35 Arial,Helvetica,sans-serif;
+  color:#c9ad80;letter-spacing:.19em;
+}
+.registerIndex span:last-child{color:#7d9eaf}
+.form{gap:.7rem 1.45rem}
+.form label{gap:.22rem;color:#c1a47a;letter-spacing:.16em;font-size:.62rem}
+.form input,.form textarea{
+  background:rgba(13,28,38,.18);
+  border:0;
+  border-bottom:1px solid rgba(104,151,175,.56);
+  border-radius:0;
+  padding:.6rem .1rem .53rem;
+  box-shadow:none;
+  outline:0;
+  color:#edf2f3;
+  transition:border-color .16s ease,background-color .16s ease,box-shadow .16s ease;
+}
+.form input{min-height:37px}
+.form textarea{min-height:68px;padding-top:.6rem;resize:vertical}
+.form input:hover,.form textarea:hover{border-bottom-color:rgba(158,198,217,.75)}
+.form input:focus,.form textarea:focus{
+  outline:0;
+  border-bottom-color:#a6d9f1;
+  background:rgba(30,76,99,.10);
+  box-shadow:0 1px 0 #a6d9f1;
+}
+.form input::placeholder,.form textarea::placeholder{color:#8197a4}
+.form button{
+  background:transparent;border:0;border-bottom:1px solid #7db4cd;
+  padding:.65rem .15rem .58rem 0;min-height:37px;
+  color:#dcecf3;font-weight:600;letter-spacing:.16em;
+}
+.form button::after{content:" ↗";color:#8cc8e4;font-size:1rem;vertical-align:-.035em}
+.form button:hover,.form button:focus-visible{
+  background:rgba(42,101,130,.14);
+  border-bottom-color:#b0e2f6;
+  outline:2px solid transparent;
+  box-shadow:0 2px 0 #9ed0e9;
+}
+.form button:focus-visible{outline:1px solid #a6d9f1;outline-offset:5px}
+.notice{margin-top:.6rem}
+@media(max-width:700px){
+  .registerIndex{font-size:.56rem;letter-spacing:.11em}
+  .form{gap:.67rem}
+  .form input{min-height:42px}
+  .form textarea{min-height:82px}
+}
+@media(prefers-reduced-motion:reduce){.form input,.form textarea{transition:none}}
+
+/* FW-PROFILE-ACCESS-1.3 — Quiet Threshold: contained reception, not a second hero */
+.reception{
+  width:min(100%,640px);
+  max-width:640px;
+  margin-inline:auto;
+  padding:clamp(1.3rem,3.4vh,2.2rem) clamp(1.25rem,2vw,2rem) 2rem;
+  background:radial-gradient(ellipse 65% 17% at 53% 6%,rgba(40,123,167,.095),transparent 100%);
+}
+.reception::before{
+  inset:0 0 auto;
+  height:95px;
+  background:radial-gradient(ellipse at 54% 0%,rgba(72,155,194,.11),transparent 66%);
+}
+.head{padding-top:.85rem;border-top-color:rgba(105,158,184,.44)}
+.head h1{
+  margin:.75rem 0 .55rem;
+  font-size:clamp(1.35rem,2.15vw,1.83rem);
+  line-height:1.2;
+  letter-spacing:.048em;
+  font-weight:450;
+}
+.head h1 span{color:#85b9cf;font-weight:350}
+.head>p:last-child{max-width:52ch;font-size:.82rem;line-height:1.5;color:#aebec7}
+.signin{
+  gap:.3rem .8rem;
+  margin:1.15rem 0 .75rem;
+  padding:.55rem 0;
+  font-size:.74rem;
+}
+.signin a{color:#a6d6ec}
+.registerIndex{margin-bottom:.65rem;padding-top:.6rem;font-size:.56rem;letter-spacing:.13em}
+.form{gap:.73rem 1.2rem}
+.form label{font-size:.6rem;letter-spacing:.13em}
+.form input{min-height:38px}
+.form textarea{min-height:66px}
+.form input,.form textarea{background:transparent;border-bottom-color:rgba(113,151,172,.5)}
+.form button{padding-top:.65rem;font-size:.65rem;letter-spacing:.14em}
+.notice{max-width:60ch;font-size:.68rem;line-height:1.48;margin-top:1rem;color:#8da2ae}
+@media(max-width:700px){
+  .reception{width:100%;padding:1.25rem 1.25rem 2rem}
+  .head h1{font-size:clamp(1.35rem,6vw,1.75rem)}
+  .signin{align-items:flex-start}
+  .form{gap:.82rem}
+  .form textarea{min-height:82px}
+}
+
+/* FW-PROFILE-ACCESS-1.4 — Reception / Register Separation */
+.reception{
+  position:relative;
+  padding-top:clamp(1.5rem,4.2vh,2.75rem);
+  padding-bottom:clamp(1.75rem,4vh,2.8rem);
+  background:none;
+}
+.reception::before{
+  inset:-2rem -4rem auto;
+  height:310px;
+  background:
+    radial-gradient(ellipse 52% 48% at 52% 16%,rgba(49,115,148,.12),transparent 82%),
+    linear-gradient(180deg,rgba(12,35,48,.11),transparent 93%);
+}
+.head{
+  position:relative;
+  padding-top:1.05rem;
+  border-top:1px solid rgba(121,175,200,.45);
+}
+.head::before{
+  content:"";
+  position:absolute;
+  top:-1px;left:42%;width:16%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(142,211,240,.58),transparent);
+  pointer-events:none;
+}
+.head h1{margin:.9rem 0 .7rem;letter-spacing:.052em}
+.head>p:last-child{max-width:48ch;line-height:1.58}
+.signin{
+  position:relative;
+  padding:.82rem 0;
+  margin:1.35rem 0 0;
+  border-top:1px solid rgba(104,149,170,.30);
+  border-bottom:0;
+}
+.registerSection{
+  position:relative;
+  margin-top:1.05rem;
+  padding:1.05rem 1.05rem 1.15rem;
+  isolation:isolate;
+}
+.registerSection::before{
+  content:"";position:absolute;z-index:-1;
+  inset:0;
+  background:
+    radial-gradient(ellipse 70% 34% at 50% 0%,rgba(40,112,151,.085),transparent 100%),
+    linear-gradient(180deg,rgba(15,35,46,.42),rgba(9,22,31,.19) 65%,transparent);
+  border-top:1px solid rgba(87,135,158,.31);
+  pointer-events:none;
+}
+.registerIndex{margin:0 0 1rem;padding-top:0;border-top:0;letter-spacing:.16em}
+.form{gap:.85rem 1.22rem}
+.form input,.form textarea{background:transparent}
+.notice{margin:1.05rem 1.05rem 0;max-width:60ch}
+.success{margin-top:1.3rem}
+@media(max-width:700px){
+  .reception{padding:1.45rem 1.1rem 2rem}
+  .reception::before{inset:0 -1rem auto;height:230px}
+  .signin{margin-top:1.05rem;align-items:flex-start}
+  .registerSection{margin-top:.75rem;padding:.9rem .55rem 1rem}
+  .notice{margin:.8rem .55rem 0}
+}
+@media(max-height:740px) and (min-width:701px){
+  .reception{padding-top:1.15rem}
+  .signin{margin-top:.9rem;padding:.6rem 0}
+  .registerSection{margin-top:.6rem;padding-top:.7rem;padding-bottom:.7rem}
+  .registerIndex{margin-bottom:.6rem}
+  .form{gap:.6rem 1.2rem}
+  .notice{margin-top:.55rem}
+}
+
+/* FW-PROFILE-ACCESS-1.5 — Reception Finish: a restrained signal of connection */
+.head::before{
+  left:0; width:16%;
+  height:1px;
+  background:linear-gradient(90deg,transparent,rgba(170,228,248,.78) 50%,transparent);
+  box-shadow:0 0 9px 1px rgba(89,176,219,.22);
+  opacity:.12;
+  animation:fwReceptionGlimmer 11s ease-in-out infinite;
+}
+@keyframes fwReceptionGlimmer{
+  0%,14%{transform:translateX(0);opacity:0}
+  24%{opacity:.7}
+  45%{transform:translateX(525%);opacity:.55}
+  54%,100%{transform:translateX(525%);opacity:0}
+}
+.registerSection::before{
+  inset:0 -0.4rem;
+  border-top-color:rgba(90,147,176,.23);
+  background:
+    radial-gradient(ellipse 54% 30% at 51% 0%,rgba(43,130,175,.075),transparent 96%),
+    linear-gradient(90deg,transparent 0%,rgba(13,34,45,.21) 12%,rgba(14,34,44,.31) 50%,rgba(13,34,45,.21) 88%,transparent 100%);
+}
+.registerSection{padding-bottom:1rem}
+.form input::placeholder,.form textarea::placeholder{color:#91a8b6}
+.form button{transition:color .2s ease,border-color .2s ease,box-shadow .2s ease}
+.form button:hover,.form button:focus-visible{color:#f2f9fc}
+@media(prefers-reduced-motion:reduce){
+  .head::before{animation:none;left:42%;opacity:.35;transform:none;box-shadow:none}
+  .form button{transition:none}
+}
+
+/* FW-PROFILE-ACCESS-1.6 — contextual return, without a gate masthead */
+.returnNav{
+  margin:1.45rem 1.05rem 0;
+  padding-top:.85rem;
+  border-top:1px solid rgba(104,149,170,.2);
+}
+.returnNav a{
+  display:inline-flex;
+  align-items:center;
+  gap:.65rem;
+  color:#93bbce;
+  text-decoration:none;
+  font-size:.68rem;
+  font-weight:500;
+  letter-spacing:.12em;
+  transition:color .2s ease;
+}
+.returnNav a:hover,.returnNav a:focus-visible{color:#e1f0f7}
+.returnNav a:focus-visible{outline:1px solid #8bbcd5;outline-offset:5px}
+.returnNav a span{font-size:1rem;line-height:1}
+@media(max-width:700px){.returnNav{margin:1rem .55rem 0}}
+@media(prefers-reduced-motion:reduce){.returnNav a{transition:none}}
