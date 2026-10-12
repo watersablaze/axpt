@@ -9,7 +9,7 @@ import { getDigitalSettlementSender } from "./digitalSettlementSender";
 import { globalMotherV5Definition } from "../definitions/globalMotherV5Definition";
 
 export const GLOBAL_MOTHER_ORIENTATION_DELIVERY_KEY =
-  "GM_CHAMBER_V2_ORIENTATION_JACQUELINE_DYER_20261012" as const;
+  "GM_CHAMBER_V2_ORIENTATION_JACQUELINE_DWYER_20261012" as const;
 
 export type GlobalMotherChamberOrientationInput = Readonly<{
   recipientEmail: string;
@@ -312,7 +312,7 @@ export async function sendGlobalMotherChamberOrientation(
     instrumentReference: globalMotherV5Definition.reference,
     chamberCycle: globalMotherV5Definition.cycleLabel,
     communication: "PRE_CHAMBER_ORIENTATION",
-    recipientName: "Jacqueline Dyer",
+    recipientName: "Jacqueline Dwyer",
     representedOrganization: "Friends of Farmers",
     intendedPrincipal: "Empress Omaedro",
     privateCredentialIncluded: false,
