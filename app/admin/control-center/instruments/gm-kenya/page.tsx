@@ -294,8 +294,6 @@ export default async function GlobalMotherResponseReviewPage() {
           </div>
         </header>
 
-        <CycleV2PreparationPanel />
-
         <aside className={styles.contextRail}>
           <section
             className={styles.metrics}
@@ -367,6 +365,8 @@ export default async function GlobalMotherResponseReviewPage() {
         </aside>
 
         <div className={styles.workGrid}>
+          <CycleV2PreparationPanel />
+
           <div className={styles.accessColumn}>
             <section
               id="gm-overview"
