@@ -4,6 +4,24 @@ import { globalMotherCycleV2Plan } from "@/domains/instruments/definitions/globa
 import styles from "./page.module.css";
 import { ChamberOrientationControl } from "./ChamberOrientationControl";
 
+const participantPresentation = {
+  KHAN_KHAN: {
+    name: "Khan-Khan",
+    institution: "AOTG",
+    delivery: "Direct",
+  },
+  GLOBAL_MOTHER: {
+    name: "Empress Omaedro II",
+    institution: "ND Royal Ministry",
+    delivery: "via Friends of Farmers",
+  },
+  FRENCH_WARD: {
+    name: "Jamal James Ward",
+    institution: "French-Ward, Inc.",
+    delivery: "Internal",
+  },
+} as const;
+
 export function CycleV2PreparationPanel() {
   return (
     <section className={`${styles.section} ${styles.cyclePreparationSection}`}>
@@ -15,38 +33,48 @@ export function CycleV2PreparationPanel() {
         <small>PREPARATION ONLY</small>
       </div>
 
-      <p className={styles.sectionLead}>
-        This surface records the next-cycle boundary before any new version,
-        recipient grant, private link, or outbound communication is created.
-      </p>
-
-      <div className={styles.recipientList}>
-        {globalMotherCycleV2Plan.participants.map((participant) => (
-          <div className={styles.recipientItem} key={participant.key}>
-            <div className={styles.recipientBody}>
-              <strong>{participant.name}</strong>
-              <span>
-                {participant.institution} · {participant.capacity}
-              </span>
-              <small>
-                {participant.participation} · Delivery: {participant.delivery}
-              </small>
-            </div>
-          </div>
-        ))}
+      <div className={styles.cycleStatusStrip}>
+        <span>V{globalMotherCycleV2Plan.storageVersion}</span>
+        <span>{globalMotherCycleV2Plan.cycleLabel}</span>
+        <span>Issuance disabled</span>
+        <span>Access disabled</span>
+        <span>No V2 grants</span>
       </div>
 
-      <p className={styles.draftingBoundary}>
-        Instrument storage version: V{globalMotherCycleV2Plan.storageVersion}.
-        Chamber label: {globalMotherCycleV2Plan.cycleLabel}. Nama remains in
-        the historical V1 record and is not included in the new-cycle roster.
-        Friends of Farmers is recorded only as the Global Mother&apos;s delivery
-        channel; no Chamber standing or deliberative authority is inferred.
+      <p className={styles.sectionLead}>
+        Next-cycle preparation only. No new version, recipient grant, private
+        link, or Chamber access has been issued.
       </p>
 
-      <p className={styles.deliveryNotice}>
-        V2 issuance disabled · V2 access delivery disabled · No V2 grants created
+      <div className={styles.cycleRoster}>
+        {globalMotherCycleV2Plan.participants.map((participant) => {
+          const presentation = participantPresentation[participant.key];
+
+          return (
+            <div
+              className={styles.cycleRosterItem}
+              key={participant.key}
+              title={participant.name}
+            >
+              <strong>{presentation.name}</strong>
+              <span>{presentation.institution}</span>
+              <small>
+                {participant.participation} · {presentation.delivery}
+              </small>
+            </div>
+          );
+        })}
+      </div>
+
+      <p className={styles.cycleBoundary}>
+        Historical V1 participation remains preserved. Friends of Farmers serves
+        as the Empress&apos;s designated delivery channel for this cycle; no
+        Chamber standing or deliberative authority is inferred.
       </p>
+
+      <div className={styles.preChamberLabel}>
+        <span>Pre-Chamber Communication</span>
+      </div>
 
       <ChamberOrientationControl />
     </section>
