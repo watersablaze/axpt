@@ -6,6 +6,12 @@ export const FRENCH_WARD_INSTITUTIONAL_PROFILE_STATUS = {
 export type FrenchWardInstitutionalProfileStatus =
   (typeof FRENCH_WARD_INSTITUTIONAL_PROFILE_STATUS)[keyof typeof FRENCH_WARD_INSTITUTIONAL_PROFILE_STATUS];
 
+export type FrenchWardInstitutionalOfficer = Readonly<{
+  name: string;
+  title: string;
+  responsibility: string;
+}>;
+
 export type FrenchWardInstitutionalProfile =
   Readonly<{
     reference:
@@ -26,6 +32,16 @@ export type FrenchWardInstitutionalProfile =
     classification:
       string;
 
+    corporateCoordinates: Readonly<{
+      registrationJurisdiction: string;
+      registrationNumber: string;
+      corporateStatus: string;
+      principalAddress: string;
+      telephone: string;
+    }>;
+
+    commercialActivities: readonly string[];
+
     publicDescription:
       string;
 
@@ -42,6 +58,18 @@ export type FrenchWardInstitutionalProfile =
       readonly string[];
 
     institutionalDefinition:
+      readonly string[];
+
+    leadership:
+      readonly FrenchWardInstitutionalOfficer[];
+
+    counterpartyEngagement:
+      readonly string[];
+
+    counterpartyDueDiligence:
+      string;
+
+    documentaryReadiness:
       readonly string[];
 
     domains:
@@ -72,6 +100,14 @@ export function assertFrenchWardInstitutionalProfile(
     !profile.publicDescription.trim() ||
     !profile.orientation.trim() ||
     !profile.custodianshipThesis.trim() ||
+    !profile.corporateCoordinates.registrationJurisdiction.trim() ||
+    !profile.corporateCoordinates.registrationNumber.trim() ||
+    !profile.corporateCoordinates.corporateStatus.trim() ||
+    !profile.corporateCoordinates.principalAddress.trim() ||
+    !profile.corporateCoordinates.telephone.trim() ||
+    profile.commercialActivities.length === 0 ||
+    profile.commercialActivities.some(activity => !activity.trim()) ||
+    !profile.counterpartyDueDiligence.trim() ||
     profile.transactionPreparation.length !== 5 ||
     profile.establishedSourceRelationships.length === 0 ||
     profile.establishedSourceRelationships.some(
@@ -84,6 +120,16 @@ export function assertFrenchWardInstitutionalProfile(
   }
 
   if (
+    profile.leadership.length !== 3 ||
+    profile.leadership.some(officer =>
+      !officer.name.trim() ||
+      !officer.title.trim() ||
+      !officer.responsibility.trim()
+    ) ||
+    profile.counterpartyEngagement.length === 0 ||
+    profile.counterpartyEngagement.some(statement => !statement.trim()) ||
+    profile.documentaryReadiness.length === 0 ||
+    profile.documentaryReadiness.some(statement => !statement.trim()) ||
     profile.domains.length === 0 ||
     profile.practiceAreas.length === 0 ||
     profile.operatingPrinciples.length === 0 ||

@@ -1,321 +1,2021 @@
-/* FW-PROFILE-VIS-1.2
-   Compact institutional dossier / transforming blue / dual rhythm
-   Editorial direction and operational precision share one surface.
-*/
+/* FW-PROFILE-C1 — Consolidated shared institutional publication.
+   Preserves PROFILE-5B.4 architecture, leadership, and reading field.
+   Used by authorized public Profile and Representative CUP. */
 
-.publication {
-  --paper: #e8e0d1;
-  --ink: #1b3038;
-  --secondary: #445255;
-  --rule: #b9af9e;
-  width: 100%;
-  max-width: 860px;
-  margin-inline: auto;
-  background: var(--paper);
-  color: var(--ink);
-  overflow-wrap: anywhere;
-  box-shadow: 0 14px 36px rgba(2, 13, 19, .16);
+.publication * {
+  box-sizing: border-box;
 }
 
-.cover {
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  padding: clamp(22px, 3.5vw, 34px);
-  color: #eee9df;
-  background:
-    radial-gradient(
-      ellipse at 78% 65%,
-      rgba(119, 157, 156, .20),
-      transparent 60%
-    ),
-    linear-gradient(
-      126deg,
-      #0a1c26 0%,
-      #102b37 43%,
-      #234650 76%,
-      #496a6c 100%
-    );
-}
-
-.cover::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    112deg,
-    transparent 19%,
-    rgba(239, 229, 206, .015) 36%,
-    rgba(226, 232, 223, .055) 46%,
-    transparent 64%
-  );
-}
-
-.cover > * {
-  position: relative;
-  z-index: 1;
-}
-
-.masthead,
-.coverRecord {
+.masthead, .coverRecord {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: baseline;
   gap: 16px;
-  color: #dad8d0;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: 10px;
-  line-height: 1.5;
-  letter-spacing: .06em;
+  font: 600 10px/1.5 Arial, Helvetica, sans-serif;
+  letter-spacing: .12em;
+  text-transform: uppercase;
 }
 
-.masthead {
-  padding-bottom: 12px;
-  border-bottom: 1px solid rgba(230, 227, 214, .25);
-  font-weight: 600;
-}
-
-.identity {
-  padding: 28px 0 25px;
-}
-
-.identity h1 {
-  margin: 0;
-  font-family: Arial, Helvetica, sans-serif;
-  font-size: clamp(29px, 4vw, 39px);
-  font-weight: 700;
-  letter-spacing: -.038em;
-  line-height: 1.1;
-}
-
-.classification {
-  margin: 8px 0 0;
-  font: 600 clamp(15px, 2vw, 18px)/1.4
-    Arial, Helvetica, sans-serif;
-  color: #dac3a0;
-}
-
-.description {
-  max-width: 560px;
-  margin: 17px 0 0;
-  font: 400 14px/1.7 Arial, Helvetica, sans-serif;
-  color: #e0e1dc;
-}
-
-.coverRecord {
-  padding-top: 12px;
-  border-top: 1px solid rgba(230, 227, 214, .25);
-  color: #c9c9c0;
-}
-
-.paper {
-  position: relative;
-  padding: clamp(28px, 4.5vw, 44px);
-  background:
-    linear-gradient(
-      180deg,
-      rgba(211, 219, 210, .38) 0,
-      transparent 80px
-    ),
-    var(--paper);
-}
-
-.narrative {
-  max-width: 690px;
-  padding-bottom: 28px;
-}
-
-.orientation {
-  margin: 0 0 19px;
-  max-width: 650px;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(18px, 2.5vw, 23px);
-  font-weight: 500;
-  letter-spacing: -.012em;
-  line-height: 1.48;
-}
-
-.definition {
-  display: grid;
-  gap: 12px;
-  color: var(--secondary);
-  font: 400 14px/1.7 Arial, Helvetica, sans-serif;
+.masthead span:last-child {
+  color: #bda678;
+  text-align: right;
 }
 
 .definition p {
   margin: 0;
 }
 
-/* VIS-2: unfolded institutional sections, not four tabular registers. */
-.number {font:600 10px/1.6 Arial,Helvetica,sans-serif;color:#897456;font-variant-numeric:tabular-nums;}
-.folioHeading {display:grid;grid-template-columns:31px 1fr;gap:15px;align-items:baseline;margin-bottom:20px;}
-.folioNumber {font:600 11px/1.5 Arial,sans-serif;color:#887052;}
-.folioHeading h2 {margin:0;color:var(--ink);font:500 21px/1.3 Georgia,"Times New Roman",serif;letter-spacing:-.015em;}
-.folioHeading p {font:400 11px/1.5 Arial,sans-serif;color:#687371;margin:5px 0 0;}
-.fieldsSection,.practiceSection,.principlesSection,.sequenceSection {border-top:1px solid var(--rule);padding:25px 0 28px;}
-.fieldText {display:flex;gap:10px 26px;flex-wrap:wrap;margin:0 0 0 46px;}
-.fieldText span {font:500 14px/1.55 Georgia,"Times New Roman",serif;color:#27404a;}
-.fieldText span:not(:last-child)::after {content:"·";padding-left:24px;color:#a18b6b;}
-.practiceNarrative {margin-left:46px;columns:2;column-gap:34px;}
-.practiceNarrative p {display:grid;grid-template-columns:24px 1fr;gap:8px;break-inside:avoid;margin:0 0 17px;color:#33494e;font:400 13px/1.55 Arial,sans-serif;}
-.practiceNarrative p span,.principleIndex {font:600 10px/1.7 Arial,sans-serif;color:#8a765a;}
-.principleArticles {list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 30px;margin:0 0 0 46px;padding:0;}
-.principleArticles li {display:grid;grid-template-columns:26px minmax(0,1fr);gap:10px;padding:12px 0;align-content:start;}
-.principleArticles li p {font:400 13px/1.58 Georgia,"Times New Roman",serif;color:#263c44;margin:0;}
-.sequenceFlow {list-style:none;display:flex;flex-wrap:wrap;align-items:baseline;gap:12px 0;margin:0 0 0 46px;padding:0;}
-.sequenceFlow li {display:flex;align-items:baseline;gap:7px;font:500 12px/1.5 Arial,sans-serif;color:#243c45;}
-.sequenceFlow li span {font-size:9px;color:#9a8665;}
-.sequenceFlow li:not(:last-child)::after {content:"/";padding:0 12px;color:#a6a092;}
-.sequenceFlow li strong {font-weight:500;}
-
-.colophon {
-  padding-top: 18px;
-  border-top: 1px solid #a49a8b;
+.sourceRelationships {
+  padding: 30px 0 49px;
+  border-top: 1px solid var(--line);
 }
 
-.details {
+.sourceRelationships h2, .preparation h2 {
+  margin: 0 0 22px;
+  color: #e4e8e5;
+  font: 500 clamp(17px,1.9vw,22px)/1.4 Arial,Helvetica,sans-serif;
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+
+.sourceRelationships .definition {
+  padding-left: clamp(0px,5vw,47px);
+}
+
+.folioHeading {
+  display: grid;
+  grid-template-columns: 34px minmax(0,1fr);
+  gap: 19px;
+  align-items: baseline;
+  margin-bottom: 28px;
+}
+
+.folioNumber, .number {
+  font: 600 11px/1.5 Arial,Helvetica,sans-serif;
+  color: var(--gold);
+  font-variant-numeric: tabular-nums;
+}
+
+.folioHeading h2 {
+  margin: 0;
+  font: 500 clamp(21px,2.4vw,29px)/1.27 Arial,Helvetica,sans-serif;
+  color: var(--ink);
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+
+.folioHeading p {
+  margin: 8px 0 0;
+  color: var(--subtle);
+  font: 400 12px/1.6 Arial,Helvetica,sans-serif;
+}
+
+.fieldsSection, .practiceSection, .principlesSection, .sequenceSection, .preparation {
+  padding: clamp(32px,4.8vw,54px) 0 clamp(36px,5vw,63px);
+  border-top: 1px solid var(--line);
+}
+
+.fieldText {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 18px;
-  color: #685e50;
-  font: 600 10px/1.6 Arial, Helvetica, sans-serif;
+  gap: 11px 22px;
+  margin: 0 0 0 53px;
 }
 
-.limitation {
-  max-width: 620px;
-  margin: 12px 0 0;
-  color: #5c6662;
-  font: 400 11px/1.7 Arial, Helvetica, sans-serif;
+.fieldText span {
+  color: #d1dce0;
+  font: 400 14px/1.75 Arial,Helvetica,sans-serif;
 }
 
-.download {
-  display: inline-block;
-  margin-top: 18px;
-  padding: 10px 15px;
-  border: 1px solid #78664d;
-  color: var(--ink);
-  text-decoration: none;
-  font: 600 12px/1.4 Arial, Helvetica, sans-serif;
+.fieldText span:not(:last-child)::after {
+  content: "·";
+  padding-left: 22px;
+  color: var(--gold);
 }
 
-.download:hover,
-.download:focus-visible {
-  background: #d9cebd;
+.practiceNarrative {
+  margin-left: 53px;
+  columns: 2;
+  column-gap: clamp(20px,4vw,57px);
 }
 
-@media (max-width: 600px) {
-  .cover {
-    padding: 22px;
-  }
-
-  .masthead,
-  .coverRecord {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .identity {
-    padding: 25px 0;
-  }
-
-  .paper {
-    padding: 26px 22px;
-  }
-
-
-  .orientation {
-    font-size: 19px;
-  }
+.practiceNarrative p {
+  display: grid;
+  grid-template-columns: 24px minmax(0,1fr);
+  gap: 11px;
+  break-inside: avoid;
+  margin: 0 0 26px;
+  color: #d0dadd;
+  font: 400 15px/1.78 Arial,Helvetica,sans-serif;
 }
 
-@media print {
-  .publication {
-    box-shadow: none;
-    print-color-adjust: exact;
-    -webkit-print-color-adjust: exact;
-  }
-
-  .cover {
-    break-inside: avoid;
-  }
-
-
-  .download {
-    display: none;
-  }
+.practiceNarrative p span, .principleIndex {
+  color: var(--gold);
+  font: 600 10px/1.7 Arial,Helvetica,sans-serif;
 }
 
-/* FW-PROFILE-CONVERGENCE-1C.4A
-   Optional Edition 2 presentation; Edition 1 unaffected.
-*/
-
-.custodianshipThesis {
-  margin: 0 0 27px;
-  padding: 16px 0 17px;
-  border-top: 1px solid var(--rule);
-  color: #253c43;
-  font: 600 clamp(15px, 2vw, 18px)/1.5
-    Georgia, "Times New Roman", serif;
-  letter-spacing: -.012em;
+.principleArticles {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 0 clamp(22px,4vw,55px);
+  margin: 0 0 0 53px;
+  padding: 0;
 }
 
-.preparation {
-  padding: 23px 0 28px;
-  border-top: 1px solid var(--rule);
+.principleArticles li {
+  display: grid;
+  grid-template-columns: 26px minmax(0,1fr);
+  gap: 10px;
+  align-content: start;
+  padding: 14px 0 21px;
+  border-top: 1px solid rgba(99,142,163,.18);
+}
+
+.principleArticles li p {
+  margin: 0;
+  color: #dce4e2;
+  font: 400 15px/1.78 Arial,Helvetica,sans-serif;
+}
+
+.sequenceFlow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px 0;
+  list-style: none;
+  margin: 0 0 0 53px;
+  padding: 0;
+}
+
+.sequenceFlow li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: #dce1de;
+  font: 500 13px/1.6 Arial,Helvetica,sans-serif;
+}
+
+.sequenceFlow li span {
+  color: var(--gold);
+  font-size: 10px;
+}
+
+.sequenceFlow li strong {
+  font-weight: 500;
+}
+
+.sequenceFlow li:not(:last-child)::after {
+  content: "→";
+  padding: 0 16px;
+  color: #6fa7c4;
 }
 
 .preparation h2 {
-  margin: 0 0 16px;
-  font: 700 13px/1.4 Arial, Helvetica, sans-serif;
+  margin-bottom: 25px;
 }
 
 .preparationStages {
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(5,minmax(0,1fr));
+  gap: 16px;
+  list-style: none;
   margin: 0;
   padding: 0;
-  list-style: none;
 }
 
 .preparationStages li {
   display: flex;
   flex-direction: column;
-  gap: 7px;
+  gap: 12px;
   min-width: 0;
-  padding-top: 10px;
-  border-top: 1px solid var(--rule);
-  font: 500 12px/1.45 Arial, Helvetica, sans-serif;
+  padding: 14px 0;
+  border-top: 1px solid rgba(106,160,187,.42);
+  font: 400 12px/1.65 Arial,Helvetica,sans-serif;
+  color: #c7d1d5;
 }
 
-@media (max-width: 600px) {
-  .preparationStages {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 15px 20px;
+.colophon {
+  margin-top: 16px;
+  padding: 31px 0 4px;
+  border-top: 1px solid rgba(192,165,119,.41);
+}
+
+.details {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px 23px;
+  font: 600 11px/1.6 Arial,Helvetica,sans-serif;
+  color: #d2b88d;
+  letter-spacing: .045em;
+}
+
+.limitation {
+  max-width: 78ch;
+  margin: 19px 0 0;
+  color: #b2c1c7;
+  font: 400 13px/1.85 Arial,Helvetica,sans-serif;
+}
+
+.download {
+  display: inline-flex;
+  align-items: center;
+  min-height: 43px;
+  margin-top: 23px;
+  border-bottom: 1px solid #7baec8;
+  color: #dbedf4;
+  text-decoration: none;
+  font: 600 11px/1.5 Arial,Helvetica,sans-serif;
+  letter-spacing: .07em;
+}
+
+.download:hover {
+  color: #fff;
+  border-bottom-color: #d7c39e;
+}
+
+.download:focus-visible {
+  outline: 2px solid #9ccce5;
+  outline-offset: 5px;
+}
+
+.leadershipSection,.engagementSection,.readinessSection {
+  padding: 32px 0 36px;
+  border-top: 1px solid var(--fw-rule);
+}
+
+.officerRegister {
+  border-top: 1px solid var(--fw-rule);
+  margin-top: 25px;
+}
+
+.officerEntry {
+  display: grid;
+  grid-template-columns: 36px minmax(190px,.9fr) minmax(220px,1.15fr);
+  gap: clamp(16px,3vw,36px);
+  padding: 29px 0 31px;
+  border-bottom: 1px solid var(--fw-rule);
+  align-items: start;
+}
+
+.officerIndex,.engagementRegister p span {
+  font: 600 10px/1.6 Arial,Helvetica,sans-serif;
+  color: var(--fw-metal);
+  letter-spacing: .1em;
+}
+
+.officerEntry h3 {
+  margin: 0;
+  color: #f1f3ef;
+  font: 600 clamp(19px,2.05vw,24px)/1.3 Arial,Helvetica,sans-serif;
+  letter-spacing: -.012em;
+}
+
+.officerTitle {
+  margin: 9px 0 0;
+  color: #d3b98d;
+  font: 500 13px/1.6 Arial,Helvetica,sans-serif;
+}
+
+.officerResponsibility {
+  margin: 0;
+  max-width: 53ch;
+  color: #d2dfe2;
+  font: 400 15px/1.78 Arial,Helvetica,sans-serif;
+}
+
+.engagementRegister {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0;
+  margin-left: 53px;
+  border-top: 1px solid var(--fw-rule);
+}
+
+.engagementRegister p {
+  display: grid;
+  grid-template-columns: 28px minmax(0,1fr);
+  gap: 15px;
+  margin: 0;
+  padding: 21px 0 22px;
+  border-bottom: 1px solid var(--fw-rule);
+  font: 400 15px/1.78 Arial,Helvetica,sans-serif;
+  color: #d1dfe2;
+}
+
+.publication {
+  --ink: #e9ece9;
+  --gold: #c0a577;
+  --blue: #86bed9;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1020px;
+  margin-inline: auto;
+  color: var(--ink);
+  box-shadow: none;
+  font-family: Arial, Helvetica, sans-serif;
+  overflow-wrap: break-word;
+  --fw-metal: #bd9e6f;
+  --fw-blue: #83bedb;
+  --fw-rule: rgba(98,147,173,.28);
+  --fw-muted: #aebdc5;
+  font-size: 14px;
+  --ground: #0e1921;
+  --copy: #d0dade;
+  --subtle: #aabac2;
+  --line: rgba(122,169,189,.27);
+  background: #101c25;
+}
+
+.classification {
+  margin: 18px 0 0;
+  font: 500 clamp(15px,1.65vw,19px)/1.5 Arial,Helvetica,sans-serif;
+  letter-spacing: .015em;
+  color: #dfd5c3;
+}
+
+.bridgeIndex span:last-child {
+  color: #99b5c4;
+  font-weight: 500;
+  letter-spacing: .09em;
+}
+
+.custodianshipThesis {
+  margin: 0 0 56px;
+  padding: 20px 0 21px;
+  border-top: 1px solid rgba(87,145,178,.39);
+  border-bottom: 1px solid rgba(87,145,178,.24);
+  font: 500 clamp(13px,1.5vw,16px)/1.7 Arial,Helvetica,sans-serif;
+  letter-spacing: .035em;
+  color: #a9d6ea;
+}
+
+.officerResponsibility,.engagementRegister p,.practiceNarrative p {
+  color: #c8d5d9;
+}
+
+.identity {
+  position: relative;
+  padding-block: clamp(58px,10vh,98px);
+  max-width: none;
+  padding: clamp(47px,6vw,67px) 0 clamp(40px,5vw,59px);
+}
+
+.identity h1 {
+  margin: 0;
+  font: 600 clamp(36px,5vw,64px)/1.08 Arial,Helvetica,sans-serif;
+  text-transform: uppercase;
+  color: #f1f2ee;
+  text-shadow: 0 1px 12px rgba(0,0,0,.23);
+  width: max-content;
+  max-width: 100%;
+  white-space: nowrap;
+  font-size: clamp(37px,4.6vw,56px);
+  line-height: 1.1;
+  letter-spacing: .008em;
+  text-wrap: nowrap;
+}
+
+.description {
+  margin: 28px 0 0;
+  font: 400 15px/1.82 Arial,Helvetica,sans-serif;
+  font-size: clamp(14px,1.25vw,16px);
+  line-height: 1.75;
+  color: #c8d7dc;
+  text-shadow: 0 1px 5px rgba(0,0,0,.18);
+  max-width: 45ch;
+}
+
+.entryBridge {
+  position: relative;
+  border-top: 1px solid rgba(107,157,182,.22);
+  padding: clamp(18px,2.6vw,28px) clamp(24px,5.7vw,72px) clamp(19px,2.9vw,31px);
+  background: linear-gradient(180deg,#101c25 0%,#13212b 72%,#15242e 100%);
+}
+
+.bridgeIndex {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  color: #c8aa7a;
+  font: 600 10px/1.5 Arial,Helvetica,sans-serif;
+  text-transform: uppercase;
+  font-size: 9px;
+  letter-spacing: .12em;
+}
+
+.bridgeRule {
+  width: min(100%,720px);
+  height: 1px;
+  background: linear-gradient(90deg,rgba(205,171,113,.58),rgba(91,163,200,.48) 60%,transparent);
+  margin: 12px 0 15px;
+  opacity: .75;
+}
+
+.bridgeTitle {
+  margin: 0 0 14px;
+  color: #ebece8;
+  font: 500 clamp(19px,2.1vw,26px)/1.3 Arial,Helvetica,sans-serif;
+  letter-spacing: .005em;
+  margin-bottom: 8px;
+  font-size: clamp(16px,1.55vw,19px);
+  line-height: 1.35;
+}
+
+.bridgeSummary {
+  margin: 0;
+  color: #cfdae0;
+  font: 400 clamp(13px,1.23vw,15px)/1.8 Arial,Helvetica,sans-serif;
+  max-width: 74ch;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.bridgeBoundary {
+  max-width: 80ch;
+  margin: 14px 0 0;
+  color: #a5b9c2;
+  font: 400 12px/1.8 Arial,Helvetica,sans-serif;
+  margin-top: 9px;
+  font-size: 11px;
+  line-height: 1.6;
+}
+
+.paper {
+  padding: 0 clamp(24px,5.7vw,72px) clamp(32px,5vw,66px);
+  color: #e9efeb;
+  background: linear-gradient(180deg,#15242e 0%,#182a34 370px,#1a2b34 850px,#182831 100%);
+}
+
+.narrative {
+  max-width: 790px;
+  padding: clamp(53px,6vw,82px) 0 clamp(41px,5vw,66px);
+  padding-top: clamp(23px,3.1vw,38px);
+  padding-bottom: clamp(34px,4.2vw,52px);
+}
+
+.orientation {
+  margin: 0 0 29px;
+  font: 400 clamp(20px,2.35vw,28px)/1.55 Georgia,"Times New Roman",serif;
+  letter-spacing: -.016em;
+  color: #eff1ed;
+  max-width: 59ch;
+  margin-bottom: 23px;
+  font-size: clamp(19px,1.96vw,23px);
+  line-height: 1.52;
+}
+
+.definition {
+  display: grid;
+  font: 400 14px/1.83 Arial,Helvetica,sans-serif;
+  gap: 17px;
+  max-width: 70ch;
+  font-size: 14px;
+  line-height: 1.86;
+  color: #d5dfe1;
+}
+
+.cover {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(27px, 4.6vw, 64px) clamp(24px, 5.7vw, 72px) clamp(31px, 4.6vw, 58px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  isolation: isolate;
+  min-height: clamp(440px,58vh,570px);
+  background: linear-gradient(90deg,
+      #081118 0%,
+      rgba(8, 17, 24, .99) 29%,
+      rgba(8, 17, 24, .92) 43%,
+      rgba(8, 17, 24, .67) 58%,
+      rgba(8, 17, 24, .17) 79%,
+      rgba(8, 17, 24, .06) 100%),
+    url("/french-ward/fw-profile-open-passage.webp") right center / auto 100% no-repeat,
+    #081118;
+}
+
+.cover::before,
+.cover::after {
+  content: none !important;
+  display: none !important;
+}
+
+.masthead {
+  padding-bottom: 17px;
+  border-bottom: 1px solid rgba(192,165,119,.28);
+  color: #d7d7d0;
+  border-bottom-color: rgba(190,174,143,.24);
+}
+
+.coverRecord {
+  padding-top: 17px;
+  border-top: 1px solid rgba(113,157,180,.27);
+  font-weight: 500;
+  color: #a9bec7;
+  border-top-color: rgba(117,155,175,.24);
+}
+
+@media (max-width:720px) {
+  .cover {
+    min-height: 450px;
   }
-}
 
+  .cover::after {
+    width: 100%;
+    opacity: .4;
+    background-position: center,right bottom;
+  }
+
+  .identity {
+    padding-block: 68px;
+  }
+
+  .identity h1 {
+    font-size: clamp(30px,8vw,43px);
+  }
+
+  .officerEntry {
+    grid-template-columns: 27px minmax(0,1fr);
+    gap: 10px 12px;
+  }
+
+  .officerResponsibility {
+    grid-column: 2;
+  }
+
+  .engagementRegister {
+    margin-left: 0;
+  }
+
+  .officerEntry h3 {
+    font-size: 19px;
+  }
+
+}
+@media (min-width: 701px) {
+  .cover {
+    background: linear-gradient(
+        90deg,
+        #081118 0%,
+        rgba(8,17,24,.99) 27%,
+        rgba(8,17,24,.91) 40%,
+        rgba(8,17,24,.60) 54%,
+        rgba(8,17,24,.14) 77%,
+        rgba(8,17,24,.06) 100%
+      ),
+      url("/french-ward/fw-profile-open-passage.webp")
+        right top / auto 103% no-repeat,
+      #081118;
+  }
+
+  .description {
+    max-width: 49ch;
+    font-size: clamp(13px, 1.05vw, 15px);
+    line-height: 1.72;
+  }
+
+}
+@media (max-width:700px) {
+  .masthead,.coverRecord {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    font-size: 9px;
+  }
+
+  .description {
+    font-size: 13px;
+  }
+
+  .orientation {
+    font-size: 20px;
+  }
+
+  .practiceNarrative {
+    columns: 1;
+  }
+
+  .principleArticles {
+    grid-template-columns: 1fr;
+  }
+
+  .fieldText,.practiceNarrative,.principleArticles,.sequenceFlow {
+    margin-left: 0;
+  }
+
+  .fieldText {
+    gap: 9px 13px;
+  }
+
+  .fieldText span:not(:last-child)::after {
+    padding-left: 12px;
+  }
+
+  .preparationStages {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+
+  .cover::before {
+    background: linear-gradient(90deg,rgba(9,14,19,.88),rgba(9,14,19,.47)),radial-gradient(ellipse 78% 20% at 89% 93%,rgba(98,177,214,.21),transparent);
+  }
+
+  .bridgeIndex {
+    font-size: 9px;
+  }
+
+  .cover {
+    padding: 25px 22px 31px;
+    min-height: 430px;
+  }
+
+  .cover::after {
+    right: -40%;
+    top: 10%;
+    width: 88%;
+    height: 111%;
+    opacity: .4;
+  }
+
+  .identity {
+    padding-block: 58px 51px;
+    padding: 52px 0 45px;
+  }
+
+  .identity h1 {
+    width: auto;
+    max-width: 100%;
+    font-size: clamp(26px,7.3vw,43px);
+    letter-spacing: -.018em;
+    white-space: nowrap;
+  }
+
+  .entryBridge {
+    padding: 20px 22px 23px;
+  }
+
+  .bridgeRule {
+    margin: 11px 0 14px;
+  }
+
+  .bridgeTitle {
+    font-size: 18px;
+  }
+
+  .bridgeSummary {
+    font-size: 12px;
+  }
+
+  .paper {
+    padding: 0 22px 40px;
+    background: linear-gradient(180deg,#15242e,#182a34 440px,#182831 100%);
+  }
+
+  .narrative {
+    padding-top: 25px;
+  }
+
+}
+@media (max-width: 700px) {
+  .cover {
+    background: linear-gradient(90deg, #081118 0%, rgba(8,17,24,.95) 47%, rgba(8,17,24,.7) 100%),
+      url("/french-ward/fw-profile-open-passage.webp") 74% center / auto 100% no-repeat,
+      #081118;
+  }
+
+  .description {
+    max-width: 48ch;
+    line-height: 1.7;
+  }
+
+}
+@media (max-width: 520px) {
+  .cover {
+    background: radial-gradient(ellipse 80% 55% at 100% 87%, rgba(48,100,134,.23), transparent 90%),
+      linear-gradient(120deg, #081118, #10212b);
+  }
+
+}
+@media (max-width:390px) {
+  .folioHeading {
+    gap: 10px;
+    grid-template-columns: 25px minmax(0,1fr);
+  }
+
+  .folioHeading h2 {
+    font-size: 19px;
+  }
+
+}
+@media (max-width:380px) {
+  .identity h1 {
+    font-size: clamp(23px,7.1vw,30px);
+  }
+
+}
 @media print {
-  .preparation {
+  .publication {
+    --ink: #182b34;
+    --copy: #33464e;
+    --subtle: #556269;
+    --gold: #806a4a;
+    --line: #bdb3a3;
+    background: #fff;
+    color: #182b34;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+  }
+
+  .orientation,.folioHeading h2,.sourceRelationships h2,.preparation h2 {
+    color: #182b34;
+  }
+
+  .fieldText span,.practiceNarrative p,.principleArticles li p,.sequenceFlow li,.preparationStages li {
+    color: #293f49;
+  }
+
+  .custodianshipThesis {
+    color: #214e69;
+  }
+
+  .details {
+    color: #806a4a;
+  }
+
+  .limitation {
+    color: #40565f;
+  }
+
+  .download {
+    display: none;
+  }
+
+  .cover,.preparation {
     break-inside: avoid;
   }
+
+  .officerEntry,.engagementRegister p {
+    break-inside: avoid;
+  }
+
+  .entryBridge {
+    background: #fff;
+    color: #182b34;
+    border-top: 1px solid #bdb3a3;
+  }
+
+  .bridgeIndex {
+    color: #806a4a;
+  }
+
+  .bridgeIndex span:last-child {
+    color: #556269;
+  }
+
+  .bridgeTitle {
+    color: #182b34;
+  }
+
+  .bridgeSummary,.bridgeBoundary {
+    color: #33464e;
+  }
+
+  .paper {
+    background: #fff;
+  }
+
+  .entryBridge,.paper {
+    background: #fff;
+  }
+
+  .orientation {
+    color: #182b34;
+  }
+
+  .definition {
+    color: #33464e;
+  }
+
+  .cover {
+    color: #f6f3ed;
+    min-height: 0;
+    background: #0b1c26 !important;
+  }
+
 }
 
-/* FW-PROFILE-RELEASE-2A — Qualified full-publication relationship */
-
-.sourceRelationships {
-  margin: 0 0 25px;
-  padding-top: 18px;
-  border-top: 1px solid rgba(43, 64, 71, 0.18);
+/* FW-PROFILE-C2/C3 — One institutional section-header register.
+   Number = section coordinate; title = principal inscription;
+   note = subordinate documentary purpose. No authority or content edits. */
+.folioHeading {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 19px;
+  align-items: start;
+  padding: 0 0 21px;
+  margin: 0 0 26px;
+  border-bottom: 1px solid rgba(104,152,176,.32);
+  position: relative;
+}
+.folioHeading::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  height: 1px;
+  width: 74px;
+  background: linear-gradient(90deg,rgba(197,166,112,.82),rgba(88,155,191,.48),transparent);
+  pointer-events: none;
+}
+.folioNumber {
+  padding-top: 5px;
+  color: #d0b384;
+  font: 600 11px/1.5 Arial,Helvetica,sans-serif;
+  letter-spacing: .1em;
+  font-variant-numeric: tabular-nums;
+}
+.folioIdentity {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px 28px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.folioHeading h2 {
+  margin: 0;
+  color: #edf0ee;
+  font: 600 clamp(19px,2.05vw,24px)/1.28 Arial,Helvetica,sans-serif;
+  letter-spacing: .036em;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+.folioHeading p {
+  margin: 0;
+  color: #afc1c8;
+  font: 400 12px/1.55 Arial,Helvetica,sans-serif;
+  letter-spacing: .018em;
+}
+.sourceRelationships h2, .preparation h2 {margin: 0;}
+.sourceRelationships .definition {
+  padding-left: 53px;
+  max-width: 74ch;
+  gap: 21px;
+  font-size: 15px;
+  line-height: 1.82;
+}
+.officerRegister {margin-top: 0; border-top: 0;}
+@media(max-width:700px) {
+  .folioHeading {grid-template-columns: 27px minmax(0,1fr);gap: 12px;padding-bottom: 15px;}
+  .folioIdentity {display: block;}
+  .folioHeading h2 {font-size: clamp(16px,4.1vw,19px);letter-spacing: .04em;}
+  .folioHeading p {margin-top: 5px;}
+  .sourceRelationships .definition {padding-left: 0;}
+  .officerEntry {grid-template-columns: 27px minmax(0,1fr);}
+  .officerResponsibility {grid-column: 2; max-width: 64ch; font-size: 14px;}
+  .engagementRegister {margin-left: 0;}
+  .engagementRegister p {font-size: 14px;}
+  .sourceRelationships .definition {font-size: 14px;}
+  .practiceNarrative p,.principleArticles li p {font-size: 14px;}
+  .limitation {font-size: 12px;}
+}
+@media print {
+  .folioHeading h2 {color: #182b34;}
+  .folioHeading p {color: #556269;}
+  .folioHeading {border-bottom-color:#bdb3a3;}
+  .officerEntry h3,.officerResponsibility,.officerTitle,.engagementRegister p {color:#263d47;}
+  .sourceRelationships .definition {color:#33464e;}
 }
 
-.sourceRelationships h2 {
-  margin: 0 0 15px;
-  color: #253c43;
-  font: 600 15px/1.45 Georgia, "Times New Roman", serif;
+/* PROFILE-C4 — Sculpted Scope and Institutional Definition.
+   Shared publication only. Canonical language and release paths unchanged. */
+.entryBridge {
+  isolation:isolate;
+  overflow:hidden;
+  background:linear-gradient(115deg,#101c25 0%,#13232e 62%,#182d39 100%);
+  padding-bottom:clamp(26px,3.7vw,44px);
+}
+.entryBridge::before {
+  content:"";
+  position:absolute;
+  inset:0 0 0 auto;
+  width:42%;
+  opacity:.58;
+  pointer-events:none;
+  background:radial-gradient(ellipse 85% 95% at 100% 20%,rgba(67,133,168,.20),transparent 76%);
+}
+.scopeComposition {
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,.88fr) minmax(0,1.12fr);
+  gap:clamp(28px,5vw,76px);
+  align-items:center;
+  padding-top:clamp(16px,2.7vw,29px);
+}
+.scopeIdentity {
+  padding-left:clamp(14px,2vw,24px);
+  border-left:2px solid rgba(189,158,103,.58);
+}
+.scopeCoordinate,.narrativeCoordinate {
+  display:block;
+  font:600 10px/1.6 Arial,Helvetica,sans-serif;
+  letter-spacing:.16em;
+  color:#c8a979;
+}
+.scopeIdentity .bridgeTitle {
+  margin:9px 0 0;
+  font:500 clamp(21px,2.5vw,29px)/1.25 Arial,Helvetica,sans-serif;
+  letter-spacing:.005em;
+  color:#eef1ee;
+}
+.scopeComposition .bridgeBoundary {
+  margin:0;
+  max-width:56ch;
+  border-left:1px solid rgba(105,162,189,.28);
+  padding:8px 0 8px clamp(18px,2.5vw,30px);
+  font:400 clamp(13px,1.3vw,15px)/1.75 Arial,Helvetica,sans-serif;
+  color:#c6d4da;
+}
+.paper {background:linear-gradient(180deg,#172a35 0%,#1b303b 450px,#1a2b34 100%);}
+.narrative {
+  max-width:none;
+  display:grid;
+  grid-template-columns:minmax(0,1.03fr) minmax(0,.97fr);
+  gap:clamp(32px,5.1vw,75px);
+  padding-top:clamp(54px,6vw,86px);
+  padding-bottom:clamp(43px,5vw,69px);
+  align-items:start;
+}
+.orientationAxis {position:relative;padding-top:19px;}
+.orientationAxis::before {
+  content:"";
+  position:absolute;
+  top:0;left:0;
+  width:min(120px,40%);height:1px;
+  background:linear-gradient(90deg,#bc9a67,rgba(104,174,205,.55),transparent);
+}
+.narrativeCoordinate {margin:0 0 clamp(19px,3vw,33px);color:#b5a17f;}
+.orientationAxis .orientation {
+  max-width:38ch;
+  margin:0;
+  font:400 clamp(22px,2.5vw,31px)/1.47 Georgia,'Times New Roman',serif;
+  letter-spacing:-.019em;
+  color:#f0f0eb;
+  text-wrap:pretty;
+}
+.definitionAxis {
+  padding-top:18px;
+  border-top:1px solid rgba(116,164,187,.32);
+}
+.definitionCaption {
+  display:flex;justify-content:space-between;align-items:baseline;
+  flex-wrap:wrap;gap:8px 12px;
+  margin-bottom:21px;
+  font:600 10px/1.6 Arial,Helvetica,sans-serif;
+  letter-spacing:.095em;text-transform:uppercase;
+  color:#d5b688;
+}
+.definitionCaption span:last-child {color:#9bb4bf;font-weight:400;letter-spacing:.035em;text-transform:none;}
+.definitionAxis .definition {max-width:none;display:block;}
+.definitionEntry {
+  display:grid;grid-template-columns:27px minmax(0,1fr);
+  gap:14px;
+  padding:17px 0 19px;
+  border-top:1px solid rgba(115,162,185,.16);
+}
+.definitionEntry:first-child {border-top:0;padding-top:0;}
+.definitionIndex {font:600 10px/1.65 Arial,Helvetica,sans-serif;color:#c0a474;letter-spacing:.05em;}
+.definitionEntry p {margin:0;font:400 clamp(13px,1.25vw,15px)/1.77 Arial,Helvetica,sans-serif;color:#ccd9df;}
+@media(max-width:750px) {
+  .scopeComposition,.narrative {grid-template-columns:minmax(0,1fr);}
+  .scopeComposition {gap:23px;}
+  .scopeComposition .bridgeBoundary {padding-top:0;padding-bottom:0;}
+  .narrative {gap:39px;padding-top:49px;}
+  .orientationAxis .orientation {max-width:52ch;font-size:clamp(20px,4.2vw,26px);}
+  .definitionCaption {gap:5px 12px;}
+}
+@media(max-width:520px) {
+  .entryBridge {padding-bottom:29px;}
+  .scopeComposition {padding-top:13px;gap:19px;}
+  .scopeIdentity .bridgeTitle {font-size:22px;}
+  .scopeComposition .bridgeBoundary {font-size:13px;}
+  .narrative {padding-top:41px;gap:34px;}
+  .orientationAxis .orientation {font-size:22px;line-height:1.5;}
+  .definitionEntry {grid-template-columns:23px minmax(0,1fr);gap:10px;}
+  .definitionEntry p {font-size:14px;}
+}
+@media print {
+  .entryBridge,.paper {background:#fff;}
+  .entryBridge::before {display:none;}
+  .scopeCoordinate,.narrativeCoordinate,.definitionIndex {color:#80684a;}
+  .scopeIdentity .bridgeTitle,.orientationAxis .orientation {color:#182b34;}
+  .scopeComposition .bridgeBoundary,.definitionEntry p {color:#263d47;}
+  .definitionAxis,.definitionEntry {break-inside:avoid;}
 }
 
-@media(max-width:600px){.practiceNarrative{columns:1}.principleArticles{grid-template-columns:1fr}.fieldText,.practiceNarrative,.principleArticles,.sequenceFlow{margin-left:0}.fieldText{gap:7px 14px}.fieldText span:not(:last-child)::after{padding-left:13px}}
+/* PROFILE-C4.1 — Institutional restraint and two-sentence governing premise.
+   Shared publication; typography and composition only. */
+@media (min-width: 751px) {
+  .narrative {
+    grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr);
+    gap: clamp(28px, 4.4vw, 62px);
+  }
+}
+.scopeIdentity .bridgeTitle {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(19px, 2vw, 24px);
+  font-weight: 500;
+  line-height: 1.28;
+  letter-spacing: -.018em;
+}
+.scopeComposition .bridgeBoundary {
+  font-size: clamp(13px, 1.16vw, 14px);
+  line-height: 1.7;
+}
+.orientationAxis .orientation {
+  max-width: 55ch;
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  letter-spacing: normal;
+  text-wrap: initial;
+}
+.premiseLead {
+  max-width: 37ch;
+  margin: 0;
+  color: #e9efed;
+  font: 500 clamp(19px, 2.1vw, 26px)/1.42 Arial, Helvetica, sans-serif;
+  letter-spacing: -.027em;
+  text-wrap: pretty;
+}
+.premiseContinuation {
+  max-width: 51ch;
+  margin: clamp(17px, 2vw, 25px) 0 0;
+  color: #bfcfd4;
+  font: 400 clamp(14px, 1.25vw, 16px)/1.73 Arial, Helvetica, sans-serif;
+  letter-spacing: .002em;
+}
+.definitionAxis {padding-top: 13px;}
+.definitionCaption {margin-bottom: 15px;}
+.definitionEntry {padding-block: 18px 20px;}
+.custodianshipThesis {
+  padding: 19px 0 21px;
+  color: #9cc8dc;
+  font: 500 clamp(12px, 1.25vw, 14px)/1.65 Arial, Helvetica, sans-serif;
+  letter-spacing: .035em;
+  text-wrap: balance;
+}
+@media (max-width: 750px) {
+  .narrative {grid-template-columns: minmax(0, 1fr);}
+  .premiseLead {font-size: clamp(19px, 3.65vw, 24px);}
+  .premiseContinuation {font-size: 14px;}
+}
+@media (max-width: 520px) {
+  .scopeIdentity .bridgeTitle {font-size: 20px;}
+  .premiseLead {font-size: 21px;line-height: 1.46;}
+  .premiseContinuation {font-size: 14px;line-height: 1.7;}
+}
+@media print {
+  .premiseLead {color: #182b34;}
+  .premiseContinuation, .custodianshipThesis {color: #33464e;}
+}
+
+/* PROFILE-C4.2 — Archival closure and restrained leadership register.
+   Presentation only: shared Profile, no content or authority mutation. */
+.custodianshipThesis {
+  position: relative;
+  margin: 10px 0 clamp(24px, 3.2vw, 38px);
+  padding: 7px 0 7px 18px;
+  border: 0;
+  color: #afcedb;
+  font: 400 clamp(12px, 1.08vw, 14px)/1.65 Arial, Helvetica, sans-serif;
+  letter-spacing: .012em;
+  text-wrap: pretty;
+}
+.custodianshipThesis::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  bottom: 7px;
+  width: 2px;
+  background: linear-gradient(180deg, #83bed8, rgba(86, 148, 179, .23));
+}
+.leadershipSection {
+  padding-top: clamp(22px, 3vw, 36px);
+  padding-bottom: clamp(22px, 3vw, 37px);
+  background: linear-gradient(180deg, rgba(7, 18, 26, .105), rgba(7, 18, 26, .02));
+}
+.leadershipSection .folioHeading {
+  border-bottom-color: rgba(118, 155, 169, .22);
+  padding-bottom: clamp(16px, 2vw, 23px);
+  margin-bottom: 0;
+}
+.leadershipSection .folioHeading h2 {
+  font-size: clamp(15px, 1.42vw, 18px);
+  font-weight: 500;
+  letter-spacing: .055em;
+}
+.leadershipSection .folioHeading p {
+  color: #98aeb7;
+  font-size: 11px;
+}
+.leadershipSection .officerEntry {
+  padding: clamp(18px, 2.2vw, 25px) 0;
+  border-bottom-color: rgba(115, 159, 175, .19);
+  align-items: start;
+}
+.leadershipSection .officerIndex {
+  color: #a89776;
+  font-weight: 500;
+  font-size: 10px;
+}
+.leadershipSection .officerEntry h3 {
+  font-size: clamp(15px, 1.52vw, 18px);
+  font-weight: 500;
+  line-height: 1.35;
+  letter-spacing: -.012em;
+  color: #e6eae7;
+}
+.leadershipSection .officerTitle {
+  margin-top: 6px;
+  font-size: clamp(11px, 1.05vw, 12px);
+  line-height: 1.5;
+  font-weight: 400;
+  color: #b7a685;
+}
+.leadershipSection .officerResponsibility {
+  max-width: 55ch;
+  color: #aec1c9;
+  font-size: clamp(12px, 1.15vw, 14px);
+  line-height: 1.72;
+}
+@media (max-width: 720px) {
+  .custodianshipThesis { margin-bottom: 23px; padding-left: 14px; }
+  .leadershipSection .officerEntry { gap: 9px 12px; padding: 19px 0; }
+  .leadershipSection .officerResponsibility { grid-column: 2; }
+}
+@media print {
+  .custodianshipThesis { color: #33464e; }
+  .custodianshipThesis::before { background: #6c8090; }
+  .leadershipSection { background: transparent; }
+  .leadershipSection .officerEntry h3 { color: #182b34; }
+  .leadershipSection .officerTitle { color: #786749; }
+  .leadershipSection .officerResponsibility { color: #33464e; }
+}
+
+/* PROFILE-C4.4 — Compressed Leadership Register with functional insignia.
+   One archival plane; no repeated drawer labels or hidden content. */
+.leadershipSection .officerRegister {
+  display: block;
+  border-top: 1px solid rgba(111, 156, 177, .25);
+  background: linear-gradient(90deg, rgba(19, 40, 52, .18), transparent 74%);
+}
+.leadershipSection .officerDrawer {
+  display: grid;
+  grid-template-columns: 23px 22px minmax(190px, .88fr) minmax(0, 1.2fr);
+  gap: clamp(12px, 2vw, 24px);
+  align-items: start;
+  min-width: 0;
+  padding: 17px 5px 18px;
+  border: 0;
+  border-bottom: 1px solid rgba(111, 156, 177, .20);
+  background: transparent;
+  box-shadow: none;
+}
+.leadershipSection .officerDrawer .officerIndex {
+  margin-top: 3px;
+  color: #b8a27d;
+  font: 500 10px/1.5 Arial, Helvetica, sans-serif;
+  letter-spacing: .06em;
+}
+.leadershipSection .officerInsignia {
+  display: inline-flex;
+  width: 19px;
+  height: 19px;
+  margin-top: 1px;
+  color: #b29e7c;
+  opacity: .78;
+}
+.leadershipSection .officerInsignia svg {display:block;width:100%;height:100%;}
+.leadershipSection .officerIdentity {min-width:0;}
+.leadershipSection .officerIdentity h3 {
+  margin: 0;
+  color: #e4e9e8;
+  font: 500 clamp(14px, 1.22vw, 17px)/1.35 Arial, Helvetica, sans-serif;
+  letter-spacing: -.01em;
+}
+.leadershipSection .officerIdentity .officerTitle {
+  margin: 4px 0 0;
+  color: #b7a586;
+  font: 400 clamp(11px, .95vw, 12px)/1.5 Arial, Helvetica, sans-serif;
+}
+.leadershipSection .officerDrawer .officerResponsibility {
+  margin: 0;
+  padding: 1px 0 0;
+  max-width: 65ch;
+  color: #b5c6cd;
+  font: 400 clamp(12px, 1.02vw, 13px)/1.62 Arial, Helvetica, sans-serif;
+}
+@media (max-width: 720px) {
+  .leadershipSection .officerDrawer {
+    grid-template-columns: 18px 19px minmax(0, 1fr);
+    gap: 7px 11px;
+    padding: 15px 2px 16px;
+  }
+  .leadershipSection .officerInsignia {width:17px;height:17px;}
+  .leadershipSection .officerDrawer .officerResponsibility {
+    grid-column: 3;
+    padding-top: 1px;
+    font-size: 12px;
+  }
+}
+@media print {
+  .leadershipSection .officerRegister {background:transparent;}
+  .leadershipSection .officerDrawer {break-inside:avoid;border-bottom-color:#b3babb;}
+  .leadershipSection .officerIdentity h3 {color:#182d35;}
+  .leadershipSection .officerIdentity .officerTitle,
+  .leadershipSection .officerInsignia {color:#786447;}
+  .leadershipSection .officerDrawer .officerResponsibility {color:#33464e;}
+}
+
+
+/* PROFILE-C4.5A — Quiet Dimensional Finish.
+   Atmosphere lives within the continuous publication surface, without a perimeter.
+   Leadership records and insignia remain native DOM content. */
+.leadershipSection {
+  position: relative;
+  isolation: isolate;
+  background: transparent;
+  box-shadow: none;
+}
+.leadershipSection::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  inset: -10px -4% -14px;
+  background:
+    radial-gradient(ellipse 62% 80% at 43% 44%, rgba(74, 123, 139, .095), transparent 83%),
+    linear-gradient(98deg, transparent 1%, rgba(44, 88, 105, .045) 38%, rgba(84, 127, 141, .065) 53%, transparent 95%);
+  opacity: .8;
+}
+.leadershipSection .officerRegister {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.leadershipSection .officerDrawer {
+  border: 0;
+  border-bottom: 1px solid rgba(126, 160, 171, .135);
+  background: transparent;
+  box-shadow: none;
+}
+.leadershipSection .officerDrawer:last-child {
+  border-bottom: 0;
+}
+.leadershipSection .officerInsignia {
+  color: #af9f80;
+  opacity: .73;
+  filter: none;
+}
+@media (max-width: 720px) {
+  .leadershipSection::before {
+    inset: -6px -2% -8px;
+    background: radial-gradient(ellipse 110% 72% at 44% 50%, rgba(69, 115, 131, .085), transparent 84%);
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  .leadershipSection::before { display: none; }
+}
+@media print {
+  .leadershipSection::before { display: none; }
+  .leadershipSection .officerDrawer { border-bottom-color: #c6ccce; }
+  .leadershipSection .officerDrawer:last-child { border-bottom: 0; }
+}
+
+/* PROFILE-C4.6 — Governed Source Register.
+   Continuous material field, three distinct record functions, no cards.
+   All institutional statements remain canonical projection values. */
+.sourceRelationships {position:relative;isolation:isolate;}
+.sourceRelationships::before {
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  inset:5% -3% 0;
+  background:radial-gradient(ellipse 52% 42% at 19% 32%,rgba(139,113,73,.055),transparent 90%),
+             radial-gradient(ellipse 56% 48% at 79% 84%,rgba(54,97,116,.075),transparent 90%);
+}
+.sourceRegister {
+  display:grid;
+  grid-template-columns:minmax(180px,.68fr) minmax(0,1.32fr);
+  gap:clamp(30px,5vw,80px);
+  padding:clamp(27px,3.5vw,44px) 0 clamp(34px,4vw,52px);
+}
+.sourceIdentity {align-self:start;min-width:0;padding-left:17px;border-left:1px solid rgba(184,157,112,.36);}
+.sourceCoordinate,.sourceRegisterLabel {
+  display:block;color:#bca579;font:600 10px/1.5 Arial,Helvetica,sans-serif;
+  letter-spacing:.12em;text-transform:uppercase;
+}
+.sourceIdentity h3 {
+  margin:14px 0 10px;color:#e8eae6;
+  font:500 clamp(20px,2.1vw,28px)/1.24 Arial,Helvetica,sans-serif;
+  letter-spacing:-.03em;text-wrap:balance;
+}
+.sourceTerritory {
+  display:block;max-width:30ch;color:#9db6c2;
+  font:400 clamp(12px,1.12vw,14px)/1.6 Arial,Helvetica,sans-serif;
+}
+.sourceNarrative {min-width:0;}
+.sourceNarrative > div {padding:0 0 clamp(19px,2.3vw,28px);}
+.sourceNarrative > div + div {padding-top:clamp(17px,2vw,25px);border-top:1px solid rgba(114,155,171,.16);}
+.sourceRegisterLabel {margin-bottom:11px;color:#bba57d;font-size:9px;letter-spacing:.13em;}
+.sourceNarrative p {max-width:73ch;margin:0;color:#c6d3d6;font:400 clamp(13px,1.21vw,15px)/1.78 Arial,Helvetica,sans-serif;}
+.sourcePrimary p {color:#dae2e1;}
+.sourcePractice p {color:#b9cbd0;}
+.sourceBoundary {position:relative;padding-left:16px!important;}
+.sourceBoundary::before {content:"";position:absolute;left:0;top:clamp(17px,2vw,25px);bottom:clamp(19px,2.3vw,28px);width:1px;background:linear-gradient(#b39970,rgba(96,146,166,.25));}
+.sourceBoundary p {color:#aebfc5;font-size:clamp(12px,1.1vw,14px);}
+@media(max-width:780px) {
+  .sourceRegister {grid-template-columns:minmax(0,1fr);gap:25px;padding-block:28px 33px;}
+  .sourceIdentity {padding-left:14px;}
+  .sourceIdentity h3 {font-size:clamp(21px,5vw,27px);}
+  .sourceNarrative p {font-size:14px;}
+  .sourceBoundary p {font-size:13px;}
+}
+@media(prefers-reduced-transparency:reduce) {.sourceRelationships::before {display:none;}}
+@media print {
+  .sourceRelationships::before {display:none;}
+  .sourceIdentity h3 {color:#172b34;}
+  .sourceCoordinate,.sourceRegisterLabel {color:#68553b;}
+  .sourceTerritory,.sourceNarrative p,.sourcePrimary p,.sourcePractice p,.sourceBoundary p {color:#33464e;}
+  .sourceNarrative > div {break-inside:avoid;}
+}
+
+/* PROFILE-C4.7A — Commercial scope, practice architecture and governing clauses.
+   Three distinct spatial registers, no changes to canonical content or authority. */
+.fieldsSection,.practiceSection,.principlesSection {position:relative;min-width:0;}
+/* Scope: staggered coordinates against one continuous material field. */
+.scopeField {display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:0 20px;padding:clamp(24px,3.2vw,40px) 0 5px;margin:0;list-style:none;}
+.scopeField li {grid-column:span 2;display:grid;grid-template-columns:30px minmax(0,1fr);gap:12px;align-items:start;min-width:0;min-height:86px;padding:17px 4px 20px;border-top:1px solid rgba(115,160,181,.23);position:relative;}
+.scopeField li:nth-child(4){grid-column:2/span 2;}
+.scopeField li:nth-child(5){grid-column:4/span 2;}
+.scopeField li::before {content:"";position:absolute;top:-1px;left:0;width:28px;height:1px;background:linear-gradient(90deg,rgba(194,160,106,.62),transparent);}
+.scopeNumber,.practiceNumber {color:#baa477;font:600 10px/1.6 Arial,Helvetica,sans-serif;letter-spacing:.09em;}
+.scopeName {color:#dce5e5;font:500 clamp(13px,1.15vw,15px)/1.54 Arial,Helvetica,sans-serif;letter-spacing:.005em;}
+/* Practice: two offset reading axes rather than a uniform checklist. */
+.practiceLedger {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 clamp(36px,6vw,94px);padding:clamp(26px,3.7vw,46px) 0 10px;margin:0;list-style:none;position:relative;}
+.practiceLedger::before {content:"";position:absolute;top:44px;bottom:27px;left:50%;width:1px;transform:skewY(-16deg);background:linear-gradient(transparent,rgba(91,141,162,.20),transparent);pointer-events:none;}
+.practiceLedger li {display:grid;grid-template-columns:30px minmax(0,1fr);gap:13px;align-items:baseline;min-width:0;padding:17px 0 20px;border-top:1px solid rgba(112,154,170,.17);}
+.practiceLedger li:nth-child(-n+3){grid-column:1;}
+.practiceLedger li:nth-child(4){grid-column:2;grid-row:2;}
+.practiceLedger li:nth-child(5){grid-column:2;grid-row:3;}
+.practiceLabel {color:#cbd8da;font:400 clamp(13px,1.18vw,15px)/1.7 Arial,Helvetica,sans-serif;max-width:43ch;}
+/* Principles: six even clauses, an intentional separate register. */
+.principlesSection .governingClauses {margin-top:clamp(21px,2.7vw,35px);border-top:1px solid rgba(181,154,107,.26);}
+.principlesSection .governingClauses li {padding:clamp(15px,2vw,23px) 0;border-bottom:1px solid rgba(113,152,168,.17);background:transparent;}
+.principlesSection .governingClauses .principleIndex {color:#bca77d;}
+.principlesSection .governingClauses p {max-width:55ch;color:#c8d5d8;font-size:clamp(13px,1.12vw,15px);line-height:1.76;}
+@media(max-width:780px){
+  .scopeField{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px;}
+  .scopeField li,.scopeField li:nth-child(4),.scopeField li:nth-child(5){grid-column:auto;min-height:75px;}
+  .scopeField li:last-child{grid-column:1/-1;}
+  .practiceLedger{gap:0 24px;}
+  .practiceLedger::before{display:none;}
+}
+@media(max-width:540px){
+  .scopeField{grid-template-columns:minmax(0,1fr);padding-top:22px;}
+  .scopeField li,.scopeField li:last-child{grid-column:1;min-height:0;padding-block:13px;}
+  .practiceLedger{display:block;padding-top:22px;}
+  .practiceLedger li{padding:14px 0 16px;}
+  .principlesSection .governingClauses li{padding-block:15px;}
+}
+@media print{
+  .scopeField li,.practiceLedger li,.principlesSection .governingClauses li{break-inside:avoid;}
+  .scopeName,.practiceLabel,.principlesSection .governingClauses p{color:#253640;}
+  .scopeNumber,.practiceNumber,.principlesSection .governingClauses .principleIndex{color:#68553b;}
+  .practiceLedger::before{display:none;}
+}
+
+/* PROFILE-C4.7A.2 — Calibrated commercial practice.
+   One continuous field, unequal reading axes and quieter connective tissue. */
+.commercialPracticeSection {
+  padding: clamp(28px, 3.8vw, 46px) 0 clamp(29px, 4vw, 49px);
+  border-top: 1px solid var(--line);
+}
+.commercialPracticeConvergence {
+  display: grid;
+  grid-template-columns: minmax(0, .78fr) 22px minmax(0, 1.22fr);
+  column-gap: clamp(14px, 2.2vw, 28px);
+  align-items: stretch;
+  margin-top: clamp(17px, 2.15vw, 27px);
+  padding: 3px 0 0;
+  background: radial-gradient(ellipse 54% 75% at 66% 49%, rgba(76, 127, 148, .052), transparent 82%);
+}
+.commercialScopeAxis,.commercialResponsibilityAxis {min-width:0;}
+.commercialAxisLabel {
+  margin:0 0 10px;
+  font:600 9px/1.5 Arial,Helvetica,sans-serif;
+  color:#b4a283;
+  text-transform:uppercase;
+  letter-spacing:.09em;
+}
+.commercialFieldList,.commercialResponsibilityList {list-style:none;margin:0;padding:0;}
+.commercialFieldList li,.commercialResponsibilityList li {
+  display:grid;
+  grid-template-columns:25px minmax(0,1fr);
+  gap:11px;
+  align-items:baseline;
+  padding:10px 0 11px;
+  border-bottom:1px solid rgba(115,157,173,.085);
+  color:#d0dcde;
+  font:400 clamp(13px,1.08vw,15px)/1.6 Arial,Helvetica,sans-serif;
+}
+.commercialFieldList li:last-child,.commercialResponsibilityList li:last-child {border-bottom:0;}
+.commercialEntryIndex {color:#b2a080;font:600 10px/1.6 Arial,Helvetica,sans-serif;letter-spacing:.05em;}
+.commercialJunction {position:relative;min-height:100%;pointer-events:none;opacity:.33;}
+.commercialJunction::before {
+  content:"";position:absolute;left:50%;top:16%;bottom:16%;width:1px;
+  background:linear-gradient(transparent,rgba(114,168,188,.34) 37%,rgba(184,157,109,.29) 59%,transparent);
+}
+.commercialJunction span {
+  position:absolute;top:49%;left:calc(50% - 6px);width:12px;height:12px;
+  border-top:1px solid rgba(196,167,118,.5);
+  border-right:1px solid rgba(196,167,118,.5);
+  transform:rotate(45deg);
+}
+@media(max-width:760px) {
+  .commercialPracticeConvergence {grid-template-columns:minmax(0,1fr);gap:17px;margin-top:19px;}
+  .commercialJunction {height:11px;min-height:0;}
+  .commercialJunction::before {left:0;right:0;top:5px;bottom:auto;width:auto;height:1px;background:linear-gradient(90deg,rgba(184,157,109,.21),rgba(114,168,188,.15),transparent);}
+  .commercialJunction span {left:50%;top:0;width:10px;height:10px;transform:rotate(135deg);}
+  .commercialAxisLabel {margin-bottom:8px;}
+  .commercialFieldList li,.commercialResponsibilityList li {padding:9px 0 10px;}
+}
+@media print {
+  .commercialPracticeConvergence {background:none;}
+  .commercialFieldList li,.commercialResponsibilityList li {color:#24353f;break-inside:avoid;}
+  .commercialAxisLabel,.commercialEntryIndex {color:#705c3e;}
+  .commercialJunction {opacity:.5;}
+}
+
+/* PROFILE-C4.8 — Governing passage: one doctrinal register and terminal continuum. */
+.governingPassageSection { position:relative; min-width:0; }
+.governingPassageComposition {padding:clamp(23px,2.8vw,37px) 0 clamp(27px,3vw,42px);background:radial-gradient(ellipse 80% 95% at 87% 85%,rgba(67,114,133,.055),transparent 85%);}
+.governingClauseHeading,.governingPassageTerminalHead {display:flex;justify-content:space-between;align-items:baseline;flex-wrap:wrap;gap:12px;text-transform:uppercase;font:600 10px/1.55 Arial,Helvetica,sans-serif;letter-spacing:.12em;color:#bba47a;}
+.governingClauseHeading span:last-child,.governingPassageTerminalHead span:last-child{color:#97abb6;font-weight:400;letter-spacing:.06em;}
+.governingPassageClauses {list-style:none;margin:13px 0 0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:clamp(23px,4.4vw,68px);}
+.governingPassageClauses li {min-width:0;display:grid;grid-template-columns:29px minmax(0,1fr);align-items:start;gap:12px;padding:15px 0;border-top:1px solid rgba(129,159,169,.16);}
+.governingPassageIndex,.governingPassageStageIndex{font:600 10px/1.75 Arial,Helvetica,sans-serif;letter-spacing:.075em;color:#b9a179;}
+.governingPassageClauses p {margin:0;color:#c8d5d8;font:400 clamp(13px,1.08vw,15px)/1.67 Arial,Helvetica,sans-serif;max-width:55ch;}
+.governingPassageTerminal {margin-top:clamp(19px,2.9vw,36px);padding-top:clamp(19px,2.4vw,29px);border-top:1px solid rgba(185,160,113,.25);}
+.governingPassageStages {list-style:none;margin:17px 0 0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(8px,1.2vw,18px);}
+.governingPassageStages li {min-width:0;position:relative;display:flex;flex-direction:column;gap:9px;padding-top:11px;border-top:1px solid rgba(108,155,177,.26);font:400 clamp(11px,.95vw,13px)/1.5 Arial,Helvetica,sans-serif;color:#d0dadd;}
+.governingPassageStages li:not(:last-child)::after{content:"";position:absolute;right:-8px;top:-3px;width:5px;height:5px;border-top:1px solid rgba(125,167,184,.56);border-right:1px solid rgba(125,167,184,.56);transform:rotate(45deg);}
+@media(max-width:760px){.governingPassageClauses{grid-template-columns:1fr;}.governingPassageStages{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:20px;}.governingPassageStages li:nth-child(3)::after{display:none;}}
+@media(max-width:460px){.governingPassageStages{grid-template-columns:repeat(2,minmax(0,1fr));}.governingPassageStages li:nth-child(3)::after{display:block;}.governingPassageStages li:nth-child(even)::after{display:none;}}
+@media print{.governingPassageComposition{background:none;}.governingPassageClauses p,.governingPassageStages li{color:#253640;}.governingPassageClauses li,.governingPassageStages li{break-inside:avoid;}.governingPassageIndex,.governingPassageStageIndex{color:#66543b;}}
+
+
+/* PROFILE-C5 — Spatial continuum; all substantive text remains from canonical arrays. */
+.c5Capacity,.c5Passage,.c5Engagement,.c5Closure{position:relative;isolation:isolate;padding-top:clamp(52px,7vw,96px);padding-bottom:clamp(52px,7vw,94px);overflow:hidden}
+.c5MovementLabel{display:flex;justify-content:space-between;gap:20px;padding:0 clamp(24px,5.7vw,72px) 22px;color:#bca57c;font:600 10px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.14em;text-transform:uppercase}
+.c5MovementLabel span:last-child{color:#91adba;font-weight:500}
+.c5Capacity .folioHeading,.c5Passage .folioHeading,.c5Engagement .folioHeading,.c5Closure .folioHeading{margin-bottom:0}
+.c5Eyebrow{display:block;color:#bba67f;font:600 10px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.c5Capacity{background:radial-gradient(ellipse 75% 62% at 28% 38%,rgba(47,93,111,.12),transparent),linear-gradient(180deg,transparent,rgba(9,27,36,.08))}
+.c5CapacityComposition{display:grid;grid-template-columns:minmax(0,0.95fr) 48px minmax(0,1.2fr);gap:clamp(16px,2.2vw,32px);align-items:center;padding:clamp(35px,5vw,70px) clamp(24px,5.7vw,72px) 4px}
+.c5CapacityThesis{margin:17px 0 34px;color:#e5eae7;font:500 clamp(18px,2.2vw,26px)/1.35 Arial,Helvetica,sans-serif;letter-spacing:-.025em;max-width:24ch}
+.c5FieldConstellation,.c5Responsibilities,.c5Clauses,.c5Stages,.c5QualificationPath ol,.c5Evidence{list-style:none;margin:0;padding:0}
+.c5FieldConstellation{display:grid;grid-template-columns:1fr 1fr;gap:20px 26px}
+.c5FieldConstellation li{display:flex;flex-direction:column;gap:12px;min-height:82px;padding-top:10px;border-top:1px solid rgba(123,166,183,.19)}
+.c5FieldConstellation span,.c5Responsibilities li>span,.c5Clauses li>span,.c5Stages li>span,.c5EngagementStatements span,.c5QualificationPath li>span,.c5Evidence li>span{color:#bca47a;font:600 11px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.09em}
+.c5FieldConstellation strong{font:500 clamp(13px,1.1vw,16px)/1.45 Arial,Helvetica,sans-serif;color:#dbe5e5}
+.c5CapacityLink{height:190px;position:relative;align-self:center}
+.c5CapacityLink:before{content:'';position:absolute;top:0;bottom:0;left:47%;width:1px;background:linear-gradient(transparent,rgba(157,183,191,.26) 40%,rgba(157,183,191,.26) 60%,transparent)}
+.c5CapacityLink span{position:absolute;left:calc(47% - 5px);top:50%;width:11px;height:11px;transform:translateY(-50%) rotate(45deg);border-top:1px solid rgba(195,168,121,.6);border-right:1px solid rgba(195,168,121,.6)}
+.c5Responsibilities{display:grid;gap:18px}
+.c5Responsibilities li{display:grid;grid-template-columns:28px 1fr;gap:14px;align-items:baseline}
+.c5Responsibilities p{margin:0;color:#c5d2d5;font:400 clamp(13px,1.12vw,16px)/1.65 Arial,Helvetica,sans-serif}
+.c5Passage{background:radial-gradient(ellipse 85% 34% at 76% 69%,rgba(61,105,127,.16),transparent)}
+.c5PassageOpening{display:flex;align-items:end;justify-content:space-between;gap:30px;padding:clamp(38px,5vw,72px) clamp(24px,5.7vw,72px) 24px}
+.c5PassageAssertion{max-width:24ch;margin:0;color:#e5ebe9;font:500 clamp(24px,3.15vw,39px)/1.25 Arial,Helvetica,sans-serif;letter-spacing:-.03em}
+.c5PassageOpening>span{max-width:165px;color:#91acba;font:500 11px/1.6 Arial,Helvetica,sans-serif;letter-spacing:.07em;text-transform:uppercase}
+.c5Clauses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:34px 36px;padding:25px clamp(24px,5.7vw,72px) 70px}
+.c5Clauses li{border-top:1px solid rgba(132,168,183,.25);padding-top:15px;display:grid;gap:15px}
+.c5Clauses p{margin:0;color:#c7d4d6;font:400 clamp(13px,1.07vw,15px)/1.75 Arial,Helvetica,sans-serif}
+.c5PassageRun{padding:28px clamp(24px,5.7vw,72px) 12px;background:linear-gradient(100deg,rgba(9,27,37,.18),rgba(59,103,126,.10) 58%,transparent)}
+.c5PassageRunLabel{display:flex;justify-content:space-between;gap:14px;margin-bottom:34px;color:#bda47b;font:600 10px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.c5PassageRunLabel span:last-child{color:#96b3c1;font-weight:400}
+.c5Stages{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px}
+.c5Stages li{position:relative;display:flex;flex-direction:column;gap:22px;min-height:104px;border-top:1px solid rgba(135,187,205,.36);padding-top:11px}
+.c5Stages li:not(:last-child):after{content:'';position:absolute;right:3px;top:-4px;width:6px;height:6px;transform:rotate(45deg);border-top:1px solid #aabdc4;border-right:1px solid #aabdc4}
+.c5Stages strong{font:500 clamp(11px,1vw,14px)/1.5 Arial,Helvetica,sans-serif;color:#dce6e5}
+.c5Engagement{background:radial-gradient(ellipse 55% 66% at 20% 63%,rgba(58,107,126,.13),transparent)}
+.c5EngagementComposition{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.85fr);gap:clamp(40px,7vw,120px);padding:clamp(43px,5vw,75px) clamp(24px,5.7vw,72px) 10px;align-items:start}
+.c5EngagementLeadText{margin:18px 0 48px;max-width:24ch;color:#e5eae8;font:500 clamp(23px,2.7vw,34px)/1.35 Arial,Helvetica,sans-serif;letter-spacing:-.025em}
+.c5EngagementStatements{display:grid;gap:26px}
+.c5EngagementStatements>div{display:grid;grid-template-columns:25px 1fr;gap:14px;align-items:baseline}
+.c5EngagementStatements p{margin:0;color:#c3d1d5;font:400 clamp(13px,1.05vw,15px)/1.76 Arial,Helvetica,sans-serif}
+.c5QualificationPath{padding:5px 0 5px 28px;border-left:1px solid rgba(140,179,194,.24)}
+.c5QualificationPath ol{margin-top:28px;display:grid;gap:0}
+.c5QualificationPath li{position:relative;display:flex;justify-content:space-between;gap:15px;align-items:center;padding:19px 0;border-bottom:1px solid rgba(145,171,184,.15)}
+.c5QualificationPath li:first-child{border-top:1px solid rgba(145,171,184,.15)}
+.c5QualificationPath strong{font:500 clamp(14px,1.2vw,17px)/1.6 Arial,Helvetica,sans-serif;color:#d5e1e2}
+.c5Closure{background:linear-gradient(180deg,rgba(12,28,38,0),rgba(9,24,33,.35) 80%,rgba(9,24,33,.2))}
+.c5ClosureComposition{display:grid;grid-template-columns:minmax(0,.76fr) minmax(0,1.24fr);gap:clamp(35px,6vw,110px);padding:clamp(45px,5vw,78px) clamp(24px,5.7vw,72px) 12px}
+.c5ClosureInscription>span{color:#bca77f;font:600 10px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.13em;text-transform:uppercase}
+.c5ClosureInscription p{max-width:22ch;margin:25px 0 0;color:#e5eae6;font:500 clamp(20px,2.35vw,29px)/1.4 Arial,Helvetica,sans-serif;letter-spacing:-.02em}
+.c5Evidence{display:grid;gap:0}
+.c5Evidence li{display:grid;grid-template-columns:31px 1fr;gap:13px;padding:21px 0;border-bottom:1px solid rgba(146,179,191,.2)}
+.c5Evidence li:first-child{border-top:1px solid rgba(146,179,191,.2)}
+.c5Evidence p{margin:0;color:#c3d2d5;font:400 clamp(13px,1.07vw,15px)/1.75 Arial,Helvetica,sans-serif}
+@media(max-width:900px){.c5CapacityComposition{grid-template-columns:minmax(0,.9fr) 20px minmax(0,1.1fr)}.c5Clauses{grid-template-columns:repeat(2,minmax(0,1fr))}.c5Stages{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:16px}.c5EngagementComposition{gap:34px}}
+@media(max-width:700px){.c5Capacity,.c5Passage,.c5Engagement,.c5Closure{padding-top:40px;padding-bottom:47px}.c5MovementLabel{padding:0 22px 16px;font-size:9px}.c5CapacityComposition,.c5EngagementComposition,.c5ClosureComposition{grid-template-columns:1fr;padding:29px 22px 8px;gap:30px}.c5CapacityLink{height:14px;width:100%}.c5CapacityLink:before{left:0;right:0;top:50%;bottom:auto;width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(157,183,191,.28),transparent)}.c5CapacityLink span{left:50%;top:calc(50% - 4px);transform:rotate(45deg)}.c5FieldConstellation{gap:15px}.c5FieldConstellation li{min-height:65px}.c5CapacityThesis{margin-bottom:22px}.c5PassageOpening{padding:31px 22px 18px;align-items:start;flex-direction:column;gap:12px}.c5PassageOpening>span{max-width:none}.c5Clauses{padding:20px 22px 35px;gap:24px 18px}.c5PassageRun{padding:22px}.c5Stages{grid-template-columns:repeat(2,minmax(0,1fr))}.c5EngagementLeadText{margin-bottom:28px}.c5QualificationPath{padding-left:17px}.c5ClosureComposition{gap:27px}.c5ClosureInscription p{max-width:30ch}}
+@media(max-width:440px){.c5Clauses{grid-template-columns:1fr}.c5MovementLabel{flex-direction:column;gap:5px}.c5PassageRunLabel{flex-direction:column;gap:5px}}
+@media print{.c5Capacity,.c5Passage,.c5Engagement,.c5Closure,.c5PassageRun{background:transparent!important;break-inside:auto}.c5CapacityComposition,.c5EngagementComposition,.c5ClosureComposition{gap:20px}.c5CapacityThesis,.c5PassageAssertion,.c5EngagementLeadText,.c5ClosureInscription p,.c5FieldConstellation strong,.c5Responsibilities p,.c5Clauses p,.c5Stages strong,.c5EngagementStatements p,.c5QualificationPath strong,.c5Evidence p{color:#152a35!important}.c5CapacityLink:before{background:#bbb}.c5Clauses li,.c5Evidence li,.c5EngagementStatements>div,.c5Stages li{break-inside:avoid}}
+
+
+/* PROFILE-C5.1 — counterparty readability and measured vertical rhythm. */
+.c5Capacity, .c5Passage, .c5Engagement, .c5Closure { padding-top: clamp(38px,5.5vw,66px); padding-bottom: clamp(34px,5vw,60px); }
+.c5CapacityComposition, .c5EngagementComposition, .c5ClosureComposition { margin-top: clamp(20px,3vw,36px); }
+.c5MovementLabel { margin-bottom: 13px; }
+.c5PassageOpening { margin-block: clamp(22px,3vw,35px); }
+@media (max-width: 700px) {
+  .c5Capacity, .c5Passage, .c5Engagement, .c5Closure { padding-top: 34px; padding-bottom: 34px; }
+}
+
+
+/* PROFILE-C5.2 — counterparty reading rhythm; subordinate scaffolding removed in JSX. */
+.c5Capacity,.c5Passage,.c5Engagement,.c5Closure {padding-top:clamp(28px,3.9vw,47px);padding-bottom:clamp(27px,4.1vw,49px)}
+.c5CapacityComposition {padding-top:clamp(24px,3.2vw,41px);align-items:start}
+.c5FieldConstellation {gap:13px 22px}
+.c5FieldConstellation li {min-height:67px;gap:8px}
+.c5CapacityLink {height:135px}
+.c5Responsibilities {gap:14px}
+.c5PassageOpening {padding-top:clamp(23px,3vw,39px);padding-bottom:12px;margin-block:0}
+.c5PassageAssertion {font-size:clamp(21px,2.5vw,32px);max-width:33ch}
+.c5Clauses {padding-top:15px;padding-bottom:clamp(22px,3.4vw,42px);gap:20px 32px}
+.c5Clauses li {gap:8px;padding-top:11px}
+.c5PassageRun {padding-top:17px;padding-bottom:2px}
+.c5PassageRunLabel {margin-bottom:17px}
+.c5Stages li {min-height:76px;gap:13px}
+.c5EngagementComposition,.c5ClosureComposition {padding-top:clamp(24px,3.3vw,43px);margin-top:0}
+.c5EngagementLeadText {font-size:clamp(21px,2.4vw,30px);margin:0 0 23px}
+.c5EngagementStatements {gap:18px}
+.c5QualificationPath ol {margin-top:17px}
+.c5QualificationPath li {padding:12px 0}
+.c5ClosureInscription p {font-size:clamp(18px,2vw,25px);margin-top:13px}
+.c5Evidence li {padding:15px 0}
+.colophon {margin-top:0}
+@media(max-width:700px){
+ .c5Capacity,.c5Passage,.c5Engagement,.c5Closure{padding-top:28px;padding-bottom:30px}
+ .c5CapacityComposition,.c5EngagementComposition,.c5ClosureComposition{padding-top:22px;gap:22px}
+ .c5CapacityLink{height:12px}
+ .c5FieldConstellation li{min-height:52px}
+ .c5PassageOpening{padding-top:21px}
+ .c5Clauses{padding-bottom:25px}
+ .c5Stages li{min-height:73px}
+}
+@media print{.c5Capacity,.c5Passage,.c5Engagement,.c5Closure{padding-block:20px}}
+
+/* PROFILE-C6A — publication-wide dimensional and section-identity calibration.
+   Presentation-only. Maintains C5.2 text, publication structure and edition. */
+.c5Capacity,.c5Passage,.c5Engagement,.c5Closure {
+  isolation:isolate;
+  background-color:#192d37;
+  transition:none;
+}
+.c5Capacity {
+  background-image:linear-gradient(116deg,rgba(20,42,54,.28),transparent 54%),
+    radial-gradient(ellipse 80% 78% at 12% 37%,rgba(93,143,162,.105),transparent 80%);
+}
+.c5Passage {
+  background-color:#172a34;
+  background-image:radial-gradient(ellipse 76% 55% at 72% 65%,rgba(94,153,179,.12),transparent 82%),
+    linear-gradient(180deg,rgba(8,21,30,.10),transparent 35%,rgba(14,40,53,.08));
+}
+.c5Engagement {
+  background-color:#1b303a;
+  background-image:radial-gradient(ellipse 76% 78% at 15% 50%,rgba(102,151,165,.12),transparent 78%),
+    linear-gradient(122deg,rgba(13,30,40,.13),transparent 65%);
+}
+.c5Closure {
+  background-color:#152732;
+  background-image:linear-gradient(180deg,rgba(58,104,125,.045),rgba(5,19,27,.18)),
+    radial-gradient(ellipse 65% 50% at 75% 39%,rgba(90,143,169,.07),transparent 90%);
+}
+/* Header grammar: one shared position, distinct reading intensity by subject. */
+.c5Capacity .folioHeading,.c5Passage .folioHeading,
+.c5Engagement .folioHeading,.c5Closure .folioHeading {
+  border-bottom-color:rgba(130,170,187,.18);
+  padding-bottom:clamp(13px,1.75vw,22px);
+}
+.c5Capacity .folioHeading {border-bottom-color:rgba(186,161,117,.20);}
+.c5Passage .folioHeading {border-bottom-color:rgba(109,167,193,.24);}
+.c5Engagement .folioHeading {border-bottom-color:rgba(151,183,190,.24);}
+.c5Closure .folioHeading {border-bottom-color:rgba(170,151,118,.18);}
+.c5Capacity .folioHeading h2,.c5Passage .folioHeading h2,
+.c5Engagement .folioHeading h2,.c5Closure .folioHeading h2 {
+  letter-spacing:.035em;
+  font-weight:600;
+  text-wrap:balance;
+}
+.c5MovementLabel {color:#b8a27c;letter-spacing:.105em;opacity:.8;}
+.c5MovementLabel span:last-child {color:#9cb8c4;}
+/* Capacities are an open field; the governing movement feels sequential. */
+.c5CapacityThesis {max-width:30ch;}
+.c5CapacityLink:before {opacity:.58;}
+.c5CapacityLink span {opacity:.75;}
+.c5PassageAssertion {font-weight:500;max-width:35ch;}
+.c5Clauses li {border-top-color:rgba(136,173,188,.16);}
+.c5PassageRun {background:linear-gradient(104deg,rgba(8,23,33,.15),rgba(67,118,145,.075) 60%,transparent);}
+.c5Stages li {border-top-color:rgba(126,175,194,.3);}
+/* Engagement is welcoming and forward-moving; evidence quietly resolves it. */
+.c5EngagementLeadText {max-width:28ch;}
+.c5QualificationPath {border-left-color:rgba(146,187,203,.16);}
+.c5QualificationPath li {border-bottom-color:rgba(145,178,192,.13);}
+.c5ClosureInscription p {max-width:28ch;}
+.c5Evidence li {border-bottom-color:rgba(140,174,184,.17);}
+@media(max-width:700px) {
+  .c5Capacity,.c5Passage,.c5Engagement,.c5Closure {background-size:auto;}
+  .c5Capacity .folioHeading h2,.c5Passage .folioHeading h2,
+  .c5Engagement .folioHeading h2,.c5Closure .folioHeading h2 {letter-spacing:.015em;}
+}
+@media print {
+  .c5Capacity,.c5Passage,.c5Engagement,.c5Closure {background:#fff!important;}
+}
+
+/* PROFILE-C6B / CORPORATE COORDINATES: documentary corporate record */
+.c6bCorporateRecord{padding:clamp(30px,4vw,58px) clamp(24px,5vw,76px);background:linear-gradient(115deg,#12222b,#1a2c35 60%,#172832);border-top:1px solid rgba(123,164,183,.21)}
+.c6bCorporateHead{display:flex;justify-content:space-between;align-items:baseline;gap:16px 30px;flex-wrap:wrap;margin-bottom:24px}
+.c6bCorporateHead>span,.c6bActivities>span{font:600 10px/1.6 Arial,Helvetica,sans-serif;letter-spacing:.13em;text-transform:uppercase;color:#c3a878}
+.c6bCorporateHead h2{margin:0;color:#e9eeeb;font:500 clamp(18px,2vw,26px)/1.25 Arial,Helvetica,sans-serif;letter-spacing:.01em}
+.c6bCorporateGrid{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:clamp(25px,5vw,64px)}
+.c6bCorporateDetails{margin:0;display:grid;gap:0}
+.c6bCorporateDetails>div{display:grid;grid-template-columns:minmax(110px,.42fr) minmax(0,1fr);gap:16px;padding:10px 0;border-bottom:1px solid rgba(121,166,187,.15)}
+.c6bCorporateDetails dt{font:500 11px/1.6 Arial,Helvetica,sans-serif;color:#a7bcc5}
+.c6bCorporateDetails dd{margin:0;color:#dce6e7;font:400 13px/1.7 Arial,Helvetica,sans-serif;overflow-wrap:anywhere}
+.c6bCorporateDetails a{color:inherit;text-underline-offset:3px}
+.c6bActivities{border-left:1px solid rgba(114,162,185,.2);padding-left:clamp(18px,3vw,40px)}
+.c6bActivities ul{list-style:none;margin:14px 0 0;padding:0}
+.c6bActivities li{padding:9px 0;color:#ccd9dd;font:400 13px/1.65 Arial,Helvetica,sans-serif}
+@media(max-width:720px){.c6bCorporateGrid{grid-template-columns:1fr}.c6bActivities{border-left:0;padding:0}.c6bCorporateDetails>div{grid-template-columns:110px minmax(0,1fr)}}
+@media print{.c6bCorporateRecord{background:#fff;color:#17252c}.c6bCorporateHead h2,.c6bCorporateDetails dd,.c6bActivities li{color:#17252c}.c6bCorporateDetails dt,.c6bCorporateHead>span,.c6bActivities>span{color:#555}}
+
+/* PROFILE-C6B.1 — counterparty due diligence; shared-publication reading inset */
+.c6b1Diligence{margin-top:clamp(18px,2.5vw,30px);padding:15px 0 0;border-top:1px solid rgba(119,161,182,.25);max-width:66ch}
+.c6b1Diligence h3{margin:0 0 9px;color:#c7aa7b;font:600 10px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.12em;text-transform:uppercase}
+.c6b1Diligence p{margin:0;color:#c7d5da;font:400 13px/1.78 Arial,Helvetica,sans-serif;text-wrap:pretty}
+@media(max-width:720px){.c6b1Diligence{margin-top:20px;padding-top:13px}.c6b1Diligence p{font-size:13px}}
+@media print{.c6b1Diligence{break-inside:avoid;border-top-color:#b7b7b7}.c6b1Diligence h3,.c6b1Diligence p{color:#21313b}}
+
+/* PROFILE-C6C — institutional section marks and unnumbered hero-adjacent leadership disclosure */
+.c6cLeadershipDisclosure{background:linear-gradient(110deg,#142730 0%,#1e3440 55%,#122530 100%);color:#e2e9e8;border-block:1px solid rgba(173,190,191,.26)}
+.c6cLeadershipDisclosure>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:19px;padding:17px clamp(24px,5vw,76px);min-height:74px;outline-offset:-4px}
+.c6cLeadershipDisclosure>summary::-webkit-details-marker{display:none}
+.c6cLeadershipSummaryMark,.c6cLeadershipMark{color:#c7a874;border:1px solid rgba(203,174,120,.46);font:600 12px/1 Arial,Helvetica,sans-serif;letter-spacing:.08em;width:34px;height:34px;display:grid;place-items:center;flex:none}
+.c6cLeadershipSummaryText{display:grid;gap:4px;flex:1}.c6cLeadershipSummaryText strong{font:600 clamp(14px,1.6vw,17px)/1.2 Arial,Helvetica,sans-serif;letter-spacing:.045em;text-transform:uppercase}.c6cLeadershipSummaryText small{font:400 12px/1.5 Arial,Helvetica,sans-serif;color:#abc0c9}
+.c6cLeadershipChevron{width:9px;height:9px;border-right:1px solid #c6ad83;border-bottom:1px solid #c6ad83;transform:rotate(45deg);transition:transform .2s;flex:none;margin-right:5px}
+.c6cLeadershipDisclosure[open] .c6cLeadershipChevron{transform:rotate(225deg)}
+.c6cLeadershipBody{padding:0 clamp(24px,5vw,76px) clamp(20px,3vw,37px)}
+.c6cLeadershipBody .leadershipSection{margin:0;padding:0;background:transparent;border:0}.c6cLeadershipHeader{display:none}.c6cLeadershipBody .officerRegister{margin:0}.c6cLeadershipBody .officerDrawer{max-width:none}
+.c6cSectionCoordinate{display:flex;flex-direction:column;align-items:start;gap:13px}.c6cSectionMark{color:#c7aa7f;display:flex;width:29px;height:29px;align-items:center;justify-content:center;border:1px solid rgba(190,160,105,.35);background:rgba(28,54,65,.34)}.c6cSectionMark svg{width:21px;height:21px}
+.folioHeading{grid-template-columns:42px minmax(0,1fr);gap:clamp(17px,2.5vw,30px);align-items:center;min-height:73px}.folioHeading h2{letter-spacing:.012em;font-weight:600}.folioHeading p{font-size:12px;letter-spacing:0}.folioHeading::after{width:45px}
+.sourceRelationships .folioHeading .c6cSectionMark{background:rgba(138,115,73,.16)}.c5Capacity .folioHeading .c6cSectionMark{background:rgba(107,149,167,.18)}.c5Passage .folioHeading .c6cSectionMark{background:rgba(164,139,95,.1)}.c5Engagement .folioHeading .c6cSectionMark{background:rgba(90,155,178,.22)}.c5Closure .folioHeading .c6cSectionMark{background:rgba(66,110,131,.25)}
+@media(max-width:720px){.c6cLeadershipDisclosure>summary{padding:15px 22px;gap:13px}.c6cLeadershipBody{padding:0 22px 24px}.folioHeading{grid-template-columns:34px minmax(0,1fr);min-height:60px}.c6cSectionMark{width:27px;height:27px}.c6cSectionMark svg{width:19px;height:19px}}
+@media print{.c6cLeadershipDisclosure{background:#fff;color:#172832}.c6cLeadershipDisclosure>summary{display:none}.c6cLeadershipBody{display:block;padding:12px 0 20px}.c6cLeadershipDisclosure:not([open]) .c6cLeadershipBody{display:block}.c6cSectionMark{color:#3b4a52;background:none!important;border-color:#888}.c6cLeadershipBody .officerDrawer{break-inside:avoid}}
+
+/* PROFILE-C6D — final coordinated composition */
+.c6cLeadershipDisclosure,.c6cLeadershipDisclosure[open]{background:#091720!important;border-color:rgba(127,158,172,.16)!important}
+.c6cLeadershipDisclosure>summary{background:#091720!important}
+.c6cLeadershipBody,.c6cLeadershipBody .leadershipSection,.c6cLeadershipBody .officerRegister,.c6cLeadershipBody .officerDrawer{background:transparent!important}
+.c6cLeadershipDisclosure[open] .c6cLeadershipBody{background:linear-gradient(180deg,#091720,#0c1c26)!important}
+.c6cLeadershipDisclosure .c6cLeadershipSummaryMark{border-color:rgba(193,161,106,.38)}
+.custodianshipThesis{margin-bottom:clamp(62px,9vw,126px)!important;padding-bottom:clamp(17px,2vw,30px)!important}
+.c5Capacity{padding-bottom:clamp(27px,3.5vw,49px)!important}
+.c6dPractice{display:grid;grid-template-columns:minmax(0,.98fr) minmax(0,1.02fr);gap:clamp(26px,5.5vw,88px);padding:clamp(28px,4vw,52px) clamp(24px,5.7vw,72px) 18px}
+.c6dPracticeContext{min-width:0}.c6dPracticeLead{margin:0 0 clamp(24px,3vw,42px);font:500 clamp(20px,2.45vw,31px)/1.43 Arial,Helvetica,sans-serif;letter-spacing:-.016em;color:#e1e9e8;max-width:37ch}
+.c6dPracticeFields p{color:#b9ccd3;font:400 clamp(13px,1.15vw,16px)/1.85 Arial,Helvetica,sans-serif;margin:12px 0 0;max-width:50ch}
+.c6dPracticeActivities .c5Responsibilities{margin-top:14px;padding:0}.c6dPracticeActivities .c5Responsibilities li{min-height:0;padding:10px 0;gap:13px}
+.c6dPracticeStandards{margin:clamp(18px,2.8vw,36px) clamp(24px,5.7vw,72px) 0;border-top:1px solid rgba(144,173,186,.21)}
+.c6dStandardsDisclosure>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:14px;min-height:60px;color:#d8e3e4;font:500 clamp(13px,1.2vw,16px)/1.5 Arial,Helvetica,sans-serif;outline-offset:-3px}
+.c6dStandardsDisclosure>summary::-webkit-details-marker{display:none}.c6dStandardsIcon{color:#c1a579;font:500 18px/1 Georgia,serif;border:1px solid rgba(180,155,105,.28);display:grid;place-items:center;width:29px;height:29px}
+.c6dDisclosureCaret{margin-left:auto;width:8px;height:8px;border-right:1px solid #bea77f;border-bottom:1px solid #bea77f;transform:rotate(45deg)}.c6dStandardsDisclosure[open] .c6dDisclosureCaret{transform:rotate(225deg)}
+.c6dStandardsContent>p{color:#cbd8dc;max-width:72ch;margin:2px 0 17px;font:400 14px/1.7 Arial,Helvetica,sans-serif}
+.c6dStandardsContent .c5Clauses{padding:10px 0 25px}.c6dPassageLine{padding:21px 0 8px;border-top:1px solid rgba(144,173,186,.14)}
+.c6dPassageLine .c5Stages{padding:23px 0 0}.c6dPassageLine .c5Eyebrow{display:block}
+.c5Engagement{padding-bottom:clamp(20px,3vw,40px)!important}.c5EngagementComposition{padding-bottom:clamp(16px,2vw,30px)}
+.c6dDueDiligence{display:grid;grid-template-columns:minmax(185px,.33fr) minmax(0,.67fr);gap:clamp(20px,4vw,70px);margin:clamp(22px,4vw,55px) clamp(24px,5.7vw,72px) 0;padding:clamp(21px,3vw,39px) 0;border-top:1px solid rgba(163,183,188,.27);border-bottom:1px solid rgba(163,183,188,.19)}
+.c6dDueHeading{display:flex;align-items:flex-start;gap:13px}.c6dDueHeading h3{margin:3px 0 0;font:600 clamp(14px,1.35vw,18px)/1.45 Arial,Helvetica,sans-serif;color:#e5eae9;letter-spacing:0}
+.c6dDueIcon{width:31px;height:31px;display:grid;place-items:center;border:1px solid rgba(195,165,114,.42);flex:none;color:#cbb085}.c6dDueIcon svg{height:21px;width:21px}
+.c6dDueDiligence>p{margin:0;color:#c7d6db;font:400 clamp(13px,1.1vw,15px)/1.8 Arial,Helvetica,sans-serif;max-width:81ch}
+.c6dReadiness{display:grid;grid-template-columns:minmax(180px,.37fr) minmax(0,.63fr);gap:clamp(20px,4.5vw,75px);padding:clamp(30px,4vw,55px) clamp(24px,5.7vw,72px) 10px;background:linear-gradient(180deg,rgba(8,26,34,.05),rgba(7,20,28,.26))}
+.c6dReadinessIntro h3{font:500 clamp(18px,2vw,24px)/1.35 Arial,Helvetica,sans-serif;color:#e1e9e7;margin:14px 0 9px}.c6dReadinessIntro p{color:#b7cbd3;font:400 13px/1.75 Arial,Helvetica,sans-serif;margin:0;max-width:38ch}.c6dReadiness .c5Evidence{padding:0;margin:0}
+.c6bCorporateRecord{background:#091720!important;border-top:1px solid rgba(161,182,186,.19);padding:clamp(19px,2.7vw,36px) clamp(24px,5vw,76px)!important}
+.c6bCorporateHead{margin-bottom:14px!important}.c6bCorporateHead h2{font-size:clamp(16px,1.65vw,21px)!important}.c6bCorporateDetails>div{padding:6px 0!important}.c6bActivities li{padding:5px 0!important}
+.colophon{margin:0!important;background:#060f16!important;border-top:1px solid rgba(165,181,188,.16);padding:clamp(23px,3vw,42px) clamp(24px,5vw,76px) clamp(26px,3.5vw,50px)!important;display:flex!important;align-items:start;justify-content:space-between;gap:15px 45px;flex-wrap:wrap}
+.colophon .details{flex:1 1 260px}.colophon .limitation{max-width:61ch!important;flex:1.35 1 340px;margin:0!important;color:#a8b8c1!important}.colophon .download{flex:0 1 auto}
+@media(max-width:760px){.c6dPractice{grid-template-columns:1fr;gap:26px;padding:24px 22px 16px}.c6dPracticeLead{font-size:21px}.c6dPracticeStandards{margin-inline:22px}.c6dDueDiligence,.c6dReadiness{grid-template-columns:1fr;gap:15px;margin-inline:22px}.c6dReadiness{margin:0;padding:28px 22px 12px}.c6dPassageLine .c5Stages{grid-template-columns:repeat(2,minmax(0,1fr))}.custodianshipThesis{margin-bottom:61px!important}.colophon{display:block!important}.colophon .limitation{margin-top:14px!important}}
+@media print{.c6cLeadershipDisclosure,.c6bCorporateRecord,.colophon,.c6dReadiness{background:white!important;color:#142833!important}.c6dStandardsDisclosure>summary{display:none!important}.c6dStandardsContent{display:block!important}.c6dStandardsDisclosure:not([open]) .c6dStandardsContent{display:block!important}.c6dPracticeLead,.c6dReadinessIntro h3,.c6dDueHeading h3{color:#172a33!important}.c6dDueDiligence>p,.c6dPracticeFields p,.c6dReadinessIntro p{color:#263741!important}.c6dDueDiligence,.c6dReadiness{break-inside:avoid}}
+
+/* PROFILE-C6E — full-stage footer, optical balance, source disclosure, interactive energy */
+/* 1. Footer leaves the inset reading column and returns to the full publication stage. */
+.colophon{
+  margin-inline:calc(-1 * clamp(24px,5.7vw,72px))!important;
+  margin-bottom:calc(-1 * clamp(32px,5vw,66px))!important;
+  width:calc(100% + 2 * clamp(24px,5.7vw,72px));
+  padding:clamp(29px,4vw,54px) clamp(24px,5.7vw,72px) clamp(31px,4.4vw,58px)!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+  align-items:start;gap:clamp(18px,3.5vw,48px);
+  background:#061018!important;border-top:1px solid rgba(185,164,120,.35);
+}
+.colophon .details{display:grid;align-content:start;gap:6px;min-width:0}
+.colophon .details span:first-child{font-size:clamp(12px,1.2vw,15px);letter-spacing:.065em;color:#e0d2b4}
+.colophon .details span:not(:first-child){font-size:10px;color:#aebac0;letter-spacing:.065em}
+.colophon .limitation{margin:0!important;max-width:64ch!important;font-size:clamp(12px,1.07vw,14px);line-height:1.7;color:#afc0c8!important}
+.colophon .download{grid-column:2;justify-self:start;margin-top:3px}
+/* 2. Section identities gain distinct but coordinated optical temperature and scale. */
+.sourceRelationships .folioHeading h2{color:#e7d4b3!important;letter-spacing:.048em;font-size:clamp(19px,2.25vw,27px)!important}
+.c5Capacity .folioHeading h2{color:#cde7ed!important;letter-spacing:.028em;font-size:clamp(19px,2.3vw,28px)!important}
+.c5Engagement .folioHeading h2{color:#d9e5ed!important;letter-spacing:.018em;font-size:clamp(19px,2.3vw,28px)!important}
+.folioHeading .c6cSectionMark{box-shadow:inset 0 0 9px rgba(125,180,202,.09)}
+.sourceRelationships .c6cSectionMark{color:#dec397;border-color:rgba(202,166,103,.5)}
+.c5Capacity .c6cSectionMark{color:#9dcde2;border-color:rgba(127,185,215,.52)}
+.c5Engagement .c6cSectionMark{color:#b2d9ea;border-color:rgba(137,190,210,.6)}
+.folioHeading p{color:#b9c9ce!important}
+/* 3. Optical balance: reduce the image's dominance without hiding its architectural detail. */
+.cover{background-image:
+  linear-gradient(90deg,#081118 0%,rgba(8,17,24,.99) 29%,rgba(8,17,24,.92) 43%,rgba(8,17,24,.67) 58%,rgba(8,17,24,.17) 79%,rgba(8,17,24,.06) 100%),
+  linear-gradient(rgba(10,25,34,.15),rgba(10,25,34,.15)),
+  url('/french-ward/fw-profile-open-passage.webp')!important;
+  background-position:center,right center,right center!important;
+  background-size:cover,cover,auto 100%!important;
+  background-repeat:no-repeat!important;
+}
+/* 4. Source relationship: the substantive lead remains visible, supporting records disclose on request. */
+.sourceRelationships .sourceRegister{padding-bottom:clamp(21px,3vw,39px)!important}
+.c6eSourceDetail{margin-top:clamp(16px,2.5vw,28px);border-top:1px solid rgba(176,165,138,.26);min-width:0}
+.c6eSourceDetail>summary{list-style:none;display:flex;align-items:center;gap:11px;cursor:pointer;min-height:53px;padding:11px 2px;color:#d4ddd9;font:500 clamp(12px,1.18vw,14px)/1.5 Arial,Helvetica,sans-serif;outline-offset:4px;transition:color .22s,background-color .22s}
+.c6eSourceDetail>summary::-webkit-details-marker{display:none}
+.c6eActionLabel{margin-left:auto;font-size:10px;color:#a9bbc1;text-transform:uppercase;letter-spacing:.09em;white-space:nowrap}
+.c6eSourceDetailBody{padding:12px 0 3px;animation:c6eReveal .25s ease-out}
+.c6eSourceDetailBody .sourcePractice,.c6eSourceDetailBody .sourceBoundary{margin:0}
+.c6eSourceDetailBody .sourcePractice+.sourceBoundary{margin-top:16px}
+/* 5. Subtle electrically charged discoverability across disclosure controls. */
+.c6eActionGlyph{height:17px;width:17px;display:grid;place-items:center;border:1px solid rgba(124,183,212,.55);flex:none;position:relative;transition:border-color .2s,box-shadow .2s}
+.c6eActionGlyph::before{content:'';width:8px;height:8px;border-right:1px solid #9ed8f3;border-bottom:1px solid #9ed8f3;transform:translateY(-2px) rotate(45deg);transition:transform .2s}
+.c6eSourceDetail[open] .c6eActionGlyph::before{transform:translateY(2px) rotate(225deg)}
+.c6cLeadershipDisclosure>summary,.c6dStandardsDisclosure>summary,.c6eSourceDetail>summary{transition:background-color .22s,color .22s,box-shadow .22s}
+.c6cLeadershipDisclosure>summary:hover,.c6dStandardsDisclosure>summary:hover,.c6eSourceDetail>summary:hover{background:rgba(72,134,164,.085)!important;color:#f1f8fa;box-shadow:inset 2px 0 0 rgba(128,210,244,.6)}
+.c6cLeadershipDisclosure>summary:focus-visible,.c6dStandardsDisclosure>summary:focus-visible,.c6eSourceDetail>summary:focus-visible{outline:2px solid #a0d7ef;outline-offset:-3px}
+.c6cLeadershipDisclosure>summary:hover .c6cLeadershipChevron,.c6dStandardsDisclosure>summary:hover .c6dDisclosureCaret{filter:drop-shadow(0 0 4px rgba(152,223,255,.75))}
+.c6cLeadershipDisclosure>summary:hover .c6cLeadershipSummaryMark,.c6dStandardsDisclosure>summary:hover .c6dStandardsIcon,.c6eSourceDetail>summary:hover .c6eActionGlyph{border-color:rgba(149,213,243,.8);box-shadow:0 0 12px rgba(65,177,232,.16)}
+@keyframes c6eReveal{from{opacity:.6;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+/* 6. Commercial introductory typography is supporting text, not a rival title. */
+.c6dPracticeLead{font-size:clamp(17px,1.8vw,24px)!important;font-weight:400!important;line-height:1.55!important;color:#c4d5d9!important;letter-spacing:-.008em!important;max-width:47ch}
+@media(max-width:760px){
+ .colophon{display:grid!important;grid-template-columns:1fr;gap:17px;padding-inline:22px!important}
+ .colophon .download{grid-column:1}
+ .c6eSourceDetail>summary{flex-wrap:wrap}.c6eActionLabel{font-size:9px}
+ .c6dPracticeLead{font-size:19px!important}
+}
+@media(prefers-reduced-motion:reduce){.c6eSourceDetailBody{animation:none}.c6cLeadershipDisclosure>summary,.c6dStandardsDisclosure>summary,.c6eSourceDetail>summary,.c6eActionGlyph{transition:none}}
+@media print{
+ .c6eSourceDetail>summary{display:none!important}
+ .c6eSourceDetailBody,.c6eSourceDetail:not([open]) .c6eSourceDetailBody{display:block!important;animation:none}
+ .colophon{background:white!important;color:#172b34!important;border-top-color:#888!important}
+ .cover{background-image:none!important}
+}
+
+/* PROFILE-C6E.1 — shared institutional identity and folio heading convergence */
+.masthead>span:first-child{color:#c7b089!important;font-weight:500!important;letter-spacing:.11em!important}
+.c6e1DocumentIdentity{display:flex;flex-direction:column;align-items:flex-end;gap:1px;text-align:right;min-width:0;color:#d4c4a6!important;text-transform:uppercase}
+.c6e1DocumentIdentity strong{font:500 10px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.11em}
+.c6e1DocumentIdentity small{font:400 9px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.08em;color:#9bb0bb}
+.identity h1{color:#cbb38a!important;font-weight:400!important;letter-spacing:.035em!important;text-transform:uppercase}
+/* Section identity is tied to the current C6D section classes (not superseded names). */
+.sourceRelationships .folioHeading h2,.c5Capacity .folioHeading h2,.c5Engagement .folioHeading h2{font-weight:500!important;line-height:1.26!important;text-transform:uppercase;letter-spacing:.04em!important;font-size:clamp(19px,2.2vw,27px)!important}
+.sourceRelationships .folioHeading h2{color:#dbc39b!important}
+.c5Capacity .folioHeading h2{color:#bedde8!important}
+.c5Engagement .folioHeading h2{color:#d0e2ea!important}
+.sourceRelationships .folioHeading .c6cSectionMark{color:#dec397!important;border-color:rgba(202,166,103,.54)!important}
+.c5Capacity .folioHeading .c6cSectionMark{color:#9ccddd!important;border-color:rgba(127,185,215,.54)!important}
+.c5Engagement .folioHeading .c6cSectionMark{color:#a9d8e9!important;border-color:rgba(137,190,210,.62)!important}
+.folioHeading .folioIdentity p{color:#a9bdc5!important;letter-spacing:.012em!important}
+@media(max-width:720px){.c6e1DocumentIdentity small{font-size:8px}.masthead{gap:12px}.sourceRelationships .folioHeading h2,.c5Capacity .folioHeading h2,.c5Engagement .folioHeading h2{font-size:clamp(16px,4.2vw,21px)!important}}
+@media print{.identity h1,.masthead>span:first-child{color:#5b4a33!important}.sourceRelationships .folioHeading h2,.c5Capacity .folioHeading h2,.c5Engagement .folioHeading h2{color:#243b47!important}}
+
+/* PROFILE-C6F — Typographic hierarchy and reading comfort; presentation only. */
+/* Folio headers: institutional scale without raising metadata to title weight. */
+.sourceRelationships .folioHeading,.c5Capacity .folioHeading,.c5Engagement .folioHeading{min-height:clamp(86px,8.3vw,116px);grid-template-columns:46px minmax(0,1fr);gap:clamp(17px,2.7vw,35px);align-items:center}
+.sourceRelationships .folioHeading h2,.c5Capacity .folioHeading h2,.c5Engagement .folioHeading h2{font-family:Arial,Helvetica,sans-serif!important;font-size:clamp(21px,2.35vw,29px)!important;font-weight:500!important;letter-spacing:.022em!important;line-height:1.18!important;text-wrap:balance}
+.folioHeading .folioIdentity p{font-size:clamp(11px,1vw,13px)!important;line-height:1.55!important;letter-spacing:.015em!important;color:#b7c7cc!important;max-width:46ch}
+.folioHeading .folioNumber{font-size:11px!important;letter-spacing:.11em!important}
+.folioHeading .c6cSectionMark{width:32px;height:32px;box-shadow:inset 0 0 12px rgba(118,174,197,.08)}
+.folioHeading .c6cSectionMark svg{width:23px;height:23px}
+/* Opening editorial architecture: one leading proposition and subordinate definitions. */
+.narrative .premiseLead{font-size:clamp(22px,2.45vw,32px)!important;line-height:1.33!important;letter-spacing:-.017em!important;font-weight:500!important;max-width:25ch}
+.narrative .premiseContinuation{font-size:clamp(13px,1.14vw,16px)!important;line-height:1.75!important;max-width:53ch;color:#c6d4d8!important}
+.definitionEntry p{font-size:clamp(13px,1.11vw,15px)!important;line-height:1.74!important;color:#c8d7dc!important}
+.definitionCaption,.narrativeCoordinate{letter-spacing:.09em}
+/* Sufficient reading size for the commercially actionable portions. */
+.c6dPracticeLead{font-size:clamp(19px,2.0vw,25px)!important;line-height:1.46!important;letter-spacing:-.012em!important;font-weight:400!important;color:#dae5e7!important}
+.c6dPracticeFields p{font-size:clamp(13px,1.08vw,15px)!important;line-height:1.72!important}
+.c6dPracticeActivities .c5Responsibilities p,.c5EngagementStatements p,.c5QualificationPath strong,.c6dReadiness .c5Evidence p{font-size:clamp(13px,1.12vw,15px)!important;line-height:1.7!important}
+.c5EngagementLeadText{font-size:clamp(21px,2.12vw,28px)!important;line-height:1.43!important;font-weight:450!important;max-width:32ch!important}
+.c6dDueDiligence>p{font-size:clamp(13px,1.13vw,15px)!important;line-height:1.75!important}
+.c6dReadinessIntro p{font-size:clamp(13px,1.03vw,14px)!important;line-height:1.72!important}
+.sourcePrimary p,.c6eSourceDetailBody p{font-size:clamp(13px,1.08vw,15px)!important;line-height:1.76!important}
+/* Keep small metadata secondary but legible. */
+.c5Eyebrow,.sourceRegisterLabel,.sourceCoordinate,.scopeCoordinate{line-height:1.5!important}
+@media(max-width:760px){
+ .sourceRelationships .folioHeading,.c5Capacity .folioHeading,.c5Engagement .folioHeading{grid-template-columns:35px minmax(0,1fr);gap:13px;min-height:78px}
+ .sourceRelationships .folioHeading h2,.c5Capacity .folioHeading h2,.c5Engagement .folioHeading h2{font-size:clamp(18px,4.5vw,23px)!important;line-height:1.24!important}
+ .folioHeading .folioIdentity p{font-size:11px!important}
+ .folioHeading .c6cSectionMark{width:29px;height:29px}.folioHeading .c6cSectionMark svg{width:21px;height:21px}
+ .narrative .premiseLead{font-size:clamp(21px,5vw,27px)!important}
+ .definitionEntry p,.c5EngagementStatements p,.c6dDueDiligence>p,.c6dReadiness .c5Evidence p,.c6dPracticeActivities .c5Responsibilities p{font-size:14px!important;line-height:1.7!important}
+ .c6dPracticeLead{font-size:20px!important}.c5EngagementLeadText{font-size:22px!important}
+}
+@media print{.sourceRelationships .folioHeading h2,.c5Capacity .folioHeading h2,.c5Engagement .folioHeading h2{color:#243b47!important}.definitionEntry p,.c6dReadiness .c5Evidence p,.c5EngagementStatements p{color:#213641!important}}
+
+/* PROFILE-C6G — independent folio boundaries and engagement consolidation */
+/* Section entrances and exits are recognizable without boxed cards or ornamental bands. */
+.sourceRelationships,.c5Capacity,.c5Engagement{position:relative;isolation:isolate;background-clip:padding-box}
+.sourceRelationships{background:linear-gradient(180deg,rgba(13,35,44,.46),rgba(20,52,64,.14) 52%,rgba(10,30,39,.34))!important;border-top:1px solid rgba(205,174,119,.32);border-bottom:1px solid rgba(174,186,174,.22)}
+.c5Capacity{background:linear-gradient(180deg,rgba(9,34,47,.56),rgba(27,60,72,.18) 49%,rgba(8,34,45,.43))!important;border-top:1px solid rgba(136,186,205,.38);border-bottom:1px solid rgba(143,179,195,.28)}
+.c5Engagement{background:linear-gradient(180deg,rgba(16,47,61,.45),rgba(27,63,78,.21) 46%,rgba(9,28,39,.58))!important;border-top:1px solid rgba(163,194,208,.42);border-bottom:1px solid rgba(181,179,151,.28)}
+.sourceRelationships>.folioHeading,.c5Capacity>.folioHeading,.c5Engagement>.folioHeading{position:relative;border-bottom:1px solid rgba(165,189,196,.2);margin-bottom:clamp(15px,2.3vw,29px)!important}
+.sourceRelationships>.folioHeading::before,.c5Capacity>.folioHeading::before,.c5Engagement>.folioHeading::before{content:'';position:absolute;left:0;top:0;height:2px;width:clamp(58px,8vw,118px);pointer-events:none}
+.sourceRelationships>.folioHeading::before{background:linear-gradient(90deg,rgba(211,180,123,.75),transparent)}
+.c5Capacity>.folioHeading::before{background:linear-gradient(90deg,rgba(124,192,216,.75),transparent)}
+.c5Engagement>.folioHeading::before{background:linear-gradient(90deg,rgba(166,209,226,.82),transparent)}
+/* Condense the public-facing working sequence without shrinking its substantive copy. */
+.c5Engagement .c5EngagementComposition{padding-top:clamp(8px,1.4vw,19px)!important;padding-bottom:clamp(7px,1.3vw,18px)!important}
+.c5Engagement .c5EngagementStatements li{margin-bottom:clamp(7px,1.2vw,15px)!important}
+.c5Engagement .c5QualificationPath{align-self:start}
+.c5Engagement .c5QualificationPath li{padding-top:clamp(7px,1vw,13px)!important;padding-bottom:clamp(7px,1vw,13px)!important}
+.c6dDueDiligence{margin-top:clamp(13px,2.4vw,29px)!important;padding-top:clamp(20px,2.7vw,35px)!important;padding-bottom:clamp(21px,2.8vw,37px)!important;grid-template-columns:minmax(190px,.31fr) minmax(0,.69fr)!important}
+.c6dDueHeading h3{max-width:19ch}
+.c6dDueDiligence>p{max-width:76ch!important;text-wrap:pretty}
+.c6dReadiness{padding-top:clamp(20px,3vw,39px)!important;padding-bottom:clamp(12px,2vw,26px)!important;background:linear-gradient(180deg,rgba(10,29,39,.08),rgba(8,23,33,.29))!important}
+.c6dReadinessIntro h3{margin-top:9px!important}
+.c6dReadiness .c5Evidence li{padding-top:clamp(9px,1.3vw,17px)!important;padding-bottom:clamp(9px,1.3vw,17px)!important}
+/* Retire C6B.1's superseded visual rail; its sole canonical field renders at C6D full width. */
+.c6b1Diligence{display:none!important}
+@media(max-width:760px){
+ .sourceRelationships>.folioHeading,.c5Capacity>.folioHeading,.c5Engagement>.folioHeading{margin-bottom:14px!important}
+ .c6dDueDiligence{grid-template-columns:1fr!important;margin-top:13px!important;gap:15px!important}
+ .c6dReadiness{gap:17px!important}
+}
+@media print{
+ .sourceRelationships,.c5Capacity,.c5Engagement{background:#fff!important;border-color:#bcc4c7!important}
+ .sourceRelationships>.folioHeading::before,.c5Capacity>.folioHeading::before,.c5Engagement>.folioHeading::before{background:#888!important}
+ .c6b1Diligence{display:none!important}
+}
+
+/* PROFILE-C6G.1 — desktop Hero optical balance; mobile reserved for dedicated pass */
+@media (min-width: 761px) {
+  .cover {
+    /* Keep the architectural threshold visible; tune only the left-hand veil. */
+    background-image:
+      linear-gradient(90deg,#081118 0%,rgba(8,17,24,.98) 25%,rgba(8,17,24,.89) 40%,rgba(8,17,24,.60) 56%,rgba(8,17,24,.12) 79%,rgba(8,17,24,.05) 100%),
+      linear-gradient(rgba(10,25,34,.10),rgba(10,25,34,.10)),
+      url('/french-ward/fw-profile-open-passage.webp') !important;
+    background-position:center,right center,right center !important;
+    background-size:cover,cover,auto 100% !important;
+    background-repeat:no-repeat !important;
+  }
+  .identity { padding-top:clamp(57px,6.9vw,90px) !important; padding-bottom:clamp(58px,7vw,94px) !important; }
+  .identity h1 {
+    font-size:clamp(38px,4.2vw,62px) !important;
+    font-weight:400 !important;
+    line-height:1.12 !important;
+    letter-spacing:.018em !important;
+    color:#ccb58f !important;
+    max-width:100%;
+    text-shadow:0 1px 8px rgba(0,0,0,.12) !important;
+  }
+  .identity h2 { font-size:clamp(17px,1.75vw,25px) !important; font-weight:400 !important; line-height:1.38 !important; letter-spacing:.005em !important; color:#dbd1c0 !important; margin-top:clamp(17px,2.1vw,28px) !important; }
+  .identity .description,.cover .description {
+    max-width:43ch !important;
+    font-size:clamp(13px,1.06vw,15px) !important;
+    line-height:1.76 !important;
+    font-weight:400 !important;
+    color:#bed0d8 !important;
+    margin-top:clamp(29px,3vw,43px) !important;
+    text-wrap:pretty;
+  }
+  .masthead {padding-bottom:clamp(15px,1.65vw,22px) !important;border-bottom-color:rgba(186,172,150,.24) !important;}
+  .coverRecord {padding-top:clamp(16px,1.7vw,23px) !important;border-top-color:rgba(128,162,178,.27) !important;color:#aabdc7 !important;letter-spacing:.095em !important;}
+}
+@media print { .identity h1 {color:#655238 !important;} .identity h2 {color:#374b56 !important;} }
+
+/* PROFILE-C6G2 — mounted publication stage; declarative hero; mobile-first corrections */
+/* Corporate identity remains in masthead. The large Hero statement describes commercial practice. */
+.masthead>span:first-child{font-weight:700!important;letter-spacing:.065em!important;color:#d4b98d!important;font-size:clamp(13px,1.13vw,17px)!important}
+.identity h1{font-size:clamp(37px,4.25vw,61px)!important;line-height:1.13!important;font-weight:400!important;max-width:13.8ch!important;white-space:normal!important;text-wrap:balance!important;letter-spacing:.003em!important}
+.identity .classification{font-size:clamp(15px,1.4vw,20px)!important;line-height:1.5!important;max-width:39ch!important}
+/* Maintain a visible margin between substantive matter and the publication perimeter. */
+.sourceRelationships,.c5Capacity,.c5Engagement{box-sizing:border-box!important;padding-inline:clamp(19px,3.25vw,48px)!important}
+.sourceRelationships .folioHeading,.c5Capacity .folioHeading,.c5Engagement .folioHeading{margin-inline:0!important}
+.sourceRelationships .sourceComposition,.sourceRelationships .sourceNarrative,.sourceRelationships .sourceRegister{max-width:100%}
+.c5Capacity .c6dPractice,.c5Capacity .c5CapacityComposition,.c5Engagement .c5EngagementComposition,.c5Engagement .c6dReadiness{min-width:0}
+/* Remove double lateral padding within the newly inset main section field. */
+.c5Capacity .c6dPractice,.c5Capacity .c5CapacityComposition{padding-inline:clamp(12px,2vw,28px)!important}
+.c5Capacity .c6dPracticeStandards{margin-inline:clamp(12px,2vw,28px)!important}
+.c5Engagement .c5EngagementComposition{padding-inline:clamp(12px,2vw,28px)!important}
+.c5Engagement .c6dDueDiligence{margin-inline:clamp(12px,2vw,28px)!important}
+.c5Engagement .c6dReadiness{padding-inline:clamp(12px,2vw,28px)!important}
+@media (max-width:760px){
+ .publication{width:100%!important;max-width:100%!important;overflow-x:clip!important}
+ .publication *{min-width:0}
+ .cover{box-sizing:border-box;min-height:auto!important;background-position:center,right center,60% center!important;background-size:cover,cover,auto 100%!important}
+ .masthead{display:flex!important;align-items:start!important;gap:14px!important;padding-block:18px!important}
+ .masthead>span:first-child{font-size:12px!important;letter-spacing:.045em!important;max-width:55%!important;line-height:1.35!important}
+ .c6e1DocumentIdentity{flex:0 1 auto;text-align:right!important;max-width:47%!important}
+ .c6e1DocumentIdentity strong{font-size:10px!important;letter-spacing:.075em!important}
+ .c6e1DocumentIdentity small{font-size:9px!important;letter-spacing:.035em!important;overflow-wrap:anywhere!important}
+ .identity{padding-block:clamp(53px,11vw,79px) clamp(57px,12vw,89px)!important}
+ .identity h1{font-size:clamp(31px,8vw,53px)!important;max-width:12ch!important;line-height:1.16!important;white-space:normal!important;overflow-wrap:normal!important;word-break:normal!important;text-wrap:balance!important}
+ .identity .classification{font-size:clamp(14px,3.6vw,18px)!important;line-height:1.45!important;margin-top:21px!important;max-width:28ch!important}
+ .identity .description,.cover .description{font-size:13px!important;line-height:1.72!important;max-width:36ch!important;margin-top:24px!important}
+ .coverRecord{display:flex!important;gap:16px!important;flex-wrap:wrap!important;padding-block:14px!important;font-size:9px!important;line-height:1.5!important;letter-spacing:.045em!important}
+ .coverRecord span{min-width:0;overflow-wrap:anywhere}
+ .entryBridge,.institutionalDefinition,.scopeComposition{box-sizing:border-box}
+ .sourceRelationships,.c5Capacity,.c5Engagement{padding-inline:clamp(18px,5.1vw,30px)!important;padding-top:clamp(29px,7vw,42px)!important;padding-bottom:clamp(29px,7vw,43px)!important}
+ .sourceRelationships .folioHeading,.c5Capacity .folioHeading,.c5Engagement .folioHeading{grid-template-columns:30px minmax(0,1fr)!important;gap:12px!important;min-height:61px!important;padding-block:10px!important}
+ .sourceRelationships .folioHeading h2,.c5Capacity .folioHeading h2,.c5Engagement .folioHeading h2{font-size:clamp(17px,4.3vw,21px)!important;line-height:1.2!important;letter-spacing:.005em!important;text-wrap:balance!important}
+ .folioHeading p{font-size:11px!important;line-height:1.45!important;margin-top:5px!important}
+ .c5Capacity .c6dPractice,.c5Capacity .c5CapacityComposition{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:20px!important;padding:22px 0 9px!important;margin-top:0!important}
+ .c5Capacity .c5CapacityLink{display:none!important}
+ .c5Capacity .c5FieldConstellation{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:13px!important}
+ .c5Capacity .c5FieldConstellation li{min-height:0!important;gap:7px!important}
+ .c5Capacity .c5Responsibilities p,.c5Engagement .c5EngagementStatements p{font-size:13px!important;line-height:1.66!important}
+ .c5Capacity .c6dPracticeStandards{margin-inline:0!important}
+ .c5Engagement .c5EngagementComposition{grid-template-columns:minmax(0,1fr)!important;padding:22px 0 8px!important;gap:24px!important}
+ .c5Engagement .c5EngagementLeadText{font-size:clamp(19px,5vw,24px)!important;line-height:1.37!important;max-width:29ch!important}
+ .c5Engagement .c5QualificationPath{padding-left:0!important;border-left:0!important}
+ .c5Engagement .c6dDueDiligence{grid-template-columns:minmax(0,1fr)!important;margin-inline:0!important;gap:16px!important;padding-block:24px!important}
+ .c5Engagement .c6dDueDiligence>p{font-size:13px!important;line-height:1.7!important;max-width:100%!important}
+ .c5Engagement .c6dReadiness{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:18px!important;padding:22px 0 10px!important}
+ .c5Engagement .c5Evidence li{grid-template-columns:26px minmax(0,1fr)!important;gap:10px!important}
+ .c5Engagement .c5Evidence p{font-size:13px!important;line-height:1.7!important}
+ .c6bCorporateRecord{padding:24px clamp(18px,5.1vw,30px)!important}
+ .colophon{padding:24px clamp(18px,5.1vw,30px) 29px!important;display:block!important}
+ .colophon .limitation{margin-top:17px!important;line-height:1.7!important}
+ .c6cLeadershipDisclosure>summary{padding-inline:clamp(18px,5.1vw,30px)!important}
+ .c6cLeadershipBody{padding-inline:clamp(18px,5.1vw,30px)!important}
+}
+@media(max-width:380px){
+ .identity h1{font-size:clamp(29px,8.3vw,35px)!important}
+ .sourceRelationships,.c5Capacity,.c5Engagement{padding-inline:17px!important}
+ .c5Capacity .c5FieldConstellation{gap:11px!important}
+ .c5Engagement .c5EngagementStatements>div{grid-template-columns:21px minmax(0,1fr)!important;gap:9px!important}
+}
+@media print{.identity h1{color:#67513a!important}.sourceRelationships,.c5Capacity,.c5Engagement{padding-inline:20px!important}}
+
+/* PROFILE-C6G3 — custodianship Hero and masthead convergence.
+   Presentation-only: no modifications to canonical institutional statements.
+   The top left is the legal identity; the principal inscription states the practice. */
+.masthead>span:first-child{
+  font-weight:700!important;
+  font-size:clamp(13px,1.14vw,17px)!important;
+  color:#d3b88e!important;
+  letter-spacing:.045em!important;
+}
+.identity h1{
+  max-width:19.5ch!important;
+  font-size:clamp(36px,3.65vw,57px)!important;
+  line-height:1.17!important;
+  font-weight:400!important;
+  letter-spacing:.006em!important;
+  text-transform:none!important;
+  text-wrap:balance!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  hyphens:none!important;
+  color:#ccb38b!important;
+}
+.identity .classification{
+  font-size:clamp(15px,1.32vw,19px)!important;
+  line-height:1.5!important;
+  color:#ddd3c2!important;
+  max-width:39ch!important;
+}
+@media(min-width:761px){
+  .identity h1{max-width:19.5ch!important;}
+  .identity{padding-top:clamp(64px,7.2vw,94px)!important;padding-bottom:clamp(61px,6.7vw,91px)!important;}
+  .identity .description,.cover .description{max-width:43ch!important;margin-top:clamp(26px,2.6vw,38px)!important;}
+}
+@media(max-width:760px){
+  .masthead>span:first-child{font-size:12px!important;letter-spacing:.035em!important;line-height:1.4!important;}
+  .identity h1{max-width:17ch!important;font-size:clamp(30px,7.55vw,48px)!important;line-height:1.2!important;letter-spacing:0!important;}
+  .identity .classification{font-size:clamp(14px,3.55vw,17px)!important;line-height:1.48!important;}
+}
+@media(max-width:380px){
+  .identity h1{font-size:clamp(28px,7.1vw,33px)!important;max-width:16ch!important;}
+}
+@media print{.identity h1{color:#67513a!important;}}

@@ -38,6 +38,21 @@ export const FRENCH_WARD_INSTITUTIONAL_PROFILE:
     displayName:
       "French-Ward",
 
+    corporateCoordinates: {
+      registrationJurisdiction: "Florida, United States",
+      registrationNumber: "P24000056039",
+      corporateStatus: "Active",
+      principalAddress: "4701 Old Canoe Creek Road #700641, St. Cloud, FL 34769, USA",
+      telephone: "+1 518 381 0306",
+    },
+
+    commercialActivities: [
+      "Commercial Precious Metals Trading",
+      "Authorized Commodity Resale (subject to applicable appointments and governing instruments)",
+      "Commercial Transaction Administration",
+      "Settlement Coordination",
+    ],
+
     classification:
       "International Trade & Commercial Operations",
 
@@ -65,9 +80,43 @@ export const FRENCH_WARD_INSTITUTIONAL_PROFILE:
     ],
 
     institutionalDefinition: [
-      "French-Ward, Inc. is a Florida corporation engaged in international trade and commercial operations. Its custodial discipline is expressed through the commercial responsibilities it undertakes, including the stewardship of relationships, commitments, records, and the conditions required for accountable passage.",
+      "French-Ward, Inc. is a Florida corporation engaged in international trade and commercial operations. Its custodial practice includes responsibility for commercial relationships, commitments, records, and the conditions of performance.",
       "French-Ward's capacity in any particular relationship—including appointed reseller, contracting seller, or custodian—is established by applicable agreements and authority records. Its institutional discipline does not independently confer legal custody or transaction-specific authority.",
-      "French-Ward uses AXPT to organize institutional records, controlled access, commercial workflows, and transaction continuity. Digital systems support the institution's work without independently establishing or enlarging its commercial authority.",
+      "French-Ward uses AXPT for institutional records, controlled access, commercial workflows, and transaction continuity. These systems do not establish or enlarge commercial authority.",
+    ],
+
+    // FW-PROFILE-5A: Identity disclosures, not grants of operative authority.
+    leadership: [
+      {
+        name: "Jamal Ward",
+        title: "President & Chief Strategic Officer",
+        responsibility: "Provides institutional leadership, strategic direction, and oversight of French-Ward's commercial relationships and organizational priorities.",
+      },
+      {
+        name: "Bobby French",
+        title: "VP & Chief of Logistics and Security",
+        responsibility: "Directs logistical planning, operational coordination, security considerations, and delivery-readiness arrangements supporting accountable execution.",
+      },
+      {
+        name: "Lawrence R. Williams",
+        title: "Chief Fiduciary & Authorized Escrow Attorney",
+        responsibility: "Oversees fiduciary considerations, authorized escrow responsibilities, documentary safeguards, and legal coordination within the scope of applicable engagements and instruments.",
+      },
+    ],
+
+    counterpartyEngagement: [
+      "Buyers, refineries, suppliers, financiers, and institutional partners may contact French-Ward through its designated commercial intake or authenticated correspondence channel to discuss a proposed engagement.",
+      "French-Ward reviews the proposed relationship and requirements before confirming next steps. An inquiry or submission does not constitute acceptance, allocation, or a binding commitment.",
+      "Qualification identifies the corporate, compliance, transaction, and delivery information required for the proposed relationship and relevant jurisdictions.",
+    ],
+
+    counterpartyDueDiligence:
+      "Commercial engagement is subject to appropriate counterparty identification, qualification, and transaction-specific review. Depending on the proposed relationship and applicable requirements, French-Ward may request corporate registration records, beneficial-ownership and authorized-signatory information, relevant licenses, source and material documentation, evidence of financial capacity, and supporting compliance records. Documentation is reviewed in relation to the proposed transaction, the applicable jurisdiction, and the responsibilities of the participating parties. Preliminary engagement or submission of materials does not itself constitute approval or authorization to proceed.",
+
+    documentaryReadiness: [
+      "Following qualification and applicable authorization, French-Ward coordinates the source-authority, commercial, logistics, and settlement documentation required for the proposed transaction.",
+      "Applicable appointments and custodial instruments, along with agreed quantities, pricing, delivery obligations, and settlement instructions, are established in the relevant instruments and transaction agreements.",
+      "Before execution, the parties confirm identity and corporate verification, applicable compliance requirements, sufficient documentation, delivery arrangements, and authenticated settlement instructions.",
     ],
 
     domains: [

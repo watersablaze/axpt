@@ -26,6 +26,9 @@ export function projectFrenchWardInstitutionalProfile():
   const projection = {
     ...FRENCH_WARD_INSTITUTIONAL_PROFILE,
 
+    corporateCoordinates: { ...FRENCH_WARD_INSTITUTIONAL_PROFILE.corporateCoordinates },
+    commercialActivities: [ ...FRENCH_WARD_INSTITUTIONAL_PROFILE.commercialActivities ],
+
     institutionalDefinition: [
       ...FRENCH_WARD_INSTITUTIONAL_PROFILE
         .institutionalDefinition,
@@ -39,6 +42,18 @@ export function projectFrenchWardInstitutionalProfile():
     establishedSourceRelationships: [
       ...FRENCH_WARD_INSTITUTIONAL_PROFILE
         .establishedSourceRelationships,
+    ],
+
+    leadership: FRENCH_WARD_INSTITUTIONAL_PROFILE.leadership.map(
+      officer => ({ ...officer }),
+    ),
+
+    counterpartyEngagement: [
+      ...FRENCH_WARD_INSTITUTIONAL_PROFILE.counterpartyEngagement,
+    ],
+
+    documentaryReadiness: [
+      ...FRENCH_WARD_INSTITUTIONAL_PROFILE.documentaryReadiness,
     ],
 
     domains: [
