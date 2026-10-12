@@ -77,7 +77,7 @@ export async function sendJensWorkspacePreparation(input: {
   // A short transaction claims this correspondence before contacting the provider.
   const claim = await prisma.$transaction(async (tx: any) => {
     await tx.$queryRaw`
-      SELECT pg_advisory_xact_lock(hashtext(${communicationType}))
+      SELECT pg_advisory_xact_lock(hashtext(${communicationType}))::text AS lock_result
     `;
     const previous = await tx.emailLog.findFirst({
       where: {
