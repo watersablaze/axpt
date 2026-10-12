@@ -121,7 +121,7 @@ export default async function RepresentativeInstitutionalResourcePage({
       surface="archival"
     >
       <nav aria-label="Representative resource navigation"
-        className="px-6 py-4 text-sm text-[#d8c39b]">
+        className="px-6 py-4 text-sm text-[#514333]">
         <Link href="/representative"
           className="underline underline-offset-4">
           Back to Representative Workspace
@@ -133,7 +133,7 @@ export default async function RepresentativeInstitutionalResourcePage({
 
       <SourceAuthorityPresentation projection={projection} />
 
-      <p className="px-6 py-6 text-sm leading-7 text-[#d8c39b]">
+      <p className="px-6 py-6 text-sm leading-7 text-[#514333]">
         Resource access does not establish appointment or delegated
         authority. Permission to present or transmit this material
         remains separately governed by the Authorized Representation Program.
