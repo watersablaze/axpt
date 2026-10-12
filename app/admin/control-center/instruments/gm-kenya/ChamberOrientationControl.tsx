@@ -126,7 +126,7 @@ export function ChamberOrientationControl() {
 
       <div className={styles.grantControl}>
         <p>
-          Introduces Jamal / French-Ward to Jacqueline Dyer at Friends of
+          Introduces Jamal / French-Ward to Jacqueline Dwyer at Friends of
           Farmers and attaches the Chamber Orientation. This communication
           contains no private Chamber credential and creates no V2 access grant.
         </p>
@@ -137,7 +137,7 @@ export function ChamberOrientationControl() {
             gap: ".35rem",
           }}
         >
-          Jacqueline Dyer email
+          Jacqueline Dwyer email
           <input
             type="email"
             autoComplete="off"
