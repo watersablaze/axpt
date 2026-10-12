@@ -27,7 +27,8 @@ function getSafeDestination() {
     !requested.startsWith('//') &&
     (
       requested.startsWith('/admin') ||
-      requested.startsWith('/representative')
+      requested.startsWith('/representative') ||
+      requested.split(/[?#]/)[0] === '/french-ward/profile'
     )
   ) {
     return requested
@@ -176,6 +177,7 @@ export default function LoginPage() {
       const requestedPath = requestedDestination.split(/[?#]/)[0]
 
       const visitorDestination = [
+        '/french-ward/profile',
         '/french-ward',
         '/french-ward/transaction-intake',
         '/transaction-intake',
@@ -184,7 +186,9 @@ export default function LoginPage() {
         : '/french-ward'
 
       const destination =
-        data.audience === 'REPRESENTATIVE'
+        requestedPath === '/french-ward/profile'
+          ? requestedDestination
+          : data.audience === 'REPRESENTATIVE'
           ? (
               requestedDestination.startsWith('/representative')
                 ? requestedDestination

@@ -3,6 +3,7 @@ import type { PrismaClient } from "@prisma/client";
 type InstitutionalAccessTransactionClient = Pick<
   PrismaClient,
   | "$queryRaw"
+  | "user"
   | "institutionalAccessGrant"
   | "institutionalAccessEvent"
   | "transactionIntake"
@@ -106,6 +107,8 @@ export async function revokeInstitutionalAccessWithClient(params: {
   actor: Principal;
   grantId: string;
   reason: string;
+  /** Optional server-owned scope restriction for a consumer interface. */
+  expectedScope?: InstitutionalAccessScope;
 }) {
   if (
     !params.actor.userId ||
@@ -122,12 +125,38 @@ export async function revokeInstitutionalAccessWithClient(params: {
   }
 
   return params.client.$transaction(async (tx: InstitutionalAccessTransactionClient) => {
+    const operator = await tx.user.findFirst({
+      where: {
+        id: params.actor.userId,
+        userRoles: {
+          some: {
+            isActive: true,
+            revokedAt: null,
+            role: {
+              rolePermissions: {
+                some: {
+                  permission: { key: "INSTITUTIONAL_ACCESS_MANAGE" },
+                },
+              },
+            },
+          },
+        },
+      },
+      select: { id: true },
+    });
+    if (!operator) {
+      throw new Error("MISSING_PERMISSION:INSTITUTIONAL_ACCESS_MANAGE");
+    }
+
     const grant = await tx.institutionalAccessGrant.findUnique({
       where: { id: params.grantId },
-      select: { recipientUserId: true },
+      select: { recipientUserId: true, scope: true },
     });
 
     if (!grant) throw new Error("INSTITUTIONAL_ACCESS_GRANT_NOT_FOUND");
+    if (params.expectedScope && grant.scope !== params.expectedScope) {
+      throw new Error("ACCESS_GRANT_SCOPE_MISMATCH");
+    }
 
     await lockRecipient(tx, grant.recipientUserId);
 

@@ -1,4 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
+import { randomBytes, randomUUID } from "node:crypto";
+import bcrypt from "bcryptjs";
 import type { Principal } from "../auth/types";
 import { PERMISSIONS } from "../auth/permissions";
 import type { InstitutionalAccessScope } from "./resolveInstitutionalAccessWithClient";
@@ -6,6 +8,7 @@ import type { InstitutionalAccessScope } from "./resolveInstitutionalAccessWithC
 type ManagementTransaction = Pick<
   PrismaClient,
   | "user"
+  | "$queryRaw"
   | "institutionalAccessRequest"
   | "institutionalAccessGrant"
   | "institutionalAccessEvent"
@@ -81,6 +84,13 @@ export async function decideInstitutionalAccessWithClient(params: {
   reason: string;
   recipientUserId?: string;
   expiresAt?: Date;
+  /** Server-owned consumer options; never forward request-body values. */
+  provisionRecipient?: boolean;
+  expectedResource?: {
+    scope: InstitutionalAccessScope;
+    resourceReference: string;
+    resourceVersion: number;
+  };
 }) {
   const requestId = required(params.requestId, "request");
   const reason = required(params.reason, "decision reason");
@@ -95,6 +105,13 @@ export async function decideInstitutionalAccessWithClient(params: {
   if (!["APPROVED", "DECLINED"].includes(params.decision)) {
     throw new Error("INVALID_ACCESS_DECISION");
   }
+
+  // An unknown, random password is hashed before opening the transaction.
+  // Recipients authenticate through canonical email PIN sign-in.
+  const provisionedPasswordHash =
+    params.decision === "APPROVED" && params.provisionRecipient
+      ? await bcrypt.hash(randomBytes(48).toString("hex"), 12)
+      : undefined;
 
   return params.client.$transaction(async (tx: ManagementTransaction) => {
     const operator = await tx.user.findFirst({
@@ -131,11 +148,82 @@ export async function decideInstitutionalAccessWithClient(params: {
       throw new Error("ACCESS_REQUEST_NOT_PENDING");
     }
 
+    if (
+      params.expectedResource &&
+      (
+        request.scope !== params.expectedResource.scope ||
+        request.resourceReference !== params.expectedResource.resourceReference ||
+        request.resourceVersion !== params.expectedResource.resourceVersion
+      )
+    ) {
+      throw new Error("ACCESS_REQUEST_RESOURCE_MISMATCH");
+    }
+
+    let recipientUserId = params.recipientUserId;
+    let recipientProvisioned = false;
+
+    if (params.decision === "APPROVED" && params.provisionRecipient) {
+      const email = request.requesterEmail.trim().toLowerCase();
+      if (
+        email !== request.requesterEmail ||
+        !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+      ) {
+        throw new Error("INVALID_REQUESTER_EMAIL");
+      }
+
+      if (
+        !params.expiresAt ||
+        !Number.isFinite(params.expiresAt.getTime()) ||
+        params.expiresAt <= new Date()
+      ) {
+        throw new Error("RECIPIENT_AND_FUTURE_EXPIRY_REQUIRED");
+      }
+
+      // Serialize account provisioning for the same normalized email.
+      // All writes still roll back if the pending-decision CAS loses.
+      await tx.$queryRaw`
+        SELECT pg_advisory_xact_lock(
+          hashtextextended(${email}, 0)
+        ) IS NULL AS locked
+      `;
+
+      const matches: Array<{ id: string; email: string }> =
+        await tx.user.findMany({
+          where: { email: { equals: email, mode: "insensitive" } },
+          select: { id: true, email: true },
+        });
+
+      // Do not create a second identity or silently rewrite a legacy email.
+      if (
+        matches.length > 1 ||
+        (matches.length === 1 && matches[0].email !== email)
+      ) {
+        throw new Error("RECIPIENT_EMAIL_RECONCILIATION_REQUIRED");
+      }
+
+      const recipient = await tx.user.upsert({
+        where: { email },
+        update: {},
+        create: {
+          username: `institutional-visitor-${randomUUID()}`,
+          email,
+          passwordHash: provisionedPasswordHash!,
+          displayName: request.requesterName,
+          viewedDocs: [],
+          isAdmin: false,
+        },
+        select: { id: true, email: true },
+      });
+
+      recipientUserId = recipient.id;
+      recipientProvisioned = matches.length === 0;
+    }
+
     const now = new Date();
 
     if (params.decision === "APPROVED") {
       if (
-        !params.recipientUserId ||
+        !recipientUserId ||
         !params.expiresAt ||
         !Number.isFinite(params.expiresAt.getTime()) ||
         params.expiresAt <= now
@@ -144,7 +232,7 @@ export async function decideInstitutionalAccessWithClient(params: {
       }
 
       const recipient = await tx.user.findUnique({
-        where: { id: params.recipientUserId },
+        where: { id: recipientUserId },
         select: { id: true, email: true },
       });
 
@@ -185,7 +273,7 @@ export async function decideInstitutionalAccessWithClient(params: {
     const grant = await tx.institutionalAccessGrant.create({
       data: {
         requestId: request.id,
-        recipientUserId: params.recipientUserId!,
+        recipientUserId: recipientUserId!,
         recipientEmail: request.requesterEmail,
         scope: request.scope,
         resourceReference: request.resourceReference,
@@ -204,6 +292,11 @@ export async function decideInstitutionalAccessWithClient(params: {
         type: "GRANTED",
         actorUserId: operator.id,
         occurredAt: now,
+        metadata: {
+          recipientUserId: recipientUserId!,
+          recipientProvisioned,
+          accountPolicy: "EMAIL_PIN_RECIPIENT_V1",
+        },
       },
     });
 
@@ -211,6 +304,8 @@ export async function decideInstitutionalAccessWithClient(params: {
       requestId: request.id,
       status: "APPROVED",
       grantId: grant.id,
+      recipientUserId: recipientUserId!,
+      recipientProvisioned,
     };
-  });
+  }, { timeout: 15_000 });
 }
