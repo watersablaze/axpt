@@ -112,17 +112,15 @@ export function renderGlobalMotherChamberOrientationEmail(
     "",
     "I'm Jamal Ward with French-Ward, Inc. Empress Omaedro spoke very warmly of you and shared that you are the person we should coordinate with through Friends of Farmers for materials intended for her review.",
     "",
-    "I wanted to introduce myself directly before anything formal arrives.",
+    "French-Ward is preparing the next private Chamber for the Empress and the other participating parties. The work has developed over the past month through ongoing discussion, review, clarification, and practical consideration around the relationship, the gold pathway, and the broader effort everyone is helping move forward with care and purpose.",
     "",
-    "French-Ward is currently preparing the next private Chamber for the Empress and the other participating parties. This work has been developing over the past month through ongoing discussions, review, clarification, and practical consideration around the relationship, the gold pathway, and the broader effort everyone is helping move forward with care and purpose.",
+    "French-Ward serves from a custodial and commercial position, drawing on its precious-minerals custodianship, gold-trade relationships, commodity experience, and coordination work. The Chamber preserves what has already developed, refines what still needs attention, and strengthens alignment before agreements and execution.",
     "",
-    "French-Ward serves this process from a custodial and commercial position, drawing on its precious-minerals custodianship, gold-trade relationships, commodity experience, and coordination work in service of the shared undertaking. The Chamber gives the group a clear place to preserve what has already developed, refine what still needs attention, and strengthen alignment before moving further toward agreements and execution.",
-    "",
-    "You'll be receiving the private Chamber access and accompanying materials for the Empress within the next 24 hours. We understand that you'll receive them, review what is being sent, and make sure they reach her properly.",
+    "You'll receive the private Chamber access and accompanying materials for the Empress within the next 24 hours. We understand that you'll review what is being sent and make sure it reaches her properly.",
     "",
     "I've attached a short Chamber Orientation so you have a clear sense of what is coming, what the Chamber holds, and where it sits in the work already underway.",
     "",
-    "Please feel welcome to reply directly to this email at any point if you have questions, concerns, or if anything about the materials or delivery process needs clarification.",
+    "Please feel welcome to reply directly if you have any questions or if anything about the materials or delivery process needs clarification.",
     "",
     "Thank you, Jacqueline. I look forward to connecting with you and working together.",
     "",
@@ -142,15 +140,14 @@ export function renderGlobalMotherChamberOrientationEmail(
   <p style="margin:0 0 8px;color:#796948;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;">French-Ward, Inc.</p>
   <h1 style="margin:0;color:#18313e;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:400;line-height:1.3;">Introduction &amp; Chamber Orientation</h1>
 </td></tr>
-<tr><td style="padding:18px 34px 34px;color:#29424f;font-size:14px;line-height:1.72;">
+<tr><td style="padding:16px 34px 30px;color:#29424f;font-size:14px;line-height:1.65;">
   <p style="margin:0 0 18px;">Dear Jacqueline,</p>
   <p style="margin:0 0 18px;">I'm Jamal Ward with French-Ward, Inc. Empress Omaedro spoke very warmly of you and shared that you are the person we should coordinate with through Friends of Farmers for materials intended for her review.</p>
-  <p style="margin:0 0 18px;">I wanted to introduce myself directly before anything formal arrives.</p>
-  <p style="margin:0 0 18px;">French-Ward is currently preparing the next private Chamber for the Empress and the other participating parties. This work has been developing over the past month through ongoing discussions, review, clarification, and practical consideration around the relationship, the gold pathway, and the broader effort everyone is helping move forward with care and purpose.</p>
-  <p style="margin:0 0 18px;">French-Ward serves this process from a custodial and commercial position, drawing on its precious-minerals custodianship, gold-trade relationships, commodity experience, and coordination work in service of the shared undertaking. The Chamber gives the group a clear place to preserve what has already developed, refine what still needs attention, and strengthen alignment before moving further toward agreements and execution.</p>
-  <p style="margin:0 0 18px;">You'll be receiving the private Chamber access and accompanying materials for the Empress within the next 24 hours. We understand that you'll receive them, review what is being sent, and make sure they reach her properly.</p>
-  <p style="margin:0 0 18px;">I've attached a short Chamber Orientation so you have a clear sense of what is coming, what the Chamber holds, and where it sits in the work already underway.</p>
-  <p style="margin:0 0 18px;">Please feel welcome to reply directly to this email at any point if you have questions, concerns, or if anything about the materials or delivery process needs clarification.</p>
+  <p style="margin:0 0 16px;">French-Ward is preparing the next private Chamber for the Empress and the other participating parties. The work has developed over the past month through ongoing discussion, review, clarification, and practical consideration around the relationship, the gold pathway, and the broader effort everyone is helping move forward with care and purpose.</p>
+  <p style="margin:0 0 16px;">French-Ward serves from a custodial and commercial position, drawing on its precious-minerals custodianship, gold-trade relationships, commodity experience, and coordination work. The Chamber preserves what has already developed, refines what still needs attention, and strengthens alignment before agreements and execution.</p>
+  <p style="margin:0 0 16px;">You'll receive the private Chamber access and accompanying materials for the Empress within the next 24 hours. We understand that you'll review what is being sent and make sure it reaches her properly.</p>
+  <p style="margin:0 0 16px;">I've attached a short Chamber Orientation so you have a clear sense of what is coming, what the Chamber holds, and where it sits in the work already underway.</p>
+  <p style="margin:0 0 16px;">Please feel welcome to reply directly if you have any questions or if anything about the materials or delivery process needs clarification.</p>
   <p style="margin:0 0 24px;">Thank you, Jacqueline. I look forward to connecting with you and working together.</p>
   <p style="margin:0;">Warmly,<br /><strong>Jamal James Ward</strong><br />Chief Strategic Officer<br />French-Ward, Inc.</p>
 </td></tr>
@@ -206,9 +203,9 @@ export async function buildGlobalMotherChamberOrientationPdf() {
 
   const width = page.getWidth();
   const height = page.getHeight();
-  const margin = 54;
+  const margin = 48;
   const contentWidth = width - margin * 2;
-  let y = height - 58;
+  let y = height - 50;
 
   const drawLines = (
     text: string,
@@ -220,9 +217,9 @@ export async function buildGlobalMotherChamberOrientationPdf() {
   ) => {
     const lines = wrapText(text, font, size, contentWidth - indent);
     for (const line of lines) {
-      if (y < 58) {
+      if (y < 44) {
         page = pdf.addPage([595.28, 841.89]);
-        y = page.getHeight() - 58;
+        y = page.getHeight() - 50;
       }
       page.drawText(line, { x: margin + indent, y, size, font, color });
       y -= lineHeight;
@@ -232,22 +229,22 @@ export async function buildGlobalMotherChamberOrientationPdf() {
   page.drawText("FRENCH-WARD / CHAMBER ORIENTATION", {
     x: margin,
     y,
-    size: 8.5,
+    size: 8.2,
     font: bold,
     color: rgb(0.48, 0.39, 0.22),
   });
-  y -= 25;
+  y -= 21;
 
-  drawLines("Framework of Royal Custodianship, Restoration & Global Trade", serif, 18, 21, rgb(0.08, 0.18, 0.23));
-  y -= 4;
+  drawLines("Framework of Royal Custodianship, Restoration & Global Trade", serif, 17.2, 19.2, rgb(0.08, 0.18, 0.23));
+  y -= 3;
   drawLines(
     `${globalMotherV5Definition.reference} / Chamber V2`,
     bold,
-    8.5,
-    11,
+    8.1,
+    10.2,
     rgb(0.38, 0.46, 0.50),
   );
-  y -= 18;
+  y -= 14;
 
   page.drawLine({
     start: { x: margin, y },
@@ -255,21 +252,22 @@ export async function buildGlobalMotherChamberOrientationPdf() {
     thickness: 0.6,
     color: rgb(0.78, 0.76, 0.70),
   });
-  y -= 20;
+  y -= 15;
 
   for (const section of orientationSections) {
-    drawLines(section.heading.toUpperCase(), bold, 8.5, 11, rgb(0.45, 0.36, 0.19));
-    y -= 5;
+    drawLines(section.heading.toUpperCase(), bold, 8.1, 10.2, rgb(0.45, 0.36, 0.19));
+    y -= 3;
 
     for (const paragraph of section.paragraphs) {
-      drawLines(paragraph, regular, 9.5, 13.5);
-      y -= 7;
+      drawLines(paragraph, regular, 9.1, 12.2);
+      y -= 4.5;
     }
 
-    y -= 5;
+    y -= 3;
   }
 
-  drawLines("French-Ward Administration", serifBold, 9.5, 12, rgb(0.18, 0.27, 0.31));
+  y -= 1;
+  drawLines("French-Ward Administration", serifBold, 9.2, 11, rgb(0.18, 0.27, 0.31));
 
   const bytes = await pdf.save();
   return Buffer.from(bytes);
