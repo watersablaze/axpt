@@ -19,11 +19,11 @@ type Preview = {
 export function ChamberOrientationControl() {
   const [recipientEmail, setRecipientEmail] = useState("");
   const [preview, setPreview] = useState<Preview | null>(null);
-  const [busy, setBusy] = useState<"preview" | "send" | null>(null);
+  const [busy, setBusy] = useState<"preview" | "attachment" | "send" | null>(null);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
 
-  async function request(action: "preview" | "send") {
+  async function request(action: "preview" | "attachment" | "send") {
     const email = recipientEmail.trim();
 
     if (!email || busy) {
@@ -50,6 +50,21 @@ export function ChamberOrientationControl() {
           }),
         },
       );
+
+      if (action === "attachment") {
+        if (!response.ok) {
+          const result = (await response.json().catch(() => null)) as
+            | { error?: string }
+            | null;
+          throw new Error(result?.error ?? "Orientation attachment failed");
+        }
+
+        const blob = await response.blob();
+        const url = URL.createObjectURL(blob);
+        window.open(url, "_blank", "noopener,noreferrer");
+        window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+        return;
+      }
 
       const result = (await response.json()) as {
         ok?: boolean;
@@ -183,6 +198,16 @@ export function ChamberOrientationControl() {
             <p>
               <strong>Attachment:</strong> {preview.attachment.filename}
             </p>
+
+            <button
+              type="button"
+              disabled={Boolean(busy)}
+              onClick={() => request("attachment")}
+            >
+              {busy === "attachment"
+                ? "Opening attachment…"
+                : "Preview attachment"}
+            </button>
 
             <iframe
               title="Jacqueline Chamber orientation email preview"
