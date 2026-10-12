@@ -2,6 +2,7 @@
 
 import { globalMotherCycleV2Plan } from "@/domains/instruments/definitions/globalMotherCycleV2Plan";
 import styles from "./page.module.css";
+import { ChamberOrientationControl } from "./ChamberOrientationControl";
 
 export function CycleV2PreparationPanel() {
   return (
@@ -44,8 +45,10 @@ export function CycleV2PreparationPanel() {
       </p>
 
       <p className={styles.deliveryNotice}>
-        Issuance disabled · Delivery disabled · No V2 access grants created
+        V2 issuance disabled · V2 access delivery disabled · No V2 grants created
       </p>
+
+      <ChamberOrientationControl />
     </section>
   );
 }
