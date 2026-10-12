@@ -1,6 +1,6 @@
 import "server-only";
 
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { PDFDocument, StandardFonts, rgb, type PDFFont } from "pdf-lib";
 
 import { prisma } from "@/infrastructure/db/prisma";
 import { resend } from "@/infrastructure/email/client";
@@ -177,7 +177,7 @@ function ascii(value: string) {
     .replaceAll("—", "-");
 }
 
-function wrapText(text: string, font: Awaited<ReturnType<PDFDocument["embedFont"]>>, size: number, maxWidth: number) {
+function wrapText(text: string, font: PDFFont, size: number, maxWidth: number) {
   const words = ascii(text).split(/\s+/);
   const lines: string[] = [];
   let line = "";
@@ -212,7 +212,7 @@ export async function buildGlobalMotherChamberOrientationPdf() {
 
   const drawLines = (
     text: string,
-    font: typeof regular,
+    font: PDFFont,
     size: number,
     lineHeight: number,
     color = rgb(0.15, 0.22, 0.26),
