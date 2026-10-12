@@ -3581,3 +3581,111 @@
     top: auto !important;
   }
 }
+
+
+/* =========================================================
+   GM-5B.7 — CHAMBER V2 PREPARATION PLACEMENT
+   The next-cycle preparation surface belongs to the operator
+   work stage, never beneath the persistent context rail.
+   ========================================================= */
+
+.cyclePreparationSection {
+  grid-column: 1 / -1;
+  position: relative;
+  margin: 0 0 .35rem !important;
+  padding: 0 0 1.15rem !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(203, 180, 125, .18) !important;
+  background: transparent !important;
+}
+
+.cyclePreparationSection .sectionHeading {
+  align-items: flex-end;
+}
+
+.cyclePreparationSection .sectionHeading span {
+  color: #b7a36f !important;
+}
+
+.cyclePreparationSection .sectionHeading h2 {
+  color: #ece9df !important;
+}
+
+.cyclePreparationSection .sectionLead {
+  max-width: 54rem;
+  color: #8da0aa !important;
+}
+
+.cyclePreparationSection .recipientList {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-top: .9rem !important;
+  border-top: 1px solid rgba(203, 180, 125, .14) !important;
+}
+
+.cyclePreparationSection .recipientItem {
+  min-width: 0;
+  padding: .8rem .9rem .85rem 0 !important;
+  border-right: 1px solid rgba(154, 174, 184, .1) !important;
+  border-bottom: 1px solid rgba(154, 174, 184, .1) !important;
+}
+
+.cyclePreparationSection .recipientItem + .recipientItem {
+  padding-left: .9rem !important;
+}
+
+.cyclePreparationSection .recipientItem:last-child {
+  border-right: 0 !important;
+}
+
+.cyclePreparationSection .recipientBody {
+  padding: 0 !important;
+}
+
+.cyclePreparationSection .recipientBody strong {
+  color: #e4e0d7;
+  font-size: .78rem;
+  font-weight: 600;
+}
+
+.cyclePreparationSection .recipientBody span,
+.cyclePreparationSection .recipientBody small {
+  color: #82949d;
+  font-size: .64rem;
+  line-height: 1.45;
+}
+
+.cyclePreparationSection .draftingBoundary {
+  max-width: 58rem;
+  margin-top: .9rem !important;
+  padding-top: .75rem;
+  border-top: 1px solid rgba(154, 174, 184, .1);
+  color: #788991 !important;
+}
+
+.cyclePreparationSection > .deliveryNotice {
+  margin-top: .55rem;
+  color: #b9a66f;
+  font-size: .58rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.cyclePreparationSection > .grantDisclosure {
+  margin-top: .9rem !important;
+  border-top-color: rgba(203, 180, 125, .22) !important;
+  border-bottom-color: rgba(203, 180, 125, .13) !important;
+}
+
+@media (max-width: 900px) {
+  .cyclePreparationSection .recipientList {
+    grid-template-columns: 1fr;
+  }
+
+  .cyclePreparationSection .recipientItem,
+  .cyclePreparationSection .recipientItem + .recipientItem {
+    padding: .75rem 0 !important;
+    border-right: 0 !important;
+  }
+}
