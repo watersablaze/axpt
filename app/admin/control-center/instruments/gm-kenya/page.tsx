@@ -12,6 +12,7 @@ import { ChamberReminderControl } from "./ChamberReminderControl";
 import { globalMotherDraftingGate } from "@/domains/instruments/invariants/globalMotherDraftingGate";
 import { DraftingDecisionControl } from "./DraftingDecisionControl";
 import { ResponseWorkspace } from "./ResponseWorkspace";
+import { CycleV2PreparationPanel } from "./CycleV2PreparationPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -292,6 +293,8 @@ export default async function GlobalMotherResponseReviewPage() {
             <b>FORMATION HOLD</b>
           </div>
         </header>
+
+        <CycleV2PreparationPanel />
 
         <aside className={styles.contextRail}>
           <section
