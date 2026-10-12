@@ -6,6 +6,7 @@ import {
   renderGlobalMotherChamberV2Continuation,
   sendGlobalMotherChamberV2Continuation,
 } from "@/domains/instruments/communications/globalMotherChamberV2Continuation";
+import { buildGlobalMotherChamberOrientationPdf } from "@/domains/instruments/communications/globalMotherChamberOrientation";
 import { getDigitalSettlementSender } from "@/domains/instruments/communications/digitalSettlementSender";
 import { globalMotherV4Definition } from "@/domains/instruments/definitions/globalMotherV4Definition";
 import { prisma } from "@/infrastructure/db/prisma";
@@ -44,7 +45,11 @@ export async function POST(request: Request) {
 
   const input = body as Record<string, unknown>;
   const action =
-    input.action === "preview" || input.action === "send" ? input.action : null;
+    input.action === "preview" ||
+    input.action === "attachment" ||
+    input.action === "send"
+      ? input.action
+      : null;
   const grantId = typeof input.grantId === "string" ? input.grantId.trim() : "";
 
   if (!action || !/^[a-z0-9]{10,40}$/.test(grantId)) {
@@ -111,6 +116,20 @@ export async function POST(request: Request) {
       grant.representativeCapacity ?? "Imperial Khan-Khan",
   };
 
+  if (action === "attachment") {
+    const pdf = await buildGlobalMotherChamberOrientationPdf();
+
+    return new NextResponse(pdf, {
+      status: 200,
+      headers: {
+        "Cache-Control": "no-store",
+        "Content-Type": "application/pdf",
+        "Content-Disposition":
+          'inline; filename="Chamber-Orientation-GM-KENYA-RCF-001-Chamber-V2.pdf"',
+      },
+    });
+  }
+
   if (action === "preview") {
     const rendered = renderGlobalMotherChamberV2Continuation(message);
 
@@ -122,6 +141,10 @@ export async function POST(request: Request) {
       text: rendered.text,
       html: rendered.html,
       privateCredentialIncluded: false,
+      attachment: {
+        filename: "Chamber-Orientation-GM-KENYA-RCF-001-Chamber-V2.pdf",
+        status: "READY_FOR_REVIEW",
+      },
     });
   }
 
