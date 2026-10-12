@@ -32,14 +32,17 @@ export default function ProfileUseControls({
         return;
       }
 
-      // Accept only the official public destination.
-      if (result.url !== "https://www.axpt.io/french-ward/profile") {
+      // Accept only the exact destination for this authorized action.
+      const expectedUrl = action === "PRESENT"
+        ? "/representative/resources/" + encodeURIComponent(resourceReleaseId)
+        : "https://www.axpt.io/french-ward/profile";
+      if (result.action !== action || result.url !== expectedUrl) {
         throw new Error("UNEXPECTED_DESTINATION");
       }
 
       if (action === "TRANSMIT") {
         await navigator.clipboard.writeText(result.url);
-        setMessage("Official Profile link copied. No message has been sent.");
+        setMessage("Profile access link copied. Recipient approval is required. No message has been sent.");
       } else {
         window.location.assign(result.url);
       }
@@ -58,6 +61,8 @@ export default function ProfileUseControls({
       </h2>
       <p className="mt-2 text-sm leading-6 text-[#b7c5ce]">
         Each action checks your current appointment, authority, and resource permissions.
+        Presentation opens your CUP publication. The shared link leads to
+        institutional access review; it does not grant recipient access.
       </p>
       <div className="mt-4 flex flex-wrap gap-3">
         <button type="button" disabled={pending}
@@ -68,7 +73,7 @@ export default function ProfileUseControls({
         <button type="button" disabled={pending}
           onClick={() => useProfile("TRANSMIT")}
           className="rounded border border-[#567ba0] px-4 py-2 text-sm text-[#eee7da] disabled:opacity-50">
-          Copy Official Profile Link
+          Copy Profile Access Link
         </button>
       </div>
       <p role="status" aria-live="polite"

@@ -94,7 +94,9 @@ export async function POST(
     return json({
       ok: true,
       action: parsed.data.action,
-      url: "https://www.axpt.io/french-ward/profile",
+      url: parsed.data.action === "PRESENT"
+        ? "/representative/resources/" + encodeURIComponent(resourceReleaseId)
+        : "https://www.axpt.io/french-ward/profile",
       evaluatedAt: decision.evaluatedAt,
     }, 200);
   } catch {
