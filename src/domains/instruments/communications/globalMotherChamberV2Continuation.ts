@@ -5,7 +5,7 @@ import { resend } from "@/infrastructure/email/client";
 
 import { getDigitalSettlementEmailMode } from "./emailMode";
 import { getDigitalSettlementSender } from "./digitalSettlementSender";
-import { buildGlobalMotherChamberOrientationPdf } from "./globalMotherChamberOrientation";
+import { buildGlobalMotherKhanKhanOrientationPdf } from "./globalMotherKhanKhanOrientation";
 import { globalMotherV4Definition } from "../definitions/globalMotherV4Definition";
 
 export const GLOBAL_MOTHER_V2_CONTINUATION_DELIVERY_KEY =
@@ -154,7 +154,7 @@ export async function sendGlobalMotherChamberV2Continuation(
     representativeCapacity: input.representativeCapacity,
     privateCredentialIncluded: false,
     attachment:
-      "Chamber-Orientation-GM-KENYA-RCF-001-Chamber-V2.pdf",
+      "Chamber-V2-Orientation-Khan-Khan-GM-KENYA-RCF-001.pdf",
   };
 
   if (mode === "log") {
@@ -178,7 +178,7 @@ export async function sendGlobalMotherChamberV2Continuation(
     };
   }
 
-  const pdf = await buildGlobalMotherChamberOrientationPdf();
+  const pdf = await buildGlobalMotherKhanKhanOrientationPdf();
 
   const response = await resend.emails.send({
     from,
@@ -189,7 +189,7 @@ export async function sendGlobalMotherChamberV2Continuation(
     html: rendered.html,
     attachments: [
       {
-        filename: "Chamber-Orientation-GM-KENYA-RCF-001-Chamber-V2.pdf",
+        filename: "Chamber-V2-Orientation-Khan-Khan-GM-KENYA-RCF-001.pdf",
         content: pdf,
       },
     ],
