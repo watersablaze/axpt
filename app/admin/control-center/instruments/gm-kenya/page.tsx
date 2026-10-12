@@ -8,6 +8,7 @@ import { IssueV4Control } from "./IssueV4Control";
 import { GrantV2Control } from "./GrantV2Control";
 import { RevokeV2Control } from "./RevokeV2Control";
 import { ChamberFollowUpControl } from "./ChamberFollowUpControl";
+import { ChamberV2ContinuationControl } from "./ChamberV2ContinuationControl";
 import { ChamberReminderControl } from "./ChamberReminderControl";
 import { globalMotherDraftingGate } from "@/domains/instruments/invariants/globalMotherDraftingGate";
 import { DraftingDecisionControl } from "./DraftingDecisionControl";
@@ -567,9 +568,17 @@ export default async function GlobalMotherResponseReviewPage() {
                             {!grant.revokedAt ? (
                               <>
                                 {response &&
-                                !expired &&
                                 grant.recipientName?.includes("Khan-Khan") ? (
-                                  <ChamberFollowUpControl grantId={grant.id} />
+                                  <>
+                                    <ChamberV2ContinuationControl
+                                      grantId={grant.id}
+                                    />
+                                    {!expired ? (
+                                      <ChamberFollowUpControl
+                                        grantId={grant.id}
+                                      />
+                                    ) : null}
+                                  </>
                                 ) : null}
 
                                 {!response &&
