@@ -368,6 +368,11 @@ export default async function GlobalMotherResponseReviewPage() {
           <CycleV2PreparationPanel />
 
           <div className={styles.accessColumn}>
+            <div className={styles.currentInstrumentMarker}>
+              <span>Current instrument · V{globalMotherV4Definition.version}</span>
+              <strong>{instrument.reference}</strong>
+            </div>
+
             <section
               id="gm-overview"
               className={`${styles.section} ${styles.integritySection}`}
