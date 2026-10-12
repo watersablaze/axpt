@@ -3689,3 +3689,189 @@
     border-right: 0 !important;
   }
 }
+
+
+/* =========================================================
+   GM-5B.8 — NEXT-CYCLE PREPARATION COMPRESSION
+   Keep V2 legible as staging while returning visual authority
+   to the currently issued V4 instrument.
+   ========================================================= */
+
+.cyclePreparationSection {
+  padding-bottom: .95rem !important;
+}
+
+.cyclePreparationSection .sectionHeading {
+  margin-bottom: .45rem;
+}
+
+.cyclePreparationSection .sectionHeading h2 {
+  font-size: clamp(1rem, 1.25vw, 1.2rem) !important;
+}
+
+.cyclePreparationSection .sectionHeading small {
+  font-size: .56rem;
+  letter-spacing: .11em;
+}
+
+.cycleStatusStrip {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .3rem .9rem;
+  align-items: center;
+  margin: .1rem 0 .55rem;
+  padding: .44rem 0;
+  border-top: 1px solid rgba(203, 180, 125, .13);
+  border-bottom: 1px solid rgba(154, 174, 184, .09);
+}
+
+.cycleStatusStrip span {
+  color: #8a9aa2;
+  font-size: .54rem;
+  font-weight: 700;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+
+.cycleStatusStrip span:nth-child(-n+2) {
+  color: #bba66f;
+}
+
+.cyclePreparationSection .sectionLead {
+  max-width: 48rem;
+  margin: .35rem 0 .65rem !important;
+  font-size: .67rem !important;
+  line-height: 1.45 !important;
+}
+
+.cycleRoster {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: .55rem 0 0;
+  border-top: 1px solid rgba(154, 174, 184, .1);
+  border-bottom: 1px solid rgba(154, 174, 184, .1);
+}
+
+.cycleRosterItem {
+  display: grid;
+  gap: .18rem;
+  min-width: 0;
+  padding: .62rem .8rem .66rem 0;
+  border-right: 1px solid rgba(154, 174, 184, .09);
+}
+
+.cycleRosterItem + .cycleRosterItem {
+  padding-left: .8rem;
+}
+
+.cycleRosterItem:last-child {
+  border-right: 0;
+}
+
+.cycleRosterItem strong {
+  color: #e4e1d9;
+  font-size: .73rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.cycleRosterItem span,
+.cycleRosterItem small {
+  color: #7d9099;
+  font-size: .6rem;
+  line-height: 1.4;
+}
+
+.cycleRosterItem small {
+  color: #9aa8ad;
+  font-weight: 600;
+  letter-spacing: .035em;
+  text-transform: uppercase;
+}
+
+.cycleBoundary {
+  max-width: 52rem;
+  margin: .62rem 0 0 !important;
+  color: #74868f !important;
+  font-size: .63rem !important;
+  line-height: 1.48 !important;
+}
+
+.preChamberLabel {
+  margin-top: .8rem;
+  padding-top: .62rem;
+  border-top: 1px solid rgba(203, 180, 125, .16);
+}
+
+.preChamberLabel span {
+  color: #8d9da4;
+  font-size: .51rem;
+  font-weight: 700;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.cyclePreparationSection > .grantDisclosure {
+  margin-top: .18rem !important;
+  border-top: 0 !important;
+}
+
+.cyclePreparationSection > .grantDisclosure > summary {
+  padding: .6rem 0 !important;
+}
+
+.cyclePreparationSection > .grantDisclosure > summary > span {
+  font-size: .69rem;
+}
+
+.cyclePreparationSection > .grantDisclosure > summary > small {
+  opacity: .78;
+}
+
+.currentInstrumentMarker {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: baseline;
+  margin: 0 0 .55rem;
+  padding: .45rem 0 .52rem;
+  border-bottom: 1px solid rgba(154, 174, 184, .12);
+}
+
+.currentInstrumentMarker span {
+  color: #9a865c;
+  font-size: .52rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.currentInstrumentMarker strong {
+  color: #71848d;
+  font-size: .54rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+@media (max-width: 760px) {
+  .cycleRoster {
+    grid-template-columns: 1fr;
+  }
+
+  .cycleRosterItem,
+  .cycleRosterItem + .cycleRosterItem {
+    padding: .58rem 0;
+    border-right: 0;
+    border-bottom: 1px solid rgba(154, 174, 184, .08);
+  }
+
+  .cycleRosterItem:last-child {
+    border-bottom: 0;
+  }
+
+  .currentInstrumentMarker {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: .2rem;
+  }
+}
