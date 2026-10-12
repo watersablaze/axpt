@@ -35,14 +35,55 @@ export async function reviewJensWorkspacePreparation(intakeId: string) {
     "This is the foundation of your working environment with French-Ward. It will grow as official instruments, tools, and processes are introduced.",
     "Once inside, the interface and welcoming guide will help you get acquainted, review your materials, and follow the appointment acceptance steps. Permissions to present or share materials will be confirmed separately.",
     "We look forward to your feedback as you settle in. It will help us shape a practical workspace for our representatives and strengthen how we support responsible engagement in the field, protecting the relationships and work entrusted to our care.",
-    "Warm regards,\nJamal Ward\nFrench-Ward, Inc.",
+    "Warm regards,\nFrench-Ward Administration\nFrench-Ward, Inc.",
   ];
   const text = paragraphs.join("\n\n");
-  const html = '<!doctype html><html><body style="margin:0;background:#f4f1ea;">' +
-    '<div style="max-width:640px;margin:auto;padding:32px 24px;color:#172635;font-family:Arial,sans-serif;font-size:15px;line-height:1.7;">' +
-    paragraphs.map(paragraph => '<p style="margin:0 0 18px;">' +
-      escapeInstitutionalEmailHtml(paragraph).replace(/\n/g, "<br>") +
-      "</p>").join("") + "</div></body></html>";
+
+
+  const bodyMarkup = paragraphs.map((paragraph, index) => {
+    if (index === paragraphs.length - 1) {
+      return '<div style="margin-top:26px;padding-top:20px;border-top:1px solid #D8D0C2;">' +
+        '<p style="margin:0 0 12px;font-family:Arial,Helvetica,sans-serif;font-size:14px;line-height:1.7;color:#514D45;">Warm regards,</p>' +
+        '<p style="margin:0;font-family:Georgia,serif;font-size:17px;line-height:1.5;color:#181714;">French-Ward Administration</p>' +
+        '<p style="margin:4px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:1px;color:#857E72;">French-Ward, Inc.</p>' +
+        "</div>";
+    }
+    const greeting = index === 0;
+    return '<p style="margin:0 0 18px;font-family:' +
+      (greeting ? "Georgia,serif;font-size:19px;color:#181714;"
+        : "Arial,Helvetica,sans-serif;font-size:14px;color:#514D45;") +
+      'line-height:1.75;">' +
+      escapeInstitutionalEmailHtml(paragraph) +
+      "</p>";
+  }).join("");
+
+  const html = `<!doctype html>
+<html lang="en">
+<body style="margin:0;padding:0;background:#181714;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#181714;">
+<tr><td align="center" style="padding:30px 14px;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:680px;background:#F4EFE3;border:1px solid #38342E;">
+<tr><td style="background:#1B1915;padding:24px 28px;border-bottom:1px solid #4A453D;">
+<div style="font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#F4EFE3;">French-Ward, Inc.</div>
+<div style="margin-top:7px;font-family:Arial,Helvetica,sans-serif;font-size:10px;letter-spacing:1.8px;text-transform:uppercase;color:#9E978C;">Authorized Representation Program</div>
+</td></tr>
+<tr><td style="padding:30px 28px 0;">
+<div style="font-family:Arial,Helvetica,sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#8A8377;">Prepared for</div>
+<div style="margin-top:9px;font-family:Georgia,serif;font-size:23px;line-height:1.35;color:#181714;">Jens Peter Thomsen</div>
+</td></tr>
+<tr><td style="padding:28px;">
+<div style="font-family:Arial,Helvetica,sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#857E72;">Representative Workspace</div>
+<h1 style="margin:12px 0 26px;font-family:Georgia,serif;font-size:30px;line-height:1.15;font-weight:400;color:#181714;">Your working foundation<br>with French-Ward.</h1>
+${bodyMarkup}
+</td></tr>
+<tr><td style="border-top:1px solid #C9C1B2;padding:18px 28px;">
+<div style="text-align:center;font-family:Arial,Helvetica,sans-serif;font-size:9px;line-height:1.8;letter-spacing:1.4px;text-transform:uppercase;color:#8A8377;">French-Ward, Inc.<br><span style="font-size:8px;letter-spacing:1px;">Institutional environment via AXPT</span></div>
+</td></tr>
+</table>
+</td></tr>
+</table>
+</body>
+</html>`;
   const from = process.env.REPRESENTATIVE_ONBOARDING_FROM_EMAIL ||
     "French-Ward <french-ward@axpt.io>";
   const replyTo = process.env.REPRESENTATIVE_ONBOARDING_REPLY_TO_EMAIL ||
