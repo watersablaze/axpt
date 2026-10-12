@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { isAdmin } from "@/domains/auth/isAdmin";
 import {
+  buildGlobalMotherChamberOrientationPdf,
   renderGlobalMotherChamberOrientationEmail,
   sendGlobalMotherChamberOrientation,
 } from "@/domains/instruments/communications/globalMotherChamberOrientation";
@@ -42,7 +43,11 @@ export async function POST(request: Request) {
 
   const input = body as Record<string, unknown>;
   const action =
-    input.action === "preview" || input.action === "send" ? input.action : null;
+    input.action === "preview" ||
+    input.action === "attachment" ||
+    input.action === "send"
+      ? input.action
+      : null;
   const recipientEmail =
     typeof input.recipientEmail === "string"
       ? input.recipientEmail.trim().toLowerCase()
@@ -68,6 +73,20 @@ export async function POST(request: Request) {
     recipientEmail,
   };
 
+  if (action === "attachment") {
+    const pdf = await buildGlobalMotherChamberOrientationPdf();
+
+    return new NextResponse(pdf, {
+      status: 200,
+      headers: {
+        "Cache-Control": "no-store",
+        "Content-Type": "application/pdf",
+        "Content-Disposition":
+          'inline; filename="Chamber-Orientation-GM-KENYA-RCF-001-Chamber-V2.pdf"',
+      },
+    });
+  }
+
   if (action === "preview") {
     const rendered = renderGlobalMotherChamberOrientationEmail(message);
 
@@ -80,7 +99,7 @@ export async function POST(request: Request) {
       html: rendered.html,
       attachment: {
         filename: "Chamber-Orientation-GM-KENYA-RCF-001-Chamber-V2.pdf",
-        status: "GENERATED_ON_SEND",
+        status: "READY_FOR_REVIEW",
       },
       privateCredentialIncluded: false,
     });
