@@ -25,26 +25,42 @@ export function ChamberV2ContinuationControl({
   async function request(action: "preview" | "attachment" | "send") {
     if (busy) return;
 
+    if (action === "attachment" && !preview?.to) {
+      setError("Preview the continuation email before opening the attachment.");
+      return;
+    }
+
     setBusy(action);
     setError("");
     setMessage("");
 
     try {
+      const attachmentPreview = action === "attachment";
+
       const response = await fetch(
-        "/api/admin/instruments/gm-kenya/v2-continuation",
+        attachmentPreview
+          ? "/api/admin/instruments/gm-kenya/orientation"
+          : "/api/admin/instruments/gm-kenya/v2-continuation",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({
-            action,
-            grantId,
-            confirmation:
-              action === "send"
-                ? "SEND CHAMBER V2 CONTINUATION"
-                : undefined,
-          }),
+          body: JSON.stringify(
+            attachmentPreview
+              ? {
+                  action: "attachment",
+                  recipientEmail: preview?.to,
+                }
+              : {
+                  action,
+                  grantId,
+                  confirmation:
+                    action === "send"
+                      ? "SEND CHAMBER V2 CONTINUATION"
+                      : undefined,
+                },
+          ),
         },
       );
 
