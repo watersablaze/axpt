@@ -170,7 +170,7 @@ export default async function AppointmentPage({
               </div>
             </dl>
 
-            {review.status === "ACTIVE" &&
+            {issuedCertificate && review.status === "ACTIVE" &&
               review.standing === "ACTIVE" &&
               review.acceptedAt &&
               review.effectiveAt &&
@@ -222,7 +222,7 @@ export default async function AppointmentPage({
                 <p className={styles.boundaryTitle}>Effect of Acceptance</p>
                 <p className={styles.prose}>
                   Acceptance does not activate the appointment, change Program
-                  standing, or independently create delegated authority.
+                  standing, or independently create delegated authority.{" "}
                   {review.status === "ACTIVE"
                     ? "French-Ward activation is recorded. Delegated authority remains separately governed."
                     : prepared

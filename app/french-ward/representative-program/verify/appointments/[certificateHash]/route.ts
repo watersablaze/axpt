@@ -47,6 +47,14 @@ export async function GET(
       ? "Current appointment eligibility confirmed"
       : "Current appointment eligibility not confirmed";
 
+    const authorityMarkup = record.certificateSchemaVersion === 2
+      ? `<section><h2>Recorded Authorities</h2><p>${record.authoritySnapshotCurrent
+          ? "The authorities stated in this certificate remain recorded as delegated, subject to the conditions below."
+          : "The certificate's authority snapshot is not fully current. Consult the individual statuses below."}</p>${record.authorities.map(authority =>
+          `<div class="authority"><h3>${escape(authority.title)}</h3><p>${escape(authority.action)}</p><p><strong>${authority.currentlyDelegated
+            ? "Delegation current - conditions apply" : "Current delegation not confirmed"}</strong></p>${authority.conditions.length
+            ? `<ul>${authority.conditions.map(condition => `<li>${escape(condition)}</li>`).join("")}</ul>` : ""}</div>`).join("")}</section>`
+      : "";
     const html = `<!doctype html>
 <html lang="en"><head>
 <meta charset="utf-8">
@@ -64,6 +72,7 @@ h2{font-size:23px;margin:24px 0 6px}
 dl{display:grid;grid-template-columns:130px 1fr;gap:12px;margin:28px 0}
 dt{color:#9bb1bc}dd{margin:0;overflow-wrap:anywhere}
 .note{border-top:1px solid #293f4b;padding-top:20px;color:#b7c6ce}
+.authority{border-top:1px solid #293f4b;padding:12px 0}h3{font-size:16px;margin:6px 0}ul{padding-left:20px}
 small{color:#9bb1bc}
 @media(max-width:480px){main{margin:20px auto;padding:22px}h1{font-size:27px}dl{grid-template-columns:1fr;gap:4px}dd{margin-bottom:12px}}
 </style></head><body><main><article>
@@ -79,7 +88,10 @@ small{color:#9bb1bc}
 <dt>Issued</dt><dd>${escape(date(record.issuedAt))}</dd>
 <dt>Checked</dt><dd>${escape(date(record.checkedAt))}</dd>
 </dl>
-<p class="note">This confirms the recorded certificate issuance and reports appointment eligibility at the check time. It does not confirm delegated authority, transaction approval, negotiation rights, or authority to bind French-Ward.</p>
+${authorityMarkup}
+<p class="note">${record.certificateSchemaVersion === 2
+  ? "This reports certificate issuance, appointment standing, and the continuing delegation of the stated authorities. Activities remain subject to the stated scope, conditions, resource permissions, and any required approvals."
+  : "This confirms the recorded certificate issuance and reports appointment eligibility at the check time. It does not confirm delegated authority, transaction approval, negotiation rights, or authority to bind French-Ward."}</p>
 <small>A retained certificate does not establish continuing eligibility. Check this record again before reliance.</small>
 </article></main></body></html>`;
 

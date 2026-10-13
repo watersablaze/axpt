@@ -6,7 +6,12 @@ import {
   type AppointmentCertificateBasis,
 } from "./issueRepresentativeAppointmentCredential";
 
-type Client = Parameters<typeof loadRepresentativeAppointmentReview>[0]["client"];
+import {
+  certificateAuthoritiesSchema, loadCertificateAuthorities,
+  canonicalCertificateJson, certificateAuthorityTitle, certificateAuthorityConditions,
+} from "./appointmentCertificateAuthorities";
+
+type Client = Parameters<typeof loadRepresentativeAppointmentReview>[0]["client"] & Parameters<typeof loadCertificateAuthorities>[0]["client"];
 const text = z.string().min(1);
 const hash = z.string().regex(/^[a-f0-9]{64}$/);
 const timestamp = z.string().datetime();
@@ -26,7 +31,7 @@ const configurationSchema = z.object({
   reviewHash: hash,
 }).strict();
 
-const metadataSchema = z.object({
+const legacyMetadataSchema = z.object({
   certificateSchemaVersion: z.literal(1),
   basisHash: hash,
   configuration: configurationSchema,
@@ -37,6 +42,14 @@ const metadataSchema = z.object({
   signatureHash: z.literal("80169c0c6a46fc165b2999220e9a4cee38e1193d22788deda49c2dfcfe0fbee2"),
   sealHash: z.literal("b5387470d30435e040aaae3d59aca784c409dd58a775a9e8c0bf9b1673680bd3"),
 }).strict();
+
+const authorityMetadataSchema = legacyMetadataSchema.extend({
+  certificateSchemaVersion: z.literal(2),
+  configuration: configurationSchema.extend({ authorities: certificateAuthoritiesSchema }).strict(),
+}).strict();
+const metadataSchema = z.discriminatedUnion("certificateSchemaVersion", [
+  legacyMetadataSchema, authorityMetadataSchema,
+]);
 
 type Evidence = {
   instrumentId: string;
@@ -106,6 +119,9 @@ export async function verifyRepresentativeAppointmentCertificate(params: {
   const unavailable = () => ({
     ...publicRecord,
     appointmentCurrentlyEligible: false,
+    authoritySnapshotCurrent: false,
+    authorities: [] as Array<{ title: string; action: string; conditions: string[]; currentlyDelegated: boolean }>,
+    certificateSchemaVersion: metadata.certificateSchemaVersion,
   });
 
   const appointment: {
@@ -151,14 +167,32 @@ export async function verifyRepresentativeAppointmentCertificate(params: {
   const expiry = review.expiresAt === null
     ? null : new Date(review.expiresAt).getTime();
 
-  return {
-    ...publicRecord,
-    appointmentCurrentlyEligible:
-      appointmentCertificateBasisHash(current) === metadata.basisHash &&
+  const appointmentCurrentlyEligible =
+      appointmentCertificateBasisHash(current) === appointmentCertificateBasisHash(
+        Object.fromEntries(Object.entries(configuration).filter(([key]) => key !== "authorities")) as AppointmentCertificateBasis
+      ) &&
       review.status === "ACTIVE" &&
       review.standing === "ACTIVE" &&
       review.endedAt === null &&
       review.effectiveAt.getTime() <= checkedAt.getTime() &&
-      (expiry === null || (Number.isFinite(expiry) && expiry > checkedAt.getTime())),
+      (expiry === null || (Number.isFinite(expiry) && expiry > checkedAt.getTime()));
+  const issuedAuthorities = "authorities" in configuration ? configuration.authorities : [];
+  const currentAuthorities = appointmentCurrentlyEligible && metadata.certificateSchemaVersion === 2
+    ? await loadCertificateAuthorities({ client: params.client,
+      userId: appointment.participant.userId, appointmentId: configuration.appointmentId, at: checkedAt })
+    : [];
+  const authorities = issuedAuthorities.map(authority => ({
+    title: certificateAuthorityTitle(authority.key), action: authority.action,
+    conditions: certificateAuthorityConditions(authority),
+    currentlyDelegated: appointmentCurrentlyEligible && currentAuthorities.some(current =>
+      current.id === authority.id && canonicalCertificateJson(current) === canonicalCertificateJson(authority)),
+  }));
+  return {
+    ...publicRecord, appointmentCurrentlyEligible,
+    certificateSchemaVersion: metadata.certificateSchemaVersion,
+    authoritySnapshotCurrent: metadata.certificateSchemaVersion === 2 &&
+      appointmentCurrentlyEligible && authorities.every(authority => authority.currentlyDelegated) &&
+      canonicalCertificateJson(issuedAuthorities) === canonicalCertificateJson(currentAuthorities),
+    authorities,
   };
 }

@@ -1,4 +1,5 @@
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
+import { PDFDocument, StandardFonts, rgb, pushGraphicsState, popGraphicsState, rectangle, clip, endPath } from "pdf-lib";
+import { certificateAuthorityTitle, certificateAuthorityConditions } from "./appointmentCertificateAuthorities";
 import type { RepresentativeAppointmentCredential } from "./loadRepresentativeAppointmentCredential";
 
 export type AppointmentCredentialExecution = Readonly<{
@@ -43,7 +44,7 @@ export async function renderRepresentativeAppointmentCredential(
   const gold = rgb(0.57, 0.45, 0.25);
   const muted = rgb(0.35, 0.40, 0.43);
   const width = 459;
-  let y = 760;
+  let y = 768;
 
   page.drawRectangle({
     x: 32, y: 32, width: 531.28, height: 777.89,
@@ -77,7 +78,7 @@ export async function renderRepresentativeAppointmentCredential(
     if (line) wrapped.push(line);
 
     for (const item of wrapped) {
-      if (y < 235) throw new Error("[ARP_CREDENTIAL_LAYOUT_OVERFLOW]");
+      if (y < (execution ? 210 : 110)) throw new Error("[ARP_CREDENTIAL_LAYOUT_OVERFLOW]");
       page.drawText(item, {
         x: centered
           ? (595.28 - font.widthOfTextAtSize(item, size)) / 2 : 68,
@@ -87,18 +88,21 @@ export async function renderRepresentativeAppointmentCredential(
     }
   }
 
+  if (execution?.reviewOnly) page.drawText("DESIGN SPECIMEN - NOT ISSUED", {
+    x: 68, y: 790, size: 8, font: sans, color: gold,
+  });
   lines("FRENCH-WARD, INC.", sans, 11, gold, true);
   y -= 5;
   lines("Authorized Representation Program", sans, 9, muted, true);
-  y -= 20;
-  lines("Certificate of Appointment", serif, 24, ink, true);
+  y -= 14;
+  lines("Certificate of Appointment", serif, 25, ink, true);
   y -= 12;
   lines("French-Ward, Inc. records the appointment of", serif, 12, ink, true);
   y -= 7;
   lines(record.displayName, bold, 23, ink, true);
   y -= 5;
   lines(humanize(record.appointmentClass), serif, 12, gold, true);
-  y -= 17;
+  y -= 10;
   page.drawLine({
     start: { x: 68, y }, end: { x: 527, y },
     thickness: 0.6, color: gold,
@@ -130,7 +134,7 @@ export async function renderRepresentativeAppointmentCredential(
       } else row = next;
     }
     if (row) rows.push(row);
-    const height = Math.max(25, rows.length * 14 + 10);
+    const height = Math.max(22, rows.length * 14 + 7);
     if (y - height < 350) {
       throw new Error("[ARP_CREDENTIAL_PARTICULARS_OVERFLOW]");
     }
@@ -150,42 +154,63 @@ export async function renderRepresentativeAppointmentCredential(
   }
 
   y -= 5;
-  lines(
-    "This certificate evidences the recorded appointment. Its reference identifies the governing Appointment Instrument.",
-    serif, 11,
-  );
-  y -= 8;
-  lines(
-    "Delegated authority, permitted activities, scope, conditions, and required approvals remain separately governed. This certificate does not independently authorize negotiation, commitments, execution of documents, or binding French-Ward, Inc.",
-    sans, 8, muted,
-  );
-  y -= 8;
-  lines(
-    "Current appointment status and authority must be checked with French-Ward before reliance. A retained copy does not establish continuing eligibility.",
-    sans, 8, muted,
-  );
+  if (record.authorities?.length) {
+    lines("RECORDED AUTHORITIES", sans, 8, gold, false);
+    y -= 3;
+    const allConditions = record.authorities.map(certificateAuthorityConditions);
+    const sharedConditions = [...new Set(allConditions[0])].filter(condition =>
+      allConditions.every(conditions => conditions.includes(condition)));
+    for (const authority of record.authorities) {
+      lines(certificateAuthorityTitle(authority.key), bold, 10, ink, false, 12);
+      lines(authority.action, serif, 10, ink, false, 12);
+      const conditions = certificateAuthorityConditions(authority).filter(condition => !sharedConditions.includes(condition));
+      if (conditions.length) lines(conditions.join(" · "), sans, 7.5, muted, false, 10);
+      y -= 6;
+    }
+    if (sharedConditions.length) {
+      lines("COMMON CONDITIONS", sans, 7, gold, false, 10);
+      lines(sharedConditions.join(" · "), sans, 7.5, muted, false, 10);
+      y -= 4;
+    }
+    lines("These authorities apply within their recorded scope and conditions. Current standing and authority are confirmed through French-Ward's verification record.",
+      sans, 8, muted, false, 11);
+  } else {
+    lines("This certificate records the appointment identified above. Any delegated authorities are stated in the governing authority record.",
+      serif, 10, ink, false, 13);
+    y -= 6;
+    lines("Current appointment standing is confirmed through French-Ward's verification record.",
+      sans, 8, muted, false, 11);
+  }
 
   if (execution) {
-    const executionBase = y - 150;
+    const executionBase = 112;
+    if (y < executionBase + 100) throw new Error("[ARP_CREDENTIAL_EXECUTION_LAYOUT_OVERFLOW]");
     if (executionBase < 95) {
       throw new Error("[ARP_CREDENTIAL_EXECUTION_LAYOUT_OVERFLOW]");
     }
     const signature = await pdf.embedPng(execution.signature);
     const seal = await pdf.embedPng(execution.seal);
 
-    // Preserve each original image's proportions.
-    const signatureScale = Math.min(
-      210 / signature.width, 112 / signature.height,
-    );
-    page.drawImage(signature, {
-      x: 61, y: executionBase + 27,
-      width: signature.width * signatureScale,
-      height: signature.height * signatureScale,
-    });
+    // The verified signature asset has a large transparent perimeter.
+    // Clip its original pixels in PDF coordinates; do not alter the signed asset.
+    if (signature.width === 2032 && signature.height === 1524) {
+      const scale = 175 / 1222;
+      page.pushOperators(pushGraphicsState(), rectangle(68, executionBase + 53, 175, 58), clip(), endPath());
+      page.drawImage(signature, {
+        x: 68 - 384 * scale,
+        y: executionBase + 53 - (1524 - 903) * scale,
+        width: signature.width * scale, height: signature.height * scale,
+      });
+      page.pushOperators(popGraphicsState());
+    } else {
+      const scale = Math.min(175 / signature.width, 58 / signature.height);
+      page.drawImage(signature, { x: 68, y: executionBase + 53,
+        width: signature.width * scale, height: signature.height * scale });
+    }
 
-    const sealScale = Math.min(83 / seal.width, 83 / seal.height);
+    const sealScale = Math.min(72 / seal.width, 72 / seal.height);
     page.drawImage(seal, {
-      x: 432, y: executionBase + 34,
+      x: 442, y: executionBase + 28,
       width: seal.width * sealScale,
       height: seal.height * sealScale,
     });

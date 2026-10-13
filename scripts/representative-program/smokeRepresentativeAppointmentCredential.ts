@@ -7,7 +7,11 @@ import {
   loadAppointmentCertificateIssuanceBasis,
   issueRepresentativeAppointmentCredential,
   loadOwnedIssuedAppointmentCertificate,
+  appointmentCertificateBasisHash,
 } from "../../src/domains/instruments/representative-program/application/issueRepresentativeAppointmentCredential";
+
+import { INITIAL_COMMERCIAL_AUTHORITY_PLAN } from
+  "../../src/domains/instruments/representative-program/application/appointmentCertificateAuthorities";
 
 import { verifyRepresentativeAppointmentCertificate } from
   "../../src/domains/instruments/representative-program/application/verifyRepresentativeAppointmentCertificate";
@@ -23,9 +27,13 @@ async function main() {
   let storeFails = false;
   let eventFails = false;
   let changeDuringUpload = false;
+  let authorityChangesDuringUpload = false;
 
   const appointment = {
     id: "appointment-a",
+    instrumentId: "instrument-a",
+    instrumentPartyId: "party-a",
+    instrumentParty: { id: "party-a", instrumentId: "instrument-a" },
     participantId: "participant-a",
     appointmentClass: "AUTHORIZED_COMMERCIAL_REPRESENTATIVE",
     scope: {
@@ -63,7 +71,17 @@ async function main() {
     },
   };
 
+  const authorities: any[] = INITIAL_COMMERCIAL_AUTHORITY_PLAN.map((entry, index) => ({
+    id: "authority-" + index, instrumentId: "instrument-a",
+    authorityKey: entry.authorityKey, title: entry.authorityKey,
+    authorityClass: entry.authorityClass, holderPartyId: "party-a",
+    action: entry.action, conditions: entry.conditions,
+    effectiveAt: new Date("2026-01-01T00:00:00Z"), expiresAt: null,
+    revokedAt: null, createdByUserId: "issuer-a",
+  }));
   const fake: any = {
+    instrumentAuthority: { findMany: async ({ where }: any) => authorities.filter(item =>
+      item.revokedAt === null && (typeof where.authorityKey !== "string" || item.authorityKey === where.authorityKey)) },
     user: {
       findUnique: async () => ({
         isAdmin: true,
@@ -134,6 +152,9 @@ async function main() {
   const reviewInput = {
     client: fake, appointmentId: appointment.id, actorUserId: "issuer-a",
   };
+  const saved = authorities.splice(0);
+  await assert.rejects(() => loadAppointmentCertificateIssuanceBasis(reviewInput));
+  authorities.push(...saved);
   const reviewed = await loadAppointmentCertificateIssuanceBasis(reviewInput);
   const bytes = Buffer.from("%PDF-1.7\nTEST CERTIFICATE\n%%EOF");
 
@@ -150,6 +171,7 @@ async function main() {
         createHash("sha256").update(bytes).digest("hex"));
       if (storeFails) throw new Error("TEST_STORAGE_FAILURE");
       if (changeDuringUpload) appointment.participant.displayName = "Changed Name";
+      if (authorityChangesDuringUpload) authorities[0].action = "Changed during upload";
       return {
         uri: "https://test.private.blob.vercel-storage.com/arp/appointment-certificates/appointment-a/test.pdf",
         access: "private" as const,
@@ -187,6 +209,14 @@ async function main() {
   appointment.participant.displayName = "Test Representative";
   assert.equal(certificates.length, 0);
   console.log("✓ storage failure and changed configuration prevent issuance evidence");
+
+  authorityChangesDuringUpload = true;
+  const actionBeforeUpload = authorities[0].action;
+  await assert.rejects(() => issueRepresentativeAppointmentCredential(input), /REVIEW_CHANGED/);
+  authorityChangesDuringUpload = false;
+  authorities[0].action = actionBeforeUpload;
+  assert.equal(certificates.length, 0);
+  console.log("✓ authority changes during upload prevent issuance evidence");
 
   eventFails = true;
   await assert.rejects(() => issueRepresentativeAppointmentCredential(input),
@@ -266,6 +296,30 @@ async function main() {
   acceptance.push(removedAcceptance);
   console.log("✓ suspension, termination, future effect, and changed acceptance block eligibility");
 
+  const originalAction = authorities[0].action;
+  authorities[0].action = "Changed authority scope";
+  assert.equal((await verify())?.authoritySnapshotCurrent, false);
+  assert.equal(await owned(), null);
+  authorities[0].action = originalAction;
+  authorities[0].revokedAt = new Date();
+  assert.equal((await verify())?.authoritySnapshotCurrent, false);
+  assert.equal((await verify())?.authorities.filter(item => !item.currentlyDelegated).length, 1);
+  assert.equal(await owned(), null);
+  authorities[0].revokedAt = null;
+  authorities[0].expiresAt = new Date("2026-01-02T00:00:00Z");
+  assert.equal((await verify())?.authoritySnapshotCurrent, false);
+  authorities[0].expiresAt = null;
+  assert.equal((await verify())?.authoritySnapshotCurrent, true);
+
+  const v2Metadata = certificates[0].metadata;
+  const { authorities: _snapshot, ...legacyConfiguration } = v2Metadata.configuration;
+  certificates[0].metadata = { ...v2Metadata, certificateSchemaVersion: 1,
+    configuration: legacyConfiguration, basisHash: appointmentCertificateBasisHash(legacyConfiguration) };
+  assert.equal((await verify())?.appointmentCurrentlyEligible, true);
+  assert.equal((await verify())?.authorities.length, 0);
+  assert.ok(await owned());
+  certificates[0].metadata = v2Metadata;
+  console.log("✓ authority changes, revocation and expiry invalidate the snapshot; legacy certificates remain verifiable");
   const metadata = certificates[0].metadata;
   certificates[0].metadata = { ...metadata, signatoryTitle: "Different" };
   await assert.rejects(verify, /VERIFICATION_EVIDENCE_CONFLICT/);

@@ -41,7 +41,7 @@ function failure(error: unknown) {
   if (message.includes("NOT_FOUND")) {
     return json({ ok: false, error: "CERTIFICATE_NOT_FOUND" }, 404);
   }
-  if (/STATE_CONFLICT|REVIEW_CHANGED|EVIDENCE_CONFLICT/.test(message)) {
+  if (/STATE_CONFLICT|REVIEW_CHANGED|EVIDENCE_CONFLICT|AUTHORITY_REQUIRED|LEGACY_ISSUANCE/.test(message)) {
     return json({ ok: false, error: "CERTIFICATE_RECORD_CONFLICT" }, 409);
   }
   console.error("[ARP_CERTIFICATE_OPERATION_FAILED]");

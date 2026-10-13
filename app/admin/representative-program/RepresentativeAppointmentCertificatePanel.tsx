@@ -8,6 +8,7 @@ type Review = {
     reference: string;
     version: number;
     effectiveAt: string;
+    authorities: Array<{ id: string; key: string; action: string; conditions: unknown; effectiveAt: string; expiresAt: string | null }>;
   };
 };
 
@@ -102,8 +103,8 @@ export default function RepresentativeAppointmentCertificatePanel({
       </h4>
       <p className="mt-2 text-xs leading-6 text-gray-400">
         Issue the sealed certificate under Jamal James Ward’s signature.
-        Issuance preserves the PDF and records its evidence. Delegated
-        authority remains separately governed.
+        Issuance preserves the PDF and its recorded authority snapshot.
+        Review the actions and conditions below; they are published with the credential.
       </p>
       <button type="button" disabled={busy} onClick={() => void inspect()}
         className="mt-3 rounded border border-gray-700 px-3 py-2 text-xs text-gray-200 disabled:opacity-50">
@@ -119,12 +120,28 @@ export default function RepresentativeAppointmentCertificatePanel({
           <p className="mt-2 text-xs text-gray-400">
             Effective: {review.configuration.effectiveAt}
           </p>
+          <div className="mt-3 space-y-3">
+            {review.configuration.authorities.map(authority => <div key={authority.id}>
+              <p className="text-xs font-semibold text-amber-100">{authority.key}</p>
+              <p className="text-xs leading-6 text-gray-200">{authority.action}</p>
+              <dl className="mt-1 text-xs leading-6 text-gray-400">
+                {authority.conditions && typeof authority.conditions === "object"
+                  ? Object.entries(authority.conditions).map(([key, value]) => <div key={key}>
+                    <dt className="font-semibold capitalize">{key.replace(/([A-Z])/g, " $1")}</dt>
+                    <dd className="break-words">{Array.isArray(value) ? value.join(", ")
+                      : typeof value === "boolean" ? value ? "Yes" : "No" : String(value)}</dd>
+                  </div>) : <div><dt>Additional conditions</dt><dd>None recorded</dd></div>}
+              </dl>
+              <p className="text-xs text-gray-400">Authority effective: {authority.effectiveAt} · Expiry: {authority.expiresAt ?? "Not recorded"}</p>
+            </div>)}
+          </div>
           <label className="mt-4 flex items-start gap-3 text-xs leading-6 text-amber-100">
             <input type="checkbox" checked={confirmed} disabled={busy}
               onChange={event => setConfirmed(event.target.checked)}
               className="mt-1" />
             I authorize issuance of this appointment certificate with
-            Jamal James Ward’s signature and the French-Ward seal.
+            Jamal James Ward’s signature and the French-Ward seal, including
+            publication of the reviewed actions and conditions.
           </label>
           <button type="button" disabled={busy || !confirmed}
             onClick={() => void issue()}

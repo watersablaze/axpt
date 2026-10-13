@@ -16,6 +16,7 @@ export async function loadRepresentativeAuthorityRegister(params: {
   client: Client;
   appointmentId: string;
   userId: string;
+  at?: Date;
 }) {
   const appointmentId = params.appointmentId.trim();
   const userId = params.userId.trim();
@@ -33,7 +34,8 @@ export async function loadRepresentativeAuthorityRegister(params: {
 
   if (!appointment || appointment.participant.userId !== userId) return null;
 
-  const at = new Date();
+  const at = params.at ?? new Date();
+  if (!Number.isFinite(at.getTime())) throw new Error("[ARP_AUTHORITY_REGISTER_TIME_INVALID]");
   const candidates: InstrumentAuthority[] = await params.client.instrumentAuthority.findMany({
     where: {
       instrumentId: appointment.instrumentId,

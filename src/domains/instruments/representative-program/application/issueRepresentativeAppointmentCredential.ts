@@ -3,6 +3,11 @@ import type { PrismaClient } from "@prisma/client";
 import { loadRepresentativeAppointmentReview } from "./representativeAppointmentAcceptance";
 import { recordInstrumentEvidenceWithClient } from "../../commands/recordInstrumentEvidenceWithClient";
 
+import {
+  loadCertificateAuthorities, certificateAuthoritiesSchema, canonicalCertificateJson,
+  type CertificateAuthority,
+} from "./appointmentCertificateAuthorities";
+
 const TITLE = "Issued representative appointment certificate";
 export const APPOINTMENT_CERTIFICATE_SIGNATORY = {
   name: "Jamal James Ward",
@@ -11,7 +16,7 @@ export const APPOINTMENT_CERTIFICATE_SIGNATORY = {
 } as const;
 
 type Client = Parameters<typeof loadRepresentativeAppointmentReview>[0]["client"] &
-  Pick<PrismaClient, "user" | "$queryRaw">;
+  Pick<PrismaClient, "user" | "$queryRaw" | "instrumentAuthority">;
 type Runner = Client & Pick<PrismaClient, "$transaction">;
 type Review = NonNullable<Awaited<ReturnType<typeof loadRepresentativeAppointmentReview>>>;
 
@@ -28,6 +33,7 @@ export type AppointmentCertificateBasis = {
   expiresAt: string | null;
   acceptedAt: string;
   reviewHash: string;
+  authorities?: CertificateAuthority[];
 };
 
 function sha(bytes: Uint8Array | string) {
@@ -101,6 +107,11 @@ export async function loadAppointmentCertificateIssuanceBasis(params: {
   });
   if (!review) throw new Error("[ARP_CERTIFICATE_NOT_FOUND]");
   const configuration = basis(review);
+  const authoritySnapshot = await loadCertificateAuthorities({
+    client: params.client, appointmentId: review.appointmentId, userId: row.participant.userId,
+  });
+  if (!authoritySnapshot.length) throw new Error("[ARP_CERTIFICATE_AUTHORITY_REQUIRED]");
+  configuration.authorities = certificateAuthoritiesSchema.parse(authoritySnapshot);
   return {
     configuration,
     basisHash: appointmentCertificateBasisHash(configuration),
@@ -133,8 +144,12 @@ async function existing(client: Client, configuration: AppointmentCertificateBas
   const fields = item.metadata && typeof item.metadata === "object" &&
     !Array.isArray(item.metadata)
     ? item.metadata as Record<string, unknown> : {};
+  const legacy = fields.certificateSchemaVersion === 1;
+  const { authorities: _authorities, ...appointmentBasis } = configuration;
+  const compared = legacy ? appointmentBasis : configuration;
   if (
-    fields.basisHash !== appointmentCertificateBasisHash(configuration) ||
+    (!legacy && fields.certificateSchemaVersion !== 2) ||
+    fields.basisHash !== appointmentCertificateBasisHash(compared) ||
     fields.issuedAt !== item.recordedAt.toISOString() ||
     fields.issuedByUserId !== item.recordedByUserId ||
     fields.signatoryName !== APPOINTMENT_CERTIFICATE_SIGNATORY.name ||
@@ -145,6 +160,7 @@ async function existing(client: Client, configuration: AppointmentCertificateBas
     issuedAt: item.recordedAt,
     contentHash: item.contentHash!,
     issued: false,
+    certificateSchemaVersion: legacy ? 1 : 2,
   };
 }
 
@@ -184,7 +200,10 @@ export async function issueRepresentativeAppointmentCredential(params: {
     throw new Error("[ARP_CERTIFICATE_REVIEW_CHANGED]");
   }
   const replay = await existing(params.client, prepared.configuration);
-  if (replay) return replay;
+  if (replay) {
+    if (replay.certificateSchemaVersion !== 2) throw new Error("[ARP_CERTIFICATE_LEGACY_ISSUANCE_REQUIRES_SEPARATE_REVIEW]");
+    return replay;
+  }
 
   const issuedAt = new Date();
   const bytes = await params.render(prepared.configuration, issuedAt);
@@ -218,7 +237,10 @@ export async function issueRepresentativeAppointmentCredential(params: {
       throw new Error("[ARP_CERTIFICATE_REVIEW_CHANGED]");
     }
     const duplicate = await existing(tx, current.configuration);
-    if (duplicate) return duplicate;
+    if (duplicate) {
+      if (duplicate.certificateSchemaVersion !== 2) throw new Error("[ARP_CERTIFICATE_LEGACY_ISSUANCE_REQUIRES_SEPARATE_REVIEW]");
+      return duplicate;
+    }
 
     const result = await recordInstrumentEvidenceWithClient({
       client: tx,
@@ -232,7 +254,7 @@ export async function issueRepresentativeAppointmentCredential(params: {
       recordedByUserId: input.actorUserId,
       recordedAt: issuedAt,
       metadata: {
-        certificateSchemaVersion: 1,
+        certificateSchemaVersion: 2,
         basisHash: current.basisHash,
         configuration: current.configuration,
         issuedAt: issuedAt.toISOString(),
@@ -272,6 +294,19 @@ export async function loadOwnedIssuedAppointmentCertificate(params: {
     throw error;
   }
 
+  configuration.authorities = await loadCertificateAuthorities({
+    client: params.client, userId: params.userId, appointmentId: params.appointmentId,
+  });
+  // A stale authority-bearing credential is withheld without losing historical evidence.
+  const snapshots = await params.client.instrumentEvidence.findMany({
+    where: { instrumentId: configuration.instrumentId, subjectId: configuration.appointmentId,
+      evidenceType: "DOCUMENT", subjectType: "INSTRUMENT", title: TITLE }, take: 2,
+  });
+  if (snapshots.length === 1) {
+    const metadata = snapshots[0].metadata as { certificateSchemaVersion?: number; configuration?: AppointmentCertificateBasis } | null;
+    if (metadata?.certificateSchemaVersion === 2 && metadata.configuration &&
+        canonicalCertificateJson(metadata.configuration.authorities) !== canonicalCertificateJson(configuration.authorities)) return null;
+  }
   const issuance = await existing(params.client, configuration);
   if (!issuance) return null;
   const evidence = await params.client.instrumentEvidence.findUnique({

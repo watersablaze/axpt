@@ -32,4 +32,6 @@ export async function loadRepresentativeAppointmentCredential(
 }
 
 export type RepresentativeAppointmentCredential =
-  NonNullable<Awaited<ReturnType<typeof loadRepresentativeAppointmentCredential>>>;
+  NonNullable<Awaited<ReturnType<typeof loadRepresentativeAppointmentCredential>>> & {
+    authorities?: import("./appointmentCertificateAuthorities").CertificateAuthority[];
+  };

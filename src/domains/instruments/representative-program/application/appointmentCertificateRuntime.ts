@@ -101,6 +101,7 @@ export async function renderIssuableAppointmentCertificate(
     effectiveAt: new Date(configuration.effectiveAt),
     expiresAt: configuration.expiresAt,
     generatedAt: issuedAt,
+    authorities: configuration.authorities,
   }, {
     signature, seal, issuedAt, reviewOnly: false,
   });
