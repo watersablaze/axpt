@@ -9,6 +9,10 @@ datasource db {
 }
 
 model User {
+
+  profileIntroductionsIssued RepresentativeProfileIntroduction[] @relation("ProfileIntroductionActor")
+  profileIntroductionsReceived RepresentativeProfileIntroduction[] @relation("ProfileIntroductionRecipient")
+
   id                    String                   @id @default(cuid())
   username              String                   @unique
   passwordHash          String
@@ -644,6 +648,9 @@ model RepresentativeProgramDocketSequence {
 }
 
 model RepresentativeProgramParticipant {
+
+  profileIntroductions RepresentativeProfileIntroduction[]
+
   id              String                        @id @default(cuid())
   docketReference String                        @unique
   userId          String?                       @unique
@@ -668,6 +675,9 @@ model RepresentativeProgramParticipant {
 }
 
 model RepresentativeProgramAppointment {
+
+  profileIntroductions RepresentativeProfileIntroduction[]
+
   id                String                         @id @default(cuid())
   participantId     String
   instrumentId      String                         @unique
@@ -775,6 +785,9 @@ model CommercialUtilityPackModuleRelease {
 }
 
 model CommercialUtilityPackResourceRelease {
+
+  profileIntroductions RepresentativeProfileIntroduction[]
+
   id               String                              @id @default(cuid())
   packageId        String
   module           CommercialUtilityPackModule
@@ -3731,6 +3744,9 @@ model InstitutionalAccessRequest {
 }
 
 model InstitutionalAccessGrant {
+
+  representativeIntroduction RepresentativeProfileIntroduction?
+
   id                String @id @default(cuid())
   requestId         String @unique
   recipientUserId   String
@@ -3770,4 +3786,60 @@ model InstitutionalAccessEvent {
 
   @@index([requestId, occurredAt])
   @@index([grantId, occurredAt])
+}
+
+enum RepresentativeProfileDeliveryStatus {
+  QUEUED
+  SENDING
+  ACCEPTED
+  FAILED
+  DELIVERY_UNKNOWN
+  LOGGED_ONLY
+}
+
+model RepresentativeProfileIntroduction {
+  id                    String @id @default(cuid())
+  actorUserId           String
+  participantId         String
+  appointmentId         String
+  resourceReleaseId     String
+  grantId               String @unique
+  recipientUserId       String
+  recipientName         String
+  recipientEmail        String
+  recipientOrganization String
+  purpose               String
+  resourceReference     String
+  resourceVersion       Int
+  policy                String
+  authoritySnapshot     Json
+  idempotencyKey        String
+  inputHash             String
+
+  recipientDeliveryStatus RepresentativeProfileDeliveryStatus @default(QUEUED)
+  recipientMessageId      String?
+  recipientAttemptedAt    DateTime?
+  recipientDeliveryError  String?
+
+  adminDeliveryStatus RepresentativeProfileDeliveryStatus @default(QUEUED)
+  adminRecipients     String[]
+  adminMessageId      String?
+  adminAttemptedAt    DateTime?
+  adminDeliveryError  String?
+
+  actor           User                                 @relation("ProfileIntroductionActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+  recipient       User                                 @relation("ProfileIntroductionRecipient", fields: [recipientUserId], references: [id], onDelete: Restrict)
+  participant     RepresentativeProgramParticipant     @relation(fields: [participantId], references: [id], onDelete: Restrict)
+  appointment     RepresentativeProgramAppointment     @relation(fields: [appointmentId], references: [id], onDelete: Restrict)
+  resourceRelease CommercialUtilityPackResourceRelease @relation(fields: [resourceReleaseId], references: [id], onDelete: Restrict)
+  grant           InstitutionalAccessGrant             @relation(fields: [grantId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([actorUserId, idempotencyKey])
+  @@index([participantId, createdAt])
+  @@index([recipientEmail, resourceReference, resourceVersion])
+  @@index([recipientDeliveryStatus, createdAt])
+  @@index([adminDeliveryStatus, createdAt])
 }
