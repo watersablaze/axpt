@@ -187,5 +187,8 @@ export async function revokeInstitutionalAccessWithClient(params: {
     });
 
     return revoked;
+  }, {
+    maxWait: 10000,
+    timeout: 30000,
   });
 }
