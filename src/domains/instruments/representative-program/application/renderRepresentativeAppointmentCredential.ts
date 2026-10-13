@@ -222,7 +222,7 @@ export async function renderRepresentativeAppointmentCredential(
     page.drawText("Jamal James Ward", {
       x: 68, y: executionBase + 29, size: 11, font: bold, color: ink,
     });
-    page.drawText("President & Chief Strategic Officer", {
+    page.drawText("Chief Strategic Officer", {
       x: 68, y: executionBase + 13, size: 8, font: sans, color: muted,
     });
     page.drawText("French-Ward, Inc.", {

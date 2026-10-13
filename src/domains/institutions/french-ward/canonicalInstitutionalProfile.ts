@@ -89,12 +89,12 @@ export const FRENCH_WARD_INSTITUTIONAL_PROFILE:
     leadership: [
       {
         name: "Jamal Ward",
-        title: "President & Chief Strategic Officer",
+        title: "Chief Strategic Officer",
         responsibility: "Provides institutional leadership, strategic direction, and oversight of French-Ward's commercial relationships and organizational priorities.",
       },
       {
         name: "Bobby French",
-        title: "VP & Chief of Logistics and Security",
+        title: "Chief Logistics Officer",
         responsibility: "Directs logistical planning, operational coordination, security considerations, and delivery-readiness arrangements supporting accountable execution.",
       },
       {

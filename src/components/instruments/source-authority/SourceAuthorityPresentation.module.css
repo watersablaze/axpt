@@ -24812,3 +24812,25 @@
     grid-column: auto;
   }
 }
+
+
+/* ARP release — supporting text readability */
+.governanceNote p,
+.capabilitySchedule p,
+.emptyRegister,
+.evidenceRegister dd,
+.authorityComparison li,
+.governedInset p,
+.geographicContext dd,
+.principlesSchedule p,
+.continuumTrack p,
+.continuumTrack li p {
+  font-size: 0.875rem !important;
+  line-height: 1.6 !important;
+}
+
+.crownRegister dd,
+.particulars dd {
+  font-size: 0.8125rem !important;
+  line-height: 1.55 !important;
+}
