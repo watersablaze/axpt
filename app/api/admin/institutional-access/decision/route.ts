@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { PERMISSIONS } from "@/domains/auth/permissions";
 import { decideProfileAccessWithClient } from "@/domains/institutional-access/manageProfileAccessWithClient";
+import { decideCommercialIntakeAccessWithClient } from "@/domains/institutional-access/manageCommercialIntakeAccessWithClient";
 import { prisma } from "@/infrastructure/db/prisma";
 
 export async function POST(request: Request) {
@@ -39,9 +40,43 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await decideProfileAccessWithClient({
-      client: prisma, actor: principal, requestId, decision, reason, expiresAt,
-    });
+    const accessRequest =
+      await prisma.institutionalAccessRequest.findUnique({
+        where: { id: requestId },
+        select: { scope: true },
+      });
+
+    if (!accessRequest) {
+      return NextResponse.json(
+        { ok: false, error: "Access request not found." },
+        { status: 404 },
+      );
+    }
+
+    const decide =
+      accessRequest.scope === "PROFILE_VIEW"
+        ? decideProfileAccessWithClient
+        : accessRequest.scope === "LOI_INTAKE_ACCESS"
+          ? decideCommercialIntakeAccessWithClient
+          : null;
+
+    if (!decide) {
+      return NextResponse.json(
+        { ok: false, error: "Unsupported access scope." },
+        { status: 409 },
+      );
+    }
+
+    const result =
+      await decide({
+        client: prisma,
+        actor: principal,
+        requestId,
+        decision,
+        reason,
+        expiresAt,
+      });
+
     return NextResponse.json({ ok: true, result });
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
@@ -49,7 +84,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ ok: false, error: "Not authorized" }, { status: 403 });
     }
     if (message === "ACCESS_REQUEST_RESOURCE_MISMATCH") {
-      return NextResponse.json({ ok: false, error: "This request does not target the current Profile edition." }, { status: 409 });
+      return NextResponse.json({ ok: false, error: "This request does not target the current resource edition." }, { status: 409 });
     }
     if (message === "RECIPIENT_EMAIL_RECONCILIATION_REQUIRED") {
       return NextResponse.json({ ok: false, error: "Existing account email requires operator reconciliation." }, { status: 409 });
@@ -57,7 +92,7 @@ export async function POST(request: Request) {
     if (message === "ACCESS_REQUEST_NOT_PENDING" || message === "ACCESS_REQUEST_ALREADY_DECIDED") {
       return NextResponse.json({ ok: false, error: "Request is no longer pending." }, { status: 409 });
     }
-    console.error("[institutional-access:profile-decision]", error);
+    console.error("[institutional-access:decision]", error);
     return NextResponse.json({ ok: false, error: "Decision could not be recorded." }, { status: 500 });
   }
 }

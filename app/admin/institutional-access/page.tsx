@@ -14,12 +14,10 @@ export default async function InstitutionalAccessAdminPage() {
   }
   const [requests, grants] = await Promise.all([
     prisma.institutionalAccessRequest.findMany({
-      where: { scope: "PROFILE_VIEW" },
       orderBy: { createdAt: "desc" }, take: 100,
       include: { grant: { select: { id: true, expiresAt: true, revokedAt: true, recipientEmail: true } }, events: { orderBy: {occurredAt: "desc"}, take: 6, select: { id:true, type:true, occurredAt:true, reason:true } } },
     }),
     prisma.institutionalAccessGrant.findMany({
-      where: { scope: "PROFILE_VIEW" },
       orderBy: { issuedAt: "desc" }, take: 100,
       select: { id:true, requestId:true, recipientEmail:true, scope:true, resourceReference:true, resourceVersion:true, issuedAt:true, expiresAt:true, revokedAt:true },
     }),

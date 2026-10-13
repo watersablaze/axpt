@@ -37,8 +37,8 @@ export function InstitutionalAccessOperator({requests,grants}:{requests:Request[
   return <main style={{minHeight:"100vh",background:"#080e18",color:"#e9edf4",padding:"clamp(20px,4vw,50px)",fontFamily:"system-ui,sans-serif"}}>
     <div style={{maxWidth:1300,margin:"0 auto"}}>
       <p style={{letterSpacing:3,fontSize:11,color:"#a9bad2"}}>FRENCH-WARD / ADMINISTRATION</p>
-      <h1 style={{fontSize:30,fontWeight:500,margin:"8px 0"}}>Institutional Profile Access</h1>
-      <p style={{color:"#99a9bf"}}>Requests, decisions, and recipient-specific publication grants. No appointment or commercial authority is created here.</p>
+      <h1 style={{fontSize:30,fontWeight:500,margin:"8px 0"}}>Institutional Access</h1>
+      <p style={{color:"#99a9bf"}}>Requests, decisions, and recipient-specific resource grants. Access is bound to the recorded scope and resource edition. No appointment or commercial authority is created here.</p>
       <div style={{display:"grid",gridTemplateColumns:"minmax(250px,1fr) minmax(0,2fr)",gap:18,marginTop:26}}>
         <section style={{border:"1px solid #26384d",padding:16}}><h2 style={{fontSize:15,marginBottom:16}}>Requests ({requests.length})</h2>
           <div style={{display:"grid",gap:8}}>{requests.map(r=><button key={r.id} onClick={()=>{setSelected(r.id);setFeedback("");setReason("");setExpires("");}} style={{textAlign:"left",padding:12,background:r.id===selected?"#192e45":"#0d1725",color:"#f1f4fa",border:"1px solid #30445b",cursor:"pointer"}}>
