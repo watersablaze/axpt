@@ -1,0 +1,24 @@
+.page{min-height:100svh;background:radial-gradient(ellipse 40% 22% at 55% 2%,rgba(42,114,153,.12),transparent 90%),#070d12;color:#e8edf0;font-family:Arial,Helvetica,sans-serif;padding:clamp(3rem,9vh,6rem) 1.25rem 3rem;box-sizing:border-box}
+.reception{max-width:640px;margin:0 auto;position:relative}
+.eyebrow,.index{display:flex;justify-content:space-between;gap:1rem;align-items:center;font-size:.62rem;font-weight:600;letter-spacing:.17em;color:#c4a677}
+.eyebrow span,.index span:last-child{color:#85a2b5;font-weight:400}
+.orientation{border-top:1px solid #35586b;margin-top:.8rem;padding-top:1.2rem}
+.orientation h1{margin:0;color:#edf1f2;font-size:clamp(1.4rem,4.4vw,2rem);font-weight:450;letter-spacing:.052em;line-height:1.2}
+.orientation h1 span{color:#8ac0d9;font-weight:300}
+.orientation p{color:#b1c3cd;font-size:.88rem;line-height:1.6;margin:.8rem 0 0;max-width:52ch}
+.register{margin-top:2rem;padding:1.1rem 0 0;border-top:1px solid rgba(80,130,155,.42);background:radial-gradient(ellipse 80% 38% at 50% 0%,rgba(33,88,115,.10),transparent 95%)}
+.index{margin-bottom:1.3rem}
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1.35rem 1.5rem}
+.form label{font-size:.64rem;color:#c4a677;letter-spacing:.14em;display:flex;flex-direction:column;gap:.45rem}
+.form input,.form textarea,.form select{width:100%;min-width:0;box-sizing:border-box;color:#e8eff2;background:transparent;border:0;border-bottom:1px solid #486578;border-radius:0;padding:.7rem .1rem;min-height:41px;font:400 .88rem/1.4 Arial,Helvetica,sans-serif;outline:0;transition:border-color .2s ease}
+.form textarea{min-height:105px;resize:vertical}.form select{color:#b8ced9;color-scheme:dark}
+.form :is(input,textarea,select):focus-visible{border-bottom-color:#abe1f4;box-shadow:0 1px 0 #abe1f4}
+.form textarea::placeholder{color:#8fa4b0}.full{grid-column:1/-1}.trap{position:absolute;opacity:0;pointer-events:none;left:-10000px}
+.form button,.receipt button{width:max-content;max-width:100%;font:600 .69rem/1.4 Arial,Helvetica,sans-serif;letter-spacing:.15em;background:transparent;color:#e4eff4;border:0;border-bottom:1px solid #8ac0d9;padding:.6rem 0;cursor:pointer}
+.form button:hover,.receipt button:hover{color:#ade1f7}.form button:focus-visible,.receipt button:focus-visible,.return:focus-visible{outline:2px solid #a8dcf5;outline-offset:4px}
+.form button:disabled{opacity:.5;cursor:wait}.error{grid-column:1/-1;color:#ffb9ac;font-size:.8rem;line-height:1.5}
+.boundary{max-width:59ch;color:#91a5b2;font-size:.72rem;line-height:1.6;margin:2rem 0 1.5rem}
+.return{font-size:.66rem;letter-spacing:.14em;text-decoration:none;color:#a8c8db}.return:hover{text-decoration:underline;text-underline-offset:4px}
+.receipt{margin:2rem 0;border-top:1px solid #51778a;padding-top:1.3rem}.receipt span{color:#c4a677;font-size:.65rem;letter-spacing:.17em}.receipt p{color:#bdcdd6}
+@media(max-width:560px){.page{padding:2.25rem 1.2rem 3rem}.form{grid-template-columns:1fr;gap:1rem}.eyebrow,.index{font-size:.57rem}.orientation h1{font-size:1.45rem}}
+@media(prefers-reduced-motion:reduce){.form input,.form textarea,.form select{transition:none}}

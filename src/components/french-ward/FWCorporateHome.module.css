@@ -1,44 +1,1706 @@
-/* FW-CORPORATE-1 — corporate presence, distinct from the official dossier. */
-.site{--navy:#0b202a;--mineral:#173641;--ivory:#f0ede5;--muted:#bac7c6;--line:rgba(237,234,225,.2);--ink:#172f38;--rule:#c9c3b8;min-height:100vh;color:var(--ink);background:#ecebe5;font-family:Arial,Helvetica,sans-serif}
-.site *{box-sizing:border-box}
-.header{background:#091c25;color:var(--ivory);border-bottom:1px solid rgba(237,234,225,.16)}
-.headerInner,.heroInner,.sectionShell,.footer{width:min(1190px,calc(100% - 72px));margin-inline:auto}
-.headerInner{min-height:82px;display:flex;justify-content:space-between;align-items:center;gap:36px}
-.wordmark{display:flex;align-items:baseline;gap:7px;color:var(--ivory);text-decoration:none;font-size:24px;font-weight:650;letter-spacing:-.055em;white-space:nowrap}
-.wordmark span{color:#c0c5c2;font-size:11px;letter-spacing:.02em}
-.navigation{display:flex;gap:clamp(16px,2.3vw,34px);align-items:center;flex-wrap:wrap}
-.navigation a,.footer a{color:inherit;text-decoration:none;font-size:12px;font-weight:600}
-.navigation a:hover,.navigation a:focus-visible,.footer a:hover,.footer a:focus-visible{color:#ddc49d}
-.hero{background:radial-gradient(ellipse at 90% 0,rgba(96,145,146,.16),transparent 46%),linear-gradient(118deg,#0a1d27 0%,#112d39 65%,#234752 100%);color:var(--ivory)}
-.heroInner{min-height:520px;display:grid;grid-template-columns:minmax(0,1.65fr) minmax(260px,.65fr);gap:clamp(50px,8vw,110px);align-items:end;padding-block:clamp(75px,9vw,120px) 76px}
-.eyebrow,.sectionLabel{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}
-.eyebrow{color:#d3c7b5;margin:0 0 33px}.eyebrow span{padding:0 8px;color:#769399}
-.hero h1{font-size:clamp(45px,5.7vw,78px);line-height:1.04;letter-spacing:-.057em;font-weight:600;max-width:880px;margin:0}
-.hero h1 span{font-weight:350;color:#bbd0cc}
-.heroStatement{max-width:700px;margin:28px 0 0;color:#d4dede;font-size:clamp(15px,1.4vw,18px);line-height:1.7}
-.heroActions{display:flex;flex-wrap:wrap;gap:14px;margin-top:32px}
-.heroActions a{display:inline-flex;gap:26px;align-items:center;justify-content:space-between;padding:14px 18px;text-decoration:none;font-size:12px;font-weight:700;border:1px solid #b3aca1}
-.primaryLink{background:#e7e0d4;color:#142d36}.secondaryLink{color:#eee9df}
-.heroActions a:hover,.heroActions a:focus-visible{outline:2px solid #d5bc94;outline-offset:2px}
-.heroAside{border-top:1px solid #83999b;padding-top:18px;align-self:end}
-.asideNumber{font-size:10px;letter-spacing:.14em;color:#d1ba97}
-.heroAside p{font:400 clamp(21px,2.15vw,29px)/1.33 Georgia,'Times New Roman',serif;letter-spacing:-.02em;margin:22px 0 19px}
-.asideDetail{font-size:12px;line-height:1.6;color:#becfce}
-.firm{background:#e8e2d7}.operations{background:#f1eee7}.resources{background:#142f3a;color:#f1ede5}
-.sectionShell{padding-block:clamp(62px,8vw,104px)}
-.sectionLabel{display:flex;gap:20px;color:#69685f;border-top:1px solid var(--rule);padding-top:16px;margin-bottom:46px}
-.sectionLabel span{color:#887453}.resources .sectionLabel{color:#bacbc9;border-color:#587078}.resources .sectionLabel span{color:#d6bd93}
-.firmBody{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(35px,7vw,100px)}
-.firm h2,.operationHeading h2,.resources h2{margin:0;font-size:clamp(30px,3.2vw,48px);line-height:1.18;letter-spacing:-.038em;font-weight:550;max-width:650px}
-.firmProse p{margin:0 0 21px;font-size:15px;line-height:1.8;color:#405157}.firmProse .lead{font:400 clamp(19px,2vw,25px)/1.52 Georgia,'Times New Roman',serif;color:#1a333b}
-.operationHeading{display:grid;grid-template-columns:1.3fr .7fr;gap:65px;align-items:end;margin-bottom:50px}.operationHeading p{font-size:15px;line-height:1.7;color:#506068;margin:0}
-.capabilities{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:56px;border-top:1px solid var(--rule)}
-.capability{display:grid;grid-template-columns:40px 1fr;gap:22px;min-height:86px;padding:21px 0;border-bottom:1px solid var(--rule)}
-.capability span{font-size:11px;font-weight:700;color:#9a825e;padding-top:5px}.capability p{font-size:17px;line-height:1.45;font-weight:500;margin:0}
-.operationsFoot{border-top:1px solid var(--rule);margin-top:42px;padding-top:18px;display:grid;grid-template-columns:185px 1fr;gap:25px}.operationsFoot span{font-size:11px;color:#6e6e66;font-weight:700;letter-spacing:.04em}.operationsFoot p{margin:0;font-size:13px;line-height:1.8;color:#52616a}
-.resources h2{max-width:760px;margin-bottom:48px}.resourceGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:30px}.resourceLink{position:relative;display:flex;flex-direction:column;gap:17px;padding:22px 35px 35px 0;min-height:250px;border-top:1px solid #7c9498;color:inherit;text-decoration:none}
-.resourceLink>span:first-child{font-size:10px;letter-spacing:.08em;color:#d8bb93;text-transform:uppercase}.resourceLink strong{font-size:21px;line-height:1.3;font-weight:550;letter-spacing:-.02em}.resourceLink p{font-size:13px;line-height:1.7;color:#c5d0ce;margin:0}.arrow{position:absolute;right:5px;top:24px;font-size:21px}.resourceLink:hover,.resourceLink:focus-visible{border-color:#e0c59a;color:#e4caa3}
-.disclaimer{border-top:1px solid rgba(229,230,219,.25);padding-top:24px;margin:34px 0 0;color:#aebfbe;font-size:12px;line-height:1.7;max-width:800px}
-.footer{padding-block:36px;display:flex;justify-content:space-between;gap:30px;align-items:center;color:#203840}.footer div{display:grid;gap:6px}.footer strong{font-size:17px;letter-spacing:-.03em}.footer span{font-size:12px;color:#637077}.footer nav{display:flex;gap:24px;flex-wrap:wrap}
-@media(max-width:850px){.headerInner,.heroInner,.sectionShell,.footer{width:min(100% - 40px,1190px)}.headerInner{padding-block:22px;align-items:flex-start;flex-direction:column;gap:22px}.heroInner{grid-template-columns:1fr;gap:50px;min-height:unset}.heroAside{max-width:490px}.firmBody,.operationHeading{grid-template-columns:1fr;gap:26px}.resourceGrid{grid-template-columns:1fr;gap:5px}.resourceLink{min-height:unset;padding-bottom:35px}}
-@media(max-width:580px){.navigation{gap:13px 20px}.navigation a{font-size:11px}.hero h1{font-size:clamp(40px,10vw,55px)}.heroInner{padding-block:66px 58px}.capabilities{grid-template-columns:1fr}.capability{min-height:unset}.operationsFoot{grid-template-columns:1fr;gap:10px}.footer{align-items:flex-start;flex-direction:column}.heroActions a{width:100%}}
+/* FW-CORPORATE-3: continuous institutional field, minimal visible surfaces. */
+.site{--ground:#080a0d;--white:#eee9df;--muted:#aba9a8;--gold:#bca174;--hair:rgba(185,162,122,.24);--blue:#183341;min-height:100vh;background:var(--ground);color:var(--white);font-family:Arial,Helvetica,sans-serif;font-weight:400}
+.site *{box-sizing:border-box}.site a{color:inherit;text-decoration:none}.site a:focus-visible{outline:1px solid #dfc698;outline-offset:5px}
+.header{position:relative;z-index:3;background:#080a0de8}.headerInner,.heroTopline,.heroBottomline,.firm,.operations,.resources,.footer{width:min(1180px,calc(100% - 90px));margin-inline:auto}
+.headerInner{min-height:81px;display:flex;align-items:center;justify-content:space-between;gap:30px;border-bottom:1px solid rgba(223,216,204,.12)}
+.wordmark{white-space:nowrap;font-size:19px;letter-spacing:-.055em;font-weight:550}.wordmark span{font-size:10px;color:#a9a49b;margin-left:5px;letter-spacing:0}
+.navigation{display:flex;align-items:center;gap:clamp(18px,2.5vw,38px);flex-wrap:wrap}.navigation a{font-size:11px;color:#aea9a3;transition:color .2s}.navigation a:hover{color:#e8cc9b}
+.hero{position:relative;isolation:isolate;min-height:min(810px,calc(100svh - 81px));display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;background:radial-gradient(ellipse 27% 35% at 79% 64%,rgba(24,64,83,.23),transparent 100%),radial-gradient(ellipse 43% 28% at 25% 92%,rgba(26,36,46,.22),transparent 100%)}
+.heroField{position:absolute;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(90deg,transparent 0%,rgba(186,163,122,.018) 50%,transparent 100%)}
+.heroField::before{content:"";position:absolute;inset:6% 8% 6%;background:linear-gradient(90deg,transparent 0,transparent calc(50% - .5px),rgba(181,148,99,.085) 50%,transparent calc(50% + .5px));mask-image:linear-gradient(transparent,black 25%,black 75%,transparent)}
+/* FW 3.1: passage is implied by discontinuous light, never a drawn enclosure. */
+.thresholdLeft,.thresholdRight{position:absolute;top:15%;bottom:15%;width:1px;opacity:.67;filter:blur(.15px);background:linear-gradient(to bottom,transparent 0%,rgba(199,161,104,.05) 17%,rgba(190,154,102,.22) 30%,transparent 47%,transparent 57%,rgba(55,111,137,.19) 73%,transparent 98%)}
+.thresholdLeft{left:calc(50% - min(25vw,310px))}.thresholdRight{right:calc(50% - min(25vw,310px));background:linear-gradient(to bottom,transparent,rgba(62,108,132,.17) 26%,transparent 53%,rgba(196,157,97,.16) 76%,transparent)}
+.thresholdLintel,.thresholdFloor{position:absolute;left:50%;transform:translateX(-50%);width:min(37vw,455px);height:1px;opacity:.5;background:linear-gradient(90deg,transparent,rgba(196,154,96,.2) 30%,rgba(196,154,96,.05) 55%,transparent 100%)}
+.thresholdLintel{top:18%;mask-image:linear-gradient(90deg,transparent,black 26%,transparent 66%)}
+.thresholdFloor{bottom:19%;width:min(45vw,560px);background:linear-gradient(90deg,transparent 8%,rgba(44,91,118,.11) 33%,rgba(175,143,99,.22) 51%,transparent 76%)}
+.railLeft,.railRight{position:absolute;top:30%;bottom:28%;width:1px;background:linear-gradient(transparent,rgba(180,145,90,.065),transparent)}.railLeft{left:8%}.railRight{right:8%}.crosshair{position:absolute;top:49%;left:50%;width:2px;height:2px;background:#be9b68;opacity:.22;transform:translate(-50%,-50%)}
+.heroTopline,.heroBottomline{position:relative;display:flex;justify-content:space-between;gap:18px;font-size:10px;letter-spacing:.13em;color:#b5afa5}.heroTopline{padding-top:31px}.heroBottomline{padding-bottom:33px}.heroBottomline a{color:#bba173}.heroBottomline a span{margin-left:10px}
+.gravity{width:min(620px,calc(100% - 48px));margin:clamp(85px,12vh,150px) auto clamp(95px,12vh,150px);text-align:center;position:relative}
+.eyebrow,.micro{font-size:11px;letter-spacing:.17em;color:#c6aa7c;margin:0;font-weight:500}.gravity h1{font:400 clamp(48px,6.3vw,80px)/1.07 Georgia,'Times New Roman',serif;letter-spacing:-.056em;margin:25px 0 21px;text-wrap:balance}.period{color:#c09c62}.goldThread{height:1px;width:68px;background:linear-gradient(90deg,transparent,#c29f68,transparent);margin:0 auto 22px}
+.heroDoctrine{font:400 clamp(23px,3.2vw,37px)/1.2 Georgia,'Times New Roman',serif;letter-spacing:-.035em;margin:0;color:#e5ded3}.heroDoctrine em,.firmHeading em,.operationIntro em,.resourceIntro em{font-weight:400;font-style:italic;color:#bea06d}
+.heroStatement{font-size:14px;line-height:1.78;color:#b9bab9;max-width:450px;margin:25px auto 0}.heroActions{margin-top:32px;display:flex;align-items:center;justify-content:center;gap:32px;flex-wrap:wrap}.heroActions a{font-size:12px;color:#daccb5;padding-bottom:9px;border-bottom:1px solid rgba(194,161,110,.47)}.heroActions a span{margin-left:19px}.heroActions a:hover{border-color:#e4c48d;color:#f8e9cb}
+.firm,.operations,.resources{position:relative;padding-block:105px 122px;border-top:1px solid rgba(184,157,112,.16)}.recordIndex{display:flex;justify-content:space-between;gap:20px;color:#bba37e;font-size:11px;letter-spacing:.13em}.recordIndex span:last-child{color:#777b7f}
+.firmGrid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(48px,9vw,150px);max-width:1000px;margin:87px auto 55px}.firmHeading h2,.operationIntro h2,.resourceIntro h2{font:400 clamp(32px,4vw,53px)/1.12 Georgia,'Times New Roman',serif;letter-spacing:-.045em;margin:19px 0 0}.firmCopy p{font-size:14px;line-height:1.85;color:#b4b7b6;margin:0 0 19px}.firmCopy .firmLead{font:400 20px/1.62 Georgia,'Times New Roman',serif;color:#e0d9ce;margin-bottom:23px}.firmFoot{margin:0 auto;max-width:1000px;display:grid;grid-template-columns:1fr 1fr;gap:clamp(48px,9vw,150px);border-top:1px solid var(--hair);padding-top:22px}.firmFoot span,.sequence span{font-size:10px;letter-spacing:.13em;color:#b29b75}.firmFoot p{margin:0;max-width:370px;font:400 17px/1.55 Georgia,'Times New Roman',serif;color:#c3beb7}
+.operationIntro,.resourceIntro{margin:75px auto 64px;max-width:1000px;display:grid;grid-template-columns:1fr 1fr;gap:clamp(48px,9vw,150px);align-items:end}.operationIntro p,.resourceIntro p{font-size:14px;line-height:1.8;max-width:390px;margin:0;color:#a6a9a9}
+.capabilities{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:clamp(48px,9vw,150px)}.capability{border-top:1px solid var(--hair);padding:19px 0 24px;display:grid;grid-template-columns:42px 1fr;gap:12px;align-items:baseline;min-height:84px}.capability span{font-size:10px;color:#b69b70}.capability p{margin:0;font-size:15px;line-height:1.5;color:#d1cdc5}
+.sequence{max-width:1000px;margin:37px auto 0;padding-top:22px;border-top:1px solid var(--hair);display:grid;grid-template-columns:1fr 1fr;gap:clamp(48px,9vw,150px)}.sequence p{font-size:13px;line-height:1.78;color:#aeb4b6;margin:0}
+.resources{padding-bottom:110px}.resourceGrid{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:34px}.resourceLink{position:relative;display:flex;flex-direction:column;gap:17px;padding:20px 22px 15px 0;border-top:1px solid var(--hair);min-height:204px}.resourceLink>span:first-child{color:#b99f76;font-size:9px;letter-spacing:.13em}.resourceLink strong{font:400 20px/1.26 Georgia,'Times New Roman',serif}.resourceLink p{font-size:13px;line-height:1.72;margin:0;color:#aeb3b4}.arrow{position:absolute;right:0;top:19px;color:#b99f76}.resourceLink:hover{border-color:#e0c08c}.disclaimer{max-width:850px;color:#777f82;font-size:12px;line-height:1.75;margin:65px auto 0}
+.footer{padding-block:34px 42px;display:flex;justify-content:space-between;gap:24px;align-items:center;border-top:1px solid var(--hair)}.footer>div{display:flex;align-items:baseline;gap:22px}.footer strong{font:400 20px Georgia,'Times New Roman',serif;letter-spacing:-.03em}.footer strong span{color:var(--gold)}.footer small{font-size:9px;letter-spacing:.08em;color:#818587}.footer nav{display:flex;gap:23px}.footer nav a{font-size:11px;color:#a5a7a7}.footer nav a:hover{color:#d9ba86}
+@media(max-width:800px){.headerInner,.heroTopline,.heroBottomline,.firm,.operations,.resources,.footer{width:calc(100% - 40px)}.headerInner{min-height:76px;gap:12px;align-items:flex-start;flex-direction:column;padding-block:20px}.navigation{gap:15px;row-gap:11px}.hero{min-height:720px}.heroTopline span:last-child{display:none}.gravity{margin-block:115px 95px}.firmGrid,.firmFoot,.operationIntro,.resourceIntro,.sequence{grid-template-columns:1fr;gap:23px}.firmGrid{margin-top:54px}.firm,.operations,.resources{padding-block:73px 82px}.operationIntro,.resourceIntro{margin-block:54px 38px}.firmFoot{margin-top:38px}.capabilities{column-gap:30px}.resourceGrid{grid-template-columns:1fr;gap:0}.resourceLink{min-height:auto;padding-bottom:30px}.footer{flex-direction:column;align-items:flex-start}.footer>div{flex-wrap:wrap;gap:10px}}
+@media(max-width:520px){.navigation a{font-size:10px}.hero{min-height:690px}.heroTopline{padding-top:19px}.gravity h1{font-size:clamp(45px,11vw,58px)}.heroDoctrine{font-size:27px}.heroActions{gap:24px}.heroStatement{font-size:12px}.capabilities{grid-template-columns:1fr}.firmHeading h2,.operationIntro h2,.resourceIntro h2{font-size:38px}.heroBottomline{font-size:8px}.thresholdLeft{left:5%}.thresholdRight{right:5%}.thresholdLintel{width:68vw}.thresholdFloor{width:76vw}.railLeft{left:3%}.railRight{right:3%}}
+@media(prefers-reduced-motion:no-preference){.heroActions a,.resourceLink{transition:color .2s,border-color .2s}}
+
+/* FW 3.1 optical finish: continuous field with a localized threshold glow. */
+.hero::after{content:"";pointer-events:none;position:absolute;z-index:-1;inset:0;background:radial-gradient(ellipse 21% 41% at 72% 59%,rgba(32,80,108,.14),transparent 100%),linear-gradient(90deg,transparent 34%,rgba(195,159,104,.017) 49.7%,transparent 50.3%);mix-blend-mode:screen}
+.gravity::before{content:"";position:absolute;pointer-events:none;z-index:-1;inset:-35px -12px;background:radial-gradient(ellipse 44% 47% at 50% 52%,rgba(16,26,34,.24),transparent 100%)}
+@media (prefers-reduced-motion:no-preference){.thresholdLeft,.thresholdRight,.thresholdLintel,.thresholdFloor{transition:opacity .35s ease}.hero:focus-within .thresholdLeft,.hero:focus-within .thresholdRight,.hero:focus-within .thresholdLintel,.hero:focus-within .thresholdFloor{opacity:.9}}
+
+
+/* FW-CORPORATE-3.2 — typographic authority, preserving 3.1 spatial architecture. */
+.wordmark{font-family:Arial,Helvetica,sans-serif;font-size:16px;font-weight:750;letter-spacing:.014em}
+.wordmark span{font-weight:500;font-size:9px;letter-spacing:.025em;margin-left:7px}
+.gravity{width:min(760px,calc(100% - 48px))}
+.gravity h1{font-family:Georgia,'Times New Roman',serif;font-weight:700;font-size:clamp(43px,5.9vw,76px);line-height:1.13;letter-spacing:-.043em;margin:27px 0 27px;white-space:nowrap}
+.heroDoctrine{max-width:470px;margin:0 auto;font-family:Arial,Helvetica,sans-serif;font-size:clamp(16px,1.55vw,20px);font-weight:400;line-height:1.5;letter-spacing:.005em;color:#c6c5c2}
+.goldThread{width:44px;margin-bottom:24px;opacity:.75}
+.heroStatement{max-width:490px;font-size:14px;line-height:1.76;margin-top:28px;color:#bbbdbb}
+.eyebrow{font-size:10px;letter-spacing:.14em;font-weight:600}
+.heroBottomline a{letter-spacing:.11em}
+.firmHeading h2,.operationIntro h2,.resourceIntro h2{font-family:Georgia,'Times New Roman',serif;font-weight:600;letter-spacing:-.035em;line-height:1.15}
+.firmCopy .firmLead{font-family:Georgia,'Times New Roman',serif;font-weight:400}
+.resourceLink strong{font-family:Georgia,'Times New Roman',serif;font-weight:600}
+.footer strong{font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:750;letter-spacing:.015em}
+@media(max-width:800px){.gravity{width:min(760px,calc(100% - 40px))}}
+@media(max-width:520px){.gravity h1{font-size:clamp(29px,8.35vw,45px);letter-spacing:-.045em}.heroDoctrine{font-size:16px}.wordmark{font-size:14px}.heroStatement{font-size:13px}}
+
+/* FW-CORPORATE-3.3 — firmer letterforms, contained record, distinct closing. */
+/* Headings should behave as structural inscriptions, not editorial display. */
+.firmHeading h2,.operationIntro h2,.resourceIntro h2{
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:clamp(25px,2.6vw,35px);
+  font-weight:650;
+  letter-spacing:-.038em;
+  line-height:1.19;
+}
+.firmCopy .firmLead{
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:clamp(17px,1.6vw,20px);
+  line-height:1.6;
+  font-weight:450;
+  letter-spacing:-.018em;
+}
+.resourceLink strong{
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:16px;
+  line-height:1.38;
+  font-weight:600;
+  letter-spacing:-.024em;
+}
+/* Opening occupies the greater field; the body enters a narrower register. */
+.firm,.operations,.resources{width:min(940px,calc(100% - 112px));}
+.firmGrid,.firmFoot,.operationIntro,.resourceIntro,.capabilities,.sequence,.resourceGrid{
+  max-width:100%;
+}
+.firmGrid,.firmFoot,.operationIntro,.resourceIntro,.sequence{
+  column-gap:clamp(45px,6vw,100px);
+}
+.firm,.operations{padding-block:95px 110px}
+.resources{padding-block:96px 98px}
+/* Distinct actions: quiet functional controls, rather than underlined text. */
+.heroActions{gap:12px;margin-top:35px}
+.heroActions a{
+  min-width:181px;
+  min-height:44px;
+  display:inline-flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:24px;
+  border:1px solid rgba(181,155,115,.38);
+  padding:12px 15px;
+  font-size:11px;
+  letter-spacing:.015em;
+  color:#e0d5c4;
+  background:rgba(8,10,13,.28);
+  transition:border-color .2s ease,background .2s ease,color .2s ease;
+}
+.heroActions a:last-child{border-color:rgba(174,181,183,.24);color:#c2c5c6}
+.heroActions a span{margin:0}
+.heroActions a span:last-child{color:#bca174}
+.heroActions a:hover,.heroActions a:focus-visible{background:rgba(185,162,122,.075);border-color:rgba(221,194,147,.76);color:#fff0d7}
+/* Closing is an access register, not a reprise of the opening hero. */
+.resourceIntro{align-items:end;margin-block:57px 40px}
+.resourceIntro .micro{margin-bottom:17px}
+.resourceIntro h2{margin:0;font-size:clamp(25px,2.6vw,34px)}
+.resourceGrid{gap:14px}
+.resourceLink{
+  border:1px solid rgba(182,158,119,.23);
+  padding:22px 20px 24px;
+  min-height:210px;
+  gap:16px;
+  background:rgba(17,20,23,.25);
+  transition:border-color .2s ease,background .2s ease;
+}
+.resourceLink:hover,.resourceLink:focus-visible{border-color:rgba(211,181,129,.66);background:rgba(31,35,38,.42)}
+.resourceLink .arrow{top:22px;right:20px}
+.resourceLink p{font-size:12px;line-height:1.65}
+.disclaimer{max-width:740px;margin:54px auto 0}
+.footer{
+  width:min(1180px,calc(100% - 90px));
+  padding-block:30px 39px;
+  align-items:start;
+  display:grid;
+  grid-template-columns:1.35fr 1fr auto;
+  gap:25px;
+}
+.footerIdentity{display:flex;flex-direction:column;align-items:start;gap:8px}
+.footer strong{font-size:14px;letter-spacing:.025em}
+.footer small{font-size:9px;letter-spacing:.1em;line-height:1.5}
+.footerUtility{display:flex;flex-direction:column;gap:9px}
+.footerUtility>span{font-size:9px;letter-spacing:.14em;color:#a99167}
+.footerUtility>a{font-size:12px;color:#d1d2d0}
+.footerUtility>a span{color:#bca174;margin-left:8px}
+.footer nav{padding-top:3px}
+@media(max-width:800px){
+  .firm,.operations,.resources{width:calc(100% - 58px);padding-block:71px 78px}
+  .firmGrid,.firmFoot,.operationIntro,.resourceIntro,.sequence{grid-template-columns:1fr;gap:24px}
+  .resourceGrid{grid-template-columns:1fr;gap:11px}
+  .resourceLink{min-height:unset;padding:20px 23px}
+  .resourceLink .arrow{right:23px}
+  .footer{width:calc(100% - 40px);grid-template-columns:1fr 1fr;gap:25px}
+  .footer nav{grid-column:1/-1}
+}
+@media(max-width:520px){
+  .firm,.operations,.resources{width:calc(100% - 42px)}
+  .firmHeading h2,.operationIntro h2,.resourceIntro h2{font-size:29px}
+  .heroActions{flex-direction:column;align-items:stretch;width:min(310px,100%);margin-inline:auto}
+  .heroActions a{width:100%}
+  .resourceIntro{margin-block:45px 30px}
+  .footer{grid-template-columns:1fr}
+  .footer nav{grid-column:auto}
+}
+
+
+/* FW-CORPORATE-3.4 — Institutional Finish & Access Architecture.
+   Refine optical weight and accessibility; retain the 3.1 threshold and 3.3 reading frame. */
+.site{--muted:#bcbfbe;--hair:rgba(185,162,122,.18)}
+/* Firm, narrowly proportioned inscription rather than bold rounded display. */
+.firmHeading h2,.operationIntro h2,.resourceIntro h2{
+  font-family:Georgia,'Times New Roman',serif;
+  font-weight:500;
+  font-size:clamp(28px,2.8vw,36px);
+  letter-spacing:-.024em;
+  line-height:1.19;
+  color:#ebe7df;
+}
+.firmCopy .firmLead{
+  font-family:Arial,Helvetica,sans-serif;
+  font-weight:400;
+  font-size:clamp(17px,1.45vw,19px);
+  letter-spacing:-.017em;
+  line-height:1.67;
+  color:#e1dfdb;
+}
+.firmCopy p,.operationIntro p,.resourceIntro p{
+  font-size:15px;
+  line-height:1.78;
+  color:#babfbe;
+}
+.capability p{font-size:15px;color:#e1dfda;line-height:1.65}
+.sequence p{font-size:14px;color:#bec3c3;line-height:1.75}
+.recordIndex span:last-child{color:#939a9c}
+.micro,.eyebrow{color:#bea373}
+/* Section endings read as ledger continuations, not decorative dividers. */
+.firmFoot p{color:#d1cac0}
+/* An access desk, distinct from the monumental opening: typography and rules instead of cards. */
+.resources{
+  margin-top:14px;
+  padding-top:80px;
+  padding-bottom:104px;
+  border-top-color:rgba(201,176,126,.28);
+  background:radial-gradient(ellipse 46% 48% at 93% 77%,rgba(24,48,61,.075),transparent 100%);
+}
+.resourceIntro{margin-block:57px 43px;align-items:center}
+.resourceIntro h2{font-size:clamp(30px,3vw,40px)}
+.resourceGrid{display:grid;grid-template-columns:1fr;gap:0;border-top:1px solid rgba(186,160,117,.34)}
+.resourceLink{
+  min-height:unset;
+  display:grid;
+  grid-template-columns:minmax(125px,.72fr) minmax(185px,1.14fr) minmax(170px,1.2fr) 20px;
+  align-items:center;
+  gap:clamp(18px,3vw,35px);
+  padding:25px 7px 27px 0;
+  border:none;
+  border-bottom:1px solid rgba(186,160,117,.22);
+  background:transparent;
+  transition:background .2s ease,border-color .2s ease,color .2s ease;
+}
+.resourceLink:hover,.resourceLink:focus-visible{
+  background:linear-gradient(90deg,rgba(183,147,94,.043),rgba(23,52,71,.052));
+  border-color:rgba(220,185,123,.63);
+}
+.resourceLink>span:first-child{font-size:10px;letter-spacing:.13em;color:#c1a475}
+.resourceLink strong{
+  font:500 clamp(17px,1.65vw,21px)/1.3 Georgia,'Times New Roman',serif;
+  letter-spacing:-.015em;
+  color:#ebe7de;
+}
+.resourceLink p{font-size:13px;line-height:1.65;color:#b2babb;max-width:320px}
+.resourceLink .arrow{
+  position:static;
+  justify-self:end;
+  align-self:center;
+  font-size:17px;
+  color:#c6a16c;
+}
+.disclaimer{margin-top:41px;font-size:12px;line-height:1.75;color:#92999b}
+/* Footnote-like ending; access register is the final destination, not a second hero. */
+.footer{border-top-color:rgba(186,160,117,.27)}
+.footerUtility>a{color:#dfd8ce}
+@media(max-width:800px){
+  .resourceLink{grid-template-columns:130px minmax(0,1fr) 20px;gap:16px;padding:22px 0}
+  .resourceLink p{grid-column:2;grid-row:2;max-width:unset}
+  .resourceLink .arrow{grid-column:3;grid-row:1}
+  .resources{padding-top:74px;padding-bottom:80px}
+}
+@media(max-width:520px){
+  .firmHeading h2,.operationIntro h2,.resourceIntro h2{font-size:30px}
+  .firmCopy p,.operationIntro p,.resourceIntro p{font-size:14px}
+  .resourceLink{grid-template-columns:minmax(0,1fr) 20px;row-gap:9px;padding:23px 0}
+  .resourceLink>span:first-child{grid-column:1;grid-row:1}
+  .resourceLink strong{grid-column:1;grid-row:2;font-size:20px}
+  .resourceLink p{grid-column:1;grid-row:3;font-size:13px}
+  .resourceLink .arrow{grid-column:2;grid-row:2}
+}
+
+
+/* FW-CORPORATE-3.5 / THE FIRM — section-specific optical hierarchy.
+   Restrained light, no photo asset, no additional UI surface. */
+.firm{
+  isolation:isolate;
+  --firm-ivory:#e9e5df;
+  --firm-body:#c4c8c9;
+  --firm-secondary:#a1a9ad;
+  --firm-metal:#b99c6b;
+}
+.firm::before{
+  content:"";
+  position:absolute;
+  z-index:-1;
+  pointer-events:none;
+  inset:7% -8% 3%;
+  background:
+    radial-gradient(ellipse 42% 57% at 2% 64%,rgba(24,58,77,.17),transparent 78%),
+    radial-gradient(ellipse 24% 37% at 86% 21%,rgba(22,37,47,.13),transparent 83%);
+  opacity:.82;
+}
+/* An inscription and a quiet gold trajectory distinguish this record. */
+.firm .recordIndex{
+  align-items:center;
+  gap:22px;
+  color:#c1a675;
+  font-weight:600;
+  letter-spacing:.16em;
+}
+.firm .recordIndex::after{
+  content:"";
+  flex:1;
+  order:1;
+  height:1px;
+  background:linear-gradient(90deg,rgba(187,157,104,.28),rgba(187,157,104,.1),transparent);
+}
+.firm .recordIndex span:last-child{
+  order:2;
+  color:#889499;
+  letter-spacing:.14em;
+  font-weight:400;
+}
+.firmGrid{align-items:start;gap:clamp(52px,7vw,116px)}
+.firmHeading .micro{
+  color:var(--firm-metal);
+  font-size:10px;
+  font-weight:600;
+  letter-spacing:.18em;
+}
+.firmHeading .micro::after{
+  content:"";
+  display:block;
+  width:29px;
+  height:1px;
+  margin-top:16px;
+  background:linear-gradient(90deg,#b99c6b,transparent);
+}
+.firmHeading h2{
+  margin-top:25px;
+  color:var(--firm-ivory);
+  font-weight:500;
+  font-size:clamp(29px,3vw,42px);
+  line-height:1.18;
+  letter-spacing:-.036em;
+  text-wrap:balance;
+}
+.firmCopy .firmLead{
+  color:#ece8e0;
+  font-size:clamp(17px,1.65vw,20px);
+  line-height:1.69;
+  font-weight:450;
+  letter-spacing:-.012em;
+  margin-bottom:30px;
+}
+.firmCopy p:not(.firmLead){
+  color:var(--firm-body);
+  font-size:14px;
+  line-height:1.86;
+  max-width:53ch;
+  margin-bottom:23px;
+}
+.firmCopy p:last-child{
+  color:var(--firm-secondary);
+  margin-bottom:0;
+}
+.firmFoot{
+  align-items:start;
+  border-top-color:rgba(185,156,107,.31);
+  padding-top:27px;
+}
+.firmFoot span{
+  color:#bb9f70;
+  font-weight:600;
+  letter-spacing:.16em;
+}
+.firmFoot p{
+  position:relative;
+  padding-left:19px;
+  max-width:43ch;
+  color:#dbd2c3;
+  font:400 clamp(16px,1.6vw,19px)/1.58 Georgia,'Times New Roman',serif;
+  letter-spacing:-.014em;
+}
+.firmFoot p::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:.2em;
+  bottom:.2em;
+  width:1px;
+  background:linear-gradient(#c19e68,rgba(193,158,104,.18));
+}
+@media(max-width:800px){
+  .firmGrid{gap:34px}
+  .firm .recordIndex::after{display:none}
+  .firmHeading h2{font-size:clamp(30px,6vw,38px)}
+  .firmCopy p:not(.firmLead){font-size:14px}
+}
+@media(max-width:520px){
+  .firm .recordIndex{font-size:9px;letter-spacing:.1em}
+  .firm .recordIndex span:last-child{font-size:9px;letter-spacing:.05em}
+  .firmFoot p{padding-left:14px}
+}
+
+
+/* FW-CORPORATE-3.6 — Thesis Register / restrained electric-blue current.
+   Preserve the two-column institutional row; compose the thesis as an entry,
+   not a floating quotation or a new physical card. */
+.firmFoot{
+  column-gap:clamp(52px,7vw,116px);
+  align-items:center;
+  padding-top:25px;
+  padding-bottom:12px;
+}
+.firmFoot span{
+  align-self:start;
+  padding-top:14px;
+  color:#bfa377;
+}
+.firmFoot p{
+  box-sizing:border-box;
+  width:min(100%,410px);
+  max-width:410px;
+  margin:0;
+  padding:18px 23px 19px 25px;
+  border-top:1px solid rgba(182,160,121,.29);
+  border-bottom:1px solid rgba(182,160,121,.19);
+  background:
+    linear-gradient(90deg,rgba(25,61,89,.105),rgba(12,21,31,.035) 48%,transparent 100%);
+  color:#dedbd5;
+  font-family:Georgia,'Times New Roman',serif;
+  font-weight:400;
+  font-size:clamp(15px,1.4vw,17px);
+  line-height:1.5;
+  letter-spacing:-.011em;
+  text-wrap:pretty;
+}
+.firmFoot p::before{
+  top:0;
+  bottom:0;
+  width:2px;
+  background:linear-gradient(180deg,
+    rgba(127,187,214,.38) 0%,
+    #508bab 43%,
+    rgba(48,91,119,.42) 100%);
+  box-shadow:0 0 13px rgba(53,137,181,.2);
+}
+@media(max-width:800px){
+  .firmFoot{gap:12px;padding-top:24px}
+  .firmFoot span{padding-top:0}
+  .firmFoot p{width:min(100%,410px);max-width:410px}
+}
+@media(max-width:520px){
+  .firmFoot p{padding:16px 18px 17px 21px;font-size:15px}
+}
+
+
+/* FW-CORPORATE-3.7 — Commercial Practice: one reading axis, indexed ledger.
+   Preserve the five canonical practice areas and six separate continuum stages. */
+.operations{
+  isolation:isolate;
+  padding-top:82px;
+  padding-bottom:89px;
+}
+/* The electrical current belongs to transitions, not to decorative boxes. */
+.operations::before,.resources::after{
+  content:"";
+  position:absolute;
+  top:-1px;
+  left:0;
+  right:0;
+  height:1px;
+  pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(63,122,154,.17) 9%,rgba(72,154,198,.6) 44%,rgba(44,105,138,.25) 71%,transparent);
+  box-shadow:0 0 10px rgba(38,104,147,.11);
+}
+.operations .recordIndex{align-items:center;gap:18px}
+.operations .recordIndex::after{
+  content:"";
+  flex:1;
+  order:1;
+  height:1px;
+  background:linear-gradient(90deg,rgba(81,139,170,.31),rgba(71,121,148,.11),transparent);
+}
+.operations .recordIndex span:last-child{order:2}
+.operationIntro{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  gap:17px;
+  max-width:690px;
+  margin:49px auto 36px;
+}
+.operationIntro h2{
+  margin:0;
+  font-size:clamp(29px,2.9vw,39px);
+  color:#eee9e0;
+  line-height:1.18;
+}
+.operationIntro p{
+  max-width:59ch;
+  color:#b7c2c7;
+  font-size:14px;
+  line-height:1.75;
+}
+.capabilities{
+  display:block;
+  width:min(100%,690px);
+  max-width:690px;
+  margin:0 auto;
+  padding:0;
+  list-style:none;
+  border-top:1px solid rgba(83,135,161,.42);
+}
+.capability{
+  display:grid;
+  grid-template-columns:42px minmax(0,1fr);
+  gap:18px;
+  align-items:center;
+  min-height:0;
+  padding:17px 0 18px;
+  border-top:0;
+  border-bottom:1px solid rgba(148,161,163,.17);
+}
+.capability span{
+  font:600 11px/1.5 Arial,Helvetica,sans-serif;
+  letter-spacing:.1em;
+  color:#bc9e6c;
+}
+.capability p{
+  max-width:58ch;
+  color:#e1e3df;
+  font-size:15px;
+  line-height:1.58;
+}
+.sequence{
+  display:block;
+  max-width:690px;
+  margin:39px auto 0;
+  padding-top:22px;
+  border-top:1px solid rgba(66,132,168,.43);
+}
+.sequence>span{
+  display:block;
+  color:#c2a579;
+  font-weight:600;
+  letter-spacing:.16em;
+}
+.passageStages{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  column-gap:0;
+  row-gap:5px;
+  padding:0;
+  margin:13px 0 0;
+  list-style:none;
+}
+.passageStages li{
+  display:inline-flex;
+  gap:9px;
+  align-items:baseline;
+  color:#b8c5ca;
+  font-size:12px;
+  line-height:1.6;
+  white-space:normal;
+}
+.passageStages li:first-child{gap:0}
+.passageSeparator{color:#507f9a;font-size:11px;margin-inline:8px 0}
+@media(max-width:800px){
+  .operations{padding-block:70px 76px}
+  .operationIntro{margin:40px auto 32px}
+  .operations .recordIndex::after{display:none}
+}
+@media(max-width:520px){
+  .operationIntro h2{font-size:30px}
+  .operationIntro p{font-size:14px}
+  .capability{grid-template-columns:35px minmax(0,1fr);gap:12px;padding-block:17px}
+  .capability p{font-size:14px}
+  .passageStages li{font-size:12px}
+}
+
+
+/* FW-CORPORATE-3.9 — horizontal institutional access-node sectors.
+   No editorial titles, cards, or three-column reading excursions. */
+.resources{
+  position:relative;
+  width:min(100% - 48px,940px);
+  padding-block:76px 78px;
+  margin-inline:auto;
+}
+.accessHeading{
+  display:flex;
+  justify-content:space-between;
+  align-items:end;
+  gap:24px;
+  padding:0 0 23px;
+  border-bottom:1px solid rgba(73,134,163,.44);
+  box-shadow:0 1px 0 rgba(10,22,31,.45);
+}
+.accessIdentity{display:flex;align-items:baseline;gap:19px;min-width:0}
+.accessIndex{color:#c0a575;font:600 10px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.12em;white-space:nowrap}
+.accessHeading h2{
+  margin:0;
+  font:500 clamp(17px,2vw,23px)/1.2 Arial,Helvetica,sans-serif;
+  color:#e5e9e8;
+  letter-spacing:.065em;
+  white-space:nowrap;
+}
+.accessHeading p{margin:0;max-width:240px;font:400 12px/1.5 Arial,Helvetica,sans-serif;color:#a2b2b9;text-align:right}
+.accessSectors{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  border-bottom:1px solid rgba(60,112,144,.47);
+  background:linear-gradient(95deg,rgba(12,23,30,.2),transparent 65%);
+}
+.accessSector{
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  min-height:186px;
+  padding:22px 22px 23px;
+  text-decoration:none;
+  outline-offset:-4px;
+  transition:background-color .2s ease,box-shadow .2s ease;
+}
+.accessSector:first-child{padding-left:4px}
+.accessSector + .accessSector{border-left:1px solid rgba(71,104,123,.43)}
+.sectorTop{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:34px;font:600 10px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.11em;color:#c0a374}
+.sectorArrow{color:#86b1c9;font:400 17px/1 Arial,Helvetica,sans-serif}
+.accessSector strong{
+  display:block;
+  max-width:26ch;
+  font:600 12px/1.45 Arial,Helvetica,sans-serif;
+  letter-spacing:.035em;
+  color:#e6eae8;
+}
+.sectorDescription{display:block;max-width:32ch;margin-top:11px;font:400 12px/1.55 Arial,Helvetica,sans-serif;color:#a7b2b6}
+.accessSector:hover,.accessSector:focus-visible{background:rgba(32,64,82,.2);box-shadow:inset 0 2px 0 rgba(79,151,191,.58)}
+.accessSector:focus-visible{outline:2px solid #7db6d0}
+.accessSector:hover .sectorArrow,.accessSector:focus-visible .sectorArrow{color:#b4dff0}
+.resources .disclaimer{
+  max-width:740px;
+  margin:29px 0 0;
+  color:#929ca1;
+  font:400 11px/1.7 Arial,Helvetica,sans-serif;
+}
+@media(max-width:800px){
+  .resources{width:calc(100% - 40px);padding-block:67px 78px}
+  .accessHeading{align-items:start;flex-direction:column;gap:12px}
+  .accessHeading p{text-align:left;max-width:none}
+  .accessSectors{grid-template-columns:1fr}
+  .accessSector,.accessSector:first-child{min-height:0;padding:22px 4px 23px}
+  .accessSector + .accessSector{border-left:0;border-top:1px solid rgba(71,104,123,.43)}
+  .sectorTop{margin-bottom:16px}
+  .accessSector strong,.sectorDescription{max-width:unset}
+}
+@media(max-width:520px){
+  .accessIdentity{gap:11px;flex-wrap:wrap}
+  .accessHeading h2{font-size:18px;letter-spacing:.035em}
+}
+@media(prefers-reduced-motion:reduce){.accessSector{transition:none}}
+
+
+/* FW-CORPORATE-3.9A — institutional typography, corporate homepage only.
+   Final overrides deliberately supersede accumulated exploratory display styles. */
+.site{
+  --fw-type-ink:#e5e9e8;
+  --fw-type-copy:#b9c3c7;
+  --fw-type-secondary:#909da4;
+  font-family:Arial,Helvetica,sans-serif;
+  font-synthesis:none;
+}
+/* Formal corporate mark: capitals, firm construction, no luxury serif. */
+.wordmark,
+.gravity h1,
+.footerIdentity strong{
+  font-family:Arial,Helvetica,sans-serif;
+  font-style:normal;
+  font-weight:600;
+  text-transform:uppercase;
+}
+.wordmark{letter-spacing:.015em;font-size:17px}
+.wordmark span{font-weight:400;letter-spacing:.045em}
+.gravity h1{
+  font-size:clamp(40px,5.6vw,73px);
+  letter-spacing:.018em;
+  line-height:1.08;
+  color:#eeeae1;
+}
+/* Claims remain factual sentences, never promotional display lettering. */
+.heroDoctrine{
+  font-family:Arial,Helvetica,sans-serif;
+  font-weight:400;
+  font-style:normal;
+  font-size:clamp(15px,1.55vw,18px);
+  letter-spacing:.003em;
+  color:#c2cace;
+}
+.heroStatement,.firmCopy .firmLead,.firmCopy p:not(.firmLead),
+.operationIntro p,.capability p,.sectorDescription,.resources .disclaimer{
+  font-family:Arial,Helvetica,sans-serif;
+  font-style:normal;
+}
+.firmCopy .firmLead{font-size:clamp(16px,1.55vw,19px);font-weight:400;line-height:1.7;color:#dfe3e2}
+.firmCopy p:not(.firmLead){color:#adb9bf}
+.firmCopy p:last-child{color:#95a3ab}
+/* Register headers: narrow, uppercase, single line on roomy viewports. */
+.firmHeading h2,
+.operationIntro h2,
+.accessHeading h2{
+  font-family:Arial,Helvetica,sans-serif;
+  font-style:normal;
+  font-weight:500;
+  font-size:clamp(18px,2.05vw,24px);
+  line-height:1.25;
+  letter-spacing:.045em;
+  text-transform:uppercase;
+  color:var(--fw-type-ink);
+  text-wrap:initial;
+}
+.firmHeading h2{margin-top:24px;white-space:nowrap}
+.operationIntro h2{white-space:nowrap}
+.accessHeading h2{font-size:clamp(17px,1.8vw,22px);letter-spacing:.05em}
+/* The thesis stays registered, not a decorative pull quote. */
+.firmFoot p{
+  font-family:Arial,Helvetica,sans-serif;
+  font-style:normal;
+  font-size:clamp(14px,1.25vw,16px);
+  font-weight:400;
+  letter-spacing:.005em;
+  line-height:1.62;
+}
+/* Access-sector titles and small labels share the operational type system. */
+.accessSector strong{font-family:Arial,Helvetica,sans-serif;font-style:normal;font-weight:600;letter-spacing:.035em}
+.recordIndex,.firmHeading .micro,.firmFoot span,.sectorTop,.accessIndex{
+  font-family:Arial,Helvetica,sans-serif;
+  font-style:normal;
+}
+.footerIdentity strong{letter-spacing:.018em;font-size:16px}
+@media(max-width:960px){
+  .firmHeading h2{white-space:normal;max-width:24ch}
+}
+@media(max-width:600px){
+  .gravity h1{font-size:clamp(30px,8vw,45px);letter-spacing:0}
+  .firmHeading h2,.operationIntro h2{font-size:clamp(18px,4.5vw,23px);white-space:normal}
+  .accessHeading h2{font-size:18px;white-space:normal}
+}
+
+/* FW-CORPORATE-3.10 — Institutional landscape: presence, orientation, restraint.
+   Only the homepage opening is changed; the lower institutional registers are preserved. */
+.hero{
+  min-height:clamp(620px,82svh,790px);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:linear-gradient(112deg,#090b0e 0%,#0a0c0f 43%,#0b1015 77%,#090c10 100%);
+}
+/* A remote, mineral horizon rather than a central illuminated portal. */
+.landscapeField{position:absolute;inset:0;pointer-events:none;z-index:-1;overflow:hidden;
+  background:
+    radial-gradient(ellipse 31% 26% at 78% 60%,rgba(56,91,111,.16),transparent 88%),
+    radial-gradient(ellipse 39% 18% at 73% 80%,rgba(19,41,56,.27),transparent 92%),
+    linear-gradient(90deg,transparent 43%,rgba(95,116,125,.015) 77%,transparent);
+}
+.landscapeField::before{content:"";position:absolute;right:-13%;bottom:14%;width:67%;height:51%;opacity:.43;
+  background:linear-gradient(168deg,transparent 12%,rgba(46,68,76,.09) 33%,rgba(35,55,68,.22) 49%,rgba(13,23,32,.08) 52%,transparent 74%);
+  clip-path:polygon(0 84%,18% 72%,32% 69%,47% 43%,63% 46%,80% 21%,100% 11%,100% 100%,0 100%);
+  filter:blur(25px);
+}
+.landscapeField::after{content:"";position:absolute;right:6%;bottom:22%;width:43%;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(145,125,94,.14) 30%,rgba(73,116,138,.28) 66%,transparent);
+  transform:rotate(-6deg);filter:blur(.3px);
+}
+.distantHorizon{position:absolute;right:0;bottom:22%;width:55%;height:34%;
+  background:radial-gradient(ellipse 75% 18% at 58% 77%,rgba(56,114,143,.13),transparent 84%);
+  opacity:.78;
+}
+.thresholdTrace{position:absolute;right:22%;top:21%;bottom:22%;width:1px;
+  background:linear-gradient(transparent,rgba(177,147,100,.14) 21%,transparent 39%,rgba(60,119,148,.18) 71%,transparent);
+}
+.landscapeCoordinate{position:absolute;right:22%;top:22%;width:19%;height:1px;
+  background:linear-gradient(90deg,rgba(180,151,104,.15),transparent);
+}
+.hero .heroTopline{width:min(1180px,calc(100% - 90px));padding-top:32px;color:#a1abb0;font-size:10px;letter-spacing:.12em}
+.landscapeInner{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,.62fr);align-items:center;gap:8%;width:min(1040px,calc(100% - 130px));margin:clamp(75px,11vh,135px) auto clamp(64px,9vh,100px)}
+.landscapeIdentity{max-width:590px;text-align:left;position:relative}
+.landscapeIdentity .eyebrow{font:500 10px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.13em;color:#c0a777}
+.landscapeIdentity h1{margin:22px 0 15px;white-space:nowrap;font:600 clamp(42px,5.35vw,73px)/1.06 Arial,Helvetica,sans-serif;letter-spacing:.013em;color:#e9ebe7}
+.landscapeClassification{margin:0;color:#cbd2d2;font-size:clamp(14px,1.5vw,17px);line-height:1.5;letter-spacing:.014em}
+.landscapeRule{width:136px;height:1px;margin:29px 0 25px;background:linear-gradient(90deg,rgba(195,165,113,.8),rgba(93,139,165,.56),transparent)}
+.landscapeStatement{margin:0;max-width:49ch;color:#aeb9bd;font:400 clamp(13px,1.08vw,15px)/1.8 Arial,Helvetica,sans-serif}
+.landscapeAxis{display:flex;flex-direction:column;justify-content:space-between;align-self:stretch;min-height:260px;padding:18px 0 16px 20px;border-left:1px solid rgba(122,144,156,.12);font:500 9px/1.6 Arial,Helvetica,sans-serif;letter-spacing:.13em;color:#7d969f}
+.landscapeAxis span:last-child{color:#b59c77;font-size:9px;max-width:22ch}
+.landscapeBottom{width:min(1180px,calc(100% - 90px));margin:0 auto;padding:20px 0 31px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:30px;border-top:1px solid rgba(73,111,135,.23)}
+.landscapeBottomLabel,.landscapeExplore{font:500 9px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.12em;color:#9fa6a5}
+.landscapeExplore{justify-self:end;color:#bba67f;white-space:nowrap}
+.landscapeExplore span{margin-left:9px;color:#7297ac}
+.landscapeActions{display:flex;align-items:center;gap:25px}
+.landscapeActions a{display:inline-flex;align-items:center;gap:15px;min-height:36px;padding:5px 0;border-bottom:1px solid rgba(174,152,118,.43);font:600 10px/1.4 Arial,Helvetica,sans-serif;letter-spacing:.065em;color:#d5d8d4;white-space:nowrap;transition:color .18s,border-color .18s}
+.landscapeActions a span{color:#83aec1;font-size:15px}
+.landscapeActions a:hover{color:#fff;border-color:#70a9c4}
+.landscapeActions a:focus-visible,.landscapeExplore:focus-visible{outline:2px solid #7baeca;outline-offset:4px}
+@media(max-width:900px){
+  .landscapeInner{width:calc(100% - 80px);grid-template-columns:minmax(0,1fr) 90px;gap:25px}
+  .landscapeIdentity h1{font-size:clamp(37px,6.5vw,61px)}
+  .landscapeBottom{grid-template-columns:1fr;justify-items:start;gap:16px}
+  .landscapeExplore{justify-self:start}
+}
+@media(max-width:600px){
+  .hero{min-height:720px}
+  .hero .heroTopline,.landscapeBottom{width:calc(100% - 40px)}
+  .landscapeInner{width:calc(100% - 48px);display:block;margin:108px auto 92px}
+  .landscapeIdentity h1{font-size:clamp(29px,8.7vw,46px);white-space:normal;letter-spacing:0}
+  .landscapeIdentity .eyebrow{font-size:9px;letter-spacing:.1em}
+  .landscapeClassification{font-size:14px}
+  .landscapeStatement{font-size:13px;line-height:1.75}
+  .landscapeAxis{display:none}
+  .thresholdTrace{right:7%;opacity:.48}
+  .landscapeActions{flex-wrap:wrap;gap:8px 24px}
+  .landscapeActions a{font-size:9px}
+  .landscapeBottom{padding-bottom:25px}
+}
+@media(prefers-reduced-motion:reduce){.landscapeActions a{transition:none}}
+
+/* FW-CORPORATE-3.11 — Public-facing corporate snapshot.
+   The full institutional definitions and six-stage continuum remain in the
+   canonical Profile. Do not restyle the hero or the access sectors here. */
+.firm,.operations{padding-top:clamp(52px,6vw,76px);padding-bottom:clamp(55px,6vw,78px)}
+.snapshotPosition{width:min(100%,850px);margin:clamp(30px,4vw,46px) auto 34px;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(25px,4vw,64px);align-items:start}
+.snapshotPosition h2,.snapshotPracticeHeading h2{margin:0;font-family:Arial,Helvetica,sans-serif;font-size:clamp(17px,1.7vw,21px);font-weight:500;line-height:1.35;letter-spacing:.045em;color:#e6e8e7;text-transform:uppercase}
+.snapshotPosition p{margin:0;max-width:56ch;font:400 15px/1.72 Arial,Helvetica,sans-serif;color:#b9c5c9}
+.firm .firmFoot{max-width:850px;margin:0 auto;padding-top:18px;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(25px,4vw,64px)}
+.firm .firmFoot p{max-width:410px;margin:0}
+.snapshotPractice{width:min(100%,850px);margin:clamp(30px,4vw,44px) auto 0}
+.snapshotPracticeHeading{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(25px,4vw,64px);align-items:start;margin:0 0 23px}
+.snapshotPracticeHeading p{margin:0;max-width:44ch;font:400 14px/1.65 Arial,Helvetica,sans-serif;color:#aebdc3}
+.snapshotPractice .capabilities{display:grid;grid-template-columns:minmax(0,1fr);gap:0;margin:0;padding:0;max-width:100%;list-style:none}
+.snapshotPractice .capability{display:grid;grid-template-columns:48px minmax(0,1fr);gap:15px;min-height:0;padding:13px 4px;border-top:1px solid rgba(65,110,135,.32);align-items:baseline}
+.snapshotPractice .capability:last-child{border-bottom:1px solid rgba(65,110,135,.32)}
+.snapshotPractice .capability>span{font:500 11px/1.5 Arial,Helvetica,sans-serif;color:#baa075;letter-spacing:.05em}
+.snapshotPractice .capability p{margin:0;color:#d0d8d9;font:400 14px/1.52 Arial,Helvetica,sans-serif}
+.practiceProfileLink{display:inline-flex;gap:12px;align-items:center;margin-top:22px;font:500 11px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.055em;text-transform:uppercase;text-decoration:none;color:#bfcfd4;border-bottom:1px solid rgba(79,137,168,.48);padding-bottom:7px}
+.practiceProfileLink:hover,.practiceProfileLink:focus-visible{color:#e2f1f7;border-bottom-color:#80b9d5}
+.practiceProfileLink:focus-visible{outline:1px solid #80b9d5;outline-offset:5px}
+@media(max-width:700px){
+ .snapshotPosition,.snapshotPracticeHeading,.firm .firmFoot{grid-template-columns:1fr;gap:15px}
+ .snapshotPosition{margin-top:32px;margin-bottom:29px}
+ .snapshotPracticeHeading{margin-bottom:23px}
+ .snapshotPractice .capability{grid-template-columns:32px minmax(0,1fr);gap:12px;padding-block:15px}
+ .snapshotPosition p{font-size:14px}
+}
+
+
+/* FW-CORPORATE-3.12 — narrative discipline + illuminated access.
+   Corporate presentation only. Never affects publication or CUP permissions. */
+.snapshotPractice{max-width:850px}
+.snapshotPracticeHeading{margin-bottom:20px}
+.snapshotPracticeHeading p{color:#9eabb2}
+.practiceNarrative{
+  max-width:740px;
+  margin:0;
+  color:#b9c6ca;
+  font:400 clamp(14px,1.24vw,16px)/1.85 Arial,Helvetica,sans-serif;
+  letter-spacing:.002em;
+  text-wrap:pretty;
+}
+.practiceNarrative span{
+  color:#e7ebea;
+  font-weight:500;
+}
+.practiceProfileLink{margin-top:24px}
+/* Access sits within the shared void, but the interaction field catches light. */
+.resources{
+  position:relative;
+  isolation:isolate;
+  overflow:hidden;
+  background:transparent;
+}
+.resources::before{
+  content:"";
+  pointer-events:none;
+  position:absolute;
+  z-index:-1;
+  inset:4% -14% 0;
+  background:
+    radial-gradient(ellipse 46% 54% at 74% 43%,rgba(57,121,156,.14),transparent 79%),
+    radial-gradient(ellipse 64% 42% at 23% 83%,rgba(35,75,103,.085),transparent 86%);
+}
+.accessHeading h2{color:#ebefed}
+.accessHeading p{color:#bac8cf}
+.accessSectors{
+  position:relative;
+  border-top:1px solid rgba(111,172,203,.67);
+  border-bottom:1px solid rgba(75,120,146,.53);
+  background:linear-gradient(110deg,rgba(20,39,52,.13),rgba(36,72,94,.14) 58%,rgba(22,48,67,.09));
+  box-shadow:0 -12px 40px rgba(57,125,169,.035);
+}
+.accessSectors::before{
+  content:"";
+  position:absolute;
+  pointer-events:none;
+  top:-1px;
+  left:0;
+  width:54%;
+  height:1px;
+  background:linear-gradient(90deg,rgba(177,154,110,.45),rgba(125,197,228,.9),transparent);
+}
+.accessSector{
+  color:#e9eeee;
+  transition:background-color .18s ease,box-shadow .18s ease;
+}
+.accessSector + .accessSector{border-left-color:rgba(108,161,188,.3)}
+.accessSector strong{color:#f0f3f1}
+.sectorTop{color:#ccb184}
+.sectorArrow{color:#a5d4e8}
+.sectorDescription{color:#bdcbd1}
+.accessSector:hover,.accessSector:focus-visible{
+  background:rgba(62,113,145,.16);
+  box-shadow:inset 0 2px 0 rgba(139,203,235,.86), 0 0 36px rgba(45,120,167,.05);
+}
+.accessSector:hover .sectorArrow,.accessSector:focus-visible .sectorArrow{color:#d3efff}
+.resources .disclaimer{color:#a0acb4}
+@media(max-width:800px){
+  .accessSector + .accessSector{border-left:0;border-top:1px solid rgba(108,161,188,.3)}
+}
+@media(prefers-reduced-motion:reduce){
+  .accessSector{transition:none}
+}
+
+
+/* FW-CORPORATE-3.13 — controlled letterform, threshold and correspondence polish.
+   The institutional landscape, snapshot, access sectors and routes are unchanged. */
+:where(.site){
+  --fw-hero-ivory:#e5e8e5;
+  --fw-body-silver:#c2cace;
+  --fw-fine-steel:#99a9b2;
+}
+/* Firm inscription: quiet its scale but not its authority. */
+.landscapeIdentity h1{
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:clamp(39px,4.58vw,64px);
+  font-weight:600;
+  line-height:1.09;
+  letter-spacing:.023em;
+  color:var(--fw-hero-ivory);
+  text-shadow:0 1px 0 rgba(210,219,219,.04);
+}
+.landscapeIdentity .eyebrow{color:#c3a77e;letter-spacing:.145em}
+.landscapeClassification{color:#d5d8d6;letter-spacing:.025em;font-weight:500}
+.landscapeStatement{color:#b6c1c5;line-height:1.76;letter-spacing:.007em}
+/* A threshold represented by incomplete coordinates: never a framed doorway. */
+.thresholdTrace{
+  right:22.5%;top:17%;bottom:19%;
+  background:linear-gradient(to bottom,
+    transparent 0%,rgba(191,164,117,.04) 10%,
+    rgba(185,153,107,.28) 23%,rgba(175,145,106,.035) 35%,
+    transparent 43%,transparent 57%,
+    rgba(81,143,181,.2) 73%,rgba(90,161,198,.075) 88%,transparent 100%);
+  box-shadow:1px 0 19px rgba(61,117,153,.065);
+}
+.thresholdTrace::before{
+  content:"";position:absolute;top:11%;right:-1px;width:clamp(42px,7vw,96px);height:1px;
+  background:linear-gradient(90deg,transparent,rgba(171,144,101,.24),rgba(157,131,94,.055));
+}
+.thresholdTrace::after{
+  content:"";position:absolute;bottom:13%;right:-15px;width:clamp(48px,9vw,120px);height:1px;
+  background:linear-gradient(90deg,transparent,rgba(89,153,187,.42),rgba(91,155,189,.12));
+  box-shadow:0 0 17px rgba(79,151,192,.13);
+}
+.landscapeCoordinate{right:22.5%;top:19.2%;width:13%;opacity:.63}
+.distantHorizon{opacity:.68}
+.landscapeField::before{opacity:.31}
+.landscapeField::after{opacity:.74}
+/* White is not one color: differentiated industrial ivory and mineral-silver. */
+.snapshotPosition h2,.snapshotPracticeHeading h2{color:#e3e7e4;letter-spacing:.058em;font-weight:500}
+.snapshotPosition p{color:var(--fw-body-silver);letter-spacing:.005em}
+.snapshotPracticeHeading p{color:var(--fw-fine-steel)}
+.practiceNarrative{color:#bbc7cc;letter-spacing:.006em}
+.practiceNarrative span{color:#e5e9e7;font-weight:500}
+.firm .firmFoot p{color:#e0e8eb;letter-spacing:.012em}
+.accessHeading h2{color:#e5ecec}
+.accessHeading p{color:#bdcad0}
+.accessSector strong{color:#eef0ed;letter-spacing:.042em}
+.sectorDescription{color:#bdcbd1}
+.footerIdentity strong{color:#e0e5e3}
+.footerUtility a{color:#dce7eb}
+@media(max-width:900px){
+  .landscapeIdentity h1{font-size:clamp(36px,5.75vw,56px)}
+}
+@media(max-width:600px){
+  .landscapeIdentity h1{font-size:clamp(29px,8vw,41px);letter-spacing:.008em}
+  .thresholdTrace{right:8%;top:24%;bottom:25%;opacity:.46}
+  .thresholdTrace::before{width:48px}
+  .thresholdTrace::after{width:52px}
+  .landscapeCoordinate{right:8%;opacity:.35}
+}
+
+
+/* FW-CORPORATE-3.14 — curved threshold reintegration.
+   One incomplete access arc, not a planetary ring or framed doorway.
+   Scope: decorative hero geometry only. */
+.landscapeField::before{
+  content:"";
+  position:absolute;
+  top:2%;right:7%;bottom:auto;
+  width:min(74vw,1050px);height:125%;
+  border:1px solid transparent;
+  border-top-color:rgba(193,164,116,.31);
+  border-right-color:rgba(97,149,178,.27);
+  border-radius:52% 52% 47% 47% / 44% 44% 56% 56%;
+  background:none;
+  clip-path:none;
+  filter:none;
+  opacity:.78;
+  transform:rotate(-9deg);
+  box-shadow:none;
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 12%,#000 43%,transparent 79%);
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 12%,#000 43%,transparent 79%);
+}
+/* Secondary ghost trace: nearly invisible, spatial rather than ornamental. */
+.thresholdTrace{
+  top:10%;right:10%;bottom:auto;
+  width:min(68vw,950px);height:116%;
+  border:1px solid transparent;
+  border-top-color:rgba(89,119,133,.12);
+  border-right-color:rgba(78,128,155,.12);
+  border-radius:52% 52% 47% 47% / 43% 43% 57% 57%;
+  background:none;
+  box-shadow:none;
+  opacity:.72;
+  transform:rotate(-8deg);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 16%,#000 38%,transparent 69%);
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 16%,#000 38%,transparent 69%);
+}
+.thresholdTrace::before,.thresholdTrace::after{content:none}
+/* A short remaining ledger coordinate, subordinate to the arch. */
+.landscapeCoordinate{
+  right:20%;top:25%;width:10%;height:1px;opacity:.31;
+  background:linear-gradient(90deg,transparent,rgba(184,157,111,.42),transparent);
+}
+.landscapeField{
+  background:
+    radial-gradient(ellipse 38% 45% at 73% 55%,rgba(54,102,134,.105),transparent 82%),
+    radial-gradient(ellipse 42% 17% at 71% 82%,rgba(26,56,74,.17),transparent 90%),
+    linear-gradient(110deg,transparent 22%,rgba(50,78,94,.022) 65%,transparent);
+}
+@media(max-width:900px){
+  .landscapeField::before{right:-9%;top:6%;width:95vw;height:112%}
+  .thresholdTrace{right:-12%;top:12%;width:96vw;height:112%}
+  .landscapeCoordinate{right:12%;top:26%;width:14%}
+}
+@media(max-width:600px){
+  .landscapeField::before{right:-72%;top:8%;width:155vw;height:90%;opacity:.42}
+  .thresholdTrace{right:-81%;top:15%;width:155vw;height:88%;opacity:.4}
+  .landscapeCoordinate{right:8%;top:20%;width:13%;opacity:.2}
+}
+
+
+/* FW-CORPORATE-3.15 — Institutional Gateway.
+   Decorative right-field image is an architectural study, not a screenshot of
+   the page: all headings, descriptions, and navigation remain live DOM content.
+   Low-key left masking preserves hierarchy and contrast. */
+.hero{isolation:isolate}
+.landscapeField{
+  background:
+    radial-gradient(ellipse 37% 42% at 72% 57%,rgba(39,91,123,.11),transparent 85%),
+    linear-gradient(100deg,#080b0e 3%,rgba(8,12,15,.46) 49%,transparent 83%);
+}
+.landscapeField::before{
+  content:"";
+  position:absolute;
+  inset:4% 0 6% auto;
+  width:69%;height:auto;
+  transform:none;border:0;border-radius:0;filter:none;
+  box-shadow:none;clip-path:none;
+  background-image:url('/french-ward/fw-gateway-atmosphere.webp');
+  background-size:cover;background-position:center 44%;
+  opacity:.82;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.35) 17%,#000 44%,#000 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.35) 17%,#000 44%,#000 100%);
+  pointer-events:none;
+}
+/* Background crop carries the decorative portal notation; do not duplicate it. */
+.landscapeAxis{visibility:hidden}
+.thresholdTrace{
+  top:8%;right:9%;width:min(66vw,900px);height:114%;
+  border:1px solid transparent;border-top-color:rgba(195,163,111,.16);
+  border-right-color:rgba(79,136,171,.15);transform:rotate(-8deg);
+  opacity:.5;pointer-events:none;
+}
+.landscapeCoordinate{opacity:.12}
+.landscapeIdentity{z-index:1}
+.landscapeIdentity h1{text-shadow:0 1px 12px rgba(0,0,0,.22)}
+.landscapeBottom{position:relative;z-index:2}
+@media(max-width:900px){
+ .landscapeField::before{width:73%;opacity:.54;background-position:53% 46%}
+ .landscapeAxis{display:none}
+}
+@media(max-width:600px){
+ .landscapeField::before{display:none}
+ .landscapeField{background:radial-gradient(ellipse 70% 48% at 82% 55%,rgba(39,83,112,.17),transparent 83%)}
+ .thresholdTrace{right:-76%;top:13%;width:157vw;height:86%;opacity:.36}
+ .landscapeCoordinate{opacity:.2}
+}
+@media(prefers-reduced-transparency:reduce){
+ .landscapeField::before{opacity:.42}
+}
+
+
+/* FW-CORPORATE-3.16 — Institutional Continuity.
+   One compact corporate introduction, not a second institutional publication.
+   Gateway, access sectors, canonical text, and resource controls are unchanged. */
+.institutionalContinuity{
+  position:relative;
+  padding-top:clamp(42px,5.5vw,72px);
+  padding-bottom:clamp(56px,7vw,88px);
+  border-top:0;
+  border-bottom:1px solid rgba(68,116,145,.25);
+  background:radial-gradient(ellipse 70% 50% at 77% 0%,rgba(24,59,80,.09),transparent 80%);
+}
+.institutionalContinuity>.recordIndex,
+.institutionalContinuity>.snapshotPosition,
+.institutionalContinuity>.firmFoot,
+.institutionalContinuity>.continuityPractice{
+  width:min(100%,850px);
+  max-width:850px;
+  margin-left:auto;
+  margin-right:auto;
+}
+.institutionalContinuity>.snapshotPosition{
+  margin-top:clamp(22px,3.5vw,40px);
+  margin-bottom:clamp(26px,3vw,38px);
+}
+.institutionalContinuity>.firmFoot{
+  margin-top:0;
+  padding-top:20px;
+  padding-bottom:25px;
+  border-top:1px solid rgba(170,152,120,.23);
+}
+.continuityPractice{
+  scroll-margin-top:110px;
+  border-top:1px solid rgba(60,100,122,.38);
+  padding-top:clamp(24px,3.5vw,36px);
+}
+.continuityPracticeIndex{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin-bottom:clamp(15px,2.5vw,26px);
+  color:#c1a67b;
+  font:500 10px/1.5 Arial,Helvetica,sans-serif;
+  letter-spacing:.13em;
+}
+.continuityPracticeIndex span:last-child{color:#89969e}
+.continuityPractice .practiceNarrative{
+  max-width:67ch;
+  margin:0;
+  font-size:clamp(14px,1.1vw,16px);
+  line-height:1.8;
+}
+.continuityPractice .practiceProfileLink{
+  display:inline-flex;
+  margin-top:24px;
+}
+@media(max-width:700px){
+  .institutionalContinuity{padding-top:44px;padding-bottom:58px}
+  .continuityPracticeIndex{flex-wrap:wrap;gap:8px}
+  .continuityPractice{scroll-margin-top:72px}
+}
+
+/* FW-CORPORATE-3.17 — Thesis Register Authority.
+   The thesis is a ruled entry within the continuous institution, not a card. */
+.institutionalContinuity > .snapshotPosition h2{
+  font-weight:500;
+  letter-spacing:.032em;
+  color:#ecece8;
+  line-height:1.29;
+}
+.institutionalContinuity > .snapshotPosition p{
+  color:#c7cfd1;
+  line-height:1.78;
+}
+.institutionalContinuity > .firmFoot{
+  position:relative;
+  grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);
+  align-items:center;
+  gap:clamp(25px,4vw,64px);
+  padding:19px 0 21px;
+  margin:0 auto;
+  border-top:1px solid rgba(157,151,140,.23);
+  border-bottom:1px solid rgba(74,116,139,.32);
+  background:none;
+}
+.institutionalContinuity > .firmFoot::before{
+  content:"";
+  position:absolute;
+  left:0;
+  bottom:-1px;
+  width:clamp(40px,8%,85px);
+  height:1px;
+  background:linear-gradient(90deg,rgba(111,180,219,.75),rgba(111,180,219,0));
+  pointer-events:none;
+}
+.institutionalContinuity > .firmFoot > span{
+  align-self:center;
+  padding:0;
+  color:#c5aa7e;
+  font-size:10px;
+  font-weight:500;
+  letter-spacing:.115em;
+}
+.institutionalContinuity > .firmFoot > p{
+  position:relative;
+  display:block;
+  box-sizing:border-box;
+  width:100%;
+  max-width:52ch;
+  padding:0;
+  margin:0;
+  border:0;
+  background:none;
+  box-shadow:none;
+  color:#e2e4e1;
+  font:400 clamp(15px,1.3vw,17px)/1.57 Arial,Helvetica,sans-serif;
+  letter-spacing:.003em;
+  text-wrap:pretty;
+}
+.institutionalContinuity > .firmFoot > p::before,
+.institutionalContinuity > .firmFoot > p::after{
+  content:none;
+  display:none;
+}
+.institutionalContinuity > .continuityPractice{
+  border-top:0;
+  padding-top:clamp(20px,2.8vw,29px);
+}
+.institutionalContinuity .continuityPracticeIndex{
+  margin-bottom:15px;
+}
+.institutionalContinuity .practiceNarrative{
+  color:#b9c5c9;
+  line-height:1.75;
+}
+@media(max-width:700px){
+  .institutionalContinuity > .firmFoot{
+    grid-template-columns:minmax(0,1fr);
+    gap:11px;
+    padding:19px 0 20px;
+  }
+  .institutionalContinuity > .firmFoot > p{max-width:100%;font-size:15px}
+}
+
+/* FW-CORPORATE-3.17A — Governing inscription.
+   Single centered thesis, no label or card; retain canonical copy. */
+.institutionalContinuity > .firmFoot{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  grid-template-columns:none;
+  padding:clamp(18px,2vw,24px) 0;
+  margin:0 auto;
+  border-top:1px solid rgba(115,151,171,.19);
+  border-bottom:1px solid rgba(115,151,171,.19);
+  background:transparent;
+}
+.institutionalContinuity > .firmFoot::before{content:none;display:none}
+.institutionalContinuity > .firmFoot > p{
+  width:auto;
+  max-width:none;
+  margin:0;
+  padding:0;
+  text-align:center;
+  text-transform:uppercase;
+  color:#76b6d7;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:clamp(10px,1vw,13px);
+  font-weight:400;
+  line-height:1.75;
+  letter-spacing:.105em;
+  text-wrap:balance;
+  box-shadow:none;
+  background:none;
+}
+@media(min-width:1100px){
+  .institutionalContinuity > .firmFoot > p{white-space:nowrap}
+}
+@media(max-width:700px){
+  .institutionalContinuity > .firmFoot{padding:19px 0}
+  .institutionalContinuity > .firmFoot > p{
+    max-width:34ch;
+    font-size:11px;
+    line-height:1.8;
+    letter-spacing:.09em;
+  }
+}
+
+
+/* FW-CORPORATE-3.18A — Etheric Exchange Floor.
+   A single material plane and reflected gateway light, without card outlines. */
+.resources{
+  width:min(100% - 48px,1020px);
+  padding:clamp(78px,9vw,118px) clamp(18px,2.8vw,36px) 84px;
+  isolation:isolate;
+  overflow:visible;
+  background:linear-gradient(180deg,rgba(9,16,23,0) 0%,rgba(13,25,34,.46) 17%,rgba(8,16,24,.78) 69%,rgba(6,12,18,.18) 100%);
+}
+.resources::before{
+  z-index:-1;
+  inset:0 -8% 0;
+  background:
+    radial-gradient(ellipse 34% 18% at 50% 33%,rgba(121,196,232,.14),transparent 85%),
+    radial-gradient(ellipse 68% 57% at 50% 63%,rgba(37,86,119,.11),transparent 76%);
+}
+.accessHeading{
+  border:0;
+  box-shadow:none;
+  padding-bottom:33px;
+}
+.accessSectors{
+  isolation:isolate;
+  position:relative;
+  overflow:hidden;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  border:0;
+  padding:45px 6px 26px;
+  background:
+    linear-gradient(180deg,rgba(20,36,48,.7),rgba(9,19,29,.97) 34%,rgba(10,20,29,.99) 78%,rgba(17,31,41,.86)),
+    radial-gradient(ellipse at 50% 0%,rgba(92,173,213,.15),transparent 50%);
+  box-shadow:0 24px 56px rgba(0,0,0,.18), inset 0 -24px 35px rgba(9,20,30,.44);
+}
+/* Fine central ignition strip with a white-hot midpoint. */
+.accessSectors::before{
+  z-index:3;
+  top:0;
+  left:0;
+  width:100%;
+  height:2px;
+  background:linear-gradient(90deg,transparent 1%,rgba(45,109,150,.26) 17%,rgba(77,160,210,.6) 37%,rgba(190,228,242,.98) 50%,rgba(78,157,203,.65) 63%,rgba(44,99,135,.23) 83%,transparent 99%);
+  box-shadow:0 2px 18px rgba(68,167,221,.19);
+}
+/* Etheric rays diverge from the same center; soft spatial light, not animated beams. */
+.accessSectors::after{
+  content:"";
+  position:absolute;
+  z-index:0;
+  pointer-events:none;
+  left:0;
+  right:0;
+  top:1px;
+  height:76%;
+  opacity:.58;
+  background:
+    linear-gradient(107deg,transparent 40%,rgba(105,187,223,.11) 49.9%,transparent 54%) left top / 52% 100% no-repeat,
+    linear-gradient(73deg,transparent 46%,rgba(105,187,223,.1) 51%,transparent 60%) right top / 52% 100% no-repeat,
+    linear-gradient(96deg,transparent 45%,rgba(99,180,218,.07) 50%,transparent 54%) left top / 53% 100% no-repeat,
+    linear-gradient(84deg,transparent 46%,rgba(99,180,218,.07) 50%,transparent 55%) right top / 53% 100% no-repeat,
+    radial-gradient(ellipse 29% 55% at 50% 0%,rgba(86,167,208,.23),transparent 100%);
+}
+.accessSector,.accessSector:first-child{
+  z-index:1;
+  position:relative;
+  min-height:244px;
+  padding:23px clamp(14px,2.1vw,27px) 22px;
+  background:transparent;
+  border:0;
+  box-shadow:none;
+  transition:background-color .22s ease,color .22s ease;
+}
+.accessSector + .accessSector{border:0}
+.accessSector:not(:last-child)::after{
+  content:"";
+  position:absolute;
+  right:0;
+  top:26px;
+  bottom:30px;
+  width:1px;
+  background:linear-gradient(180deg,transparent,rgba(109,149,170,.12) 38%,rgba(109,149,170,.17) 68%,transparent);
+  pointer-events:none;
+}
+.sectorTop{margin-bottom:20px;color:#bfa679;font-size:9px;letter-spacing:.14em}
+.sectorIcon{
+  display:block;
+  flex:none;
+  width:30px;
+  height:30px;
+  margin:0 0 28px;
+  color:#bfa77e;
+  filter:drop-shadow(0 0 8px rgba(87,164,205,.08));
+  transition:color .22s ease,filter .22s ease;
+}
+.accessSector strong{max-width:26ch;font-size:12px;line-height:1.5;letter-spacing:.045em}
+.sectorDescription{max-width:33ch;color:#b0bec5;line-height:1.65}
+.accessSector:hover,.accessSector:focus-visible{
+  background:linear-gradient(180deg,rgba(68,131,170,.075),rgba(50,105,142,.12));
+  box-shadow:none;
+}
+.accessSector:hover .sectorIcon,.accessSector:focus-visible .sectorIcon{
+  color:#a0d5ef;
+  filter:drop-shadow(0 0 9px rgba(78,176,230,.24));
+}
+.accessSector:focus-visible{outline:2px solid #8ac1df;outline-offset:-3px}
+.resources .disclaimer{margin-top:23px;color:#99a9b3;font-size:10px;max-width:82ch}
+@media(max-width:800px){
+  .resources{width:calc(100% - 30px);padding:78px 15px 66px}
+  .accessSectors{grid-template-columns:1fr;padding:27px 12px 13px}
+  .accessSectors::after{height:50%;opacity:.42}
+  .accessSector,.accessSector:first-child{min-height:0;padding:24px 12px 28px}
+  .accessSector:not(:last-child)::after{top:auto;bottom:0;left:12px;right:12px;width:auto;height:1px;background:linear-gradient(90deg,transparent,rgba(108,151,176,.18),transparent)}
+  .sectorTop{margin-bottom:14px}
+  .sectorIcon{width:26px;height:26px;margin-bottom:18px}
+}
+@media(prefers-reduced-motion:reduce){
+  .accessSector,.sectorIcon{transition:none}
+}
+@media(prefers-reduced-transparency:reduce){
+  .accessSectors::after{display:none}
+}
+
+
+/* FW-CORPORATE-3.19B — responsive gateway floor correction.
+   Preserve the complete atmospheric source, rather than cropping its lower
+   reflection via background-size:cover on wide desktop displays. */
+.landscapeField::before{
+  inset:0 0 0 auto;
+  width:min(72%,1050px);
+  height:100%;
+  background-size:auto 100%;
+  background-position:right bottom;
+  background-repeat:no-repeat;
+  opacity:.82;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.36) 15%,#000 42%);
+  mask-image:linear-gradient(90deg,transparent 0%,rgba(0,0,0,.36) 15%,#000 42%);
+}
+/* A muted receiving plane beneath the actual photographic floor. */
+.landscapeBottom{
+  background:linear-gradient(180deg,rgba(7,12,17,.16),rgba(7,11,15,.66));
+}
+@media(max-width:900px){
+  .landscapeField::before{
+    width:78%;
+    background-size:auto 100%;
+    background-position:right bottom;
+    opacity:.72;
+  }
+}
+@media(max-width:600px){
+  .landscapeField::before{display:none}
+  .landscapeBottom{background:transparent}
+}
+
+
+/* FW-CORPORATE-3.19C — Clean gateway top edge and responsive horizon.
+   The atmospheric source contains decorative lettering at its upper edge.
+   Suppress that part of the image without hiding real, accessible DOM text. */
+.landscapeField::after{
+  content:"";
+  position:absolute;
+  left:32%;right:0;top:0;
+  width:auto;height:clamp(86px,13.5%,126px);
+  transform:none;
+  opacity:1;
+  filter:none;
+  background:linear-gradient(180deg,
+    #080c10 0%,rgba(8,12,16,.98) 22%,
+    rgba(8,12,16,.94) 50%,rgba(8,12,16,.66) 73%,
+    transparent 100%);
+  pointer-events:none;
+}
+/* Preserve the reflective floor and prevent the top edge of the
+   artwork competing with the corporate header at medium widths. */
+@media (max-width:1100px){
+  .landscapeField::before{
+    width:78%;
+    background-position:right bottom;
+    opacity:.65;
+  }
+  .landscapeField::after{left:28%;height:clamp(96px,15%,140px)}
+}
+@media (max-width:900px){
+  .hero .heroTopline{gap:14px;align-items:start}
+  .hero .heroTopline span:last-child{max-width:25ch;text-align:right;line-height:1.55}
+  .landscapeField::before{width:84%;opacity:.43}
+  .landscapeField::after{left:18%;height:clamp(105px,18%,150px)}
+  .landscapeInner{position:relative;z-index:1}
+}
+@media (max-width:600px){
+  /* Small screens use the restrained CSS threshold, not the image crop. */
+  .landscapeField::before{display:none}
+  .landscapeField::after{display:none}
+  .hero .heroTopline{flex-wrap:wrap;gap:6px 14px}
+  .hero .heroTopline span:last-child{max-width:none;text-align:left}
+  .landscapeInner{margin-top:clamp(70px,11svh,108px);margin-bottom:clamp(50px,9svh,88px)}
+  .landscapeBottom{gap:12px}
+  .landscapeActions{gap:8px 18px}
+}
+
+/* FW-CORPORATE-3.19E — Mobile composition, not desktop scaled down.
+   Scoped below tablet width; the approved desktop gateway remains untouched. */
+@media (max-width: 600px) {
+  .site { overflow-x:clip; }
+  .header { background:#080d12; }
+  .headerInner {
+    width:calc(100% - 40px);
+    min-height:67px;
+    padding:13px 0 12px;
+    display:flex;
+    flex-direction:row;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  }
+  .wordmark { font-size:clamp(13px,4.25vw,17px);letter-spacing:-.025em; }
+  .wordmark span { font-size:7px;letter-spacing:.04em;margin-left:4px; }
+  .navigation { gap:12px;flex-wrap:nowrap; }
+  .navigation a { font-size:9px;letter-spacing:.01em;white-space:nowrap; }
+
+  .hero {
+    min-height:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:initial;
+    overflow:hidden;
+    background:radial-gradient(ellipse 67% 40% at 88% 73%,rgba(31,77,105,.18),transparent 84%),#080d12;
+  }
+  .hero .heroTopline {
+    width:calc(100% - 40px);
+    padding:19px 0 0;
+    display:flex;
+    flex-direction:row;
+    justify-content:space-between;
+    align-items:start;
+    flex-wrap:nowrap;
+    gap:14px;
+  }
+  .hero .heroTopline span {font-size:8px;letter-spacing:.095em;line-height:1.5;}
+  .hero .heroTopline span:last-child {display:none;}
+  .landscapeField {background:radial-gradient(ellipse 48% 42% at 88% 62%,rgba(40,94,126,.14),transparent 100%);}
+  .landscapeField::before,.landscapeField::after {display:none;}
+  .thresholdTrace {top:22%;right:-90%;width:148vw;height:72%;opacity:.22;}
+  .landscapeCoordinate {opacity:.09;}
+  .landscapeInner {
+    display:block;
+    width:calc(100% - 40px);
+    margin:clamp(56px,13vw,84px) auto 0;
+    padding:0 0 48px;
+  }
+  .landscapeIdentity {max-width:100%;}
+  .landscapeIdentity .eyebrow {font-size:9px;line-height:1.6;letter-spacing:.105em;}
+  .landscapeIdentity h1 {
+    font-size:clamp(30px,9.1vw,44px);
+    line-height:1.09;
+    margin:18px 0 12px;
+    white-space:nowrap;
+    letter-spacing:-.018em;
+  }
+  .landscapeClassification {font-size:12px;line-height:1.5;}
+  .landscapeRule {margin:21px 0 18px;width:96px;}
+  .landscapeStatement {font-size:12px;line-height:1.75;max-width:47ch;color:#b7c3c8;}
+  .landscapeBottom {
+    width:calc(100% - 40px);
+    margin:0 auto;
+    padding:18px 0 24px;
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    gap:16px;
+    background:linear-gradient(180deg,rgba(21,52,72,.09),transparent 100%);
+    border-top:1px solid rgba(91,145,177,.28);
+  }
+  .landscapeBottomLabel {font-size:8px;letter-spacing:.11em;}
+  .landscapeActions {width:100%;display:grid;grid-template-columns:minmax(0,1fr);gap:0;}
+  .landscapeActions a {
+    width:100%;
+    min-height:46px;
+    display:flex;
+    justify-content:space-between;
+    font-size:10px;
+    letter-spacing:.065em;
+    padding:12px 0;
+    border-bottom:1px solid rgba(121,164,184,.22);
+  }
+  .landscapeExplore {justify-self:start;font-size:9px;letter-spacing:.12em;}
+
+  .institutionalContinuity {
+    width:calc(100% - 40px);
+    padding:50px 0 60px;
+  }
+  .recordIndex {font-size:9px;letter-spacing:.105em;gap:12px;align-items:baseline;}
+  .recordIndex span:last-child {text-align:right;}
+  .snapshotPosition {
+    width:100%;
+    display:grid;
+    grid-template-columns:minmax(0,1fr);
+    gap:17px;
+    margin:28px 0 26px;
+  }
+  .snapshotPosition h2 {font-size:clamp(18px,5vw,21px);line-height:1.32;letter-spacing:.025em;}
+  .snapshotPosition p {font-size:13px;line-height:1.77;}
+  .institutionalContinuity > .firmFoot {padding:18px 4px;}
+  .institutionalContinuity > .firmFoot > p {max-width:37ch;font-size:10px;line-height:1.8;letter-spacing:.075em;}
+  .institutionalContinuity > .continuityPractice {padding-top:27px;}
+  .continuityPracticeIndex {font-size:9px;flex-wrap:nowrap;gap:8px;}
+  .continuityPracticeIndex span:last-child {font-size:8px;white-space:nowrap;}
+  .continuityPractice .practiceNarrative {max-width:100%;font-size:13px;line-height:1.78;}
+  .continuityPractice .practiceProfileLink {font-size:10px;margin-top:22px;}
+
+  .resources {width:calc(100% - 40px);padding:60px 0 65px;}
+  .accessHeading {display:flex;flex-direction:column;align-items:start;gap:10px;padding-bottom:22px;}
+  .accessIdentity {display:flex;align-items:baseline;gap:13px;flex-wrap:nowrap;}
+  .accessHeading h2 {font-size:clamp(16px,5vw,20px);letter-spacing:.03em;line-height:1.3;}
+  .accessIndex {font-size:9px;white-space:nowrap;}
+  .accessHeading p {font-size:12px;line-height:1.5;margin:0;}
+  .accessSectors {
+    width:100%;
+    padding:13px 18px 10px;
+    grid-template-columns:minmax(0,1fr);
+    background:linear-gradient(180deg,rgba(15,38,54,.9),rgba(9,20,29,.98) 43%,rgba(12,27,38,.95));
+  }
+  .accessSectors::after {height:45%;opacity:.3;}
+  .accessSector,.accessSector:first-child {padding:22px 0 24px;min-height:0;}
+  .accessSector:not(:last-child)::after {left:0;right:0;bottom:0;}
+  .sectorTop {font-size:9px;margin-bottom:13px;}
+  .sectorIcon {width:25px;height:25px;margin-bottom:14px;}
+  .accessSector strong {font-size:12px;max-width:100%;line-height:1.45;}
+  .sectorDescription {font-size:12px;line-height:1.65;max-width:42ch;}
+  .resources .disclaimer {font-size:10px;line-height:1.75;margin-top:20px;}
+  .footer {width:calc(100% - 40px);padding:28px 0 36px;gap:23px;}
+  .footerIdentity,.footerUtility {gap:7px;}
+  .footer nav {gap:20px;flex-wrap:wrap;}
+}
+@media (max-width: 360px) {
+  .navigation {gap:9px;}
+  .navigation a {font-size:8px;}
+  .wordmark {font-size:13px;}
+  .landscapeIdentity h1 {font-size:clamp(27px,8.7vw,32px);}
+  .accessIdentity {gap:9px;}
+  .accessHeading h2 {font-size:16px;}
+}
+
+
+/* FW-CORPORATE-3.19F — Mobile governing inscription and etheric access.
+   Reorder the existing live thesis only on phones; keep desktop and routes intact. */
+@media (max-width: 600px) {
+  .institutionalContinuity {
+    display:flex;
+    flex-direction:column;
+  }
+  .institutionalContinuity > .recordIndex { order:0; }
+  .institutionalContinuity > .firmFoot {
+    order:1;
+    width:100%;
+    margin:29px auto 34px;
+    padding:23px 10px 25px;
+    border-top:1px solid rgba(86,139,166,.19);
+    border-bottom:1px solid rgba(86,139,166,.19);
+    background:radial-gradient(ellipse 70% 90% at 50% 42%,rgba(38,94,121,.075),transparent 83%);
+  }
+  .institutionalContinuity > .firmFoot > p {
+    max-width:39ch;
+    font-family:Arial,Helvetica,sans-serif;
+    font-weight:400;
+    font-size:clamp(8.5px,2.25vw,10px);
+    line-height:1.95;
+    letter-spacing:.115em;
+    color:#80bbd8;
+    text-align:center;
+    text-wrap:balance;
+  }
+  .institutionalContinuity > .snapshotPosition {
+    order:2;
+    margin:0 auto 31px;
+    gap:15px;
+  }
+  .institutionalContinuity > .continuityPractice {
+    order:3;
+    border-top:1px solid rgba(77,119,145,.25);
+    padding-top:26px;
+  }
+  .snapshotPosition h2 {letter-spacing:.02em;line-height:1.3;}
+  .continuityPractice .practiceProfileLink {max-width:100%;line-height:1.6;}
+
+  /* A softly illuminated receiving horizon rather than vertical light beams. */
+  .resources {
+    position:relative;
+    isolation:isolate;
+    padding-top:68px;
+  }
+  .resources::before {
+    z-index:-1;
+    inset:-34px -20px auto;
+    height:270px;
+    background:
+      radial-gradient(ellipse 49% 28% at 50% 8%,rgba(108,184,220,.17),transparent 92%),
+      radial-gradient(ellipse 78% 65% at 50% 38%,rgba(31,82,113,.1),transparent 90%);
+    pointer-events:none;
+  }
+  .accessSectors {
+    background:linear-gradient(180deg,rgba(10,24,34,.58),rgba(8,18,27,.79) 45%,rgba(8,17,25,.64));
+    box-shadow:inset 0 1px rgba(79,135,166,.08);
+  }
+  .accessSectors::before {
+    height:1px;
+    background:linear-gradient(90deg,transparent,rgba(87,157,197,.25) 26%,rgba(157,208,230,.5) 50%,rgba(80,143,178,.22) 74%,transparent);
+    box-shadow:0 2px 20px rgba(70,150,194,.12);
+  }
+  .accessSectors::after {
+    opacity:1;
+    height:240px;
+    background:radial-gradient(ellipse 75% 70% at 50% 0%,rgba(71,145,187,.115),transparent 84%);
+  }
+  .accessSector:hover,.accessSector:focus-visible {
+    background:rgba(49,107,139,.045);
+  }
+  .accessSector:not(:last-child)::after {
+    background:linear-gradient(90deg,transparent,rgba(102,159,189,.2) 16%,rgba(102,159,189,.2) 84%,transparent);
+  }
+}
+@media (max-width: 360px) {
+  .institutionalContinuity > .firmFoot {margin-top:25px;margin-bottom:31px;padding:22px 3px 24px;}
+  .institutionalContinuity > .firmFoot > p {font-size:8.5px;letter-spacing:.085em;}
+}
+@media (prefers-reduced-transparency: reduce) and (max-width: 600px) {
+  .resources::before {display:none;}
+  .institutionalContinuity > .firmFoot {background:transparent;}
+  .accessSectors {background:#0a1822;}
+}
