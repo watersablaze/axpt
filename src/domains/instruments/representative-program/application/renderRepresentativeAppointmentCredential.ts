@@ -155,7 +155,7 @@ export async function renderRepresentativeAppointmentCredential(
 
   y -= 5;
   if (record.authorities?.length) {
-    lines("RECORDED AUTHORITIES", sans, 8, gold, false);
+    lines("COMMERCIAL MANDATE", sans, 8, gold, false);
     y -= 3;
     const allConditions = record.authorities.map(certificateAuthorityConditions);
     const sharedConditions = [...new Set(allConditions[0])].filter(condition =>

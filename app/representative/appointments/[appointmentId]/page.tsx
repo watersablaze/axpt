@@ -113,7 +113,7 @@ export default async function AppointmentPage({
                   {prepared ? "Prepared Appointment" : "Appointment Record"}
                 </h1>
               </div>
-              <p className={styles.version}>Version {review.instrumentVersion}</p>
+
             </div>
             <p className={styles.reference}>{review.instrumentReference}</p>
             <p className={styles.instrumentTitle}>{review.title}</p>
@@ -140,8 +140,8 @@ export default async function AppointmentPage({
 
             <dl className={styles.particulars}>
               <div>
-                <dt>Appointment Form</dt>
-                <dd className={styles.capitalize}>{humanize(review.appointmentForm)}</dd>
+                <dt>Appointment</dt>
+                <dd className={styles.capitalize}>{review.appointmentForm === "INDIVIDUAL_REPRESENTATION" ? "Appointed individually by French-Ward, Inc." : humanize(review.appointmentForm)}</dd>
               </div>
               <div>
                 <dt>Program Standing</dt>
@@ -209,25 +209,24 @@ export default async function AppointmentPage({
             ) : null}
 
             <section className={styles.basis} aria-labelledby="appointment-basis">
-              <p className={styles.overline}>Appointment Basis</p>
+              <p className={styles.overline}>Commercial Mandate</p>
               <h2 id="appointment-basis" className={styles.sectionTitle}>
-                Derived from your executed Master Agreement
+                Scope and Conditions
               </h2>
-              <p className={styles.prose}>
-                This Appointment Instrument derives from your bound
-                Representative Program Master Agreement. Acceptance records
-                your acknowledgement of the prepared appointment configuration.
-              </p>
+              {review.representativeRole ? <>
+                <p className={styles.prose}>{review.representativeRole.purpose}</p>
+                <ul className={styles.prose} style={{ paddingLeft: 20, listStyleType: "disc" }}>
+                  {review.representativeRole.activities.map(activity => <li key={activity}>{activity}</li>)}
+                </ul>
+                <p className={styles.prose}>{review.representativeRole.conditions}</p>
+              </> : <p className={styles.prose}>
+                Your appointment details are being finalized. Your materials remain available in the workspace.
+              </p>}
               <div className={styles.boundary}>
-                <p className={styles.boundaryTitle}>Effect of Acceptance</p>
+                <p className={styles.boundaryTitle}>Accepting Your Appointment</p>
                 <p className={styles.prose}>
-                  Acceptance does not activate the appointment, change Program
-                  standing, or independently create delegated authority.{" "}
-                  {review.status === "ACTIVE"
-                    ? "French-Ward activation is recorded. Delegated authority remains separately governed."
-                    : prepared
-                      ? "French-Ward activation requires a separate operator decision."
-                      : "Appointment status and delegated authority remain separately governed."}
+                  By accepting, you confirm this role under your executed Master Agreement.
+                  Your Authority Register and the controls beside each material show its available uses.
                 </p>
               </div>
             </section>

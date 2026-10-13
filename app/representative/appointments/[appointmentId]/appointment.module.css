@@ -296,3 +296,119 @@
   .particulars { grid-template-columns: 1fr; }
   .headingRow { align-items: flex-start; flex-direction: column; gap: 10px; }
 }
+
+/* Compact appointment reading layout */
+.field { padding: 16px 20px 24px; }
+.shell { max-width: 1180px; }
+.navigation { padding-bottom: 12px; }
+.crown { padding: 18px 26px; }
+.institution {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 16px;
+  padding-bottom: 10px;
+}
+.program { margin: 0; }
+.headingRow { margin-top: 12px; }
+.title { font-size: clamp(26px, 2.8vw, 34px); }
+.crown > .reference { margin-top: 8px; }
+.instrumentTitle { margin-top: 4px; }
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr);
+  column-gap: 28px;
+  padding: 0 26px;
+}
+.identity {
+  grid-column: 1 / -1;
+  gap: 20px;
+  padding: 16px 0;
+}
+.name { margin-top: 5px; font-size: clamp(21px, 2vw, 25px); }
+.classification { margin-top: 4px; }
+.status { padding: 10px 14px; }
+.statusValue { margin-top: 4px; line-height: 1.5; }
+.particulars {
+  grid-column: 1;
+  align-content: start;
+  gap: 15px 20px;
+  padding: 18px 0;
+  border-bottom: 0;
+}
+.particulars dd { margin-top: 5px; line-height: 1.5; }
+.basis {
+  grid-column: 2;
+  padding: 18px 0;
+}
+.sectionTitle { margin-top: 5px; font-size: 16px; line-height: 1.4; }
+.prose { margin-top: 8px; line-height: 1.6; }
+.boundary { margin-top: 12px; padding: 12px 14px; }
+.decision {
+  grid-column: 1 / -1;
+  margin: 0 -26px;
+  padding: 16px 26px;
+}
+.form { margin-top: 12px; }
+.confirmation { font-size: 13px; line-height: 1.6; }
+.decisionNote { margin-top: 6px; line-height: 1.6; }
+.submit { margin-top: 12px; padding: 11px 18px; }
+.receipt { margin-top: 10px; padding: 12px 14px; }
+.timestamp { margin-top: 8px; }
+.footer { padding: 12px 26px; line-height: 1.6; }
+
+@media (max-width: 760px) {
+  .body { grid-template-columns: minmax(0, 1fr); }
+  .particulars, .basis { grid-column: 1; }
+  .particulars { border-bottom: 1px solid #253944; }
+}
+@media (max-width: 640px) {
+  .field { padding: 12px 10px 24px; }
+  .crown { padding: 18px; }
+  .body { padding: 0 18px; }
+  .identity { grid-template-columns: 1fr; gap: 12px; }
+  .decision { margin: 0 -18px; padding: 16px 18px; }
+  .footer { padding: 12px 18px; }
+}
+
+/* Ivory appointment document surface */
+.field { background: #ded8cb; color: #292720; }
+.instrument {
+  background: #f7f3e9;
+  border-color: #bcb3a2;
+  box-shadow: 0 14px 44px rgba(48, 39, 24, .12);
+}
+.crown { background: #eee7d8; border-color: #c6bdab; }
+.institution { border-color: #c8bda6; }
+.back { color: #514838; }
+.back:hover { color: #755419; }
+.navigationLabel, .overline, .particulars dt { color: #686253; }
+.eyebrow { color: #795d2b; }
+.program, .instrumentTitle, .version { color: #625d51; }
+.title, .name, .sectionTitle { color: #27251f; }
+.reference, .classification { color: #70572c; }
+.identity, .particulars, .footer { border-color: #cec6b7; }
+.status {
+  background: #eae2d2;
+  border-color: #957443;
+}
+.statusValue { color: #594622; }
+.prose, .decisionNote, .timestamp, .footer { color: #575246; }
+.boundary {
+  background: #efeade;
+  border-color: #c8bfad;
+  border-left-color: #927b50;
+}
+.boundaryTitle { color: #625235; }
+.decision {
+  background: #eae3d4;
+  border-color: #c3b8a4;
+}
+.confirmation { color: #363228; }
+.receipt { background: #f2ebdc; border-color: #b7a27d; }
+.receiptHeading { color: #614a24; }
+.error {
+  background: #f6e7e2;
+  border-color: #bb8d7c;
+  color: #843c30;
+}

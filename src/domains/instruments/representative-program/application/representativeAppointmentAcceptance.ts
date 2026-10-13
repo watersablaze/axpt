@@ -1,3 +1,4 @@
+import { representativeAppointmentRoleSchema } from "./representativeAppointmentRole";
 import { createHash } from "node:crypto";
 import type { PrismaClient } from "@prisma/client";
 import { recordInstrumentEvidenceWithClient } from "../../commands/recordInstrumentEvidenceWithClient";
@@ -113,6 +114,13 @@ export async function loadRepresentativeAppointmentReview(params: {
     scope.masterAgreementReference !== agreement.reference
   ) throw new Error("[ARP_APPOINTMENT_ACCEPTANCE_RECORD_CONFLICT]");
 
+  const roleResult = scope.representativeRole === undefined
+    ? null : representativeAppointmentRoleSchema.safeParse(scope.representativeRole);
+  if (roleResult && !roleResult.success) {
+    throw new Error("[ARP_APPOINTMENT_ROLE_RECORD_CONFLICT]");
+  }
+  const representativeRole = roleResult?.success ? roleResult.data : null;
+
   const snapshot = {
     appointmentId: appointment.id,
     participantId: participant.id,
@@ -158,6 +166,7 @@ export async function loadRepresentativeAppointmentReview(params: {
 
   return {
     ...snapshot,
+    representativeRole,
     displayName: participant.displayName,
     standing: participant.standing,
     status: appointment.instrument.status,
@@ -221,6 +230,7 @@ export async function acceptRepresentativeAppointmentWithClient(params: {
         appointmentClass: review.appointmentClass,
         appointmentForm: review.appointmentForm,
         masterAgreementReference: review.masterAgreementReference,
+        scope: review.scope,
       },
     },
   });

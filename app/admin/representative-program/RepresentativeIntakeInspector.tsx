@@ -9,6 +9,7 @@ import RepresentativeAppointmentPreparationPanel from "./RepresentativeAppointme
 import RepresentativeCommercialUtilityPackPanel from "./RepresentativeCommercialUtilityPackPanel";
 import RepresentativeCommunicationsPanel from "./RepresentativeCommunicationsPanel";
 import JensWorkspacePreparation from "./JensWorkspacePreparation";
+import JensWorkspaceAccess from "./JensWorkspaceAccess";
 
 type Intake = {
   id: string;
@@ -821,6 +822,10 @@ export default function RepresentativeIntakeInspector({
                 key={intake.id + "-workspace-preparation"}
                 intakeId={intake.id}
               />
+            ) : null}
+
+            {intake.id === "cmusi9eqz0001w0qfvic3532g" && intake.status === "ADMITTED" ? (
+              <JensWorkspaceAccess key={intake.id + "-workspace-access"} intakeId={intake.id} />
             ) : null}
 
             <RepresentativeAccessReissuePanel

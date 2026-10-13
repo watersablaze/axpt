@@ -567,3 +567,23 @@
     scroll-margin-top: 110px;
   }
 }
+
+/* ARP appointment card — ivory alternative */
+.plaque {
+  padding: 0;
+  border: 1px solid #c8bda6;
+  border-left: 3px solid #a3844b;
+  border-radius: 3px;
+  background: #f1ebde;
+  box-shadow: 0 8px 24px rgba(0,0,0,.14);
+}
+.plaqueInset { padding: 22px 20px; border: 0; }
+.plaqueIssuer { color: #765d31; }
+.plaqueCategory { color: #766f61; }
+.plaqueName { color: #292820; font-size: 25px; line-height: 1.2; }
+.plaqueDesignation { color: #69532c; line-height: 1.6; }
+.plaqueFacts { border-color: #cec3ae; }
+.plaqueFacts dt { color: #766f61; }
+.plaqueFacts dd { color: #39372f; }
+.plaqueReference { color: #766f61; }
+.plaqueLink { color: #685024; }

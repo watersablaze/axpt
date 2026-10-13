@@ -297,6 +297,10 @@ export async function POST(request: Request) {
             deviceInfo: userAgent,
           },
         })
+      },
+      {
+        maxWait: 10000,
+        timeout: 30000,
       }
     )
   } catch (error) {

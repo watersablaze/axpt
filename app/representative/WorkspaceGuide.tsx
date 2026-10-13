@@ -6,23 +6,23 @@ import canvas from "./workspace-canvas.module.css";
 const movements = [
   {
     title: "Your Appointment",
-    copy: "Your appointment records your formal relationship with French-Ward. Its status and effective date belong to that instrument. Appointment does not independently grant operative authority.",
+    copy: "Your appointment defines your role with French-Ward. Read your commercial mandate, review its scope and conditions, and confirm your acceptance when you are ready.",
     source: "Appointment Record",
   },
   {
-    title: "Your Authority",
-    copy: "Authority is separately recorded and evaluated. Consult the current register and the scope, conditions, and required approvals before undertaking representative activity.",
+    title: "Your Scope of Activity",
+    copy: "Your Authority Register shows the activities currently available to you and their conditions. Use it as a practical reference when introducing relationships, communicating approved information, presenting materials, or coordinating engagement.",
     source: "Authority Register",
   },
   {
     title: "Your Commercial Utility Pack",
-    copy: "Your CUP brings together documentary materials released for your account. Viewing, personal download, presentation, and transmission are separately governed. Possession of a resource does not establish authority to use it on behalf of French-Ward.",
+    copy: "Your Commercial Utility Pack keeps your official materials together. Open each resource to get acquainted with its content. The controls and use conditions show whether you can view, download, present, or share it. Sharing tools will appear as they become available.",
     source: "Commercial Utility Pack · Released resources",
   },
   {
-    title: "Your Current Position",
+    title: "Your Next Step",
     copy: "",
-    source: "Current Step · Server-derived position",
+    source: "Overview · Your next step",
   },
 ] as const;
 
@@ -54,9 +54,9 @@ export default function WorkspaceGuide({ position }: { position: string }) {
         </h1>
         <p className={canvas.guideCopy}>
           {step === 0
-            ? "This is your institutional environment for representation with French-Ward. Establish your current position, inspect your appointment and authority, and open the documentary materials released to you."
+            ? "Welcome to your working environment with French-Ward. Here you can review your appointment, get acquainted with official materials, and find the scope and guidance for your representative work."
             : complete
-              ? "Your workspace will develop with your Program standing, authority, and released resources. Return to Guide whenever you need to reorient."
+              ? "Start with your appointment and materials, then return to Overview for your next step. Your workspace will grow with new resources and tools. We welcome your feedback as you begin using it."
               : step === 4 ? position : movement?.copy}
         </p>
         {movement ? (
@@ -95,7 +95,7 @@ export default function WorkspaceGuide({ position }: { position: string }) {
         )}
       </div>
       <p className={canvas.guideFootnote}>
-        Guide explains the environment. Institutional decisions remain governed by the underlying records.
+        Use official materials as issued. Bring commercial terms and commitments to French-Ward for authorization.
       </p>
     </section>
   );

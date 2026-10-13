@@ -1,3 +1,4 @@
+import { INITIAL_REPRESENTATIVE_APPOINTMENT_ROLE, representativeAppointmentRoleSchema } from "../application/representativeAppointmentRole";
 import type { PrismaClient } from "@prisma/client";
 
 import {
@@ -55,7 +56,9 @@ function appointmentScopeMatches(params: {
   const keys = Object.keys(params.scope).sort();
 
   return (
-    keys.length === 2 &&
+    (keys.length === 2 || (keys.length === 3 &&
+      keys[2] === "representativeRole" &&
+      representativeAppointmentRoleSchema.safeParse(params.scope.representativeRole).success)) &&
     keys[0] === "appointmentForm" &&
     keys[1] === "masterAgreementReference" &&
     params.scope.appointmentForm === params.appointmentForm &&
@@ -176,6 +179,7 @@ export async function prepareRepresentativeProgramAppointmentWithClient(params: 
   const appointmentScope = {
     appointmentForm: params.appointmentForm,
     masterAgreementReference: masterAgreement.reference,
+    representativeRole: INITIAL_REPRESENTATIVE_APPOINTMENT_ROLE,
   };
 
   const existing = await params.client.institutionalInstrument.findUnique({
