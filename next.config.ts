@@ -5,6 +5,13 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   productionBrowserSourceMaps: false,
 
+  outputFileTracingIncludes: {
+    "/api/admin/representative-program/appointments/credential": [
+      "./private-assets/arp/jamal-ward-signature.png",
+      "./private-assets/arp/french-ward-seal.png",
+    ],
+  },
+
   /*
    * Local mobile visual-QA builds may proceed
    * while unrelated worktree TypeScript is in
