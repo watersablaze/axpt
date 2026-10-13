@@ -3,6 +3,24 @@ import Image from "next/image";
 import Link from "next/link";
 
 import TransactionIntakeForm from "./TransactionIntakeForm";
+import CommercialIntakeAccessRequest from "./CommercialIntakeAccessRequest";
+
+import {
+  getPrincipal,
+} from "@/domains/auth/getPrincipal";
+
+import {
+  resolveInstitutionalAccessWithClient,
+} from "@/domains/institutional-access/resolveInstitutionalAccessWithClient";
+
+import {
+  FRENCH_WARD_COMMERCIAL_INTAKE,
+} from "@/domains/institutions/french-ward/commercial";
+
+import {
+  prisma,
+} from "@/infrastructure/db/prisma";
+
 import styles from "./transaction-intake.module.css";
 
 export const metadata: Metadata = {
@@ -28,6 +46,43 @@ export default async function TransactionIntakePage({
   const referralCode = params?.ref || "";
   const representativeName = params?.rep || "";
   const program = params?.program || "";
+
+  const principal =
+    await getPrincipal();
+
+  const access =
+    principal
+      ? await resolveInstitutionalAccessWithClient({
+          client:
+            prisma,
+
+          identity: {
+            userId:
+              principal.userId,
+
+            email:
+              principal.email,
+          },
+
+          scope:
+            FRENCH_WARD_COMMERCIAL_INTAKE
+              .accessScope,
+
+          action:
+            "VIEW_FORM",
+
+          resourceReference:
+            FRENCH_WARD_COMMERCIAL_INTAKE
+              .reference,
+
+          resourceVersion:
+            FRENCH_WARD_COMMERCIAL_INTAKE
+              .version,
+        })
+      : {
+          allowed:
+            false,
+        } as const;
 
   return (
     <main className={styles.page}>
@@ -87,38 +142,59 @@ export default async function TransactionIntakePage({
         </div>
       </section>
 
-      <nav
-        className={styles.instrumentNav}
-        aria-label="Transaction intake sections"
-      >
-        <div>
-          <a href="#status">01 Status</a>
-          <a href="#counterparty">
-            02 Counterparty
-          </a>
-          <a href="#transaction">
-            03 Transaction
-          </a>
-          <a href="#delivery">04 Delivery</a>
-          <a href="#settlement">
-            05 Settlement
-          </a>
-          <a href="#readiness">
-            06 Readiness
-          </a>
-          <a href="#submission">
-            07 Submission
-          </a>
-        </div>
-      </nav>
+      {access.allowed ? (
+        <>
+          <nav
+            className={styles.instrumentNav}
+            aria-label="Transaction intake sections"
+          >
+            <div>
+              <a href="#status">01 Status</a>
+              <a href="#counterparty">
+                02 Counterparty
+              </a>
+              <a href="#transaction">
+                03 Transaction
+              </a>
+              <a href="#delivery">
+                04 Delivery
+              </a>
+              <a href="#settlement">
+                05 Settlement
+              </a>
+              <a href="#readiness">
+                06 Readiness
+              </a>
+              <a href="#submission">
+                07 Submission
+              </a>
+            </div>
+          </nav>
 
-      <TransactionIntakeForm
-        initialReferralCode={referralCode}
-        initialRepresentativeName={
-          representativeName
-        }
-        initialProgram={program}
-      />
+          <TransactionIntakeForm
+            initialReferralCode={
+              referralCode
+            }
+            initialRepresentativeName={
+              representativeName
+            }
+            initialProgram={
+              program
+            }
+          />
+        </>
+      ) : (
+        <CommercialIntakeAccessRequest
+          initialName={
+            principal?.displayName ??
+            ""
+          }
+          initialEmail={
+            principal?.email ??
+            ""
+          }
+        />
+      )}
     </main>
   );
 }

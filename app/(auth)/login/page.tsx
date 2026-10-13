@@ -28,7 +28,12 @@ function getSafeDestination() {
     (
       requested.startsWith('/admin') ||
       requested.startsWith('/representative') ||
-      requested.split(/[?#]/)[0] === '/french-ward/profile'
+      [
+        '/french-ward/profile',
+        '/french-ward',
+        '/french-ward/transaction-intake',
+        '/transaction-intake',
+      ].includes(requested.split(/[?#]/)[0])
     )
   ) {
     return requested

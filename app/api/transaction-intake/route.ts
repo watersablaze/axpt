@@ -1,4 +1,18 @@
 import { NextResponse } from "next/server";
+
+import {
+  getPrincipal,
+} from "@/domains/auth/getPrincipal";
+
+import {
+  consumeInstitutionalAccessWithClient,
+  InstitutionalAccessDeniedError,
+} from "@/domains/institutional-access/consumeInstitutionalAccessWithClient";
+
+import {
+  FRENCH_WARD_COMMERCIAL_INTAKE,
+} from "@/domains/institutions/french-ward/commercial";
+
 import { prisma } from "@/infrastructure/db/prisma";
 import { createTransactionIntakeReference } from "../../../lib/intakeReference";
 import { sendTransactionIntakeConfirmation } from "@/domains/control-center/transaction-intakes/sendTransactionIntakeConfirmation";
@@ -16,6 +30,22 @@ function asRequiredString(value: unknown) {
 
 export async function POST(req: Request) {
   try {
+    const principal =
+      await getPrincipal();
+
+    if (!principal) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            "Commercial intake access is required.",
+        },
+        {
+          status: 403,
+        },
+      );
+    }
+
     const body = await req.json();
 
     const submitterName = asRequiredString(body.submitterName);
@@ -49,7 +79,38 @@ export async function POST(req: Request) {
 
     const reference = createTransactionIntakeReference();
 
-    const intake = await prisma.transactionIntake.create({
+    const intake =
+      await consumeInstitutionalAccessWithClient({
+        client:
+          prisma,
+
+        identity: {
+          userId:
+            principal.userId,
+
+          email:
+            principal.email,
+        },
+
+        scope:
+          FRENCH_WARD_COMMERCIAL_INTAKE
+            .accessScope,
+
+        action:
+          "SUBMIT_INTAKE",
+
+        resourceReference:
+          FRENCH_WARD_COMMERCIAL_INTAKE
+            .reference,
+
+        resourceVersion:
+          FRENCH_WARD_COMMERCIAL_INTAKE
+            .version,
+
+        execute:
+          async (tx) => {
+            const created =
+              await tx.transactionIntake.create({
       data: {
         reference,
 
@@ -242,6 +303,23 @@ export async function POST(req: Request) {
       },
     });
 
+            return {
+              value:
+                created,
+
+              intakeId:
+                created.id,
+
+              intakeReference:
+                created.reference,
+            };
+          },
+      });
+
+    /*
+     * External side effects intentionally occur only after the
+     * access-consumption / intake transaction has committed.
+     */
     await sendTransactionIntakeConfirmation({
       id: intake.id,
       reference: intake.reference,
@@ -294,6 +372,22 @@ export async function POST(req: Request) {
       },
     });
   } catch (error) {
+    if (
+      error instanceof
+      InstitutionalAccessDeniedError
+    ) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            "Commercial intake access is required.",
+        },
+        {
+          status: 403,
+        },
+      );
+    }
+
     console.error("[transaction-intake:create]", error);
 
     return NextResponse.json(

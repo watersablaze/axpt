@@ -1,0 +1,138 @@
+.panel {
+  width: min(760px, calc(100% - 2rem));
+  margin: 3.5rem auto 5rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border: 1px solid rgba(154, 125, 72, 0.34);
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.eyebrow {
+  margin: 0 0 0.8rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.panel h2 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.8rem, 4vw, 2.8rem);
+  font-weight: 500;
+  line-height: 1.1;
+}
+
+.intro {
+  max-width: 620px;
+  margin: 1.1rem 0 0;
+  line-height: 1.7;
+}
+
+.form {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.form label {
+  display: grid;
+  gap: 0.45rem;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+.form input,
+.form textarea {
+  width: 100%;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  padding: 0.8rem 0.9rem;
+  background: #fff;
+  font: inherit;
+  font-weight: 400;
+  letter-spacing: normal;
+}
+
+.form textarea {
+  resize: vertical;
+}
+
+.form button {
+  justify-self: start;
+  margin-top: 0.4rem;
+  border: 0;
+  padding: 0.85rem 1.25rem;
+  background: #171717;
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.form button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.notice {
+  margin: 1.6rem 0 0;
+  padding-top: 1.15rem;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+  font-size: 0.82rem;
+  line-height: 1.65;
+}
+
+.error {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+
+.signInPanel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.25rem;
+  margin-top: 1.6rem;
+  padding: 1rem 1.1rem;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(0, 0, 0, 0.025);
+}
+
+.signInPanel strong {
+  display: block;
+  font-size: 0.82rem;
+}
+
+.signInPanel p {
+  margin: 0.25rem 0 0;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.signInLink {
+  flex: 0 0 auto;
+  padding: 0.72rem 0.95rem;
+  border: 1px solid #171717;
+  color: #171717;
+  font-size: 0.76rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.signInLink:hover,
+.signInLink:focus-visible {
+  background: #171717;
+  color: #fff;
+}
+
+@media (max-width: 620px) {
+  .signInPanel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .signInLink {
+    text-align: center;
+  }
+}
