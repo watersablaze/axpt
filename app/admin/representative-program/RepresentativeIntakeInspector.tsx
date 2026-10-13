@@ -441,6 +441,18 @@ export default function RepresentativeIntakeInspector({
   focusedIntakeId?: string | null;
   onFocusedIntakeChange?: (intakeId: string) => void;
 }) {
+
+  const views = [
+    ["overview", "Overview"],
+    ["intake", "Intake"],
+    ["agreement", "Agreement"],
+    ["appointment", "Appointment & Authority"],
+    ["cup", "CUP"],
+    ["correspondence", "Correspondence"],
+    ["access", "Access"],
+  ] as const;
+  type View = (typeof views)[number][0];
+  const [view, setView] = useState<View>("overview");
   const [intakeId, setIntakeId] = useState("");
   const [intake, setIntake] = useState<Intake | null>(null);
   const [loading, setLoading] = useState(false);
@@ -495,6 +507,7 @@ export default function RepresentativeIntakeInspector({
     // Clear only when moving to a different candidate.
     if (intake?.id !== id) {
       setIntake(null);
+      setView("overview");
     }
 
     try {
@@ -728,7 +741,22 @@ export default function RepresentativeIntakeInspector({
       ) : null}
 
       {intake ? (
-        <div className="mt-6 grid gap-5 xl:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.55fr)]">
+
+        <div className="mt-6 grid min-w-0 gap-5">
+          <nav aria-label="Candidate workspace"
+            className="sticky top-0 z-10 flex flex-wrap gap-2 border-y border-gray-800 bg-[#080e17] p-3">
+            {views.map(([key, label]) => (
+              <button key={key} type="button"
+                aria-current={view === key ? "page" : undefined}
+                onClick={() => setView(key)}
+                className={view === key
+                  ? "rounded border border-[#b99657] bg-[#b99657]/15 px-3 py-2 text-sm font-semibold text-[#ead3a4]"
+                  : "rounded border border-gray-800 px-3 py-2 text-sm text-gray-300 hover:border-gray-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#b99657]"}>
+                {label}
+              </button>
+            ))}
+          </nav>
+
           <div className="space-y-5">
             <div className="rounded border border-gray-800 bg-black p-4">
               <div className="flex flex-wrap items-start justify-between gap-4">
@@ -753,7 +781,7 @@ export default function RepresentativeIntakeInspector({
               </div>
             </div>
 
-            <dl className="grid gap-3 text-sm sm:grid-cols-2">
+            <dl style={{ display: view === "overview" ? undefined : "none" }} className="grid gap-3 text-sm sm:grid-cols-2">
               {[
                 ["Intake status", intake.status],
                 ["Qualification decision", intake.qualificationDecision],
@@ -779,22 +807,22 @@ export default function RepresentativeIntakeInspector({
               ))}
             </dl>
 
-            <div className="rounded border border-gray-800 bg-black p-4">
-              <h3 className="text-sm font-semibold text-gray-200">
-                Internal Review Notes
+            <div hidden={view !== "intake"} className="rounded border border-gray-800 bg-black p-4"><h3 className="text-sm font-semibold text-gray-200">Internal Review Notes
               </h3>
               <p className="mt-2 whitespace-pre-wrap text-sm text-gray-400">
                 {intake.internalNotes || "No notes recorded."}
               </p>
             </div>
 
-            <CandidateSubmissionDossier
+            <div hidden={view !== "intake"}>
+<CandidateSubmissionDossier
               submission={intake.submission}
               submittedAt={intake.submittedAt}
             />
+</div>
           </div>
 
-          <aside className="space-y-4 xl:sticky xl:top-6 xl:self-start">
+          <aside className="space-y-4">
             <div className="rounded border border-gray-800 bg-black p-3">
               <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
                 Operator Actions
@@ -805,7 +833,8 @@ export default function RepresentativeIntakeInspector({
               </p>
             </div>
 
-            <RepresentativeCommunicationsPanel
+            <div hidden={view !== "correspondence"}>
+<RepresentativeCommunicationsPanel
               key={`${intake.id}-communications`}
               intakeId={intake.id}
               status={intake.status}
@@ -814,41 +843,52 @@ export default function RepresentativeIntakeInspector({
               communications={intake.communications}
               onChanged={() => loadIntakeById(intake.id)}
             />
+</div>
 
 
             {intake.id === "cmusi9eqz0001w0qfvic3532g" &&
               intake.status === "ADMITTED" ? (
-              <JensWorkspacePreparation
+              <div hidden={view !== "correspondence"}>
+<JensWorkspacePreparation
                 key={intake.id + "-workspace-preparation"}
                 intakeId={intake.id}
               />
+</div>
             ) : null}
 
             {intake.id === "cmusi9eqz0001w0qfvic3532g" && intake.status === "ADMITTED" ? (
-              <JensWorkspaceAccess key={intake.id + "-workspace-access"} intakeId={intake.id} />
+              <div hidden={view !== "correspondence"}>
+<JensWorkspaceAccess key={intake.id + "-workspace-access"} intakeId={intake.id} />
+</div>
             ) : null}
 
-            <RepresentativeAccessReissuePanel
+            <div hidden={view !== "access"}>
+<RepresentativeAccessReissuePanel
               key={`${intake.id}-access`}
               intakeId={intake.id}
               status={intake.status}
             />
+</div>
 
-            <RepresentativeIntakeDecisionControls
+            <div hidden={view !== "intake"}>
+<RepresentativeIntakeDecisionControls
               key={intake.id}
               intakeId={intake.id}
               status={intake.status}
               onChanged={() => loadIntakeById(intake.id)}
             />
+</div>
 
             {intake.status === "QUALIFIED" || intake.status === "ADMITTED" ? (
-              <RepresentativeMasterAgreementPanel
+              <div hidden={view !== "agreement"}>
+<RepresentativeMasterAgreementPanel
                 key={`${intake.id}-agreement`}
                 intake={intake}
                 onChanged={() => loadIntakeById(intake.id)}
               />
+</div>
             ) : (
-              <section className="rounded border border-gray-800 bg-gray-950 p-4">
+              <section hidden={view !== "agreement"} className="rounded border border-gray-800 bg-gray-950 p-4">
                 <p className="text-xs uppercase tracking-[0.16em] text-gray-500">
                   Agreement Control
                 </p>
@@ -865,17 +905,21 @@ export default function RepresentativeIntakeInspector({
 
             {intake.status === "ADMITTED" && intake.admittedParticipantId ? (
               <>
-                <RepresentativeCommercialUtilityPackPanel
+                <div hidden={view !== "cup"}>
+<RepresentativeCommercialUtilityPackPanel
                   key={`${intake.id}-cup`}
                   participantId={intake.admittedParticipantId}
                   candidateDisplayName={intake.candidateDisplayName}
                 />
+</div>
 
-                <RepresentativeAppointmentPreparationPanel
+                <div hidden={view !== "appointment"}>
+<RepresentativeAppointmentPreparationPanel
                   key={`${intake.id}-appointment`}
                   participantId={intake.admittedParticipantId}
                   candidateDisplayName={intake.candidateDisplayName}
                 />
+</div>
               </>
             ) : null}
           </aside>
