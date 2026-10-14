@@ -775,8 +775,24 @@ export default function RepresentativeIntakeInspector({
                   </p>
                 </div>
 
-                <div className="rounded border border-gray-700 bg-gray-950 px-3 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-gray-300">
-                  {intake.status}
+                <div className="flex flex-wrap items-center gap-3">
+                  {intake.admittedParticipantId ? (
+                    <a
+                      href={
+                        "/admin/representative-program/participants/" +
+                        encodeURIComponent(intake.admittedParticipantId) +
+                        "/workspace-preview"
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded border border-[#b99657] px-3 py-2 text-sm font-medium text-[#ead3a4] hover:bg-[#b99657]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#b99657]"
+                    >
+                      Open Workspace Preview ↗
+                    </a>
+                  ) : null}
+                  <div className="rounded border border-gray-700 bg-gray-950 px-3 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-gray-300">
+                    {intake.status}
+                  </div>
                 </div>
               </div>
             </div>
