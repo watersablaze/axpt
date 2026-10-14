@@ -14,7 +14,13 @@ const deliveryLabels: Record<string, string> = {
 };
 const deliveryLabel = (status: string) => deliveryLabels[status] || "Status unavailable";
 
-export default function ProfileUseControls({ resourceReleaseId }: { resourceReleaseId: string }) {
+export default function ProfileUseControls({
+  resourceReleaseId,
+  readOnly = false,
+}: {
+  resourceReleaseId: string;
+  readOnly?: boolean;
+}) {
   const [pending, setPending] = useState(false);
   const [message, setMessage] = useState("");
   const [receipt, setReceipt] = useState<Receipt | null>(null);
@@ -22,6 +28,7 @@ export default function ProfileUseControls({ resourceReleaseId }: { resourceRele
   const submission = useRef<{ fields: string; key: string } | null>(null);
   const base = "/api/representative/commercial-utility-packs/resources/" + encodeURIComponent(resourceReleaseId) + "/profile";
   async function present() {
+    if (readOnly || pending) return;
     setPending(true); setMessage("");
     try {
       const response = await fetch(base + "/use", {
@@ -37,7 +44,7 @@ export default function ProfileUseControls({ resourceReleaseId }: { resourceRele
   }
   async function invite(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (pending || introductionId) return;
+    if (readOnly || pending || introductionId) return;
     const form = new FormData(event.currentTarget);
     const fields = {
       recipientName: String(form.get("recipientName") || "").trim(),
@@ -78,7 +85,7 @@ export default function ProfileUseControls({ resourceReleaseId }: { resourceRele
     finally { setPending(false); }
   }
   async function refresh() {
-    if (!introductionId) return;
+    if (readOnly || pending || !introductionId) return;
     setPending(true);
     try {
       const response = await fetch(base + "/invite?introductionId=" + encodeURIComponent(introductionId), { cache: "no-store" });
@@ -93,22 +100,28 @@ export default function ProfileUseControls({ resourceReleaseId }: { resourceRele
   return <section aria-labelledby="profile-use-heading" className="mt-6 border-t border-[#30495c] py-5">
     <h2 id="profile-use-heading" className="text-base font-medium text-[#eee7da]">Use the Official Profile</h2>
     <p className="mt-2 text-sm leading-6 text-[#b7c5ce]">Present the official publication or invite a named recipient. Invitations arrange seven days of Profile access and notify French-Ward Administration.</p>
-    <button type="button" disabled={pending} onClick={present} className={buttonClass + " mt-4"}>Open for Presentation</button>
+    {readOnly ? (
+      <p className="mt-3 text-sm text-[#d8c39b]">
+        Operator preview · Representative controls are shown for inspection.
+        Presentation and invitation sending are disabled here.
+      </p>
+    ) : null}
+    <button type="button" disabled={readOnly || pending} onClick={present} className={buttonClass + " mt-4"}>Open for Presentation</button>
     {!introductionId ? <form onSubmit={invite} className="mt-6 grid gap-4 sm:grid-cols-2">
-      <label className="text-sm text-[#b7c5ce]">Recipient name<input className={inputClass} name="recipientName" maxLength={120} required disabled={pending} /></label>
-      <label className="text-sm text-[#b7c5ce]">Recipient email<input className={inputClass} name="recipientEmail" type="email" maxLength={254} required disabled={pending} /></label>
-      <label className="text-sm text-[#b7c5ce] sm:col-span-2">Organization<input className={inputClass} name="recipientOrganization" maxLength={180} required disabled={pending} /></label>
-      <label className="text-sm text-[#b7c5ce] sm:col-span-2">Introduction purpose<textarea className={inputClass} name="purpose" rows={2} maxLength={1000} required disabled={pending} /></label>
+      <label className="text-sm text-[#b7c5ce]">Recipient name<input className={inputClass} name="recipientName" maxLength={120} required disabled={readOnly || pending} /></label>
+      <label className="text-sm text-[#b7c5ce]">Recipient email<input className={inputClass} name="recipientEmail" type="email" maxLength={254} required disabled={readOnly || pending} /></label>
+      <label className="text-sm text-[#b7c5ce] sm:col-span-2">Organization<input className={inputClass} name="recipientOrganization" maxLength={180} required disabled={readOnly || pending} /></label>
+      <label className="text-sm text-[#b7c5ce] sm:col-span-2">Introduction purpose<textarea className={inputClass} name="purpose" rows={2} maxLength={1000} required disabled={readOnly || pending} /></label>
       <p className="text-xs leading-5 text-[#b7c5ce] sm:col-span-2">The system sends an official invitation. This purpose is recorded for Admin review and is not included in the recipient email.</p>
-      <button className={buttonClass + " justify-self-start"} disabled={pending} type="submit">{pending ? "Processing…" : "Send Profile Invitation"}</button>
+      <button className={buttonClass + " justify-self-start"} disabled={readOnly || pending} type="submit">{pending ? "Processing…" : "Send Profile Invitation"}</button>
     </form> : <div className="mt-5 text-sm leading-6 text-[#b7c5ce]">
       {receipt && <><p>{receipt.recipientName} · {receipt.recipientEmail}</p>
         <p>Recipient email: {deliveryLabel(receipt.recipientDeliveryStatus)}</p>
         <p>Admin notification: {deliveryLabel(receipt.adminDeliveryStatus)}</p>
         <p>Access: {receipt.grant.revokedAt ? "Revoked" : new Date(receipt.grant.expiresAt).getTime() <= Date.now() ? "Expired" : "Granted"}</p>
         <p>Expires: {new Date(receipt.grant.expiresAt).toLocaleString()}</p></>}
-      <div className="mt-3 flex flex-wrap gap-3"><button type="button" className={buttonClass} disabled={pending} onClick={refresh}>Refresh Status</button>
-      <button type="button" className={buttonClass} disabled={pending} onClick={() => { setIntroductionId(null); setReceipt(null); setMessage(""); if (submission.current) {
+      <div className="mt-3 flex flex-wrap gap-3"><button type="button" className={buttonClass} disabled={readOnly || pending} onClick={refresh}>Refresh Status</button>
+      <button type="button" className={buttonClass} disabled={readOnly || pending} onClick={() => { setIntroductionId(null); setReceipt(null); setMessage(""); if (submission.current) {
         try { sessionStorage.removeItem("arp-profile-invitation:" + resourceReleaseId + ":" + submission.current.fields); } catch { /* Storage is optional. */ }
       } submission.current = null; }}>Invite Another Recipient</button></div>
     </div>}

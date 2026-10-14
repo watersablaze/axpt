@@ -1,5 +1,6 @@
 import boundaries from "../../../../../../../representative/resources/[resourceReleaseId]/operating-boundaries.module.css";
 import Link from "next/link";
+import ProfileUseControls from "../../../../../../../representative/ProfileUseControls";
 import { notFound, redirect } from "next/navigation";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { isAdmin } from "@/domains/auth/isAdmin";
@@ -66,6 +67,10 @@ export default async function OperatorResourcePreview({
     return <main className="min-h-screen bg-[#0c1d25] px-4 py-8 text-[#eee7da]">
       <div className="mx-auto max-w-7xl">
         {navigation}
+        <ProfileUseControls
+          resourceReleaseId={resourceReleaseId}
+          readOnly
+        />
         <FrenchWardInstitutionalProfileView
           profile={resource.content}
           packageReference={resource.packageReference}

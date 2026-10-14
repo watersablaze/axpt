@@ -92,6 +92,7 @@ export default async function RepresentativeResourcePage({
 
           {resource.kind === "INSTITUTIONAL_PROFILE" ? (
             <>
+            <ProfileUseControls resourceReleaseId={resourceReleaseId} />
             <FrenchWardInstitutionalProfileView
               profile={resource.content}
               packageReference={resource.packageReference}
@@ -101,7 +102,6 @@ export default async function RepresentativeResourcePage({
                   : undefined
               }
             />
-              <ProfileUseControls resourceReleaseId={resourceReleaseId} />
             </>
           ) : (
             <>
