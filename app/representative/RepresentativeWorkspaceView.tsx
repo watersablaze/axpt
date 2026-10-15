@@ -1,3 +1,5 @@
+import BuyerDossierControls from "./BuyerDossierControls";
+import { loadBuyerDossierOptionsWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/application/loadBuyerDossierOptionsWithClient";
 import WorkspaceStage from "./WorkspaceStage";
 import WorkspaceGuide from "./WorkspaceGuide";
 import CupWorkingSet from "./CupWorkingSet";
@@ -123,6 +125,8 @@ export default async function RepresentativeWorkspaceView({
       userId: userId,
     });
 
+  const buyerDossierOptions = await loadBuyerDossierOptionsWithClient({ client: prisma, userId, pack: commercialUtilityPack });
+
   const reviewAvailable = Boolean(appointmentReview?.canAccept);
   const awaitingActivation = Boolean(
     appointmentReview?.acceptedAt && appointmentReview.status === "DRAFT"
@@ -210,6 +214,7 @@ export default async function RepresentativeWorkspaceView({
                       <summary>Package record</summary>
                       <p className={canvas.packReference}>{commercialUtilityPack.reference} · Version {commercialUtilityPack.version}</p>
                     </details>
+                    <BuyerDossierControls options={buyerDossierOptions} readOnly={operatorPreview} />
                     <CupWorkingSet storageKey={`arp-workspace:${operatorPreview ? 'operator-preview:' : ''}${userId}:cup:${commercialUtilityPack.reference}:v${commercialUtilityPack.version}`} resourceIds={commercialUtilityPack.modules.flatMap(entry => entry.resources.map(resource => resource.id))} categories={commercialUtilityPack.modules.flatMap(entry =>
                       entry.resources.map(() => humanize(entry.module))
                     )} labels={commercialUtilityPack.modules.flatMap(entry =>

@@ -1,3 +1,4 @@
+import { deliverRepresentativeBuyerDossierWithClient } from "../../src/domains/instruments/representative-program/commercial-utility-pack/application/deliverRepresentativeBuyerDossierWithClient";
 import { resolveInstitutionalVisitorSignInWithClient } from "../../src/domains/institutional-access/resolveInstitutionalVisitorSignInWithClient";
 import { loadRecipientBuyerDossierWithClient } from "../../src/domains/instruments/representative-program/commercial-utility-pack/application/loadRecipientBuyerDossierWithClient";
 import assert from "node:assert/strict";
@@ -193,6 +194,23 @@ async function main() {
   await client.commercialUtilityPackResourceRelease.update({where:{id:sourceItem.resourceReleaseId},data:{state:"RELEASED"}});
   assert.ok((await readDossier())?.items.every(item=>item.available));
   console.log("✓ Recipient dossier serves both full projections; wrong identity, revocation, changed content and resource withdrawal deny access.");
+  let providerCalls = 0;
+  const delivery = await deliverRepresentativeBuyerDossierWithClient({
+    client, dossierId: first.dossier.id, actorUserId: actorId, mode: "log",
+    from: "local-sender@example.invalid", replyTo: "local-reply@example.invalid",
+    accessCurrent: async (tx, record) => {
+      const view = await loadRecipientBuyerDossierWithClient({ client: tx, dossierId: record.id,
+        userId: record.recipientUserId, email: record.recipientEmail });
+      return Boolean(view?.items.length && view.items.every(item => item.available));
+    },
+    send: async () => { providerCalls++; throw new Error("PROVIDER_MUST_NOT_RUN_IN_LOG_MODE"); },
+  });
+  assert.equal(delivery.persistenceIssue, false);
+  assert.equal(providerCalls, 0);
+  const delivered = await client.representativeBuyerDossier.findUniqueOrThrow({ where: { id: first.dossier.id } });
+  assert.equal(delivered.recipientDeliveryStatus, "LOGGED_ONLY");
+  assert.equal(delivered.adminDeliveryStatus, "LOGGED_ONLY");
+  console.log("✓ Both delivery channels commit LOGGED_ONLY against real PostgreSQL without contacting a provider.");
   const accessInput = {
     client, identity: { userId: first.dossier.recipientUserId, email: recipientEmail },
     scope: "PROFILE_VIEW" as const, action: "VIEW" as const,
@@ -209,7 +227,7 @@ async function main() {
   await client.institutionalAccessGrant.update({where:{id:sourceItem.grantId},data:{revokedAt:new Date()}});
   assert.equal((await resolveInstitutionalVisitorSignInWithClient(visitorInput)).eligible, false);
   console.log("✓ A valid Source Authority grant supports visitor sign-in; no remaining valid grant denies it.");
-  assert.equal(await client.emailLog.count(), 0);
+  assert.equal(await client.emailLog.count(), 2);
   console.log("✓ Resulting grant admits its recipient; wrong identity, revocation, and expiry deny access.");
   console.log("ARP_BUYER_DOSSIER_LOCAL_DATABASE_OK");
 }

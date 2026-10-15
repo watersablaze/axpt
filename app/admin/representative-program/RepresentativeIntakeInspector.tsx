@@ -770,6 +770,7 @@ export default function RepresentativeIntakeInspector({
                   <p className="mt-1 text-sm text-gray-400">
                     {intake.candidateEmail}
                   </p>
+                  <a href="/admin/representative-program/buyer-dossiers" className="mt-2 inline-block text-sm text-[#ead3a4] underline underline-offset-4">Buyer Introductions →</a>
                   <p className="mt-2 break-all font-mono text-xs text-gray-500">
                     {intake.reference} · {intake.id}
                   </p>

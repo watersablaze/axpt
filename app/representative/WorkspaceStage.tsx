@@ -37,8 +37,14 @@ export default function WorkspaceStage({
     } catch {
       // Browser storage is optional.
     }
+    if (window.location.hash === "#buyer-invitation") next = "cup";
     setView(next);
   }, [storageKey]);
+  useEffect(() => {
+    if (view === "cup" && window.location.hash === "#buyer-invitation") {
+      document.getElementById("buyer-invitation")?.scrollIntoView({ block: "start" });
+    }
+  }, [view]);
   const stage = useRef<HTMLDivElement>(null);
   const views = { overview, cup, appointment, authority, program, guide };
 
