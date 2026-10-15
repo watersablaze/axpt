@@ -26,6 +26,8 @@ export async function releaseCommercialUtilityPackResourceWithClient(
     resourceReleaseId: string;
     actorUserId: string;
     occurredAt?: Date;
+    // Supplied only by the reviewed-additions application inside its transaction.
+    releasedModuleReview?: { id: string; updatedAt: Date };
   },
 ) {
   const resourceReleaseId =
@@ -107,6 +109,7 @@ export async function releaseCommercialUtilityPackResourceWithClient(
         select: {
           id: true,
           state: true,
+          updatedAt: true,
         },
       });
 
@@ -117,9 +120,11 @@ export async function releaseCommercialUtilityPackResourceWithClient(
   }
 
   if (
-    moduleRelease.state !==
-    COMMERCIAL_UTILITY_PACK_MODULE_STATE
-      .READY
+    moduleRelease.state !== COMMERCIAL_UTILITY_PACK_MODULE_STATE.READY &&
+    !(moduleRelease.state === COMMERCIAL_UTILITY_PACK_MODULE_STATE.RELEASED &&
+      params.releasedModuleReview !== undefined &&
+      params.releasedModuleReview.id === moduleRelease.id &&
+      params.releasedModuleReview.updatedAt.getTime() === moduleRelease.updatedAt.getTime())
   ) {
     throw new Error(
       `[CUP_RESOURCE_RELEASE_MODULE_NOT_READY] ${moduleRelease.state}`,
