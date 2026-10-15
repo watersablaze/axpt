@@ -95,26 +95,40 @@ export default function ProfileUseControls({
     } catch { setMessage("Status is temporarily unavailable. The recorded introduction remains in place."); }
     finally { setPending(false); }
   }
-  const inputClass = "mt-1 w-full rounded border border-[#567ba0] bg-[#10242d] px-3 py-2 text-[#eee7da]";
+  const inputClass = "mt-1 w-full rounded border border-[#567ba0] bg-[#10242d] px-3 py-1.5 text-sm leading-5 text-[#eee7da]";
   const buttonClass = "rounded border border-[#567ba0] px-4 py-2 text-sm text-[#eee7da] disabled:opacity-50";
-  return <section aria-labelledby="profile-use-heading" className="mt-6 border-t border-[#30495c] py-5">
-    <h2 id="profile-use-heading" className="text-base font-medium text-[#eee7da]">Use the Official Profile</h2>
-    <p className="mt-2 text-sm leading-6 text-[#b7c5ce]">Present the official publication or invite a named recipient. Invitations arrange seven days of Profile access and notify French-Ward Administration.</p>
+  return <section aria-labelledby="profile-use-heading" className="my-3 rounded border border-[#30495c] px-4 py-3">
+    <div className="flex flex-wrap items-center gap-3">
+      <h2 id="profile-use-heading" className="mr-auto text-sm font-medium text-[#eee7da]">
+        Official Profile
+      </h2>
+      <button type="button" disabled={readOnly || pending}
+        onClick={present} className={buttonClass}>
+        Open for Presentation
+      </button>
+    </div>
     {readOnly ? (
-      <p className="mt-3 text-sm text-[#d8c39b]">
-        Operator preview · Representative controls are shown for inspection.
-        Presentation and invitation sending are disabled here.
+      <p className="mt-2 text-xs text-[#d8c39b]">
+        Read-only preview · Expand the invitation to inspect its fields.
       </p>
     ) : null}
-    <button type="button" disabled={readOnly || pending} onClick={present} className={buttonClass + " mt-4"}>Open for Presentation</button>
-    {!introductionId ? <form onSubmit={invite} className="mt-6 grid gap-4 sm:grid-cols-2">
+
+    {!introductionId ? <details className="mt-2">
+      <summary className="w-fit cursor-pointer rounded border border-[#567ba0] px-4 py-2 text-sm text-[#eee7da] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#d8c39b]">
+        Invite to View Profile
+      </summary>
+      <p className="mt-3 text-xs leading-5 text-[#b7c5ce]">
+        Arrange seven days of access for a named recipient and notify French-Ward Administration.
+      </p>
+      <form onSubmit={invite} className="mt-3 grid max-w-3xl gap-x-3 gap-y-2 sm:grid-cols-2">
       <label className="text-sm text-[#b7c5ce]">Recipient name<input className={inputClass} name="recipientName" maxLength={120} required disabled={readOnly || pending} /></label>
       <label className="text-sm text-[#b7c5ce]">Recipient email<input className={inputClass} name="recipientEmail" type="email" maxLength={254} required disabled={readOnly || pending} /></label>
-      <label className="text-sm text-[#b7c5ce] sm:col-span-2">Organization<input className={inputClass} name="recipientOrganization" maxLength={180} required disabled={readOnly || pending} /></label>
-      <label className="text-sm text-[#b7c5ce] sm:col-span-2">Introduction purpose<textarea className={inputClass} name="purpose" rows={2} maxLength={1000} required disabled={readOnly || pending} /></label>
-      <p className="text-xs leading-5 text-[#b7c5ce] sm:col-span-2">The system sends an official invitation. This purpose is recorded for Admin review and is not included in the recipient email.</p>
+      <label className="text-sm text-[#b7c5ce]">Organization<input className={inputClass} name="recipientOrganization" maxLength={180} required disabled={readOnly || pending} /></label>
+      <label className="text-sm text-[#b7c5ce]">Introduction purpose<textarea className={inputClass} name="purpose" rows={1} maxLength={1000} required disabled={readOnly || pending} /></label>
+      <p className="text-xs leading-5 text-[#b7c5ce] sm:col-span-2">Purpose is visible to Admin only; the recipient receives an official Profile invitation.</p>
       <button className={buttonClass + " justify-self-start"} disabled={readOnly || pending} type="submit">{pending ? "Processing…" : "Send Profile Invitation"}</button>
-    </form> : <div className="mt-5 text-sm leading-6 text-[#b7c5ce]">
+    </form>
+    </details> : <div className="mt-3 text-sm leading-6 text-[#b7c5ce]">
       {receipt && <><p>{receipt.recipientName} · {receipt.recipientEmail}</p>
         <p>Recipient email: {deliveryLabel(receipt.recipientDeliveryStatus)}</p>
         <p>Admin notification: {deliveryLabel(receipt.adminDeliveryStatus)}</p>
@@ -125,6 +139,6 @@ export default function ProfileUseControls({
         try { sessionStorage.removeItem("arp-profile-invitation:" + resourceReleaseId + ":" + submission.current.fields); } catch { /* Storage is optional. */ }
       } submission.current = null; }}>Invite Another Recipient</button></div>
     </div>}
-    <p role="status" aria-live="polite" className="mt-3 text-sm text-[#d8c39b]">{message}</p>
+    <p role="status" aria-live="polite" className={message ? "mt-3 text-sm text-[#d8c39b]" : "sr-only"}>{message}</p>
   </section>;
 }
