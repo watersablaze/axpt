@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 
 export type BuyerDossierPublication = Readonly<{
   resourceReleaseId: string;
-  kind: "INSTITUTIONAL_PROFILE" | "SOURCE_AUTHORITY";
+  kind: "INSTITUTIONAL_PROFILE" | "SOURCE_AUTHORITY" | "DECLARATION_OF_TRUST" | "RESELLER_AGREEMENT" | "SANCTIONS_SCREENING";
   reference: string;
   version: number;
   label: string;
@@ -24,7 +24,7 @@ export async function resolveBuyerDossierSelection(input: {
   ports: BuyerDossierSelectionPorts;
 }) {
   const ids = input.resourceReleaseIds;
-  if (!Array.isArray(ids) || !ids.length || ids.length > 2 ||
+  if (!Array.isArray(ids) || !ids.length || ids.length > 5 ||
       ids.some(id => typeof id !== "string" || !id.trim() || id !== id.trim() || id.length > 191) ||
       new Set(ids).size !== ids.length) {
     return { allowed: false as const, reason: "INVALID_SELECTION" };
@@ -33,7 +33,7 @@ export async function resolveBuyerDossierSelection(input: {
   for (const id of [...ids].sort()) {
     const publication = await input.ports.loadPublication(id);
     if (!publication || publication.resourceReleaseId !== id ||
-        !["INSTITUTIONAL_PROFILE", "SOURCE_AUTHORITY"].includes(publication.kind) ||
+        !["INSTITUTIONAL_PROFILE", "SOURCE_AUTHORITY", "DECLARATION_OF_TRUST", "RESELLER_AGREEMENT", "SANCTIONS_SCREENING"].includes(publication.kind) ||
         !publication.reference.trim() || !publication.label.trim() ||
         !Number.isInteger(publication.version) || publication.version < 1 ||
         !/^[a-f0-9]{64}$/.test(publication.recipientContentHash)) {

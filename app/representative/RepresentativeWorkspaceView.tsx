@@ -247,7 +247,7 @@ export default async function RepresentativeWorkspaceView({
                             </Link>
                           ) : ((resource.resourceType === "STRUCTURED_CONTENT" &&
                               (module === "REPRESENTATION" || module === "OPERATING_BOUNDARIES")) ||
-                            (resource.resourceType === "INSTITUTIONAL_INSTRUMENT" && module === "DOCUMENTS")) ? (
+                            (["INSTITUTIONAL_INSTRUMENT", "DOCUMENT"].includes(resource.resourceType) && module === "DOCUMENTS")) ? (
                             <Link
                               href={resource.resourceType === "INSTITUTIONAL_INSTRUMENT"
                                 ? `/representative/resources/${encodeURIComponent(resource.id)}/institutional`

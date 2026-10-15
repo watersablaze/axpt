@@ -3701,6 +3701,7 @@ model GlobalMotherRecipientChallenge {
 
 enum InstitutionalAccessScope {
   SOURCE_AUTHORITY_VIEW
+  SUPPORTING_DOCUMENT_VIEW
   PROFILE_VIEW
   LOI_INTAKE_ACCESS
 }

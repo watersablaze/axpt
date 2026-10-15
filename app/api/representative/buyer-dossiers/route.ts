@@ -12,7 +12,7 @@ export const dynamic = "force-dynamic";
 const headers = { "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer" };
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers });
 const schema = z.object({
-  resourceReleaseIds: z.array(z.string().trim().min(1).max(191)).min(1).max(2).refine(ids=>new Set(ids).size===ids.length),
+  resourceReleaseIds: z.array(z.string().trim().min(1).max(191)).min(1).max(5).refine(ids=>new Set(ids).size===ids.length),
   reviewHash: z.string().regex(/^[a-f0-9]{64}$/), recipientName: z.string().trim().min(1).max(120),
   recipientEmail: z.string().trim().email().max(254), recipientOrganization: z.string().trim().min(1).max(180),
   purpose: z.string().trim().min(1).max(1000), idempotencyKey: z.string().uuid(),
@@ -34,7 +34,7 @@ export async function GET(request: Request) {
       return result ? json({ ok: true, receipt: result }) : json({ ok: false }, 404);
     }
     const ids = url.searchParams.getAll("resourceReleaseId");
-    if (!ids.length || ids.length > 2 || ids.some(id=>!id || id.length>191) || new Set(ids).size!==ids.length) return json({ ok: false }, 400);
+    if (!ids.length || ids.length > 5 || ids.some(id=>!id || id.length>191) || new Set(ids).size!==ids.length) return json({ ok: false }, 400);
     const now = new Date();
     const appointments: Array<{ id: string }> = await prisma.representativeProgramAppointment.findMany({
       where: { participant: { userId: principal.userId }, instrument: { status: "ACTIVE" }, effectiveAt: { lte: now },

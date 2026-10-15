@@ -1,3 +1,4 @@
+import { buyerPublicationScope } from "../supporting-documents/buyerSupportingDocumentPolicy";
 import type { PrismaClient } from "@prisma/client";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
 import bcrypt from "bcryptjs";
@@ -8,7 +9,7 @@ type Transaction = Parameters<typeof resolveRepresentativeBuyerDossierSelectionW
   Pick<PrismaClient, "$queryRaw" | "user" | "representativeBuyerDossier" |
   "institutionalAccessRequest" | "institutionalAccessGrant" | "institutionalAccessEvent" | "domainEvent">;
 const fields = z.object({
-  resourceReleaseIds: z.array(z.string().trim().min(1).max(191)).min(1).max(2)
+  resourceReleaseIds: z.array(z.string().trim().min(1).max(191)).min(1).max(5)
     .refine(ids => new Set(ids).size === ids.length),
   reviewHash: z.string().regex(/^[a-f0-9]{64}$/),
   recipientName: z.string().trim().min(1).max(120),
@@ -110,7 +111,8 @@ export async function createRepresentativeBuyerDossierWithClient(input: {
       resourceVersion: number; label: string; recipientContentHash: string; canDownload: boolean;
     }> = [];
     for (const publication of selection.publications) {
-      const scope = publication.kind === "INSTITUTIONAL_PROFILE" ? "PROFILE_VIEW" : "SOURCE_AUTHORITY_VIEW";
+      const scope = buyerPublicationScope(publication.kind);
+      if (!scope) throw new BuyerDossierError("DOSSIER_NOT_AUTHORIZED");
       const request = await tx.institutionalAccessRequest.create({ data: {
         requesterName: data.recipientName, requesterEmail: data.recipientEmail,
         institutionalAffiliation: data.recipientOrganization, requesterCapacity: "INVITED_BUYER_DOSSIER_RECIPIENT",

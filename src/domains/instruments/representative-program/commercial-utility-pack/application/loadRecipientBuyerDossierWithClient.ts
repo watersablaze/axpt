@@ -21,7 +21,7 @@ export async function loadRecipientBuyerDossierWithClient(input: {
       items: { orderBy: { resourceReleaseId: "asc" }, include: { grant: { include: { request: true } } } } },
   });
   if (!dossier || !buyerDossierIdentityAllowsAccess({ ...input, dossier, at }) ||
-      !dossier.items.length || dossier.items.length > 2 ||
+      !dossier.items.length || dossier.items.length > 5 ||
       new Set(dossier.items.map((item: { kind: string }) => item.kind)).size !== dossier.items.length) return null;
   const items = [];
   for (const item of dossier.items) {

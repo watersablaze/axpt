@@ -1,3 +1,4 @@
+import { SUPPORTING_DOCUMENTS } from "../../src/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/catalog";
 import { deliverRepresentativeBuyerDossierWithClient } from "../../src/domains/instruments/representative-program/commercial-utility-pack/application/deliverRepresentativeBuyerDossierWithClient";
 import { resolveInstitutionalVisitorSignInWithClient } from "../../src/domains/institutional-access/resolveInstitutionalVisitorSignInWithClient";
 import { loadRecipientBuyerDossierWithClient } from "../../src/domains/instruments/representative-program/commercial-utility-pack/application/loadRecipientBuyerDossierWithClient";
@@ -229,6 +230,34 @@ async function main() {
   console.log("✓ A valid Source Authority grant supports visitor sign-in; no remaining valid grant denies it.");
   assert.equal(await client.emailLog.count(), 2);
   console.log("✓ Resulting grant admits its recipient; wrong identity, revocation, and expiry deny access.");
+  const supportingIds: string[]=[];
+  for(const publication of SUPPORTING_DOCUMENTS){
+    const id=prefix+"-"+publication.kind;supportingIds.push(id);
+    await client.commercialUtilityPackResourceRelease.create({data:{id,packageId,module:"DOCUMENTS",resourceType:"DOCUMENT",resourceId:publication.reference,
+      label:publication.title,state:"RELEASED",canView:true,canTransmit:true,
+      metadata:{publicationVersion:publication.version,sha256:publication.sha256,byteLength:publication.byteLength,mimeType:"application/pdf",sourceFileName:publication.sourceFileName,
+        fileUrl:`https://zjlswvetvtzvn453.private.blob.vercel-storage.com/arp/supporting-publications/${publication.reference}/v${publication.version}/${publication.sha256}.pdf`}}});
+  }
+  const fiveIds=[...input.resourceReleaseIds,...supportingIds];
+  const fiveReview=await resolveRepresentativeBuyerDossierSelectionWithClient({client,userId:actorId,appointmentId,resourceReleaseIds:fiveIds});
+  assert.ok(fiveReview.allowed);if(!fiveReview.allowed)throw new Error("FIVE_MATERIAL_REVIEW_DENIED");
+  const five=await run({...input,resourceReleaseIds:fiveIds,reviewHash:fiveReview.reviewHash,idempotencyKey:randomUUID(),recipientEmail:prefix+"-five@example.invalid"});
+  const recipient={client,dossierId:five.dossier.id,userId:five.dossier.recipientUserId,email:five.dossier.recipientEmail};
+  const fiveVisible=await loadRecipientBuyerDossierWithClient(recipient);
+  assert.equal(fiveVisible?.items.length,5);assert.ok(fiveVisible?.items.every(item=>item.available));
+  assert.ok(five.dossier.items.every((item:{canDownload:boolean})=>!item.canDownload));
+  const supportingItems=five.dossier.items.filter((item:{kind:string})=>["DECLARATION_OF_TRUST","RESELLER_AGREEMENT","SANCTIONS_SCREENING"].includes(item.kind));
+  assert.equal(supportingItems.length,3);
+  const supportingGrants=await client.institutionalAccessGrant.findMany({where:{id:{in:supportingItems.map((item:{grantId:string})=>item.grantId)}}});
+  assert.ok(supportingGrants.every((grant:{scope:string})=>grant.scope==="SUPPORTING_DOCUMENT_VIEW"));
+  const otherGrants=five.dossier.items.filter((item:{kind:string})=>["INSTITUTIONAL_PROFILE","SOURCE_AUTHORITY"].includes(item.kind));
+  await client.institutionalAccessGrant.updateMany({where:{id:{in:otherGrants.map((item:{grantId:string})=>item.grantId)}},data:{revokedAt:new Date()}});
+  assert.equal((await resolveInstitutionalVisitorSignInWithClient({client,userId:recipient.userId,email:recipient.email})).eligible,true);
+  await client.commercialUtilityPackResourceRelease.update({where:{id:supportingIds[0]},data:{state:"WITHDRAWN"}});
+  const withdrawn=await loadRecipientBuyerDossierWithClient(recipient);
+  assert.equal(withdrawn?.items.filter(item=>item.available).length,2);
+  assert.equal(await loadRecipientBuyerDossierWithClient({...recipient,userId:actorId}),null);
+  console.log("✓ Five-material real database dossier binds three supporting grants, supports visitor login and denies withdrawn resources without implied downloads.");
   console.log("ARP_BUYER_DOSSIER_LOCAL_DATABASE_OK");
 }
 main().catch(error => { console.error(error instanceof Error ? error.message : "Acceptance failed"); process.exitCode = 1; })

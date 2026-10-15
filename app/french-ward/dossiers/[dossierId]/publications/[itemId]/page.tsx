@@ -1,3 +1,4 @@
+import { SupportingDocumentView } from "../../../../../representative/SupportingDocumentView";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
@@ -24,6 +25,12 @@ export default async function BuyerPublicationPage({ params }: { params: Promise
   if (publication.kind === "INSTITUTIONAL_PROFILE") return <main className={styles.profile}>
     {back}<FrenchWardInstitutionalProfileView profile={publication.content} />
   </main>;
+  if (publication.kind !== "SOURCE_AUTHORITY") {
+    const content=publication.content;
+    return <SupportingDocumentView title={content.title} reference={content.reference} version={content.version}
+      note={content.disclosureNote} backHref={`/french-ward/dossiers/${encodeURIComponent(dossier.id)}`}
+      documentHref={`/api/french-ward/dossiers/${encodeURIComponent(dossier.id)}/publications/${encodeURIComponent(item.id)}/document?mode=inline`} />;
+  }
   const projection = publication.content;
   const subject = projection.identity.subject;
   return <InstrumentShell eyebrow="Source Authority" classificationLabel="Governed Institutional Source Record"

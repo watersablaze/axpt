@@ -1,3 +1,5 @@
+import { SupportingDocumentView } from "../../../../../../representative/SupportingDocumentView";
+import { loadRepresentativeSupportingDocumentWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/loadRepresentativeSupportingDocumentWithClient";
 import boundaries from "../../../../../../../representative/resources/[resourceReleaseId]/operating-boundaries.module.css";
 import Link from "next/link";
 import ProfileUseControls from "../../../../../../../representative/ProfileUseControls";
@@ -49,6 +51,10 @@ export default async function OperatorResourcePreview({
   const input = {
     client: prisma, userId: participant.userId, resourceReleaseId,
   };
+  const supporting=await loadRepresentativeSupportingDocumentWithClient(input);
+  if(supporting){const publication=supporting.publication;return <SupportingDocumentView
+    title={publication.title} reference={publication.reference} version={publication.version} note={publication.disclosureNote}
+    backHref={base} preview documentHref={`/api/admin/representative-program/participants/${encodeURIComponent(participantId)}/workspace-preview/resources/${encodeURIComponent(resourceReleaseId)}/supporting-document?mode=inline`} />;}
   const resource =
     await loadRepresentativeCommercialUtilityPackResourceWithClient(input);
   const institutional = resource ? null :

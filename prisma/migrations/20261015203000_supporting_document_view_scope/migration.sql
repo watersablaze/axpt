@@ -1,0 +1,1 @@
+ALTER TYPE "InstitutionalAccessScope" ADD VALUE 'SUPPORTING_DOCUMENT_VIEW';

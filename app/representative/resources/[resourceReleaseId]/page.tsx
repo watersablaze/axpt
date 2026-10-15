@@ -1,3 +1,5 @@
+import { SupportingDocumentView } from "../../SupportingDocumentView";
+import { loadRepresentativeSupportingDocumentWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/loadRepresentativeSupportingDocumentWithClient";
 import { resolveRepresentativeCommercialUtilityPackConsumptionWithClient } from
   "@/domains/instruments/representative-program/commercial-utility-pack/application/resolveRepresentativeCommercialUtilityPackConsumptionWithClient";
 import { FrenchWardInstitutionalProfileView } from "@/components/french-ward/profile/FrenchWardInstitutionalProfileView";
@@ -35,6 +37,13 @@ export default async function RepresentativeResourcePage({
     });
 
   if (!consumption.allowed) notFound();
+  const supporting=await loadRepresentativeSupportingDocumentWithClient({client:prisma,userId:principal.userId,resourceReleaseId});
+  if (supporting) {
+    const publication=supporting.publication;
+    return <SupportingDocumentView title={publication.title} reference={publication.reference} version={publication.version}
+      note={publication.disclosureNote} backHref="/representative"
+      documentHref={`/api/representative/commercial-utility-packs/resources/${encodeURIComponent(resourceReleaseId)}/supporting-document?mode=inline`} />;
+  }
 
   const resource =
     await loadRepresentativeCommercialUtilityPackResourceWithClient({

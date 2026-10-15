@@ -28,8 +28,7 @@ export function buyerDossierItemAllowsAccess(input: {
   if (!buyerDossierIdentityAllowsAccess(input)) return false;
   const { item, current, at } = input;
   const grant = item.grant;
-  const scope = item.kind === "INSTITUTIONAL_PROFILE" ? "PROFILE_VIEW"
-    : item.kind === "SOURCE_AUTHORITY" ? "SOURCE_AUTHORITY_VIEW" : null;
+  const scope = item.kind === "INSTITUTIONAL_PROFILE" ? "PROFILE_VIEW" : item.kind === "SOURCE_AUTHORITY" ? "SOURCE_AUTHORITY_VIEW" : ["DECLARATION_OF_TRUST", "RESELLER_AGREEMENT", "SANCTIONS_SCREENING"].includes(item.kind) ? "SUPPORTING_DOCUMENT_VIEW" : null;
   return Boolean(scope && current && Number.isInteger(item.resourceVersion) && item.resourceVersion > 0 &&
     /^[a-f0-9]{64}$/.test(item.recipientContentHash) &&
     grant.id === item.grantId && grant.recipientUserId === input.userId &&
