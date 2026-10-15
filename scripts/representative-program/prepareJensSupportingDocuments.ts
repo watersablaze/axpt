@@ -98,7 +98,13 @@ async function main() {
   for (const entry of entries) {
     let existing;
     try { existing = await head(entry.url, { token }); }
-    catch (error) { if (!(error instanceof Error) || error.name !== "BlobNotFoundError") throw error; }
+    catch (error) {
+      const missing = error instanceof Error && (
+        error.name === "BlobNotFoundError" ||
+        error.message === "Vercel Blob: The requested blob does not exist"
+      );
+      if (!missing) throw error;
+    }
     if (!existing) {
       const uploaded = await put(entry.pathname, entry.bytes, { access: "private", token, addRandomSuffix: false,
         allowOverwrite: false, contentType: "application/pdf" });
