@@ -9,6 +9,8 @@ datasource db {
 }
 
 model User {
+  buyerDossiersIssued RepresentativeBuyerDossier[] @relation("BuyerDossierActor")
+  buyerDossiersReceived RepresentativeBuyerDossier[] @relation("BuyerDossierRecipient")
 
   profileIntroductionsIssued RepresentativeProfileIntroduction[] @relation("ProfileIntroductionActor")
   profileIntroductionsReceived RepresentativeProfileIntroduction[] @relation("ProfileIntroductionRecipient")
@@ -648,6 +650,7 @@ model RepresentativeProgramDocketSequence {
 }
 
 model RepresentativeProgramParticipant {
+  buyerDossiers RepresentativeBuyerDossier[]
 
   profileIntroductions RepresentativeProfileIntroduction[]
 
@@ -675,6 +678,7 @@ model RepresentativeProgramParticipant {
 }
 
 model RepresentativeProgramAppointment {
+  buyerDossiers RepresentativeBuyerDossier[]
 
   profileIntroductions RepresentativeProfileIntroduction[]
 
@@ -785,6 +789,7 @@ model CommercialUtilityPackModuleRelease {
 }
 
 model CommercialUtilityPackResourceRelease {
+  buyerDossierItems RepresentativeBuyerDossierItem[]
 
   profileIntroductions RepresentativeProfileIntroduction[]
 
@@ -3695,6 +3700,7 @@ model GlobalMotherRecipientChallenge {
  // ============================================================================
 
 enum InstitutionalAccessScope {
+  SOURCE_AUTHORITY_VIEW
   PROFILE_VIEW
   LOI_INTAKE_ACCESS
 }
@@ -3744,6 +3750,7 @@ model InstitutionalAccessRequest {
 }
 
 model InstitutionalAccessGrant {
+  buyerDossierItem RepresentativeBuyerDossierItem?
 
   representativeIntroduction RepresentativeProfileIntroduction?
 
@@ -3842,4 +3849,66 @@ model RepresentativeProfileIntroduction {
   @@index([recipientEmail, resourceReference, resourceVersion])
   @@index([recipientDeliveryStatus, createdAt])
   @@index([adminDeliveryStatus, createdAt])
+}
+
+
+// Selected buyer publications. Existing Profile-only introductions remain independent.
+model RepresentativeBuyerDossier {
+  id String @id @default(cuid())
+  actorUserId String
+  participantId String
+  appointmentId String
+  recipientUserId String
+  recipientName String
+  recipientEmail String
+  recipientOrganization String
+  purpose String
+  policy String
+  reviewHash String
+  inputHash String
+  idempotencyKey String
+  authoritySnapshot Json
+  expiresAt DateTime
+  revokedAt DateTime?
+  recipientDeliveryStatus RepresentativeProfileDeliveryStatus @default(QUEUED)
+  recipientMessageId String?
+  recipientAttemptedAt DateTime?
+  recipientDeliveryError String?
+  adminDeliveryStatus RepresentativeProfileDeliveryStatus @default(QUEUED)
+  adminRecipients String[]
+  adminMessageId String?
+  adminAttemptedAt DateTime?
+  adminDeliveryError String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  actor User @relation("BuyerDossierActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+  recipient User @relation("BuyerDossierRecipient", fields: [recipientUserId], references: [id], onDelete: Restrict)
+  participant RepresentativeProgramParticipant @relation(fields: [participantId], references: [id], onDelete: Restrict)
+  appointment RepresentativeProgramAppointment @relation(fields: [appointmentId], references: [id], onDelete: Restrict)
+  items RepresentativeBuyerDossierItem[]
+  @@unique([actorUserId, idempotencyKey])
+  @@index([participantId, createdAt])
+  @@index([recipientUserId, expiresAt])
+  @@index([recipientDeliveryStatus, createdAt])
+  @@index([adminDeliveryStatus, createdAt])
+}
+
+model RepresentativeBuyerDossierItem {
+  id String @id @default(cuid())
+  dossierId String
+  resourceReleaseId String
+  grantId String @unique
+  kind String
+  resourceReference String
+  resourceVersion Int
+  label String
+  recipientContentHash String
+  // Buyer retention is a separate release decision, not inherited personal download.
+  canDownload Boolean @default(false)
+  createdAt DateTime @default(now())
+  dossier RepresentativeBuyerDossier @relation(fields: [dossierId], references: [id], onDelete: Restrict)
+  resourceRelease CommercialUtilityPackResourceRelease @relation(fields: [resourceReleaseId], references: [id], onDelete: Restrict)
+  grant InstitutionalAccessGrant @relation(fields: [grantId], references: [id], onDelete: Restrict)
+  @@unique([dossierId, resourceReleaseId])
+  @@unique([dossierId, resourceReference])
 }
