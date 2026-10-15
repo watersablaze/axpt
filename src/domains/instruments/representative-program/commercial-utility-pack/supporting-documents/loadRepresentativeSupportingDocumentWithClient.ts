@@ -2,7 +2,7 @@ import type { PrismaClient } from "@prisma/client";
 import { loadRepresentativeCommercialUtilityPackWithClient } from "../application/loadRepresentativeCommercialUtilityPackWithClient";
 import { findSupportingDocument } from "./catalog";
 
-type Client = Parameters<typeof loadRepresentativeCommercialUtilityPackWithClient>[0]["client"] & Pick<PrismaClient, "document">;
+type Client = Parameters<typeof loadRepresentativeCommercialUtilityPackWithClient>[0]["client"] & Pick<PrismaClient, "commercialUtilityPackResourceRelease">;
 /** Resolve only an owned, currently viewable DOCUMENT resource with exact approved registration. */
 export async function loadRepresentativeSupportingDocumentWithClient(input: {
   client: Client; userId: string; resourceReleaseId: string;
@@ -15,9 +15,14 @@ export async function loadRepresentativeSupportingDocumentWithClient(input: {
   const resource = matches[0];
   const publication = findSupportingDocument(resource.resourceId, 1);
   if (!publication) return null;
-  const document = await input.client.document.findUnique({ where: { id: publication.reference },
-    select: { fileName: true, fileUrl: true, fileSize: true, mimeType: true } });
-  if (!document || document.fileName !== publication.sourceFileName || document.fileSize !== publication.byteLength ||
-      document.mimeType !== "application/pdf") return null;
-  return { publication, canDownload: resource.canDownload === true, fileUrl: document.fileUrl };
+  const registered = await input.client.commercialUtilityPackResourceRelease.findUnique({
+    where: { id: input.resourceReleaseId }, select: { metadata: true },
+  });
+  const metadata: unknown = registered?.metadata;
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) return null;
+  const record = metadata as Record<string, unknown>;
+  if (record.publicationVersion !== publication.version || record.sha256 !== publication.sha256 ||
+      record.byteLength !== publication.byteLength || record.mimeType !== "application/pdf" ||
+      record.sourceFileName !== publication.sourceFileName || typeof record.fileUrl !== "string") return null;
+  return { publication, canDownload: resource.canDownload === true, fileUrl: record.fileUrl };
 }
