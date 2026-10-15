@@ -28,6 +28,7 @@ function getSafeDestination() {
     (
       requested.startsWith('/admin') ||
       requested.startsWith('/representative') ||
+      /^\/french-ward\/dossiers\/[A-Za-z0-9-]{1,191}(?:\/publications\/[A-Za-z0-9-]{1,191})?$/.test(requested) ||
       [
         '/french-ward/profile',
         '/french-ward',

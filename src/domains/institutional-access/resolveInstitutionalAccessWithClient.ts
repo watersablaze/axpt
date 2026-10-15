@@ -2,6 +2,7 @@ import type { PrismaClient } from "@prisma/client";
 
 export type InstitutionalAccessScope =
   | "PROFILE_VIEW"
+  | "SOURCE_AUTHORITY_VIEW"
   | "LOI_INTAKE_ACCESS";
 
 export type InstitutionalAccessAction =
@@ -24,7 +25,7 @@ export function institutionalScopeAllowsAction(
   action: InstitutionalAccessAction,
 ): boolean {
   return (
-    (scope === "PROFILE_VIEW" && action === "VIEW") ||
+    (["PROFILE_VIEW", "SOURCE_AUTHORITY_VIEW"].includes(scope) && action === "VIEW") ||
     (scope === "LOI_INTAKE_ACCESS" &&
       (action === "VIEW_FORM" || action === "SUBMIT_INTAKE"))
   );

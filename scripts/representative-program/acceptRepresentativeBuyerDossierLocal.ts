@@ -1,3 +1,5 @@
+import { resolveInstitutionalVisitorSignInWithClient } from "../../src/domains/institutional-access/resolveInstitutionalVisitorSignInWithClient";
+import { loadRecipientBuyerDossierWithClient } from "../../src/domains/instruments/representative-program/commercial-utility-pack/application/loadRecipientBuyerDossierWithClient";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { randomUUID } from "node:crypto";
@@ -161,6 +163,36 @@ async function main() {
   assert.equal(await client.userRole.count({ where: { userId: first.dossier.recipientUserId } }), 0);
   assert.equal(await client.representativeProgramParticipant.count({ where: { userId: first.dossier.recipientUserId } }), 0);
   console.log("✓ Exact replay creates one dossier with two item grants and audit chains; changed submission is rejected without extra privileges.");
+  const readDossier = (userId = first.dossier.recipientUserId) => loadRecipientBuyerDossierWithClient({
+    client, dossierId: first.dossier.id, userId, email: recipientEmail,
+  });
+  const visible = await readDossier();
+  assert.ok(visible);
+  assert.equal(visible.items.length, 2);
+  assert.ok(visible.items.every(item => item.available));
+  assert.ok(visible.items.every(item => !item.canDownload));
+  const sourcePublication = visible.items.find(item => item.publication?.kind === "SOURCE_AUTHORITY")?.publication;
+  assert.equal(sourcePublication?.kind, "SOURCE_AUTHORITY");
+  if (sourcePublication?.kind !== "SOURCE_AUTHORITY") throw new Error("LOCAL_SOURCE_NOT_RETURNED");
+  assert.equal(sourcePublication.content.audience, "RECIPIENT");
+  assert.equal(sourcePublication.content.operatorRecord.length, 0);
+  assert.equal(await readDossier(actorId), null);
+  await client.representativeBuyerDossier.update({where:{id:first.dossier.id},data:{revokedAt:new Date()}});
+  assert.equal(await readDossier(), null);
+  await client.representativeBuyerDossier.update({where:{id:first.dossier.id},data:{revokedAt:null}});
+  await client.institutionalAccessGrant.update({where:{id:sourceItem.grantId},data:{revokedAt:new Date()}});
+  const partial = await readDossier();
+  assert.equal(partial?.items.find(item=>item.id===sourceItem.id)?.publication, null);
+  assert.equal(partial?.items.filter(item=>item.available).length, 1);
+  await client.institutionalAccessGrant.update({where:{id:sourceItem.grantId},data:{revokedAt:null}});
+  await client.representativeBuyerDossierItem.update({where:{id:sourceItem.id},data:{recipientContentHash:"0".repeat(64)}});
+  assert.equal((await readDossier())?.items.find(item=>item.id===sourceItem.id)?.publication, null);
+  await client.representativeBuyerDossierItem.update({where:{id:sourceItem.id},data:{recipientContentHash:sourceItem.recipientContentHash}});
+  await client.commercialUtilityPackResourceRelease.update({where:{id:sourceItem.resourceReleaseId},data:{state:"WITHDRAWN"}});
+  assert.equal((await readDossier())?.items.find(item=>item.id===sourceItem.id)?.publication, null);
+  await client.commercialUtilityPackResourceRelease.update({where:{id:sourceItem.resourceReleaseId},data:{state:"RELEASED"}});
+  assert.ok((await readDossier())?.items.every(item=>item.available));
+  console.log("✓ Recipient dossier serves both full projections; wrong identity, revocation, changed content and resource withdrawal deny access.");
   const accessInput = {
     client, identity: { userId: first.dossier.recipientUserId, email: recipientEmail },
     scope: "PROFILE_VIEW" as const, action: "VIEW" as const,
@@ -172,6 +204,11 @@ async function main() {
   assert.equal((await resolveInstitutionalAccessWithClient(accessInput)).allowed, false);
   await client.institutionalAccessGrant.update({ where: { id: first.dossier.items.find((item: { kind: string }) => item.kind === "INSTITUTIONAL_PROFILE")!.grantId }, data: { revokedAt: null, expiresAt: new Date(0) } });
   assert.equal((await resolveInstitutionalAccessWithClient(accessInput)).allowed, false);
+  const visitorInput = { client, userId: first.dossier.recipientUserId, email: recipientEmail };
+  assert.equal((await resolveInstitutionalVisitorSignInWithClient(visitorInput)).eligible, true);
+  await client.institutionalAccessGrant.update({where:{id:sourceItem.grantId},data:{revokedAt:new Date()}});
+  assert.equal((await resolveInstitutionalVisitorSignInWithClient(visitorInput)).eligible, false);
+  console.log("✓ A valid Source Authority grant supports visitor sign-in; no remaining valid grant denies it.");
   assert.equal(await client.emailLog.count(), 0);
   console.log("✓ Resulting grant admits its recipient; wrong identity, revocation, and expiry deny access.");
   console.log("ARP_BUYER_DOSSIER_LOCAL_DATABASE_OK");

@@ -24,7 +24,7 @@ export async function resolveInstitutionalVisitorSignInWithClient(params: {
       issuedAt: { lte: now },
       expiresAt: { gt: now },
       revokedAt: null,
-      scope: { in: ["PROFILE_VIEW", "LOI_INTAKE_ACCESS"] },
+      scope: { in: ["PROFILE_VIEW", "SOURCE_AUTHORITY_VIEW", "LOI_INTAKE_ACCESS"] },
     },
     select: {
       scope: true,
@@ -36,6 +36,7 @@ export async function resolveInstitutionalVisitorSignInWithClient(params: {
   for (const candidate of candidates) {
     if (
       candidate.scope !== "PROFILE_VIEW" &&
+      candidate.scope !== "SOURCE_AUTHORITY_VIEW" &&
       candidate.scope !== "LOI_INTAKE_ACCESS"
     ) continue;
 
@@ -43,7 +44,7 @@ export async function resolveInstitutionalVisitorSignInWithClient(params: {
       client: params.client,
       identity: { userId: params.userId, email },
       scope: candidate.scope,
-      action: candidate.scope === "PROFILE_VIEW" ? "VIEW" : "VIEW_FORM",
+      action: candidate.scope === "LOI_INTAKE_ACCESS" ? "VIEW_FORM" : "VIEW",
       resourceReference: candidate.resourceReference,
       resourceVersion: candidate.resourceVersion,
       now,
