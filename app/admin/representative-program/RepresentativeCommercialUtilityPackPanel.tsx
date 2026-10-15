@@ -1,6 +1,7 @@
 "use client";
 
 import ResourcePermissionDecision from "./ResourcePermissionDecision";
+import SelectedCupAdditionsRelease from "./SelectedCupAdditionsRelease";
 
 import {
   useEffect,
@@ -458,6 +459,22 @@ export default function RepresentativeCommercialUtilityPackPanel({
                       Review Release · {moduleLabel(entry.module)}
                     </button>
                   )
+                ) : null}
+                {entry.state === "RELEASED" && ["PREPARING", "CURRENT"].includes(pack.state) &&
+                  entry.currentResources.some(resource => resource.state === "WITHHELD") ? (
+                  <SelectedCupAdditionsRelease
+                    key={pack.id + ":" + entry.module}
+                    packageId={pack.id}
+                    participantId={participantId}
+                    resources={entry.currentResources.filter(resource => resource.state === "WITHHELD")}
+                    disabled={busy || loading || Boolean(stateError)}
+                    onStart={() => {actionInFlight.current = true; setBusy(true); setPendingModule(null);}}
+                    onComplete={async message => {
+                      setReleaseNotice(message);
+                      try {await reloadPack();}
+                      finally {actionInFlight.current = false; setBusy(false);}
+                    }}
+                  />
                 ) : null}
                 {entry.currentResources.length === 0 ? (
                   <p className="mt-2 text-xs text-gray-500">No current resources.</p>
