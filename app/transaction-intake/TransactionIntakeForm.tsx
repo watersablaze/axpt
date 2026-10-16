@@ -4,6 +4,7 @@ import { FormEvent, useMemo, useState } from "react";
 import styles from "./transaction-intake.module.css";
 
 type Props = {
+  readOnly?: boolean;
   initialReferralCode?: string;
   initialRepresentativeName?: string;
   initialProgram?: string;
@@ -87,6 +88,7 @@ function checked(formData: FormData, key: string) {
 }
 
 export default function TransactionIntakeForm({
+  readOnly = false,
   initialReferralCode = "",
   initialRepresentativeName = "",
   initialProgram = "",
@@ -121,6 +123,7 @@ export default function TransactionIntakeForm({
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (readOnly) return;
 
     const form = event.currentTarget;
     const formData = new FormData(form);
@@ -697,6 +700,7 @@ export default function TransactionIntakeForm({
       className={styles.form}
       onSubmit={onSubmit}
     >
+      <fieldset disabled={readOnly} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
       {/* 01 — STATUS */}
 
       <section
@@ -1798,7 +1802,7 @@ export default function TransactionIntakeForm({
           className={styles.submit}
           type="submit"
           disabled={
-            submitState.status === "submitting"
+            readOnly || submitState.status === "submitting"
           }
         >
           {submitState.status === "submitting"
@@ -1806,6 +1810,7 @@ export default function TransactionIntakeForm({
             : "Submit for Review"}
         </button>
       </div>
+      </fieldset>
     </form>
   );
 }

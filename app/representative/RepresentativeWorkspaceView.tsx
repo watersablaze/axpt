@@ -226,16 +226,18 @@ export default async function RepresentativeWorkspaceView({
                         Letter of Intent &amp; Transaction Intake
                       </h3>
                       <p className="mt-2 max-w-2xl text-sm leading-6 text-[#c6d3e2]">
-                        Direct a prospective buyer to French-Ward’s controlled
-                        commercial intake. Access and submission remain subject
-                        to the intake’s separate approval process.
+                        Preview the LOI form here. Include LOI access in your
+                        buyer invitation so the recipient can open and submit it
+                        after sign-in, without a separate access request.
                       </p>
                       <Link
-                        href="/french-ward/transaction-intake"
+                        href={operatorPreview
+                          ? `/admin/representative-program/participants/${encodeURIComponent(previewParticipantId!)}/workspace-preview/loi`
+                          : "/representative/loi"}
                         prefetch={false}
                         className="mt-4 inline-block text-sm font-semibold text-[#e8cb91] underline underline-offset-4"
                       >
-                        Open Letter of Intent →
+                        Preview Letter of Intent →
                       </Link>
                     </section>
                     <CupWorkingSet storageKey={`arp-workspace:${operatorPreview ? 'operator-preview:' : ''}${userId}:cup:${commercialUtilityPack.reference}:v${commercialUtilityPack.version}`} resourceIds={commercialUtilityPack.modules.flatMap(entry => entry.resources.map(resource => resource.id))} categories={commercialUtilityPack.modules.flatMap(entry =>
