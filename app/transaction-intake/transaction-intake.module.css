@@ -1746,3 +1746,2008 @@
     top: -1.45rem;
   }
 }
+
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-1 — Institutional Profile visual convergence
+
+   Presentation only.
+   No form structure, field identity, validation, access,
+   submission, or transaction semantics are changed.
+
+   Direction:
+   - continuous French-Ward publication field
+   - open-passage cover language
+   - mineral blue / restrained gold
+   - quieter operational form controls
+   - publication hierarchy rather than generic web-form cards
+   ═════════════════════════════════════════════════════════════ */
+
+.page {
+  --fw-blue: #83bedb;
+  --fw-blue-deep: #081118;
+  --fw-blue-soft: #101c25;
+
+  --bone: #dce4e2;
+  --bone-light: #f1f2ee;
+  --paper: #15242e;
+  --field: rgba(13, 28, 38, 0.28);
+
+  --ink: #e9ece9;
+  --muted: #aabac2;
+
+  --bronze: #bd9e6f;
+  --bronze-bright: #c0a577;
+
+  --rule: rgba(122, 169, 189, 0.21);
+  --rule-dark: rgba(122, 169, 189, 0.32);
+  --blue-rule: rgba(122, 169, 189, 0.24);
+
+  background:
+    linear-gradient(
+      180deg,
+      #081118 0,
+      #101c25 470px,
+      #15242e 980px,
+      #182a34 100%
+    );
+
+  color: var(--ink);
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+
+/* ─────────────────────────────
+   ISSUER / DOCUMENT REGISTER
+   ───────────────────────────── */
+
+.instrumentMasthead {
+  background: #081118;
+  color: #e9ece9;
+
+  border-bottom:
+    1px solid
+    rgba(190, 174, 143, 0.24);
+}
+
+.mastheadInner {
+  width:
+    min(
+      1020px,
+      calc(100% - 48px)
+    );
+
+  padding:
+    1.05rem
+    0;
+
+  gap: 2rem;
+}
+
+.returnLink {
+  color: #91b4c5;
+}
+
+.returnLink:hover,
+.returnLink:focus-visible {
+  color: #e3eef2;
+}
+
+.issuer p {
+  color: #e2e5e2;
+
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+}
+
+.issuer span {
+  color: #bd9e6f;
+
+  font-size: 0.47rem;
+  letter-spacing: 0.14em;
+}
+
+.issuerSeal {
+  opacity: 0.88;
+}
+
+.documentMeta span {
+  color: #8ea5b0;
+}
+
+.documentMeta strong {
+  color: #d0b482;
+}
+
+
+/* ─────────────────────────────
+   COVER / OPEN PASSAGE
+   ───────────────────────────── */
+
+.hero {
+  align-items: stretch;
+
+  min-height:
+    clamp(
+      390px,
+      53vh,
+      520px
+    );
+
+  padding:
+    clamp(3.8rem, 7vw, 6.2rem)
+    clamp(24px, 5.7vw, 72px);
+
+  background:
+    linear-gradient(
+      90deg,
+      #081118 0%,
+      rgba(8, 17, 24, 0.99) 28%,
+      rgba(8, 17, 24, 0.91) 43%,
+      rgba(8, 17, 24, 0.61) 59%,
+      rgba(8, 17, 24, 0.16) 80%,
+      rgba(8, 17, 24, 0.06) 100%
+    ),
+    url("/french-ward/fw-profile-open-passage.webp")
+      right center / auto 103%
+      no-repeat,
+    #081118;
+
+  color: #f1f2ee;
+}
+
+.heroInner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  width:
+    min(
+      1020px,
+      100%
+    );
+
+  margin:
+    0 auto;
+
+  text-align: left;
+}
+
+.kicker,
+.stageCode {
+  color: #c0a577;
+
+  font-size: 0.56rem;
+  letter-spacing: 0.16em;
+}
+
+.hero h1 {
+  width:
+    min(
+      760px,
+      100%
+    );
+
+  margin:
+    1.05rem
+    0
+    1.35rem;
+
+  color: #f1f2ee;
+
+  font-size:
+    clamp(
+      2.6rem,
+      5vw,
+      4.9rem
+    );
+
+  line-height: 1.03;
+
+  font-weight: 600;
+
+  letter-spacing: -0.025em;
+
+  text-transform: uppercase;
+
+  text-shadow:
+    0 1px 12px
+    rgba(0, 0, 0, 0.23);
+}
+
+.hero h1 span {
+  margin-top: 0.18rem;
+
+  color: #a9c9d6;
+
+  font-weight: 400;
+}
+
+.heroLead {
+  max-width: 47ch;
+
+  margin: 0;
+
+  color: #c8d7dc;
+
+  font-size:
+    clamp(
+      0.9rem,
+      1.3vw,
+      1rem
+    );
+
+  line-height: 1.72;
+}
+
+
+/* ─────────────────────────────
+   DOCUMENT NAVIGATION
+   ───────────────────────────── */
+
+.instrumentNav {
+  top: 0;
+
+  background:
+    rgba(
+      12,
+      25,
+      33,
+      0.97
+    );
+
+  border-top:
+    1px solid
+    rgba(122, 169, 189, 0.16);
+
+  border-bottom:
+    1px solid
+    rgba(122, 169, 189, 0.25);
+
+  backdrop-filter:
+    blur(10px);
+}
+
+.instrumentNav > div {
+  justify-content: flex-start;
+
+  width:
+    min(
+      1020px,
+      calc(100% - 48px)
+    );
+}
+
+.instrumentNav a {
+  color: #8fa7b2;
+
+  font-size: 0.48rem;
+}
+
+.instrumentNav a:hover,
+.instrumentNav a:focus-visible {
+  color: #e4eff3;
+}
+
+
+/* ─────────────────────────────
+   FORM PUBLICATION FIELD
+   ───────────────────────────── */
+
+.form {
+  width:
+    min(
+      1020px,
+      calc(100% - 48px)
+    );
+
+  padding:
+    clamp(3.1rem, 5vw, 4.8rem)
+    0
+    clamp(5rem, 8vw, 7rem);
+}
+
+.section {
+  padding-bottom:
+    clamp(
+      3.4rem,
+      5vw,
+      4.8rem
+    );
+
+  margin-bottom:
+    clamp(
+      3.4rem,
+      5vw,
+      4.8rem
+    );
+
+  border-bottom:
+    1px solid
+    var(--rule);
+}
+
+.sectionHeader {
+  grid-template-columns:
+    36px
+    minmax(0, 1fr);
+
+  gap: 17px;
+
+  padding-bottom:
+    1.35rem;
+
+  margin-bottom:
+    clamp(
+      1.8rem,
+      3vw,
+      2.6rem
+    );
+
+  border-bottom:
+    1px solid
+    var(--rule-dark);
+}
+
+.sectionHeader > span {
+  color: #bd9e6f;
+
+  font-size: 0.62rem;
+}
+
+.sectionHeader .stageCode {
+  color: #8daebb;
+}
+
+.sectionHeader h2 {
+  margin:
+    0.3rem
+    0
+    0;
+
+  color: #e9ece9;
+
+  font-size:
+    clamp(
+      1.35rem,
+      2vw,
+      1.8rem
+    );
+
+  line-height: 1.25;
+
+  font-weight: 500;
+
+  letter-spacing: 0.035em;
+
+  text-transform: uppercase;
+}
+
+
+/* ─────────────────────────────
+   STATUS / GOVERNING CONTEXT
+   ───────────────────────────── */
+
+.instrumentNotice {
+  border-top:
+    1px solid
+    var(--rule);
+
+  border-bottom:
+    1px solid
+    var(--rule);
+}
+
+.instrumentNotice p {
+  color: #aebdc5;
+}
+
+.progression {
+  border-bottom:
+    1px solid
+    var(--rule);
+}
+
+.progression span {
+  color: #91a6b0;
+}
+
+.progression i {
+  color: #c0a577;
+}
+
+
+/* ─────────────────────────────
+   SUBSECTION LANGUAGE
+   ───────────────────────────── */
+
+.subheading {
+  border-bottom:
+    1px solid
+    var(--rule);
+
+  color: #c8d5d9;
+
+  letter-spacing: 0.13em;
+}
+
+.helper {
+  color: #98acb5;
+}
+
+
+/* ─────────────────────────────
+   FORM REGISTER
+   ───────────────────────────── */
+
+.grid {
+  gap:
+    1.45rem
+    2.35rem;
+}
+
+.grid label,
+.choiceBlock > label {
+  color: #b9a27c;
+
+  font-size: 0.58rem;
+
+  letter-spacing: 0.095em;
+}
+
+.grid input,
+.grid select,
+.grid textarea,
+.choiceBlock input,
+.choiceBlock select,
+.choiceBlock textarea {
+  border: 0;
+
+  border-bottom:
+    1px solid
+    rgba(113, 151, 172, 0.52);
+
+  background:
+    rgba(
+      13,
+      28,
+      38,
+      0.14
+    );
+
+  color: #edf2f3;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  box-shadow: none;
+
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.grid input,
+.grid select,
+.choiceBlock input,
+.choiceBlock select {
+  min-height: 43px;
+
+  padding:
+    0
+    0.35rem;
+}
+
+.grid textarea,
+.choiceBlock textarea {
+  padding:
+    0.7rem
+    0.35rem;
+
+  min-height: 100px;
+}
+
+.grid input:hover,
+.grid select:hover,
+.grid textarea:hover,
+.choiceBlock input:hover,
+.choiceBlock select:hover,
+.choiceBlock textarea:hover {
+  border-bottom-color:
+    rgba(
+      158,
+      198,
+      217,
+      0.78
+    );
+}
+
+.grid input:focus,
+.grid select:focus,
+.grid textarea:focus,
+.choiceBlock input:focus,
+.choiceBlock select:focus,
+.choiceBlock textarea:focus {
+  border-color:
+    #a6d9f1;
+
+  background:
+    rgba(
+      30,
+      76,
+      99,
+      0.11
+    );
+
+  box-shadow:
+    0 1px 0
+    #a6d9f1;
+}
+
+.grid input::placeholder,
+.grid textarea::placeholder,
+.choiceBlock input::placeholder,
+.choiceBlock textarea::placeholder {
+  color: #7f96a2;
+}
+
+.grid select,
+.choiceBlock select {
+  background-image:
+    linear-gradient(
+      45deg,
+      transparent 50%,
+      #8fb5c5 50%
+    ),
+    linear-gradient(
+      135deg,
+      #8fb5c5 50%,
+      transparent 50%
+    );
+}
+
+
+/* ─────────────────────────────
+   CHOICE / AUTHORITY REGISTER
+   ───────────────────────────── */
+
+.choiceBlock {
+  border-top:
+    1px solid
+    var(--rule);
+
+  border-bottom:
+    1px solid
+    var(--rule);
+}
+
+.choiceLabel {
+  color: #b9a27c;
+}
+
+.checkboxGrid {
+  border-top:
+    1px solid
+    var(--rule);
+}
+
+.checkbox {
+  border-bottom:
+    1px solid
+    var(--rule);
+
+  color: #c3d0d4;
+}
+
+.checkbox:nth-child(odd) {
+  border-right:
+    1px solid
+    var(--rule);
+}
+
+.checkbox input {
+  border-color:
+    #7693a1;
+
+  background:
+    transparent;
+}
+
+.checkbox input:checked {
+  border-color:
+    #c0a577;
+
+  background:
+    linear-gradient(
+      135deg,
+      transparent 35%,
+      #c0a577 35%,
+      #c0a577 58%,
+      transparent 58%
+    );
+}
+
+.declarations {
+  border-top:
+    1px solid
+    var(--rule-dark);
+}
+
+
+/* ─────────────────────────────
+   SUBMISSION REGISTER
+   ───────────────────────────── */
+
+.submitArea {
+  border-top:
+    1px solid
+    var(--rule-dark);
+
+  border-bottom:
+    1px solid
+    var(--rule-dark);
+}
+
+.submitNote {
+  color: #9eafb7;
+}
+
+.submit {
+  min-width: 190px;
+
+  border: 0;
+
+  border-bottom:
+    1px solid
+    #83bedb;
+
+  background:
+    transparent;
+
+  color: #e2eef3;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  letter-spacing: 0.15em;
+}
+
+.submit::after {
+  content: "  ↗";
+
+  color: #8cc8e4;
+
+  font-size: 0.9rem;
+}
+
+.submit:hover,
+.submit:focus-visible {
+  border-bottom-color:
+    #d6c29b;
+
+  background:
+    rgba(
+      42,
+      101,
+      130,
+      0.12
+    );
+
+  color: #fff;
+}
+
+
+/* ─────────────────────────────
+   SUCCESS / ERROR
+   ───────────────────────────── */
+
+.error {
+  border:
+    1px solid
+    rgba(
+      196,
+      112,
+      99,
+      0.35
+    );
+
+  background:
+    rgba(
+      100,
+      40,
+      36,
+      0.13
+    );
+
+  color: #efb6aa;
+}
+
+.successCard {
+  border:
+    1px solid
+    var(--rule-dark);
+
+  background:
+    linear-gradient(
+      180deg,
+      #101c25,
+      #15242e
+    );
+
+  color: #e9ece9;
+}
+
+.successCard h2 {
+  color: #f0f2ef;
+}
+
+.successCard > p,
+.muted {
+  color: #aebdc5;
+}
+
+.reference {
+  border-top:
+    1px solid
+    #c0a577;
+
+  border-bottom:
+    1px solid
+    #c0a577;
+
+  color: #d9c39c;
+}
+
+
+/* ─────────────────────────────
+   RESPONSIVE PROFILE CONVERGENCE
+   ───────────────────────────── */
+
+@media (max-width: 760px) {
+  .mastheadInner,
+  .instrumentNav > div,
+  .form {
+    width:
+      calc(100% - 36px);
+  }
+
+  .hero {
+    min-height: 390px;
+
+    padding:
+      3.7rem
+      22px;
+
+    background:
+      linear-gradient(
+        90deg,
+        #081118 0%,
+        rgba(8, 17, 24, 0.95) 48%,
+        rgba(8, 17, 24, 0.71) 100%
+      ),
+      url("/french-ward/fw-profile-open-passage.webp")
+        74% center / auto 100%
+        no-repeat,
+      #081118;
+  }
+
+  .hero h1 {
+    font-size:
+      clamp(
+        2.3rem,
+        9vw,
+        3.7rem
+      );
+  }
+
+  .checkbox:nth-child(odd) {
+    border-right: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero {
+    background:
+      radial-gradient(
+        ellipse 80% 55%
+        at 100% 87%,
+        rgba(48, 100, 134, 0.23),
+        transparent 90%
+      ),
+      linear-gradient(
+        120deg,
+        #081118,
+        #10212b
+      );
+  }
+
+  .hero h1 {
+    letter-spacing:
+      -0.035em;
+  }
+
+  .sectionHeader {
+    grid-template-columns:
+      29px
+      minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid input,
+  .grid select,
+  .grid textarea,
+  .choiceBlock input,
+  .choiceBlock select,
+  .choiceBlock textarea,
+  .submit {
+    transition: none;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-2 — Intake restraint pass
+
+   Purpose:
+   - keep the LOI in the French-Ward visual family
+   - stop behaving like the Institutional Profile publication
+   - reduce ceremony before the form
+   - increase operational density
+   - preserve all existing form structure and semantics
+   ═════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────
+   PAGE / FORM FIELD
+───────────────────────────── */
+
+.page {
+  background:
+    linear-gradient(
+      180deg,
+      #0d1921 0,
+      #13232d 220px,
+      #192d37 620px,
+      #1a2e38 100%
+    );
+}
+
+/* ─────────────────────────────
+   COMPACT INTAKE HERO
+───────────────────────────── */
+
+.hero {
+  min-height: 0;
+
+  padding:
+    clamp(2.4rem, 4vw, 3.5rem)
+    2rem
+    clamp(2.6rem, 4.5vw, 3.8rem);
+
+  background:
+    radial-gradient(
+      ellipse 44% 110% at 88% 54%,
+      rgba(63, 130, 162, 0.17),
+      transparent 72%
+    ),
+    linear-gradient(
+      105deg,
+      #091219 0%,
+      #0d1b24 58%,
+      #122934 100%
+    );
+
+  border-bottom:
+    1px solid
+    rgba(107, 161, 188, 0.24);
+}
+
+.heroInner {
+  width: min(1120px, calc(100% - 64px));
+  margin: 0 auto;
+
+  text-align: left;
+}
+
+.kicker {
+  font-size: 0.49rem;
+  letter-spacing: 0.17em;
+
+  color: #bda06f;
+}
+
+.hero h1 {
+  max-width: 760px;
+
+  margin:
+    0.72rem
+    0
+    0.75rem;
+
+  font-size:
+    clamp(2rem, 4vw, 3.55rem);
+
+  line-height: 0.99;
+
+  font-weight: 520;
+
+  letter-spacing: -0.042em;
+}
+
+.hero h1 span {
+  margin-top: 0.12rem;
+
+  font-weight: 330;
+
+  color: #8fc0d6;
+}
+
+.heroLead {
+  max-width: 560px;
+
+  margin: 0;
+
+  font-size:
+    clamp(0.76rem, 1.15vw, 0.91rem);
+
+  line-height: 1.52;
+
+  color: rgba(219, 231, 237, 0.66);
+}
+
+/* ─────────────────────────────
+   NAV — QUIETER TRANSITION
+───────────────────────────── */
+
+.instrumentNav {
+  background:
+    rgba(15, 30, 39, 0.97);
+
+  border-top: 0;
+
+  border-bottom:
+    1px solid
+    rgba(107, 161, 188, 0.19);
+}
+
+.instrumentNav > div {
+  justify-content: flex-start;
+
+  width:
+    min(1040px, calc(100% - 64px));
+
+  gap:
+    clamp(1rem, 2.3vw, 1.8rem);
+}
+
+.instrumentNav a {
+  padding:
+    0.72rem
+    0;
+
+  font-size: 0.44rem;
+
+  color:
+    rgba(209, 225, 232, 0.49);
+}
+
+/* ─────────────────────────────
+   FORM DENSITY
+───────────────────────────── */
+
+.form {
+  width:
+    min(1040px, calc(100% - 64px));
+
+  padding:
+    clamp(2.2rem, 4vw, 3.25rem)
+    0
+    clamp(3.5rem, 6vw, 5rem);
+}
+
+.section {
+  padding-bottom:
+    clamp(2.2rem, 3.5vw, 3rem);
+
+  margin-bottom:
+    clamp(2.2rem, 3.6vw, 3.15rem);
+
+  border-bottom-color:
+    rgba(120, 164, 184, 0.22);
+}
+
+.section:last-of-type {
+  margin-bottom: 1.5rem;
+}
+
+.sectionHeader {
+  grid-template-columns:
+    2.2rem minmax(0, 1fr);
+
+  gap: 0.65rem;
+
+  padding-bottom: 0.72rem;
+
+  margin-bottom:
+    clamp(1.15rem, 2vw, 1.6rem);
+
+  border-bottom-color:
+    rgba(116, 164, 187, 0.27);
+}
+
+.sectionHeader > span {
+  padding-top: 0.1rem;
+
+  font-size: 0.5rem;
+}
+
+.sectionHeader h2 {
+  margin-top: 0.2rem;
+
+  font-size:
+    clamp(1.18rem, 1.8vw, 1.55rem);
+
+  line-height: 1.08;
+
+  letter-spacing: -0.024em;
+}
+
+/* ─────────────────────────────
+   STATUS / PROGRESSION
+───────────────────────────── */
+
+.instrumentNotice {
+  gap:
+    clamp(1.1rem, 2.4vw, 2.4rem);
+
+  padding:
+    0.9rem
+    0;
+}
+
+.instrumentNotice p {
+  font-size: 0.72rem;
+  line-height: 1.52;
+}
+
+.progression {
+  gap: 0.55rem;
+
+  padding:
+    0.82rem
+    0;
+
+  margin-bottom: 1.45rem;
+}
+
+.progression span {
+  font-size: 0.45rem;
+}
+
+/* ─────────────────────────────
+   SUBSECTIONS / HELPERS
+───────────────────────────── */
+
+.subheading {
+  margin:
+    1.8rem
+    0
+    0.85rem;
+
+  padding-bottom: 0.45rem;
+
+  font-size: 0.58rem;
+}
+
+.helper {
+  max-width: 680px;
+
+  margin:
+    -0.1rem
+    0
+    1rem;
+
+  font-size: 0.67rem;
+  line-height: 1.48;
+}
+
+/* ─────────────────────────────
+   INPUT SYSTEM
+───────────────────────────── */
+
+.grid {
+  column-gap:
+    clamp(1.25rem, 2.4vw, 2rem);
+
+  row-gap:
+    0.92rem;
+}
+
+.field,
+.grid > label {
+  gap: 0.35rem;
+}
+
+.form label {
+  font-size: 0.56rem;
+  letter-spacing: 0.11em;
+}
+
+.form input,
+.form select,
+.form textarea {
+  min-height: 34px;
+
+  padding:
+    0.38rem
+    0.05rem
+    0.45rem;
+
+  background:
+    rgba(225, 239, 245, 0.025);
+
+  border-bottom-color:
+    rgba(120, 169, 192, 0.42);
+
+  color: #e5edf0;
+}
+
+.form textarea {
+  min-height: 66px;
+
+  padding-top: 0.5rem;
+}
+
+.form input:focus,
+.form select:focus,
+.form textarea:focus {
+  background:
+    rgba(101, 165, 195, 0.065);
+
+  border-bottom-color:
+    #90c7df;
+}
+
+/* ─────────────────────────────
+   CHECKBOXES
+───────────────────────────── */
+
+.choiceLabel {
+  margin-bottom: 0.65rem;
+}
+
+.checkboxGrid {
+  margin-bottom: 1rem;
+}
+
+.checkbox {
+  gap: 0.62rem;
+
+  padding:
+    0.58rem
+    0.9rem
+    0.58rem
+    0;
+
+  font-size: 0.69rem;
+  line-height: 1.4;
+}
+
+.checkbox:nth-child(odd) {
+  padding-right: 1rem;
+}
+
+.checkbox:nth-child(even) {
+  padding-left: 1rem;
+}
+
+.declarations {
+  margin-top: 1.45rem;
+}
+
+.declarations .checkbox {
+  padding:
+    0.72rem
+    0;
+}
+
+/* ─────────────────────────────
+   SUBMISSION
+───────────────────────────── */
+
+.submitArea {
+  gap: 2rem;
+
+  padding:
+    1.25rem
+    0;
+}
+
+.submitNote {
+  max-width: 600px;
+
+  margin-top: 0.25rem;
+
+  font-size: 0.66rem;
+  line-height: 1.45;
+}
+
+.submit {
+  min-width: 164px;
+  min-height: 40px;
+}
+
+/* ─────────────────────────────
+   MOBILE
+───────────────────────────── */
+
+@media (max-width: 760px) {
+  .hero {
+    padding:
+      2.2rem
+      1rem
+      2.4rem;
+  }
+
+  .heroInner {
+    width: calc(100% - 16px);
+  }
+
+  .hero h1 {
+    font-size:
+      clamp(1.8rem, 8.6vw, 2.7rem);
+  }
+
+  .heroLead {
+    max-width: 46ch;
+  }
+
+  .form,
+  .instrumentNav > div {
+    width: calc(100% - 32px);
+  }
+
+  .section {
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .sectionHeader {
+    margin-bottom: 1.1rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero {
+    min-height: 0;
+
+    padding:
+      1.85rem
+      0.75rem
+      2rem;
+
+    background:
+      linear-gradient(
+        115deg,
+        #091219,
+        #10242e
+      );
+  }
+
+  .hero h1 {
+    font-size:
+      clamp(1.65rem, 9vw, 2.25rem);
+  }
+
+  .heroLead {
+    font-size: 0.75rem;
+  }
+
+  .form {
+    padding-top: 1.7rem;
+  }
+
+  .sectionHeader {
+    grid-template-columns:
+      1.8rem minmax(0, 1fr);
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-3 — Working surface + desktop navigation rail
+
+   - restore mineral select surfaces
+   - distinguish the intake working field from the page ground
+   - fix section navigation at left on desktop
+   - retain compact operational rhythm
+   ═════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────
+   FORM WORKING SURFACE
+───────────────────────────── */
+
+.form {
+  position: relative;
+
+  width:
+    min(1040px, calc(100% - 64px));
+
+  padding:
+    clamp(2.3rem, 4vw, 3.3rem)
+    clamp(1.5rem, 3vw, 2.6rem)
+    clamp(3.5rem, 6vw, 5rem);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(49, 78, 92, 0.22),
+      rgba(37, 67, 81, 0.18) 36%,
+      rgba(34, 63, 77, 0.13) 100%
+    );
+
+  border-left:
+    1px solid
+    rgba(126, 170, 190, 0.14);
+
+  border-right:
+    1px solid
+    rgba(126, 170, 190, 0.1);
+
+  box-shadow:
+    inset 0 1px 0 rgba(159, 196, 212, 0.05);
+}
+
+/* Keep individual fields quieter than selects,
+   but distinct from the surrounding working surface. */
+
+.form input,
+.form textarea {
+  background:
+    rgba(9, 24, 32, 0.18);
+
+  border-bottom-color:
+    rgba(135, 180, 201, 0.46);
+}
+
+.form input:hover,
+.form textarea:hover {
+  background:
+    rgba(29, 62, 76, 0.2);
+}
+
+.form input:focus,
+.form textarea:focus {
+  background:
+    rgba(70, 119, 141, 0.13);
+}
+
+/* ─────────────────────────────
+   SELECTS — RESTORE MINERAL SURFACE
+───────────────────────────── */
+
+.form select {
+  min-height: 34px;
+
+  padding:
+    0.4rem
+    2rem
+    0.4rem
+    0.55rem;
+
+  background:
+    linear-gradient(
+      180deg,
+      #aacbd9,
+      #9ec2d1
+    );
+
+  border: 0;
+
+  border-bottom:
+    1px solid
+    #77a8bd;
+
+  color:
+    #10242f;
+
+  font-weight: 520;
+
+  box-shadow:
+    inset 0 -1px 0
+    rgba(15, 47, 61, 0.16);
+
+  cursor: pointer;
+}
+
+.form select:hover {
+  background:
+    linear-gradient(
+      180deg,
+      #b6d4df,
+      #a7cad7
+    );
+}
+
+.form select:focus {
+  background:
+    linear-gradient(
+      180deg,
+      #bedbe5,
+      #acd0dc
+    );
+
+  border-bottom-color:
+    #d5edf6;
+
+  outline:
+    1px solid
+    rgba(163, 211, 230, 0.48);
+
+  outline-offset: 2px;
+}
+
+/* ─────────────────────────────
+   DESKTOP LEFT NAVIGATION RAIL
+───────────────────────────── */
+
+@media (min-width: 1180px) {
+  .instrumentNav {
+    position: fixed;
+
+    top: 50%;
+    left:
+      max(
+        1.4rem,
+        calc((100vw - 1420px) / 2)
+      );
+
+    z-index: 30;
+
+    width: 132px;
+
+    transform:
+      translateY(-50%);
+
+    background:
+      rgba(9, 21, 29, 0.62);
+
+    border: 0;
+
+    border-left:
+      1px solid
+      rgba(120, 169, 192, 0.25);
+
+    backdrop-filter:
+      blur(10px);
+  }
+
+  .instrumentNav > div {
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: flex-start;
+
+    width: 100%;
+
+    gap: 0;
+
+    padding:
+      0.45rem
+      0
+      0.45rem
+      0.8rem;
+
+    overflow: visible;
+  }
+
+  .instrumentNav a {
+    display: block;
+
+    width: 100%;
+
+    padding:
+      0.5rem
+      0;
+
+    font-size: 0.43rem;
+
+    line-height: 1.25;
+
+    letter-spacing: 0.11em;
+
+    color:
+      rgba(193, 216, 226, 0.46);
+  }
+
+  .instrumentNav a:hover,
+  .instrumentNav a:focus-visible {
+    color:
+      #9dcde1;
+  }
+}
+
+/* Horizontal nav remains the mobile/tablet behavior. */
+
+@media (max-width: 1179px) {
+  .instrumentNav {
+    position: sticky;
+
+    top: 0;
+
+    width: auto;
+
+    transform: none;
+  }
+
+  .instrumentNav > div {
+    flex-direction: row;
+  }
+}
+
+/* ─────────────────────────────
+   SMALL-SCREEN WORKING SURFACE
+───────────────────────────── */
+
+@media (max-width: 760px) {
+  .form {
+    width:
+      calc(100% - 24px);
+
+    padding:
+      1.8rem
+      1rem
+      3rem;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-4 — Final restraint polish
+
+   - blend desktop index rail into surrounding field
+   - soften working-surface perimeter
+   - slightly restrain mineral select emphasis
+   ═════════════════════════════════════════════════════════════ */
+
+/* Working field should read as a zone, not a card. */
+
+.form {
+  border-left-color:
+    rgba(126, 170, 190, 0.09);
+
+  border-right-color:
+    rgba(126, 170, 190, 0.055);
+
+  box-shadow:
+    inset 0 1px 0 rgba(159, 196, 212, 0.04),
+    inset 24px 0 38px -38px rgba(134, 190, 214, 0.16),
+    inset -24px 0 38px -38px rgba(134, 190, 214, 0.1);
+}
+
+/* Keep selects distinctive without becoming the dominant object. */
+
+.form select {
+  background:
+    linear-gradient(
+      180deg,
+      #a5c7d5,
+      #99bdcc
+    );
+}
+
+.form select:hover {
+  background:
+    linear-gradient(
+      180deg,
+      #afceda,
+      #a1c5d2
+    );
+}
+
+/* Desktop document index: fade into the intake field. */
+
+@media (min-width: 1180px) {
+  .instrumentNav {
+    width: 136px;
+
+    background:
+      linear-gradient(
+        90deg,
+        rgba(7, 19, 26, 0.78) 0%,
+        rgba(9, 23, 31, 0.59) 58%,
+        rgba(11, 27, 36, 0.18) 88%,
+        transparent 100%
+      );
+
+    border-left:
+      1px solid
+      rgba(126, 174, 195, 0.18);
+
+    box-shadow:
+      10px 0 30px
+      rgba(3, 12, 17, 0.12);
+
+    backdrop-filter:
+      blur(7px);
+  }
+
+  .instrumentNav > div {
+    padding:
+      0.55rem
+      1.15rem
+      0.55rem
+      0.72rem;
+  }
+
+  .instrumentNav a {
+    color:
+      rgba(191, 214, 224, 0.43);
+  }
+
+  .instrumentNav a:hover,
+  .instrumentNav a:focus-visible {
+    color: #a4d0e2;
+
+    transform:
+      translateX(2px);
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-5 — lighter field / near-transparent rail
+   Presentation only.
+   ═════════════════════════════════════════════════════════════ */
+
+@media (min-width: 1180px) {
+  .instrumentNav {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(8, 20, 28, 0.42) 0%,
+        rgba(8, 20, 28, 0.24) 58%,
+        rgba(8, 20, 28, 0.08) 86%,
+        rgba(8, 20, 28, 0.01) 100%
+      );
+
+    border-left:
+      1px solid rgba(132, 178, 198, 0.11);
+
+    box-shadow:
+      8px 0 24px rgba(3, 10, 16, 0.08);
+
+    backdrop-filter:
+      blur(4px);
+  }
+}
+
+/* Lighten the working form surface slightly more blue. */
+.form {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(30, 56, 71, 0.94) 0%,
+      rgba(28, 53, 68, 0.95) 100%
+    );
+}
+
+/* Keep the field distinct but softer. */
+.form::before {
+  opacity: 0.42;
+}
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-6 — Mobile alignment + guidance readability
+
+   - improve descriptive/helper contrast everywhere
+   - align mobile working surface and section geometry
+   - preserve current desktop hierarchy
+   ═════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────
+   GUIDANCE / DESCRIPTION CONTRAST
+───────────────────────────── */
+
+.helper,
+.instrumentNotice p,
+.submitNote,
+.profileCopy,
+.form p {
+  color:
+    rgba(205, 221, 229, 0.76);
+}
+
+.helper {
+  font-size: 0.7rem;
+  line-height: 1.52;
+}
+
+.instrumentNotice p {
+  color:
+    rgba(214, 227, 233, 0.78);
+}
+
+.choiceLabel {
+  color:
+    rgba(216, 229, 235, 0.78);
+}
+
+.checkbox {
+  color:
+    rgba(218, 229, 234, 0.86);
+}
+
+/* Placeholder text should remain subordinate,
+   but visibly readable. */
+
+.form input::placeholder,
+.form textarea::placeholder {
+  color:
+    rgba(190, 209, 219, 0.58);
+
+  opacity: 1;
+}
+
+/* ─────────────────────────────
+   MOBILE ALIGNMENT
+───────────────────────────── */
+
+@media (max-width: 760px) {
+  .form {
+    width: 100%;
+
+    margin: 0;
+
+    padding:
+      1.7rem
+      1.35rem
+      3rem;
+
+    border-left: 0;
+    border-right: 0;
+  }
+
+  .instrumentNav > div {
+    width: 100%;
+
+    padding:
+      0
+      1.15rem;
+  }
+
+  .sectionHeader {
+    grid-template-columns:
+      2rem minmax(0, 1fr);
+
+    gap: 0.55rem;
+  }
+
+  .sectionHeader h2 {
+    font-size:
+      clamp(1.35rem, 5.7vw, 1.8rem);
+
+    line-height: 1.08;
+  }
+
+  .sectionHeader > span {
+    padding-top: 0.12rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+
+    row-gap: 0.9rem;
+  }
+
+  .wide {
+    grid-column: auto;
+  }
+
+  .subheading {
+    margin-top: 1.55rem;
+  }
+
+  .helper {
+    margin-bottom: 0.9rem;
+  }
+
+  .checkboxGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkbox,
+  .checkbox:nth-child(odd),
+  .checkbox:nth-child(even) {
+    padding:
+      0.72rem
+      0;
+
+    border-right: 0;
+  }
+
+  .checkbox {
+    grid-template-columns:
+      1.25rem minmax(0, 1fr);
+
+    gap: 0.7rem;
+  }
+
+  .checkbox input {
+    margin-top: 0.12rem;
+  }
+
+  .submitArea {
+    align-items: stretch;
+
+    flex-direction: column;
+
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .form {
+    padding:
+      1.45rem
+      1rem
+      2.75rem;
+  }
+
+  .instrumentNav > div {
+    padding:
+      0
+      0.9rem;
+  }
+
+  .instrumentNav a {
+    padding:
+      0.68rem
+      0;
+
+    font-size: 0.42rem;
+  }
+
+  .section {
+    padding-bottom: 1.75rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .sectionHeader {
+    grid-template-columns:
+      1.7rem minmax(0, 1fr);
+
+    margin-bottom: 1rem;
+  }
+
+  .sectionHeader h2 {
+    font-size:
+      clamp(1.28rem, 6.2vw, 1.65rem);
+  }
+
+  .helper,
+  .instrumentNotice p,
+  .submitNote {
+    font-size: 0.69rem;
+    line-height: 1.5;
+  }
+
+  .checkbox {
+    font-size: 0.68rem;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-7 — Raise helper/descriptive copy to white
+   Target only explanatory guidance text.
+   ═════════════════════════════════════════════════════════════ */
+
+.helper,
+.fieldHint,
+.supportingText,
+.sectionNote,
+.instrumentNotice p,
+.submitNote,
+.authorityHint,
+.readinessHint,
+.complianceHint,
+.form p {
+  color: rgba(235, 242, 246, 0.92);
+}
+
+/* If helper text sits directly after a field/input block,
+   keep it clearly readable. */
+.grid p,
+.choiceBlock p,
+.section p {
+  color: rgba(235, 242, 246, 0.92);
+}
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-8 — Guidance copy contrast
+   Raise field/choice/section instructions to readable light tone.
+   ═════════════════════════════════════════════════════════════ */
+
+.fieldHelp,
+.choiceHelp,
+.helper {
+  color: rgba(244, 248, 250, 0.94);
+}
+
+.fieldHelp {
+  font-size: 0.66rem;
+  line-height: 1.45;
+}
+
+.choiceHelp,
+.helper {
+  color: rgba(235, 242, 246, 0.9);
+}
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-9 — Checkbox state clarity
+   Unchecked must visibly read empty; checked must visibly read selected.
+   ═════════════════════════════════════════════════════════════ */
+
+.checkbox input[type="checkbox"] {
+  appearance: none;
+
+  width: 16px;
+  height: 16px;
+
+  margin-top: 0.12rem;
+
+  border:
+    1px solid
+    rgba(205, 225, 234, 0.72);
+
+  background: transparent;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(9, 25, 33, 0.18);
+
+  cursor: pointer;
+}
+
+.checkbox input[type="checkbox"]:hover {
+  border-color: #a7d3e5;
+
+  background:
+    rgba(126, 183, 207, 0.08);
+}
+
+.checkbox input[type="checkbox"]:checked {
+  border-color: #d2b47b;
+
+  background:
+    linear-gradient(
+      135deg,
+      transparent 0 38%,
+      #f4e1b5 38% 47%,
+      transparent 47% 100%
+    ),
+    linear-gradient(
+      45deg,
+      transparent 0 46%,
+      #f4e1b5 46% 56%,
+      transparent 56% 100%
+    ),
+    #9a7b43;
+
+  box-shadow:
+    0 0 0 1px rgba(210, 180, 123, 0.18);
+}
+
+.checkbox input[type="checkbox"]:focus-visible {
+  outline:
+    2px solid
+    rgba(151, 205, 226, 0.82);
+
+  outline-offset: 3px;
+}
