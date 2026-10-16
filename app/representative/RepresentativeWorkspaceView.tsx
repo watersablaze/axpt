@@ -215,6 +215,29 @@ export default async function RepresentativeWorkspaceView({
                       <p className={canvas.packReference}>{commercialUtilityPack.reference} · Version {commercialUtilityPack.version}</p>
                     </details>
                     <BuyerDossierControls options={buyerDossierOptions} readOnly={operatorPreview} />
+                    <section
+                      aria-label="Letter of Intent and Transaction Intake"
+                      className="my-5 rounded-lg border border-[#425c78] bg-[#0c1929] p-5"
+                    >
+                      <p className="text-xs font-semibold uppercase tracking-widest text-[#dfc58f]">
+                        Commercial Intake
+                      </p>
+                      <h3 className="mt-2 text-xl font-semibold text-white">
+                        Letter of Intent &amp; Transaction Intake
+                      </h3>
+                      <p className="mt-2 max-w-2xl text-sm leading-6 text-[#c6d3e2]">
+                        Direct a prospective buyer to French-Ward’s controlled
+                        commercial intake. Access and submission remain subject
+                        to the intake’s separate approval process.
+                      </p>
+                      <Link
+                        href="/french-ward/transaction-intake"
+                        prefetch={false}
+                        className="mt-4 inline-block text-sm font-semibold text-[#e8cb91] underline underline-offset-4"
+                      >
+                        Open Letter of Intent →
+                      </Link>
+                    </section>
                     <CupWorkingSet storageKey={`arp-workspace:${operatorPreview ? 'operator-preview:' : ''}${userId}:cup:${commercialUtilityPack.reference}:v${commercialUtilityPack.version}`} resourceIds={commercialUtilityPack.modules.flatMap(entry => entry.resources.map(resource => resource.id))} categories={commercialUtilityPack.modules.flatMap(entry =>
                       entry.resources.map(() => humanize(entry.module))
                     )} labels={commercialUtilityPack.modules.flatMap(entry =>

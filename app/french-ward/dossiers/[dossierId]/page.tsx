@@ -28,6 +28,21 @@ export default async function BuyerDossierPage({ params }: { params: Promise<{ d
       {item.available ? <Link className={styles.open} href={`/french-ward/dossiers/${encodeURIComponent(dossier.id)}/publications/${encodeURIComponent(item.id)}`} prefetch={false}>Open full document →</Link>
         : <p>This publication is currently unavailable. Contact French-Ward for assistance.</p>}
     </article>)}</div>
+    <section className={styles.document}
+      aria-label="Letter of Intent and Transaction Intake"
+      style={{ marginTop: 24 }}>
+      <p className={styles.eyebrow}>Commercial Intake</p>
+      <h2>Letter of Intent &amp; Transaction Intake</h2>
+      <p className={styles.meta}>
+        Ready to outline a proposed transaction? Open French-Ward’s
+        controlled commercial intake. Access to these publications does
+        not automatically approve access to the intake form.
+      </p>
+      <Link className={styles.open}
+        href="/french-ward/transaction-intake" prefetch={false}>
+        Open Letter of Intent →
+      </Link>
+    </section>
     <footer className={styles.footer}>For correspondence: <a href="mailto:french-ward@axpt.io">french-ward@axpt.io</a></footer>
   </main>;
 }
