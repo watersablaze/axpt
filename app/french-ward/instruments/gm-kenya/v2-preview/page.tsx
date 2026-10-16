@@ -8,7 +8,13 @@ import { globalMotherCycleV2Plan } from "@/domains/instruments/definitions/globa
 export const dynamic = "force-dynamic";
 
 const movements = [
-  { index: "I", label: "Recognition & Relationship", active: true },
+  {
+    index: "00",
+    label: "Mission Overview",
+    notation: "Mission",
+    active: true,
+  },
+  { index: "I", label: "Recognition & Relationship" },
   { index: "II", label: "Authority & Custodianship" },
   { index: "III", label: "Governed Gold Passage" },
   { index: "IV", label: "Restoration & Continuity" },
@@ -76,6 +82,35 @@ export default function GlobalMotherV2DraftPreviewPage() {
     }),
   );
 
+  const overview = {
+    mission:
+      "Establish a protected, values-aligned operating field for custodial gold passage, institutional coordination, restoration, and responsible global trade.",
+    currentState: [
+      "Chamber V1 concluded and preserved in Intermission.",
+      "Chamber V2 is in preparation; no V2 access or commercial authority has been issued.",
+      "Refinery readiness is affirmed as a principal operational requirement.",
+      "The Framework remains the relationship and authority layer before definitive transaction instruments.",
+    ],
+    clarified: [
+      "Relationship precedes obligation.",
+      "Authority remains attributable to each institution.",
+      "Refinery-specific terms belong to the later commercial layer.",
+      "Technology serves private coordination, continuity, and documentary integrity.",
+    ],
+    attention: [
+      "Confirm standing, responsibilities, and authority boundaries.",
+      "Resolve unanswered deliberative questions directly.",
+      "Advance refinery relationships and readiness in proper sequence.",
+      "Determine whether sufficient alignment exists for definitive formation.",
+    ],
+    protocol: [
+      "Clarity before pressure.",
+      "Understanding before assumption.",
+      "Alignment before obligation.",
+      "Conditions before movement.",
+    ],
+  } as const;
+
   return (
     <GlobalMotherConstitutionalShell
       eyebrow="French-Ward / Internal Chamber V2 Draft"
@@ -87,7 +122,64 @@ export default function GlobalMotherV2DraftPreviewPage() {
       movements={[...movements]}
       recipient={null}
       chamberParticipants={participants}
+      presentation="operative-v2"
     >
+      <section
+        id="gm-mission-overview"
+        className={styles.v2MissionOverview}
+        aria-labelledby="gm-v2-mission-title"
+      >
+        <header className={styles.v2MissionHeader}>
+          <div>
+            <p className={styles.v2SystemKicker}>Chamber V2 · Mission Protocol</p>
+            <h2 id="gm-v2-mission-title">A clearer field for coordinated action.</h2>
+          </div>
+          <span className={styles.v2SystemState}>PREPARATION · NOT ISSUED</span>
+        </header>
+
+        <p className={styles.v2MissionStatement}>{overview.mission}</p>
+
+        <div className={styles.v2MissionRail} aria-label="Formation sequence">
+          {[
+            "Relationship",
+            "Authority",
+            "Deliberation",
+            "Agreement",
+            "Conditions",
+            "Movement",
+          ].map((step, index) => (
+            <div key={step} className={index === 2 ? styles.v2MissionRailActive : undefined}>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+              <strong>{step}</strong>
+            </div>
+          ))}
+        </div>
+
+        <div className={styles.v2MissionGrid}>
+          <section>
+            <span>Current state</span>
+            {overview.currentState.map((item) => <p key={item}>{item}</p>)}
+          </section>
+          <section>
+            <span>Clarified</span>
+            {overview.clarified.map((item) => <p key={item}>{item}</p>)}
+          </section>
+          <section>
+            <span>Requires attention</span>
+            {overview.attention.map((item) => <p key={item}>{item}</p>)}
+          </section>
+          <section className={styles.v2ProtocolModule}>
+            <span>Operating doctrine</span>
+            {overview.protocol.map((item) => <strong key={item}>{item}</strong>)}
+          </section>
+        </div>
+
+        <footer className={styles.v2MissionFooter}>
+          <span>Protected deliberation · custodial trade · sovereign digital coordination</span>
+          <strong>Proceed through the Framework →</strong>
+        </footer>
+      </section>
+
       {movementGroups.map((movement) => {
         const propositions = globalMotherV5Definition.propositions.filter(
           (proposition) =>
