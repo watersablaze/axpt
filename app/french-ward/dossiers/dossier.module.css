@@ -19,3 +19,23 @@
 .navigation span { overflow-wrap:anywhere; }
 .open:focus-visible,.navigation a:focus-visible,.header a:focus-visible { outline:2px solid #ead3a4; outline-offset:5px; }
 @media print { .navigation { display:none; } .profile { padding:0; background:white; color:black; } }
+
+/* Buyer reception: restrained contrast and a single entrance transition. */
+.reception { background:radial-gradient(ellipse at 85% 0%,#142e50 0,transparent 48%),#070d16; color:#f5f7fa; font-family:Arial,Helvetica,sans-serif; -webkit-font-smoothing:antialiased; }
+.header { border-color:#334b69; padding-bottom:24px; }
+.header a { color:#f5f7fa; font-weight:700; letter-spacing:.15em; }
+.header span,.meta { color:#bfccdc; }
+.welcome { padding:48px 0 30px; }
+.eyebrow { color:#e1c68f; text-transform:uppercase; font-weight:700; letter-spacing:.12em; }
+.welcome h1 { font-family:Arial,Helvetica,sans-serif; font-weight:600; letter-spacing:-.035em; color:#fff; }
+.welcome p { color:#d2dce9; }
+.documents { gap:18px; }
+.document { background:linear-gradient(145deg,#12253b,#0d1929); border-color:#334b69; border-radius:8px; padding:26px; display:flex; flex-direction:column; transition:border-color .2s ease,background-color .2s ease; }
+.document:hover,.document:focus-within { border-color:#bfa36b; }
+.document h2 { font-family:Arial,Helvetica,sans-serif; font-size:21px; font-weight:600; line-height:1.45; letter-spacing:-.015em; color:#fff; }
+.open { color:#e8cb91; font-weight:600; margin-top:auto; }
+.footer { border-color:#334b69; color:#bfccdc; }
+.footer a { color:#e8cb91; }
+@keyframes arrive { from { opacity:0; transform:translateY(7px); } to { opacity:1; transform:translateY(0); } }
+@media (prefers-reduced-motion:no-preference) { .welcome,.documents { animation:arrive .55s ease-out both; } .documents { animation-delay:.08s; } }
+@media (prefers-reduced-motion:reduce) { .document { transition:none; } }

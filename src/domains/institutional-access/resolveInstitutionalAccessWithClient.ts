@@ -49,6 +49,8 @@ export async function resolveInstitutionalAccessWithClient(params: {
   resourceReference: string;
   resourceVersion: number;
   now?: Date;
+  /** Optional server-owned exact grant binding for an invitation view. */
+  grantId?: string;
 }) {
   const now = params.now ?? new Date();
   const email = params.identity.email.trim().toLowerCase();
@@ -67,6 +69,25 @@ export async function resolveInstitutionalAccessWithClient(params: {
 
   const grant = await params.client.institutionalAccessGrant.findFirst({
     where: {
+      ...(params.grantId ? { id: params.grantId } : {}),
+      // Standalone grants retain their existing policy. Dossier-issued LOI
+      // grants require a linked, live dossier with the same recipient identity.
+      ...(params.scope === "LOI_INTAKE_ACCESS" ? {
+        AND: [
+          { OR: [
+            { buyerDossierLoi: { is: null } },
+            { buyerDossierLoi: { is: {
+              recipientUserId: params.identity.userId, recipientEmail: email,
+              recipient: { email }, revokedAt: null, expiresAt: { gt: now },
+            } } },
+          ] },
+          { OR: [
+            { request: { decisionPolicy: null } },
+            { request: { decisionPolicy: { not: "BUYER_DOSSIER_LOI_ACCESS_V1" } } },
+            { buyerDossierLoi: { isNot: null } },
+          ] },
+        ],
+      } : {}),
       recipientUserId: params.identity.userId,
       recipientEmail: email,
       scope: params.scope,

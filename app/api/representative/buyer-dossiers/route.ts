@@ -12,6 +12,7 @@ export const dynamic = "force-dynamic";
 const headers = { "Cache-Control": "private, no-store", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer" };
 const json = (body: unknown, status = 200) => NextResponse.json(body, { status, headers });
 const schema = z.object({
+  includeLoiAccess: z.boolean().optional().default(false),
   resourceReleaseIds: z.array(z.string().trim().min(1).max(191)).min(1).max(5).refine(ids=>new Set(ids).size===ids.length),
   reviewHash: z.string().regex(/^[a-f0-9]{64}$/), recipientName: z.string().trim().min(1).max(120),
   recipientEmail: z.string().trim().email().max(254), recipientOrganization: z.string().trim().min(1).max(180),
@@ -19,7 +20,7 @@ const schema = z.object({
 }).strict();
 const receipt = (id: string, actorUserId: string) => prisma.representativeBuyerDossier.findFirst({
   where: { id, actorUserId }, select: { id: true, recipientName: true, recipientEmail: true,
-    expiresAt: true, revokedAt: true, recipientDeliveryStatus: true, adminDeliveryStatus: true,
+    expiresAt: true, revokedAt: true, recipientDeliveryStatus: true, adminDeliveryStatus: true, loiAccessGrantId: true,
     items: { select: { label: true, resourceReference: true, resourceVersion: true } } },
 });
 export async function GET(request: Request) {
@@ -33,6 +34,9 @@ export async function GET(request: Request) {
       const result = await receipt(id, principal.userId);
       return result ? json({ ok: true, receipt: result }) : json({ ok: false }, 404);
     }
+    const loiFlags = url.searchParams.getAll("includeLoiAccess");
+    if (loiFlags.length > 1 || loiFlags.some(value => value !== "true" && value !== "false")) return json({ ok: false }, 400);
+    const includeLoiAccess = loiFlags[0] === "true";
     const ids = url.searchParams.getAll("resourceReleaseId");
     if (!ids.length || ids.length > 5 || ids.some(id=>!id || id.length>191) || new Set(ids).size!==ids.length) return json({ ok: false }, 400);
     const now = new Date();
@@ -42,7 +46,7 @@ export async function GET(request: Request) {
     });
     if (appointments.length!==1) return json({ ok: false }, 403);
     const review = await resolveRepresentativeBuyerDossierSelectionWithClient({ client: prisma, userId: principal.userId,
-      appointmentId: appointments[0].id, resourceReleaseIds: ids, at: now });
+      appointmentId: appointments[0].id, resourceReleaseIds: ids, at: now, includeLoiAccess });
     return review.allowed ? json({ ok: true, review }) : json({ ok: false, error: review.reason }, 403);
   } catch { return json({ ok: false, error: "DOSSIER_REVIEW_UNAVAILABLE" }, 503); }
 }
@@ -65,7 +69,7 @@ export async function POST(request: Request) {
     const delivery = await deliverRepresentativeBuyerDossierWithClient({ client: prisma, dossierId:id, actorUserId:principal.userId, mode,
       from:process.env.FRENCH_WARD_EMAIL_FROM || process.env.REPRESENTATIVE_ONBOARDING_FROM_EMAIL || "French-Ward <french-ward@axpt.io>",
       replyTo:process.env.REPRESENTATIVE_ONBOARDING_REPLY_TO_EMAIL || "french-ward@axpt.io",
-      accessCurrent: async (tx, record) => { const view = await loadRecipientBuyerDossierWithClient({client:tx,dossierId:record.id,userId:record.recipientUserId,email:record.recipientEmail}); return Boolean(view?.items.length && view.items.every(item=>item.available)); },
+      accessCurrent: async (tx, record) => { const view = await loadRecipientBuyerDossierWithClient({client:tx,dossierId:record.id,userId:record.recipientUserId,email:record.recipientEmail}); return Boolean(view?.items.length && view.items.every(item=>item.available) && (!view.loiAccess || view.loiAccess.available)); },
       send:async message=>{ const response=await resend.emails.send(message); return {accepted:!response.error && Boolean(response.data?.id),messageId:response.data?.id}; },
     });
     const result=await receipt(id,principal.userId);

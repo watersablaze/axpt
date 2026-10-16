@@ -131,6 +131,9 @@ async function main(){
  write("app/layout.tsx","export default function Layout({children}) {return <html><body>{children}</body></html>;}\n");
  expose("app/api/representative/buyer-dossiers/route.ts","GET, POST");
  expose("app/api/auth/login/verify/route.ts","POST");
+ expose("app/transaction-intake/page.tsx","default");
+ expose("app/french-ward/transaction-intake/page.tsx","default");
+ expose("app/api/transaction-intake/route.ts","POST");
  expose("app/api/french-ward/dossiers/[dossierId]/publications/[itemId]/document/route.ts","GET");
  expose("app/api/representative/commercial-utility-packs/resources/[resourceReleaseId]/supporting-document/route.ts","GET");
  expose("app/api/admin/representative-program/participants/[participantId]/workspace-preview/resources/[resourceReleaseId]/supporting-document/route.ts","GET");
@@ -232,6 +235,35 @@ async function main(){
  assert.equal((await request(reception+"/publications/"+profileItem.id,undefined,visitorCookie)).response.status,404);
  assert.equal(await client.emailLog.count(),2);
  console.log("✓ Per-publication revocation and dossier expiry are enforced through the existing recipient session.");
+ const loiReview=await request(route+query+"&includeLoiAccess=true",undefined,actorCookie);
+ assert.equal(loiReview.response.status,200);assert.ok(loiReview.data.review.loiAccess);
+ assert.notEqual(loiReview.data.review.reviewHash,review.data.review.reviewHash);
+ assert.equal((await request(route+query+"&includeLoiAccess=invalid",undefined,actorCookie)).response.status,400);
+ assert.equal((await request(route,{...fields,includeLoiAccess:"true"},actorCookie)).response.status,400);
+ const loiFields={...fields,includeLoiAccess:true,reviewHash:loiReview.data.review.reviewHash,
+   recipientEmail:prefix+"-loi-visitor@example.invalid",idempotencyKey:randomUUID()};
+ assert.equal((await request(route,{...loiFields,reviewHash:review.data.review.reviewHash},actorCookie)).response.status,409);
+ const loiSent=await request(route,loiFields,actorCookie);assert.equal(loiSent.response.status,202,JSON.stringify(loiSent.data));
+ const loiDossier=await client.representativeBuyerDossier.findUniqueOrThrow({where:{id:loiSent.data.dossierId}});
+ assert.ok(loiDossier.loiAccessGrantId);
+ const loiUser=await client.user.findUniqueOrThrow({where:{id:loiDossier.recipientUserId}});
+ await client.pinLoginRequest.create({data:{email:loiUser.email,pinHash:await bcrypt.hash("581924",12),expiresAt:new Date(Date.now()+600000)}});
+ const loiLogin=await request("/api/auth/login/verify",{email:loiUser.email,pin:"581924"});assert.equal(loiLogin.response.status,200);
+ const loiCookie=loiLogin.response.headers.getSetCookie().find(value=>value.startsWith("axpt_session=")).split(";")[0];
+ const loiReception=await request("/french-ward/dossiers/"+loiDossier.id,undefined,loiCookie);
+ assert.equal(loiReception.response.status,200);assert.ok(loiReception.text.includes("LOI access is included"));
+ const form=await request("/french-ward/transaction-intake",undefined,loiCookie);
+ assert.equal(form.response.status,200);assert.ok(form.text.includes('name="submitterName"'));
+ const savedForm="/french-ward/transaction-intake";
+ const blockedBody={submitterName:"HTTP Buyer",submitterEmail:loiUser.email,submitterRole:"BUYER",
+   declarationAccuracy:true,declarationNoObligation:true,declarationNoCommission:true};
+ const intakes=await client.transactionIntake.count();
+ await client.representativeBuyerDossier.update({where:{id:loiDossier.id},data:{revokedAt:new Date()}});
+ const blockedForm=await request(savedForm,undefined,loiCookie);assert.equal(blockedForm.response.status,200);
+ assert.ok(!blockedForm.text.includes('name="submitterName"'));
+ assert.equal((await request("/api/transaction-intake",blockedBody,loiCookie)).response.status,403);
+ assert.equal(await client.transactionIntake.count(),intakes);
+ console.log("✓ Actual opt-in API review and PIN session open the LOI form; saved form and submission deny after dossier revocation, without sending mail.");
  console.log("ARP_FIVE_MATERIAL_PDF_HTTP_OK");
 }
 main().catch(error=>{console.error(redact(error.stack || error.message));if(output)console.error(output);process.exitCode=1;}).finally(async()=>{await stop();await client.$disconnect();if(temporary)fs.rmSync(temporary,{recursive:true,force:true});});

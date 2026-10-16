@@ -1,3 +1,5 @@
+import { FRENCH_WARD_COMMERCIAL_INTAKE } from "../../src/domains/institutions/french-ward/commercial";
+import { consumeInstitutionalAccessWithClient } from "../../src/domains/institutional-access/consumeInstitutionalAccessWithClient";
 import { SUPPORTING_DOCUMENTS } from "../../src/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/catalog";
 import { deliverRepresentativeBuyerDossierWithClient } from "../../src/domains/instruments/representative-program/commercial-utility-pack/application/deliverRepresentativeBuyerDossierWithClient";
 import { resolveInstitutionalVisitorSignInWithClient } from "../../src/domains/institutional-access/resolveInstitutionalVisitorSignInWithClient";
@@ -29,6 +31,7 @@ const resourceId = prefix + "-resource";
 const profile = projectFrenchWardInstitutionalProfile();
 const recipientEmail = prefix + "@example.invalid";
 const input = {
+  includeLoiAccess: false,
   resourceReleaseIds: [resourceId, prefix + "-source-resource"], reviewHash: "0".repeat(64), recipientName: "Local Visitor",
   recipientEmail, recipientOrganization: "Local QA Institution",
   purpose: "Isolated database acceptance", idempotencyKey: randomUUID(),
@@ -258,6 +261,73 @@ async function main() {
   assert.equal(withdrawn?.items.filter(item=>item.available).length,2);
   assert.equal(await loadRecipientBuyerDossierWithClient({...recipient,userId:actorId}),null);
   console.log("✓ Five-material real database dossier binds three supporting grants, supports visitor login and denies withdrawn resources without implied downloads.");
+  assert.equal(first.dossier.loiAccessGrantId, null);
+  assert.equal(await client.institutionalAccessGrant.count({where:{scope:"LOI_INTAKE_ACCESS"}}),0);
+  const loiReview=await resolveRepresentativeBuyerDossierSelectionWithClient({client,userId:actorId,appointmentId,
+    resourceReleaseIds:input.resourceReleaseIds,includeLoiAccess:true});
+  assert.ok(loiReview.allowed);if(!loiReview.allowed)throw new Error("LOI_REVIEW_DENIED");
+  assert.notEqual(loiReview.reviewHash,selection.reviewHash);
+  const loiFields={...input,includeLoiAccess:true,reviewHash:loiReview.reviewHash,
+    recipientEmail:prefix+"-loi@example.invalid",idempotencyKey:randomUUID()};
+  const beforeLoi={grants:await client.institutionalAccessGrant.count(),requests:await client.institutionalAccessRequest.count(),
+    dossiers:await client.representativeBuyerDossier.count(),events:await client.institutionalAccessEvent.count()};
+  await assert.rejects(()=>run({...loiFields,reviewHash:selection.reviewHash}),/DOSSIER_REVIEW_CHANGED/);
+  await assert.rejects(()=>run(loiFields,failing),/INJECTED_AUDIT_FAILURE/);
+  assert.equal(await client.institutionalAccessGrant.count(),beforeLoi.grants);
+  assert.equal(await client.institutionalAccessRequest.count(),beforeLoi.requests);
+  assert.equal(await client.representativeBuyerDossier.count(),beforeLoi.dossiers);
+  assert.equal(await client.institutionalAccessEvent.count(),beforeLoi.events);
+  assert.equal(await client.user.count({where:{email:loiFields.recipientEmail}}),0);
+  // Communication is independently required for the optional intake invitation.
+  await client.instrumentAuthority.updateMany({where:{instrumentId,authorityKey:"ARP.COMMUNICATION"},data:{revokedAt:new Date()}});
+  await assert.rejects(()=>run(loiFields),/DOSSIER_NOT_AUTHORIZED/);
+  assert.equal(await client.institutionalAccessGrant.count(),beforeLoi.grants);
+  await client.instrumentAuthority.updateMany({where:{instrumentId,authorityKey:"ARP.COMMUNICATION"},data:{revokedAt:null}});
+  const loiDossier=await run(loiFields);
+  assert.ok(loiDossier.dossier.loiAccessGrantId);
+  assert.equal((await run(loiFields)).dossier.id,loiDossier.dossier.id);
+  await assert.rejects(()=>run({...loiFields,includeLoiAccess:false}),/IDEMPOTENCY_CONFLICT/);
+  assert.equal(await client.institutionalAccessGrant.count(),beforeLoi.grants+3);
+  assert.equal(loiDossier.dossier.items.length,2);
+  const loiGrant=await client.institutionalAccessGrant.findUniqueOrThrow({where:{id:loiDossier.dossier.loiAccessGrantId!}});
+  assert.equal(loiGrant.scope,"LOI_INTAKE_ACCESS");
+  assert.equal(loiGrant.resourceReference,FRENCH_WARD_COMMERCIAL_INTAKE.reference);
+  assert.equal(loiGrant.resourceVersion,FRENCH_WARD_COMMERCIAL_INTAKE.version);
+  assert.equal(loiGrant.expiresAt.getTime(),loiDossier.dossier.expiresAt.getTime());
+  const loiIdentity={userId:loiDossier.dossier.recipientUserId,email:loiFields.recipientEmail};
+  const loiAccess={client,identity:loiIdentity,scope:"LOI_INTAKE_ACCESS" as const,action:"VIEW_FORM" as const,
+    resourceReference:FRENCH_WARD_COMMERCIAL_INTAKE.reference,resourceVersion:FRENCH_WARD_COMMERCIAL_INTAKE.version};
+  assert.equal((await resolveInstitutionalAccessWithClient(loiAccess)).allowed,true);
+  assert.equal((await resolveInstitutionalAccessWithClient({...loiAccess,identity:{...loiIdentity,userId:actorId}})).allowed,false);
+  const loiReception={client,dossierId:loiDossier.dossier.id,...loiIdentity};
+  assert.equal((await loadRecipientBuyerDossierWithClient(loiReception))?.loiAccess?.available,true);
+  const submitLoi=()=>consumeInstitutionalAccessWithClient({client,identity:loiIdentity,scope:"LOI_INTAKE_ACCESS",
+    action:"SUBMIT_INTAKE",resourceReference:FRENCH_WARD_COMMERCIAL_INTAKE.reference,
+    resourceVersion:FRENCH_WARD_COMMERCIAL_INTAKE.version,execute:async tx=>{
+      const intake=await tx.transactionIntake.create({data:{reference:prefix+"-LOI-"+randomUUID(),
+        submitterName:"Local Buyer",submitterEmail:loiIdentity.email,submitterRole:"BUYER",
+        declarationAccuracy:true,declarationNoObligation:true,declarationNoCommission:true}});
+      return {value:intake.id,intakeId:intake.id,intakeReference:intake.reference};
+    }});
+  const intakeId=await submitLoi();assert.ok(await client.transactionIntake.findUnique({where:{id:intakeId}}));
+  const intakes=await client.transactionIntake.count();
+  await client.representativeBuyerDossier.update({where:{id:loiDossier.dossier.id},data:{revokedAt:new Date()}});
+  assert.equal((await resolveInstitutionalAccessWithClient(loiAccess)).allowed,false);
+  await assert.rejects(submitLoi,/INSTITUTIONAL_ACCESS_DENIED/);
+  assert.equal(await client.transactionIntake.count(),intakes);
+  await client.representativeBuyerDossier.update({where:{id:loiDossier.dossier.id},data:{revokedAt:null,expiresAt:new Date(0)}});
+  assert.equal((await resolveInstitutionalAccessWithClient(loiAccess)).allowed,false);
+  await assert.rejects(submitLoi,/INSTITUTIONAL_ACCESS_DENIED/);
+  await client.representativeBuyerDossier.update({where:{id:loiDossier.dossier.id},data:{expiresAt:loiGrant.expiresAt}});
+  await client.institutionalAccessGrant.update({where:{id:loiGrant.id},data:{revokedAt:new Date()}});
+  assert.equal((await resolveInstitutionalAccessWithClient(loiAccess)).allowed,false);
+  assert.equal((await loadRecipientBuyerDossierWithClient(loiReception))?.loiAccess?.available,false);
+  await assert.rejects(submitLoi,/INSTITUTIONAL_ACCESS_DENIED/);
+  await client.institutionalAccessGrant.update({where:{id:loiGrant.id},data:{revokedAt:null,expiresAt:new Date(0)}});
+  assert.equal((await resolveInstitutionalAccessWithClient(loiAccess)).allowed,false);
+  assert.equal(await client.transactionIntake.count(),intakes);
+  assert.equal(await client.userRole.count({where:{userId:loiIdentity.userId}}),0);
+  console.log("✓ LOI is opt-in and review-bound; independent authority, atomic rollback, replay, real intake consumption, dossier/grant revocation and expiry enforced.");
   console.log("ARP_BUYER_DOSSIER_LOCAL_DATABASE_OK");
 }
 main().catch(error => { console.error(error instanceof Error ? error.message : "Acceptance failed"); process.exitCode = 1; })

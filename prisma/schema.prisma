@@ -3751,6 +3751,7 @@ model InstitutionalAccessRequest {
 }
 
 model InstitutionalAccessGrant {
+  buyerDossierLoi RepresentativeBuyerDossier? @relation("BuyerDossierLoi")
   buyerDossierItem RepresentativeBuyerDossierItem?
 
   representativeIntroduction RepresentativeProfileIntroduction?
@@ -3855,6 +3856,8 @@ model RepresentativeProfileIntroduction {
 
 // Selected buyer publications. Existing Profile-only introductions remain independent.
 model RepresentativeBuyerDossier {
+  loiAccessGrantId String? @unique
+  loiAccessGrant InstitutionalAccessGrant? @relation("BuyerDossierLoi", fields: [loiAccessGrantId], references: [id], onDelete: Restrict)
   id String @id @default(cuid())
   actorUserId String
   participantId String

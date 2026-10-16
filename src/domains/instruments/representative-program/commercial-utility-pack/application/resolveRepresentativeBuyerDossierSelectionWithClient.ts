@@ -1,3 +1,4 @@
+import { FRENCH_WARD_COMMERCIAL_INTAKE } from "@/domains/institutions/french-ward/commercial";
 import { loadRepresentativeSupportingDocumentWithClient } from "../supporting-documents/loadRepresentativeSupportingDocumentWithClient";
 import { createHash } from "node:crypto";
 import { projectFrenchWardInstitutionalProfile } from "@/domains/institutions/french-ward/projectFrenchWardInstitutionalProfile";
@@ -24,12 +25,13 @@ export async function resolveRepresentativeBuyerDossierSelectionWithClient(input
   appointmentId: string;
   resourceReleaseIds: readonly string[];
   at?: Date;
+  includeLoiAccess?: boolean;
 }) {
   const at = input.at ?? new Date();
   if (!input.userId.trim() || !input.appointmentId.trim() || !Number.isFinite(at.getTime())) {
     throw new Error("[BUYER_DOSSIER_IDENTITY_OR_TIME_INVALID]");
   }
-  return resolveBuyerDossierSelection({
+  const selection = await resolveBuyerDossierSelection({
     resourceReleaseIds: input.resourceReleaseIds,
     ports: {
       loadPublication: async resourceReleaseId => {
@@ -80,4 +82,25 @@ export async function resolveRepresentativeBuyerDossierSelectionWithClient(input
       },
     },
   });
+  if (!selection.allowed || !input.includeLoiAccess) return selection;
+  if (FRENCH_WARD_COMMERCIAL_INTAKE.status !== "CURRENT") {
+    return { allowed: false as const, reason: "LOI_INTAKE_UNAVAILABLE" };
+  }
+  // This is a distinct intake invitation policy, not a publication permission.
+  for (const authorityKey of [REPRESENTATIVE_AUTHORITY_KEY.INTRODUCTION, REPRESENTATIVE_AUTHORITY_KEY.COMMUNICATION]) {
+    const authority = await resolveRepresentativeProgramAuthorityApplicabilityWithClient({
+      client: input.client, request: { appointmentId: input.appointmentId, authorityKey,
+        context: { documentClass: "LOI_INTAKE_ACCESS" }, at },
+    });
+    if (!authority.exercisable || !authority.applicable || authority.approvalRequired === true) {
+      return { allowed: false as const, reason: "LOI_INTAKE_NOT_AUTHORIZED" };
+    }
+  }
+  const loiAccess = {
+    policy: "BUYER_DOSSIER_LOI_ACCESS_V1", scope: FRENCH_WARD_COMMERCIAL_INTAKE.accessScope,
+    reference: FRENCH_WARD_COMMERCIAL_INTAKE.reference, version: FRENCH_WARD_COMMERCIAL_INTAKE.version,
+    label: "Letter of Intent & Transaction Intake", route: FRENCH_WARD_COMMERCIAL_INTAKE.route,
+    actions: ["VIEW_FORM", "SUBMIT_INTAKE"],
+  };
+  return { ...selection, loiAccess, reviewHash: hash({ publicationReviewHash: selection.reviewHash, loiAccess }) };
 }

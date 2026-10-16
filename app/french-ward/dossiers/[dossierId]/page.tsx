@@ -34,14 +34,16 @@ export default async function BuyerDossierPage({ params }: { params: Promise<{ d
       <p className={styles.eyebrow}>Commercial Intake</p>
       <h2>Letter of Intent &amp; Transaction Intake</h2>
       <p className={styles.meta}>
-        Ready to outline a proposed transaction? Open French-Ward’s
-        controlled commercial intake. Access to these publications does
-        not automatically approve access to the intake form.
+        {dossier.loiAccess?.available
+          ? "LOI access is included in your invitation. You may open the form and submit your proposed transaction for French-Ward review. Submission does not approve a transaction."
+          : dossier.loiAccess
+            ? "LOI access under this invitation is currently unavailable. Contact French-Ward for assistance."
+            : "LOI access was not included in this invitation. You may request access through French-Ward’s commercial intake."}
       </p>
-      <Link className={styles.open}
+      {!dossier.loiAccess || dossier.loiAccess.available ? <Link className={styles.open}
         href="/french-ward/transaction-intake" prefetch={false}>
-        Open Letter of Intent →
-      </Link>
+        {dossier.loiAccess?.available ? "Open Letter of Intent →" : "Request LOI Access →"}
+      </Link> : null}
     </section>
     <footer className={styles.footer}>For correspondence: <a href="mailto:french-ward@axpt.io">french-ward@axpt.io</a></footer>
   </main>;

@@ -1,7 +1,9 @@
+import { resolveInstitutionalAccessWithClient } from "@/domains/institutional-access/resolveInstitutionalAccessWithClient";
+import { FRENCH_WARD_COMMERCIAL_INTAKE } from "@/domains/institutions/french-ward/commercial";
 import type { PrismaClient } from "@prisma/client";
 import { buyerDossierIdentityAllowsAccess, buyerDossierItemAllowsAccess } from "./buyerDossierAccessPolicy";
 import { loadBuyerDossierPublicationWithClient } from "./loadBuyerDossierPublicationWithClient";
-type Client = Pick<PrismaClient, "representativeBuyerDossier"> &
+type Client = Pick<PrismaClient, "representativeBuyerDossier" | "institutionalAccessGrant"> &
   Parameters<typeof loadBuyerDossierPublicationWithClient>[0]["client"];
 
 /** Recipient principal only. No operator impersonation and no URL-supplied email.
@@ -33,5 +35,13 @@ export async function loadRecipientBuyerDossierWithClient(input: {
       version: item.resourceVersion, available: allowed, canDownload: allowed && item.canDownload,
       publication: allowed ? publication : null });
   }
-  return { id: dossier.id, recipientName: dossier.recipientName, expiresAt: dossier.expiresAt, items };
+  const intake = FRENCH_WARD_COMMERCIAL_INTAKE;
+  const loi = dossier.loiAccessGrantId ? await resolveInstitutionalAccessWithClient({
+    client: input.client, identity: { userId: input.userId, email: input.email },
+    scope: intake.accessScope, action: "VIEW_FORM", resourceReference: intake.reference,
+    resourceVersion: intake.version, grantId: dossier.loiAccessGrantId, now: at,
+  }) : null;
+  const loiAccess = dossier.loiAccessGrantId
+    ? { included: true, available: Boolean(loi?.allowed), route: intake.route } : null;
+  return { id: dossier.id, recipientName: dossier.recipientName, expiresAt: dossier.expiresAt, items, loiAccess };
 }

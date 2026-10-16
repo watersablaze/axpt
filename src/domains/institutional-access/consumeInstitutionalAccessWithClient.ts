@@ -51,6 +51,14 @@ export async function consumeInstitutionalAccessWithClient<T>(params: {
 }): Promise<T> {
   return params.client.$transaction(async (tx: InstitutionalAccessTransactionClient) => {
     await lockRecipient(tx, params.identity.userId);
+    if (params.scope === "LOI_INTAKE_ACCESS") {
+      // Hold parent invitations stable through the protected submission.
+      // A concurrent dossier revocation waits for this transaction to finish.
+      await tx.$queryRaw`SELECT d.id FROM "RepresentativeBuyerDossier" d
+        JOIN "InstitutionalAccessGrant" g ON g.id = d."loiAccessGrantId"
+        WHERE g."recipientUserId" = ${params.identity.userId}
+        ORDER BY d.id FOR SHARE OF d`;
+    }
 
     const now = new Date();
     const access = await resolveInstitutionalAccessWithClient({

@@ -1,3 +1,4 @@
+import { FRENCH_WARD_COMMERCIAL_INTAKE } from "@/domains/institutions/french-ward/commercial";
 import { buyerPublicationScope } from "../supporting-documents/buyerSupportingDocumentPolicy";
 import type { PrismaClient } from "@prisma/client";
 import { createHash, randomBytes, randomUUID } from "node:crypto";
@@ -9,6 +10,7 @@ type Transaction = Parameters<typeof resolveRepresentativeBuyerDossierSelectionW
   Pick<PrismaClient, "$queryRaw" | "user" | "representativeBuyerDossier" |
   "institutionalAccessRequest" | "institutionalAccessGrant" | "institutionalAccessEvent" | "domainEvent">;
 const fields = z.object({
+  includeLoiAccess: z.boolean().optional().default(false),
   resourceReleaseIds: z.array(z.string().trim().min(1).max(191)).min(1).max(5)
     .refine(ids => new Set(ids).size === ids.length),
   reviewHash: z.string().regex(/^[a-f0-9]{64}$/),
@@ -47,6 +49,7 @@ export async function createRepresentativeBuyerDossierWithClient(input: {
     actorUserId, resourceReleaseIds: ids, reviewHash: data.reviewHash,
     recipientName: data.recipientName, recipientEmail: data.recipientEmail,
     recipientOrganization: data.recipientOrganization, purpose: data.purpose,
+    ...(data.includeLoiAccess ? { includeLoiAccess: true } : {}),
   })).digest("hex");
   const passwordHash = await bcrypt.hash(randomBytes(48).toString("hex"), 12);
   return input.client.$transaction(async (tx: Transaction) => {
@@ -85,7 +88,7 @@ export async function createRepresentativeBuyerDossierWithClient(input: {
       SELECT "packageId" FROM "CommercialUtilityPackResourceRelease" WHERE id = ANY(${ids}::text[])
     ) ORDER BY id FOR SHARE`;
     const selection = await resolveRepresentativeBuyerDossierSelectionWithClient({
-      client: tx, userId: actorUserId, appointmentId: appointment.id, resourceReleaseIds: ids, at: new Date(),
+      client: tx, userId: actorUserId, appointmentId: appointment.id, resourceReleaseIds: ids, at: new Date(), includeLoiAccess: data.includeLoiAccess,
     });
     if (!selection.allowed) throw new BuyerDossierError("DOSSIER_NOT_AUTHORIZED");
     if (selection.reviewHash !== data.reviewHash) throw new BuyerDossierError("DOSSIER_REVIEW_CHANGED");
@@ -135,18 +138,41 @@ export async function createRepresentativeBuyerDossierWithClient(input: {
         type: "GRANTED", actorUserId, metadata: { dossierId, policy: selection.policy,
           recipientProvisioned: matches.length === 0 } } });
     }
+    let loiAccessGrantId: string | null = null;
+    if (data.includeLoiAccess) {
+      const intake = FRENCH_WARD_COMMERCIAL_INTAKE;
+      const request = await tx.institutionalAccessRequest.create({ data: {
+        requesterName: data.recipientName, requesterEmail: data.recipientEmail,
+        institutionalAffiliation: data.recipientOrganization,
+        requesterCapacity: "INVITED_BUYER_LOI_RECIPIENT", purpose: data.purpose,
+        scope: intake.accessScope, resourceReference: intake.reference, resourceVersion: intake.version,
+        status: "APPROVED", decisionPolicy: "BUYER_DOSSIER_LOI_ACCESS_V1",
+        decisionReason: "LOI access explicitly selected and reviewed under introduction and communication authority.",
+        decidedByUserId: actorUserId, decidedAt: issuedAt,
+        events: { create: [{ type: "REQUESTED", actorUserId,
+          metadata: { origin: "REPRESENTATIVE_BUYER_DOSSIER_LOI", dossierId } }, { type: "APPROVED", actorUserId }] },
+      }, select: { id: true } });
+      const grant = await tx.institutionalAccessGrant.create({ data: {
+        requestId: request.id, recipientUserId: recipient.id, recipientEmail: data.recipientEmail,
+        scope: intake.accessScope, resourceReference: intake.reference, resourceVersion: intake.version,
+        issuedByUserId: actorUserId, issuedAt, expiresAt,
+      }, select: { id: true } });
+      loiAccessGrantId = grant.id;
+      await tx.institutionalAccessEvent.create({ data: { requestId: request.id, grantId: grant.id,
+        type: "GRANTED", actorUserId, metadata: { dossierId, policy: "BUYER_DOSSIER_LOI_ACCESS_V1" } } });
+    }
     const dossier = await tx.representativeBuyerDossier.create({ data: {
       id: dossierId, actorUserId, participantId: appointment.participantId, appointmentId: appointment.id,
       recipientUserId: recipient.id, recipientName: data.recipientName, recipientEmail: data.recipientEmail,
       recipientOrganization: data.recipientOrganization, purpose: data.purpose, policy: selection.policy,
       reviewHash: selection.reviewHash, inputHash, idempotencyKey: data.idempotencyKey,
       authoritySnapshot: JSON.parse(JSON.stringify({ selection, authorities })),
-      expiresAt, adminRecipients, items: { create: items },
+      expiresAt, adminRecipients, loiAccessGrantId, items: { create: items },
     }, include: { items: { orderBy: { resourceReleaseId: "asc" } } } });
     await tx.domainEvent.create({ data: { streamType: "RepresentativeBuyerDossier", streamId: dossier.id,
       eventType: "REPRESENTATIVE_BUYER_DOSSIER_CREATED", payload: {
         actorUserId, participantId: appointment.participantId, appointmentId: appointment.id,
-        recipientUserId: recipient.id, reviewHash: selection.reviewHash,
+        recipientUserId: recipient.id, reviewHash: selection.reviewHash, loiAccessGrantId,
         items: items.map(item => ({ grantId: item.grantId, reference: item.resourceReference, version: item.resourceVersion })),
       } } });
     return { dossier, replay: false };
