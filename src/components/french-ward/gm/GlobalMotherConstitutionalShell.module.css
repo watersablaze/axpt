@@ -971,3 +971,154 @@
     min-height: 0;
   }
 }
+
+
+/* =========================================================
+   GM V5 / CHAMBER V2 — OPERATIVE SHELL
+   Wider mission field, lighter enclosure, rails as structure.
+   Scoped so issued V4 presentation remains unchanged.
+   ========================================================= */
+
+@media (min-width: 861px) {
+  .operativeShell {
+    padding:
+      clamp(.45rem, .9vw, .8rem)
+      clamp(.35rem, .8vw, .7rem)
+      .2rem;
+  }
+
+  .operativeShell .documentIdentity {
+    padding:
+      .8rem
+      clamp(1rem, 1.8vw, 1.5rem)
+      .8rem;
+  }
+
+  .operativeShell .documentIdentity > div {
+    max-width: 72rem;
+  }
+
+  .operativeShell .documentIdentity strong {
+    font-size: clamp(1.1rem, 1.55vw, 1.48rem);
+  }
+
+  .operativeShell .documentIdentity p {
+    max-width: 60rem;
+    font-size: .78rem;
+  }
+
+  .operativeShell .pamphlet {
+    width: 100%;
+    border-color: rgba(187, 161, 103, .18);
+    box-shadow:
+      0 18px 52px rgba(2, 9, 13, .2),
+      inset 0 1px rgba(231, 239, 239, .025);
+  }
+
+  .operativeShell .constitutionalBody {
+    grid-template-columns:
+      clamp(12.5rem, 15.5vw, 16.5rem)
+      minmax(0, 1fr);
+  }
+
+  .operativeShell .councilSpine {
+    padding:
+      clamp(.85rem, 1.5vw, 1.2rem)
+      clamp(.7rem, 1.2vw, 1rem);
+    border-right-color: rgba(170, 194, 204, .12);
+    background:
+      linear-gradient(180deg, rgba(23, 51, 67, .94), rgba(16, 39, 52, .97));
+  }
+
+  .operativeShell .activeChamber {
+    padding:
+      clamp(1rem, 1.8vw, 1.5rem)
+      clamp(1.15rem, 2.4vw, 2.4rem)
+      clamp(1.8rem, 3vw, 2.8rem);
+    background:
+      radial-gradient(
+        ellipse at 18% 0,
+        rgba(252, 249, 239, .75),
+        transparent 58%
+      ),
+      linear-gradient(
+        145deg,
+        #f1ede2,
+        #ece7dc 62%,
+        #e7e1d4
+      );
+  }
+
+  .operativeShell .chamberContent,
+  .operativeShell .chamberProgression {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+  }
+
+  .operativeShell .chamberNotation {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+    padding-bottom: .7rem;
+  }
+
+  .operativeShell .spineMovement {
+    border-radius: 0;
+    border-left: 1px solid rgba(150, 185, 201, .1);
+    background: transparent;
+  }
+
+  .operativeShell .spineMovementActive {
+    background:
+      linear-gradient(90deg, rgba(188, 155, 84, .1), transparent 82%);
+    box-shadow:
+      inset 2px 0 rgba(211, 179, 108, .7);
+  }
+
+  .operativeShell .utility {
+    min-height: 26px;
+    padding-block: .25rem;
+    background:
+      linear-gradient(90deg, rgba(41, 72, 91, .5), transparent 58%);
+  }
+}
+
+.operativeShell .atmosphere {
+  opacity: .84;
+  background:
+    linear-gradient(
+      111deg,
+      transparent 9%,
+      rgba(114, 174, 201, .055) 17%,
+      transparent 27%
+    ),
+    linear-gradient(
+      101deg,
+      transparent 39%,
+      rgba(215, 189, 126, .042) 48%,
+      transparent 58%
+    ),
+    linear-gradient(
+      126deg,
+      transparent 62%,
+      rgba(124, 182, 205, .038) 69%,
+      transparent 77%
+    ),
+    radial-gradient(
+      ellipse at 54% 0,
+      rgba(188, 219, 231, .13),
+      rgba(168, 197, 211, .04) 34%,
+      transparent 68%
+    );
+}
+
+@media (max-width: 860px) {
+  .operativeShell .activeChamber {
+    padding-top: .8rem;
+  }
+
+  .operativeShell .spineFramework {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+}
