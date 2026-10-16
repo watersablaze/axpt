@@ -395,8 +395,13 @@ export default function RepresentativeCommercialUtilityPackPanel({
         Reload Persisted CUP State
       </button>
 
+      {loading && pack ? (
+        <p role="status" className="mt-3 text-xs text-gray-400">
+          Updating persisted CUP state…
+        </p>
+      ) : null}
       <div className="mt-4 space-y-3" aria-live="polite" aria-busy={loading}>
-        {loading ? (
+        {loading && !pack ? (
           <p className="text-sm text-gray-400">Loading persisted CUP state…</p>
         ) : stateError ? (
           <p role="alert" className="text-sm text-red-300">{stateError}</p>
