@@ -1,4 +1,4 @@
-import { SupportingDocumentView } from "../../../../../../representative/SupportingDocumentView";
+import { SupportingDocumentView } from "../../../../../../../representative/SupportingDocumentView";
 import { loadRepresentativeSupportingDocumentWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/loadRepresentativeSupportingDocumentWithClient";
 import boundaries from "../../../../../../../representative/resources/[resourceReleaseId]/operating-boundaries.module.css";
 import Link from "next/link";
