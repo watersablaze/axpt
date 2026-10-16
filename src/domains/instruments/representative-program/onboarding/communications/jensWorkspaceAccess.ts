@@ -9,7 +9,7 @@ import { getRepresentativeOnboardingEmailMode } from "./emailMode";
 export const JENS_ACCESS_INTAKE = "cmusi9eqz0001w0qfvic3532g";
 const recipient = "juxtaport@gmail.com";
 const communicationType =
-  "ARP_ONBOARDING_WORKSPACE_ACCESS_" + JENS_ACCESS_INTAKE + "_V1";
+  "ARP_ONBOARDING_WORKSPACE_ACCESS_" + JENS_ACCESS_INTAKE + "_RELEASE_20261016_V2";
 
 export async function reviewJensWorkspaceAccess(intakeId: string) {
   if (intakeId !== JENS_ACCESS_INTAKE) {
