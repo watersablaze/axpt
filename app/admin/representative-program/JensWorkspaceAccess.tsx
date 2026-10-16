@@ -57,7 +57,7 @@ export default function JensWorkspaceAccess({ intakeId }: { intakeId: string }) 
     <section className="rounded border border-cyan-500/20 bg-gray-950 p-4">
       <h3 className="text-sm font-semibold text-gray-100">Workspace Access Email</h3>
       <p className="mt-2 text-xs leading-5 text-gray-400">
-        Workspace sign-in and first-stage guidance for Jens. Contains no PIN or private token.
+        Live workspace announcement for Jens, including buyer invitations and optional LOI access. Contains no PIN or private token.
       </p>
       <button type="button" disabled={busy} onClick={() => void preview()}
         className="mt-3 rounded border border-cyan-700 px-3 py-2 text-xs text-cyan-200 disabled:opacity-50">
@@ -81,7 +81,7 @@ export default function JensWorkspaceAccess({ intakeId }: { intakeId: string }) 
           <label className="flex items-start gap-2 text-xs leading-5 text-gray-300">
             <input type="checkbox" checked={confirmed} disabled={busy || Boolean(blocked)}
               onChange={event => setConfirmed(event.target.checked)} />
-            I reviewed the recipient and exact message, including the current limits on document sharing.
+            I reviewed Jens’s recipient address and the exact workspace announcement.
           </label>
           <button type="button" disabled={busy || !confirmed || Boolean(blocked)}
             onClick={() => void send()}
