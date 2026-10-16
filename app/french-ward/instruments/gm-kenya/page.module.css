@@ -3019,3 +3019,270 @@
   color: #263f50;
   text-shadow: 0 1px 0 #fffdf780;
 }
+
+
+/* =========================================================
+   GM V5 / CHAMBER V2 — OPERATIVE MISSION OVERVIEW
+   Rails and atmosphere carry the architecture; modules remain
+   open, technological, and subordinate to the mission field.
+   ========================================================= */
+
+.v2MissionOverview {
+  position: relative;
+  width: min(100%, 1120px);
+  margin: 0 auto;
+  padding: clamp(1.2rem, 2.8vw, 2.35rem) 0 clamp(1.5rem, 3vw, 2.6rem);
+}
+
+.v2MissionOverview::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 1px;
+  background: linear-gradient(
+    to bottom,
+    rgba(190, 153, 84, .62),
+    rgba(128, 184, 207, .18) 48%,
+    transparent 94%
+  );
+}
+
+.v2MissionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 2rem;
+  padding: 0 0 1.15rem clamp(1rem, 2.4vw, 2rem);
+  border-bottom: 1px solid rgba(163, 191, 205, .18);
+}
+
+.v2SystemKicker,
+.v2SystemState,
+.v2MissionGrid > section > span,
+.v2MissionFooter > span {
+  text-transform: uppercase;
+  letter-spacing: .14em;
+  font-size: .58rem;
+}
+
+.v2SystemKicker {
+  margin: 0 0 .55rem;
+  color: rgba(190, 153, 84, .84);
+}
+
+.v2MissionHeader h2 {
+  margin: 0;
+  max-width: 720px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  font-size: clamp(1.8rem, 3vw, 3.3rem);
+  line-height: 1.02;
+  letter-spacing: -.028em;
+  color: rgba(239, 232, 216, .96);
+}
+
+.v2SystemState {
+  flex: none;
+  color: rgba(158, 196, 214, .72);
+  padding-bottom: .25rem;
+}
+
+.v2MissionStatement {
+  max-width: 880px;
+  margin: 1.5rem 0 1.35rem clamp(1rem, 2.4vw, 2rem);
+  color: rgba(232, 223, 200, .74);
+  font-size: clamp(.98rem, 1.2vw, 1.08rem);
+  line-height: 1.7;
+}
+
+.v2MissionRail {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  margin-left: clamp(1rem, 2.4vw, 2rem);
+  border-top: 1px solid rgba(154, 188, 204, .18);
+  border-bottom: 1px solid rgba(154, 188, 204, .18);
+}
+
+.v2MissionRail > div {
+  position: relative;
+  min-height: 74px;
+  padding: .75rem .8rem .8rem;
+  border-right: 1px solid rgba(154, 188, 204, .12);
+  background: linear-gradient(180deg, rgba(39, 80, 101, .06), transparent);
+}
+
+.v2MissionRail > div:last-child {
+  border-right: 0;
+}
+
+.v2MissionRail span {
+  display: block;
+  color: rgba(164, 193, 207, .4);
+  font-size: .52rem;
+  letter-spacing: .12em;
+}
+
+.v2MissionRail strong {
+  display: block;
+  margin-top: .85rem;
+  color: rgba(228, 224, 213, .72);
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .035em;
+}
+
+.v2MissionRailActive {
+  background:
+    linear-gradient(180deg, rgba(185, 151, 82, .11), rgba(35, 74, 94, .035)) !important;
+  box-shadow: inset 0 -2px 0 rgba(205, 174, 107, .72);
+}
+
+.v2MissionRailActive strong {
+  color: rgba(239, 229, 204, .96);
+}
+
+.v2MissionGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin: 1.6rem 0 0 clamp(1rem, 2.4vw, 2rem);
+  border-top: 1px solid rgba(154, 188, 204, .16);
+}
+
+.v2MissionGrid > section {
+  min-height: 190px;
+  padding: 1.15rem 1.15rem 1.25rem 0;
+  border-bottom: 1px solid rgba(154, 188, 204, .13);
+}
+
+.v2MissionGrid > section:not(:nth-child(3n + 1)) {
+  padding-left: 1.15rem;
+  border-left: 1px solid rgba(154, 188, 204, .11);
+}
+
+.v2MissionGrid > section > span {
+  display: block;
+  margin-bottom: .9rem;
+  color: rgba(190, 153, 84, .72);
+}
+
+.v2MissionGrid p {
+  position: relative;
+  margin: .52rem 0 0;
+  padding-left: .9rem;
+  color: rgba(225, 222, 212, .68);
+  font-size: .79rem;
+  line-height: 1.52;
+}
+
+.v2MissionGrid p::before {
+  content: "";
+  position: absolute;
+  top: .58em;
+  left: 0;
+  width: .28rem;
+  height: 1px;
+  background: rgba(141, 185, 205, .46);
+}
+
+.v2ProtocolModule {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: auto repeat(4, minmax(0, 1fr));
+  gap: 0;
+  align-items: center;
+  min-height: 92px !important;
+  padding: 0 !important;
+  border-left: 0 !important;
+}
+
+.v2ProtocolModule > span {
+  margin: 0 !important;
+  padding: 1rem 1.2rem 1rem 0;
+}
+
+.v2ProtocolModule > strong {
+  min-height: 92px;
+  display: grid;
+  place-items: center;
+  padding: .9rem 1rem;
+  border-left: 1px solid rgba(154, 188, 204, .11);
+  color: rgba(238, 228, 204, .82);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(.82rem, 1vw, .94rem);
+  font-weight: 400;
+  line-height: 1.35;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(187, 153, 83, .035), transparent);
+}
+
+.v2MissionFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1.5rem;
+  margin-left: clamp(1rem, 2.4vw, 2rem);
+  padding-top: 1.05rem;
+}
+
+.v2MissionFooter > span {
+  color: rgba(156, 187, 201, .48);
+}
+
+.v2MissionFooter > strong {
+  color: rgba(211, 189, 140, .76);
+  font-size: .72rem;
+  font-weight: 500;
+  letter-spacing: .03em;
+}
+
+@media (max-width: 900px) {
+  .v2MissionHeader {
+    align-items: start;
+    flex-direction: column;
+    gap: .8rem;
+  }
+
+  .v2MissionRail {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .v2MissionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .v2MissionGrid > section,
+  .v2MissionGrid > section:not(:nth-child(3n + 1)) {
+    min-height: 0;
+    padding: 1rem 0 1.15rem;
+    border-left: 0;
+  }
+
+  .v2ProtocolModule {
+    display: block;
+  }
+
+  .v2ProtocolModule > span {
+    padding: 1rem 0 .4rem !important;
+  }
+
+  .v2ProtocolModule > strong {
+    min-height: 0;
+    display: block;
+    padding: .7rem 0;
+    border-left: 0;
+    border-top: 1px solid rgba(154, 188, 204, .1);
+    text-align: left;
+  }
+
+  .v2MissionFooter {
+    flex-direction: column;
+    gap: .55rem;
+  }
+}
+
+@media (max-width: 620px) {
+  .v2MissionRail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
