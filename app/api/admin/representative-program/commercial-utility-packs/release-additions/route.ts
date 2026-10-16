@@ -17,7 +17,11 @@ function failure(error: unknown) {
   const message = error instanceof Error ? error.message : "";
   if (message === "[CUP_ADDITION_ADMIN_REQUIRED]" || message === "[CUP_RESOURCE_RELEASE_ADMIN_REQUIRED]")
     return json({ok: false}, 403);
-  const conflict = message.startsWith("[CUP_ADDITION_") || message.startsWith("[CUP_RESOURCE_RELEASE_") ||
+  const rawSerializationConflict = typeof error === "object" && error !== null &&
+    "code" in error && error.code === "P2010" && "meta" in error &&
+    typeof error.meta === "object" && error.meta !== null &&
+    "code" in error.meta && error.meta.code === "40001";
+  const conflict = rawSerializationConflict || message.startsWith("[CUP_ADDITION_") || message.startsWith("[CUP_RESOURCE_RELEASE_") ||
     (typeof error === "object" && error !== null && "code" in error && error.code === "P2034");
   return json({ok: false, error: conflict ? "ADDITIONS_RELEASE_CONFLICT" : "ADDITIONS_RELEASE_UNAVAILABLE"}, conflict ? 409 : 503);
 }
