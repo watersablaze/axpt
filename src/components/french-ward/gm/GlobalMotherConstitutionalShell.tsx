@@ -16,6 +16,7 @@ type Movement = {
   index: string;
   label: string;
   active?: boolean;
+  notation?: string;
 };
 
 type ChamberParticipant = {
@@ -36,6 +37,7 @@ type GlobalMotherConstitutionalShellProps = {
   movements: Movement[];
   recipient?: { name: string; institution: string; capacity: string } | null;
   chamberParticipants?: ChamberParticipant[];
+  presentation?: "constitutional" | "operative-v2";
   children: ReactNode;
 };
 
@@ -47,6 +49,7 @@ export function GlobalMotherConstitutionalShell({
   movements,
   recipient,
   chamberParticipants = [],
+  presentation = "constitutional",
   children,
 }: GlobalMotherConstitutionalShellProps) {
   const chambers =
@@ -118,8 +121,16 @@ export function GlobalMotherConstitutionalShell({
     });
   };
 
+  const operativePresentation = presentation === "operative-v2";
+
   return (
-    <main className={styles.shell}>
+    <main
+      className={
+        operativePresentation
+          ? `${styles.shell} ${styles.operativeShell}`
+          : styles.shell
+      }
+    >
       <div
         className={styles.atmosphere}
         aria-hidden="true"
@@ -273,7 +284,7 @@ export function GlobalMotherConstitutionalShell({
             <header className={styles.chamberNotation} ref={notationRef} tabIndex={-1}>
               <div>
                 <span>
-                  Article
+                  {activeMovement?.notation ?? "Article"}
                 </span>
 
                 <strong>
