@@ -1,6 +1,6 @@
 import { loadRepresentativeAppointmentWorkspaceDetailsWithClient } from "@/domains/instruments/representative-program/application/loadRepresentativeAppointmentWorkspaceDetailsWithClient";
 import BuyerDossierControls from "./BuyerDossierControls";
-import { loadBuyerDossierOptionsWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/application/loadBuyerDossierOptionsWithClient";
+import { loadBuyerDossierOptionsBatchedWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/application/loadBuyerDossierOptionsBatchedWithClient";
 import WorkspaceStage from "./WorkspaceStage";
 import WorkspaceGuide from "./WorkspaceGuide";
 import CupWorkingSet from "./CupWorkingSet";
@@ -8,7 +8,7 @@ import canvas from "./workspace-canvas.module.css";
 import Link from "next/link";
 import AuthorityRegister from "./AuthorityRegister";
 
-import { loadRepresentativeWorkspace } from "@/domains/instruments/representative-program/application/loadRepresentativeWorkspace";
+import { loadRepresentativeWorkspaceSnapshotWithClient } from "@/domains/instruments/representative-program/application/loadRepresentativeWorkspaceSnapshotWithClient";
 
 import { prisma } from "@/infrastructure/db/prisma";
 import { loadRepresentativeCommercialUtilityPackSnapshotWithClient as loadRepresentativeCommercialUtilityPackWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/application/loadRepresentativeCommercialUtilityPackSnapshotWithClient";
@@ -67,10 +67,17 @@ export default async function RepresentativeWorkspaceView({
     throw new Error("[ARP_OPERATOR_PREVIEW_PARTICIPANT_REQUIRED]");
   }
 
-  const workspace =
-    await loadRepresentativeWorkspace(
-      userId,
-    );
+  const [workspace, commercialUtilityPack] =
+    await Promise.all([
+      loadRepresentativeWorkspaceSnapshotWithClient({
+        client: prisma,
+        userId,
+      }),
+      loadRepresentativeCommercialUtilityPackWithClient({
+        client: prisma,
+        userId,
+      }),
+    ]);
 
   if (!workspace) {
     return (
@@ -102,7 +109,7 @@ export default async function RepresentativeWorkspaceView({
   const appointment =
     workspace.appointment;
 
-  const [appointmentDetails, commercialUtilityPack] =
+  const [appointmentDetails, buyerDossierOptions] =
     await Promise.all([
       appointment
         ? loadRepresentativeAppointmentWorkspaceDetailsWithClient({
@@ -114,15 +121,14 @@ export default async function RepresentativeWorkspaceView({
             appointmentReview: null,
             authorityRegister: null,
           }),
-      loadRepresentativeCommercialUtilityPackWithClient({
+      loadBuyerDossierOptionsBatchedWithClient({
         client: prisma,
         userId,
+        pack: commercialUtilityPack,
       }),
     ]);
 
   const { appointmentReview, authorityRegister } = appointmentDetails;
-
-  const buyerDossierOptions = await loadBuyerDossierOptionsWithClient({ client: prisma, userId, pack: commercialUtilityPack });
 
   const reviewAvailable = Boolean(appointmentReview?.canAccept);
   const awaitingActivation = Boolean(
