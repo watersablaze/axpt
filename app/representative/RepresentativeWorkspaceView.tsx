@@ -1,3 +1,4 @@
+import { loadRepresentativeAppointmentWorkspaceDetailsWithClient } from "@/domains/instruments/representative-program/application/loadRepresentativeAppointmentWorkspaceDetailsWithClient";
 import BuyerDossierControls from "./BuyerDossierControls";
 import { loadBuyerDossierOptionsWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/application/loadBuyerDossierOptionsWithClient";
 import WorkspaceStage from "./WorkspaceStage";
@@ -6,13 +7,11 @@ import CupWorkingSet from "./CupWorkingSet";
 import canvas from "./workspace-canvas.module.css";
 import Link from "next/link";
 import AuthorityRegister from "./AuthorityRegister";
-import { loadRepresentativeAuthorityRegister } from "@/domains/instruments/representative-program/application/loadRepresentativeAuthorityRegister";
-import { loadRepresentativeAppointmentReview } from "@/domains/instruments/representative-program/application/representativeAppointmentAcceptance";
 
 import { loadRepresentativeWorkspace } from "@/domains/instruments/representative-program/application/loadRepresentativeWorkspace";
 
 import { prisma } from "@/infrastructure/db/prisma";
-import { loadRepresentativeCommercialUtilityPackWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/application/loadRepresentativeCommercialUtilityPackWithClient";
+import { loadRepresentativeCommercialUtilityPackSnapshotWithClient as loadRepresentativeCommercialUtilityPackWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/application/loadRepresentativeCommercialUtilityPackSnapshotWithClient";
 
 export const dynamic = "force-dynamic";
 
@@ -103,27 +102,25 @@ export default async function RepresentativeWorkspaceView({
   const appointment =
     workspace.appointment;
 
-  const [appointmentReview, authorityRegister, commercialUtilityPack] =
+  const [appointmentDetails, commercialUtilityPack] =
     await Promise.all([
       appointment
-        ? loadRepresentativeAppointmentReview({
+        ? loadRepresentativeAppointmentWorkspaceDetailsWithClient({
             client: prisma,
             userId,
             appointmentId: appointment.id,
           })
-        : Promise.resolve(null),
-      appointment
-        ? loadRepresentativeAuthorityRegister({
-            client: prisma,
-            appointmentId: appointment.id,
-            userId,
-          })
-        : Promise.resolve(null),
+        : Promise.resolve({
+            appointmentReview: null,
+            authorityRegister: null,
+          }),
       loadRepresentativeCommercialUtilityPackWithClient({
         client: prisma,
         userId,
       }),
     ]);
+
+  const { appointmentReview, authorityRegister } = appointmentDetails;
 
   const buyerDossierOptions = await loadBuyerDossierOptionsWithClient({ client: prisma, userId, pack: commercialUtilityPack });
 
