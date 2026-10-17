@@ -9,6 +9,7 @@ import { PERMISSIONS } from '@/domains/auth/permissions'
 export async function GET() {
   await requirePermission(PERMISSIONS.TREASURY_READ)
 
+  try {
   const [
     pendingActions,
     queuedExecutions,
@@ -88,4 +89,14 @@ export async function GET() {
     ok: true,
     snapshot,
   })
+  } catch (error) {
+    const code = typeof error === 'object' && error !== null && 'code' in error
+      && typeof error.code === 'string' ? error.code : 'UNKNOWN';
+    console.error('[CONTROL_CENTER_SNAPSHOT_UNAVAILABLE]', { code });
+    return NextResponse.json(
+      { ok: false, error: 'CONTROL_CENTER_SNAPSHOT_UNAVAILABLE' },
+      { status: 503, headers: { 'Cache-Control': 'no-store' } },
+    );
+  }
+
 }

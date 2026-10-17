@@ -103,27 +103,27 @@ export default async function RepresentativeWorkspaceView({
   const appointment =
     workspace.appointment;
 
-  const appointmentReview = appointment
-    ? await loadRepresentativeAppointmentReview({
+  const [appointmentReview, authorityRegister, commercialUtilityPack] =
+    await Promise.all([
+      appointment
+        ? loadRepresentativeAppointmentReview({
+            client: prisma,
+            userId,
+            appointmentId: appointment.id,
+          })
+        : Promise.resolve(null),
+      appointment
+        ? loadRepresentativeAuthorityRegister({
+            client: prisma,
+            appointmentId: appointment.id,
+            userId,
+          })
+        : Promise.resolve(null),
+      loadRepresentativeCommercialUtilityPackWithClient({
         client: prisma,
-        userId: userId,
-        appointmentId: appointment.id,
-      })
-    : null;
-
-  const authorityRegister = appointment
-    ? await loadRepresentativeAuthorityRegister({
-        client: prisma,
-        appointmentId: appointment.id,
-        userId: userId,
-      })
-    : null;
-
-  const commercialUtilityPack =
-    await loadRepresentativeCommercialUtilityPackWithClient({
-      client: prisma,
-      userId: userId,
-    });
+        userId,
+      }),
+    ]);
 
   const buyerDossierOptions = await loadBuyerDossierOptionsWithClient({ client: prisma, userId, pack: commercialUtilityPack });
 

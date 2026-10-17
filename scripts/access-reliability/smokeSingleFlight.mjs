@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import { singleFlight } from '../../src/lib/control-center/singleFlight.ts';
+let runs = 0;
+let release;
+const refresh = singleFlight(async () => {
+  runs++;
+  await new Promise(resolve => { release = resolve; });
+  return 7;
+});
+const first = refresh();
+assert.equal(first, refresh());
+await Promise.resolve();
+assert.equal(runs, 1);
+release();
+assert.equal(await first, 7);
+const next = refresh();
+await Promise.resolve();
+assert.equal(runs, 2);
+release();
+await next;
+let attempts = 0;
+const failing = singleFlight(async () => { attempts++; throw Error('unavailable'); });
+await assert.rejects(failing());
+await assert.rejects(failing());
+assert.equal(attempts, 2);
+console.log('PASS: concurrent refreshes coalesce; success and failure release the lock');

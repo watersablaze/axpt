@@ -1,4 +1,5 @@
 import { resolveInstitutionalVisitorSignInWithClient } from '../institutional-access/resolveInstitutionalVisitorSignInWithClient'
+import { cache } from 'react'
 import { prisma } from '@/infrastructure/db/prisma'
 import { getSessionFromCookie } from '@/lib/auth/session'
 
@@ -6,7 +7,7 @@ import type { Principal } from './types'
 import type { PermissionKey } from './permissions'
 import { resolveRepresentativeSessionValidity } from './resolveRepresentativeSessionValidity'
 
-export async function getPrincipal(): Promise<Principal | null> {
+export const getPrincipal = cache(async function getPrincipal(): Promise<Principal | null> {
   const session = await getSessionFromCookie()
 
   console.log('[auth/getPrincipal] resolving principal', {
@@ -125,4 +126,4 @@ export async function getPrincipal(): Promise<Principal | null> {
     permissions,
     sessionId: null,
   }
-}
+})

@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { singleFlight } from '@/lib/control-center/singleFlight'
 
 import styles from './control-center.module.css'
 
@@ -97,6 +98,8 @@ export function ControlCenterShell() {
   const [loading, setLoading] =
     useState(true)
 
+  const [snapshotError, setSnapshotError] = useState<string | null>(null)
+
   async function loadSnapshot() {
     try {
       const res = await fetch(
@@ -106,12 +109,16 @@ export function ControlCenterShell() {
         }
       )
 
+      if (!res.ok) throw new Error(`CONTROL_CENTER_HTTP_${res.status}`)
       const json = await res.json()
+      if (!json?.ok || !json?.snapshot) throw new Error('CONTROL_CENTER_RESPONSE_INVALID')
+      setSnapshotError(null)
 
       if (json?.snapshot) {
         setSnapshot(json.snapshot)
       }
     } catch (err) {
+      setSnapshotError('Control Center telemetry is unavailable. Any previously loaded values are stale.')
       console.error(
         '[CONTROL_CENTER_LOAD_FAILED]',
         err
@@ -122,10 +129,11 @@ export function ControlCenterShell() {
   }
 
   useEffect(() => {
-    loadSnapshot()
+    const refresh = singleFlight(loadSnapshot)
+    void refresh()
 
     const interval = window.setInterval(() => {
-      void loadSnapshot()
+      if (document.visibilityState === 'visible') void refresh()
     }, 5000)
 
     return () => {
@@ -154,7 +162,13 @@ export function ControlCenterShell() {
     }, 0)
   }
 
+  if (snapshotError && snapshot.timestamp === 0) {
+    return <div role="alert" className="p-6 text-amber-200">{snapshotError} Retrying automatically.</div>
+  }
+
   return (
+    <>
+    {snapshotError ? <div role="alert" className="p-4 text-amber-200">{snapshotError}</div> : null}
     <div className={styles.grid}>
       <div className={styles.left}>
         <SystemHealthPanel
@@ -263,5 +277,6 @@ export function ControlCenterShell() {
         <ActionPanel />
       </div>
     </div>
+    </>
   )
 }
