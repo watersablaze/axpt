@@ -1,3 +1,4 @@
+import { loadPrincipalUserWithClient } from './loadPrincipalUserWithClient'
 import { resolveInstitutionalVisitorSignInWithClient } from '../institutional-access/resolveInstitutionalVisitorSignInWithClient'
 import { cache } from 'react'
 import { prisma } from '@/infrastructure/db/prisma'
@@ -20,35 +21,8 @@ export const getPrincipal = cache(async function getPrincipal(): Promise<Princip
     return null
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      id: session.userId,
-    },
-    include: {
-      userRoles: {
-        where: {
-          isActive: true,
-          revokedAt: null,
-        },
-        include: {
-          role: {
-            include: {
-              rolePermissions: {
-                include: {
-                  permission: true,
-                },
-              },
-            },
-          },
-        },
-      },
-      representativeProgramParticipants: {
-        select: {
-          standing: true,
-        },
-      },
-    },
-  })
+  const user = await loadPrincipalUserWithClient(prisma, session.userId)
+
 
   if (!user) {
     console.log('[auth/getPrincipal] user not found for session')
