@@ -1,3 +1,5 @@
+import { Suspense } from 'react'
+import WorkspaceLoadingState from '@/components/system/WorkspaceLoadingState'
 import OperationsShell from '@/components/admin/layout/OperationsShell'
 import { EntityProvider } from '@/lib/context/EntityContext'
 import { OperatorProvider } from '@/lib/operator/OperatorContext'
@@ -7,7 +9,19 @@ import { isAdmin as hasAdminAccess } from '@/domains/auth/isAdmin'
 
 export const dynamic = 'force-dynamic'
 
-export default async function AdminAppLayout({
+export default function AdminAppLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <Suspense fallback={<WorkspaceLoadingState />}>
+      <AuthorizedAdminLayout>{children}</AuthorizedAdminLayout>
+    </Suspense>
+  )
+}
+
+async function AuthorizedAdminLayout({
   children,
 }: {
   children: React.ReactNode
