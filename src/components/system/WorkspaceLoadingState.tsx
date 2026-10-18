@@ -4,7 +4,7 @@ export default function WorkspaceLoadingState() {
       role="status"
       aria-live="polite"
       aria-atomic="true"
-      className="flex min-h-[100dvh] items-center justify-center px-6 py-12 sm:px-10"
+      className="fixed inset-0 z-[100] flex min-h-[100dvh] w-full items-center justify-center overflow-auto px-6 py-12 sm:px-10"
       style={{
         background:
           'radial-gradient(ellipse at 50% 35%, #1b3035 0%, #101b23 45%, #0b1219 100%)',
