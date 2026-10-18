@@ -3,6 +3,7 @@ import BuyerDossierControls from "./BuyerDossierControls";
 import { loadBuyerDossierOptionsBatchedWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/application/loadBuyerDossierOptionsBatchedWithClient";
 import WorkspaceStage from "./WorkspaceStage";
 import WorkspaceGuide from "./WorkspaceGuide";
+import FieldCommunications from "./FieldCommunications";
 import CupWorkingSet from "./CupWorkingSet";
 import canvas from "./workspace-canvas.module.css";
 import Link from "next/link";
@@ -12,6 +13,13 @@ import { loadRepresentativeWorkspaceSnapshotWithClient } from "@/domains/instrum
 
 import { prisma } from "@/infrastructure/db/prisma";
 import { loadRepresentativeCommercialUtilityPackSnapshotWithClient as loadRepresentativeCommercialUtilityPackWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/application/loadRepresentativeCommercialUtilityPackSnapshotWithClient";
+
+
+
+
+
+
+
 
 export const dynamic = "force-dynamic";
 
@@ -166,6 +174,15 @@ export default async function RepresentativeWorkspaceView({
       <WorkspaceStage
         storageKey={`arp-workspace:${operatorPreview ? 'operator-preview:' : ''}${userId}:view:v1`}
         guide={<WorkspaceGuide position={currentStepCopy} />}
+        communications={
+          <FieldCommunications
+            previewMode={operatorPreview}
+            previewParticipant={{
+              docketReference: workspace.docketReference,
+              displayName: workspace.displayName,
+            }}
+          />
+        }
         identity={
           <header className={canvas.identity}>
             <div>
@@ -288,6 +305,17 @@ export default async function RepresentativeWorkspaceView({
                           ) : (
                             <p className={canvas.resourceAccess}>Viewer not yet available.</p>
                           )}
+
+                          <Link
+                            href={`${
+                              operatorPreview
+                                ? `/admin/representative-program/participants/${encodeURIComponent(previewParticipantId!)}/workspace-preview`
+                                : "/representative"
+                            }?view=communications&fieldContextType=CUP_RESOURCE&fieldContextId=${encodeURIComponent(resource.id)}`}
+                            className={canvas.openResource}
+                          >
+                            Comment / Ask a Question <span aria-hidden="true">→</span>
+                          </Link>
 
                           <details className={canvas.permissions}>
                             <summary>Use conditions</summary>

@@ -1,0 +1,784 @@
+import { createHash } from "node:crypto";
+
+import type { PrismaClient } from "@prisma/client";
+
+import type { CommunicationsTransactionClient } from "@/domains/communications/shared/databaseTypes";
+
+import { COMMUNICATION_EVENT_TYPE } from "@/domains/communications/events";
+
+export const REPRESENTATIVE_FIELD_MESSAGE_TYPES = [
+  "COMMENT",
+  "REQUEST",
+  "RESOURCE_COMMENT",
+] as const;
+
+export type RepresentativeFieldMessageType =
+  (typeof REPRESENTATIVE_FIELD_MESSAGE_TYPES)[number];
+
+export const REPRESENTATIVE_FIELD_CONTEXT_TYPES = [
+  "WORKSPACE",
+  "APPOINTMENT",
+  "CUP_RESOURCE",
+] as const;
+
+export type RepresentativeFieldContext =
+  | {
+      type: "WORKSPACE";
+    }
+  | {
+      type: "APPOINTMENT";
+      id: string;
+    }
+  | {
+      type: "CUP_RESOURCE";
+      id: string;
+    };
+
+type ParticipantRecord = {
+  id: string;
+  docketReference: string;
+  displayName: string;
+  userId: string | null;
+  createdByUserId: string;
+};
+
+type TargetPointer = {
+  targetType:
+    | "REPRESENTATIVE_PROGRAM_PARTICIPANT"
+    | "REPRESENTATIVE_APPOINTMENT"
+    | "COMMERCIAL_UTILITY_PACK_RESOURCE_RELEASE";
+  targetSubtype:
+    | "REPRESENTATIVE_PROGRAM_PARTICIPANT"
+    | "REPRESENTATIVE_APPOINTMENT"
+    | "COMMERCIAL_UTILITY_PACK_RESOURCE_RELEASE";
+  targetId: string;
+};
+
+const MAX_MESSAGE_LENGTH = 10_000;
+const MAX_CLIENT_MESSAGE_ID_LENGTH = 200;
+
+function normalizeRequired(value: string, code: string, maxLength = 191) {
+  const normalized = value.trim();
+
+  if (!normalized || normalized.length > maxLength) {
+    throw new Error(code);
+  }
+
+  return normalized;
+}
+
+function isUniqueConstraintError(error: unknown) {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    (error as { code?: unknown }).code === "P2002"
+  );
+}
+
+function roomClientId(participantId: string) {
+  return `arp-field:${participantId}`;
+}
+
+function roomFingerprint(params: {
+  participantId: string;
+  representativeUserId: string;
+  operatorUserId: string;
+}) {
+  return createHash("sha256")
+    .update(
+      JSON.stringify({
+        version: 1,
+        participantId: params.participantId,
+        representativeUserId: params.representativeUserId,
+        operatorUserId: params.operatorUserId,
+      }),
+    )
+    .digest("hex");
+}
+
+async function resolveParticipant(
+  client: PrismaClient | CommunicationsTransactionClient,
+  userIdInput: string,
+): Promise<ParticipantRecord> {
+  const userId = normalizeRequired(
+    userIdInput,
+    "ARP_FIELD_COMMUNICATIONS_USER_ID_INVALID",
+  );
+
+  const participants = await client.representativeProgramParticipant.findMany({
+    where: {
+      userId,
+    },
+    orderBy: [
+      {
+        createdAt: "desc",
+      },
+      {
+        id: "desc",
+      },
+    ],
+    take: 2,
+    select: {
+      id: true,
+      docketReference: true,
+      displayName: true,
+      userId: true,
+      createdByUserId: true,
+    },
+  });
+
+  if (participants.length === 0) {
+    throw new Error("ARP_FIELD_COMMUNICATIONS_PARTICIPANT_NOT_FOUND");
+  }
+
+  if (participants.length !== 1) {
+    throw new Error("ARP_FIELD_COMMUNICATIONS_PARTICIPANT_CONTRADICTION");
+  }
+
+  const participant = participants[0];
+
+  if (participant.userId !== userId) {
+    throw new Error("ARP_FIELD_COMMUNICATIONS_IDENTITY_CONFLICT");
+  }
+
+  return participant;
+}
+
+async function requireInstitutionalOperator(
+  client: PrismaClient | CommunicationsTransactionClient,
+  participant: ParticipantRecord,
+) {
+  const operator = await client.user.findUnique({
+    where: {
+      id: participant.createdByUserId,
+    },
+    select: {
+      id: true,
+      isAdmin: true,
+    },
+  });
+
+  if (!operator || !operator.isAdmin) {
+    throw new Error("ARP_FIELD_COMMUNICATIONS_OPERATOR_UNAVAILABLE");
+  }
+
+  return operator;
+}
+
+async function resolveOwnedTarget(
+  client: PrismaClient | CommunicationsTransactionClient,
+  participant: ParticipantRecord,
+  context: RepresentativeFieldContext | null | undefined,
+): Promise<TargetPointer> {
+  if (!context || context.type === "WORKSPACE") {
+    return {
+      targetType: "REPRESENTATIVE_PROGRAM_PARTICIPANT",
+      targetSubtype: "REPRESENTATIVE_PROGRAM_PARTICIPANT",
+      targetId: participant.id,
+    };
+  }
+
+  if (context.type === "APPOINTMENT") {
+    const appointmentId = normalizeRequired(
+      context.id,
+      "ARP_FIELD_COMMUNICATIONS_APPOINTMENT_ID_INVALID",
+    );
+
+    const appointment =
+      await client.representativeProgramAppointment.findUnique({
+        where: {
+          id: appointmentId,
+        },
+        select: {
+          id: true,
+          participantId: true,
+        },
+      });
+
+    if (!appointment || appointment.participantId !== participant.id) {
+      throw new Error("ARP_FIELD_COMMUNICATIONS_CONTEXT_NOT_OWNED");
+    }
+
+    return {
+      targetType: "REPRESENTATIVE_APPOINTMENT",
+      targetSubtype: "REPRESENTATIVE_APPOINTMENT",
+      targetId: appointment.id,
+    };
+  }
+
+  if (context.type === "CUP_RESOURCE") {
+    const resourceReleaseId = normalizeRequired(
+      context.id,
+      "ARP_FIELD_COMMUNICATIONS_RESOURCE_ID_INVALID",
+    );
+
+    const resource =
+      await client.commercialUtilityPackResourceRelease.findUnique({
+        where: {
+          id: resourceReleaseId,
+        },
+        select: {
+          id: true,
+          state: true,
+          package: {
+            select: {
+              participantId: true,
+              audience: true,
+            },
+          },
+        },
+      });
+
+    if (
+      !resource ||
+      resource.package.participantId !== participant.id ||
+      resource.package.audience !== "REPRESENTATIVE" ||
+      resource.state !== "RELEASED"
+    ) {
+      throw new Error("ARP_FIELD_COMMUNICATIONS_CONTEXT_NOT_OWNED");
+    }
+
+    return {
+      targetType: "COMMERCIAL_UTILITY_PACK_RESOURCE_RELEASE",
+      targetSubtype: "COMMERCIAL_UTILITY_PACK_RESOURCE_RELEASE",
+      targetId: resource.id,
+    };
+  }
+
+  throw new Error("ARP_FIELD_COMMUNICATIONS_CONTEXT_INVALID");
+}
+
+function messageKind(type: RepresentativeFieldMessageType) {
+  switch (type) {
+    case "COMMENT":
+      return "TEXT" as const;
+
+    case "REQUEST":
+      return "REQUEST" as const;
+
+    case "RESOURCE_COMMENT":
+      return "DOCUMENT_REFERENCE" as const;
+  }
+}
+
+async function ensureTargetLink(params: {
+  tx: CommunicationsTransactionClient;
+  roomId: string;
+  pointer: TargetPointer;
+  linkedByUserId: string;
+}) {
+  const existing = await params.tx.communicationOperationalLink.findUnique({
+    where: {
+      roomId_targetType_targetSubtype_targetId: {
+        roomId: params.roomId,
+        targetType: params.pointer.targetType,
+        targetSubtype: params.pointer.targetSubtype,
+        targetId: params.pointer.targetId,
+      },
+    },
+  });
+
+  if (existing) {
+    return existing;
+  }
+
+  const link = await params.tx.communicationOperationalLink.create({
+    data: {
+      roomId: params.roomId,
+      targetType: params.pointer.targetType,
+      targetSubtype: params.pointer.targetSubtype,
+      targetId: params.pointer.targetId,
+      linkedByUserId: params.linkedByUserId,
+    },
+  });
+
+  await params.tx.domainEvent.create({
+    data: {
+      streamType: "COMMUNICATION_OPERATIONAL_ROOM",
+      streamId: params.roomId,
+      eventType: COMMUNICATION_EVENT_TYPE.OPERATIONAL_TARGET_LINKED,
+      payload: {
+        roomId: params.roomId,
+        linkId: link.id,
+        targetType: link.targetType,
+        targetSubtype: link.targetSubtype,
+        targetId: link.targetId,
+      },
+      metadata: {
+        actorUserId: params.linkedByUserId,
+        source: "ARP_FIELD_COMMUNICATIONS",
+      },
+      occurredAt: link.linkedAt,
+    },
+  });
+
+  return link;
+}
+
+async function performRepresentativeFieldSend(
+  client: PrismaClient,
+  params: {
+    userId: string;
+    clientMessageId: string;
+    type: RepresentativeFieldMessageType;
+    body: string;
+    context?: RepresentativeFieldContext | null;
+  },
+) {
+  const representativeUserId = normalizeRequired(
+    params.userId,
+    "ARP_FIELD_COMMUNICATIONS_USER_ID_INVALID",
+  );
+
+  const clientMessageId = normalizeRequired(
+    params.clientMessageId,
+    "ARP_FIELD_COMMUNICATIONS_CLIENT_MESSAGE_ID_INVALID",
+    MAX_CLIENT_MESSAGE_ID_LENGTH,
+  );
+
+  const body = normalizeRequired(
+    params.body,
+    "ARP_FIELD_COMMUNICATIONS_MESSAGE_REQUIRED",
+    MAX_MESSAGE_LENGTH,
+  );
+
+  if (!REPRESENTATIVE_FIELD_MESSAGE_TYPES.includes(params.type)) {
+    throw new Error("ARP_FIELD_COMMUNICATIONS_MESSAGE_TYPE_INVALID");
+  }
+
+  return client.$transaction(async (tx: CommunicationsTransactionClient) => {
+    const participant = await resolveParticipant(tx, representativeUserId);
+
+    const operator = await requireInstitutionalOperator(tx, participant);
+
+    const pointer = await resolveOwnedTarget(tx, participant, params.context);
+
+    const clientRoomId = roomClientId(participant.id);
+
+    let operationalRoom = await tx.communicationOperationalRoom.findUnique({
+      where: {
+        createdByUserId_clientRoomId: {
+          createdByUserId: operator.id,
+          clientRoomId,
+        },
+      },
+      include: {
+        conversation: {
+          include: {
+            members: {
+              where: {
+                leftAt: null,
+              },
+              select: {
+                userId: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!operationalRoom) {
+      const occurredAt = new Date();
+
+      const conversation = await tx.communicationConversation.create({
+        data: {
+          kind: "GROUP",
+          status: "ACTIVE",
+          title: `French-Ward Representative Field — ${participant.displayName}`,
+          createdByUserId: operator.id,
+          members: {
+            create: [
+              {
+                userId: operator.id,
+                role: "OWNER",
+              },
+              {
+                userId: representativeUserId,
+                role: "MEMBER",
+              },
+            ],
+          },
+          operationalRoom: {
+            create: {
+              clientRoomId,
+              requestFingerprint: roomFingerprint({
+                participantId: participant.id,
+                representativeUserId,
+                operatorUserId: operator.id,
+              }),
+              roomClass: "GENERAL_OPERATIONS",
+              createdByUserId: operator.id,
+            },
+          },
+        },
+        include: {
+          members: {
+            where: {
+              leftAt: null,
+            },
+            select: {
+              userId: true,
+            },
+          },
+          operationalRoom: true,
+        },
+      });
+
+      const room = conversation.operationalRoom;
+
+      if (!room) {
+        throw new Error("ARP_FIELD_COMMUNICATIONS_ROOM_CREATE_FAILED");
+      }
+
+      await tx.domainEvent.create({
+        data: {
+          streamType: "COMMUNICATION_CONVERSATION",
+          streamId: conversation.id,
+          eventType: COMMUNICATION_EVENT_TYPE.CONVERSATION_CREATED,
+          payload: {
+            conversationId: conversation.id,
+            kind: conversation.kind,
+          },
+          metadata: {
+            actorUserId: representativeUserId,
+            institutionalOwnerUserId: operator.id,
+            source: "ARP_FIELD_COMMUNICATIONS",
+          },
+          occurredAt,
+        },
+      });
+
+      await tx.domainEvent.create({
+        data: {
+          streamType: "COMMUNICATION_OPERATIONAL_ROOM",
+          streamId: room.id,
+          eventType: COMMUNICATION_EVENT_TYPE.OPERATIONAL_ROOM_CREATED,
+          payload: {
+            roomId: room.id,
+            conversationId: conversation.id,
+            roomClass: room.roomClass,
+          },
+          metadata: {
+            actorUserId: representativeUserId,
+            institutionalOwnerUserId: operator.id,
+            source: "ARP_FIELD_COMMUNICATIONS",
+          },
+          occurredAt,
+        },
+      });
+
+      operationalRoom = {
+        ...room,
+        conversation,
+      };
+    }
+
+    if (operationalRoom.roomClass !== "GENERAL_OPERATIONS") {
+      throw new Error("ARP_FIELD_COMMUNICATIONS_ROOM_TOPOLOGY_CONFLICT");
+    }
+
+    const activeMembers = new Set(
+      operationalRoom.conversation.members.map(
+        (member: { userId: string }) => member.userId,
+      ),
+    );
+
+    if (
+      !activeMembers.has(operator.id) ||
+      !activeMembers.has(representativeUserId)
+    ) {
+      throw new Error("ARP_FIELD_COMMUNICATIONS_MEMBERSHIP_CONFLICT");
+    }
+
+    if (operationalRoom.conversation.status !== "ACTIVE") {
+      throw new Error("ARP_FIELD_COMMUNICATIONS_ROOM_NOT_WRITABLE");
+    }
+
+    const participantPointer: TargetPointer = {
+      targetType: "REPRESENTATIVE_PROGRAM_PARTICIPANT",
+      targetSubtype: "REPRESENTATIVE_PROGRAM_PARTICIPANT",
+      targetId: participant.id,
+    };
+
+    await ensureTargetLink({
+      tx,
+      roomId: operationalRoom.id,
+      pointer: participantPointer,
+      linkedByUserId: operator.id,
+    });
+
+    await ensureTargetLink({
+      tx,
+      roomId: operationalRoom.id,
+      pointer,
+      linkedByUserId: representativeUserId,
+    });
+
+    const kind = messageKind(params.type);
+
+    const existing = await tx.communicationMessage.findUnique({
+      where: {
+        conversationId_senderUserId_clientMessageId: {
+          conversationId: operationalRoom.conversationId,
+          senderUserId: representativeUserId,
+          clientMessageId,
+        },
+      },
+    });
+
+    if (existing) {
+      if (
+        existing.body !== body ||
+        existing.kind !== kind ||
+        existing.workflowTargetType !== pointer.targetType ||
+        existing.workflowTargetSubtype !== pointer.targetSubtype ||
+        existing.workflowTargetId !== pointer.targetId
+      ) {
+        throw new Error("ARP_FIELD_COMMUNICATIONS_IDEMPOTENCY_COLLISION");
+      }
+
+      return {
+        participant,
+        operationalRoomId: operationalRoom.id,
+        conversationId: operationalRoom.conversationId,
+        message: existing,
+        created: false,
+      };
+    }
+
+    const message = await tx.communicationMessage.create({
+      data: {
+        conversationId: operationalRoom.conversationId,
+        senderUserId: representativeUserId,
+        clientMessageId,
+        kind,
+        body,
+        workflowTargetType: pointer.targetType,
+        workflowTargetSubtype: pointer.targetSubtype,
+        workflowTargetId: pointer.targetId,
+      },
+    });
+
+    await tx.communicationConversation.update({
+      where: {
+        id: operationalRoom.conversationId,
+      },
+      data: {
+        updatedAt: message.createdAt,
+      },
+    });
+
+    await tx.domainEvent.create({
+      data: {
+        streamType: "COMMUNICATION_CONVERSATION",
+        streamId: operationalRoom.conversationId,
+        eventType: COMMUNICATION_EVENT_TYPE.MESSAGE_SENT,
+        payload: {
+          messageId: message.id,
+          conversationId: operationalRoom.conversationId,
+          senderUserId: representativeUserId,
+          kind: message.kind,
+          workflowReference: {
+            targetType: message.workflowTargetType,
+            targetSubtype: message.workflowTargetSubtype,
+            targetId: message.workflowTargetId,
+          },
+          createdAt: message.createdAt.toISOString(),
+        },
+        metadata: {
+          actorUserId: representativeUserId,
+          participantId: participant.id,
+          source: "ARP_FIELD_COMMUNICATIONS",
+        },
+        occurredAt: message.createdAt,
+      },
+    });
+
+    return {
+      participant,
+      operationalRoomId: operationalRoom.id,
+      conversationId: operationalRoom.conversationId,
+      message,
+      created: true,
+    };
+  });
+}
+
+export async function sendRepresentativeFieldMessageWithClient(params: {
+  client: PrismaClient;
+  userId: string;
+  clientMessageId: string;
+  type: RepresentativeFieldMessageType;
+  body: string;
+  context?: RepresentativeFieldContext | null;
+}) {
+  try {
+    return await performRepresentativeFieldSend(params.client, params);
+  } catch (error) {
+    if (!isUniqueConstraintError(error)) {
+      throw error;
+    }
+
+    /*
+     * A concurrent first send may race on the deterministic
+     * room/link/message identities. Replay once against the
+     * database winner. All material identities are idempotent.
+     */
+    return performRepresentativeFieldSend(params.client, params);
+  }
+}
+
+export async function loadRepresentativeFieldCommunicationsWithClient(params: {
+  client: PrismaClient;
+  userId: string;
+  take?: number;
+}) {
+  const participant = await resolveParticipant(params.client, params.userId);
+
+  const operator = await requireInstitutionalOperator(
+    params.client,
+    participant,
+  );
+
+  const take = Math.max(1, Math.min(params.take ?? 100, 200));
+
+  const room = await params.client.communicationOperationalRoom.findUnique({
+    where: {
+      createdByUserId_clientRoomId: {
+        createdByUserId: operator.id,
+        clientRoomId: roomClientId(participant.id),
+      },
+    },
+    include: {
+      links: {
+        orderBy: {
+          linkedAt: "asc",
+        },
+      },
+      conversation: {
+        include: {
+          members: {
+            where: {
+              leftAt: null,
+            },
+            select: {
+              userId: true,
+              role: true,
+            },
+          },
+          messages: {
+            orderBy: [
+              {
+                createdAt: "desc",
+              },
+              {
+                id: "desc",
+              },
+            ],
+            take,
+            include: {
+              sender: {
+                select: {
+                  id: true,
+                  displayName: true,
+                  name: true,
+                  email: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!room) {
+    return {
+      participant: {
+        id: participant.id,
+        docketReference: participant.docketReference,
+        displayName: participant.displayName,
+      },
+      room: null,
+      messages: [],
+    };
+  }
+
+  if (
+    room.roomClass !== "GENERAL_OPERATIONS" ||
+    room.conversation.status !== "ACTIVE"
+  ) {
+    throw new Error("ARP_FIELD_COMMUNICATIONS_ROOM_TOPOLOGY_CONFLICT");
+  }
+
+  const activeMembers = new Set(
+    room.conversation.members.map(
+      (member: { userId: string }) => member.userId,
+    ),
+  );
+
+  if (
+    !activeMembers.has(operator.id) ||
+    !activeMembers.has(participant.userId!)
+  ) {
+    throw new Error("ARP_FIELD_COMMUNICATIONS_MEMBERSHIP_CONFLICT");
+  }
+
+  return {
+    participant: {
+      id: participant.id,
+      docketReference: participant.docketReference,
+      displayName: participant.displayName,
+    },
+    room: {
+      id: room.id,
+      conversationId: room.conversationId,
+      title: room.conversation.title,
+      createdAt: room.createdAt,
+      updatedAt: room.updatedAt,
+      links: room.links.map(
+        (link: {
+          targetType: string;
+          targetSubtype: string;
+          targetId: string;
+          linkedAt: Date;
+        }) => ({
+          targetType: link.targetType,
+          targetSubtype: link.targetSubtype,
+          targetId: link.targetId,
+          linkedAt: link.linkedAt,
+        }),
+      ),
+    },
+    messages: [...room.conversation.messages].reverse().map((message) => ({
+      id: message.id,
+      kind: message.kind,
+      body: message.body,
+      createdAt: message.createdAt,
+      sender: {
+        role:
+          message.senderUserId === participant.userId
+            ? ("REPRESENTATIVE" as const)
+            : ("FRENCH_WARD" as const),
+        displayName:
+          message.sender.displayName ??
+          message.sender.name ??
+          (message.senderUserId === participant.userId
+            ? participant.displayName
+            : "French-Ward"),
+      },
+      context:
+        message.workflowTargetType &&
+        message.workflowTargetSubtype &&
+        message.workflowTargetId
+          ? {
+              targetType: message.workflowTargetType,
+              targetSubtype: message.workflowTargetSubtype,
+              targetId: message.workflowTargetId,
+            }
+          : null,
+    })),
+  };
+}

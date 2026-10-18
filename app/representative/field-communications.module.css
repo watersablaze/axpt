@@ -1,0 +1,482 @@
+.surface {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 11.5rem;
+  grid-template-areas:
+    "preview preview"
+    "header header"
+    "thread doctrine"
+    "thread context"
+    "composer composer";
+  width: min(calc(100% - 2rem), 860px);
+  margin: 0 auto;
+  color: #eee7da;
+}
+
+.previewNotice {
+  grid-area: preview;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.65rem 0;
+  border-top: 1px solid rgba(197, 162, 95, 0.28);
+  border-bottom: 1px solid rgba(197, 162, 95, 0.16);
+}
+
+.previewNotice strong {
+  flex: none;
+  color: #dec47f;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.previewNotice span {
+  color: #8297a0;
+  font-size: 0.66rem;
+  line-height: 1.5;
+  text-align: right;
+}
+
+.header {
+  grid-area: header;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1.5rem;
+  align-items: end;
+  padding: 0.15rem 0 1.35rem;
+  border-bottom: 1px solid rgba(129, 153, 164, 0.18);
+}
+
+.kicker {
+  margin: 0;
+  color: #c5a25f;
+  font-size: 0.57rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.title {
+  margin: 0.45rem 0 0;
+  color: #eee7da;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.8rem, 3vw, 2.3rem);
+  font-weight: 400;
+  letter-spacing: -0.038em;
+  line-height: 1.08;
+}
+
+.intro {
+  max-width: 31rem;
+  margin: 0.85rem 0 0;
+  color: #9eb2bc;
+  font-size: 0.79rem;
+  line-height: 1.75;
+}
+
+.record {
+  min-width: 9.5rem;
+  padding-left: 1rem;
+  border-left: 1px solid rgba(197, 162, 95, 0.28);
+}
+
+.record span,
+.contextLabel,
+.typeControl span,
+.messageControl > span {
+  display: block;
+  color: #748a94;
+  font-size: 0.55rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.record strong {
+  display: block;
+  margin-top: 0.4rem;
+  color: #d8c18d;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.67rem;
+  font-weight: 500;
+}
+
+.thread {
+  grid-area: thread;
+  display: grid;
+  align-content: start;
+  min-width: 0;
+  min-height: 11.75rem;
+  max-height: 24rem;
+  overflow-y: auto;
+  margin-top: 1.35rem;
+  border-top: 1px solid rgba(111, 139, 150, 0.14);
+  border-bottom: 1px solid rgba(111, 139, 150, 0.15);
+  background:
+    radial-gradient(
+      ellipse at 50% 20%,
+      rgba(28, 67, 80, 0.11),
+      transparent 65%
+    );
+}
+
+.doctrine {
+  grid-area: doctrine;
+  align-self: start;
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 1.35rem;
+  padding: 1rem 0 1rem 1.1rem;
+  border-top: 1px solid rgba(111, 139, 150, 0.14);
+  border-left: 1px solid rgba(197, 162, 95, 0.3);
+  border-bottom: 1px solid rgba(111, 139, 150, 0.08);
+}
+
+.doctrine strong {
+  color: #d9c078;
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.doctrine span {
+  color: #7e959f;
+  font-size: 0.65rem;
+  line-height: 1.65;
+}
+
+.contextBar {
+  grid-area: context;
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: 0.8rem;
+  padding: 1rem 0 1rem 1.1rem;
+  border-left: 1px solid rgba(197, 162, 95, 0.3);
+  border-bottom: 1px solid rgba(111, 139, 150, 0.15);
+}
+
+.contextBar strong {
+  display: block;
+  margin-top: 0.3rem;
+  color: #d4dcdd;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.contextClear {
+  width: fit-content;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  color: #c1aa76;
+  cursor: pointer;
+  font-size: 0.63rem;
+  text-decoration: underline;
+  text-underline-offset: 0.22rem;
+}
+
+.messageRepresentative,
+.messageInstitution {
+  position: relative;
+  width: 100%;
+  padding: 1rem 1rem 1rem 1.15rem;
+  border-bottom: 1px solid rgba(111, 139, 150, 0.1);
+}
+
+.messageRepresentative::before,
+.messageInstitution::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1rem;
+  bottom: 1rem;
+  width: 1px;
+}
+
+.messageRepresentative::before {
+  background: rgba(197, 162, 95, 0.58);
+}
+
+.messageInstitution::before {
+  background: rgba(114, 160, 177, 0.55);
+}
+
+.messageHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.messageHeader strong {
+  color: #d5bf8b;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.messageHeader span {
+  color: #607680;
+  font-size: 0.58rem;
+}
+
+.messageBody {
+  max-width: 38rem;
+  margin: 0.65rem 0 0;
+  color: #d1dcdb;
+  font-size: 0.81rem;
+  line-height: 1.72;
+  white-space: pre-wrap;
+}
+
+.messageContext {
+  margin: 0.7rem 0 0;
+  color: #617983;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.56rem;
+  letter-spacing: 0.05em;
+}
+
+.empty {
+  align-self: center;
+  justify-self: center;
+  max-width: 24rem;
+  padding: 2.1rem 1.25rem;
+  text-align: center;
+}
+
+.empty::before {
+  content: "FIELD RECORD · OPEN";
+  display: block;
+  margin-bottom: 1rem;
+  color: #68818c;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.53rem;
+  letter-spacing: 0.18em;
+}
+
+.empty p {
+  margin: 0;
+  color: #d8c08a;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.empty span,
+.quiet {
+  display: block;
+  margin-top: 0.55rem;
+  color: #70858f;
+  font-size: 0.68rem;
+  line-height: 1.6;
+}
+
+.composer {
+  grid-area: composer;
+  margin-top: 0.9rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(197, 162, 95, 0.22);
+}
+
+.composerHead {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 8.75rem;
+  gap: 1.25rem;
+  align-items: end;
+}
+
+.composerHead h2 {
+  margin: 0.32rem 0 0;
+  color: #e4e1d8;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.05rem;
+  font-weight: 400;
+}
+
+.typeControl select {
+  width: 100%;
+  margin-top: 0.3rem;
+  border: 0;
+  border-bottom: 1px solid #3d525c;
+  background: transparent;
+  padding: 0.4rem 1.4rem 0.4rem 0;
+  color: #d5dddc;
+  font-size: 0.68rem;
+  outline: none;
+  color-scheme: dark;
+}
+
+.typeControl select:focus-visible {
+  border-bottom-color: #c5a25f;
+}
+
+.resourceContext {
+  align-self: end;
+  justify-self: end;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid rgba(197, 162, 95, 0.35);
+  color: #d3ba7a;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.messageControl {
+  display: block;
+  margin-top: 0.9rem;
+}
+
+.messageControl textarea {
+  width: 100%;
+  min-height: 5.75rem;
+  margin-top: 0.45rem;
+  resize: vertical;
+  border: 1px solid rgba(98, 128, 139, 0.34);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(12, 29, 36, 0.72),
+      rgba(7, 19, 25, 0.76)
+    );
+  padding: 0.9rem 1rem;
+  color: #eee7da;
+  font: inherit;
+  font-size: 0.8rem;
+  line-height: 1.7;
+  outline: none;
+}
+
+.messageControl textarea::placeholder {
+  color: #6d838d;
+}
+
+.messageControl textarea:focus {
+  border-color: rgba(197, 162, 95, 0.55);
+  box-shadow: 0 0 0 1px rgba(197, 162, 95, 0.07);
+}
+
+.submitRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.7rem;
+}
+
+.submitRow p {
+  max-width: 28rem;
+  margin: 0;
+  color: #677e88;
+  font-size: 0.62rem;
+  line-height: 1.5;
+}
+
+.submitRow button {
+  flex: none;
+  border: 0;
+  border-bottom: 1px solid rgba(197, 162, 95, 0.68);
+  background: transparent;
+  padding: 0.5rem 0;
+  color: #dbc27e;
+  cursor: pointer;
+  font-size: 0.65rem;
+  font-weight: 700;
+}
+
+.submitRow button:not(:disabled):hover {
+  color: #edd597;
+  border-bottom-color: #e0c477;
+}
+
+.submitRow button:disabled {
+  cursor: not-allowed;
+  opacity: 0.38;
+}
+
+.error {
+  margin: 0.7rem 0 0;
+  color: #d6a3a3;
+  font-size: 0.68rem;
+}
+
+@media (max-width: 860px) {
+  .surface {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "preview"
+      "header"
+      "doctrine"
+      "context"
+      "thread"
+      "composer";
+    width: 100%;
+  }
+
+  .header {
+    grid-template-columns: 1fr;
+  }
+
+  .record {
+    border-left: 0;
+    border-top: 1px solid rgba(197, 162, 95, 0.2);
+    padding: 0.8rem 0 0;
+  }
+
+  .doctrine,
+  .contextBar {
+    margin-top: 0;
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .composerHead {
+    grid-template-columns: 1fr;
+  }
+
+  .typeControl {
+    max-width: 12rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .previewNotice,
+  .submitRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .previewNotice span {
+    text-align: left;
+  }
+
+  .empty {
+    padding: 3rem 1rem;
+  }
+}
+
+@media (min-width: 861px) {
+  .surface {
+    padding-block: 0.35rem 1.25rem;
+  }
+
+  .thread {
+    margin-right: 1.15rem;
+  }
+
+  .doctrine,
+  .contextBar {
+    padding-left: 0.95rem;
+  }
+
+  .composer {
+    width: calc(100% - 1rem);
+    margin-inline: auto;
+  }
+}

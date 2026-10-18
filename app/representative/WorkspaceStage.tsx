@@ -9,13 +9,14 @@ const directory = [
   ["appointment", "Appointment"],
   ["authority", "Authority Register"],
   ["program", "Program Record"],
+  ["communications", "Field Communications"],
   ["guide", "Guide"],
 ] as const;
 
 type View = (typeof directory)[number][0];
 
 export default function WorkspaceStage({
-  identity, overview, cup, appointment, authority, program, position, guide, storageKey,
+  identity, overview, cup, appointment, authority, program, communications, position, guide, storageKey,
 }: {
   storageKey: string;
   guide: ReactNode;
@@ -25,6 +26,7 @@ export default function WorkspaceStage({
   appointment: ReactNode;
   authority: ReactNode;
   program: ReactNode;
+  communications: ReactNode;
   position: ReactNode;
 }) {
   const [view, setView] = useState<View>("overview");
@@ -33,7 +35,11 @@ export default function WorkspaceStage({
     let next: View = "overview";
     try {
       const saved = sessionStorage.getItem(storageKey);
-      next = directory.find(([key]) => key === saved)?.[0] ?? "overview";
+      const requested = new URLSearchParams(window.location.search).get("view");
+      next =
+        directory.find(([key]) => key === requested)?.[0] ??
+        directory.find(([key]) => key === saved)?.[0] ??
+        "overview";
     } catch {
       // Browser storage is optional.
     }
@@ -46,7 +52,15 @@ export default function WorkspaceStage({
     }
   }, [view]);
   const stage = useRef<HTMLDivElement>(null);
-  const views = { overview, cup, appointment, authority, program, guide };
+  const views = {
+    overview,
+    cup,
+    appointment,
+    authority,
+    program,
+    communications,
+    guide,
+  };
 
   function select(next: View) {
     try {
