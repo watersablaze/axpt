@@ -1,5 +1,5 @@
 "use client";
-import { Children, useEffect, useState, type ReactNode } from "react";
+import { Children, useEffect, useRef, useState, type ReactNode } from "react";
 import styles from "./cup-reading.module.css";
 
 export default function CupWorkingSet({ storageKey, resourceIds, labels, categories, sidebar, children }: {
@@ -17,7 +17,8 @@ export default function CupWorkingSet({ storageKey, resourceIds, labels, categor
     return title;
   }
   const materials = Children.toArray(children);
-  const [selected, setSelected] = useState(0);
+  const [selected, setSelected] = useState<number | null>(null);
+  const materialStage = useRef<HTMLDivElement>(null);
   const resourceIdentity = JSON.stringify(resourceIds);
 
   useEffect(() => {
@@ -41,8 +42,16 @@ export default function CupWorkingSet({ storageKey, resourceIds, labels, categor
       // Selection remains available without storage.
     }
     setSelected(index);
+    requestAnimationFrame(() => {
+      const target = materialStage.current;
+      const crown = document.querySelector("[data-workspace-crown]");
+      const threshold = (crown?.getBoundingClientRect().bottom ?? 0) + 16;
+      if (target && target.getBoundingClientRect().top < threshold) {
+        target.scrollIntoView({ block: "start", behavior: "auto" });
+      }
+    });
   }
-  const current = Math.min(selected, Math.max(0, materials.length - 1));
+  const current = Math.min(selected ?? 0, Math.max(0, materials.length - 1));
 
   if (!materials.length) return null;
 
@@ -70,11 +79,11 @@ export default function CupWorkingSet({ storageKey, resourceIds, labels, categor
           </button>)}
         </nav>
       </aside>
-      <div className={styles.materialStage}>
+      <div ref={materialStage} className={styles.materialStage}>
         <div id="cup-focused-material" key={resourceIds[current] || current}
           className={styles.materialArrival} role="region"
           aria-label={labels[current] || "Selected material"}>
-          {materials[current]}
+          {selected === null ? <p role="status" className={styles.readerStatus}>Restoring selected material…</p> : materials[current]}
         </div>
         <div className={styles.materialControls}>
           <button type="button" disabled={current === 0} onClick={() => selectMaterial(current - 1)}>← Previous</button>

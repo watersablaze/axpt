@@ -1,6 +1,7 @@
 "use client";
 
 import { Children, useEffect, useRef, useState, type ReactNode  } from "react";
+import WorkspaceNavigationProbe from "./WorkspaceNavigationProbe";
 import canvas from "./workspace-canvas.module.css";
 
 const directory = [
@@ -74,7 +75,8 @@ export default function WorkspaceStage({
 
   return (
     <>
-      <div className={canvas.workspaceCrown}>
+      {process.env.NODE_ENV === "development" ? <WorkspaceNavigationProbe /> : null}
+      <div data-workspace-crown className={canvas.workspaceCrown}>
         {Children.toArray(identity)}
       </div>
 

@@ -1,3 +1,4 @@
+import CupReaderReady from "../../../CupReaderReady";
 import CupPdfReader from "../../../CupPdfReader";
 import { loadRepresentativeSupportingDocumentWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/loadRepresentativeSupportingDocumentWithClient";
 import boundaries from "../../../resources/[resourceReleaseId]/operating-boundaries.module.css";
@@ -56,11 +57,12 @@ export default async function CupPublicationReader({ params, searchParams }: {
   </main>;
   const resource = await loadRepresentativeCommercialUtilityPackResourceWithClient(input);
   if (resource?.kind === "INSTITUTIONAL_PROFILE") return <main className="min-h-screen bg-[#0c1d25] p-4 text-[#eee7da]">
+    <CupReaderReady />
     <FrenchWardInstitutionalProfileView profile={resource.content} packageReference={resource.packageReference} />
   </main>;
   if (resource?.kind === "OPERATING_BOUNDARIES") {
     const content = resource.content;
-    return <main className={boundaries.page}><article className={boundaries.record}>
+    return <main className={boundaries.page}><CupReaderReady /><article className={boundaries.record}>
       <h1 className={boundaries.title}>{content.title}</h1>
       <p className={boundaries.reference}>{content.reference} · Version {content.version}</p>
       <p className={boundaries.scope}>{content.scope}</p>
@@ -73,16 +75,16 @@ export default async function CupPublicationReader({ params, searchParams }: {
     </article></main>;
   }
   const institutional = await loadRepresentativeCommercialUtilityPackInstitutionalResourceWithClient(input);
-  if (institutional?.kind === "REPRESENTATIVE_PROGRAM_AGREEMENT") return <CupPdfReader title="Executed Representative Agreement" href={api + "/document?mode=inline"} />;
+  if (institutional?.kind === "REPRESENTATIVE_PROGRAM_AGREEMENT") return <CupPdfReader fillViewport title="Executed Representative Agreement" href={api + "/document?mode=inline"} />;
   if (institutional?.kind !== "SOURCE_AUTHORITY" || institutional.presentation.audience !== "REPRESENTATIVE") notFound();
   const projection = institutional.presentation;
   const subject = projection.identity.subject;
-  return <InstrumentShell eyebrow="Source Authority" classificationLabel="Governed Institutional Source Record"
+  return <><CupReaderReady /><InstrumentShell eyebrow="Source Authority" classificationLabel="Governed Institutional Source Record"
     brandLabel={subject.displayName} title="Source Authority Instrument"
     subtitle={[subject.jurisdiction, subject.sector, subject.principalCommodityActivity.join(" · ")].join(" · ")}
     reference={projection.identity.instrumentReference} version={String(projection.identity.versionNumber)}
     status={projection.standing.replaceAll("_", " ")} movements={[]} showStatusRail={false}
     hideHero density="compact" surface="archival">
     <SourceAuthorityPresentation projection={projection} />
-  </InstrumentShell>;
+  </InstrumentShell></>;
 }
