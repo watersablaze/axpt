@@ -1,0 +1,26 @@
+.panel { margin:0 0 18px; padding:14px 0 10px; border-block:1px solid #2a4853; color:#dbe7e8; font-family:inherit; }
+.heading { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:10px; }
+.heading h3 { margin:0; color:#d9e7e5; font-size:12px; font-weight:600; letter-spacing:.025em; }
+.heading > span { color:#9ab5bf; font-size:10px; }
+.actions { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); align-items:start; gap:8px; }
+.action { min-width:0; border:1px solid #35525b; border-radius:5px; background:linear-gradient(120deg,#16354166,#0b222b33); }
+.action summary { position:relative; display:grid; gap:5px; min-height:58px; box-sizing:border-box; padding:10px 28px 10px 12px; cursor:pointer; list-style:none; }
+.action summary::-webkit-details-marker { display:none; }
+.action summary:hover { background:#24485444; }
+.label { color:#edf2ed; font-size:12px; line-height:1.35; font-weight:550; }
+.status { font-size:10px; line-height:1.45; color:#b1cbd5; }
+.status[data-tone="available"] { color:#a5d9c9; }
+.status[data-tone="withheld"] { color:#d6c295; }
+.indicator { position:absolute; top:15px; right:12px; width:7px; height:7px; border-right:1px solid #9bbbc4; border-bottom:1px solid #9bbbc4; transform:rotate(45deg); }
+.action[open] .indicator { top:19px; transform:rotate(225deg); }
+.action[open] { background:#102d37; border-color:#52717a; }
+.explanation { margin:0; padding:2px 12px 13px; font-size:12px; line-height:1.65; color:#bfd1d7; overflow-wrap:anywhere; }
+.boundary { margin-top:10px; }
+.boundary summary { display:flex; gap:8px; width:fit-content; padding:4px 0; list-style:none; cursor:pointer; color:#9ebbc5; font-size:11px; }
+.boundary summary::-webkit-details-marker { display:none; }
+.boundary[open] summary { color:#ddca9f; }
+.boundary p { max-width:90ch; margin:7px 0 3px; color:#bdcfd5; font-size:12px; line-height:1.7; }
+.panel summary:focus-visible { outline:2px solid #c5dcd5; outline-offset:3px; border-radius:3px; }
+@media(max-width:1000px) { .actions { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:420px) { .heading { align-items:flex-start; flex-direction:column; gap:4px; } .action summary { padding-left:10px; } }
+@media(prefers-reduced-motion:no-preference) { .action summary { transition:background-color 150ms ease; } }

@@ -1,3 +1,4 @@
+import CupMaterialUse from "./CupMaterialUse";
 import cupStyles from "./cup-reading.module.css";
 import CupMaterialReader from "./CupMaterialReader";
 import { loadRepresentativeAppointmentWorkspaceDetailsWithClient } from "@/domains/instruments/representative-program/application/loadRepresentativeAppointmentWorkspaceDetailsWithClient";
@@ -405,148 +406,10 @@ export default async function RepresentativeWorkspaceView({
                           </Link>
 
                           </div>
-                          <section className={cupStyles.usePosture}
-                            aria-labelledby={`use-posture-${resource.id}`}>
-                            <p id={`use-posture-${resource.id}`} className={cupStyles.usePostureLabel}>
-                              How You May Use This Material
-                            </p>
-                            <dl className={cupStyles.materialPermissionStrip}>
-                              <div>
-                                <dt>View</dt>
-                                <dd data-state="released">
-                                  Available now
-                                </dd>
-                              </div>
-
-                              <div>
-                                <dt>Present</dt>
-                                <dd
-                                  data-state={
-                                    resource.canPresent
-                                      ? "governed"
-                                      : "withheld"
-                                  }
-                                >
-                                  {resource.canPresent
-                                    ? "Context check required"
-                                    : "Not released"}
-                                </dd>
-                              </div>
-
-                              <div>
-                                <dt>Transmit</dt>
-                                <dd
-                                  data-state={
-                                    resource.canTransmit
-                                      ? "governed"
-                                      : "withheld"
-                                  }
-                                >
-                                  {resource.canTransmit
-                                    ? "Context check required"
-                                    : "Not released"}
-                                </dd>
-                              </div>
-
-                              <div>
-                                <dt>Download</dt>
-                                <dd
-                                  data-state={
-                                    resource.canDownload
-                                      ? "permitted"
-                                      : "withheld"
-                                  }
-                                >
-                                  {resource.canDownload
-                                    ? "Available"
-                                    : "Not released"}
-                                </dd>
-                              </div>
-                            </dl>
-                            <details className={cupStyles.materialUseDetails}>
-                              <summary>Use conditions &amp; authority</summary>
-                              <p className={cupStyles.usePostureNote}>
-                                Resource permissions describe available material use.
-                                They do not independently establish authority.
-                              </p>
-                            <dl className={cupStyles.usePostureGrid}>
-                              <div>
-                                <dt>View</dt>
-                                <dd data-state="released">
-                                  Available now
-                                </dd>
-                                <p>
-                                  Open and review this released material in your
-                                  workspace.
-                                </p>
-                              </div>
-
-                              <div>
-                                <dt>Present</dt>
-                                <dd
-                                  data-state={
-                                    resource.canPresent
-                                      ? "governed"
-                                      : "withheld"
-                                  }
-                                >
-                                  {resource.canPresent
-                                    ? "Context check required"
-                                    : "Not released"}
-                                </dd>
-                                <p>
-                                  {resource.canPresent
-                                    ? "Presentation is available only when your recorded authority applies to the specific commercial context."
-                                    : "Presentation permission has not been released for this material."}
-                                </p>
-                              </div>
-
-                              <div>
-                                <dt>Transmit</dt>
-                                <dd
-                                  data-state={
-                                    resource.canTransmit
-                                      ? "governed"
-                                      : "withheld"
-                                  }
-                                >
-                                  {resource.canTransmit
-                                    ? "Context check required"
-                                    : "Not released"}
-                                </dd>
-                                <p>
-                                  {resource.canTransmit
-                                    ? "Sending this material to another party requires the applicable communication authority and recipient context."
-                                    : "Transmission permission has not been released for this material."}
-                                </p>
-                              </div>
-
-                              <div>
-                                <dt>Download</dt>
-                                <dd
-                                  data-state={
-                                    resource.canDownload
-                                      ? "permitted"
-                                      : "withheld"
-                                  }
-                                >
-                                  {resource.canDownload
-                                    ? "Available"
-                                    : "Not released"}
-                                </dd>
-                                <p>
-                                  {resource.canDownload
-                                    ? "A personal copy may be downloaded under the current resource permission."
-                                    : "A personal downloadable copy has not been released for this material."}
-                                </p>
-                              </div>
-                            </dl>
-                              <p className={cupStyles.usePostureNote}>
-                                Appointment, delegated authority, resource permission,
-                                and transaction authority remain separately governed.
-                              </p>
-                            </details>
-                          </section>
+                          <CupMaterialUse id={resource.id}
+                            canPresent={resource.canPresent}
+                            canTransmit={resource.canTransmit}
+                            canDownload={resource.canDownload} />
 
                           <CupMaterialReader
                             resourceReleaseId={resource.id}
