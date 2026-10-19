@@ -1,9 +1,10 @@
 "use client";
 import { useRef, useState, type FormEvent } from "react";
+import canvas from "./cup-reading.module.css";
 import type { BuyerDossierOption } from "@/domains/instruments/representative-program/commercial-utility-pack/application/loadBuyerDossierOptionsWithClient";
 type Receipt = { id:string; recipientName:string; recipientEmail:string; expiresAt:string; revokedAt:string|null; recipientDeliveryStatus:string; adminDeliveryStatus:string };
 const statusLabel = (value:string) => ({QUEUED:"Queued",SENDING:"Sending — refresh status",ACCEPTED:"Email provider accepted",FAILED:"Needs operator attention",DELIVERY_UNKNOWN:"Uncertain — operator review required",LOGGED_ONLY:"Test mode — no email sent"}[value] || "Unavailable");
-export default function BuyerDossierControls({ options, readOnly=false }: {options:BuyerDossierOption[];readOnly?:boolean}) {
+export default function BuyerDossierControls({ options, readOnly=false, compact=false }: {options:BuyerDossierOption[];readOnly?:boolean;compact?:boolean}) {
   const [selected,setSelected]=useState<string[]>([]);
   const [includeLoiAccess,setIncludeLoiAccess]=useState(false);
   const [review,setReview]=useState<{reviewHash:string;loiAccess?:{label:string;reference:string;version:number};publications:Array<{label:string;reference:string;version:number}>}|null>(null);
@@ -59,11 +60,14 @@ export default function BuyerDossierControls({ options, readOnly=false }: {optio
   const locked=readOnly||pending;
   const inputClass="mt-1 w-full rounded border border-[#567ba0] bg-[#10242d] px-3 py-1.5 text-sm text-[#eee7da]";
   const buttonClass="rounded border border-[#567ba0] px-4 py-2 text-sm text-[#eee7da] disabled:opacity-50";
-  return <section id="buyer-invitation" aria-labelledby="buyer-invitation-heading" className="my-4 rounded border border-[#30495c] bg-[#10242d] px-4 py-3 text-[#eee7da]">
-    <h3 id="buyer-invitation-heading" className="text-base font-medium">Introduce a Buyer</h3>
-    <p className="mt-1 text-xs leading-5 text-[#b7c5ce]">One invitation with your selected materials. Seven days of access; French-Ward Administration is notified.</p>
-    {readOnly?<p className="mt-2 text-xs text-[#d8c39b]">Read-only preview · Expand to inspect the invitation.</p>:null}
-    {!dossierId?<details className="mt-3"><summary className="w-fit cursor-pointer text-sm underline underline-offset-4">Prepare Buyer Invitation</summary>
+  return <section id="buyer-invitation" aria-labelledby="buyer-invitation-heading" className={canvas.buyerAction}>
+    {!compact ? <p className={canvas.actionEyebrow}>Buyer Introduction</p> : null}
+    <h3 id="buyer-invitation-heading" className={compact ? "sr-only" : undefined}>Introduce a Buyer</h3>
+    {!compact ? <p>Send one governed invitation with selected released materials. Access remains time-bound and French-Ward Administration is notified.</p> : null}
+    {readOnly && !compact?<p className={canvas.actionPreviewNote}>Read-only representative preview</p>:null}
+    {!dossierId?<details className={canvas.buyerActionDetails}><summary>{compact ? "Introduce Buyer" : "Prepare Invitation"} <span aria-hidden="true">→</span></summary>
+      {readOnly ? <p className={canvas.actionPreviewNote}>Read-only preview · Sending is disabled.</p> : null}
+      <p className={canvas.invitationIntro}>Select released materials and arrange recipient-specific access. French-Ward Administration is notified.</p>
       <form onSubmit={submit} className="mt-3 grid max-w-3xl gap-x-3 gap-y-2 sm:grid-cols-2" onChange={()=>{setReview(null);setConfirmed(false);}}>
         <fieldset disabled={locked} className="sm:col-span-2"><legend className="mb-2 text-sm">Select materials</legend>
           {options.map(option=><label key={option.id} className="mb-2 flex items-start gap-2 text-sm"><input type="checkbox" checked={selected.includes(option.id)} disabled={locked||!option.canTransmit}

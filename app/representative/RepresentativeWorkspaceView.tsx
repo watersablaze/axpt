@@ -1,3 +1,5 @@
+import cupStyles from "./cup-reading.module.css";
+import CupMaterialReader from "./CupMaterialReader";
 import { loadRepresentativeAppointmentWorkspaceDetailsWithClient } from "@/domains/instruments/representative-program/application/loadRepresentativeAppointmentWorkspaceDetailsWithClient";
 import BuyerDossierControls from "./BuyerDossierControls";
 import { loadBuyerDossierOptionsBatchedWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/application/loadBuyerDossierOptionsBatchedWithClient";
@@ -8,6 +10,7 @@ import CupWorkingSet from "./CupWorkingSet";
 import canvas from "./workspace-canvas.module.css";
 import Link from "next/link";
 import AuthorityRegister from "./AuthorityRegister";
+import RepresentativeSessionControl from "./RepresentativeSessionControl";
 
 import { loadRepresentativeWorkspaceSnapshotWithClient } from "@/domains/instruments/representative-program/application/loadRepresentativeWorkspaceSnapshotWithClient";
 
@@ -65,15 +68,32 @@ function appointmentEvidenceDate(value: string) {
 export default async function RepresentativeWorkspaceView({
   userId,
   operatorPreview = false,
+  representativeSessionPreview = false,
+  viewportFrame = false,
   previewParticipantId,
 }: {
   userId: string;
   operatorPreview?: boolean;
+  representativeSessionPreview?: boolean;
+  viewportFrame?: boolean;
   previewParticipantId?: string;
 }) {
   if (operatorPreview && !previewParticipantId) {
     throw new Error("[ARP_OPERATOR_PREVIEW_PARTICIPANT_REQUIRED]");
   }
+
+  if (representativeSessionPreview && !operatorPreview) {
+    throw new Error("[ARP_REPRESENTATIVE_SESSION_PREVIEW_REQUIRES_OPERATOR_PREVIEW]");
+  }
+
+  const representativePreviewLens =
+    operatorPreview && representativeSessionPreview;
+
+  const representativePreviewQuery =
+    representativePreviewLens ? "?lens=representative" : "";
+
+  const representativePreviewContinuation =
+    representativePreviewLens ? "&lens=representative" : "";
 
   const [workspace, commercialUtilityPack] =
     await Promise.all([
@@ -138,6 +158,12 @@ export default async function RepresentativeWorkspaceView({
 
   const { appointmentReview, authorityRegister } = appointmentDetails;
 
+  const releasedCupMaterialCount =
+    commercialUtilityPack?.modules.reduce(
+      (count, entry) => count + entry.resources.length,
+      0,
+    ) ?? 0;
+
   const reviewAvailable = Boolean(appointmentReview?.canAccept);
   const awaitingActivation = Boolean(
     appointmentReview?.acceptedAt && appointmentReview.status === "DRAFT"
@@ -170,7 +196,12 @@ export default async function RepresentativeWorkspaceView({
           : "Your Program record is established. Appointment preparation is the next institutional step.";
 
   return (
-    <main className={canvas.workspace}>
+    <main
+      className={[
+        canvas.workspace,
+        viewportFrame ? canvas.viewportFrame : "",
+      ].filter(Boolean).join(" ")}
+    >
       <WorkspaceStage
         storageKey={`arp-workspace:${operatorPreview ? 'operator-preview:' : ''}${userId}:view:v1`}
         guide={<WorkspaceGuide position={currentStepCopy} />}
@@ -184,111 +215,167 @@ export default async function RepresentativeWorkspaceView({
           />
         }
         identity={
-          <header className={canvas.identity}>
-            <div>
-              <p className={canvas.kicker}>French-Ward, Inc. · Authorized Representation Program</p>
-              <p className={canvas.identityName}>{workspace.displayName}</p>
-            </div>
-            <p className={canvas.standing}>Program standing: {humanize(workspace.standing)}</p>
-          </header>
-        }
-        overview={<><section id="current-step" aria-labelledby="current-step-title"
-                className="scroll-mt-36 border border-[#8c7855]/40 border-l-2 border-l-[#c5a25f] bg-[#13232a] px-5 py-5 md:px-6">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#d7b269]">Current Step</p>
-                <div className="mt-2 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                  <div>
-                    <h1 id="current-step-title" className="font-serif text-2xl leading-tight text-[#eee6d7]"><span className={appointmentActive ? canvas.activeNode : canvas.quietNode} aria-hidden="true" />{currentStepTitle}</h1>
-                    <p className="mt-3 max-w-2xl text-sm leading-6 text-[#b7c9d2]">{currentStepCopy}</p>
-                  </div>
-                  {reviewAvailable && appointment ? (
-                    <Link href={operatorPreview ? `/admin/representative-program/participants/${encodeURIComponent(previewParticipantId!)}/workspace-preview/appointment` : `/representative/appointments/${appointment.id}`}
-                      className="inline-flex shrink-0 items-center justify-center rounded border border-[#c5a25f]/60 bg-[#c5a25f]/10 px-4 py-3 text-xs font-semibold text-[#e0c490] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#d7b269]">
-                      {operatorPreview ? "Inspect Prepared Appointment" : "Review Prepared Appointment"}
-                    </Link>
-                  ) : appointmentActive && commercialUtilityPack ? (
-                    <a href="#field-resources" className={canvas.enterCup}>Open Your CUP ↘</a>
-                  ) : null}
+          <div className={canvas.workspaceCommandHeader}>
+            <section className={canvas.commandIdentity}>
+              <img
+                src="/FW/french-ward_V3.2.png"
+                alt=""
+                aria-hidden="true"
+                className={canvas.workspaceSeal}
+              />
+
+              <div className={canvas.commandIdentityText}>
+                <p className={canvas.kicker}>
+                  French-Ward, Inc. · Authorized Representation Program
+                </p>
+
+                <p className={canvas.identityName}>
+                  {workspace.displayName}
+                </p>
+
+                <p className={canvas.commandStanding}>
+                  Program standing · {humanize(workspace.standing)}
+                </p>
+              </div>
+            </section>
+
+            <section className={canvas.commandAccess}>
+              {operatorPreview && !representativeSessionPreview ? (
+                <div className={canvas.commandOperatorPreview}>
+                  <p className={canvas.commandMicroLabel}>
+                    Operator Preview
+                  </p>
+
+                  <p>
+                    No representative session is active.
+                  </p>
                 </div>
-              </section>
-          <div className={canvas.orientation}>
-            <p>Your appointment, authority record, and released materials are available through the directory.</p>
-            <a href="#workspace-guide" className={canvas.guideInvitation}>Begin Orientation →</a>
+              ) : (
+                <RepresentativeSessionControl
+                  readOnlyPreview={representativeSessionPreview}
+                />
+              )}
+            </section>
           </div>
-        </>}
-        cup={<section id="field-resources" className={canvas.cup} aria-labelledby="cup-title">
-                <header className={canvas.cupHeader}>
-                  <svg className={canvas.glyph} viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                    <path d="M8 11h23v26H8zM16 7h23v26M12 19h15M12 25h10" />
-                    <path d="m29 37 10-10M32 27h7v7" />
-                  </svg>
-                  <div>
-                    <p className={canvas.kicker}>Your Documentary Environment</p>
-                    <h2 id="cup-title" className={canvas.cupTitle}>Commercial Utility Pack {commercialUtilityPack ? <span className={canvas.version}>V{commercialUtilityPack.version}</span> : null}</h2>
-                    <p className={canvas.cupIntro}>Open your materials. Consult the record before you act.</p>
+        }
+        overview={
+          <section
+            className={canvas.workspaceGuidance}
+            aria-label="Workspace guidance"
+          >
+            <div className={canvas.workspaceGuidanceInner}>
+              <p className={canvas.workspaceGuidancePrimary}>
+                This is your workspace.
+              </p>
+
+              <p className={canvas.workspaceGuidanceFocus}>
+                Bring your work into focus.
+              </p>
+
+              <p className={canvas.workspaceGuidanceSecondary}>
+                Move through the directory as the work requires.
+              </p>
+            </div>
+          </section>
+        }
+        cup={<section id="field-resources" className={cupStyles.cup} aria-labelledby="cup-title">
+                <header className={cupStyles.cupHeader}>
+                  <div className={cupStyles.cupHeaderMark} aria-hidden="true">
+                    <svg className={cupStyles.glyph} viewBox="0 0 48 48" fill="none">
+                      <path d="M8 11h23v26H8zM16 7h23v26M12 19h15M12 25h10" />
+                      <path d="m29 37 10-10M32 27h7v7" />
+                    </svg>
                   </div>
+
+                  <div className={cupStyles.cupHeading}>
+                    <p className={cupStyles.kicker}>Your Documentary Environment</p>
+
+                    <div className={cupStyles.cupTitleLine}>
+                      <h2 id="cup-title" className={cupStyles.cupTitle}>
+                        Commercial Utility Pack
+                      </h2>
+
+                      {commercialUtilityPack ? (
+                        <span className={cupStyles.version}>
+                          V{commercialUtilityPack.version}
+                        </span>
+                      ) : null}
+                    </div>
+
+                    <p className={cupStyles.cupIntro}>
+                      Released institutional materials for governed representative use.
+                    </p>
+                    {commercialUtilityPack ? (
+<details className={cupStyles.packageRecord}>
+                            <summary>Package Record</summary>
+                            <dl>
+                              <div>
+                                <dt>Reference</dt>
+                                <dd>{commercialUtilityPack.reference}</dd>
+                              </div>
+                              <div>
+                                <dt>Version</dt>
+                                <dd>{commercialUtilityPack.version}</dd>
+                              </div>
+                            </dl>
+                          </details>
+                    ) : null}
+                  </div>
+
+                  {commercialUtilityPack ? (
+                    <div className={cupStyles.cupReleaseSummary}>
+                      <span>{releasedCupMaterialCount}</span>
+                      <small>Released Materials</small>
+                    </div>
+                  ) : null}
                 </header>
 
                 {commercialUtilityPack ? (
                   <>
-                    <details className={canvas.packageRecord}>
-                      <summary>Package record</summary>
-                      <p className={canvas.packReference}>{commercialUtilityPack.reference} · Version {commercialUtilityPack.version}</p>
-                    </details>
-                    <BuyerDossierControls options={buyerDossierOptions} readOnly={operatorPreview} />
-                    <section
-                      aria-label="Letter of Intent and Transaction Intake"
-                      className="my-5 rounded-lg border border-[#425c78] bg-[#0c1929] p-5"
+
+
+                    <CupWorkingSet
+                      storageKey={`arp-workspace:${operatorPreview ? 'operator-preview:' : ''}${userId}:cup:${commercialUtilityPack.reference}:v${commercialUtilityPack.version}`}
+                      resourceIds={commercialUtilityPack.modules.flatMap(entry =>
+                        entry.resources.map(resource => resource.id)
+                      )}
+                      categories={commercialUtilityPack.modules.flatMap(entry =>
+                        entry.resources.map(() => humanize(entry.module))
+                      )}
+                      labels={commercialUtilityPack.modules.flatMap(entry =>
+                        entry.resources.map(resource =>
+                          resource.label || humanize(resource.resourceType)
+                        )
+                      )}
+                      sidebar={
+                        <div className={cupStyles.commercialTools}>
+                          <BuyerDossierControls options={buyerDossierOptions} readOnly={operatorPreview} compact />
+                          <Link href={operatorPreview
+                            ? `/admin/representative-program/participants/${encodeURIComponent(previewParticipantId!)}/workspace-preview/loi${representativePreviewQuery}`
+                            : "/representative/loi"}
+                            prefetch={false} className={cupStyles.intakeLink}>
+                            Preview LOI <span aria-hidden="true">↗</span>
+                          </Link>
+                        </div>
+                      }
                     >
-                      <p className="text-xs font-semibold uppercase tracking-widest text-[#dfc58f]">
-                        Commercial Intake
-                      </p>
-                      <h3 className="mt-2 text-xl font-semibold text-white">
-                        Letter of Intent &amp; Transaction Intake
-                      </h3>
-                      <p className="mt-2 max-w-2xl text-sm leading-6 text-[#c6d3e2]">
-                        Preview the LOI form here. Include LOI access in your
-                        buyer invitation so the recipient can open and submit it
-                        after sign-in, without a separate access request.
-                      </p>
-                      <Link
-                        href={operatorPreview
-                          ? `/admin/representative-program/participants/${encodeURIComponent(previewParticipantId!)}/workspace-preview/loi`
-                          : "/representative/loi"}
-                        prefetch={false}
-                        className="mt-4 inline-block text-sm font-semibold text-[#e8cb91] underline underline-offset-4"
-                      >
-                        Preview Letter of Intent →
-                      </Link>
-                    </section>
-                    <CupWorkingSet storageKey={`arp-workspace:${operatorPreview ? 'operator-preview:' : ''}${userId}:cup:${commercialUtilityPack.reference}:v${commercialUtilityPack.version}`} resourceIds={commercialUtilityPack.modules.flatMap(entry => entry.resources.map(resource => resource.id))} categories={commercialUtilityPack.modules.flatMap(entry =>
-                      entry.resources.map(() => humanize(entry.module))
-                    )} labels={commercialUtilityPack.modules.flatMap(entry =>
-                      entry.resources.map(resource =>
-                        resource.label || humanize(resource.resourceType)
-                      )
-                    )}>
                       {commercialUtilityPack.modules.flatMap(entry =>
                         entry.resources.map(resource => ({ module: entry.module, resource }))
                       ).map(({ module, resource }, index) => (
-                        <article key={resource.id} className={canvas.resource}>
-                          <div className={canvas.hanger} aria-hidden="true" />
-                          <p className={canvas.resourceCategory}>
-                            {String(index + 1).padStart(2, "0")} / {humanize(module)}
-                          </p>
-                          <h3 className={canvas.resourceTitle}>
+                        <article key={resource.id} className={cupStyles.resource}>
+                          <div className={cupStyles.hanger} aria-hidden="true" />
+
+                          <h3 className={cupStyles.resourceTitle}>
                             {resource.label || humanize(resource.resourceType)}
                           </h3>
-                          <p className={canvas.resourceAccess}>
-                            Released for viewing · Personal download {resource.canDownload ? "permitted" : "withheld"}
-                          </p>
-
+                          <div className={cupStyles.materialActionRow}>
                           {operatorPreview ? (
                             <Link
-                              href={`/admin/representative-program/participants/${encodeURIComponent(previewParticipantId!)}/workspace-preview/resources/${encodeURIComponent(resource.id)}`}
+                              href={`/admin/representative-program/participants/${encodeURIComponent(previewParticipantId!)}/workspace-preview/resources/${encodeURIComponent(resource.id)}${representativePreviewQuery}`}
                               prefetch={false}
-                              className={canvas.openResource}
+                              className={cupStyles.openResource}
                             >
-                              Open Resource <span aria-hidden="true">↗</span>
+                              Open separately <span aria-hidden="true">↗</span>
                             </Link>
                           ) : ((resource.resourceType === "STRUCTURED_CONTENT" &&
                               (module === "REPRESENTATION" || module === "OPERATING_BOUNDARIES")) ||
@@ -298,12 +385,12 @@ export default async function RepresentativeWorkspaceView({
                                 ? `/representative/resources/${encodeURIComponent(resource.id)}/institutional`
                                 : `/representative/resources/${encodeURIComponent(resource.id)}`}
                               prefetch={false}
-                              className={canvas.openResource}
+                              className={cupStyles.openResource}
                             >
-                              Open Resource <span aria-hidden="true">↗</span>
+                              Open separately <span aria-hidden="true">↗</span>
                             </Link>
                           ) : (
-                            <p className={canvas.resourceAccess}>Viewer not yet available.</p>
+                            <p className={cupStyles.resourceAccess}>Viewer not yet available.</p>
                           )}
 
                           <Link
@@ -311,28 +398,168 @@ export default async function RepresentativeWorkspaceView({
                               operatorPreview
                                 ? `/admin/representative-program/participants/${encodeURIComponent(previewParticipantId!)}/workspace-preview`
                                 : "/representative"
-                            }?view=communications&fieldContextType=CUP_RESOURCE&fieldContextId=${encodeURIComponent(resource.id)}`}
-                            className={canvas.openResource}
+                            }?view=communications&fieldContextType=CUP_RESOURCE&fieldContextId=${encodeURIComponent(resource.id)}${representativePreviewContinuation}`}
+                            className={cupStyles.openResource}
                           >
-                            Comment / Ask a Question <span aria-hidden="true">→</span>
+                            Ask French-Ward <span aria-hidden="true">→</span>
                           </Link>
 
-                          <details className={canvas.permissions}>
-                            <summary>Use conditions</summary>
-                            <p>Present: {resource.canPresent
-                              ? "Requires authority and context evaluation"
-                              : "Withheld"}</p>
-                            <p>Transmit: {resource.canTransmit
-                              ? "Requires authority and context evaluation"
-                              : "Withheld"}</p>
-                            <p>Resource access does not establish authority.</p>
-                          </details>
+                          </div>
+                          <section className={cupStyles.usePosture}
+                            aria-labelledby={`use-posture-${resource.id}`}>
+                            <p id={`use-posture-${resource.id}`} className={cupStyles.usePostureLabel}>
+                              How You May Use This Material
+                            </p>
+                            <dl className={cupStyles.materialPermissionStrip}>
+                              <div>
+                                <dt>View</dt>
+                                <dd data-state="released">
+                                  Available now
+                                </dd>
+                              </div>
+
+                              <div>
+                                <dt>Present</dt>
+                                <dd
+                                  data-state={
+                                    resource.canPresent
+                                      ? "governed"
+                                      : "withheld"
+                                  }
+                                >
+                                  {resource.canPresent
+                                    ? "Context check required"
+                                    : "Not released"}
+                                </dd>
+                              </div>
+
+                              <div>
+                                <dt>Transmit</dt>
+                                <dd
+                                  data-state={
+                                    resource.canTransmit
+                                      ? "governed"
+                                      : "withheld"
+                                  }
+                                >
+                                  {resource.canTransmit
+                                    ? "Context check required"
+                                    : "Not released"}
+                                </dd>
+                              </div>
+
+                              <div>
+                                <dt>Download</dt>
+                                <dd
+                                  data-state={
+                                    resource.canDownload
+                                      ? "permitted"
+                                      : "withheld"
+                                  }
+                                >
+                                  {resource.canDownload
+                                    ? "Available"
+                                    : "Not released"}
+                                </dd>
+                              </div>
+                            </dl>
+                            <details className={cupStyles.materialUseDetails}>
+                              <summary>Use conditions &amp; authority</summary>
+                              <p className={cupStyles.usePostureNote}>
+                                Resource permissions describe available material use.
+                                They do not independently establish authority.
+                              </p>
+                            <dl className={cupStyles.usePostureGrid}>
+                              <div>
+                                <dt>View</dt>
+                                <dd data-state="released">
+                                  Available now
+                                </dd>
+                                <p>
+                                  Open and review this released material in your
+                                  workspace.
+                                </p>
+                              </div>
+
+                              <div>
+                                <dt>Present</dt>
+                                <dd
+                                  data-state={
+                                    resource.canPresent
+                                      ? "governed"
+                                      : "withheld"
+                                  }
+                                >
+                                  {resource.canPresent
+                                    ? "Context check required"
+                                    : "Not released"}
+                                </dd>
+                                <p>
+                                  {resource.canPresent
+                                    ? "Presentation is available only when your recorded authority applies to the specific commercial context."
+                                    : "Presentation permission has not been released for this material."}
+                                </p>
+                              </div>
+
+                              <div>
+                                <dt>Transmit</dt>
+                                <dd
+                                  data-state={
+                                    resource.canTransmit
+                                      ? "governed"
+                                      : "withheld"
+                                  }
+                                >
+                                  {resource.canTransmit
+                                    ? "Context check required"
+                                    : "Not released"}
+                                </dd>
+                                <p>
+                                  {resource.canTransmit
+                                    ? "Sending this material to another party requires the applicable communication authority and recipient context."
+                                    : "Transmission permission has not been released for this material."}
+                                </p>
+                              </div>
+
+                              <div>
+                                <dt>Download</dt>
+                                <dd
+                                  data-state={
+                                    resource.canDownload
+                                      ? "permitted"
+                                      : "withheld"
+                                  }
+                                >
+                                  {resource.canDownload
+                                    ? "Available"
+                                    : "Not released"}
+                                </dd>
+                                <p>
+                                  {resource.canDownload
+                                    ? "A personal copy may be downloaded under the current resource permission."
+                                    : "A personal downloadable copy has not been released for this material."}
+                                </p>
+                              </div>
+                            </dl>
+                              <p className={cupStyles.usePostureNote}>
+                                Appointment, delegated authority, resource permission,
+                                and transaction authority remain separately governed.
+                              </p>
+                            </details>
+                          </section>
+
+                          <CupMaterialReader
+                            resourceReleaseId={resource.id}
+                            resourceReference={resource.resourceType === "DOCUMENT" ? resource.resourceId : undefined}
+                            title={resource.label || humanize(resource.resourceType)}
+                            previewParticipantId={operatorPreview ? previewParticipantId : undefined}
+                          />
                         </article>
                       ))}
                     </CupWorkingSet>
                   </>
                 ) : (
-                  <p className={canvas.pending}>
+                  <p className={cupStyles.pending}>
                     Your documentary environment will populate as resources are released for your account.
                   </p>
                 )}
@@ -359,7 +586,7 @@ export default async function RepresentativeWorkspaceView({
                 <div><dt>Effective date</dt><dd>{appointment.effectiveAt ? displayDate(appointment.effectiveAt) : "Not yet established"}</dd></div>
               </dl>
               <p className={canvas.pending}>Appointment and delegated authority remain separately governed.</p>
-              {operatorPreview ? <Link className={canvas.openResource} href={`/admin/representative-program/participants/${encodeURIComponent(previewParticipantId!)}/workspace-preview/appointment`}>Inspect Appointment Instrument ↗</Link> : <Link className={canvas.openResource} href={`/representative/appointments/${appointment.id}`}>
+              {operatorPreview ? <Link className={canvas.openResource} href={`/admin/representative-program/participants/${encodeURIComponent(previewParticipantId!)}/workspace-preview/appointment${representativePreviewQuery}`}>Inspect Appointment Instrument ↗</Link> : <Link className={canvas.openResource} href={`/representative/appointments/${appointment.id}`}>
                 {reviewAvailable ? "Review and Accept Appointment" : "Inspect Appointment Instrument"} ↗
               </Link>}
             </> : <p className={canvas.pending}>Appointment preparation is pending.</p>}
@@ -381,7 +608,7 @@ export default async function RepresentativeWorkspaceView({
                     : appointmentActive ? "Appointment" : "Appointment Record"}
                 </p>
                 <h2 id="appointment-plaque-title" className={canvas.plaqueName}>
-                  {workspace.displayName}
+                  Appointment Active
                 </h2>
 
                 {appointment ? (
@@ -396,7 +623,7 @@ export default async function RepresentativeWorkspaceView({
                         : appointment.instrument.status === "DRAFT" ? "Pending activation" : "Not recorded"}</dd></div>
                     </dl>
                     <p className={canvas.plaqueReference}>{appointment.instrument.reference}</p>
-                    {operatorPreview ? <Link className={canvas.plaqueLink} href={`/admin/representative-program/participants/${encodeURIComponent(previewParticipantId!)}/workspace-preview/appointment`}>Inspect Record →</Link> : <Link href={`/representative/appointments/${appointment.id}`} className={canvas.plaqueLink}>
+                    {operatorPreview ? <Link className={canvas.plaqueLink} href={`/admin/representative-program/participants/${encodeURIComponent(previewParticipantId!)}/workspace-preview/appointment${representativePreviewQuery}`}>Inspect Record →</Link> : <Link href={`/representative/appointments/${appointment.id}`} className={canvas.plaqueLink}>
                       {reviewAvailable ? "Review and Accept" : "Inspect Record"} →
                     </Link>}
                   </>

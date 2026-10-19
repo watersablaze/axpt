@@ -1,34 +1,21 @@
 "use client";
-
 import { Children, useEffect, useState, type ReactNode } from "react";
-import canvas from "./workspace-canvas.module.css";
+import styles from "./cup-reading.module.css";
 
-export default function CupWorkingSet({
-  storageKey,
-  resourceIds,
-  labels,
-  categories,
-  children,
-}: {
-  storageKey: string;
-  resourceIds: string[];
-  labels: string[];
-  categories: string[];
-  children: ReactNode;
+export default function CupWorkingSet({ storageKey, resourceIds, labels, categories, sidebar, children }: {
+  storageKey: string; resourceIds: string[]; labels: string[]; categories: string[];
+  sidebar?: ReactNode; children: ReactNode;
 }) {
-  function directoryLabel(title: string, category: string) {
-    if (category === "Representation" && /Institutional Profile/i.test(title)) {
-      return "Institutional Profile";
-    }
-    if (category === "Documents" && /Representative Agreement/i.test(title)) {
-      return "Representative Agreement";
-    }
-    if (category === "Operating Boundaries") {
-      return "Operating Boundaries";
-    }
+  function directoryLabel(title: string) {
+    if (/Institutional Profile/i.test(title)) return "Institutional Profile";
+    if (/Representative Agreement/i.test(title)) return "Representative Agreement";
+    if (/SOURCE AUTHORITY/i.test(title)) return "Bafoula Source Authority";
+    if (/Declaration of Trust/i.test(title)) return "Declaration of Trust";
+    if (/Reseller.*Agreement/i.test(title)) return "Reseller & Agent Agreement";
+    if (/Sanctions Screening/i.test(title)) return "Sanctions Screening Report";
+    if (/Operating Boundaries/i.test(title)) return "Operating Boundaries";
     return title;
   }
-
   const materials = Children.toArray(children);
   const [selected, setSelected] = useState(0);
   const resourceIdentity = JSON.stringify(resourceIds);
@@ -59,61 +46,42 @@ export default function CupWorkingSet({
 
   if (!materials.length) return null;
 
-  return (
-    <div className={canvas.workingSet}>
-      <label className={canvas.mobileMaterials}>
-        <span className={canvas.kicker}>Released Materials</span>
-        <select value={current} onChange={event => selectMaterial(Number(event.target.value))}>
-          {materials.map((_, index) => (
-            <option key={resourceIds[index] || index} value={index}>
-              {String(index + 1).padStart(2, "0")} · {directoryLabel(labels[index] || "Released resource", categories[index] || "")}
-            </option>
-          ))}
-        </select>
-      </label>
 
-      <nav className={canvas.materialDirectory} aria-label="Released CUP materials">
-        <p className={canvas.kicker}>Released Materials</p>
-        {materials.map((material, index) => (
-          <button
-            key={typeof material === "object" && material !== null && "key" in material
-              ? String(material.key) : index}
-            type="button"
+  return <div className={styles.readingWorkspace}>
+    {sidebar}
+    <div className={styles.workingSet}>
+      <aside className={styles.materialIndex}>
+        <label className={styles.mobileMaterials}>
+          <span>Materials · {materials.length}</span>
+          <select value={current} onChange={event => selectMaterial(Number(event.target.value))}>
+            {materials.map((_, index) => <option key={resourceIds[index] || index} value={index}>
+              {directoryLabel(labels[index] || "Released material")}
+            </option>)}
+          </select>
+        </label>
+        <nav className={styles.materialDirectory} aria-label="Released CUP materials">
+          <p className={styles.indexHeading}>Materials <span>{materials.length}</span></p>
+          {materials.map((_, index) => <button key={resourceIds[index] || index}
+            type="button" title={labels[index]}
             aria-current={current === index ? "true" : undefined}
-            aria-controls="cup-focused-material"
-            onClick={() => selectMaterial(index)}
-          >
-            <span>{String(index + 1).padStart(2, "0")}</span>
-            {directoryLabel(labels[index] || "Released resource", categories[index] || "")}
-          </button>
-        ))}
-      </nav>
-
-      <div className={canvas.materialStage}>
-        <p className={canvas.materialPosition} aria-live="polite">
-          {String(current + 1).padStart(2, "0")} / {String(materials.length).padStart(2, "0")}
-          {" · "}{categories[current] || "Released material"}
-        </p>
-
-        <div
-          id="cup-focused-material"
-          key={current}
-          className={canvas.materialArrival}
-        >
+            aria-controls="cup-focused-material" onClick={() => selectMaterial(index)}>
+            <span className={styles.indexNumber}>{String(index + 1).padStart(2, "0")}</span>
+            <span>{directoryLabel(labels[index] || "Released material")}</span>
+          </button>)}
+        </nav>
+      </aside>
+      <div className={styles.materialStage}>
+        <div id="cup-focused-material" key={resourceIds[current] || current}
+          className={styles.materialArrival} role="region"
+          aria-label={labels[current] || "Selected material"}>
           {materials[current]}
         </div>
-
-        <div className={canvas.materialControls}>
-          <button type="button" disabled={current === 0}
-            onClick={() => selectMaterial(current - 1)}>
-            ← Previous material
-          </button>
-          <button type="button" disabled={current === materials.length - 1}
-            onClick={() => selectMaterial(current + 1)}>
-            Next material →
-          </button>
+        <div className={styles.materialControls}>
+          <button type="button" disabled={current === 0} onClick={() => selectMaterial(current - 1)}>← Previous</button>
+          <span aria-live="polite">{current + 1} / {materials.length} · {categories[current]}</span>
+          <button type="button" disabled={current === materials.length - 1} onClick={() => selectMaterial(current + 1)}>Next →</button>
         </div>
       </div>
     </div>
-  );
+  </div>;
 }

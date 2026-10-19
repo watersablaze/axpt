@@ -73,8 +73,13 @@ export default function WorkspaceStage({
   }
 
   return (
-    <div className={canvas.shell}>
-      <div className={canvas.mobileDirectory}>
+    <>
+      <div className={canvas.workspaceCrown}>
+        {Children.toArray(identity)}
+      </div>
+
+      <div className={canvas.shell}>
+        <div className={canvas.mobileDirectory}>
         <label>
           <span className={canvas.kicker}>Workspace</span>
           <select value={view} onChange={event => {
@@ -124,7 +129,6 @@ export default function WorkspaceStage({
       </aside>
 
       <div className={canvas.center}>
-        {Children.toArray(identity)}
         <div
           id="workspace-stage"
           ref={stage}
@@ -159,7 +163,8 @@ export default function WorkspaceStage({
         </div>
       </div>
 
-      {Children.toArray(position)}
-    </div>
+        {Children.toArray(position)}
+      </div>
+    </>
   );
 }

@@ -1,7 +1,25 @@
-/** Internal storage adapter; URL validation belongs to readSupportingDocument. */
+import { createHash } from "node:crypto";
+import { createSupportingDocumentByteCache } from "./supportingDocumentByteCache";
+
+const byteCache = createSupportingDocumentByteCache();
+let credentialFingerprint: string | undefined;
+
+/** Internal storage adapter; URL validation belongs to readSupportingDocument.
+ * Cache only verified immutable bytes. The caller still authorizes before and after every read.
+ */
 export async function readPrivateSupportingBlob(url: string, maximumBytes: number): Promise<Uint8Array> {
   const token = process.env.BLOB_READ_WRITE_TOKEN?.trim();
-  if (!token || token.includes("[SENSITIVE]")) throw new Error("SUPPORTING_STORAGE_UNAVAILABLE");
+  if (!token || token.includes("[SENSITIVE]")) {
+    byteCache.clear(); credentialFingerprint = undefined;
+    throw new Error("SUPPORTING_STORAGE_UNAVAILABLE");
+  }
+  const fingerprint = createHash("sha256").update(token).digest("hex");
+  if (fingerprint !== credentialFingerprint) {
+    byteCache.clear(); credentialFingerprint = fingerprint;
+  }
+  const key = JSON.stringify([url, maximumBytes]);
+  const cached = byteCache.get(key);
+  if (cached) return cached;
   const response = await fetch(url, { headers: { Authorization: `Bearer ${token}` },
     cache: "no-store", redirect: "error", signal: AbortSignal.timeout(15000) });
   if (!response.ok || !response.body) throw new Error("SUPPORTING_STORAGE_READ_FAILED");
@@ -19,5 +37,14 @@ export async function readPrivateSupportingBlob(url: string, maximumBytes: numbe
     }
   } finally { reader.releaseLock(); }
   if (length !== maximumBytes) throw new Error("SUPPORTING_STORAGE_LENGTH_INVALID");
-  return Buffer.concat(chunks);
+  const bytes = Buffer.concat(chunks);
+  // Independently verify before insertion; corrupt bytes never populate the cache.
+  const locator = new URL(url);
+  const digest = locator.pathname.match(/\/([a-f0-9]{64})\.pdf$/)?.[1];
+  if (locator.protocol === "https:" && locator.hostname === "zjlswvetvtzvn453.private.blob.vercel-storage.com" &&
+      digest && bytes.subarray(0, 5).toString("ascii") === "%PDF-" &&
+      createHash("sha256").update(bytes).digest("hex") === digest) {
+    byteCache.set(key, bytes);
+  }
+  return bytes;
 }

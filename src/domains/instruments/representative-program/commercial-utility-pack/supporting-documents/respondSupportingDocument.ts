@@ -7,7 +7,14 @@ export async function respondSupportingDocument(request:Request,authorize:()=>Pr
  if (!["inline","download"].includes(mode)) return new NextResponse(null,{status:400,headers});
  if (readOnly&&mode==="download") return new NextResponse(null,{status:403,headers});
  try {
-  const result=await readSupportingDocument({action:mode==="download"?"DOWNLOAD":"VIEW",authorize,read:readPrivateSupportingBlob});
+  const started=performance.now();
+  const authorizationMs:number[]=[];let storageMs=0;
+  const measuredAuthorize=async()=>{const start=performance.now();try{return await authorize();}finally{authorizationMs.push(Math.round(performance.now()-start));}};
+  const measuredRead=async(url:string,maximumBytes:number)=>{const start=performance.now();try{return await readPrivateSupportingBlob(url,maximumBytes);}finally{storageMs+=performance.now()-start;}};
+  const result=await (async()=>{try{return await readSupportingDocument({action:mode==="download"?"DOWNLOAD":"VIEW",authorize:measuredAuthorize,read:measuredRead});}
+    finally{if(process.env.NODE_ENV === "development") console.info("[ARP_SUPPORTING_READ_TIMING]",{
+      authorizationMs,storageMs:Math.round(storageMs),totalMs:Math.round(performance.now()-started),
+    });}})();
   if(!result)return new NextResponse(null,{status:404,headers});
   const fileName=`${result.reference}-v${result.version}.pdf`.replace(/[^a-zA-Z0-9._-]/g,"_");
   return new NextResponse(Buffer.from(result.bytes),{headers:{...headers,"Content-Type":"application/pdf","Content-Disposition":`${mode==="download"?"attachment":"inline"}; filename="${fileName}"`,"Content-Length":String(result.bytes.byteLength)}});
