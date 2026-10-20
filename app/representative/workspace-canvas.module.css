@@ -3565,3 +3565,51 @@
 .workspace .position::before {
   background: none;
 }
+
+/* Candidate responsive correction: crown, navigation and reading width. */
+@media (max-width: 1099px) {
+  .workspace .workspaceCrown {
+    height: auto;
+    min-height: 0;
+  }
+  .workspaceCrown .workspaceCommandHeader {
+    height: auto;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    padding: 12px 18px;
+  }
+  .workspaceCrown .commandIdentity {
+    min-width: 0;
+    gap: 12px;
+    padding: 0;
+  }
+  .workspaceCrown .commandAccess { padding: 0 0 0 12px; }
+  .workspaceCrown .commandSignOut { min-width: 88px; min-height: 44px; }
+  .workspace .mobileDirectory {
+    position: relative;
+    top: auto;
+    margin: 0;
+    padding: 16px 0;
+    box-shadow: none;
+    background: transparent;
+  }
+  .workspace .workspaceGuidance {
+    min-height: 260px;
+    padding: 48px 20px;
+  }
+  .workspace .workspaceGuidanceInner { transform: none; }
+}
+@media (max-width: 1400px) {
+  .workspace .workingSet { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+  .workspace .cupOperatingRail { position: static; max-height: none; overflow: visible; }
+  .workspace .materialDirectory { display: none; }
+  .workspace .mobileMaterials { display: block; min-width: 0; }
+  .workspace .materialStage { min-width: 0; max-width: none; }
+}
+@media (max-width: 540px) {
+  .workspaceCrown .workspaceCommandHeader { grid-template-columns: minmax(0, 1fr); gap: 10px; }
+  .workspaceCrown .commandAccess { padding: 0; justify-content: flex-end; }
+  .workspaceCrown .commandIdentityText { min-width: 0; overflow-wrap: anywhere; }
+  .workspace .workspaceGuidance { min-height: 220px; padding: 36px 16px; }
+}

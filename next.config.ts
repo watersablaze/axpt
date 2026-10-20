@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
   productionBrowserSourceMaps: false,
 
   outputFileTracingIncludes: {
+    "/representative/materials/*/reader": [
+      "./node_modules/@axpt/source-authority-join/**/*",
+    ],
     "/api/admin/representative-program/appointments/credential": [
       "./private-assets/arp/jamal-ward-signature.png",
       "./private-assets/arp/french-ward-seal.png",
