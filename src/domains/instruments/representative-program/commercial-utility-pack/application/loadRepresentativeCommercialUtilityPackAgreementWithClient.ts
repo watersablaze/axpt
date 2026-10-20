@@ -56,6 +56,9 @@ export async function loadRepresentativeCommercialUtilityPackAgreementWithClient
     read: (key: string) => Promise<Uint8Array>;
     blobHostname?: string;
     readBlob?: (url: string) => Promise<Uint8Array>;
+    readVerifiedBytes?: (input: {
+      uri: string; sha256: string; read: () => Promise<Uint8Array>;
+    }) => Promise<Uint8Array>;
   },
 ) {
   const id = params.resourceReleaseId.trim();
@@ -168,7 +171,9 @@ export async function loadRepresentativeCommercialUtilityPackAgreementWithClient
       /[\u0000-\u001f\u007f]/.test(key)
     ) return null;
 
-    bytes = await params.read(key);
+    bytes = params.readVerifiedBytes
+      ? await params.readVerifiedBytes({ uri: document.uri, sha256: hash, read: () => params.read(key) })
+      : await params.read(key);
   } else {
     let locator: URL;
     try {
@@ -192,7 +197,10 @@ export async function loadRepresentativeCommercialUtilityPackAgreementWithClient
       !params.readBlob
     ) return null;
 
-    bytes = await params.readBlob(locator.href);
+    const readBlob = params.readBlob;
+    bytes = params.readVerifiedBytes
+      ? await params.readVerifiedBytes({ uri: locator.href, sha256: hash, read: () => readBlob(locator.href) })
+      : await readBlob(locator.href);
   }
   if (
     Buffer.from(bytes.subarray(0, 5)).toString("ascii") !== "%PDF-" ||

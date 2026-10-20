@@ -1,3 +1,4 @@
+import { readCachedAgreementBytes } from "@/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/readCachedAgreementBytes";
 import { createLocalReadTiming } from "@/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/localReadTiming";
 import { resolveRepresentativeCommercialUtilityPackConsumptionWithClient } from
   "@/domains/instruments/representative-program/commercial-utility-pack/application/resolveRepresentativeCommercialUtilityPackConsumptionWithClient";
@@ -61,6 +62,7 @@ export async function GET(
         userId: principal.userId,
         resourceReleaseId,
         bucket,
+        readVerifiedBytes: readCachedAgreementBytes,
         read: async key => {
           const store = createNeonObjectStorage();
           if (!store) {
