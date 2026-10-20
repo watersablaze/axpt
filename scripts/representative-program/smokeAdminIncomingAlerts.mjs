@@ -42,3 +42,8 @@ await deliverAdminIncomingAlert(client, 1, options); assert.equal(sends, 3);
 row.status = "QUEUED"; row.to = "other@example.com";
 await deliverAdminIncomingAlert(client, 1, options); assert.equal(sends, 3);
 console.log("ADMIN_INCOMING_ALERTS_OK: concurrent claim, replay, log mode, rejection retry, ambiguous/interrupted holds and fixed recipient; no email or database connection.");
+
+await queueAdminIncomingAlert(client, { kind: "GENERAL_INQUIRY", sourceId: "general-1" });
+await deliverAdminIncomingAlert(client, 1, { ...options, send: async input => { assert.match(input.text, /https:\/\/www\.axpt\.io\/admin\/incoming\/general\/general-1/); return { data: { id: "general-test" }, error: null }; } });
+assert.equal(row.status, "SENT");
+console.log("GENERAL_INQUIRY_ALERT_LINK_OK: canonical Admin review URL; no email sent.");

@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
-import { resend } from "@/infrastructure/email/client";
+import { prisma } from "@/infrastructure/db/prisma";
+import { createGeneralInquiryWithClient, deliverGeneralInquiryCopy } from "@/domains/admin-incoming/generalInquiries";
+import { dispatchAdminIncomingAlert } from "@/domains/admin-incoming/adminIncomingAlerts";
 
 export const runtime = "nodejs";
 
 const MAX_BODY_BYTES = 12_000;
 const HOURLY_LIMIT = 6;
 const WINDOW_SECONDS = 3600;
-const DESTINATION = "french-ward@axpt.io";
 const allowedSubjects = new Set([
   "Business relationship",
   "Commercial opportunity",
@@ -122,42 +123,22 @@ export async function POST(request: Request) {
     return failure("Complete all required inquiry fields.", 400);
   }
 
-  if (!process.env.RESEND_API_KEY) {
-    return failure("Inquiry delivery is temporarily unavailable.", 503);
-  }
-
   const rate = checkRateLimit(request);
   if (rate === "limited") {
     return failure("Too many inquiries. Please try again later.", 429, WINDOW_SECONDS);
   }
-  const from = process.env.FRENCH_WARD_EMAIL_FROM ||
-    process.env.NOTIFY_FROM_EMAIL ||
-    process.env.RESEND_FROM_EMAIL ||
-    "French-Ward <no-reply@axpt.io>";
-
-  const content = [
-    "French-Ward public inquiry", `Name: ${name}`, `Email: ${email}`,
-    `Organization: ${organization}`, `Subject: ${subject}`, "", message,
-  ].join("\n");
-
+  let saved: { id: string; copyLogId: number };
+  const input = { name, email, organization, subject, message };
   try {
-    const { data, error } = await resend.emails.send({
-      from,
-      to: [DESTINATION],
-      subject: `FW Inquiry: ${subject}`,
-      text: content,
-      replyTo: email,
-    });
-    if (error || !data?.id) {
-      console.error("[fw-inquiry] Delivery rejected", error?.name ?? "NO_PROVIDER_RECEIPT");
-      return failure("Inquiry delivery is temporarily unavailable. Please try again later.", 502);
-    }
-    console.info("[fw-inquiry] Provider accepted inquiry", { messageId: data.id });
-    return NextResponse.json({ ok: true }, {
-      status: 202,
-      headers: { "Cache-Control": "no-store" },
-    });
+    saved = await createGeneralInquiryWithClient(prisma, input);
   } catch {
-    return failure("Inquiry delivery is temporarily unavailable. Please try again later.", 502);
+    console.error("[fw-inquiry] INQUIRY_PERSIST_FAILED");
+    return failure("Unable to record your inquiry. Please try again later.", 503);
   }
+  // Persistence is the receipt. Mail outcomes cannot turn it into a failed submission.
+  await Promise.all([
+    dispatchAdminIncomingAlert(prisma, { kind: "GENERAL_INQUIRY", sourceId: saved.id }),
+    deliverGeneralInquiryCopy(prisma, input, saved.copyLogId),
+  ]);
+  return NextResponse.json({ ok: true }, { status: 202, headers: { "Cache-Control": "no-store" } });
 }

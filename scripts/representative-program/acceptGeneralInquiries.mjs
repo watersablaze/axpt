@@ -1,0 +1,44 @@
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+const require = createRequire(import.meta.url);
+const { PrismaClient } = require("@prisma/client");
+const { createGeneralInquiryWithClient, updateGeneralInquiryWithClient, deliverGeneralInquiryCopy } = require("../../src/domains/admin-incoming/generalInquiries.ts");
+const { deliverAdminIncomingAlert } = require("../../src/domains/admin-incoming/adminIncomingAlerts.ts");
+const url = new URL(process.env.DATABASE_URL);
+assert.equal(url.hostname, "127.0.0.1"); assert.equal(url.port, "5433"); assert.match(url.pathname, /^\/arp_general_qa_[a-f0-9]{12}$/);
+assert.equal(process.env.ADMIN_INCOMING_ALERT_EMAIL_MODE, "log");
+const prisma = new PrismaClient();
+const input = { name: "Local inquiry QA", email: "local@example.invalid", organization: "Local test", subject: "General inquiry", message: "private message body <script>test</script>" };
+const failingClient = delegate => ({ $transaction: callback => prisma.$transaction(tx => callback(new Proxy(tx, { get(target, key) {
+  if (key === delegate) return new Proxy(target[key], { get(model, operation) { if (operation === "create") return async () => { throw new Error("LOCAL_INJECTED_FAILURE"); }; return model[operation]; } });
+  return target[key];
+} }))) });
+try {
+  await prisma.emailLog.create({ data: { type: "LOCAL_EXISTING_RECEIPT", status: "LOGGED_ONLY" } });
+  await assert.rejects(createGeneralInquiryWithClient(failingClient("emailLog"), input), /LOCAL_INJECTED_FAILURE/);
+  assert.equal(await prisma.frenchWardInquiry.count(), 0, "Inquiry must roll back if the alert cannot be queued");
+  const saved = await createGeneralInquiryWithClient(prisma, input);
+  const record = await prisma.frenchWardInquiry.findUnique({ where: { id: saved.id }, include: { events: true } });
+  assert.equal(record.status, "OPEN"); assert.equal(record.revision, 0); assert.equal(record.events.length, 1);
+  const logs = await prisma.emailLog.findMany({ where: { rawPayload: { path: ["sourceId"], equals: saved.id } } });
+  assert.equal(logs.length, 1); assert.equal(logs[0].to, "connect@axpt.io"); assert.equal(logs[0].status, "QUEUED");
+  assert.ok(!JSON.stringify(logs[0].rawPayload).includes(input.message));
+  let wouldSend = 0;
+  await deliverAdminIncomingAlert(prisma, logs[0].id, { mode: "log", from: "local@example.invalid", send: async () => { wouldSend++; throw new Error("MUST_NOT_SEND"); } });
+  assert.equal(wouldSend, 0);
+  await deliverGeneralInquiryCopy(prisma, input, saved.copyLogId);
+  assert.equal((await prisma.emailLog.findUnique({ where: { id: saved.copyLogId } })).status, "LOGGED_ONLY");
+  const update = { id: saved.id, actorUserId: "LOCAL_OPERATOR", revision: 0, status: "IN_REVIEW", note: "Review started." };
+  await assert.rejects(updateGeneralInquiryWithClient(prisma, { ...update, note: " " }), /INVALID/);
+  await assert.rejects(updateGeneralInquiryWithClient(failingClient("frenchWardInquiryEvent"), update), /LOCAL_INJECTED_FAILURE/);
+  assert.equal((await prisma.frenchWardInquiry.findUnique({ where: { id: saved.id } })).revision, 0, "Audit failure must roll back the status change");
+  const results = await Promise.allSettled([updateGeneralInquiryWithClient(prisma, update), updateGeneralInquiryWithClient(prisma, update)]);
+  assert.equal(results.filter(x => x.status === "fulfilled").length, 1);
+  const loser = results.find(x => x.status === "rejected"); assert.match(loser.reason.message, /CONFLICT/);
+  await updateGeneralInquiryWithClient(prisma, { ...update, revision: 1, status: "CLOSED", note: "Reply recorded externally; local fixture closed." });
+  await updateGeneralInquiryWithClient(prisma, { ...update, revision: 2, status: "OPEN", note: "Reopened for follow-up." });
+  const final = await prisma.frenchWardInquiry.findUnique({ where: { id: saved.id }, include: { events: true } });
+  assert.equal(final.status, "OPEN"); assert.equal(final.revision, 3); assert.equal(final.events.length, 4);
+  assert.equal(await prisma.emailLog.count({ where: { type: "LOCAL_EXISTING_RECEIPT" } }), 1);
+  console.log("GENERAL_INQUIRY_ACCEPTANCE_OK: exact migration, atomic inquiry/alert receipt, rollback on queue/audit failure, concurrent stale-update denial, close/reopen history, log-only notifications and existing receipt preserved.");
+} finally { await prisma.$disconnect(); }

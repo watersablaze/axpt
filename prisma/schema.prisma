@@ -3926,3 +3926,33 @@ model RepresentativeBuyerDossierItem {
   @@unique([dossierId, resourceReleaseId])
   @@unique([dossierId, resourceReference])
 }
+
+// Durable French-Ward public inquiries; alert delivery is a separate record.
+model FrenchWardInquiry {
+  id           String   @id @default(uuid())
+  name         String
+  email        String
+  organization String
+  subject      String
+  message      String
+  status       String   @default("OPEN")
+  revision     Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  events       FrenchWardInquiryEvent[]
+
+  @@index([status, createdAt])
+}
+
+model FrenchWardInquiryEvent {
+  id          String   @id @default(uuid())
+  inquiryId   String
+  inquiry     FrenchWardInquiry @relation(fields: [inquiryId], references: [id], onDelete: Restrict)
+  actorUserId String?
+  fromStatus  String?
+  toStatus    String
+  note        String
+  createdAt   DateTime @default(now())
+
+  @@index([inquiryId, createdAt])
+}

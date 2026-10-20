@@ -1,15 +1,15 @@
 import type { PrismaClient } from "@prisma/client";
 
 type Client = Pick<PrismaClient, "emailLog">;
-export type IncomingAlert = { kind: "PROFILE_REQUEST" | "LOI_ACCESS_REQUEST" | "ARP_FIELD_MESSAGE"; sourceId: string };
+export type IncomingAlert = { kind: "PROFILE_REQUEST" | "LOI_ACCESS_REQUEST" | "ARP_FIELD_MESSAGE" | "GENERAL_INQUIRY"; sourceId: string };
 const recipient = "connect@axpt.io";
 const prefix = "ADMIN_INCOMING_V1:";
-const titles = { PROFILE_REQUEST: "Profile access request", LOI_ACCESS_REQUEST: "LOI access request", ARP_FIELD_MESSAGE: "Representative field communication" };
+const titles = { PROFILE_REQUEST: "Profile access request", LOI_ACCESS_REQUEST: "LOI access request", ARP_FIELD_MESSAGE: "Representative field communication", GENERAL_INQUIRY: "General inquiry" };
 export function incomingAlertType(input: IncomingAlert) { return prefix + input.kind + ":" + input.sourceId; }
 
 /** Called inside the transaction creating the request/message; no network IO here. */
 export async function queueAdminIncomingAlert(client: Client, input: IncomingAlert) {
-  const reviewPath = input.kind === "ARP_FIELD_MESSAGE" ? "/admin/incoming?lane=field" : "/admin/institutional-access?requestId=" + encodeURIComponent(input.sourceId);
+  const reviewPath = input.kind === "ARP_FIELD_MESSAGE" ? "/admin/incoming?lane=field" : input.kind === "GENERAL_INQUIRY" ? "/admin/incoming/general/" + encodeURIComponent(input.sourceId) : "/admin/institutional-access?requestId=" + encodeURIComponent(input.sourceId);
   return client.emailLog.create({ data: {
     type: incomingAlertType(input), to: recipient, subject: "[AXPT • Review] " + titles[input.kind], status: "QUEUED",
     rawPayload: { kind: input.kind, sourceId: input.sourceId, reviewPath },
@@ -26,7 +26,7 @@ export async function deliverAdminIncomingAlert(client: Client, id: number, opti
   const payload = row.rawPayload as { kind?: string; sourceId?: string; reviewPath?: string } | null;
   if (!payload || !Object.prototype.hasOwnProperty.call(titles, payload.kind || "") || !payload.sourceId) return;
   // Reconstruct the URL from validated canonical fields, never from a supplied URL.
-  const path = payload.kind === "ARP_FIELD_MESSAGE" ? "/admin/incoming?lane=field" : "/admin/institutional-access?requestId=" + encodeURIComponent(payload.sourceId);
+  const path = payload.kind === "ARP_FIELD_MESSAGE" ? "/admin/incoming?lane=field" : payload.kind === "GENERAL_INQUIRY" ? "/admin/incoming/general/" + encodeURIComponent(payload.sourceId) : "/admin/institutional-access?requestId=" + encodeURIComponent(payload.sourceId);
   const url = "https://www.axpt.io" + path;
   const claim = await client.emailLog.updateMany({ where: { id, status: { in: ["QUEUED", "FAILED", "LOGGED_ONLY"] } }, data: { status: "SENDING" } });
   if (claim.count !== 1) return;

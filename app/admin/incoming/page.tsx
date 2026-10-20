@@ -54,6 +54,17 @@ export default async function IncomingAdminPage({ searchParams }: {
       rows = records.map(record => ({ id: record.id, title: record.reference,
         detail: `${record.submitterName} · ${record.submitterEmail}`, status: record.status.replaceAll("_", " "),
         at: record.createdAt, href: `/admin/transaction-intakes/${encodeURIComponent(record.id)}`, action: "Review transaction" }));
+    } else if (lane === "general") {
+      const records = await prisma.frenchWardInquiry.findMany({
+        where: { status: { in: ["OPEN", "IN_REVIEW"] } },
+        orderBy: [{ createdAt: "asc" }, { id: "asc" }], skip, take: PAGE_SIZE + 1,
+        select: { id: true, name: true, email: true, organization: true, subject: true, status: true, createdAt: true },
+      });
+      rows = records.map((record: { id: string; name: string; email: string; organization: string; subject: string; status: string; createdAt: Date }) => ({
+        id: record.id, title: record.subject, detail: `${record.name} · ${record.email} · ${record.organization}`,
+        status: record.status.replaceAll("_", " "), at: record.createdAt,
+        href: `/admin/incoming/general/${encodeURIComponent(record.id)}`, action: "Review inquiry",
+      }));
     } else if (lane === "field" && fieldAllowed) {
       const records = await prisma.communicationConversation.findMany({
         where: { status: "ACTIVE", members: { some: { userId: principal.userId, leftAt: null } },
@@ -93,14 +104,10 @@ export default async function IncomingAdminPage({ searchParams }: {
       <h2 id="incoming-lane" className="text-xl font-medium">{titles[lane]}</h2>
       {lane === "access" && <p className="text-sm text-slate-400">Pending decisions, oldest first. Approved and declined records remain in Institutional Access.</p>}
       {lane === "transactions" && <p className="text-sm text-slate-400">Submitted, under review, and awaiting clarification, oldest first. Access requests are listed separately.</p>}
+      {lane === "general" && <p className="text-sm text-slate-400">Open and in-review inquiries, oldest first. <Link href="/admin/incoming/general" className="underline">Browse all, including closed</Link>. Earlier email-only inquiries are not imported.</p>}
       {lane === "field" && <p className="text-sm text-slate-400">Active ARP conversations you belong to, newest activity first. The label describes the latest message; it is not an unresolved-task count. Replies remain in Communications.</p>}
       {!allowed ? <p role="status" className="rounded border border-slate-600 p-4">Your session does not have the permission required for this category.</p>
         : failed ? <p role="alert" className="rounded border border-amber-400 p-4">This queue could not be loaded. Refresh to retry; do not interpret this as an empty inbox.</p>
-        : lane === "general" ? <div className="space-y-3 rounded border border-amber-500/40 p-5">
-            <h3 className="font-semibold text-amber-200">Mailbox review required</h3>
-            <p className="text-sm leading-6">Public inquiries currently send email to french-ward@axpt.io. They are not stored as reviewable Admin requests, so this inbox cannot report their count or resolution.</p>
-            <p className="text-sm text-slate-300">Review that mailbox directly. Durable inquiry tracking and an Admin reply/disposition workflow remain to be implemented.</p>
-          </div>
         : rows.length === 0 ? <p className="rounded border border-slate-700 p-5">{page === 1 ? "No records match this category." : "No records on this page. Return to the previous page."}</p>
         : <ul className="space-y-3">{rows.slice(0, PAGE_SIZE).map(row => <li key={row.id} className="rounded border border-slate-700 p-4">
           <div className="flex flex-wrap items-start justify-between gap-3"><h3 className="font-semibold">{row.title}</h3><span className="text-xs text-amber-200">{row.status}</span></div>
@@ -108,14 +115,14 @@ export default async function IncomingAdminPage({ searchParams }: {
           <p className="mt-2 text-xs text-slate-400"><time dateTime={row.at.toISOString()}>{row.at.toISOString().replace("T", " ").slice(0, 16)} UTC</time></p>
           <Link href={row.href} className="mt-3 inline-block text-sm text-cyan-200 underline underline-offset-4">{row.action} →</Link>
         </li>)}</ul>}
-      {allowed && !failed && lane !== "general" && <nav aria-label="Inbox pages" className="flex items-center gap-5 text-sm">
+      {allowed && !failed && <nav aria-label="Inbox pages" className="flex items-center gap-5 text-sm">
         {page > 1 && <Link href={href(lane, page - 1)} className="underline">← Previous</Link>}<span>Page {page}</span>
         {more && <Link href={href(lane, page + 1)} className="underline">Next →</Link>}
       </nav>}
     </section>
     <aside className="space-y-2 border-t border-slate-700 pt-5 text-sm text-slate-300">
       <h2 className="font-semibold text-amber-200">Notification coverage</h2>
-      <p>Profile/LOI access requests and ARP field messages do not currently send an Admin email alert through their submission handlers. Check this inbox while notification delivery is being completed.</p>
+      <p>Profile/LOI access requests, general inquiries, and ARP field messages queue Admin alerts. Sending depends on the configured delivery mode. Review Alert delivery for recorded outcomes.</p>
       <p>Submitted LOIs have an internal email path; sending depends on configured recipients and delivery mode. This page does not establish email delivery.</p>
     </aside>
     <footer className="flex flex-wrap gap-5 text-sm text-cyan-200">
