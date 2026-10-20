@@ -24,3 +24,14 @@
 @media(max-width:1000px) { .actions { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:420px) { .heading { align-items:flex-start; flex-direction:column; gap:4px; } .action summary { padding-left:10px; } }
 @media(prefers-reduced-motion:no-preference) { .action summary { transition:background-color 150ms ease; } }
+
+/* Equal document-use summary rhythm */
+.action summary {
+  align-content: start;
+}
+.action summary .label {
+  min-height: 2.7em;
+}
+.action summary .status {
+  min-height: 2.9em;
+}
