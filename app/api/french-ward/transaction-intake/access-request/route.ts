@@ -1,3 +1,4 @@
+import { queueAdminIncomingAlert, dispatchAdminIncomingAlert } from "@/domains/admin-incoming/adminIncomingAlerts";
 import {
   NextResponse,
 } from "next/server";
@@ -34,6 +35,7 @@ export async function POST(
     const result =
       await requestInstitutionalAccessWithClient(
         {
+          onRequested: (tx, id) => queueAdminIncomingAlert(tx, { kind: "LOI_ACCESS_REQUEST", sourceId: id }),
           client:
             prisma,
 
@@ -80,6 +82,7 @@ export async function POST(
         },
       );
 
+    await dispatchAdminIncomingAlert(prisma, { kind: "LOI_ACCESS_REQUEST", sourceId: result.id });
     return NextResponse.json(
       {
         ok:

@@ -1,3 +1,4 @@
+import { queueAdminIncomingAlert, dispatchAdminIncomingAlert } from "@/domains/admin-incoming/adminIncomingAlerts";
 import {
   NextResponse,
 } from "next/server";
@@ -274,6 +275,7 @@ export async function POST(
   try {
     const result =
       await sendRepresentativeFieldMessageWithClient({
+        onMessageCreated: (tx, id) => queueAdminIncomingAlert(tx, { kind: "ARP_FIELD_MESSAGE", sourceId: id }),
         client:
           prisma,
         userId:
@@ -285,6 +287,8 @@ export async function POST(
           messageBody,
         context,
       });
+
+    await dispatchAdminIncomingAlert(prisma, { kind: "ARP_FIELD_MESSAGE", sourceId: result.message.id });
 
     return NextResponse.json(
       {

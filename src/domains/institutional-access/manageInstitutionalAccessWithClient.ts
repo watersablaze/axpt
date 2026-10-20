@@ -34,6 +34,7 @@ export async function requestInstitutionalAccessWithClient(params: {
   scope: InstitutionalAccessScope;
   resourceReference: string;
   resourceVersion: number;
+  onRequested?: (tx: Pick<PrismaClient, "emailLog">, id: string) => Promise<unknown>;
 }) {
   if (
     !["PROFILE_VIEW", "LOI_INTAKE_ACCESS"].includes(params.scope) ||
@@ -48,7 +49,7 @@ export async function requestInstitutionalAccessWithClient(params: {
     throw new Error("INVALID_REQUESTER_EMAIL");
   }
 
-  return params.client.institutionalAccessRequest.create({
+  const create = (client: Pick<PrismaClient, "institutionalAccessRequest">) => client.institutionalAccessRequest.create({
     data: {
       requesterName: required(params.requesterName, "name"),
       requesterEmail: email,
@@ -69,6 +70,12 @@ export async function requestInstitutionalAccessWithClient(params: {
     },
     select: { id: true, status: true, createdAt: true },
   });
+  if (!params.onRequested) return create({ institutionalAccessRequest: params.client.institutionalAccessRequest });
+  return params.client.$transaction(async (tx: Pick<PrismaClient, "institutionalAccessRequest" | "emailLog">) => {
+    const result = await create(tx);
+    await params.onRequested!(tx, result.id);
+    return result;
+  }, { timeout: 15000 });
 }
 
 /**

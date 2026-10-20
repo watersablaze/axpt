@@ -324,6 +324,7 @@ async function performRepresentativeFieldSend(
     type: RepresentativeFieldMessageType;
     body: string;
     context?: RepresentativeFieldContext | null;
+    onMessageCreated?: (tx: Pick<PrismaClient, "emailLog">, id: string) => Promise<unknown>;
   },
 ) {
   const representativeUserId = normalizeRequired(
@@ -596,6 +597,8 @@ async function performRepresentativeFieldSend(
       },
     });
 
+    await params.onMessageCreated?.({ emailLog: tx.emailLog }, message.id);
+
     return {
       participant,
       operationalRoomId: operationalRoom.id,
@@ -613,6 +616,7 @@ export async function sendRepresentativeFieldMessageWithClient(params: {
   type: RepresentativeFieldMessageType;
   body: string;
   context?: RepresentativeFieldContext | null;
+  onMessageCreated?: (tx: Pick<PrismaClient, "emailLog">, id: string) => Promise<unknown>;
 }) {
   try {
     return await performRepresentativeFieldSend(params.client, params);

@@ -1,3 +1,4 @@
+import { queueAdminIncomingAlert, dispatchAdminIncomingAlert } from "@/domains/admin-incoming/adminIncomingAlerts";
 import { NextResponse } from "next/server";
 import { requestInstitutionalAccessWithClient } from "@/domains/institutional-access/manageInstitutionalAccessWithClient";
 import { projectFrenchWardInstitutionalProfile } from "@/domains/institutions/french-ward/projectFrenchWardInstitutionalProfile";
@@ -12,6 +13,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const profile = projectFrenchWardInstitutionalProfile();
     const result = await requestInstitutionalAccessWithClient({
+      onRequested: (tx, id) => queueAdminIncomingAlert(tx, { kind: "PROFILE_REQUEST", sourceId: id }),
       client: prisma,
       requesterName: field(body.requesterName),
       requesterEmail: field(body.requesterEmail),
@@ -22,6 +24,7 @@ export async function POST(request: Request) {
       resourceReference: profile.reference,
       resourceVersion: profile.version,
     });
+    await dispatchAdminIncomingAlert(prisma, { kind: "PROFILE_REQUEST", sourceId: result.id });
     return NextResponse.json({
       ok: true,
       request: { id: result.id, status: result.status },

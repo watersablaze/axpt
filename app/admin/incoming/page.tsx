@@ -84,7 +84,7 @@ export default async function IncomingAdminPage({ searchParams }: {
       <p className="text-xs uppercase tracking-[.2em] text-amber-200">French-Ward · Administration</p>
       <h1 className="text-3xl font-semibold">Incoming work</h1>
       <p className="max-w-3xl text-sm leading-6 text-slate-300">Review requests and representative messages through their existing decision and reply controls. Reading, replying, and resolving are separate actions.</p>
-      <IncomingRefresh />
+      <Link href="/admin/incoming/alerts">Alert delivery</Link><IncomingRefresh />
     </header>
     <nav aria-label="Incoming work categories" className="flex flex-wrap gap-2">{lanes.map(value =>
       <Link key={value} href={href(value)} aria-current={lane === value ? "page" : undefined}
