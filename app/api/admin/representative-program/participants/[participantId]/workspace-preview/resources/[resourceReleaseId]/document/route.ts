@@ -1,3 +1,4 @@
+import { createLocalReadTiming } from "@/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/localReadTiming";
 import { isAdmin } from "@/domains/auth/isAdmin";
 import { resolveRepresentativeCommercialUtilityPackConsumptionWithClient } from
   "@/domains/instruments/representative-program/commercial-utility-pack/application/resolveRepresentativeCommercialUtilityPackConsumptionWithClient";
@@ -16,13 +17,14 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ participantId: string; resourceReleaseId: string }> },
 ) {
+  const timing = createLocalReadTiming();
   const headers = {
     "Cache-Control": "private, no-store, max-age=0",
     "X-Content-Type-Options": "nosniff",
     "Cross-Origin-Resource-Policy": "same-origin",
   };
 
-  const principal = await getPrincipal();
+  const principal = await timing.measure("principal", () => getPrincipal());
   if (!principal) {
     return new NextResponse(null, { status: 401, headers });
   }
@@ -34,13 +36,14 @@ export async function GET(
   if (!participantId || participantId.length > 191) {
     return new NextResponse(null, { status: 400, headers });
   }
-  const participant = await prisma.representativeProgramParticipant.findUnique({
+  const participant = await timing.measure<{ userId: string | null } | null>("participant", () => prisma.representativeProgramParticipant.findUnique({
     where: { id: participantId },
     select: { userId: true },
-  });
+  }));
   if (!participant?.userId) {
     return new NextResponse(null, { status: 404, headers });
   }
+  const participantUserId = participant.userId;
   // Existing execution evidence is stored in this private Blob store.
   const blobHostname = "zjlswvetvtzvn453.private.blob.vercel-storage.com";
   const bucket = process.env.AXPT_TRANSACTION_DOCUMENT_BUCKET?.trim() || "";
@@ -56,12 +59,12 @@ export async function GET(
 
   try {
     const consumption =
-      await resolveRepresentativeCommercialUtilityPackConsumptionWithClient({
+      await timing.measure("authorization", () => resolveRepresentativeCommercialUtilityPackConsumptionWithClient({
         client: prisma,
-        userId: participant.userId,
+        userId: participantUserId,
         resourceReleaseId,
         action: download ? "DOWNLOAD" : "VIEW",
-      });
+      }));
 
     if (!consumption.allowed) {
       return new NextResponse(null, {
@@ -71,9 +74,9 @@ export async function GET(
     }
 
     const agreement =
-      await loadRepresentativeCommercialUtilityPackAgreementWithClient({
+      await timing.measure("agreement_inclusive", () => loadRepresentativeCommercialUtilityPackAgreementWithClient({
         client: prisma,
-        userId: participant.userId,
+        userId: participantUserId,
         resourceReleaseId,
         bucket,
         read: async key => {
@@ -81,10 +84,10 @@ export async function GET(
           if (!store) {
             throw new Error("[REPRESENTATIVE_CUP_PRIVATE_STORAGE_UNAVAILABLE]");
           }
-          return store.read(key);
+          return timing.measure("storage", () => store.read(key));
         },
         blobHostname,
-        readBlob: async url => {
+        readBlob: async url => timing.measure("storage", async () => {
           const locator = new URL(url);
           if (
             locator.protocol !== "https:" ||
@@ -115,8 +118,8 @@ export async function GET(
           }
 
           return new Uint8Array(await response.arrayBuffer());
-        },
-      });
+        }),
+      }));
 
     if (!agreement) {
       return new NextResponse(null, { status: 404, headers });
@@ -134,6 +137,7 @@ export async function GET(
       status: 200,
       headers: {
         ...headers,
+        ...timing.headers(),
         "Content-Type": "application/pdf",
         "Content-Disposition":
           `${download ? "attachment" : "inline"}; filename="${fileName}"`,

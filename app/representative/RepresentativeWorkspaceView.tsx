@@ -1,3 +1,4 @@
+import CupTimingCheck from "./CupTimingCheck";
 import CupMaterialUse from "./CupMaterialUse";
 import cupStyles from "./cup-reading.module.css";
 import CupMaterialReader from "./CupMaterialReader";
@@ -138,7 +139,7 @@ export default async function RepresentativeWorkspaceView({
   const appointment =
     workspace.appointment;
 
-  const [appointmentDetails, buyerDossierOptions] =
+  const [appointmentDetails, buyerDossierOptions, readerInstruments] =
     await Promise.all([
       appointment
         ? loadRepresentativeAppointmentWorkspaceDetailsWithClient({
@@ -155,7 +156,17 @@ export default async function RepresentativeWorkspaceView({
         userId,
         pack: commercialUtilityPack,
       }),
+      prisma.institutionalInstrument.findMany({
+        where: { id: { in: commercialUtilityPack?.modules.flatMap(entry =>
+          entry.resources.filter(resource => resource.resourceType === "INSTITUTIONAL_INSTRUMENT")
+            .map(resource => resource.resourceId)) ?? [] } },
+        select: { id: true, kind: true },
+      }),
     ]);
+  // Presentation routing only. Every document endpoint still authorizes the request.
+  const agreementIds = new Set(readerInstruments
+    .filter(instrument => instrument.kind === "REPRESENTATIVE_PROGRAM_AGREEMENT")
+    .map(instrument => instrument.id));
 
   const { appointmentReview, authorityRegister } = appointmentDetails;
 
@@ -280,6 +291,21 @@ export default async function RepresentativeWorkspaceView({
           </section>
         }
         cup={<section id="field-resources" className={cupStyles.cup} aria-labelledby="cup-title">
+                {process.env.NODE_ENV === "development" && commercialUtilityPack ? <CupTimingCheck
+                  materials={commercialUtilityPack.modules.flatMap(entry => entry.resources.map(resource => {
+                    const pdf = resource.resourceType === "DOCUMENT" || agreementIds.has(resource.resourceId);
+                    const api = operatorPreview
+                      ? `/api/admin/representative-program/participants/${encodeURIComponent(previewParticipantId!)}/workspace-preview/resources/${encodeURIComponent(resource.id)}`
+                      : `/api/representative/commercial-utility-packs/resources/${encodeURIComponent(resource.id)}`;
+                    const query = new URLSearchParams();
+                    if (operatorPreview && previewParticipantId) query.set("previewParticipantId", previewParticipantId);
+                    if (resource.resourceType === "STRUCTURED_CONTENT") query.set("renderer", "structured");
+                    if (resource.resourceType === "INSTITUTIONAL_INSTRUMENT") query.set("renderer", "institutional");
+                    return { id: resource.id, label: resource.label || humanize(resource.resourceType),
+                      format: pdf ? "pdf" as const : "html" as const,
+                      href: pdf ? api + (resource.resourceType === "DOCUMENT" ? "/supporting-document?mode=inline" : "/document?mode=inline")
+                        : `/representative/materials/${encodeURIComponent(resource.id)}/reader?${query.toString()}` };
+                  }))} /> : null}
                 <header className={cupStyles.cupHeader}>
                   <div className={cupStyles.cupHeaderMark} aria-hidden="true">
                     <svg className={cupStyles.glyph} viewBox="0 0 48 48" fill="none">
@@ -413,6 +439,8 @@ export default async function RepresentativeWorkspaceView({
 
                           <CupMaterialReader
                             resourceReleaseId={resource.id}
+                            resourceType={resource.resourceType}
+                            agreementPdf={resource.resourceType === "INSTITUTIONAL_INSTRUMENT" && agreementIds.has(resource.resourceId)}
                             resourceReference={resource.resourceType === "DOCUMENT" ? resource.resourceId : undefined}
                             title={resource.label || humanize(resource.resourceType)}
                             previewParticipantId={operatorPreview ? previewParticipantId : undefined}

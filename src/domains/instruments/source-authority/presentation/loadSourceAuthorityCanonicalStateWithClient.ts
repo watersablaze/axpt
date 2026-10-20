@@ -246,6 +246,8 @@ export async function loadSourceAuthorityCanonicalStateWithClient(
 
     instrumentReference:
       string;
+
+    onReadTiming?: (phase: string, milliseconds: number) => void;
   }>,
 ): Promise<
   CanonicalSourceAuthorityPresentationState
@@ -259,6 +261,7 @@ export async function loadSourceAuthorityCanonicalStateWithClient(
     );
   }
 
+  const instrumentStarted = performance.now();
   const instrument =
     await params.client
       .institutionalInstrument
@@ -286,6 +289,8 @@ export async function loadSourceAuthorityCanonicalStateWithClient(
         },
       });
 
+  params.onReadTiming?.("sai_instrument", performance.now() - instrumentStarted);
+
   if (!instrument) {
     throw new Error(
       `[SOURCE_AUTHORITY_PRESENTATION_NOT_FOUND] ${instrumentReference}`,
@@ -302,6 +307,7 @@ export async function loadSourceAuthorityCanonicalStateWithClient(
     );
   }
 
+  const versionStarted = performance.now();
   const version =
     await params.client
       .instrumentVersion
@@ -325,12 +331,15 @@ export async function loadSourceAuthorityCanonicalStateWithClient(
         },
       });
 
+  params.onReadTiming?.("sai_version", performance.now() - versionStarted);
+
   if (!version) {
     throw new Error(
       "[SOURCE_AUTHORITY_PRESENTATION_CURRENT_VERSION_NOT_FOUND]",
     );
   }
 
+  const sourceAuthorityStarted = performance.now();
   const sourceAuthority =
     await params.client
       .sourceAuthorityRecord
@@ -515,12 +524,15 @@ export async function loadSourceAuthorityCanonicalStateWithClient(
         },
       });
 
+  params.onReadTiming?.("sai_graph", performance.now() - sourceAuthorityStarted);
+
   if (!sourceAuthority) {
     throw new Error(
       "[SOURCE_AUTHORITY_PRESENTATION_RECORD_NOT_FOUND]",
     );
   }
 
+  const profileParticularsStarted = performance.now();
   const profileParticulars =
     await params.client
       .sourceAuthorityProfileParticulars
@@ -564,6 +576,8 @@ export async function loadSourceAuthorityCanonicalStateWithClient(
             true,
         },
       });
+
+  params.onReadTiming?.("sai_particulars", performance.now() - profileParticularsStarted);
 
   if (!profileParticulars) {
     throw new Error(

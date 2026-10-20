@@ -1,0 +1,13 @@
+.panel { margin:14px 0; padding:10px 12px; border:1px dashed #53717d; border-radius:4px; color:#c3d5dc; background:#15323a55; font-size:12px; }
+.panel summary { cursor:pointer; color:#d9c799; width:fit-content; }
+.panel p { margin:10px 0; line-height:1.6; max-width:95ch; }
+.controls { display:flex; gap:8px; flex-wrap:wrap; }
+.controls button { min-height:40px; padding:7px 12px; border:1px solid #6d8b94; border-radius:4px; background:#15323c; color:#edf1e7; cursor:pointer; }
+.controls button:disabled { opacity:.5; cursor:default; }
+.panel summary:focus-visible,.controls button:focus-visible { outline:2px solid #e1cfa4; outline-offset:3px; }
+.scroll { overflow-x:auto; }
+.scroll table { width:100%; border-collapse:collapse; font-size:11px; text-align:left; }
+.scroll caption { text-align:left; color:#9bb8c4; padding:8px 0; }
+.scroll th,.scroll td { padding:9px 12px 9px 0; border-bottom:1px solid #42616b; vertical-align:top; }
+.scroll thead th { color:#d8c79f; }
+.scroll tbody th { font-weight:400; }

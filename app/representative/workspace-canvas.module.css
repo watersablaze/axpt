@@ -3487,3 +3487,81 @@
 @media (max-width: 820px) {
   .cupSecondaryActions { margin-top: 16px; padding-top: 16px; }
 }
+
+/* Shared mineral-blue field; the rails keep their own roles without opaque slabs. */
+.workspace {
+  background:
+    radial-gradient(ellipse at 48% 8%,rgba(71,132,148,.13),transparent 54%),
+    linear-gradient(180deg,#0a1d25 0%,#0c242d 52%,#0b222b 100%);
+}
+.workspace .shell { background:transparent; }
+.workspace .directory,
+.workspace .position {
+  isolation:isolate;
+  background:transparent;
+  box-shadow:none;
+  border-color:transparent;
+}
+/* Left: a cool, quiet navigation veil with a fading vertical datum. */
+.workspace .directory::before {
+  content:""; position:absolute; inset:0; z-index:-1; pointer-events:none;
+  background:radial-gradient(ellipse at 0 8%,rgba(76,138,154,.11),transparent 66%),
+    linear-gradient(180deg,rgba(16,44,54,.45),rgba(16,44,54,.12) 65%,transparent 96%);
+}
+.workspace .directory::after {
+  content:""; position:absolute; top:18px; right:0; bottom:8%; width:1px; pointer-events:none;
+  background:linear-gradient(180deg,rgba(124,174,185,.32),rgba(124,174,185,.10) 55%,transparent);
+}
+.workspace .directory nav { gap:4px; }
+.workspace .directory nav button {
+  border-radius:4px; color:#b9ced5;
+  background:transparent; box-shadow:none;
+}
+.workspace .directory nav button:hover { background:linear-gradient(90deg,rgba(79,137,151,.14),transparent); color:#edf3ef; }
+.workspace .directory nav button[aria-current="page"] {
+  color:#f0f4ef;
+  background:linear-gradient(90deg,rgba(83,151,164,.23),rgba(66,122,137,.06) 75%,transparent);
+  box-shadow:inset 2px 0 0 #a3cec9;
+}
+.workspace .directory nav button span { color:#87aab6; }
+.workspace .directory nav button[aria-current="page"] span { color:#bcddd8; }
+.workspace .directoryNote { color:#9cb7c1; }
+/* Right: a warmer record surface, distinct from navigation but open to the field. */
+.workspace .position::before {
+  content:""; position:absolute; inset:0; height:auto; z-index:-1; pointer-events:none;
+  background:radial-gradient(ellipse at 80% 12%,rgba(181,157,106,.08),transparent 65%),
+    linear-gradient(180deg,rgba(25,48,54,.48),rgba(23,46,52,.14) 62%,transparent 96%);
+}
+.workspace .position::after {
+  content:""; position:absolute; top:18px; bottom:10%; left:0; width:1px; pointer-events:none;
+  background:linear-gradient(180deg,rgba(194,178,136,.35),rgba(151,169,166,.10) 60%,transparent);
+}
+.workspace .position .plaque { background:transparent; box-shadow:none; }
+.workspace .position .plaqueInset { background:transparent; border-color:rgba(170,184,176,.12); }
+.workspace .position .plaqueIssuer { color:#dfcca6; }
+.workspace .position .plaqueName { color:#f0ede2; text-shadow:none; }
+.workspace .position .plaqueCategory,
+.workspace .position .plaqueReference,
+.workspace .positionNote { color:#adc1c7; }
+.workspace .position .plaqueFacts { border-color:rgba(161,183,184,.20); }
+.workspace .position .plaqueFacts dt { color:#9fb8c2; }
+.workspace .position .plaqueFacts dd { color:#e0e9e7; }
+.workspace .position .plaqueLink { color:#e2cfa6; }
+@media(max-width:1099px) {
+  .workspace .directory { position:relative; }
+  .workspace .directory::after { display:none; }
+  .workspace .position::after { top:0; right:0; bottom:auto; width:auto; height:1px;
+    background:linear-gradient(90deg,transparent,rgba(194,178,136,.34),transparent); }
+}
+
+
+/* Transparent workspace rails — shared backing surface. */
+.workspace .directory,
+.workspace .position {
+  background: transparent;
+  box-shadow: none;
+}
+.workspace .directory::before,
+.workspace .position::before {
+  background: none;
+}

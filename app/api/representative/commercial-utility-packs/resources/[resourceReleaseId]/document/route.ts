@@ -1,3 +1,4 @@
+import { createLocalReadTiming } from "@/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/localReadTiming";
 import { resolveRepresentativeCommercialUtilityPackConsumptionWithClient } from
   "@/domains/instruments/representative-program/commercial-utility-pack/application/resolveRepresentativeCommercialUtilityPackConsumptionWithClient";
 import { NextResponse, type NextRequest } from "next/server";
@@ -15,13 +16,14 @@ export async function GET(
   request: NextRequest,
   context: { params: Promise<{ resourceReleaseId: string }> },
 ) {
+  const timing = createLocalReadTiming();
   const headers = {
     "Cache-Control": "private, no-store, max-age=0",
     "X-Content-Type-Options": "nosniff",
     "Cross-Origin-Resource-Policy": "same-origin",
   };
 
-  const principal = await getPrincipal();
+  const principal = await timing.measure("principal", () => getPrincipal());
   if (!principal) {
     return new NextResponse(null, { status: 401, headers });
   }
@@ -39,12 +41,12 @@ export async function GET(
 
   try {
     const consumption =
-      await resolveRepresentativeCommercialUtilityPackConsumptionWithClient({
+      await timing.measure("authorization", () => resolveRepresentativeCommercialUtilityPackConsumptionWithClient({
         client: prisma,
         userId: principal.userId,
         resourceReleaseId,
         action: download ? "DOWNLOAD" : "VIEW",
-      });
+      }));
 
     if (!consumption.allowed) {
       return new NextResponse(null, {
@@ -54,7 +56,7 @@ export async function GET(
     }
 
     const agreement =
-      await loadRepresentativeCommercialUtilityPackAgreementWithClient({
+      await timing.measure("agreement_inclusive", () => loadRepresentativeCommercialUtilityPackAgreementWithClient({
         client: prisma,
         userId: principal.userId,
         resourceReleaseId,
@@ -64,10 +66,10 @@ export async function GET(
           if (!store) {
             throw new Error("[REPRESENTATIVE_CUP_PRIVATE_STORAGE_UNAVAILABLE]");
           }
-          return store.read(key);
+          return timing.measure("storage", () => store.read(key));
         },
         blobHostname,
-        readBlob: async url => {
+        readBlob: async url => timing.measure("storage", async () => {
           const locator = new URL(url);
           if (
             locator.protocol !== "https:" ||
@@ -98,8 +100,8 @@ export async function GET(
           }
 
           return new Uint8Array(await response.arrayBuffer());
-        },
-      });
+        }),
+      }));
 
     if (!agreement) {
       return new NextResponse(null, { status: 404, headers });
@@ -117,6 +119,7 @@ export async function GET(
       status: 200,
       headers: {
         ...headers,
+        ...timing.headers(),
         "Content-Type": "application/pdf",
         "Content-Disposition":
           `${download ? "attachment" : "inline"}; filename="${fileName}"`,

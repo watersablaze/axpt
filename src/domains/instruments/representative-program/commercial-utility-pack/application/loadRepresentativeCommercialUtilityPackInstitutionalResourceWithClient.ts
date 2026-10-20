@@ -40,6 +40,7 @@ export async function loadRepresentativeCommercialUtilityPackInstitutionalResour
     client: Client;
     userId: string;
     resourceReleaseId: string;
+    onReadTiming?: (phase: string, milliseconds: number) => void;
   },
 ): Promise<
   RepresentativeCommercialUtilityPackInstitutionalResource | null
@@ -142,6 +143,7 @@ export async function loadRepresentativeCommercialUtilityPackInstitutionalResour
           instrument.reference,
         audience:
           "REPRESENTATIVE",
+        onReadTiming: params.onReadTiming,
       });
 
     if (

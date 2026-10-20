@@ -17,5 +17,13 @@ export async function GET(request:Request,context:{params:Promise<{participantId
  if(process.env.NODE_ENV === "development") console.info("[ARP_SUPPORTING_ACCESS_TIMING]", {
    principalMs: Math.round(principalMs), participantMs: Math.round(performance.now()-started-principalMs),
  });
- return respondSupportingDocument(request,()=>loadRepresentativeSupportingDocumentWithClient({client:prisma,userId:participant.userId!,resourceReleaseId}),true);
+ const accessMs = performance.now()-started;
+ const participantMs = accessMs-principalMs;
+ const response = await respondSupportingDocument(request,()=>loadRepresentativeSupportingDocumentWithClient({client:prisma,userId:participant.userId!,resourceReleaseId}),true);
+ if(process.env.NODE_ENV === "development") {
+   const readTiming = response.headers.get("Server-Timing");
+   response.headers.set("Server-Timing", `principal;dur=${principalMs.toFixed(1)}, participant;dur=${participantMs.toFixed(1)}, ` +
+     (readTiming ? readTiming + ", " : "") + `total;dur=${(performance.now()-started).toFixed(1)}`);
+ }
+ return response;
 }

@@ -33,6 +33,8 @@ export async function loadSourceAuthorityPresentationWithClient(
 
     audience:
       SourceAuthorityPresentationAudience;
+
+    onReadTiming?: (phase: string, milliseconds: number) => void;
   }>,
 ): Promise<
   SourceAuthorityPresentationProjection
@@ -44,6 +46,8 @@ export async function loadSourceAuthorityPresentationWithClient(
 
       instrumentReference:
         params.instrumentReference,
+
+      onReadTiming: params.onReadTiming,
     });
 
   return deriveSourceAuthorityPresentation({
