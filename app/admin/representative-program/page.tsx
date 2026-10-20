@@ -39,6 +39,10 @@ export default function RepresentativeProgramAdminPage() {
           </Link>
         </header>
 
+        <Link href="/admin/incoming" className="mt-5 inline-block rounded border border-cyan-700 px-4 py-2 text-sm text-cyan-200">
+          Incoming requests &amp; communications →
+        </Link>
+
         <div className="mt-4">
           <RepresentativeProgramLifecycle />
         </div>

@@ -9,6 +9,12 @@ type AdminNavItem = {
 
 export const ADMIN_NAV: readonly AdminNavItem[] = [
   {
+    label: 'Incoming work',
+    href: '/admin/incoming',
+    entity: { assets: [] as string[] },
+    requiredAnyPermissions: ['admin.access'],
+  },
+  {
     label: 'Overview',
     href: '/admin',
     entity: { assets: [] as string[] },

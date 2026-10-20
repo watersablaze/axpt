@@ -6,14 +6,22 @@ import { InstitutionalAccessOperator } from "./InstitutionalAccessOperator";
 
 export const dynamic = "force-dynamic";
 
-export default async function InstitutionalAccessAdminPage() {
+export default async function InstitutionalAccessAdminPage({ searchParams }: {
+  searchParams?: Promise<{ requestId?: string }>;
+}) {
   const principal = await getPrincipal();
   if (!principal) redirect("/login");
   if (!principal.permissions.includes(PERMISSIONS.INSTITUTIONAL_ACCESS_MANAGE)) {
     return <main style={{padding:32}}>Access denied.</main>;
   }
+  const params = await searchParams;
+  const requestId = params?.requestId?.trim();
+  if (requestId && requestId.length > 191) {
+    return <main style={{padding:32}}>Invalid request identifier.</main>;
+  }
   const [requests, grants] = await Promise.all([
     prisma.institutionalAccessRequest.findMany({
+      ...(requestId ? { where: { id: requestId } } : {}),
       orderBy: { createdAt: "desc" }, take: 100,
       include: { grant: { select: { id: true, expiresAt: true, revokedAt: true, recipientEmail: true } }, events: { orderBy: {occurredAt: "desc"}, take: 6, select: { id:true, type:true, occurredAt:true, reason:true } } },
     }),
