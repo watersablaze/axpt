@@ -3613,3 +3613,26 @@
   .workspaceCrown .commandIdentityText { min-width: 0; overflow-wrap: anywhere; }
   .workspace .workspaceGuidance { min-height: 220px; padding: 36px 16px; }
 }
+
+/* Compact chrome crown, aligned with the Admin surface header. */
+.workspace { --workspace-crown-height:76px; }
+.workspace .workspaceCrown { height:var(--workspace-crown-height); min-height:var(--workspace-crown-height); border-block:1px solid rgba(160,187,201,.27); background:linear-gradient(110deg,#121e27,#0c151c); box-shadow:inset 0 1px rgba(220,237,245,.07); backdrop-filter:none; }
+.workspace .workspaceCrown::after { background:linear-gradient(90deg,#8ba5b455,#cee1e53b,#8ba5b410); }
+.workspace .workspaceCrown .workspaceCommandHeader { height:var(--workspace-crown-height); min-height:0; grid-template-columns:minmax(0,1fr) auto; padding:0 20px; align-items:center; gap:16px; }
+.workspace .workspaceCrown .commandIdentity { gap:12px; padding:0; min-width:0; }
+.workspace .workspaceCrown .workspaceSeal { width:32px; height:32px; opacity:.7; }
+.workspace .workspaceCrown .commandIdentity .kicker { margin:0; font-size:8px; letter-spacing:.1em; color:#91aebc; }
+.workspace .workspaceCrown .commandIdentity .identityName { margin:3px 0 0; font-size:16px; line-height:1.2; }
+.workspace .workspaceCrown .commandStanding { margin:3px 0 0; font-size:9px; letter-spacing:.03em; }
+.workspace .workspaceCrown .commandAccess { padding:0; }
+.workspace .workspaceCrown .commandSignOut { min-height:34px; min-width:80px; padding:6px 12px; border:1px solid #465e6b; border-radius:4px; box-shadow:none; background:rgba(151,181,197,.035); }
+.workspace .workspaceCrown .commandOperatorPreview p { margin:0; font-size:10px; }
+.workspace .workspaceCrown .commandOperatorPreview p + p { margin-top:3px; }
+@media(max-width:600px) {
+  .workspace { --workspace-crown-height:96px; }
+  .workspace .workspaceCrown .workspaceCommandHeader { padding:8px 12px; gap:10px; }
+  .workspace .workspaceCrown .workspaceSeal { display:none; }
+  .workspace .workspaceCrown .commandIdentity .kicker { max-width:30ch; font-size:7px; }
+  .workspace .workspaceCrown .commandIdentity .identityName { font-size:14px; }
+  .workspace .workspaceCrown .commandSignOut { min-width:66px; min-height:40px; font-size:10px; }
+}
