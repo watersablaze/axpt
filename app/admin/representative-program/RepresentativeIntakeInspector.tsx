@@ -10,6 +10,7 @@ import RepresentativeCommercialUtilityPackPanel from "./RepresentativeCommercial
 import RepresentativeCommunicationsPanel from "./RepresentativeCommunicationsPanel";
 import JensWorkspacePreparation from "./JensWorkspacePreparation";
 import JensWorkspaceAccess from "./JensWorkspaceAccess";
+import OpenRepresentativeFieldRoom from "./OpenRepresentativeFieldRoom";
 
 type Intake = {
   id: string;
@@ -777,6 +778,12 @@ export default function RepresentativeIntakeInspector({
                 </div>
 
                 <div className="flex flex-wrap items-center gap-3">
+                  {intake.admittedParticipantId ? (
+                    <OpenRepresentativeFieldRoom
+                      key={intake.admittedParticipantId}
+                      participantId={intake.admittedParticipantId}
+                    />
+                  ) : null}
                   {intake.admittedParticipantId ? (
                     <a
                       href={

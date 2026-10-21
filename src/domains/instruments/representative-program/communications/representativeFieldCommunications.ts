@@ -316,6 +316,171 @@ async function ensureTargetLink(params: {
   return link;
 }
 
+async function ensureRepresentativeFieldRoom(
+  tx: CommunicationsTransactionClient,
+  participant: ParticipantRecord,
+  operator: { id: string },
+  representativeUserId: string,
+  actorUserId: string,
+) {
+  const clientRoomId = roomClientId(participant.id);
+
+  let operationalRoom = await tx.communicationOperationalRoom.findUnique({
+    where: {
+      createdByUserId_clientRoomId: {
+        createdByUserId: operator.id,
+        clientRoomId,
+      },
+    },
+    include: {
+      conversation: {
+        include: {
+          members: {
+            where: {
+              leftAt: null,
+            },
+            select: {
+              userId: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!operationalRoom) {
+    const occurredAt = new Date();
+
+    const conversation = await tx.communicationConversation.create({
+      data: {
+        kind: "GROUP",
+        status: "ACTIVE",
+        title: `French-Ward Representative Field — ${participant.displayName}`,
+        createdByUserId: operator.id,
+        members: {
+          create: [
+            {
+              userId: operator.id,
+              role: "OWNER",
+            },
+            {
+              userId: representativeUserId,
+              role: "MEMBER",
+            },
+          ],
+        },
+        operationalRoom: {
+          create: {
+            clientRoomId,
+            requestFingerprint: roomFingerprint({
+              participantId: participant.id,
+              representativeUserId,
+              operatorUserId: operator.id,
+            }),
+            roomClass: "GENERAL_OPERATIONS",
+            createdByUserId: operator.id,
+          },
+        },
+      },
+      include: {
+        members: {
+          where: {
+            leftAt: null,
+          },
+          select: {
+            userId: true,
+          },
+        },
+        operationalRoom: true,
+      },
+    });
+
+    const room = conversation.operationalRoom;
+
+    if (!room) {
+      throw new Error("ARP_FIELD_COMMUNICATIONS_ROOM_CREATE_FAILED");
+    }
+
+    await tx.domainEvent.create({
+      data: {
+        streamType: "COMMUNICATION_CONVERSATION",
+        streamId: conversation.id,
+        eventType: COMMUNICATION_EVENT_TYPE.CONVERSATION_CREATED,
+        payload: {
+          conversationId: conversation.id,
+          kind: conversation.kind,
+        },
+        metadata: {
+          actorUserId,
+          institutionalOwnerUserId: operator.id,
+          source: "ARP_FIELD_COMMUNICATIONS",
+        },
+        occurredAt,
+      },
+    });
+
+    await tx.domainEvent.create({
+      data: {
+        streamType: "COMMUNICATION_OPERATIONAL_ROOM",
+        streamId: room.id,
+        eventType: COMMUNICATION_EVENT_TYPE.OPERATIONAL_ROOM_CREATED,
+        payload: {
+          roomId: room.id,
+          conversationId: conversation.id,
+          roomClass: room.roomClass,
+        },
+        metadata: {
+          actorUserId,
+          institutionalOwnerUserId: operator.id,
+          source: "ARP_FIELD_COMMUNICATIONS",
+        },
+        occurredAt,
+      },
+    });
+
+    operationalRoom = {
+      ...room,
+      conversation,
+    };
+  }
+
+  if (operationalRoom.roomClass !== "GENERAL_OPERATIONS") {
+    throw new Error("ARP_FIELD_COMMUNICATIONS_ROOM_TOPOLOGY_CONFLICT");
+  }
+
+  const activeMembers = new Set(
+    operationalRoom.conversation.members.map(
+      (member: { userId: string }) => member.userId,
+    ),
+  );
+
+  if (
+    !activeMembers.has(operator.id) ||
+    !activeMembers.has(representativeUserId)
+  ) {
+    throw new Error("ARP_FIELD_COMMUNICATIONS_MEMBERSHIP_CONFLICT");
+  }
+
+  if (operationalRoom.conversation.status !== "ACTIVE") {
+    throw new Error("ARP_FIELD_COMMUNICATIONS_ROOM_NOT_WRITABLE");
+  }
+
+  const participantPointer: TargetPointer = {
+    targetType: "REPRESENTATIVE_PROGRAM_PARTICIPANT",
+    targetSubtype: "REPRESENTATIVE_PROGRAM_PARTICIPANT",
+    targetId: participant.id,
+  };
+
+  await ensureTargetLink({
+    tx,
+    roomId: operationalRoom.id,
+    pointer: participantPointer,
+    linkedByUserId: operator.id,
+  });
+
+  return operationalRoom;
+}
+
 async function performRepresentativeFieldSend(
   client: PrismaClient,
   params: {
@@ -355,160 +520,9 @@ async function performRepresentativeFieldSend(
 
     const pointer = await resolveOwnedTarget(tx, participant, params.context);
 
-    const clientRoomId = roomClientId(participant.id);
-
-    let operationalRoom = await tx.communicationOperationalRoom.findUnique({
-      where: {
-        createdByUserId_clientRoomId: {
-          createdByUserId: operator.id,
-          clientRoomId,
-        },
-      },
-      include: {
-        conversation: {
-          include: {
-            members: {
-              where: {
-                leftAt: null,
-              },
-              select: {
-                userId: true,
-              },
-            },
-          },
-        },
-      },
-    });
-
-    if (!operationalRoom) {
-      const occurredAt = new Date();
-
-      const conversation = await tx.communicationConversation.create({
-        data: {
-          kind: "GROUP",
-          status: "ACTIVE",
-          title: `French-Ward Representative Field — ${participant.displayName}`,
-          createdByUserId: operator.id,
-          members: {
-            create: [
-              {
-                userId: operator.id,
-                role: "OWNER",
-              },
-              {
-                userId: representativeUserId,
-                role: "MEMBER",
-              },
-            ],
-          },
-          operationalRoom: {
-            create: {
-              clientRoomId,
-              requestFingerprint: roomFingerprint({
-                participantId: participant.id,
-                representativeUserId,
-                operatorUserId: operator.id,
-              }),
-              roomClass: "GENERAL_OPERATIONS",
-              createdByUserId: operator.id,
-            },
-          },
-        },
-        include: {
-          members: {
-            where: {
-              leftAt: null,
-            },
-            select: {
-              userId: true,
-            },
-          },
-          operationalRoom: true,
-        },
-      });
-
-      const room = conversation.operationalRoom;
-
-      if (!room) {
-        throw new Error("ARP_FIELD_COMMUNICATIONS_ROOM_CREATE_FAILED");
-      }
-
-      await tx.domainEvent.create({
-        data: {
-          streamType: "COMMUNICATION_CONVERSATION",
-          streamId: conversation.id,
-          eventType: COMMUNICATION_EVENT_TYPE.CONVERSATION_CREATED,
-          payload: {
-            conversationId: conversation.id,
-            kind: conversation.kind,
-          },
-          metadata: {
-            actorUserId: representativeUserId,
-            institutionalOwnerUserId: operator.id,
-            source: "ARP_FIELD_COMMUNICATIONS",
-          },
-          occurredAt,
-        },
-      });
-
-      await tx.domainEvent.create({
-        data: {
-          streamType: "COMMUNICATION_OPERATIONAL_ROOM",
-          streamId: room.id,
-          eventType: COMMUNICATION_EVENT_TYPE.OPERATIONAL_ROOM_CREATED,
-          payload: {
-            roomId: room.id,
-            conversationId: conversation.id,
-            roomClass: room.roomClass,
-          },
-          metadata: {
-            actorUserId: representativeUserId,
-            institutionalOwnerUserId: operator.id,
-            source: "ARP_FIELD_COMMUNICATIONS",
-          },
-          occurredAt,
-        },
-      });
-
-      operationalRoom = {
-        ...room,
-        conversation,
-      };
-    }
-
-    if (operationalRoom.roomClass !== "GENERAL_OPERATIONS") {
-      throw new Error("ARP_FIELD_COMMUNICATIONS_ROOM_TOPOLOGY_CONFLICT");
-    }
-
-    const activeMembers = new Set(
-      operationalRoom.conversation.members.map(
-        (member: { userId: string }) => member.userId,
-      ),
+    const operationalRoom = await ensureRepresentativeFieldRoom(
+      tx, participant, operator, representativeUserId, representativeUserId,
     );
-
-    if (
-      !activeMembers.has(operator.id) ||
-      !activeMembers.has(representativeUserId)
-    ) {
-      throw new Error("ARP_FIELD_COMMUNICATIONS_MEMBERSHIP_CONFLICT");
-    }
-
-    if (operationalRoom.conversation.status !== "ACTIVE") {
-      throw new Error("ARP_FIELD_COMMUNICATIONS_ROOM_NOT_WRITABLE");
-    }
-
-    const participantPointer: TargetPointer = {
-      targetType: "REPRESENTATIVE_PROGRAM_PARTICIPANT",
-      targetSubtype: "REPRESENTATIVE_PROGRAM_PARTICIPANT",
-      targetId: participant.id,
-    };
-
-    await ensureTargetLink({
-      tx,
-      roomId: operationalRoom.id,
-      pointer: participantPointer,
-      linkedByUserId: operator.id,
-    });
 
     await ensureTargetLink({
       tx,
@@ -785,4 +799,38 @@ export async function loadRepresentativeFieldCommunicationsWithClient(params: {
           : null,
     })),
   };
+}
+
+/** Open the canonical participant room as its institutional operator; sends nothing. */
+export async function openAdminRepresentativeFieldRoomWithClient(params: {
+  client: PrismaClient;
+  participantId: string;
+  operatorUserId: string;
+}) {
+  const participantId = normalizeRequired(params.participantId, "ARP_FIELD_PARTICIPANT_ID_INVALID");
+  const operatorUserId = normalizeRequired(params.operatorUserId, "ARP_FIELD_OPERATOR_ID_INVALID");
+  async function perform() {
+    return params.client.$transaction(async (tx: CommunicationsTransactionClient) => {
+      const bound: ParticipantRecord | null = await tx.representativeProgramParticipant.findUnique({
+        where: { id: participantId },
+        select: { id: true, docketReference: true, displayName: true, userId: true, createdByUserId: true },
+      });
+      if (!bound?.userId || bound.createdByUserId !== operatorUserId) {
+        throw new Error("ARP_FIELD_OPERATOR_ACCESS_DENIED");
+      }
+      const participant = await resolveParticipant(tx, bound.userId);
+      if (participant.id !== participantId || participant.createdByUserId !== operatorUserId) {
+        throw new Error("ARP_FIELD_OPERATOR_ACCESS_DENIED");
+      }
+      const operator = await requireInstitutionalOperator(tx, participant);
+      if (operator.id === bound.userId) throw new Error("ARP_FIELD_COMMUNICATIONS_IDENTITY_CONFLICT");
+      const room = await ensureRepresentativeFieldRoom(tx, participant, operator, bound.userId, operatorUserId);
+      return { conversationId: room.conversationId };
+    }, { maxWait: 10_000, timeout: 30_000 });
+  }
+  try { return await perform(); }
+  catch (error) {
+    if (!isUniqueConstraintError(error)) throw error;
+    return perform();
+  }
 }
