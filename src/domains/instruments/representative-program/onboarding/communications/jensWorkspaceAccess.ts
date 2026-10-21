@@ -9,7 +9,7 @@ import { getRepresentativeOnboardingEmailMode } from "./emailMode";
 export const JENS_ACCESS_INTAKE = "cmusi9eqz0001w0qfvic3532g";
 const recipient = "juxtaport@gmail.com";
 const communicationType =
-  "ARP_ONBOARDING_WORKSPACE_ACCESS_" + JENS_ACCESS_INTAKE + "_RELEASE_20261016_V2";
+  "ARP_ONBOARDING_WORKSPACE_ACCESS_" + JENS_ACCESS_INTAKE + "_CUP_TOV_UPDATE_20261022_V1";
 
 export async function reviewJensWorkspaceAccess(intakeId: string) {
   if (intakeId !== JENS_ACCESS_INTAKE) {
@@ -26,16 +26,14 @@ export async function reviewJensWorkspaceAccess(intakeId: string) {
     throw new Error("PREPARATION_NOT_AVAILABLE");
   }
 
-  const subject = "Your French-Ward Representative Workspace Is Ready";
+  const subject = "CUP Update | Gold Supply & Transaction Overview";
   const paragraphs = [
     "Hi Jens,",
-    "Your French-Ward Representative Workspace is now ready, with your active appointment, signed Agreement, and Commercial Utility Pack organized in one place.",
+    "Your Commercial Utility Pack has been updated with the Gold Supply & Transaction Overview, identifying you as the Authorized Representative.",
     "Access your workspace: https://www.axpt.io/representative",
-    "Sign in using juxtaport@gmail.com and enter the access code sent to that email address. No password is required.",
-    "Your materials include French-Ward’s Institutional Profile, the Bafoula Source Authority Instrument, the Reseller Agreement, the Declaration of Trust, the Sanctions Screening Report, and your Operating Boundaries.",
-    "When introducing a prospective buyer, you can select the approved materials and send one combined invitation from your workspace. You may also include Letter of Intent access, allowing the recipient to review the materials and submit their proposed transaction after signing in.",
-    "The workspace records the permissions applicable to each material. Please use its invitation controls when sharing with buyers so access remains connected to the intended recipient and the official publications.",
-    "We welcome your feedback as you begin using the workspace with your buyer group. It will help us continue shaping a practical, supportive working environment.",
+    "The document is available for presentation from your CUP. To share it with a prospective buyer, use Introduce a Buyer to select this document alongside any other approved materials. The system sends one combined access invitation, with you copied on the email. Commercial intake access may also be included when appropriate.",
+    "Your workspace also includes French-Ward Communications, providing a direct channel to our team for questions, buyer coordination, and follow-up. You can keep these exchanges within the workspace alongside your representative materials.",
+    "We’ve also improved the workspace layout and material organization to make it easier to navigate and use.",
     "Warm regards,\nJamal Ward\nFrench-Ward, Inc."
 ];
   const text = paragraphs.join("\n\n");
@@ -56,7 +54,7 @@ export async function reviewJensWorkspaceAccess(intakeId: string) {
 </td></tr>
 <tr><td style="padding:30px 28px 10px;">
 <p style="margin:0 0 12px;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:1.5px;color:#d7bd86;">PREPARED FOR JENS PETER THOMSEN</p>
-<h1 style="margin:0 0 24px;font-family:Arial,Helvetica,sans-serif;font-size:29px;line-height:1.25;font-weight:600;color:#ffffff;">Your workspace is ready.</h1>
+<h1 style="margin:0 0 24px;font-family:Arial,Helvetica,sans-serif;font-size:29px;line-height:1.25;font-weight:600;color:#ffffff;">Your CUP has been updated.</h1>
 <p style="margin:0 0 30px;"><a href="https://www.axpt.io/representative" style="display:inline-block;padding:14px 22px;background:#d8bd85;color:#101724;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:700;text-decoration:none;border-radius:3px;">Open Your Workspace →</a></p>
 ${bodyMarkup}
 </td></tr>
