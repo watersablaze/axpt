@@ -1,4 +1,6 @@
 import Link from "next/link";
+import styles from "@/components/admin/layout/AdminDeskColumns.module.css";
+import AdminSurfaceHeader from "@/components/admin/layout/AdminSurfaceHeader";
 import { notFound, redirect } from "next/navigation";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { isAdmin } from "@/domains/auth/isAdmin";
@@ -130,28 +132,18 @@ export default async function AdminWorkDesk({ searchParams }: {
   }
 
   return (
-    <section aria-labelledby="work-desk-title" className="space-y-5">
-      <header className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-[11px] uppercase tracking-[.2em] text-amber-200/80">
-            French-Ward · Operator desk
-          </p>
-          <h2 id="work-desk-title" className="mt-2 text-2xl font-medium tracking-tight text-white">
-            Incoming work
-          </h2>
-          <p className="mt-2 text-sm text-neutral-400">
-            Review the context. Open the record. Take the next action.
-          </p>
-        </div>
-        <Link
-          href="/admin/incoming/alerts"
-          className="rounded-lg border border-neutral-700 px-3 py-2 text-sm text-neutral-300 hover:border-amber-300/60 hover:text-white"
-        >
-          Check alert delivery →
-        </Link>
-      </header>
-
-      <div className="flex flex-wrap items-center justify-between gap-3 border-y border-neutral-800 py-3">
+    <section aria-labelledby="work-desk-title" className="space-y-3">
+      <AdminSurfaceHeader
+        id="work-desk-title"
+        title="Incoming work"
+        description="Review requests, submissions, inquiries, and field activity."
+        actions={
+          <Link href="/admin/incoming/alerts">
+            Alert delivery <span aria-hidden="true">↗</span>
+          </Link>
+        }
+        toolbar={
+          <div className="flex min-w-0 flex-wrap items-center justify-between gap-x-5 gap-y-2">
         <nav aria-label="Incoming work categories" className="flex flex-wrap gap-1">
           {lanes.map(value => (
             <Link
@@ -160,7 +152,7 @@ export default async function AdminWorkDesk({ searchParams }: {
               aria-current={lane === value ? "page" : undefined}
               className={`rounded-lg px-3 py-2 text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 ${
                 lane === value
-                  ? "bg-amber-100 text-neutral-950"
+                  ? "bg-cyan-100/10 text-cyan-100"
                   : "text-neutral-400 hover:bg-white/5 hover:text-white"
               }`}
             >
@@ -170,6 +162,9 @@ export default async function AdminWorkDesk({ searchParams }: {
         </nav>
         <IncomingRefresh />
       </div>
+        }
+      />
+
 
       <div className="flex flex-wrap items-center justify-between gap-2 text-xs text-neutral-500">
         <p>{notes[lane]}</p>
@@ -198,8 +193,8 @@ export default async function AdminWorkDesk({ searchParams }: {
           </p>
         </div>
       ) : (
-        <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.15fr)_minmax(300px,.85fr)]">
-          <div className="min-w-0 overflow-hidden rounded-xl border border-neutral-800">
+        <div className={styles.columns}>
+          <aside aria-label="Incoming work queue" className={styles.sidebar}>
             <div className="flex justify-between gap-3 border-b border-neutral-800 bg-white/[.025] px-4 py-3">
               <h3 className="text-xs font-medium uppercase tracking-wider text-neutral-400">Work queue</h3>
               <span className="text-xs text-neutral-500">
@@ -213,7 +208,7 @@ export default async function AdminWorkDesk({ searchParams }: {
                     href={selectHref(row.id)}
                     scroll={false}
                     aria-current={selected?.id === row.id ? "true" : undefined}
-                    className={`block border-l-2 px-4 py-4 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 ${
+                    className={`block border-l-2 px-4 py-3 transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 ${
                       selected?.id === row.id
                         ? "border-amber-200 bg-amber-100/[.055]"
                         : "border-transparent hover:bg-white/[.035]"
@@ -231,10 +226,10 @@ export default async function AdminWorkDesk({ searchParams }: {
                 </li>
               ))}
             </ul>
-          </div>
+          </aside>
 
           {selected && (
-            <aside aria-labelledby="selected-work-title" className="min-w-0 rounded-xl border border-neutral-700 bg-white/[.025] p-5 sm:p-6 xl:sticky xl:top-3">
+            <section aria-labelledby="selected-work-title" className={styles.record}>
               <p className="text-[10px] uppercase tracking-[.18em] text-neutral-500">Selected record</p>
               <h3 id="selected-work-title" className="mt-3 break-words text-xl font-medium leading-7 text-white">
                 {selected.title}
@@ -253,7 +248,7 @@ export default async function AdminWorkDesk({ searchParams }: {
               </dl>
               <Link
                 href={selected.href}
-                className="mt-6 inline-flex max-w-full items-center rounded-lg bg-amber-100 px-4 py-3 text-sm font-medium text-neutral-950 hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
+                className="mt-5 inline-flex max-w-full items-center rounded-lg border border-cyan-200/20 bg-cyan-100/5 px-4 py-2.5 text-sm font-medium text-cyan-100 hover:border-cyan-200/40 hover:bg-cyan-100/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300"
               >
                 {selected.action} →
               </Link>
@@ -262,7 +257,7 @@ export default async function AdminWorkDesk({ searchParams }: {
                   ? "Open Communications to read and reply. This preview does not mark the conversation read."
                   : "Viewing this summary leaves the record unchanged. Review and decisions happen in the record."}
               </p>
-            </aside>
+            </section>
           )}
         </div>
       )}

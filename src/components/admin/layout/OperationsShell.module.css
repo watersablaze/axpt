@@ -1,0 +1,62 @@
+.surface {
+  --admin-surface-gutter: clamp(12px, 1.4vw, 22px);
+  padding: 0 !important;
+  isolation: isolate;
+}
+.surface > div,
+.surface > section {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  box-sizing: border-box;
+  padding-inline: var(--admin-surface-gutter);
+}
+
+/* Independent desk panes */
+.surface {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden !important;
+}
+.surface > div,
+.surface > section {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: hidden;
+  gap: 12px;
+}
+.surface > div > *,
+.surface > section > * {
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
+}
+.surface > div > header,
+.surface > section > header,
+.surface > section > footer,
+.surface > section > nav {
+  flex-shrink: 0;
+}
+
+/* Unified Admin foundation */
+.surface {
+  --admin-foundation: #0c1116;
+  --admin-panel: #10171d;
+  --admin-rule: rgba(147,177,193,.13);
+  background:
+    radial-gradient(ellipse at 0 0,rgba(111,91,149,.045),transparent 55%),
+    var(--admin-foundation);
+  gap: 0;
+}
+.surface > div,
+.surface > section {
+  background: transparent;
+}
+
+/* Continuous desk surfaces */
+.surface > div,
+.surface > section {
+  padding-inline: 0;
+  gap: 0;
+}

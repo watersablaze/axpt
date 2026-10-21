@@ -23,6 +23,6 @@ export default function IncomingRefresh() {
     </button>
     <label className="flex items-center gap-2"><input type="checkbox" checked={automatic}
       onChange={event => setAutomatic(event.target.checked)} />Refresh every minute while visible</label>
-    <span role="status" className="text-xs text-slate-400">{pending ? "Updating incoming records…" : "Opening this inbox does not mark messages read."}</span>
+    <span role="status" className="text-xs text-slate-400">{pending ? "Updating incoming records…" : ""}</span>
   </div>;
 }
