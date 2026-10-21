@@ -87,6 +87,8 @@ export default function RepresentativeProgramWorkspace() {
             {participantId ? <div className={styles.contextActions}>
               <Link href={`/admin/representative-program/participants/${encodeURIComponent(participantId)}/workspace-preview`}
                 target="_blank" rel="noopener noreferrer">Workspace Preview ↗</Link>
+              <Link href={`/admin/representative-program/buyer-dossiers/email-preview?participantId=${encodeURIComponent(participantId)}`}
+                target="_blank" rel="noopener noreferrer" prefetch={false}>Preview Buyer Email ↗</Link>
               <OpenRepresentativeFieldRoom key={participantId} participantId={participantId} />
             </div> : null}
           </> : <p className={styles.contextCopy}>{focusedIntakeId ? "Record identity appears after the selected intake loads." : "Select a record to see its identity, linked account and workspace access."}</p>}

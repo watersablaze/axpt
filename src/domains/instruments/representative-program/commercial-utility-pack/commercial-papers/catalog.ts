@@ -1,3 +1,4 @@
+import {resolveTovPublication} from "../../../../institutions/french-ward/tovRepresentativeCopy";
 import { TOV_PUBLICATION } from "../../../../institutions/french-ward/tovPublication";
 import { createHash } from "node:crypto";
 import { frenchWardTransactionOverview } from "../../../../institutions/french-ward/frenchWardTransactionOverview";
@@ -8,6 +9,7 @@ export type CommercialPaperKey = (typeof COMMERCIAL_PAPER_KEYS)[number];
 export type CommercialPaper = {
   key: CommercialPaperKey; reference: string; version: number; title: string;
   status: string; referenceStatus: string | null; contentHash: string; publicationHash: string | null;
+  publicationHtml?:string; publicationRevision?:number;
   content: typeof frenchWardTransactionOverview | typeof FRENCH_WARD_STANDING_SCO;
 };
 function canonical(value: unknown): unknown {
@@ -47,7 +49,9 @@ export function commercialPaperPinMatches(metadata: unknown, paper: CommercialPa
   return !!pin && typeof pin === "object" && "schemaVersion" in pin && pin.schemaVersion === (paper.publicationHash ? 2 : 1) &&
     "key" in pin && pin.key === paper.key && "reference" in pin && pin.reference === paper.reference &&
     "version" in pin && pin.version === paper.version && "contentHash" in pin && pin.contentHash === paper.contentHash &&
-    (!paper.publicationHash || ("publicationHash" in pin && pin.publicationHash === paper.publicationHash));
+    (!paper.publicationHash || (paper.key==="TRANSACTION_OVERVIEW"
+      ? resolveTovPublication(metadata)!==null
+      : ("publicationHash" in pin && pin.publicationHash===paper.publicationHash)));
 }
 /** Used in both reviewed-additions and direct module-release commands. */
 export function assertCommercialPaperReleasePin(resource: {

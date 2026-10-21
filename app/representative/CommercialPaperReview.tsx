@@ -9,7 +9,7 @@ export default function CommercialPaperReview({paper, preview = false}: {paper: 
       <p>{paper.reference} · Edition {String(paper.version).padStart(2, "0")} · {paper.status}</p>
       <p>{paper.referenceStatus} · Presentation, transmission and download remain separately governed.</p>
     </aside>
-    <TovPublicationView />
+    <TovPublicationView html={paper.publicationHtml} publicationRevision={paper.publicationRevision} />
   </div>;
   const content = paper.content;
   const sections = "orientation" in content

@@ -384,3 +384,64 @@
  .keyFacts { grid-template-columns:.79fr 1fr 1.66fr 1fr; column-gap:14px; }
  .keyFacts div:nth-child(3) strong { white-space:nowrap; font-size:clamp(11px,1.18vw,13px); letter-spacing:-.025em; }
 }
+
+/* Publication revision 02: accepted mobile and representative-copy refinement. */
+
+.document { overflow-wrap:break-word; }
+.heroComposition { grid-template-columns:minmax(0,1fr) 150px; gap:24px; background:radial-gradient(ellipse at 88% 45%,rgba(166,130,83,.12),transparent 58%); }
+.heroGraphite { width:140px; max-width:140px; transform:translateX(-6px); padding:0; }
+.heroGraphite img { width:100%; max-width:140px; max-height:94px; opacity:.7; filter:grayscale(.55) sepia(.1) saturate(.35) contrast(.91); }
+.heroGraphite figcaption { font-size:6px; line-height:1.5; color:#7a807c; letter-spacing:.035em; }
+.representativeCopy { display:flex; justify-content:space-between; align-items:baseline; flex-wrap:wrap; gap:6px 20px; margin:22px 0 0; padding:10px 0; border-bottom:1px solid #bbc4bd; color:#41585e; font-family:Arial,Helvetica,sans-serif; }
+.representativeCopy > span { font-size:8px; text-transform:uppercase; letter-spacing:.1em; color:#6e7f80; }
+.representativeCopy strong { font-size:12px; font-weight:600; }
+.representativeCopy small { display:block; margin-top:4px; font-size:9px; line-height:1.5; font-weight:400; color:#6b7d80; }
+@media screen and (max-width:720px) {
+ .document { width:100%; margin:0; }
+ .masthead { padding:18px; background:#e9e7de; border-top-width:3px; }
+ .brandLine { flex-direction:row; align-items:center; gap:10px; margin:-18px -18px 0; padding:14px 18px 11px; background:#30474f; }
+ .brandLine strong { font-size:11px; letter-spacing:.06em; }
+ .brandLine > span { font-size:7px; text-align:right; max-width:16ch; }
+ .brandLine .instrumentMark { padding:5px; font-size:7px; margin-right:7px; }
+ .documentIdentity { flex-direction:column; align-items:flex-start; gap:5px; margin:0 -18px; padding:10px 18px 14px; background:#30474f; }
+ .documentIdentity span { font-size:9px; line-height:1.5; overflow-wrap:anywhere; }
+ .representativeCopy { margin-top:14px; padding:8px 0; gap:6px; }
+ .representativeCopy strong { font-size:11px; }
+ .representativeCopy small { font-size:8px; }
+ .heroComposition { display:block; margin-top:15px; margin-bottom:12px; padding:10px 0 16px; }
+ .heroComposition .heading h1 { font-size:clamp(26px,7.2vw,34px); line-height:1.12; max-width:20ch; }
+ .heroComposition .heading p { font-size:12px; line-height:1.6; margin-top:12px; }
+ .heroGraphite { float:right; width:92px; max-width:92px; margin:4px 0 10px 14px; transform:none; }
+ .heroGraphite img { max-width:92px; max-height:66px; opacity:.61; }
+ .heroGraphite figcaption { font-size:5.5px; line-height:1.4; }
+ .heroComposition::after { clear:both; }
+ .keyFacts { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 14px; padding-top:6px; }
+ .keyFacts div, .keyFacts div + div { min-width:0; padding:0 0 8px; border-left:0; border-bottom:1px solid #c4ccc5; }
+ .keyFacts span { font-size:7px; line-height:1.5; letter-spacing:.06em; }
+ .keyFacts strong { font-size:11px; line-height:1.5; }
+ .body { padding-inline:18px; }
+ .source, .references { grid-template-columns:1fr; gap:10px; padding-block:20px; }
+ .source p, .referenceItem p, .stages p { font-size:12px; line-height:1.65; }
+ .journey { margin-inline:-18px; padding:22px 18px; }
+ .journeyHead { display:block; margin-bottom:12px; }
+ .journeyHead h2 { font-size:24px; }
+ .journeyHead > p { max-width:none; margin-top:10px; font-size:11px; }
+ .stages li { grid-template-columns:24px minmax(0,1fr); gap:8px 10px; padding-block:13px; }
+ .stages h3 { font-size:14px; }
+ .stageFlag { grid-column:2; font-size:8px; text-align:left; }
+ .activeStage { margin-inline:0; padding-inline:7px!important; }
+ .referenceGrid { grid-template-columns:1fr; gap:16px; }
+ .references::after { width:150px; opacity:.12; }
+ .footer { grid-template-columns:1fr; gap:10px; padding:16px 18px; }
+ .footer small { grid-column:1; }
+}
+/* Public attribution omits internal participant and package identifiers. */
+.representativeCopy { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:center; }
+.representativeCopy strong { text-align:right; overflow-wrap:anywhere; }
+@media print {
+ .heroGraphite { max-width:110px; }
+ .heroGraphite img { max-height:74px; }
+ .representativeCopy { margin-top:9px; padding:7px 0; break-inside:avoid; }
+}
+
+.heroComposition .heading{grid-column:1;grid-row:1}.heroComposition .heroGraphite{grid-column:2;grid-row:1}

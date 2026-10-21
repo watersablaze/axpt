@@ -1,3 +1,4 @@
+import {resolveTovPublication} from "../../../../institutions/french-ward/tovRepresentativeCopy";
 import type { PrismaClient } from "@prisma/client";
 import { commercialPapers, commercialPaperPinMatches } from "./catalog";
 
@@ -20,5 +21,9 @@ export async function loadRepresentativeCommercialPaper(input: {
   }, select: {resourceId: true, metadata: true}});
   if (!resource) return null;
   const paper = papers.find(candidate => candidate.reference === resource.resourceId);
-  return paper && commercialPaperPinMatches(resource.metadata, paper) ? paper : null;
+  if(!paper || !commercialPaperPinMatches(resource.metadata,paper))return null;
+  if(paper.key!=="TRANSACTION_OVERVIEW")return paper;
+  const publication=resolveTovPublication(resource.metadata);
+  if(!publication || (publication.copy && (publication.copy.resourceReleaseId!==resourceReleaseId || publication.copy.representativeUserId!==userId)))return null;
+  return {...paper,publicationHash:publication.publicationHash,publicationHtml:publication.html,publicationRevision:publication.publicationRevision};
 }

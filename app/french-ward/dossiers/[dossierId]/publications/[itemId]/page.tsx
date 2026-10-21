@@ -23,7 +23,7 @@ export default async function BuyerPublicationPage({ params }: { params: Promise
   if (!dossier || !item?.available || !item.publication) notFound();
   const publication = item.publication;
   const back = <nav className={styles.navigation} aria-label="Document navigation"><Link href={`/french-ward/dossiers/${encodeURIComponent(dossier.id)}`}>← Your documents</Link><span>{item.reference} · Edition {item.version}</span></nav>;
-  if (publication.kind === "TRANSACTION_OVERVIEW") return <main className={styles.profile}>{back}<TovPublicationView /></main>;
+  if (publication.kind === "TRANSACTION_OVERVIEW") return <main className={styles.profile}>{back}<TovPublicationView html={publication.content.html} publicationRevision={publication.content.publicationRevision} /></main>;
   if (publication.kind === "INSTITUTIONAL_PROFILE") return <main className={styles.profile}>
     {back}<FrenchWardInstitutionalProfileView profile={publication.content} />
   </main>;

@@ -13,14 +13,16 @@ registerHooks({resolve(specifier, context, next) {
 const root=fileURLToPath(new URL("../../", import.meta.url));
 const expected={
   "src/components/french-ward/transaction-overview/tovTradePassagePlate.ts": "736cce345e94f59038714771a745ac9cadb1dc73b48653726293b529f9f03d8b",
-  "src/components/french-ward/transaction-overview/FrenchWardTransactionOverviewView.module.css": "89f3eb6f89948b2d8189d187ea77600335082c32797cd1926e784206268e8e74",
-  "src/components/french-ward/transaction-overview/FrenchWardTransactionOverviewView.tsx": "dc89a4e44290fcba3ab1a1d8abdd5d6dbd70d0445c8f18ed567c1dd718b168c4",
+  "src/components/french-ward/transaction-overview/FrenchWardTransactionOverviewView.module.css": "ad56479e4abf83774827d63fc06b4356b6d5dee892683b652e5c688d2f43a18b",
+  "src/components/french-ward/transaction-overview/FrenchWardTransactionOverviewView.tsx": "ca35c2c816f316d7eb902cf60e4f6987469b58289674d6a6f0f9bcc30c221a5c",
   "src/domains/institutions/french-ward/frenchWardTransactionOverview.ts": "74c5333c4166d316c08e2b5e4ae12e4938c0d10b45d974e893d9da987dcf50ae",
   "src/domains/institutions/french-ward/tovGraphiteImageData.ts": "7368329af0d8831cae99dbb57686fa22d44936730a54cc01556c0f016bd8506d",
-  "src/domains/institutions/french-ward/renderFrenchWardTransactionOverviewHtml.ts": "7393115c0d68a149e2239b5989b0e06db13dbc3da5b45c476a647dec66ebd80a",
+  "src/domains/institutions/french-ward/renderFrenchWardTransactionOverviewHtml.ts": "bb77c33221c150a638db405dd700823528abe969adc93a0b8deadf6d924c4ebe",
   "public/french-ward/commercial-papers/tov-etched-documentary-marks.svg": "a0267a9400e43460e5334380658f7cbb7a7fd76efc9f5dcf48badc5ee11050e1",
   "public/french-ward/commercial-papers/tov-dore-graphite.webp": "8a90220f469f1847539019db7f26b261a6cc3b3ae55990c0124c1b531add9c30",
-  "src/domains/institutions/french-ward/tovPublication.ts": "bc2f40e3451a823b9541db050c4be836d67a50b269f543d45f91d78f060459da"
+  "src/domains/institutions/french-ward/tovPublication.ts": "01ad2b8254b1006b63609668a99954c1b3e896782b52de04c2423921ffdeee6b",
+  "src/domains/institutions/french-ward/tovPublicationLegacy.ts": "3005128aec5b983f017774f73081b43f7f90a852ee541bc15a913f33a4fb4d4f",
+  "src/domains/institutions/french-ward/tovRepresentativeCopy.ts": "d4810d15135435ddeb0cf4f9e3d0a30b0c5666fb7b011fa7ecbbebcb0a6f60ec"
 };
 for (const [name, hash] of Object.entries(expected)) assert.equal(createHash("sha256").update(readFileSync(resolve(root,name))).digest("hex"),hash,"Publication source changed: "+name);
 const { commercialPapers }=await import("../../src/domains/instruments/representative-program/commercial-utility-pack/commercial-papers/catalog.ts");

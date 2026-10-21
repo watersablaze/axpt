@@ -20,6 +20,6 @@ export async function GET(_request: Request, context: {params: Promise<{resource
     if (appointments.length !== 1) return new NextResponse(null,{status:403,headers});
     const decision = await resolveRepresentativeCommercialUtilityPackConsumptionWithClient({client:prisma,userId:principal.userId,appointmentId:appointments[0].id,resourceReleaseId,action:"PRESENT",context:{documentClass:"TRANSACTION_OVERVIEW"},at});
     if (!decision.allowed) return new NextResponse(null,{status:403,headers});
-    return new NextResponse(TOV_PUBLICATION.html,{headers:{...headers,"Content-Type":"text/html; charset=utf-8","Content-Disposition":"inline","Content-Security-Policy":"default-src 'none'; img-src data:; style-src 'unsafe-inline'; frame-ancestors 'self'; base-uri 'none'; form-action 'none'; sandbox"}});
+    return new NextResponse(paper.publicationHtml ?? TOV_PUBLICATION.html,{headers:{...headers,"Content-Type":"text/html; charset=utf-8","Content-Disposition":"inline","Content-Security-Policy":"default-src 'none'; img-src data:; style-src 'unsafe-inline'; frame-ancestors 'self'; base-uri 'none'; form-action 'none'; sandbox"}});
   } catch { return new NextResponse(null,{status:503,headers}); }
 }

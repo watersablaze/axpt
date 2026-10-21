@@ -1,4 +1,5 @@
 "use client";
+import Link from "next/link";
 import styles from "./operator-panels.module.css";
 
 import CommercialPaperAdditions from "./CommercialPaperAdditions";
@@ -478,6 +479,9 @@ export default function RepresentativeCommercialUtilityPackPanel({
                   <div key={resource.id} className={styles.resourceRow}>
                     <div className={styles.resourceIdentity}><h5>{resource.label || resource.resourceId}</h5>
                       <span className={styles.state} data-state={resource.state}>{resource.state}</span></div>
+                    {resource.resourceId === "FW-TOV-2026-001" && resource.state === "RELEASED" ? <Link
+                      href={`/admin/representative-program/commercial-papers/TRANSACTION_OVERVIEW/refinement?resourceReleaseId=${encodeURIComponent(resource.id)}`}
+                      target="_blank" rel="noopener noreferrer" prefetch={false} className="my-2 inline-block text-xs text-cyan-200 underline underline-offset-4">Review TOV publication revision ↗</Link> : null}
                     <dl className={styles.permissions} aria-label="Recorded resource permissions">
                       {([["View", resource.canView], ["Download", resource.canDownload], ["Present", resource.canPresent], ["Transmit", resource.canTransmit]] as const).map(([label, allowed]) =>
                         <div key={label} data-allowed={allowed}><dt>{label}</dt><dd>{allowed ? "Permitted" : "Withheld"}</dd></div>)}

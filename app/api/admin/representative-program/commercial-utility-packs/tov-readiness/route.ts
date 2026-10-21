@@ -1,3 +1,4 @@
+import {resolveTovPublication} from "@/domains/institutions/french-ward/tovRepresentativeCopy";
 import { NextResponse } from "next/server";
 import type { PrismaClient } from "@prisma/client";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
@@ -58,7 +59,7 @@ export async function GET(request: Request) {
       const intake = await tx.representativeOnboardingIntake.findUnique({where:{reference:intakeReference},select:{reference:true,status:true,candidateDisplayName:true,candidateEmail:true,admittedParticipant:{select:{id:true,docketReference:true,displayName:true,standing:true,userId:true,user:{select:{email:true}},appointments:{select:{id:true,effectiveAt:true,expiresAt:true,endedAt:true,instrument:{select:{reference:true,status:true,authorities:{select:{authorityKey:true,action:true,conditions:true,effectiveAt:true,expiresAt:true,revokedAt:true}}}}}}}}}});
       step = "reading CUP state";
       const packs: ReportPack[] = intake?.admittedParticipant ? await tx.commercialUtilityPack.findMany({where:{participantId:intake.admittedParticipant.id,version:1},select:{id:true,reference:true,state:true,releaseState:true,modules:{select:{module:true,state:true}},resources:{where:{resourceId:paper.reference},select:{id:true,resourceType:true,state:true,canView:true,canDownload:true,canPresent:true,canTransmit:true,metadata:true}}},take:2}) : [];
-      return {referenceCheck:{sourceCatalogUnique:true,conflictingInstrumentRecords:collisions,establishesDatabaseRegistration:false},intake,packs:packs.map(pack=>({...pack,resources:pack.resources.map(resource=>({...resource,metadata:undefined,currentEditionPinMatches:commercialPaperPinMatches(resource.metadata,paper)}))}))};
+      return {referenceCheck:{sourceCatalogUnique:true,conflictingInstrumentRecords:collisions,establishesDatabaseRegistration:false},intake,packs:packs.map(pack=>({...pack,resources:pack.resources.map(resource=>({...resource,metadata:undefined,currentEditionPinMatches:commercialPaperPinMatches(resource.metadata,paper),releasedPublicationHash:resolveTovPublication(resource.metadata)?.publicationHash??null,publicationRevision:resolveTovPublication(resource.metadata)?.publicationRevision??null,representativeAttribution:resolveTovPublication(resource.metadata)?.copy?.displayName??null}))}))};
     },{maxWait:10000,timeout:30000});
     return NextResponse.json({ok:true,inspection:"READ_ONLY_TOV_RELEASE_READINESS",source:"ACTIVE_ADMIN_RUNTIME",
       inspectedAt:new Date().toISOString(),databaseFingerprint,reference:paper.reference,version:paper.version,status:paper.status,
