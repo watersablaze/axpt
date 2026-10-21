@@ -34,36 +34,35 @@ export async function reviewJensWorkspaceAccess(intakeId: string) {
     "The document is available for presentation from your CUP. To share it with a prospective buyer, use Introduce a Buyer to select this document alongside any other approved materials. The system sends one combined access invitation, with you copied on the email. Commercial intake access may also be included when appropriate.",
     "Your workspace also includes French-Ward Communications, providing a direct channel to our team for questions, buyer coordination, and follow-up. You can keep these exchanges within the workspace alongside your representative materials.",
     "We’ve also improved the workspace layout and material organization to make it easier to navigate and use.",
-    "Warm regards,\nJamal Ward\nFrench-Ward, Inc."
+    "Warm regards,\nFrench-Ward Administration\nFrench-Ward, Inc."
 ];
   const text = paragraphs.join("\n\n");
   const bodyMarkup = paragraphs.filter((_, index) => index !== 2).map((paragraph, index) => {
     const content = escapeInstitutionalEmailHtml(paragraph).replaceAll("\n", "<br>");
     return '<p style="margin:0 0 22px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.8;color:' +
-      (index === 0 ? '#ffffff' : '#cad6e2') + ';">' + content + '</p>';
+      (index === 0 ? '#30251f' : '#514333') + ';">' + content + '</p>';
   }).join("");
   const html = `<!doctype html>
 <html lang="en"><head><meta name="viewport" content="width=device-width, initial-scale=1"><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#070d16;">
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#070d16;">
+<body style="margin:0;padding:0;background:#eee6d8;">
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="background:#eee6d8;">
 <tr><td align="center" style="padding:32px 12px;">
-<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:640px;background:#101f32;border:1px solid #283b50;">
-<tr><td style="padding:28px 28px 24px;border-bottom:1px solid #344153;">
-<p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;color:#e2c78f;">FRENCH-WARD, INC.</p>
-<p style="margin:10px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.6;color:#aebfd0;">Authorized Representation Program</p>
+<table role="presentation" width="100%" cellspacing="0" cellpadding="0" border="0" style="max-width:640px;background:#fbf7ef;border:1px solid #d5c6b1;">
+<tr><td style="padding:28px 28px 24px;background:#30251f;border-bottom:1px solid #684b36;">
+<p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;font-weight:700;letter-spacing:2px;color:#ead8b8;">FRENCH-WARD, INC.</p>
+<p style="margin:10px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.6;color:#d9cbb8;">Authorized Representation Program</p>
 </td></tr>
 <tr><td style="padding:30px 28px 10px;">
-<p style="margin:0 0 12px;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:1.5px;color:#d7bd86;">PREPARED FOR JENS PETER THOMSEN</p>
-<h1 style="margin:0 0 24px;font-family:Arial,Helvetica,sans-serif;font-size:29px;line-height:1.25;font-weight:600;color:#ffffff;">Your CUP has been updated.</h1>
-<p style="margin:0 0 30px;"><a href="https://www.axpt.io/representative" style="display:inline-block;padding:14px 22px;background:#d8bd85;color:#101724;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:700;text-decoration:none;border-radius:3px;">Open Your Workspace →</a></p>
+<p style="margin:0 0 12px;font-family:Arial,Helvetica,sans-serif;font-size:11px;letter-spacing:1.5px;color:#8b6943;">PREPARED FOR JENS PETER THOMSEN</p>
+<h1 style="margin:0 0 24px;font-family:Arial,Helvetica,sans-serif;font-size:29px;line-height:1.25;font-weight:600;color:#30251f;">Your CUP has been updated.</h1>
+<p style="margin:0 0 30px;"><a href="https://www.axpt.io/representative" style="display:inline-block;padding:14px 22px;background:#684b36;color:#fff8ec;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:700;text-decoration:none;border-radius:3px;">Open Your Workspace →</a></p>
 ${bodyMarkup}
 </td></tr>
-<tr><td style="padding:22px 28px;border-top:1px solid #344153;">
-<p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.8;color:#aebfd0;">If the button does not open, visit<br><a href="https://www.axpt.io/representative" style="color:#e2c78f;overflow-wrap:anywhere;">https://www.axpt.io/representative</a></p>
-<p style="margin:14px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.8;color:#aebfd0;">French-Ward, Inc. · Institutional environment via AXPT</p>
+<tr><td style="padding:22px 28px;border-top:1px solid #d5c6b1;">
+<p style="margin:0;font-family:Arial,Helvetica,sans-serif;font-size:12px;line-height:1.8;color:#786650;">If the button does not open, visit<br><a href="https://www.axpt.io/representative" style="color:#684b36;overflow-wrap:anywhere;">https://www.axpt.io/representative</a></p>
+<p style="margin:14px 0 0;font-family:Arial,Helvetica,sans-serif;font-size:11px;line-height:1.8;color:#786650;">French-Ward, Inc. · Institutional environment via AXPT</p>
 </td></tr></table></td></tr></table></body></html>`;
-  const from = process.env.REPRESENTATIVE_ONBOARDING_FROM_EMAIL ||
-    "French-Ward <french-ward@axpt.io>";
+  const from = "French-Ward Administration <french-ward@axpt.io>";
   const replyTo = process.env.REPRESENTATIVE_ONBOARDING_REPLY_TO_EMAIL ||
     "french-ward@axpt.io";
   const mode = getRepresentativeOnboardingEmailMode();
