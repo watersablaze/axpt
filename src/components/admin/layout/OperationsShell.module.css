@@ -60,3 +60,10 @@
   padding-inline: 0;
   gap: 0;
 }
+
+/* Control Center visual integration */
+.controlCenter {
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: #0c1116;
+}

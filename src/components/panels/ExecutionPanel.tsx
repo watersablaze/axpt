@@ -1,9 +1,7 @@
+import type { ControlCenterSnapshot } from "./contracts/controlCenter"
+
 type Props = {
-  data: {
-    pending: number
-    successRate: number
-    activeJobs: number
-  }
+  data: ControlCenterSnapshot["execution"]
 }
 
 export default function ExecutionPanel({
@@ -18,7 +16,7 @@ export default function ExecutionPanel({
       <div className="grid gap-4 md:grid-cols-3">
         <div>
           <div className="text-xs text-neutral-500">
-            Pending
+            Queue entries
           </div>
 
           <div className="text-2xl text-white">
@@ -28,11 +26,11 @@ export default function ExecutionPanel({
 
         <div>
           <div className="text-xs text-neutral-500">
-            Success Rate
+            Success rate
           </div>
 
-          <div className="text-2xl text-green-400">
-            {(data.successRate * 100).toFixed(0)}%
+          <div className="text-2xl text-neutral-300">
+            {data.successRate === null ? "Not measured" : `${(data.successRate * 100).toFixed(0)}%`}
           </div>
         </div>
 
@@ -41,8 +39,8 @@ export default function ExecutionPanel({
             Active Jobs
           </div>
 
-          <div className="text-2xl text-cyan-400">
-            {data.activeJobs}
+          <div className="text-2xl text-neutral-300">
+            {data.activeJobs ?? "Not measured"}
           </div>
         </div>
       </div>

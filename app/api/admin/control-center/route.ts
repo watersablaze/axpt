@@ -40,16 +40,16 @@ export async function GET() {
     timestamp: Date.now(),
 
     system: {
-      health: failedExecutions > 0 ? 0.78 : 0.92,
-      drift: failedExecutions > 0 ? 0.18 : 0.1,
-      stability: failedExecutions > 0 ? 0.72 : 0.88,
-      status: failedExecutions > 0 ? 'WATCH' : 'STABLE',
+      health: null,
+      drift: null,
+      stability: null,
+      status: 'UNKNOWN',
     },
 
     execution: {
       pending: queuedExecutions,
-      successRate: failedExecutions > 0 ? 0.91 : 1,
-      activeJobs: queuedExecutions,
+      successRate: null,
+      activeJobs: null,
     },
 
     treasury: {
@@ -59,8 +59,8 @@ export async function GET() {
     },
 
     reconciliation: {
-      driftScore: 0,
-      anomalies: failedExecutions,
+      driftScore: null,
+      anomalies: null,
       lastSync: null,
     },
 
@@ -71,9 +71,9 @@ export async function GET() {
     },
 
     governance: {
-      riskScore: failedExecutions > 0 ? 0.22 : 0.08,
-      activeLocks: 0,
-      riskLevel: failedExecutions > 0 ? 'MEDIUM' : 'LOW',
+      riskScore: null,
+      activeLocks: null,
+      riskLevel: 'UNKNOWN',
     },
 
     authority: {
@@ -88,7 +88,7 @@ export async function GET() {
   return NextResponse.json({
     ok: true,
     snapshot,
-  })
+  }, { headers: { 'Cache-Control': 'private, no-store' } })
   } catch (error) {
     const code = typeof error === 'object' && error !== null && 'code' in error
       && typeof error.code === 'string' ? error.code : 'UNKNOWN';

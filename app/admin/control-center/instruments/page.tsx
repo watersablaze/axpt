@@ -1,3 +1,4 @@
+import ControlDomainSurface from "@/components/admin/control-center/ControlDomainSurface";
 import Link from "next/link";
 
 import { loadControlCenterInstrumentRegistry } from "@/domains/control-center/registries/loadControlCenterInstrumentRegistry";
@@ -12,22 +13,16 @@ export default async function ControlCenterInstrumentsPage() {
   const instruments = await loadControlCenterInstrumentRegistry();
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-      <header className="border-b border-stone-800 pb-6">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-stone-500">
-          AXPT Control Center / Instruments
-        </p>
+    <ControlDomainSurface title="Institutional instrument registry" description="Canonical institutional records. Each instrument retains its own authority boundary."
+      rail={<nav aria-label="Institutional instrument registry index">
+        <h2>Records · {instruments.length}</h2>
+        {instruments.map((instrument) => <a key={instrument.reference} href={`#${encodeURIComponent("instrument-" + instrument.reference)}`}>
+          {instrument.reference}
+        </a>)}
+        {instruments.length === 0 ? <p className="text-xs text-neutral-400">No records listed.</p> : null}
+      </nav>}>
 
-        <h1 className="mt-2 text-2xl font-medium text-white">
-          Institutional Instrument Registry
-        </h1>
 
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-stone-500">
-          Canonical institutional instruments recorded by AXPT. Registry
-          presence records institutional existence; operator actions remain
-          governed by each instrument&apos;s own authority boundary.
-        </p>
-      </header>
 
       <section className="mt-6 overflow-hidden rounded-lg border border-stone-800">
         <div className="border-b border-stone-800 bg-black/20 px-4 py-3">
@@ -44,6 +39,7 @@ export default async function ControlCenterInstrumentsPage() {
           instruments.map((instrument) => (
             <article
               key={instrument.reference}
+              id={"instrument-" + instrument.reference}
               className="border-b border-stone-800 p-5 last:border-b-0"
             >
               <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
@@ -114,6 +110,6 @@ export default async function ControlCenterInstrumentsPage() {
           ))
         )}
       </section>
-    </main>
+    </ControlDomainSurface>
   );
 }

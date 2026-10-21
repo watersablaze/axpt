@@ -269,6 +269,8 @@ export function useControlCenterOperationalState() {
     useState<ControlCenterOperatorIdentity | null>(null)
 
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [lastSuccessfulAt, setLastSuccessfulAt] = useState<number | null>(null)
 
   const [refreshOperationalState] = useState(() => singleFlight(async () => {
     try {
@@ -284,6 +286,9 @@ export function useControlCenterOperationalState() {
       const json =
         (await res.json()) as OperationalStateResponse
 
+      if (!json.ok || !json.state) {
+        throw new Error('OPERATIONAL_STATE_RESPONSE_INVALID')
+      }
       const state = json.state
 
       setIncidents(
@@ -359,21 +364,15 @@ export function useControlCenterOperationalState() {
       setOperatorIdentity(
         identityJson.operator ?? null
       )
+      setError(null)
+      setLastSuccessfulAt(Date.now())
     } catch (err) {
       console.error(
         '[CONTROL_CENTER_OPERATIONAL_STATE_FAILED]',
         err
       )
 
-      setIncidents([])
-      setIntelligence([])
-      setActions([])
-      setTimeline([])
-      setOperatorActivity([])
-      setTransitionExecutionLedger([])
-      setDossiers([])
-      setTransitionRegistry(null)
-      setOperatorIdentity(null)
+      setError('Operational refresh failed. Previously loaded records may be stale.')
     } finally {
       setLoading(false)
     }
@@ -384,7 +383,7 @@ export function useControlCenterOperationalState() {
 
     const interval = window.setInterval(
       () => { if (document.visibilityState === 'visible') void refreshOperationalState() },
-      5000
+      30000
     )
 
     return () => window.clearInterval(interval)
@@ -401,6 +400,8 @@ export function useControlCenterOperationalState() {
     transitionRegistry,
     operatorIdentity,
     loading,
+    error,
+    lastSuccessfulAt,
     refreshOperationalState,
   }
 }

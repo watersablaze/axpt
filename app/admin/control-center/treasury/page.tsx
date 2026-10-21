@@ -1,3 +1,4 @@
+import ControlDomainSurface from "@/components/admin/control-center/ControlDomainSurface";
 import DigitalSettlementReceiptAdmissionPanel from "@/components/admin/control-center/treasury/DigitalSettlementReceiptAdmissionPanel";
 
 import OriginateTreasuryTransferPanel from "@/components/admin/control-center/treasury/OriginateTreasuryTransferPanel";
@@ -6,30 +7,17 @@ import TransferExecutionSummaryPanel from "@/components/admin/control-center/tre
 
 export default function TreasuryPage() {
   return (
-    <main className="min-h-screen bg-[#05070a] px-4 py-5 text-neutral-200">
-      <div className="mx-auto w-full max-w-5xl space-y-5">
-        <header className="border-b border-neutral-900 pb-4">
-          <div className="text-[10px] uppercase tracking-[0.22em] text-neutral-600">
-            AXPT Control Center / Treasury
-          </div>
-
-          <h1 className="mt-2 text-2xl font-medium text-white">
-            Treasury Operating Surface
-          </h1>
-
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-neutral-500">
-            Operator-facing origination and perception of canonical Treasury
-            state. The Control Center may formulate and observe Treasury
-            activity, while Treasury law remains within the Gateway.
-          </p>
-        </header>
-
-        <DigitalSettlementReceiptAdmissionPanel />
-
-        <OriginateTreasuryTransferPanel />
-
-        <TransferExecutionSummaryPanel />
-      </div>
-    </main>
+    <ControlDomainSurface title="Treasury operating surface"
+      description="Formulate and inspect Treasury activity. Authority and execution remain governed by the Treasury Gateway."
+      rail={<nav aria-label="Treasury sections">
+        <h2>Working sections</h2>
+        <a href="#receipt-admission">DSI receipt admission</a>
+        <a href="#transfer-origination">Originate transfer</a>
+        <a href="#execution-review">Execution review</a>
+      </nav>}>
+      <section id="receipt-admission" aria-label="DSI receipt admission"><DigitalSettlementReceiptAdmissionPanel /></section>
+      <section id="transfer-origination" aria-label="Transfer origination"><OriginateTreasuryTransferPanel /></section>
+      <section id="execution-review" aria-label="Execution review"><TransferExecutionSummaryPanel /></section>
+    </ControlDomainSurface>
   );
 }

@@ -188,7 +188,9 @@ export default function ControlCenterConstitutionalShell({
         </div>
       </header>
 
-      <div className={styles.content}>
+      <div className={`${styles.content} ${
+        pathname === '/admin/control-center' ? styles.commandContent : ''
+      }`}>
         {children}
       </div>
     </section>

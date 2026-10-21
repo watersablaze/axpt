@@ -4,16 +4,16 @@ export type ControlCenterSnapshot = {
   timestamp: number
 
   system: {
-    health: number
-    drift: number
-    stability: number
-    status: 'STABLE' | 'WATCH' | 'DEGRADED' | 'CRITICAL'
+    health: number | null
+    drift: number | null
+    stability: number | null
+    status: 'UNKNOWN' | 'STABLE' | 'WATCH' | 'DEGRADED' | 'CRITICAL'
   }
 
   execution: {
     pending: number
-    successRate: number
-    activeJobs: number
+    successRate: number | null
+    activeJobs: number | null
   }
 
   treasury: {
@@ -23,8 +23,8 @@ export type ControlCenterSnapshot = {
   }
 
   reconciliation: {
-    driftScore: number
-    anomalies: number
+    driftScore: number | null
+    anomalies: number | null
     lastSync: number | null
   }
 
@@ -35,9 +35,9 @@ export type ControlCenterSnapshot = {
   }
 
   governance: {
-    riskScore: number
-    activeLocks: number
-    riskLevel: 'LOW' | 'MEDIUM' | 'HIGH'
+    riskScore: number | null
+    activeLocks: number | null
+    riskLevel: 'UNKNOWN' | 'LOW' | 'MEDIUM' | 'HIGH'
   }
 
   authority: {

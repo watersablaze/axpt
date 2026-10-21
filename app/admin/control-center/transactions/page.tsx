@@ -1,3 +1,4 @@
+import ControlDomainSurface from "@/components/admin/control-center/ControlDomainSurface";
 import Link from "next/link";
 
 import { getControlCenterTransactionRegistry } from "@/domains/control-center/registries/controlCenterTransactionRegistry";
@@ -8,22 +9,16 @@ export default function ControlCenterTransactionsPage() {
   const transactions = getControlCenterTransactionRegistry();
 
   return (
-    <main className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
-      <header className="border-b border-stone-800 pb-6">
-        <p className="text-[10px] uppercase tracking-[0.2em] text-stone-500">
-          AXPT Control Center / Transactions
-        </p>
+    <ControlDomainSurface title="Transaction registry" description="Governed commercial records. Registry presence does not authorize execution, settlement, or movement of value."
+      rail={<nav aria-label="Transaction registry index">
+        <h2>Records · {transactions.length}</h2>
+        {transactions.map((transaction) => <a key={transaction.reference} href={`#${encodeURIComponent("transaction-" + transaction.reference)}`}>
+          {transaction.reference}
+        </a>)}
+        {transactions.length === 0 ? <p className="text-xs text-neutral-400">No records listed.</p> : null}
+      </nav>}>
 
-        <h1 className="mt-2 text-2xl font-medium text-white">
-          Transaction Registry
-        </h1>
 
-        <p className="mt-3 max-w-3xl text-sm leading-6 text-stone-500">
-          Governed commercial transaction environments admitted to the
-          Control Center. Registry presence does not itself authorize
-          execution, settlement, or movement of value.
-        </p>
-      </header>
 
       <section className="mt-6 overflow-hidden rounded-lg border border-stone-800">
         <div className="border-b border-stone-800 bg-black/20 px-4 py-3">
@@ -40,6 +35,7 @@ export default function ControlCenterTransactionsPage() {
           transactions.map((transaction) => (
             <article
               key={transaction.reference}
+              id={"transaction-" + transaction.reference}
               className="border-b border-stone-800 p-5 last:border-b-0"
             >
               <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-start">
@@ -96,6 +92,6 @@ export default function ControlCenterTransactionsPage() {
           ))
         )}
       </section>
-    </main>
+    </ControlDomainSurface>
   );
 }

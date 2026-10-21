@@ -92,3 +92,183 @@
     max-width: 100%;
   }
 }
+
+/* Control Center visual integration */
+.grid {
+  grid-template-columns: minmax(210px,250px) minmax(0,1fr) minmax(200px,240px);
+  min-height: 100%;
+  gap: 0;
+  padding: 0;
+  overflow: visible;
+  background: #0c1116;
+}
+.left,
+.center,
+.right {
+  min-width: 0;
+  overflow: visible;
+  padding: 16px;
+  gap: 12px;
+}
+.left {
+  background:
+    radial-gradient(ellipse at 0 0,rgba(104,77,143,.13),transparent 65%),
+    linear-gradient(165deg,#10121d,#0b141b 55%,#091817);
+  border-right: 1px solid rgba(147,177,193,.13);
+}
+.center {
+  max-width: none;
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 85% 0,rgba(99,161,179,.065),transparent 58%),
+    linear-gradient(145deg,#121d25,#101820 65%,#111922);
+}
+.right {
+  background: linear-gradient(170deg,#0d171e,#0c141a);
+  border-left: 1px solid rgba(147,177,193,.13);
+}
+.left > div,
+.center > div,
+.right > div {
+  min-width: 0;
+  border-color: rgba(147,177,193,.15);
+  border-radius: 8px;
+  background-color: rgba(12,19,25,.68);
+}
+.left h2,
+.right h2 {
+  color: #c4d9e3;
+  font-size: 15px;
+  line-height: 1.4;
+}
+.center h2 { color: #d2e6ef; }
+.grid button {
+  border-color: rgba(147,177,193,.22);
+  border-radius: 5px;
+}
+.grid button:hover:not(:disabled) {
+  border-color: rgba(147,197,214,.45);
+  background-color: rgba(130,184,204,.08);
+}
+.grid button:focus-visible,
+.grid a:focus-visible {
+  outline: 2px solid #9bcbdc;
+  outline-offset: 2px;
+}
+@media(max-width:1180px) {
+  .grid { grid-template-columns: minmax(200px,240px) minmax(0,1fr); }
+  .left { display: flex; }
+  .right {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3,minmax(0,1fr));
+    border-left: 0;
+    border-top: 1px solid rgba(147,177,193,.13);
+  }
+  .center { max-width: none; }
+}
+@media(max-width:760px) {
+  .grid { grid-template-columns: minmax(0,1fr); }
+  .center { grid-row: 1; }
+  .left {
+    border-right: 0;
+    border-top: 1px solid rgba(147,177,193,.13);
+  }
+  .right { grid-template-columns: minmax(0,1fr); }
+  .left, .center, .right { padding: 12px; }
+}
+
+/* Fixed Command frame */
+.commandFrame {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+}
+.commandFrame > :not(.grid) {
+  flex-shrink: 0;
+}
+.commandFrame .grid {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: hidden;
+  grid-template-columns: minmax(205px,250px) minmax(0,1fr) minmax(195px,240px);
+  grid-template-rows: minmax(0,1fr);
+}
+.commandFrame .left,
+.commandFrame .right {
+  display: flex;
+  grid-column: auto;
+  grid-row: auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #415b69 transparent;
+}
+.commandFrame .left > *,
+.commandFrame .right > * {
+  flex-shrink: 0;
+}
+.commandFrame .center {
+  grid-column: auto;
+  grid-row: auto;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+  gap: 0;
+}
+.modeBar {
+  flex-shrink: 0;
+  min-width: 0;
+  padding: 12px;
+  border-bottom: 1px solid rgba(147,177,193,.14);
+  background: #111b23;
+}
+.stage {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 0%;
+  min-height: 0;
+  min-width: 0;
+  gap: 12px;
+  padding: 16px;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #496574 #101820;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+}
+.stage > * { flex-shrink: 0; min-width: 0; }
+@media(max-width:1000px) {
+  .commandFrame .grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    grid-template-rows: minmax(0,2fr) minmax(0,1fr);
+  }
+  .commandFrame .center {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .commandFrame .left {
+    grid-column: 1;
+    grid-row: 2;
+    border-top: 1px solid rgba(147,177,193,.14);
+  }
+  .commandFrame .right {
+    grid-column: 2;
+    grid-row: 2;
+    border-top: 1px solid rgba(147,177,193,.14);
+    border-left: 1px solid rgba(147,177,193,.14);
+  }
+}
+@media(max-width:600px) {
+  .stage { padding: 12px; }
+  .modeBar { padding: 8px; }
+  .commandFrame .left,
+  .commandFrame .right { padding: 10px; }
+}

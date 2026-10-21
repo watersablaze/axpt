@@ -273,3 +273,125 @@
     white-space: nowrap;
   }
 }
+
+/* Control Center visual integration */
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #0c1116;
+}
+.axis {
+  position: relative;
+  top: auto;
+  z-index: 20;
+  flex-shrink: 0;
+  background:
+    linear-gradient(105deg,rgba(127,101,164,.045),
+      rgba(93,157,175,.03) 60%,transparent),
+    #0c1116;
+  border-bottom: 1px solid rgba(147,177,193,.16);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.identity {
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 14px 20px 8px;
+}
+.identity span {
+  color: #c7dce6;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -.015em;
+}
+.identity strong {
+  color: #8196a2;
+  font-size: 10px;
+  letter-spacing: .06em;
+}
+.navigationRow { padding-inline: 12px; }
+.primaryNavigation a,
+.secondaryNavigation a {
+  padding: 10px 12px;
+  color: #8fa5b1;
+  font-size: 11px;
+  letter-spacing: .055em;
+}
+.primaryNavigation a:hover,
+.secondaryNavigation a:hover {
+  color: #d5eaf2;
+  background: rgba(130,184,204,.045);
+}
+.primaryNavigation a.active,
+.secondaryNavigation a.active {
+  color: #c5e6f0;
+  background: rgba(130,184,204,.065);
+}
+.primaryNavigation a.active::after,
+.secondaryNavigation a.active::after {
+  background: #87b8c9;
+}
+.location {
+  padding: 7px 20px;
+  color: #7e939f;
+  font-size: 9px;
+  letter-spacing: .065em;
+  border-top-color: rgba(147,177,193,.08);
+}
+.content {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #496574 #101820;
+}
+.axis a:focus-visible,
+.mobileDisclosure summary:focus-visible {
+  outline: 2px solid #9bcbdc;
+  outline-offset: -2px;
+}
+@media(max-width:720px) {
+  .shell { padding-top: 0; }
+  .identity { padding: 10px 14px; }
+  .mobileDisclosure {
+    background: rgba(116,167,187,.035);
+    border-color: rgba(147,177,193,.14);
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+  .mobileDisclosure summary { color: #c7dce6; }
+  .mobileDomainNavigation a { color: #96acb9; }
+  .mobileDomainNavigation a.active { color: #d5edf5; }
+  .mobileDomainNavigation a.active::before { background: #87b8c9; }
+  .disclosureMark { color: #87b8c9; }
+  .location { padding-inline: 14px; }
+}
+
+/* Fixed Command frame */
+.commandContent {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Compact mobile domain navigation */
+@media(max-width:720px) {
+  .identity {padding:9px 14px; gap:4px 10px;}
+  .identity span {font-size:13px;}
+  .identity strong {font-size:9px;}
+  .location {padding:5px 14px; font-size:8px;}
+  .mobileDomainNavigation {
+    max-height:23dvh;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    scrollbar-width:thin;
+  }
+  .mobileDomainNavigation a {padding:9px 8px;}
+}
