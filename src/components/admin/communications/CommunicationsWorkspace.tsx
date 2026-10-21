@@ -7,6 +7,8 @@ import {
   useState,
 } from "react"
 
+import { useSearchParams } from "next/navigation"
+
 import { useCommunicationsRealtime } from "@/lib/realtime/communications/CommunicationsProvider"
 import { isCurrentConversationLoad } from "@/domains/communications/client/isCurrentConversationLoad"
 import {
@@ -347,6 +349,12 @@ export default function CommunicationsWorkspace({
   canManageConversations: boolean
   canCreateOperationalRooms: boolean
 }) {
+  const conversationSearchParams = useSearchParams()
+  const linkedConversationId =
+    conversationSearchParams.get("conversationId")
+  const pendingLinkedConversationRef =
+    useRef<string | null>(null)
+
   const realtime =
     useCommunicationsRealtime()
 
@@ -670,6 +678,29 @@ export default function CommunicationsWorkspace({
             )
           }
 
+          const linkedId =
+            pendingLinkedConversationRef.current
+
+          if (linkedId) {
+            pendingLinkedConversationRef.current = null
+
+            const permitted =
+              linkedId.length <= 191 &&
+              payload.conversations.some(
+                conversation => conversation.id === linkedId
+              )
+
+            if (!permitted) {
+              selectConversation(null)
+              setError(
+                "The requested conversation is unavailable or you no longer have access."
+              )
+              return
+            }
+
+            selectConversation(linkedId)
+          }
+
           setError(null)
         } catch (cause) {
           setError(
@@ -890,10 +921,13 @@ export default function CommunicationsWorkspace({
 
   useEffect(
     () => {
+      pendingLinkedConversationRef.current =
+        linkedConversationId
       void loadConversations()
     },
     [
       loadConversations,
+      linkedConversationId,
     ]
   )
 

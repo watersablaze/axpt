@@ -95,7 +95,7 @@ export default async function AdminWorkDesk({ searchParams }: {
           detail: latest?.body.slice(0, 220) || "No messages recorded.",
           status: unread ? "New incoming message" : latest?.senderUserId === principal.userId ? "Latest message sent by you" : "Latest incoming message read",
           at: latest?.createdAt ?? record.updatedAt,
-          href: "/admin/communications", action: "Open Communications to review and reply" };
+          href: `/admin/communications?conversationId=${encodeURIComponent(record.id)}`, action: "Open conversation to review and reply" };
       });
     }
   } catch (error: unknown) {
