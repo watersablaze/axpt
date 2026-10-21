@@ -1,3 +1,4 @@
+import { assertCommercialPaperReleasePin } from "../commercial-papers/catalog";
 import { createHash } from "node:crypto";
 import type { PrismaClient } from "@prisma/client";
 import { releaseCommercialUtilityPackResourceWithClient } from "../commands/releaseCommercialUtilityPackResourceWithClient";
@@ -56,6 +57,7 @@ export async function reviewSelectedCommercialUtilityPackAdditions(input: Select
   if (resources.length !== selected.resourceReleaseIds.length)
     throw new Error("[CUP_ADDITION_SELECTION_CONFLICT]");
   for (const resource of resources) {
+    assertCommercialPaperReleasePin(resource);
     const modules = pack.modules.filter(module => module.module === resource.module);
     if (resource.state !== "WITHHELD" || resource.releasedAt || resource.releasedByUserId ||
       modules.length !== 1 || modules[0].state !== "RELEASED")

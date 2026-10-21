@@ -1,5 +1,7 @@
 "use client";
+import styles from "./operator-panels.module.css";
 
+import CommercialPaperAdditions from "./CommercialPaperAdditions";
 import ResourcePermissionDecision from "./ResourcePermissionDecision";
 import SelectedCupAdditionsRelease from "./SelectedCupAdditionsRelease";
 
@@ -91,6 +93,13 @@ function moduleLabel(
     .join(" ");
 }
 
+const CUP_MODULE_DISPLAY: Record<string, {index: string; purpose: string}> = {
+  REPRESENTATION: {index: "01", purpose: "Institutional identity and approved representative-facing materials."},
+  COMMERCIAL_PARAMETERS: {index: "02", purpose: "Canonical commercial guidance and transaction parameters."},
+  DOCUMENTS: {index: "03", purpose: "Governing records, source evidence and commercial papers."},
+  OPERATING_BOUNDARIES: {index: "04", purpose: "Limits of use, conduct and representative responsibilities."},
+};
+
 export default function RepresentativeCommercialUtilityPackPanel({
   participantId,
   candidateDisplayName,
@@ -124,6 +133,9 @@ export default function RepresentativeCommercialUtilityPackPanel({
   const [pendingModule, setPendingModule] = useState<string | null>(null);
   const [releasingModule, setReleasingModule] = useState<string | null>(null);
   const [releaseNotice, setReleaseNotice] = useState<string | null>(null);
+
+  const preparationLocked = Boolean(pack && (pack.modules.some(entry => entry.state === "RELEASED") ||
+    !["PREPARING", "CURRENT"].includes(pack.state)));
 
   useEffect(() => {
     const current = ++generation.current;
@@ -181,7 +193,7 @@ export default function RepresentativeCommercialUtilityPackPanel({
   }
 
   async function preparePack() {
-    if (actionInFlight.current || loading || stateError) return;
+    if (actionInFlight.current || loading || stateError || preparationLocked) return;
     actionInFlight.current = true;
     setPendingModule(null);
     setReleaseNotice(null);
@@ -336,40 +348,28 @@ export default function RepresentativeCommercialUtilityPackPanel({
   }
 
   return (
-    <section className="rounded border border-cyan-900/60 bg-cyan-950/10 p-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
+    <section className={styles.packSurface}>
+      <div className={styles.panelHeader}>
         <div>
           <p className="text-xs uppercase tracking-[0.18em] text-cyan-500/70">
             Commercial Utility Pack
           </p>
 
           <h3 className="mt-2 text-base font-semibold text-white">
-            Govern Representative Field Resources
+            Representative Field Resources
           </h3>
         </div>
 
-        <span className="rounded border border-cyan-900/60 bg-black px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-cyan-300/70">
-          Preparation & Module Release
-        </span>
+        <button type="button" disabled={busy || loading} onClick={() => void reloadPack()}
+          className={styles.secondaryButton}>Reload CUP State</button>
       </div>
 
-      <p className="mt-3 text-sm leading-5 text-gray-400">
-        Prepare or refresh the governed Commercial Utility Pack for{" "}
-        <strong className="text-gray-200">
-          {candidateDisplayName}
-        </strong>
-        . Preparation composes currently available representative-safe
-        resources and evaluates readiness. Each READY module requires a separate
-        confirmed release decision. Resource permissions remain governed;
-        release does not grant appointment authority or send a notification.
-      </p>
-
-      <div className="mt-4 rounded border border-gray-800 bg-black p-3">
-        <p className="text-xs leading-5 text-gray-500">
-          Source Authority is not selected automatically. Commercial Parameters
-          remain blocked until the canonical institutional record is CURRENT.
-        </p>
-      </div>
+      <p className={styles.panelIntro}>Released resources and governed additions for <strong>{candidateDisplayName}</strong>.</p>
+      <details className={styles.guidance}><summary>Preparation and release guidance</summary>
+        <p>Preparation registers available resources and evaluates readiness. READY modules require a separate release decision.
+          Resource permissions do not grant appointment authority or send notifications.</p>
+        <p>Source Authority requires explicit selection. Commercial Parameters remain blocked until their canonical record is CURRENT.</p>
+      </details>
 
       {error ? (
         <p
@@ -386,15 +386,6 @@ export default function RepresentativeCommercialUtilityPackPanel({
         </p>
       ) : null}
 
-      <button
-        type="button"
-        disabled={busy || loading}
-        onClick={() => void reloadPack()}
-        className="mt-4 rounded border border-gray-700 px-3 py-2 text-xs text-gray-300 disabled:opacity-50"
-      >
-        Reload Persisted CUP State
-      </button>
-
       {loading && pack ? (
         <p role="status" className="mt-3 text-xs text-gray-400">
           Updating persisted CUP state…
@@ -406,8 +397,8 @@ export default function RepresentativeCommercialUtilityPackPanel({
         ) : stateError ? (
           <p role="alert" className="text-sm text-red-300">{stateError}</p>
         ) : pack ? (
-          <div className="space-y-3 rounded border border-cyan-900/50 bg-black p-3">
-            <p className="text-xs uppercase tracking-widest text-cyan-400">
+          <div className={styles.persistedPack}>
+            <p className={styles.eyebrow}>
               Persisted CUP State
             </p>
             <p className="break-all font-mono text-xs text-cyan-100">
@@ -416,17 +407,33 @@ export default function RepresentativeCommercialUtilityPackPanel({
             <p className="text-xs text-gray-300">
               Package: {pack.state} · Release: {pack.releaseState}
             </p>
+            <dl className={styles.packSummary} aria-label="Persisted CUP resource summary">
+              <div><dt>Released resources</dt><dd>{pack.modules.reduce((count, entry) => count + entry.currentResources.filter(resource => resource.state === "RELEASED").length, 0)}</dd></div>
+              <div><dt>Withheld resources</dt><dd>{pack.modules.reduce((count, entry) => count + entry.currentResources.filter(resource => resource.state === "WITHHELD").length, 0)}</dd></div>
+              <div><dt>Modules ready for review</dt><dd>{pack.modules.filter(entry => entry.state === "READY").length}</dd></div>
+            </dl>
+            <nav className={styles.moduleIndex} aria-label="CUP sections">
+              {pack.modules.map(entry => <a key={entry.module} href={"#cup-" + pack.id + "-" + entry.module} data-module={entry.module}>
+                <span>{CUP_MODULE_DISPLAY[entry.module]?.index || "·"}</span>{moduleLabel(entry.module)}
+              </a>)}
+            </nav>
             {pack.modules.map((entry) => (
-              <div key={entry.module} className="rounded border border-gray-800 p-3">
-                <p className="text-sm text-gray-200">
-                  {moduleLabel(entry.module)} · {entry.state}
-                </p>
+              <section key={entry.module} id={"cup-" + pack.id + "-" + entry.module} data-module={entry.module} className={styles.moduleSection}>
+                <header className={styles.moduleHeader}>
+                  <span className={styles.moduleNumber}>{CUP_MODULE_DISPLAY[entry.module]?.index || "·"}</span>
+                  <div className={styles.moduleTitle}><h4>{moduleLabel(entry.module)}</h4>
+                    <p>{CUP_MODULE_DISPLAY[entry.module]?.purpose || "Governed representative resources."}</p></div>
+                  <div className={styles.moduleHeaderMeta}>
+                    <span className={styles.state} data-state={entry.state}>{entry.state}</span>
+                    <span className={styles.resourceCount}>{entry.currentResources.length} {entry.currentResources.length === 1 ? "resource" : "resources"}</span>
+                  </div>
+                </header>
                 {entry.state === "READY" &&
                  entry.currentResources.length > 0 &&
                  pack.state !== "SUPERSEDED" &&
                  pack.state !== "WITHDRAWN" ? (
                   pendingModule === entry.module ? (
-                    <div className="mt-3 rounded border border-amber-900/60 bg-amber-950/20 p-3">
+                    <div className={styles.moduleDecision}>
                       <p className="text-xs leading-5 text-amber-200">
                         Release {moduleLabel(entry.module)} for {candidateDisplayName}?
                         This releases all {entry.currentResources.length} current
@@ -465,6 +472,41 @@ export default function RepresentativeCommercialUtilityPackPanel({
                     </button>
                   )
                 ) : null}
+                {entry.currentResources.length === 0 ? (
+                  <p className="mt-2 text-xs text-gray-500">No current resources.</p>
+                ) : entry.currentResources.map((resource) => (
+                  <div key={resource.id} className={styles.resourceRow}>
+                    <div className={styles.resourceIdentity}><h5>{resource.label || resource.resourceId}</h5>
+                      <span className={styles.state} data-state={resource.state}>{resource.state}</span></div>
+                    <dl className={styles.permissions} aria-label="Recorded resource permissions">
+                      {([["View", resource.canView], ["Download", resource.canDownload], ["Present", resource.canPresent], ["Transmit", resource.canTransmit]] as const).map(([label, allowed]) =>
+                        <div key={label} data-allowed={allowed}><dt>{label}</dt><dd>{allowed ? "Permitted" : "Withheld"}</dd></div>)}
+                    </dl>
+                    {resource.state === "RELEASED" &&
+                      entry.state === "RELEASED" &&
+                      ["PREPARING", "CURRENT"].includes(pack.state) ? (
+                      <ResourcePermissionDecision
+                        key={participantId + ":" + resource.id}
+                        resourceReleaseId={resource.id}
+                        participantId={participantId}
+                        disabled={busy || loading || Boolean(stateError)}
+                        onDecision={reloadPack}
+                      />
+                    ) : null}
+                  </div>
+                ))}
+                {entry.module === "DOCUMENTS" && entry.state === "RELEASED" &&
+                  ["PREPARING", "CURRENT"].includes(pack.state) ? (
+                  <CommercialPaperAdditions key={pack.id + ":commercial-papers"}
+                    packageId={pack.id} participantId={participantId}
+                    disabled={busy || loading || Boolean(stateError)}
+                    onStart={() => {actionInFlight.current = true; setBusy(true); setPendingModule(null);}}
+                    onComplete={async message => {
+                      setReleaseNotice(message);
+                      try {await reloadPack();}
+                      finally {actionInFlight.current = false; setBusy(false);}
+                    }} />
+                ) : null}
                 {entry.state === "RELEASED" && ["PREPARING", "CURRENT"].includes(pack.state) &&
                   entry.currentResources.some(resource => resource.state === "WITHHELD") ? (
                   <SelectedCupAdditionsRelease
@@ -481,32 +523,7 @@ export default function RepresentativeCommercialUtilityPackPanel({
                     }}
                   />
                 ) : null}
-                {entry.currentResources.length === 0 ? (
-                  <p className="mt-2 text-xs text-gray-500">No current resources.</p>
-                ) : entry.currentResources.map((resource) => (
-                  <div key={resource.id} className="mt-2 text-xs text-gray-400">
-                    <p>{resource.label || resource.resourceId} · {resource.state}</p>
-                    <p className="mt-1 text-gray-500">
-                      Resource permissions apply after governed release.
-                      View: {resource.canView ? "Permitted" : "Withheld"} ·
-                      Download: {resource.canDownload ? "Permitted" : "Withheld"} ·
-                      Present: {resource.canPresent ? "Permitted" : "Withheld"} ·
-                      Transmit: {resource.canTransmit ? "Permitted" : "Withheld"}
-                    </p>
-                    {resource.state === "RELEASED" &&
-                      entry.state === "RELEASED" &&
-                      ["PREPARING", "CURRENT"].includes(pack.state) ? (
-                      <ResourcePermissionDecision
-                        key={participantId + ":" + resource.id}
-                        resourceReleaseId={resource.id}
-                        participantId={participantId}
-                        disabled={busy || loading || Boolean(stateError)}
-                        onDecision={reloadPack}
-                      />
-                    ) : null}
-                  </div>
-                ))}
-              </div>
+              </section>
             ))}
           </div>
         ) : (
@@ -515,7 +532,7 @@ export default function RepresentativeCommercialUtilityPackPanel({
       </div>
 
       {result ? (
-        <div className="mt-4 space-y-3 rounded border border-cyan-900/50 bg-black p-3">
+        <div className={styles.preparationReceipt}>
           <div>
             <p className="text-[10px] uppercase tracking-[0.16em] text-cyan-500/60">
               Preparation Receipt · {result.created
@@ -616,18 +633,25 @@ export default function RepresentativeCommercialUtilityPackPanel({
         </div>
       ) : null}
 
+      {preparationLocked ? <p className={styles.preparationNote}>
+        {pack && ["PREPARING", "CURRENT"].includes(pack.state)
+          ? "This CUP has released modules. Use the module controls and selected additions to manage resources; whole-pack preparation is unavailable."
+          : "This package is no longer open for preparation. Inspect its recorded state before any further action."}
+      </p> : null}
       <button
         type="button"
-        disabled={busy || loading || Boolean(stateError)}
+        disabled={busy || loading || Boolean(stateError) || preparationLocked}
         onClick={() =>
           void preparePack()
         }
-        className="mt-4 rounded border border-cyan-700/60 bg-cyan-950/30 px-4 py-2.5 text-sm font-medium text-cyan-200 hover:bg-cyan-950/50 disabled:cursor-not-allowed disabled:opacity-50"
+        className={styles.prepareButton}
       >
         {busy
           ? releasingModule
             ? "Releasing " + moduleLabel(releasingModule) + "…"
-            : "Preparing CUP…"
+            : "Operation in progress…"
+          : preparationLocked
+            ? "Whole-Pack Preparation Unavailable"
           : result
             ? "Prepare / Refresh CUP Again"
             : "Prepare Commercial Utility Pack"}

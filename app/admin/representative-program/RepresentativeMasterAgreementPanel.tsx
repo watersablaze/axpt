@@ -1,4 +1,5 @@
 "use client";
+import styles from "./governance-panels.module.css";
 
 import { useState, type FormEvent } from "react";
 
@@ -481,7 +482,7 @@ export default function RepresentativeMasterAgreementPanel({
     intake.masterAgreementInstrumentId === agreement?.instrumentId;
 
   return (
-    <section className="rounded border border-gray-800 bg-gray-950 p-5">
+    <section className={styles.agreementSurface}>
       <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
         Separate Instrument
       </p>
@@ -496,7 +497,8 @@ export default function RepresentativeMasterAgreementPanel({
         appointment, and delegated authority remain separate governed facts.
       </p>
 
-      <form onSubmit={prepareAgreement} className="mt-5 space-y-3">
+      <form onSubmit={prepareAgreement} className={styles.referenceForm}>
+        <h4 className={styles.formHeading}>Reference &amp; preparation</h4>
         <label className="grid gap-2">
           <span className="text-xs text-gray-400">Agreement reference</span>
 
@@ -528,7 +530,7 @@ export default function RepresentativeMasterAgreementPanel({
           />
         </label>
 
-        <div className="flex flex-wrap gap-3">
+        <div className={styles.formActions}>
           <button
             type="button"
             disabled={busy || !reference.trim()}
@@ -561,7 +563,8 @@ export default function RepresentativeMasterAgreementPanel({
       ) : null}
 
       {agreement ? (
-        <div className="mt-4 rounded border border-gray-700 bg-black p-4 text-sm text-gray-300">
+        <div className={styles.recordReadout}>
+          <p className={styles.readoutHeading}>Recorded agreement</p>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
               <p>
@@ -599,7 +602,7 @@ export default function RepresentativeMasterAgreementPanel({
       ) : null}
 
       {agreement && signerMatches && agreement.status === "DRAFT" ? (
-        <div className="mt-5 border-t border-gray-800 pt-5">
+        <div className={styles.workflowSection} data-stage="execution">
           <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
             Execution Evidence
           </p>
@@ -616,7 +619,7 @@ export default function RepresentativeMasterAgreementPanel({
             PDFs or one combined execution package containing both.
           </p>
 
-          <form onSubmit={recordExecution} className="mt-5 space-y-4">
+          <form onSubmit={recordExecution} className={styles.decisionForm}>
             <label className="grid gap-2">
               <span className="text-xs text-gray-400">Designated signer</span>
 
@@ -644,7 +647,7 @@ export default function RepresentativeMasterAgreementPanel({
                 Acrobat completion timestamp
               </legend>
 
-              <div className="grid gap-3 md:grid-cols-3">
+              <div className={styles.timestampFields}>
                 <label className="grid gap-2">
                   <span className="text-xs text-gray-500">Date</span>
 
@@ -780,7 +783,7 @@ export default function RepresentativeMasterAgreementPanel({
               </>
             )}
 
-            <label className="flex items-start gap-3 rounded border border-amber-800/40 bg-amber-950/10 p-3">
+            <label className={styles.confirmation}>
               <input
                 name="operatorConfirmedAllSignatures"
                 type="checkbox"
@@ -817,7 +820,7 @@ export default function RepresentativeMasterAgreementPanel({
       ) : null}
 
       {agreement && signerMatches && agreement.status === "EXECUTED" ? (
-        <div className="mt-5 rounded border border-emerald-800/50 bg-emerald-950/20 p-4">
+        <div className={styles.recognizedNote}>
           <p className="text-xs uppercase tracking-[0.18em] text-emerald-400/70">
             Execution Recognized
           </p>
@@ -834,7 +837,7 @@ export default function RepresentativeMasterAgreementPanel({
       signerMatches &&
       agreement.status === "EXECUTED" &&
       intake.status === "QUALIFIED" ? (
-        <div className="mt-5 border-t border-gray-800 pt-5">
+        <div className={styles.workflowSection} data-stage="admission">
           <p className="text-xs uppercase tracking-[0.18em] text-amber-400/70">
             Program Admission
           </p>
@@ -851,8 +854,8 @@ export default function RepresentativeMasterAgreementPanel({
             authority, or delegated authority.
           </p>
 
-          <form onSubmit={admitAndBind} className="mt-4 space-y-4">
-            <div className="rounded border border-gray-800 bg-black p-3 text-xs leading-5 text-gray-400">
+          <form onSubmit={admitAndBind} className={styles.decisionForm}>
+            <div className={styles.admissionSummary}>
               <p>
                 Candidate:{" "}
                 <strong className="text-gray-200">
@@ -869,7 +872,7 @@ export default function RepresentativeMasterAgreementPanel({
               </p>
             </div>
 
-            <label className="flex items-start gap-3 rounded border border-amber-800/40 bg-amber-950/10 p-3">
+            <label className={styles.confirmation}>
               <input
                 name="operatorConfirmedAdmission"
                 type="checkbox"
@@ -914,8 +917,8 @@ export default function RepresentativeMasterAgreementPanel({
         <div
           className={
             agreementBound
-              ? "mt-5 rounded border border-blue-800/50 bg-blue-950/20 p-4"
-              : "mt-5 rounded border border-red-800/50 bg-red-950/20 p-4"
+              ? styles.boundNote
+              : styles.bindingAlert
           }
         >
           <p className="text-xs uppercase tracking-[0.18em] text-blue-400/70">

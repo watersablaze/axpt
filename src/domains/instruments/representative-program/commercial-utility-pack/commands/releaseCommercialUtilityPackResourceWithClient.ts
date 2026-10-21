@@ -1,3 +1,4 @@
+import { assertCommercialPaperReleasePin } from "../commercial-papers/catalog";
 import type {
   PrismaClient,
 } from "@prisma/client";
@@ -82,6 +83,8 @@ export async function releaseCommercialUtilityPackResourceWithClient(
       `[CUP_RESOURCE_RELEASE_NOT_FOUND] ${resourceReleaseId}`,
     );
   }
+
+  assertCommercialPaperReleasePin(resource);
 
   if (
     resource.state ===

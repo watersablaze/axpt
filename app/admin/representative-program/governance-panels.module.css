@@ -1,0 +1,70 @@
+.agreementSurface, .appointmentSurface { container-type: inline-size; min-width: 0; padding: 0; border: 0; background: transparent; }
+.agreementSurface > p:first-child, .appointmentSurface > p:first-child { margin: 0; color: #98a9bc; font-size: 10px; }
+.agreementSurface > h3, .appointmentSurface > h3 { margin: 7px 0 0; color: #d2dfeb; font-size: 18px; font-weight: 500; line-height: 1.5; }
+.agreementSurface > p, .appointmentSurface > p { max-width: 84ch; font-size: 12px; line-height: 1.8; }
+.referenceForm { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); gap: 15px 20px; margin-top: 24px; padding-top: 17px; border-top: 2px solid rgba(156,139,190,.4); }
+.referenceForm > label { min-width: 0; }
+.formHeading { grid-column: 1 / -1; margin: 0; color: #bdb0d4; font-size: 12px; line-height: 1.6; font-weight: 500; }
+.referenceForm input { min-width: 0; width: 100%; background: #0b131a; border-color: rgba(139,169,189,.25); font-size: 12px; }
+.formActions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 9px; }
+.formActions button { min-height: 33px; padding: 7px 10px; font-size: 11px; border-radius: 4px; }
+.formActions button[type="button"] { color: #b5ccdb; border-color: rgba(127,171,194,.35); background: rgba(67,130,160,.075); }
+.formActions button[type="submit"] { color: #bfb2d7; border-color: rgba(152,129,191,.3); background: rgba(119,87,161,.055); }
+.recordReadout { margin-top: 24px; padding: 16px 0; border-block: 1px solid rgba(132,174,193,.19); background: transparent; color: #b4c7d5; font-size: 12px; }
+.readoutHeading { margin: 0 0 12px; color: #7798ad; font-size: 10px; text-transform: uppercase; letter-spacing: .09em; }
+.recordReadout > p { overflow-wrap: anywhere; }
+.recordReadout strong { font-weight: 500; }
+.recordGrid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 18px 25px; margin-top: 18px; font-size: 11px; }
+.recordGrid > div { min-width: 0; }
+.recordGrid dt { color: #6f8fa5; font-size: 10px; }
+.recordGrid dd { margin: 5px 0 0; color: #c0d1dc; line-height: 1.7; overflow-wrap: anywhere; }
+.workflowSection { margin-top: 28px; padding: 18px 0 0; border-top: 2px solid rgba(120,170,148,.4); }
+.workflowSection[data-stage="admission"] { border-color: rgba(166,145,113,.45); }
+.workflowSection > h4 { margin: 6px 0 0; color: #c8dbd2; font-size: 15px; font-weight: 500; line-height: 1.5; }
+.workflowSection[data-stage="admission"] > h4 { color: #d6c5a2; }
+.workflowSection > p { max-width: 84ch; font-size: 11px; line-height: 1.9; }
+.decisionForm { display: grid; gap: 17px; min-width: 0; margin-top: 18px; padding: 16px 18px; border-left: 2px solid rgba(181,157,106,.4); background: rgba(155,125,65,.025); }
+.decisionForm > label, .decisionForm fieldset { min-width: 0; }
+.decisionForm input:not([type="checkbox"]), .decisionForm select { min-width: 0; width: 100%; background-color: #0c141b; border-color: rgba(134,163,185,.25); font-size: 12px; }
+.decisionForm > label > span { line-height: 1.8; }
+.decisionForm > button { justify-self: start; min-height: 34px; font-size: 11px; padding: 8px 12px; border-radius: 4px; }
+.timestampFields { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); gap: 12px; }
+.timestampFields label { min-width: 0; }
+.confirmation { display: flex; align-items: flex-start; gap: 10px; margin-top: 17px; padding: 12px 0; border: 0; border-top: 1px solid rgba(184,158,100,.25); background: transparent; }
+.confirmation input { flex: 0 0 auto; accent-color: #b7a274; }
+.confirmation span { max-width: 84ch; color: #c4b58e; font-size: 11px; line-height: 1.8; }
+.recognizedNote, .boundNote, .bindingAlert { margin-top: 20px; padding: 14px 16px; border: 0; border-left: 2px solid rgba(120,170,148,.5); background: rgba(79,140,109,.045); }
+.boundNote { border-color: rgba(131,158,197,.5); background: rgba(85,122,165,.045); }
+.bindingAlert { border-color: rgba(197,130,130,.55); background: rgba(162,76,76,.045); }
+.recognizedNote > p, .boundNote > p, .bindingAlert > p { font-size: 11px; line-height: 1.8; }
+.boundNote h4, .bindingAlert h4 { font-size: 14px; font-weight: 500; }
+.admissionSummary { padding: 0; border: 0; background: transparent; color: #96aaba; font-size: 11px; line-height: 1.8; }
+.appointmentActions { display: flex; align-items: center; flex-wrap: wrap; gap: 9px; margin-top: 14px; }
+.appointmentActions button { min-height: 34px; padding: 8px 11px; font-size: 11px; border-radius: 4px; }
+.certificateSection { margin-top: 30px; padding-top: 18px; border-top: 2px solid rgba(139,145,191,.4); }
+.certificateSection > h4 { margin: 0; color: #bebbd7; font-size: 15px; line-height: 1.5; font-weight: 500; }
+.certificateSection > p { max-width: 85ch; color: #8499aa; font-size: 11px; line-height: 1.9; }
+.certificateSection > button { font-size: 11px; padding: 7px 10px; border-color: rgba(151,136,187,.3); color: #c3b5db; }
+.certificateDecision { min-width: 0; margin-top: 16px; padding: 16px 18px; border: 0; border-left: 2px solid rgba(190,165,112,.45); background: rgba(159,126,62,.03); }
+.publishedAuthorities { display: grid; gap: 0; margin-top: 16px; }
+.publishedAuthorities > div { min-width: 0; padding: 14px 0; border-top: 1px solid rgba(143,164,182,.15); }
+.publishedAuthorities dd { margin-left: 0; }
+.authoritySection { margin-top: 30px; padding-top: 18px; border-top: 2px solid rgba(188,162,107,.42); }
+.authoritySection > h4 { margin: 0; color: #cdbc95; font-size: 15px; font-weight: 500; line-height: 1.5; }
+.authoritySection > p { max-width: 85ch; color: #8b9fae; font-size: 11px; line-height: 1.9; }
+.authorityList { margin-top: 18px; }
+.authorityRow { padding: 18px 0; border: 0; border-top: 1px solid rgba(143,164,182,.17); border-radius: 0; background: transparent; }
+.authorityRow > p:first-child { margin: 0; color: #c5d4df; font-size: 12px; font-weight: 500; }
+.authorityRow > p { max-width: 85ch; font-size: 11px; line-height: 1.8; }
+.conditionsDisclosure { margin-top: 10px; color: #819aaf; font-size: 10px; }
+.conditionsDisclosure summary { cursor: pointer; }
+.conditionsDisclosure pre { max-width: 100%; margin-top: 10px; padding: 10px 12px; background: rgba(80,115,141,.04); color: #9bacbc; }
+.authorityDecision { display: grid; gap: 15px; min-width: 0; margin-top: 16px; padding: 15px 16px; border-left: 2px solid rgba(194,163,103,.5); background: rgba(151,118,54,.035); }
+.authorityDecision fieldset { min-width: 0; }
+.authorityDecision input, .authorityDecision select, .authorityDecision textarea { min-width: 0; }
+.authorityDecision textarea { resize: vertical; }
+.agreementSurface button:focus-visible, .appointmentSurface button:focus-visible, .authoritySection summary:focus-visible { outline: 2px solid #a8bfce; outline-offset: 3px; }
+@container (max-width: 560px) {
+  .referenceForm, .recordGrid, .timestampFields { grid-template-columns: minmax(0,1fr); }
+  .decisionForm, .certificateDecision, .authorityDecision { padding-inline: 12px; }
+}

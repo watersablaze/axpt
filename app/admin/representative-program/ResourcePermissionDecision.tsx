@@ -1,4 +1,5 @@
 "use client";
+import styles from "./operator-panels.module.css";
 
 import { useRef, useState } from "react";
 
@@ -132,7 +133,7 @@ export default function ResourcePermissionDecision({
     (permissions.canDownload || permissions.canPresent || permissions.canTransmit);
 
   return (
-    <div className="mt-3">
+    <div className={styles.permissionControl}>
       {!review ? (
         <button type="button" disabled={locked} onClick={() => void loadReview()}
           className="rounded border border-cyan-800 px-3 py-2 text-xs text-cyan-200 disabled:opacity-50">
@@ -140,7 +141,7 @@ export default function ResourcePermissionDecision({
         </button>
       ) : (
         <fieldset disabled={locked}
-          className="rounded border border-amber-900/60 bg-amber-950/10 p-3">
+          className={styles.permissionDecision}>
           <legend className="px-1 text-xs text-amber-200">Resource Permission Decision</legend>
           <p className="break-words text-xs text-gray-300">
             {review.label || review.resourceId}

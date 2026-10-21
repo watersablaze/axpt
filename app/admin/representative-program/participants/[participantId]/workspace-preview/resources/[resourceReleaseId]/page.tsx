@@ -1,3 +1,5 @@
+import CommercialPaperReview from "../../../../../../../representative/CommercialPaperReview";
+import { loadRepresentativeCommercialPaper } from "@/domains/instruments/representative-program/commercial-utility-pack/commercial-papers/loadRepresentativeCommercialPaper";
 import { SupportingDocumentView } from "../../../../../../../representative/SupportingDocumentView";
 import { loadRepresentativeSupportingDocumentWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/loadRepresentativeSupportingDocumentWithClient";
 import boundaries from "../../../../../../../representative/resources/[resourceReleaseId]/operating-boundaries.module.css";
@@ -51,6 +53,8 @@ export default async function OperatorResourcePreview({
   const input = {
     client: prisma, userId: participant.userId, resourceReleaseId,
   };
+  const commercialPaper = await loadRepresentativeCommercialPaper(input);
+  if (commercialPaper) return <CommercialPaperReview paper={commercialPaper} preview />;
   const supporting=await loadRepresentativeSupportingDocumentWithClient(input);
   if(supporting){const publication=supporting.publication;return <SupportingDocumentView
     title={publication.title} reference={publication.reference} version={publication.version} note={publication.disclosureNote}

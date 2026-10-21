@@ -1,4 +1,5 @@
 "use client";
+import styles from "./governance-panels.module.css";
 import RepresentativeAuthorityPanel from "./RepresentativeAuthorityPanel";
 import RepresentativeAppointmentCertificatePanel from "./RepresentativeAppointmentCertificatePanel";
 
@@ -114,7 +115,7 @@ export default function RepresentativeAppointmentPreparationPanel({
   const available = !appointment || appointment.canActivate;
 
   return (
-    <section className="rounded border border-gray-800 bg-black p-4">
+    <section className={styles.appointmentSurface}>
       <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
         Appointment Instrument
       </p>
@@ -126,9 +127,9 @@ export default function RepresentativeAppointmentPreparationPanel({
       {loading ? <p className="mt-4 text-sm text-gray-400">Loading persisted record…</p> : null}
 
       {!loading && appointment ? (
-        <div className="mt-4 rounded border border-blue-800/50 bg-blue-950/20 p-4">
+        <div className={styles.recordReadout}>
           <p className="break-words font-mono text-xs text-blue-100">{appointment.reference}</p>
-          <dl className="mt-4 grid gap-4 text-xs sm:grid-cols-2">
+          <dl className={styles.recordGrid}>
             <div>
               <dt className="text-gray-500">Instrument status</dt>
               <dd className="mt-1 text-gray-200">{appointment.status}</dd>
@@ -171,7 +172,7 @@ export default function RepresentativeAppointmentPreparationPanel({
       </p>
 
       {!loading && !error && available ? (
-        <label className="mt-4 flex items-start gap-3 rounded border border-amber-800/40 p-3">
+        <label className={styles.confirmation}>
           <input
             type="checkbox"
             checked={confirmed}
@@ -189,7 +190,7 @@ export default function RepresentativeAppointmentPreparationPanel({
 
       {error ? <p role="alert" className="mt-4 text-sm text-red-300">{error}</p> : null}
 
-      <div className="mt-4 flex flex-wrap gap-3">
+      <div className={styles.appointmentActions}>
         {!loading && !error && available ? (
           <button
             type="button"

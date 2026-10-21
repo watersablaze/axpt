@@ -1,3 +1,4 @@
+import { findCommercialPaper } from "@/domains/instruments/representative-program/commercial-utility-pack/commercial-papers/catalog";
 import CupTimingCheck from "./CupTimingCheck";
 import CupMaterialUse from "./CupMaterialUse";
 import cupStyles from "./cup-reading.module.css";
@@ -405,7 +406,8 @@ export default async function RepresentativeWorkspaceView({
                               Open separately <span aria-hidden="true">↗</span>
                             </Link>
                           ) : ((resource.resourceType === "STRUCTURED_CONTENT" &&
-                              (module === "REPRESENTATION" || module === "OPERATING_BOUNDARIES")) ||
+                              (module === "REPRESENTATION" || module === "OPERATING_BOUNDARIES" ||
+                                (module === "DOCUMENTS" && Boolean(findCommercialPaper(resource.resourceId))))) ||
                             (["INSTITUTIONAL_INSTRUMENT", "DOCUMENT"].includes(resource.resourceType) && module === "DOCUMENTS")) ? (
                             <Link
                               href={resource.resourceType === "INSTITUTIONAL_INSTRUMENT"

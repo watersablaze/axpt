@@ -1,3 +1,5 @@
+import CommercialPaperReview from "../../../CommercialPaperReview";
+import { loadRepresentativeCommercialPaper } from "@/domains/instruments/representative-program/commercial-utility-pack/commercial-papers/loadRepresentativeCommercialPaper";
 import { withSourceAuthorityJoinGraph } from "@/infrastructure/db/sourceAuthorityJoinGraph";
 import { createLocalReadTiming } from "@/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/localReadTiming";
 import CupReaderReady from "../../../CupReaderReady";
@@ -51,6 +53,9 @@ export default async function CupPublicationReader({ params, searchParams }: {
   }));
   if (!decision.allowed) notFound();
   const input = { client: prisma, userId, resourceReleaseId };
+  const commercialPaper = await loadRepresentativeCommercialPaper(input);
+  if (commercialPaper) return <><ReaderTiming value={timing.value()} /><CupReaderReady /><CommercialPaperReview paper={commercialPaper} /></>;
+
   const api = previewParticipantId
     ? "/api/admin/representative-program/participants/" + encodeURIComponent(previewParticipantId) +
       "/workspace-preview/resources/" + encodeURIComponent(resourceReleaseId)

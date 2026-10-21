@@ -4,6 +4,8 @@ import {
   useState,
 } from "react";
 
+import styles from "./correspondence-panels.module.css";
+
 type Communication = {
   id: number;
   type: string | null;
@@ -236,7 +238,7 @@ export default function RepresentativeCommunicationsPanel({
   }
 
   return (
-    <section className="rounded border border-cyan-500/20 bg-cyan-500/[0.035] p-4">
+    <section className={styles.panel}>
       <p className="text-xs uppercase tracking-[0.18em] text-cyan-300/70">
         Communications
       </p>
@@ -250,8 +252,8 @@ export default function RepresentativeCommunicationsPanel({
         Previewing never rotates access or sends email.
       </p>
 
-      <div className="mt-4 grid gap-3">
-        <div className="rounded border border-gray-800 bg-black p-3">
+      <div className={styles.composeGrid}>
+        <div className={styles.messageTool}>
           <p className="text-[10px] uppercase tracking-[0.16em] text-gray-500">
             Candidate Invitation
           </p>
@@ -307,7 +309,7 @@ export default function RepresentativeCommunicationsPanel({
           ) : null}
         </div>
 
-        <div className="rounded border border-gray-800 bg-black p-3">
+        <div className={styles.messageTool}>
           <p className="text-[10px] uppercase tracking-[0.16em] text-gray-500">
             Submission Receipt
           </p>
@@ -364,8 +366,55 @@ export default function RepresentativeCommunicationsPanel({
         </div>
       </div>
 
+      <details open className={styles.history}>
+        <summary className="cursor-pointer text-xs font-semibold text-gray-400">
+          Delivery History · {communications.length} recorded
+        </summary>
+
+        {communications.length ? (
+          <ul className="mt-3 space-y-2">
+            {[...communications].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).map(
+              (communication) => (
+                <li
+                  key={communication.id}
+                  className={styles.historyRow}
+                >
+                  <p className={styles.deliveryStatus} data-status={communication.status ?? "UNKNOWN"}>
+                    {communication.status ??
+                      "UNKNOWN"}
+                  </p>
+
+                  <p className="mt-1 break-words text-xs text-gray-300">
+                    {communication.subject ??
+                      communication.type ??
+                      "Representative communication"}
+                  </p>
+
+                  <p className={styles.recipient}>To {communication.to ?? "Not recorded"} · From {communication.from ?? "Not recorded"}</p>
+                  <p className="mt-1 text-[10px] text-gray-500">
+                    {new Date(
+                      communication.createdAt,
+                    ).toLocaleString()}
+                    {communication.messageId
+                      ? ` · ${communication.messageId}`
+                      : ""}
+                  </p>
+                </li>
+              ),
+            )}
+          </ul>
+        ) : (
+          <p className="mt-3 text-xs text-gray-600">
+            No representative communications recorded yet.
+          </p>
+        )}
+      </details>
+
+      {!preview ? <p className={styles.emptyPreview}>Choose a preview above to review the recipient, subject and email before approving delivery.</p> : null}
+
       {preview ? (
-        <section className="mt-4 rounded border border-gray-700 bg-black p-3">
+        <section className={styles.preview}>
+          <h4 className={styles.sectionTitle}>Review before delivery</h4>
           <div className="grid gap-1 text-xs text-gray-400">
             <p>
               <span className="text-gray-600">
@@ -394,7 +443,7 @@ export default function RepresentativeCommunicationsPanel({
               title={`${preview.type} email preview`}
               srcDoc={preview.html}
               sandbox=""
-              className="h-[720px] w-full bg-white"
+              className={styles.emailFrame}
             />
           </div>
 
@@ -455,48 +504,7 @@ export default function RepresentativeCommunicationsPanel({
         </div>
       ) : null}
 
-      <details className="mt-4 border-t border-gray-800 pt-3">
-        <summary className="cursor-pointer text-xs font-semibold text-gray-400">
-          Communication History
-        </summary>
 
-        {communications.length ? (
-          <ul className="mt-3 space-y-2">
-            {communications.map(
-              (communication) => (
-                <li
-                  key={communication.id}
-                  className="rounded border border-gray-800 bg-black p-3"
-                >
-                  <p className="text-[10px] uppercase tracking-[0.13em] text-gray-500">
-                    {communication.status ??
-                      "UNKNOWN"}
-                  </p>
-
-                  <p className="mt-1 break-words text-xs text-gray-300">
-                    {communication.subject ??
-                      communication.type ??
-                      "Representative communication"}
-                  </p>
-
-                  <p className="mt-1 text-[10px] text-gray-600">
-                    {new Date(
-                      communication.createdAt,
-                    ).toLocaleString()}
-                    {communication.messageId
-                      ? ` · ${communication.messageId}`
-                      : ""}
-                  </p>
-                </li>
-              ),
-            )}
-          </ul>
-        ) : (
-          <p className="mt-3 text-xs text-gray-600">
-            No representative communications recorded yet.
-          </p>
-        )}
-      </details>
     </section>
   );
 }

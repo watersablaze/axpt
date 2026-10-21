@@ -1,0 +1,198 @@
+.workspace {
+  --arp-foundation: #0c1116;
+  --arp-panel: #10171d;
+  --arp-rule: rgba(147,177,193,.15);
+  --arp-text: #d5e0e5;
+  --arp-muted: #92a2ad;
+  --arp-accent: #a8cbd4;
+  container-type: inline-size;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  color: var(--arp-text);
+  background: var(--arp-foundation);
+}
+.workspace > header { flex: 0 0 auto; padding-inline: 20px; }
+.workspace [hidden] { display: none !important; }
+.workspace button, .workspace input { font-family: inherit; }
+.workspace button { cursor: pointer; }
+.workspace button:disabled { cursor: default; opacity: .5; }
+.workspace button:focus-visible, .workspace a:focus-visible, .workspace input:focus-visible, .directoryList:focus-visible {
+  outline: 2px solid var(--arp-accent); outline-offset: 3px;
+}
+.commandBar { display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 12px; min-height: 53px; padding: 9px 18px; border-bottom: 1px solid var(--arp-rule); background: #0e151b; }
+.modeControls { display: flex; flex-wrap: wrap; gap: 7px; }
+.modeControls button, .railHeading button, .refreshRecord, .contextActions a, .contextActions button, .emptyStage button {
+  min-height: 33px; padding: 7px 10px; border: 1px solid var(--arp-rule); border-radius: 4px; color: #b7c9d2; background: transparent; font-size: 11px; line-height: 1.4; text-decoration: none;
+}
+.modeControls button[aria-pressed="true"] { color: #dfedf1; background: rgba(125,176,192,.1); border-color: rgba(145,198,210,.45); }
+.modeControls button:hover, .searchActions button:hover, .recordRow:hover { background: rgba(124,170,188,.07); }
+.commandIdentity { min-width: 0; margin: 0; color: #b9cbd4; font-size: 11px; text-align: right; overflow-wrap: anywhere; }
+.commandIdentity span { color: var(--arp-muted); }
+.desk { position: relative; display: grid; grid-template-columns: minmax(230px,270px) minmax(0,1fr) minmax(220px,260px); flex: 1 1 0%; min-height: 0; overflow: hidden; }
+.recordRail, .contextRail { display: flex; flex-direction: column; min-height: 0; min-width: 0; overflow: hidden; background: #0e151b; }
+.recordRail { border-right: 1px solid var(--arp-rule); }
+.contextRail { border-left: 1px solid var(--arp-rule); }
+.railHeading { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex: 0 0 auto; min-height: 48px; padding: 14px 16px; border-bottom: 1px solid var(--arp-rule); }
+.railHeading h2 { margin: 0; color: #bacdd6; font-size: 11px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; }
+.directory { display: flex; flex-direction: column; flex: 1 1 0%; min-height: 0; min-width: 0; }
+.directoryControls { flex: 0 0 auto; padding: 14px; border-bottom: 1px solid var(--arp-rule); }
+.searchForm label, .exactLookup label { display: block; margin-bottom: 7px; color: var(--arp-muted); font-size: 11px; }
+.searchForm input, .exactLookup input { width: 100%; min-width: 0; padding: 9px 10px; color: #dae5e9; border: 1px solid rgba(147,177,193,.22); border-radius: 4px; background: #0a1015; font-size: 12px; }
+.searchForm input::placeholder, .exactLookup input::placeholder { color: #687e8c; }
+.searchActions { display: flex; gap: 6px; margin-top: 8px; }
+.searchActions button, .exactLookup button, .loadMore { min-height: 30px; padding: 6px 9px; border: 1px solid var(--arp-rule); border-radius: 4px; color: #abc3ce; background: transparent; font-size: 10px; }
+.searchActions button:last-child { margin-left: auto; }
+.exactLookup { margin-top: 12px; color: #7f97a5; font-size: 10px; }
+.exactLookup summary { cursor: pointer; }
+.exactLookup form { display: grid; gap: 7px; margin-top: 10px; }
+.exactLookup label { margin: 0; }
+.directoryList { flex: 1 1 0%; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
+.directoryList ul { margin: 0; padding: 0; list-style: none; }
+.directoryList li { border-bottom: 1px solid var(--arp-rule); }
+.recordRow { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; width: 100%; min-width: 0; padding: 16px 14px; border: 0; border-left: 3px solid transparent; background: transparent; text-align: left; overflow-wrap: anywhere; }
+.recordRow[aria-pressed="true"] { border-left-color: #96bdca; background: rgba(124,170,188,.085); }
+.rowName { color: #dce8ed; font-size: 12px; font-weight: 600; line-height: 1.5; }
+.rowEmail { color: #a9bdc8; font-size: 11px; line-height: 1.5; }
+.rowReference { color: #738e9f; font-size: 9px; line-height: 1.5; font-family: ui-monospace, monospace; }
+.rowStatus { margin-top: 2px; color: #a5ccd3; font-size: 9px; letter-spacing: .08em; }
+.rowParticipant { color: #7d96a4; font-size: 10px; line-height: 1.5; }
+.directoryCount { flex: 0 0 auto; margin: 0; padding: 11px 14px; border-top: 1px solid var(--arp-rule); color: #78919f; font-size: 10px; }
+.directoryEmpty { padding: 16px; color: var(--arp-muted); font-size: 12px; line-height: 1.7; }
+.loadMore { display: block; margin: 14px auto; }
+.stage { display: flex; flex-direction: column; min-width: 0; min-height: 0; overflow: hidden; background: #0c1218; }
+.recordStage, .invitationStage, .inspector { display: flex; flex-direction: column; flex: 1 1 0%; min-width: 0; min-height: 0; overflow: hidden; }
+.recordToolbar { display: flex; flex: 0 0 auto; align-items: stretch; gap: 8px; min-width: 0; padding: 0 12px; border-bottom: 1px solid var(--arp-rule); background: #101820; }
+.toolTabs { display: flex; flex: 1 1 0%; gap: 4px; min-width: 0; overflow-x: auto; overscroll-behavior-x: contain; scrollbar-width: thin; }
+.toolTabs button { flex: 0 0 auto; position: relative; padding: 15px 9px; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #839eae; font-size: 11px; white-space: nowrap; }
+.toolTabs button[aria-current="page"] { border-bottom-color: #9dbecb; color: #d2e6ec; background: rgba(128,168,185,.06); }
+.refreshRecord { flex: 0 0 auto; align-self: center; font-size: 10px; padding: 6px 8px; }
+.recordHeading, .stageHeading { display: flex; flex: 0 0 auto; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 18px 22px; border-bottom: 1px solid var(--arp-rule); background: linear-gradient(110deg,rgba(103,86,136,.055),rgba(76,137,158,.045)); }
+.recordHeading h2, .stageHeading h2 { margin: 6px 0 0; color: #cddfe7; font-size: 19px; line-height: 1.4; font-weight: 500; }
+.stageHeading { display: block; }
+.stageHeading p { margin: 7px 0 0; color: var(--arp-muted); font-size: 12px; line-height: 1.6; }
+.eyebrow { margin: 0; color: #809cab; font-size: 9px; line-height: 1.6; letter-spacing: .1em; overflow-wrap: anywhere; text-transform: uppercase; }
+.recordCandidate { margin: 6px 0 0; color: #92abb9; font-size: 11px; line-height: 1.6; overflow-wrap: anywhere; }
+.inspectorScroll, .invitationBody { flex: 1 1 0%; min-height: 0; min-width: 0; overflow: auto; overscroll-behavior: contain; padding: 20px 22px 36px; scrollbar-gutter: stable; }
+.recordBody { display: grid; gap: 18px; width: 100%; min-width: 0; }
+.recordBody > div { min-width: 0; }
+.recordBody section { min-width: 0; max-width: 100%; }
+.recordBody pre { max-width: 100%; }
+.invitationBody > section { width: 100%; max-width: 880px; margin-inline: auto; }
+.contextBody { flex: 1 1 0%; min-height: 0; overflow-y: auto; overscroll-behavior: contain; padding: 20px 16px; }
+.contextName { margin: 9px 0 0; color: #d1e0e7; font-size: 16px; font-weight: 500; line-height: 1.5; overflow-wrap: anywhere; }
+.contextDetails { display: grid; gap: 16px; margin: 22px 0; }
+.contextDetails dt { color: #6f8b9c; font-size: 9px; text-transform: uppercase; letter-spacing: .09em; }
+.contextDetails dd { margin: 5px 0 0; color: #b7cbd6; font-size: 11px; line-height: 1.65; overflow-wrap: anywhere; }
+.contextActions { display: grid; gap: 9px; padding-top: 14px; border-top: 1px solid var(--arp-rule); }
+.contextActions a { text-align: center; }
+.contextActions > * { min-width: 0; }
+.contextNote { margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--arp-rule); }
+.contextNote h3 { margin: 0; color: #90aab8; font-size: 10px; font-weight: 500; }
+.contextNote p, .contextCopy { margin: 8px 0 0; color: #7893a2; font-size: 11px; line-height: 1.8; }
+.contextLink { display: block; margin-top: 18px; color: #a2c1ce; font-size: 11px; text-decoration: none; }
+.contextLink:hover { text-decoration: underline; }
+.emptyStage { display: flex; flex-direction: column; align-items: flex-start; justify-content: center; flex: 1 1 0%; padding: clamp(22px,5vw,60px); }
+.emptyStage h2 { margin: 14px 0 0; color: #c8dce6; font-size: clamp(20px,2.2vw,30px); font-weight: 400; letter-spacing: -.03em; }
+.emptyStage > p:not(.eyebrow) { max-width: 52ch; margin: 15px 0 0; color: #8ca4b3; font-size: 13px; line-height: 1.9; }
+.emptyStage button { margin-top: 20px; }
+.emptyStage .quiet, .quiet { color: #7893a3; font-size: 11px; line-height: 1.6; }
+.error { margin: 12px; padding: 12px; border: 1px solid rgba(214,127,127,.3); color: #dfaeae; background: rgba(104,40,40,.1); font-size: 12px; line-height: 1.7; }
+.mobileOnly, .contextToggle, .modeControls .mobileOnly, .modeControls .contextToggle, .railHeading .mobileOnly, .railHeading .contextToggle, .emptyStage .mobileOnly { display: none; }
+.scrim { display: none; }
+@container (max-width: 1100px) {
+  .desk { grid-template-columns: 245px minmax(0,1fr); }
+  .contextRail { display: none; }
+  .contextToggle, .modeControls .contextToggle, .railHeading .contextToggle { display: inline-flex; }
+  .contextRail[data-mobile-open="true"] { display: flex; position: absolute; z-index: 51; inset: 0 0 0 auto; width: min(340px,90%); box-shadow: -16px 0 50px #0008; }
+  .scrim[data-panel="context"] { display: block; position: absolute; z-index: 40; inset: 0; border: 0; background: rgba(0,0,0,.6); }
+  .commandIdentity { max-width: 32%; }
+}
+@container (max-width: 760px) {
+  .desk { grid-template-columns: minmax(0,1fr); }
+  .scrim { display: block; position: absolute; z-index: 40; inset: 0; border: 0; background: rgba(0,0,0,.6); }
+  .recordRail { display: none; }
+  .mobileOnly, .modeControls .mobileOnly, .railHeading .mobileOnly, .emptyStage .mobileOnly { display: inline-flex; }
+  .recordRail[data-mobile-open="true"] { display: flex; position: absolute; z-index: 51; inset: 0 auto 0 0; width: min(320px,90%); box-shadow: 16px 0 50px #0008; }
+  .workspace > header { padding-inline: 14px; }
+  .commandBar { align-items: flex-start; flex-direction: column; padding: 8px 12px; gap: 6px; }
+  .commandIdentity { max-width: 100%; text-align: left; font-size: 10px; }
+  .modeControls { gap: 5px; }
+  .modeControls button { min-height: 32px; font-size: 10px; padding: 6px 8px; }
+  .recordToolbar { flex-wrap: wrap; gap: 0; padding-inline: 10px; }
+  .toolTabs { flex-basis: 100%; }
+  .toolTabs button { padding: 12px 8px; font-size: 10px; }
+  .refreshRecord { margin: 6px 0 9px; }
+  .recordHeading, .stageHeading { padding: 14px; }
+  .recordHeading h2, .stageHeading h2 { font-size: 17px; }
+  .inspectorScroll, .invitationBody { padding: 16px 14px 30px; }
+}
+
+/* ARP 1D: continuous surface and functional color cues. Scoped to this desk only. */
+:global(main):has(> .workspace) {
+  padding: 0 !important;
+  overflow: hidden !important;
+}
+.workspace { --arp-rule: rgba(147,177,193,.18); }
+.recordRail { background: linear-gradient(180deg,rgba(53,124,146,.055),transparent 65%),#0e151b; }
+.contextRail { background: linear-gradient(180deg,rgba(121,100,160,.055),transparent 65%),#0e151b; }
+.recordRail .railHeading { border-top: 2px solid rgba(104,187,207,.46); }
+.contextRail .railHeading { border-top: 2px solid rgba(162,139,195,.42); }
+.railHeading { min-height: 46px; padding-block: 12px; }
+.modeControls button[aria-pressed="true"] { background: rgba(74,153,181,.13); border-color: rgba(120,196,218,.5); color: #d0ebf3; }
+.modeControls button:last-child { border-color: rgba(154,134,194,.3); color: #c6b9df; }
+.recordToolbar { padding-inline: 10px; }
+.toolTabs { flex-wrap: wrap; overflow: visible; gap: 0 3px; }
+.toolTabs button { --tool-color: #a5c9d8; padding: 12px 8px; }
+.toolTabs button[data-tool="intake"] { --tool-color: #8cc9b4; }
+.toolTabs button[data-tool="agreement"] { --tool-color: #c2b0dc; }
+.toolTabs button[data-tool="appointment"] { --tool-color: #d6bc89; }
+.toolTabs button[data-tool="cup"] { --tool-color: #88c9d9; }
+.toolTabs button[data-tool="correspondence"] { --tool-color: #9ab6dc; }
+.toolTabs button[data-tool="access"] { --tool-color: #c4b3d6; }
+.toolTabs button { color: color-mix(in srgb,var(--tool-color) 65%,#84929c); }
+.toolTabs button:hover:not(:disabled) { background: color-mix(in srgb,var(--tool-color) 7%,transparent); color: var(--tool-color); }
+.toolTabs button[aria-current="page"] { color: var(--tool-color); border-bottom-color: var(--tool-color); background: color-mix(in srgb,var(--tool-color) 9%,transparent); }
+.recordHeading { padding-block: 15px; }
+.headingActions { display: flex; flex: 0 0 auto; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px; }
+.headingActions .quiet { margin: 0; }
+.headingActions .refreshRecord { margin: 0; border-color: rgba(103,171,193,.3); color: #a9d1de; background: rgba(74,134,156,.075); }
+.headingActions .refreshRecord:hover:not(:disabled) { border-color: #729cac; background: rgba(74,134,156,.14); }
+.recordRow[aria-pressed="true"] { border-left-color: #7ac5d5; background: linear-gradient(100deg,rgba(72,145,166,.14),rgba(72,145,166,.045)); }
+.searchActions button:first-child { color: #b4dce8; border-color: rgba(113,183,205,.3); background: rgba(65,132,153,.09); }
+.contextActions > a:first-child { color: #b4d8e5; border-color: rgba(111,176,201,.34); background: rgba(68,132,157,.09); }
+.contextActions button { color: #c8b8df; border-color: rgba(163,135,201,.3); background: rgba(121,91,159,.07); }
+.recordBody [data-record-field] { border-radius: 4px; border-color: var(--arp-rule); background: #0e171e; }
+.recordBody [data-record-field="Intake status"], .recordBody [data-record-field="Qualification decision"] {
+  border-top: 2px solid rgba(115,181,157,.5);
+  background: linear-gradient(120deg,rgba(63,126,104,.09),transparent),#0e171e;
+}
+.workspace [data-state="ADMITTED"], .workspace [data-state="QUALIFIED"], .workspace [data-state="ACTIVE"] { color: #b1d6c4; }
+.workspace [data-state="PENDING"], .workspace [data-state="UNDER_REVIEW"], .workspace [data-state="SUBMITTED"], .workspace [data-state="DRAFT"] { color: #d8c195; }
+.workspace [data-state="REJECTED"], .workspace [data-state="DECLINED"], .workspace [data-state="WITHDRAWN"], .workspace [data-state="REVOKED"] { color: #d6a7a7; }
+.recordBody [data-record-field="Participant ID"], .recordBody [data-record-field="Master Agreement ID"] {
+  border-top: 2px solid rgba(154,133,186,.4);
+}
+.recordBody [data-record-field="Participant ID"] dd, .recordBody [data-record-field="Master Agreement ID"] dd {
+  color: #b4bdcd; font-family: ui-monospace,monospace; font-size: 11px; line-height: 1.7;
+}
+@container (max-width: 760px) {
+  .toolTabs button { padding: 10px 7px; }
+  .recordToolbar { padding-inline: 7px; }
+  .recordHeading { flex-wrap: wrap; }
+  .headingActions { margin-left: auto; }
+  .headingActions .refreshRecord { margin: 0; }
+}
+
+/* 1E: the desk owns the outer frame; individual tools begin at their own heading. */
+.recordBody > div > div > section {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  padding: 0;
+  box-shadow: none;
+}

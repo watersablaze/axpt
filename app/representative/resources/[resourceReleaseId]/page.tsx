@@ -1,3 +1,5 @@
+import CommercialPaperReview from "../../CommercialPaperReview";
+import { loadRepresentativeCommercialPaper } from "@/domains/instruments/representative-program/commercial-utility-pack/commercial-papers/loadRepresentativeCommercialPaper";
 import { SupportingDocumentView } from "../../SupportingDocumentView";
 import { loadRepresentativeSupportingDocumentWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/loadRepresentativeSupportingDocumentWithClient";
 import { resolveRepresentativeCommercialUtilityPackConsumptionWithClient } from
@@ -37,6 +39,9 @@ export default async function RepresentativeResourcePage({
     });
 
   if (!consumption.allowed) notFound();
+  const commercialPaper = await loadRepresentativeCommercialPaper({client: prisma, userId: principal.userId, resourceReleaseId});
+  if (commercialPaper) return <CommercialPaperReview paper={commercialPaper} />;
+
   const supporting=await loadRepresentativeSupportingDocumentWithClient({client:prisma,userId:principal.userId,resourceReleaseId});
   if (supporting) {
     const publication=supporting.publication;

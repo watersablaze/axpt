@@ -1,3 +1,4 @@
+import { findCommercialPaper } from "@/domains/instruments/representative-program/commercial-utility-pack/commercial-papers/catalog";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
@@ -41,7 +42,11 @@ export async function GET(request: Request) {
       participantId: review.pack.participantId, reviewHash: review.reviewHash,
       resources: review.resources.map(resource => ({id: resource.id, resourceId: resource.resourceId,
         label: resource.label, state: resource.state, canView: resource.canView, canDownload: resource.canDownload,
-        canPresent: resource.canPresent, canTransmit: resource.canTransmit}))}}, 200);
+        canPresent: resource.canPresent, canTransmit: resource.canTransmit,
+        commercialPaper: (() => {const paper = findCommercialPaper(resource.resourceId); return paper ? {
+          status: paper.status, referenceStatus: paper.referenceStatus,
+          previewHref: "/admin/representative-program/commercial-papers/" + paper.key + "?hash=" + paper.contentHash,
+        } : null;})()}))}}, 200);
   } catch (error) {return failure(error);}
 }
 export async function POST(request: Request) {

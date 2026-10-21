@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import styles from "./representative-admin-workspace.module.css";
 
 import RepresentativeAccessReissuePanel from "./RepresentativeAccessReissuePanel";
 import RepresentativeIntakeDecisionControls from "./RepresentativeIntakeDecisionControls";
@@ -10,7 +11,6 @@ import RepresentativeCommercialUtilityPackPanel from "./RepresentativeCommercial
 import RepresentativeCommunicationsPanel from "./RepresentativeCommunicationsPanel";
 import JensWorkspacePreparation from "./JensWorkspacePreparation";
 import JensWorkspaceAccess from "./JensWorkspaceAccess";
-import OpenRepresentativeFieldRoom from "./OpenRepresentativeFieldRoom";
 
 type Intake = {
   id: string;
@@ -38,15 +38,6 @@ type Intake = {
     createdAt: string;
   }>;
 };
-
-type IntakeLookup = Pick<
-  Intake,
-  "id" | "reference" | "candidateDisplayName" | "candidateEmail" | "status"
->;
-
-type SearchResponse =
-  | { ok: true; intakes: IntakeLookup[] }
-  | { ok: false; error: string };
 
 type IntakeResponse =
   | { ok: true; intake: Intake }
@@ -435,376 +426,79 @@ function CandidateSubmissionDossier({
   );
 }
 
-export default function RepresentativeIntakeInspector({
-  focusedIntakeId,
-  onFocusedIntakeChange,
-}: {
-  focusedIntakeId?: string | null;
-  onFocusedIntakeChange?: (intakeId: string) => void;
-}) {
+export type RepresentativeIntakeIdentity = Pick<Intake,
+  "id" | "reference" | "candidateDisplayName" | "candidateEmail" | "status" | "qualificationDecision" | "admittedParticipantId">;
 
+export default function RepresentativeIntakeInspector({focusedIntakeId, onIdentity}: {
+  focusedIntakeId: string;
+  onIdentity: (identity: RepresentativeIntakeIdentity | null, sourceIntakeId: string) => void;
+}) {
   const views = [
-    ["overview", "Overview"],
-    ["intake", "Intake"],
-    ["agreement", "Agreement"],
-    ["appointment", "Appointment & Authority"],
-    ["cup", "CUP"],
-    ["correspondence", "Correspondence"],
-    ["access", "Access"],
+    ["overview", "Overview"], ["intake", "Intake & Qualification"], ["agreement", "Agreement"],
+    ["appointment", "Appointment & Authority"], ["cup", "CUP"],
+    ["correspondence", "Correspondence"], ["access", "Access"],
   ] as const;
   type View = (typeof views)[number][0];
   const [view, setView] = useState<View>("overview");
-  const [intakeId, setIntakeId] = useState("");
   const [intake, setIntake] = useState<Intake | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [search, setSearch] = useState("");
-  const [matches, setMatches] = useState<IntakeLookup[]>([]);
-  const [searching, setSearching] = useState(false);
-  const [searched, setSearched] = useState(false);
-  const [searchError, setSearchError] = useState<string | null>(null);
-
-  async function searchIntakes(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const query = search.trim();
-    if (query.length < 2) return;
-
-    setSearching(true);
-    setSearched(false);
-    setSearchError(null);
-    setMatches([]);
-
+  const request = useRef<AbortController | null>(null);
+  const generation = useRef(0);
+  const loadIntakeById = useCallback(async (id: string) => {
+    request.current?.abort();
+    const controller = new AbortController(); request.current = controller;
+    const current = ++generation.current;
+    setLoading(true); setError(null);
     try {
-      const response = await fetch(
-        `/api/admin/representative-program/intakes?q=${encodeURIComponent(query)}`,
-        { cache: "no-store" },
-      );
-      const payload = (await response.json()) as SearchResponse;
-      if (!response.ok || !payload.ok) {
-        setSearchError(
-          payload.ok
-            ? `Unable to search intakes (${response.status}).`
-            : payload.error,
-        );
-        return;
-      }
-      setMatches(payload.intakes);
-      setSearched(true);
-    } catch {
-      setSearchError("Unable to reach the intake search service.");
-    } finally {
-      setSearching(false);
-    }
-  }
-
-  async function loadIntakeById(id: string) {
-    if (!id) return;
-
-    setLoading(true);
-    setError(null);
-
-    // Preserve the focused record during a same-intake refresh so
-    // child operator controls retain their local success state.
-    // Clear only when moving to a different candidate.
-    if (intake?.id !== id) {
-      setIntake(null);
-      setView("overview");
-    }
-
-    try {
-      const response = await fetch(
-        `/api/admin/representative-program/intakes/${encodeURIComponent(id)}`,
-        { cache: "no-store" },
-      );
+      const response = await fetch(`/api/admin/representative-program/intakes/${encodeURIComponent(id)}`,
+        {cache: "no-store", signal: controller.signal});
       const payload = (await response.json()) as IntakeResponse;
-
-      if (!response.ok || !payload.ok) {
-        setError(
-          payload.ok
-            ? `Unable to load intake (${response.status}).`
-            : payload.error,
-        );
-        return;
+      if (current !== generation.current) return;
+      if (!response.ok || !payload.ok || payload.intake.id !== id) {
+        setError("The selected intake could not be loaded. Refresh to retry.");
+        setIntake(null); onIdentity(null, id); return;
       }
-
-      setIntake(payload.intake);
+      const record = payload.intake;
+      setIntake(record);
+      onIdentity({id: record.id, reference: record.reference, candidateDisplayName: record.candidateDisplayName,
+        candidateEmail: record.candidateEmail, status: record.status, qualificationDecision: record.qualificationDecision,
+        admittedParticipantId: record.admittedParticipantId}, id);
     } catch {
-      setError("Unable to reach the intake service.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    if (!focusedIntakeId) return;
-
-    setIntakeId(focusedIntakeId);
-    void loadIntakeById(focusedIntakeId);
-  }, [focusedIntakeId]);
-
-  async function loadIntake(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const identifier = intakeId.trim();
-
-    if (!identifier) return;
-
-    let resolvedId = identifier;
-
-    if (identifier.toUpperCase().startsWith("FWI-")) {
-      setLoading(true);
-      setError(null);
-
-      try {
-        const response = await fetch(
-          `/api/admin/representative-program/intakes?q=${encodeURIComponent(
-            identifier,
-          )}`,
-          { cache: "no-store" },
-        );
-
-        const payload = (await response.json()) as SearchResponse;
-
-        if (!response.ok || !payload.ok) {
-          setError(
-            payload.ok
-              ? `Unable to resolve intake reference (${response.status}).`
-              : payload.error,
-          );
-          return;
-        }
-
-        const exact = payload.intakes.find(
-          (item) => item.reference.toLowerCase() === identifier.toLowerCase(),
-        );
-
-        if (!exact) {
-          setError("No intake matches that institutional reference.");
-          return;
-        }
-
-        resolvedId = exact.id;
-        setIntakeId(exact.id);
-      } catch {
-        setError("Unable to resolve the intake reference.");
-        return;
-      } finally {
-        setLoading(false);
+      if (!controller.signal.aborted && current === generation.current) {
+        setError("The selected intake could not be reached. Refresh to retry."); setIntake(null); onIdentity(null, id);
       }
-    }
+    } finally {if (current === generation.current) setLoading(false);}
+  }, [onIdentity]);
+  useEffect(() => {
+    void loadIntakeById(focusedIntakeId);
+    return () => {++generation.current; request.current?.abort();};
+  }, [focusedIntakeId, loadIntakeById]);
+  return <section className={styles.inspector} aria-label="Selected record tools">
+    <div className={styles.recordToolbar}>
+      <nav className={styles.toolTabs} aria-label="Candidate workspace tools">
+        {views.map(([key, label]) => <button key={key} type="button" disabled={!intake}
+          data-tool={key} aria-current={view === key ? "page" : undefined} onClick={() => setView(key)}>{label}</button>)}
+      </nav>
 
-    if (onFocusedIntakeChange && resolvedId !== focusedIntakeId) {
-      onFocusedIntakeChange(resolvedId);
-      return;
-    }
-
-    await loadIntakeById(resolvedId);
-  }
-
-  return (
-    <section
-      aria-busy={loading}
-      className={[
-        "mx-auto w-full rounded border border-gray-800 bg-gray-950 p-5",
-        intake ? "max-w-3xl" : "max-w-2xl",
-      ].join(" ")}
-    >
-      <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
-        Operator Review
-      </p>
-      <h2 className="mt-2 text-xl font-semibold text-white">
-        Inspect Candidate Intake
-      </h2>
-      <p className="mt-2 max-w-2xl text-sm leading-5 text-gray-400">
-        Search the candidate registry first. Use exact lookup only when you
-        already have a known institutional identifier. Viewing this record makes
-        no status change.
-      </p>
-
-      <form
-        onSubmit={searchIntakes}
-        className="mt-5 flex flex-wrap items-end gap-3"
-      >
-        <label className="grid min-w-64 flex-1 gap-2">
-          <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
-            Find Candidate
-          </span>
-          <input
-            required
-            minLength={2}
-            maxLength={100}
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Name, email, or reference"
-            className="rounded border border-gray-700 bg-black px-3 py-2 text-white outline-none focus:border-gray-500"
-          />
-        </label>
-        <button
-          type="submit"
-          disabled={searching}
-          className="rounded border border-gray-700 bg-gray-900 px-4 py-2 text-sm text-gray-200 hover:bg-gray-800 disabled:opacity-50"
-        >
-          {searching ? "Searching…" : "Search"}
-        </button>
-      </form>
-
-      {searchError ? (
-        <p role="alert" className="mt-3 text-sm text-red-300">
-          {searchError}
-        </p>
-      ) : null}
-
-      {searched && matches.length === 0 ? (
-        <p role="status" className="mt-3 text-sm text-gray-400">
-          No matching intakes.
-        </p>
-      ) : null}
-
-      {matches.length > 0 ? (
-        <ul aria-label="Matching intakes" className="mt-3 space-y-2">
-          {matches.map((match) => (
-            <li key={match.id}>
-              <button
-                type="button"
-                onClick={() => {
-                  setIntakeId(match.id);
-
-                  if (onFocusedIntakeChange && match.id !== focusedIntakeId) {
-                    onFocusedIntakeChange(match.id);
-                    return;
-                  }
-
-                  void loadIntakeById(match.id);
-                }}
-                className="w-full rounded border border-gray-800 bg-black p-3 text-left hover:border-gray-600"
-              >
-                <span className="block text-sm font-semibold text-white">
-                  {match.candidateDisplayName}
-                </span>
-                <span className="mt-1 block text-xs text-gray-400">
-                  {match.candidateEmail} · {match.reference} · {match.status}
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
-      ) : null}
-
-      <details className="mt-5 rounded border border-gray-900 bg-black">
-        <summary className="flex cursor-pointer list-none items-center justify-between gap-4 px-4 py-3">
-          <span>
-            <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-gray-400">
-              Exact lookup
-            </span>
-            <span className="mt-1 block text-xs text-gray-600">
-              Load by internal ID or institutional reference
-            </span>
-          </span>
-
-          <span className="rounded border border-gray-800 bg-gray-950 px-2 py-1 text-[10px] uppercase tracking-[0.14em] text-gray-600">
-            Fallback
-          </span>
-        </summary>
-
-        <div className="border-t border-gray-900 px-4 py-4">
-          <form
-            onSubmit={loadIntake}
-            className="flex flex-wrap items-end gap-3"
-          >
-            <label className="grid min-w-64 flex-1 gap-2">
-              <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
-                Intake ID or Reference
-              </span>
-              <input
-                required
-                maxLength={191}
-                value={intakeId}
-                onChange={(event) => setIntakeId(event.target.value)}
-                placeholder="Paste internal ID or FWI reference"
-                className="rounded border border-gray-700 bg-black px-3 py-2 text-white outline-none focus:border-gray-500"
-              />
-            </label>
-            <button
-              type="submit"
-              disabled={loading}
-              className="rounded border border-gray-700 bg-gray-900 px-4 py-2 text-sm font-semibold text-gray-300 hover:border-gray-600 hover:bg-gray-800 disabled:opacity-50"
-            >
-              {loading ? "Loading…" : "Load Intake"}
-            </button>
-          </form>
-        </div>
-      </details>
-
-      {error ? (
-        <p role="alert" className="mt-4 text-sm text-red-300">
-          {error}
-        </p>
-      ) : null}
-
-      {intake ? (
-
-        <div className="mt-6 grid min-w-0 gap-5">
-          <nav aria-label="Candidate workspace"
-            className="sticky top-0 z-10 flex flex-wrap gap-2 border-y border-gray-800 bg-[#080e17] p-3">
-            {views.map(([key, label]) => (
-              <button key={key} type="button"
-                aria-current={view === key ? "page" : undefined}
-                onClick={() => setView(key)}
-                className={view === key
-                  ? "rounded border border-[#b99657] bg-[#b99657]/15 px-3 py-2 text-sm font-semibold text-[#ead3a4]"
-                  : "rounded border border-gray-800 px-3 py-2 text-sm text-gray-300 hover:border-gray-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#b99657]"}>
-                {label}
-              </button>
-            ))}
-          </nav>
-
-          <div className="space-y-5">
-            <div className="rounded border border-gray-800 bg-black p-4">
-              <div className="flex flex-wrap items-start justify-between gap-4">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
-                    Focused Candidate
-                  </p>
-                  <h3 className="mt-2 text-lg font-semibold text-white">
-                    {intake.candidateDisplayName}
-                  </h3>
-                  <p className="mt-1 text-sm text-gray-400">
-                    {intake.candidateEmail}
-                  </p>
-                  <a href="/admin/representative-program/buyer-dossiers" className="mt-2 inline-block text-sm text-[#ead3a4] underline underline-offset-4">Buyer Introductions →</a>
-                  <p className="mt-2 break-all font-mono text-xs text-gray-500">
-                    {intake.reference} · {intake.id}
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3">
-                  {intake.admittedParticipantId ? (
-                    <OpenRepresentativeFieldRoom
-                      key={intake.admittedParticipantId}
-                      participantId={intake.admittedParticipantId}
-                    />
-                  ) : null}
-                  {intake.admittedParticipantId ? (
-                    <a
-                      href={
-                        "/admin/representative-program/participants/" +
-                        encodeURIComponent(intake.admittedParticipantId) +
-                        "/workspace-preview"
-                      }
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="rounded border border-[#b99657] px-3 py-2 text-sm font-medium text-[#ead3a4] hover:bg-[#b99657]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#b99657]"
-                    >
-                      Open Workspace Preview ↗
-                    </a>
-                  ) : null}
-                  <div className="rounded border border-gray-700 bg-gray-950 px-3 py-2 text-xs font-semibold uppercase tracking-[0.14em] text-gray-300">
-                    {intake.status}
-                  </div>
-                </div>
-              </div>
-            </div>
-
+    </div>
+    <div className={styles.recordHeading}>
+      <div><p className={styles.eyebrow}>{intake?.reference || "Loading selected intake"}</p>
+        <h2>{views.find(([key]) => key === view)?.[1]}</h2>
+        {intake ? <p className={styles.recordCandidate}>{intake.candidateDisplayName} · {intake.candidateEmail}</p> : null}
+      </div>
+      <div className={styles.headingActions}>
+        {loading ? <p role="status" className={styles.quiet}>Updating record…</p> : null}
+      <button type="button" className={styles.refreshRecord} disabled={loading} onClick={() => void loadIntakeById(focusedIntakeId)}>Refresh Record</button>
+      </div>
+    </div>
+    <div className={styles.inspectorScroll} aria-busy={loading}>
+      {error ? <p role="alert" className={styles.error}>{error}</p> : null}
+      {intake ? <div className={styles.recordBody}>
+        {(view === "cup" || view === "appointment") &&
+          !(intake.status === "ADMITTED" && intake.admittedParticipantId) ?
+          <p className={styles.quiet}>These controls become available after admission and linkage to a Program participant.</p> : null}
+        <div style={{display: view === "overview" || view === "intake" ? undefined : "none"}} className="space-y-5">
             <dl style={{ display: view === "overview" ? undefined : "none" }} className="grid gap-3 text-sm sm:grid-cols-2">
               {[
                 ["Intake status", intake.status],
@@ -821,12 +515,13 @@ export default function RepresentativeIntakeInspector({
               ].map(([label, value]) => (
                 <div
                   key={label}
+                  data-record-field={label}
                   className="rounded border border-gray-800 bg-black p-3"
                 >
                   <dt className="text-xs uppercase tracking-wide text-gray-500">
                     {label}
                   </dt>
-                  <dd className="mt-2 break-all text-gray-200">{value}</dd>
+                  <dd data-state={label === "Intake status" || label === "Qualification decision" ? value : undefined} className="mt-2 break-all text-gray-200">{value}</dd>
                 </div>
               ))}
             </dl>
@@ -846,17 +541,7 @@ export default function RepresentativeIntakeInspector({
 </div>
           </div>
 
-          <aside className="space-y-4">
-            <div className="rounded border border-gray-800 bg-black p-3">
-              <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
-                Operator Actions
-              </p>
-              <p className="mt-2 text-xs leading-5 text-gray-400">
-                Controls appear only when the candidate reaches the lifecycle
-                state that permits them.
-              </p>
-            </div>
-
+          <div className="space-y-4">
             <div hidden={view !== "correspondence"}>
 <RepresentativeCommunicationsPanel
               key={`${intake.id}-communications`}
@@ -946,9 +631,8 @@ export default function RepresentativeIntakeInspector({
 </div>
               </>
             ) : null}
-          </aside>
-        </div>
-      ) : null}
-    </section>
-  );
+          </div>
+      </div> : !error ? <p className={styles.quiet}>Loading the selected record…</p> : null}
+    </div>
+  </section>;
 }

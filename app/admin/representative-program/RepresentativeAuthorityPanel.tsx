@@ -1,4 +1,5 @@
 "use client";
+import styles from "./governance-panels.module.css";
 
 import { useEffect, useRef, useState } from "react";
 
@@ -158,7 +159,7 @@ export default function RepresentativeAuthorityPanel({
     "mt-2 w-full rounded border border-gray-700 bg-gray-950 p-2 text-xs text-gray-200";
 
   return (
-    <section className="mt-6 border-t border-gray-800 pt-5">
+    <section className={styles.authoritySection}>
       <h4 className="text-sm font-semibold text-amber-200">Authority Register</h4>
       <p className="mt-3 text-xs leading-6 text-gray-400">
         Each authority requires a separate operator decision.
@@ -170,9 +171,9 @@ export default function RepresentativeAuthorityPanel({
       {stateError ? <p role="alert" className="mt-3 text-xs text-red-300">Authority state unavailable.</p> : null}
       {!entries && !stateError ? <p className="mt-3 text-xs text-gray-500">Loading authority register…</p> : null}
 
-      <div className="mt-4 space-y-3">
+      <div className={styles.authorityList}>
         {entries?.map(entry => (
-          <article key={entry.key} className="rounded border border-gray-800 p-3">
+          <article key={entry.key} className={styles.authorityRow} data-exercisable={entry.exercisable}>
             <p className="text-xs font-medium text-gray-200">{entry.title}</p>
             <p className="mt-2 text-xs text-amber-200">
               {entry.authority?.authorityClass ?? "NO OPERATIVE RECORD"}
@@ -187,9 +188,11 @@ export default function RepresentativeAuthorityPanel({
                   Effective: {entry.authority.effectiveAt} ·
                   Expires: {entry.authority.expiresAt ?? "No recorded expiry"}
                 </p>
-                <pre className="mt-2 whitespace-pre-wrap break-words text-[11px] text-gray-400">
-                  {JSON.stringify(entry.authority.conditions ?? {}, null, 2)}
-                </pre>
+                <details className={styles.conditionsDisclosure}><summary>Recorded conditions</summary>
+                  <pre className="mt-2 whitespace-pre-wrap break-words text-[11px] text-gray-400">
+                    {JSON.stringify(entry.authority.conditions ?? {}, null, 2)}
+                  </pre>
+                </details>
               </>
             ) : null}
 
@@ -203,7 +206,7 @@ export default function RepresentativeAuthorityPanel({
             </button>
 
             {draft?.entry.key === entry.key ? (
-              <form className="mt-4 space-y-3 border-t border-gray-800 pt-4"
+              <form className={styles.authorityDecision}
                 onSubmit={event => { event.preventDefault(); void submit(); }}>
                 <p className="text-xs font-semibold text-amber-200">
                   {draft.decision === "RECORD" ? "Record Authority" : "Revoke Displayed Authority"}

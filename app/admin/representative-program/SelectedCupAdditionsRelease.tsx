@@ -1,7 +1,9 @@
 "use client";
+import styles from "./operator-panels.module.css";
 import { useEffect, useRef, useState } from "react";
 type Resource = {id: string; resourceId: string; label: string | null; state: string;
-  canView: boolean; canDownload: boolean; canPresent: boolean; canTransmit: boolean};
+  canView: boolean; canDownload: boolean; canPresent: boolean; canTransmit: boolean;
+  commercialPaper?: {status: string; referenceStatus: string | null; previewHref: string} | null};
 type Review = {packageId: string; packageReference: string; participantId: string; reviewHash: string; resources: Resource[]};
 const endpoint = "/api/admin/representative-program/commercial-utility-packs/release-additions";
 const button = "rounded border border-amber-800 px-3 py-2 text-xs text-amber-200 disabled:opacity-50";
@@ -61,8 +63,8 @@ export default function SelectedCupAdditionsRelease({packageId, participantId, r
       }
     }
   }
-  return <details className="mt-3 rounded border border-amber-900/50 p-3">
-    <summary className="cursor-pointer text-xs font-medium text-amber-200">Release selected additions</summary>
+  return <details className={styles.releaseTool}>
+    <summary>Release selected additions</summary>
     <p className="mt-2 text-xs leading-5 text-gray-400">
       Select up to five withheld resources. Release preserves their current permissions and does not send a notification.
     </p>
@@ -80,11 +82,17 @@ export default function SelectedCupAdditionsRelease({packageId, participantId, r
         {busy && !review ? "Loading review…" : "Review Selected Additions"}
       </button>
     </fieldset>
-    {review ? <fieldset disabled={disabled || busy} className="mt-3 space-y-3 border-t border-gray-800 pt-3">
+    {review ? <fieldset disabled={disabled || busy} className={styles.releaseDecision}>
       <legend className="sr-only">Reviewed release decision</legend>
       <p className="break-all font-mono text-xs text-gray-400">{review.packageReference}</p>
       <ul className="space-y-2 text-xs text-gray-300">{review.resources.map(resource => <li key={resource.id}>
         <p>{resource.label || resource.resourceId}</p>
+        {resource.commercialPaper ? <div className="mt-2 text-amber-200">
+          <p>{resource.commercialPaper.status}</p>
+          {resource.commercialPaper.referenceStatus ? <p>Reference: {resource.commercialPaper.referenceStatus}</p> : null}
+          <a href={resource.commercialPaper.previewHref} target="_blank" rel="noreferrer" className="underline">Preview reviewed paper ↗</a>
+          <p>CUP release grants reading access under the displayed permissions. It does not issue this paper.</p>
+        </div> : null}
         <p className="mt-1 text-gray-500">Permissions remain: View {resource.canView ? "permitted" : "withheld"} · Download {resource.canDownload ? "permitted" : "withheld"} · Present {resource.canPresent ? "permitted" : "withheld"} · Transmit {resource.canTransmit ? "permitted" : "withheld"}</p>
       </li>)}</ul>
       <label className="block text-xs text-gray-300">Release reason

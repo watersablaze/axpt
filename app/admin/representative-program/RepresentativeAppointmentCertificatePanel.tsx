@@ -1,4 +1,5 @@
 "use client";
+import styles from "./governance-panels.module.css";
 import { useEffect, useRef, useState } from "react";
 
 type Review = {
@@ -97,7 +98,7 @@ export default function RepresentativeAppointmentCertificatePanel({
   }
 
   return (
-    <section className="mt-5 border-t border-gray-800 pt-5">
+    <section className={styles.certificateSection}>
       <h4 className="text-sm font-semibold text-amber-100">
         Certificate of Appointment
       </h4>
@@ -112,7 +113,7 @@ export default function RepresentativeAppointmentCertificatePanel({
       </button>
 
       {review ? (
-        <div className="mt-4 border border-amber-800/40 p-4">
+        <div className={styles.certificateDecision}>
           <p className="text-sm text-white">{review.configuration.displayName}</p>
           <p className="mt-2 break-words font-mono text-xs text-gray-300">
             {review.configuration.reference} · Version {review.configuration.version}
@@ -120,7 +121,7 @@ export default function RepresentativeAppointmentCertificatePanel({
           <p className="mt-2 text-xs text-gray-400">
             Effective: {review.configuration.effectiveAt}
           </p>
-          <div className="mt-3 space-y-3">
+          <div className={styles.publishedAuthorities}>
             {review.configuration.authorities.map(authority => <div key={authority.id}>
               <p className="text-xs font-semibold text-amber-100">{authority.key}</p>
               <p className="text-xs leading-6 text-gray-200">{authority.action}</p>
