@@ -1,3 +1,4 @@
+import { TovPublicationView } from "@/components/french-ward/transaction-overview/TovPublicationView";
 import { SupportingDocumentView } from "../../../../../representative/SupportingDocumentView";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -11,7 +12,7 @@ import { SourceAuthorityPresentation } from "@/components/instruments/source-aut
 import styles from "../../../dossier.module.css";
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
-export const metadata: Metadata = { title: "French-Ward — Institutional Publication", robots: { index: false, follow: false }, referrer: "no-referrer" };
+export const metadata: Metadata = { title: "French-Ward — Publication", robots: { index: false, follow: false }, referrer: "no-referrer" };
 export default async function BuyerPublicationPage({ params }: { params: Promise<{ dossierId: string; itemId: string }> }) {
   const { dossierId, itemId } = await params;
   if (!itemId || itemId.length > 191) notFound();
@@ -22,6 +23,7 @@ export default async function BuyerPublicationPage({ params }: { params: Promise
   if (!dossier || !item?.available || !item.publication) notFound();
   const publication = item.publication;
   const back = <nav className={styles.navigation} aria-label="Document navigation"><Link href={`/french-ward/dossiers/${encodeURIComponent(dossier.id)}`}>← Your documents</Link><span>{item.reference} · Edition {item.version}</span></nav>;
+  if (publication.kind === "TRANSACTION_OVERVIEW") return <main className={styles.profile}>{back}<TovPublicationView /></main>;
   if (publication.kind === "INSTITUTIONAL_PROFILE") return <main className={styles.profile}>
     {back}<FrenchWardInstitutionalProfileView profile={publication.content} />
   </main>;

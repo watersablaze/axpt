@@ -1,3 +1,4 @@
+import { TOV_PUBLICATION } from "../../../../institutions/french-ward/tovPublication";
 import { createHash } from "node:crypto";
 import { frenchWardTransactionOverview } from "../../../../institutions/french-ward/frenchWardTransactionOverview";
 import { FRENCH_WARD_STANDING_SCO } from "../../../../institutions/french-ward/frenchWardStandingSoftCorporateOffer";
@@ -6,7 +7,7 @@ export const COMMERCIAL_PAPER_KEYS = ["TRANSACTION_OVERVIEW", "STANDING_SOFT_COR
 export type CommercialPaperKey = (typeof COMMERCIAL_PAPER_KEYS)[number];
 export type CommercialPaper = {
   key: CommercialPaperKey; reference: string; version: number; title: string;
-  status: string; referenceStatus: string | null; contentHash: string;
+  status: string; referenceStatus: string | null; contentHash: string; publicationHash: string | null;
   content: typeof frenchWardTransactionOverview | typeof FRENCH_WARD_STANDING_SCO;
 };
 function canonical(value: unknown): unknown {
@@ -23,24 +24,30 @@ export function commercialPapers(): CommercialPaper[] {
     const version = "version" in content ? content.version : content.edition;
     if (!content.reference.trim() || !Number.isSafeInteger(version) || version < 1)
       throw new Error("[CUP_COMMERCIAL_PAPER_IDENTITY_INVALID]");
+    const contentHash = createHash("sha256").update(JSON.stringify(canonical({key, version, content}))).digest("hex");
+    const publicationHash = key === "TRANSACTION_OVERVIEW" ? createHash("sha256").update(TOV_PUBLICATION.html).digest("hex") : null;
+    if (key === "TRANSACTION_OVERVIEW" && (TOV_PUBLICATION.reference !== content.reference ||
+        TOV_PUBLICATION.version !== version || TOV_PUBLICATION.contentHash !== contentHash ||
+        TOV_PUBLICATION.publicationHash !== publicationHash)) throw new Error("[CUP_TOV_PUBLICATION_CHANGED]");
     return {key, reference: content.reference, version, title: content.title, status: content.status,
       referenceStatus: "referenceStatus" in content ? content.referenceStatus : null,
-      contentHash: createHash("sha256").update(JSON.stringify(canonical({key, version, content}))).digest("hex"), content};
+      contentHash, publicationHash, content};
   });
 }
 export function findCommercialPaper(reference: string) {
   return commercialPapers().find(paper => paper.reference === reference) ?? null;
 }
 export function commercialPaperMetadata(paper: CommercialPaper) {
-  return {commercialPaper: {schemaVersion: 1, key: paper.key, reference: paper.reference,
-    version: paper.version, contentHash: paper.contentHash}};
+  return {commercialPaper: {schemaVersion: paper.publicationHash ? 2 : 1, key: paper.key, reference: paper.reference,
+    version: paper.version, contentHash: paper.contentHash, ...(paper.publicationHash ? {publicationHash: paper.publicationHash} : {})}};
 }
 export function commercialPaperPinMatches(metadata: unknown, paper: CommercialPaper): boolean {
   if (!metadata || typeof metadata !== "object" || !("commercialPaper" in metadata)) return false;
   const pin = metadata.commercialPaper;
-  return !!pin && typeof pin === "object" && "schemaVersion" in pin && pin.schemaVersion === 1 &&
+  return !!pin && typeof pin === "object" && "schemaVersion" in pin && pin.schemaVersion === (paper.publicationHash ? 2 : 1) &&
     "key" in pin && pin.key === paper.key && "reference" in pin && pin.reference === paper.reference &&
-    "version" in pin && pin.version === paper.version && "contentHash" in pin && pin.contentHash === paper.contentHash;
+    "version" in pin && pin.version === paper.version && "contentHash" in pin && pin.contentHash === paper.contentHash &&
+    (!paper.publicationHash || ("publicationHash" in pin && pin.publicationHash === paper.publicationHash));
 }
 /** Used in both reviewed-additions and direct module-release commands. */
 export function assertCommercialPaperReleasePin(resource: {

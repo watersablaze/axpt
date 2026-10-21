@@ -1,3 +1,4 @@
+import { isSameOriginMutation } from "@/domains/auth/isSameOriginMutation";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
@@ -11,6 +12,7 @@ const id = z.string().trim().min(1).max(191);
 const bodySchema = z.object({packageId: id, keys: z.array(z.enum(COMMERCIAL_PAPER_KEYS)).min(1).max(2)
   .refine(keys => new Set(keys).size === keys.length),
   expectedContentHashes: z.record(z.string(), z.string().regex(/^[a-f0-9]{64}$/)),
+  expectedPublicationHashes: z.record(z.string(), z.string().regex(/^[a-f0-9]{64}$/)).optional().default({}),
   confirmPreparedStatus: z.literal(true),
 }).strict();
 const headers = {"Cache-Control": "private, no-store, max-age=0", "X-Content-Type-Options": "nosniff", "Referrer-Policy": "no-referrer"};
@@ -18,7 +20,7 @@ const json = (body: unknown, status: number) => NextResponse.json(body, {status,
 export async function GET(request: Request) {
   const principal = await getPrincipal();
   if (!principal) return json({ok: false}, 401);
-  if (!isAdmin(principal)) return json({ok: false}, 403);
+  if (!isAdmin(principal)) return json({ok: false, diagnostic: "STAGING_OPERATOR_ADMIN_REQUIRED"}, 403);
   const query = new URL(request.url).searchParams;
   if (query.getAll("packageId").length !== 1 || [...query.keys()].some(key => key !== "packageId")) return json({ok: false}, 400);
   const parsed = id.safeParse(query.get("packageId"));
@@ -33,29 +35,33 @@ export async function GET(request: Request) {
         documents?.length !== 1 || documents[0].state !== "RELEASED") return json({ok: false, error: "COMMERCIAL_PAPER_PACKAGE_CONFLICT"}, 409);
     return json({ok: true, packageId: pack.id, participantId: pack.participantId,
       papers: commercialPapers().map(({content: _content, ...paper}) => ({...paper,
-        previewHref: "/admin/representative-program/commercial-papers/" + paper.key + "?hash=" + paper.contentHash}))}, 200);
+        previewHref: "/admin/representative-program/commercial-papers/" + paper.key + "?hash=" + paper.contentHash + (paper.publicationHash ? "&publicationHash=" + paper.publicationHash : "")}))}, 200);
   } catch {return json({ok: false, error: "COMMERCIAL_PAPERS_UNAVAILABLE"}, 503);}
 }
 export async function POST(request: Request) {
   const principal = await getPrincipal();
   if (!principal) return json({ok: false}, 401);
-  if (!isAdmin(principal)) return json({ok: false}, 403);
-  if (request.headers.get("origin") !== new URL(request.url).origin) return json({ok: false}, 403);
+  if (!isAdmin(principal)) return json({ok: false, diagnostic: "STAGING_OPERATOR_ADMIN_REQUIRED"}, 403);
+  if (!isSameOriginMutation(request)) return json({ok: false, diagnostic: "STAGING_ORIGIN_MISMATCH"}, 403);
   let body: unknown;
   try {const text = await request.text();
     if (Buffer.byteLength(text, "utf8") > 4000) return json({ok: false}, 413);
     body = JSON.parse(text);
   } catch {return json({ok: false}, 400);}
   const parsed = bodySchema.safeParse(body);
-  if (!parsed.success) return json({ok: false}, 400);
+  if (!parsed.success) return json({ok: false, diagnostic: "INVALID_STAGING_REQUEST"}, 400);
   try {
     const result = await stageCommercialPapers({...parsed.data, client: prisma, actorUserId: principal.userId});
     return json({ok: true, result}, 200);
   } catch (error) {
     const message = error instanceof Error ? error.message : "";
-    if (message === "[CUP_COMMERCIAL_PAPER_ADMIN_REQUIRED]") return json({ok: false}, 403);
+    const domainCode = message.match(/^\[([A-Z0-9_]+)\]$/)?.[1];
+    const prismaCode = typeof error === "object" && error !== null && "code" in error && /^P[0-9]{4}$/.test(String(error.code)) ? String(error.code) : null;
+    const validationFailure = error instanceof Error && error.name === "PrismaClientValidationError";
+    const diagnostic = domainCode || prismaCode || (validationFailure ? "PRISMA_VALIDATION_FAILED" : "STAGING_OPERATION_FAILED");
+    if (message === "[CUP_COMMERCIAL_PAPER_ADMIN_REQUIRED]") return json({ok: false, diagnostic}, 403);
     const conflict = message.startsWith("[CUP_COMMERCIAL_PAPER_") ||
       (typeof error === "object" && error !== null && "code" in error && ["P2034", "P2010", "P2002"].includes(String(error.code)));
-    return json({ok: false, error: conflict ? "COMMERCIAL_PAPER_STAGING_CONFLICT" : "COMMERCIAL_PAPER_STAGING_UNAVAILABLE"}, conflict ? 409 : 503);
+    return json({ok: false, error: conflict ? "COMMERCIAL_PAPER_STAGING_CONFLICT" : "COMMERCIAL_PAPER_STAGING_UNAVAILABLE", diagnostic}, conflict ? 409 : 503);
   }
 }

@@ -1,3 +1,4 @@
+import { loadBuyerTovPublicationWithClient } from "../commercial-papers/loadBuyerTovPublicationWithClient";
 import { loadRepresentativeSupportingDocumentWithClient } from "../supporting-documents/loadRepresentativeSupportingDocumentWithClient";
 import { createHash } from "node:crypto";
 import { loadRepresentativeCommercialUtilityPackResourceWithClient } from "./loadRepresentativeCommercialUtilityPackResourceWithClient";
@@ -10,6 +11,8 @@ const hash = (value: unknown) => createHash("sha256").update(JSON.stringify(valu
 export async function loadBuyerDossierPublicationWithClient(input: {
   client: Client; representativeUserId: string; resourceReleaseId: string;
 }) {
+  const tov = await loadBuyerTovPublicationWithClient({client: input.client, userId: input.representativeUserId, resourceReleaseId: input.resourceReleaseId});
+  if (tov) return tov;
   const supporting = await loadRepresentativeSupportingDocumentWithClient({client:input.client,userId:input.representativeUserId,resourceReleaseId:input.resourceReleaseId});
   if (supporting) {
     const content = supporting.publication;

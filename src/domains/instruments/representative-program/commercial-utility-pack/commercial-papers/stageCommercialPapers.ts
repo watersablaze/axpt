@@ -6,7 +6,7 @@ type Client = Pick<PrismaClient, "user" | "commercialUtilityPack" | "commercialU
 /** Narrow additions path: never reopens a released module or refreshes existing resource content/permissions. */
 export async function stageCommercialPapers(input: {
   client: Pick<PrismaClient, "$transaction">; actorUserId: string; packageId: string;
-  keys: CommercialPaperKey[]; expectedContentHashes: Record<string, string>;
+  keys: CommercialPaperKey[]; expectedContentHashes: Record<string, string>; expectedPublicationHashes?: Record<string, string>;
 }) {
   const actorUserId = input.actorUserId.trim(), packageId = input.packageId.trim();
   const papers = commercialPapers();
@@ -15,7 +15,8 @@ export async function stageCommercialPapers(input: {
       input.keys.some(key => !papers.some(paper => paper.key === key)))
     throw new Error("[CUP_COMMERCIAL_PAPER_INPUT_INVALID]");
   const selected = papers.filter(paper => input.keys.includes(paper.key));
-  if (selected.some(paper => input.expectedContentHashes[paper.key] !== paper.contentHash))
+  if (selected.some(paper => input.expectedContentHashes[paper.key] !== paper.contentHash ||
+      (paper.publicationHash !== null && input.expectedPublicationHashes?.[paper.key] !== paper.publicationHash)))
     throw new Error("[CUP_COMMERCIAL_PAPER_REVIEW_CHANGED]");
   return input.client.$transaction(async (tx: Client) => {
     const actor = await tx.user.findUnique({where: {id: actorUserId}, select: {isAdmin: true}});
@@ -52,7 +53,7 @@ export async function stageCommercialPapers(input: {
       streamType: "COMMERCIAL_UTILITY_PACK", streamId: packageId,
       eventType: "COMMERCIAL_UTILITY_PACK_COMMERCIAL_PAPERS_STAGED", eventVersion: 1,
       payload: {resources: resources.filter(resource => resource.created), papers: selected.map(paper => ({
-        key: paper.key, reference: paper.reference, version: paper.version, contentHash: paper.contentHash,
+        key: paper.key, reference: paper.reference, version: paper.version, contentHash: paper.contentHash, publicationHash: paper.publicationHash,
       })), releasePerformed: false}, metadata: {actorUserId, source: "representative-program.commercial-utility-pack.commercial-papers"},
     }});
     return {packageId, participantId: pack.participantId, resources, releasePerformed: false as const};

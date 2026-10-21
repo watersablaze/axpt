@@ -1,3 +1,4 @@
+import { loadBuyerTovPublicationWithClient } from "../commercial-papers/loadBuyerTovPublicationWithClient";
 import { FRENCH_WARD_COMMERCIAL_INTAKE } from "@/domains/institutions/french-ward/commercial";
 import { loadRepresentativeSupportingDocumentWithClient } from "../supporting-documents/loadRepresentativeSupportingDocumentWithClient";
 import { createHash } from "node:crypto";
@@ -35,6 +36,8 @@ export async function resolveRepresentativeBuyerDossierSelectionWithClient(input
     resourceReleaseIds: input.resourceReleaseIds,
     ports: {
       loadPublication: async resourceReleaseId => {
+        const tov = await loadBuyerTovPublicationWithClient({client: input.client, userId: input.userId, resourceReleaseId});
+        if (tov) return {resourceReleaseId, kind: tov.kind, reference: tov.reference, version: tov.version, label: tov.content.title, recipientContentHash: tov.recipientContentHash};
         const supporting = await loadRepresentativeSupportingDocumentWithClient({client:input.client,userId:input.userId,resourceReleaseId});
         if (supporting) {
           const publication=supporting.publication;

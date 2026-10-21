@@ -12,6 +12,7 @@ export default function BuyerDossierControls({ options, readOnly=false, compact=
   const [pending,setPending]=useState(false);
   const [message,setMessage]=useState("");
   const [receipt,setReceipt]=useState<Receipt|null>(null);
+  const [recent,setRecent]=useState<Receipt[]|null>(null);
   const [dossierId,setDossierId]=useState<string|null>(null);
   const inFlight=useRef(false);
   const submission=useRef<{signature:string;key:string}|null>(null);
@@ -57,6 +58,28 @@ export default function BuyerDossierControls({ options, readOnly=false, compact=
     catch{setMessage("Status unavailable. The recorded introduction remains in place.");}
     finally{inFlight.current=false;setPending(false);}
   }
+  async function loadRecent() {
+    if(readOnly || inFlight.current) return;
+    inFlight.current=true;setPending(true);
+    try {
+      const response=await fetch(endpoint+"?list=recent",{cache:"no-store"});const result=await response.json();
+      if(!response.ok || !result.ok || !Array.isArray(result.receipts))throw new Error();
+      setRecent(result.receipts);
+    } catch {setMessage("Recent invitations unavailable. Please try again.");}
+    finally {inFlight.current=false;setPending(false);}
+  }
+  async function revoke() {
+    if(readOnly || inFlight.current || !dossierId || receipt?.revokedAt) return;
+    if(!window.confirm("Revoke this buyer invitation and its selected document and LOI access?")) return;
+    inFlight.current=true;setPending(true);
+    try {
+      const response=await fetch(endpoint,{method:"PATCH",headers:{"Content-Type":"application/json"},cache:"no-store",body:JSON.stringify({dossierId,action:"REVOKE"})});
+      const result=await response.json();
+      if(!response.ok || !result.ok) throw new Error();
+      setReceipt(result.receipt);setRecent(null);setMessage("Buyer access revoked. No email sent.");
+    } catch {setMessage("Revocation unconfirmed. Refresh status before retrying.");}
+    finally {inFlight.current=false;setPending(false);}
+  }
   const locked=readOnly||pending;
   const inputClass="mt-1 w-full rounded border border-[#567ba0] bg-[#10242d] px-3 py-1.5 text-sm text-[#eee7da]";
   const buttonClass="rounded border border-[#567ba0] px-4 py-2 text-sm text-[#eee7da] disabled:opacity-50";
@@ -95,10 +118,18 @@ export default function BuyerDossierControls({ options, readOnly=false, compact=
         <button className={buttonClass+" justify-self-start"} type="submit" disabled={locked||!selected.length||Boolean(review&&!confirmed)}>{pending?"Processing…":review?"Send Buyer Invitation":"Review Selection"}</button>
       </form>
     </details>:<div className="mt-3 text-sm leading-6">
-      {receipt?<><p>{receipt.recipientName} · {receipt.recipientEmail}</p><p>Recipient: {statusLabel(receipt.recipientDeliveryStatus)}</p><p>Admin: {statusLabel(receipt.adminDeliveryStatus)}</p><p>Expires: {new Date(receipt.expiresAt).toLocaleString()}</p></>:<p>Introduction recorded; refresh to inspect delivery.</p>}
+      {receipt?<><p>{receipt.recipientName} · {receipt.recipientEmail}</p><p>Recipient: {statusLabel(receipt.recipientDeliveryStatus)}</p><p>Admin: {statusLabel(receipt.adminDeliveryStatus)}</p><p>Expires: {new Date(receipt.expiresAt).toLocaleString()}</p><p>Access: {receipt.revokedAt ? "Revoked" : "Time-bound grant recorded"}</p></>:<p>Introduction recorded; refresh to inspect delivery.</p>}
       <div className="mt-3 flex flex-wrap gap-3"><button className={buttonClass} type="button" disabled={locked} onClick={refresh}>Refresh Status</button>
+      <button className={buttonClass} type="button" disabled={locked||!receipt||Boolean(receipt.revokedAt)} onClick={()=>void revoke()}>Revoke Buyer Access</button>
       <button className={buttonClass} type="button" disabled={locked} onClick={()=>{setDossierId(null);setReceipt(null);setReview(null);setConfirmed(false);setSelected([]);setIncludeLoiAccess(false);setMessage("");if(submission.current){try{sessionStorage.removeItem("arp-buyer-dossier:v1:"+submission.current.signature);}catch{}}submission.current=null;}}>Introduce Another Buyer</button></div>
     </div>}
+    {!readOnly ? <details className="mt-4 border-t border-[#365461] pt-3">
+      <summary className="cursor-pointer text-sm">Manage recent buyer access</summary>
+      <button className={buttonClass+" mt-3"} type="button" disabled={locked} onClick={()=>void loadRecent()}>Load Recent Invitations</button>
+      {recent ? <ul className="mt-3 space-y-3">{recent.map(entry=><li key={entry.id} className="flex flex-wrap items-center gap-3 text-sm"><span>{entry.recipientName} · {entry.recipientEmail} · {entry.revokedAt ? "Revoked" : new Date(entry.expiresAt)<=new Date() ? "Expired" : "Grant recorded"}</span><button className={buttonClass} type="button" disabled={locked} onClick={()=>{setDossierId(entry.id);setReceipt(entry);setMessage("Invitation selected. Refresh for current status or revoke access.");}}>Inspect Access</button></li>)}</ul> : null}
+      {recent?.length===0 ? <p className="mt-3 text-sm">No recorded invitations.</p> : null}
+      <p className="mt-2 text-xs">Shows your latest 20 invitations. Inspecting access does not resend email.</p>
+    </details> : null}
     <p role="status" aria-live="polite" className={message?"mt-3 text-sm text-[#d8c39b]":"sr-only"}>{message}</p>
   </section>;
 }

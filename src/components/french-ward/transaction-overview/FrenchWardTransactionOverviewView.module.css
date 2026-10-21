@@ -1,0 +1,386 @@
+/* FW COMMERCIAL PAPERS / TOV — warm operational paper. */
+.document{--ink:#263943;--muted:#556671;--gold:#876b42;--blue:#416879;--rule:#c8c9c3;box-sizing:border-box;max-width:1020px;margin:0 auto;background:#f2f0e9;color:var(--ink);font:400 14px/1.64 Arial,Helvetica,sans-serif;box-shadow:0 14px 48px #0002;overflow:hidden}
+.document *{box-sizing:border-box}.masthead{background:#e9e7de;border-bottom:2px solid #647d86;padding:28px clamp(24px,5.7vw,68px) 27px}.brandLine,.documentIdentity{display:flex;justify-content:space-between;gap:18px;align-items:baseline}.brandLine strong{font-size:13px;letter-spacing:.08em;color:#233c49}.brandLine span,.documentIdentity{font-size:10px;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}.documentIdentity{border-top:1px solid var(--rule);padding-top:12px;margin-top:13px}.heading{padding:30px 0 23px;max-width:730px}.kicker,.smallIndex{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold)}.heading h1{font-size:clamp(29px,4vw,42px);font-weight:500;line-height:1.14;letter-spacing:-.028em;margin:10px 0 12px}.heading p{color:var(--muted);font-size:13px;max-width:73ch;margin:0;line-height:1.65}.keyFacts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid #abb5b5;padding-top:17px;gap:15px}.keyFacts div{display:grid;gap:5px}.keyFacts span{color:var(--gold);letter-spacing:.1em;font-size:9px}.keyFacts strong{font-weight:600;color:var(--ink);font-size:13px}.body{padding:0 clamp(24px,5.7vw,68px)}.source,.references{display:grid;grid-template-columns:175px minmax(0,1fr);gap:24px;padding:28px 0}.source{border-bottom:1px solid var(--rule)}.source h2,.references h2{margin:0 0 11px;font-size:19px;line-height:1.25;font-weight:600}.source p,.referenceItem p{font-size:12px;line-height:1.68;color:#465b65;margin:0 0 10px}.journey{margin:0 calc(-1 * clamp(24px,5.7vw,68px));padding:32px clamp(24px,5.7vw,68px) 38px;background:#dde4e4;border-top:2px solid #90a4ab;border-bottom:2px solid #90a4ab}.journeyHead{display:flex;justify-content:space-between;gap:28px;align-items:end;margin-bottom:19px}.journeyHead h2{margin:7px 0 0;font-size:clamp(24px,3vw,32px);font-weight:500;letter-spacing:-.02em;line-height:1.18}.journeyHead>p{max-width:270px;color:var(--muted);font-size:11px;margin:0}.stages{padding:0;margin:0;list-style:none;border-top:1px solid #9bafb3}.stages li{display:grid;grid-template-columns:40px minmax(0,1fr) 115px;gap:14px;position:relative;border-bottom:1px solid #b4c2c3;padding:14px 0;break-inside:avoid}.stageNum{font-size:11px;color:var(--blue);font-weight:700}.stages h3{margin:0 0 5px;color:#233d4a;font-size:15px;font-weight:600}.stages p{font-size:12px;line-height:1.63;color:#475e68;margin:0}.activeStage{background:#cadbdc;border-left:3px solid #457788;margin-inline:-9px;padding-inline:9px!important}.stageFlag{font-size:9px;color:#2c697f;letter-spacing:.08em;text-align:right}.references{padding-bottom:35px}.referenceGrid{display:grid;grid-template-columns:1fr 1fr;gap:20px 28px}.referenceItem{display:grid;grid-template-columns:20px minmax(0,1fr);gap:9px;border-top:1px solid var(--rule);padding-top:13px;break-inside:avoid}.referenceItem>span{font-size:10px;color:var(--gold)}.referenceItem h3{font-size:13px;font-weight:700;margin:0 0 7px;line-height:1.4}.footer{display:grid;grid-template-columns:1fr 1.7fr;gap:10px 25px;background:#e2e4e1;border-top:2px solid #7a9199;padding:19px clamp(24px,5.7vw,68px)}.footer>div{display:flex;flex-direction:column;gap:4px;font-size:10px;color:#3e5660}.footer p{margin:0;font-size:10px;line-height:1.5;color:#56676f}.footer small{grid-column:1/-1;font-size:9px;color:#65747b}
+@media(max-width:690px){.brandLine,.documentIdentity{align-items:start;flex-direction:column;gap:5px}.keyFacts{grid-template-columns:1fr;gap:10px}.keyFacts div{padding-bottom:8px;border-bottom:1px solid #c6cecd}.source,.references{grid-template-columns:1fr;gap:9px}.journeyHead{display:block}.journeyHead>p{margin-top:10px}.stages li{grid-template-columns:28px minmax(0,1fr);gap:9px}.stageFlag{grid-column:2;text-align:left}.referenceGrid{grid-template-columns:1fr}.footer{grid-template-columns:1fr}.footer small{grid-column:1}}
+@media print{.document{box-shadow:none;max-width:none;background:white;color:#162e37;font-size:11px}.masthead,.journey,.footer{background:white!important}.masthead{padding-top:12px}.heading{padding:14px 0}.heading h1{font-size:25px}.source,.references{padding:12px 0}.journey{padding-block:12px}.stages li{padding:6px 0}.stages p,.source p,.referenceItem p{font-size:10px;line-height:1.35}.stages h3{font-size:12px}.referenceGrid{gap:9px 18px}.referenceItem{padding-top:6px}.footer{padding-block:10px}}
+
+/* CP-2 / Publication rhythm: the passage remains the governing element. */
+.document { font-kerning: normal; text-rendering: optimizeLegibility; }
+.masthead { border-bottom-width: 1px; }
+.heading { padding-top: 26px; padding-bottom: 25px; }
+.heading h1 { font-weight: 600; max-width: 19ch; text-wrap: balance; }
+.heading p { max-width: 63ch; font-size: 13px; line-height: 1.72; }
+.keyFacts { column-gap: 23px; }
+.keyFacts div + div { border-left: 1px solid #cbd0ca; padding-left: 18px; }
+.keyFacts strong { font-size: 13px; line-height: 1.38; }
+.source { grid-template-columns: 162px minmax(0,1fr); padding-block: 25px; }
+.source > div:last-child { max-width: 73ch; }
+.source h2, .references h2 { letter-spacing: -.015em; }
+.source p,.referenceItem p { font-size: 12.5px; line-height: 1.72; }
+.journey { padding-block: 33px 37px; }
+.journeyHead { margin-bottom: 22px; }
+.journeyHead h2 { text-wrap: balance; font-weight: 600; }
+.journeyHead > p { max-width: 32ch; font-size: 12px; line-height: 1.55; }
+.stages li { grid-template-columns: 48px minmax(0,1fr) 120px; column-gap: 18px; padding-block: 16px; align-items:start; }
+.stageNum { font-size: 13px; font-variant-numeric: tabular-nums; letter-spacing:.06em; }
+.stages h3 { font-size: 15px; line-height: 1.4; letter-spacing: -.01em; }
+.stages p { font-size: 12.5px; line-height: 1.65; max-width: 76ch; }
+.activeStage { border-left-width: 2px; background: #cfdddc; }
+.activeStage .stageNum { color: #20566b; }
+.stageFlag { font-weight: 700; line-height: 1.45; }
+.references { grid-template-columns: 162px minmax(0,1fr); gap: 30px; padding-block: 29px 38px; }
+.referenceGrid { gap: 19px 28px; }
+.referenceItem { grid-template-columns: 25px minmax(0,1fr); }
+.referenceItem h3 { font-size: 13px; }
+.footer { padding-block: 20px 21px; }
+@media(max-width:690px) {
+  .document { width: 100%; box-shadow:none; }
+  .masthead { padding: 23px 22px 24px; }
+  .body { padding-inline: 22px; }
+  .heading h1 { font-size:clamp(27px,7vw,37px); }
+  .keyFacts div + div { border-left:0; padding-left:0; }
+  .source,.references { grid-template-columns:1fr; padding-block:23px; }
+  .journey { margin-inline:-22px; padding: 26px 22px 29px; }
+  .stages li { grid-template-columns: 33px minmax(0,1fr); gap: 9px 12px; padding-block: 14px; }
+  .stageFlag { grid-column: 2; text-align:left; }
+  .referenceGrid { grid-template-columns:1fr; gap:15px; }
+  .footer { padding-inline:22px; }
+}
+@page { size: A4; margin: 16mm 15mm; }
+@media print {
+  .document { margin:0; width:100%; box-shadow:none; overflow:visible; font-size:11px; }
+  .masthead { border-bottom:1px solid #7f969b; padding:0 0 12px; }
+  .body { padding:0; }
+  .heading { padding:11px 0 12px; }
+  .heading h1 { font-size:24px; }
+  .keyFacts { padding-top:9px; }
+  .keyFacts div + div { border-left:1px solid #d0d3d0; padding-left:9px; }
+  .source { display:block; padding:11px 0; }
+  .source p,.referenceItem p,.stages p { font-size:10px; line-height:1.38; }
+  .journey { margin-inline:0; padding:11px 0 12px; break-before:auto; }
+  .journeyHead { margin-bottom:8px; }
+  .journeyHead h2 { font-size:17px; }
+  .journeyHead > p { font-size:10px; }
+  .stages li { grid-template-columns:28px minmax(0,1fr) 100px; gap:9px; padding:6px 0; }
+  .stages h3 { font-size:11px; margin-bottom:2px; }
+  .stageNum { font-size:10px; }
+  .activeStage { border-left:2px solid #457788; padding-left:6px!important; margin-inline:0; }
+  .references { display:block; padding:10px 0; }
+  .references h2 { font-size:15px; }
+  .referenceGrid { gap:9px 15px; }
+  .referenceItem { padding-top:6px; }
+  .footer { padding:9px 0 0; break-inside:avoid; }
+  .document, .masthead,.journey,.footer { -webkit-print-color-adjust: exact; print-color-adjust:exact; }
+}
+
+/* CP-3: procedural identity and minimum initial tranche */
+.instrumentMark{display:inline-grid;place-items:center;border:1px solid #9e987f;color:#5b6d6c;font:700 9px/1 Arial,sans-serif;font-style:normal;letter-spacing:.08em;padding:7px;margin-right:11px;vertical-align:middle;}
+.keyFacts{grid-template-columns:repeat(4,minmax(0,1fr));}
+@media(max-width:760px){.keyFacts{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:430px){.keyFacts{grid-template-columns:1fr 1fr;}}
+@media print{.keyFacts{grid-template-columns:repeat(4,minmax(0,1fr));}.instrumentMark{padding:4px;}}
+
+/* CP-4: editorial compression — preserve legibility and documentary hierarchy. */
+.source p,.referenceItem p{max-width:78ch;line-height:1.55;}
+.stages li p{max-width:85ch;line-height:1.55;}
+.referenceItem{break-inside:avoid;}
+@media print{.stages li p,.referenceItem p,.source p{line-height:1.42;}.referenceItem{break-inside:avoid;}}
+
+/* CP-5: documentary graphite plate, print-safe and subordinate to text. */
+.illustrationPlate{margin:0 clamp(24px,5.7vw,68px) 18px;position:relative;border-top:1px solid #b5b8b1;border-bottom:1px solid #c7cbc5;break-inside:avoid}.illustrationPlate img,.illustrationPlate svg{display:block;width:100%;height:auto;max-height:215px;object-fit:cover}.illustrationPlate figcaption{padding:7px 1px;font:600 9px/1.4 Arial,sans-serif;letter-spacing:.12em;color:#64747a}.illustrationPlate img{filter:grayscale(.48)}@media(max-width:760px){.illustrationPlate{margin-inline:22px}.illustrationPlate img,.illustrationPlate svg{max-height:150px}}@media print{.illustrationPlate{margin:7px 0 10px;break-inside:avoid}.illustrationPlate img,.illustrationPlate svg{max-height:125px}.illustrationPlate figcaption{font-size:7px}.illustrationPlate{-webkit-print-color-adjust:exact;print-color-adjust:exact}}
+
+/* CP-5D: compact paired masthead; illustration subordinate to the transaction journey. */
+.heroComposition{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(235px,.8fr);gap:clamp(18px,3.3vw,43px);align-items:center;padding:24px 0 19px}
+.heroComposition .heading{padding:0;min-width:0;max-width:none}
+.heroComposition .heading h1{max-width:19ch;font-size:clamp(27px,3.5vw,40px);line-height:1.12}
+.heroComposition .heading p{max-width:53ch}
+.heroGraphite{margin:0;align-self:center;min-width:0;text-align:right;break-inside:avoid}
+.heroGraphite img{width:100%;height:auto;max-width:355px;max-height:248px;object-fit:contain;display:block;margin-left:auto;filter:saturate(.67) contrast(.94)}
+.heroGraphite figcaption{font:600 8px/1.45 Arial,Helvetica,sans-serif;letter-spacing:.06em;color:#68747a;margin-top:3px}
+@media(max-width:720px){.heroComposition{grid-template-columns:1fr;gap:7px;padding:20px 0 14px}.heroGraphite{width:min(70%,280px);justify-self:end}.heroGraphite img{max-height:170px}.heroComposition .heading h1{font-size:clamp(27px,7vw,37px)}}
+@media(max-width:410px){.heroGraphite{width:min(68%,215px)}.heroGraphite img{max-height:120px}}
+@media print{.heroComposition{grid-template-columns:minmax(0,1.25fr) minmax(180px,.75fr);gap:18px;padding:12px 0}.heroGraphite img{max-height:130px}.heroGraphite figcaption{font-size:6px}.heroComposition .heading h1{font-size:25px}}
+
+
+/* FW-TOV-5E — small, subdued graphite study and archival inscription. */
+.heroComposition{grid-template-columns:minmax(0,1.46fr) minmax(180px,.54fr);gap:clamp(18px,2.6vw,34px)}
+.heroGraphite{width:100%;max-width:246px;justify-self:end;opacity:.81}
+.heroGraphite img{max-width:246px;max-height:168px;filter:grayscale(.42) saturate(.43) brightness(.88) contrast(.93)}
+.heroGraphite figcaption{font:500 6px/1.45 Arial,Helvetica,sans-serif;letter-spacing:.14em;color:#7d807a;margin-top:2px;opacity:.77;text-align:right}
+@media(max-width:720px){
+  .heroComposition{grid-template-columns:1fr;gap:5px}
+  .heroGraphite{width:min(58%,210px);max-width:210px;justify-self:end}
+  .heroGraphite img{max-height:138px}
+  .heroGraphite figcaption{font-size:5.5px;letter-spacing:.1em}
+}
+@media(max-width:410px){.heroGraphite{width:min(55%,180px)}.heroGraphite img{max-height:118px}}
+@media print{
+  .heroComposition{grid-template-columns:minmax(0,1.48fr) minmax(125px,.52fr)}
+  .heroGraphite{max-width:174px;opacity:.8}
+  .heroGraphite img{max-height:116px}
+  .heroGraphite figcaption{font-size:5.5pt;color:#727777}
+}
+
+
+/* FW-TOV-5F — graphite undercurrents; no new editorial blocks or plates. */
+/* First register: faint measuring line, rather than an illustration. */
+.source{position:relative}
+.source::before{content:"";position:absolute;left:0;top:0;width:46px;height:1px;background:linear-gradient(90deg,rgba(123,97,61,.72),rgba(123,97,61,0))}
+.source h2{position:relative}
+/* Passage: barely perceptible paper grain and a single graphite guide at the stage index. */
+.journey{background-color:#dde4e4;background-image:radial-gradient(rgba(53,69,75,.038) .45px,transparent .7px),linear-gradient(115deg,rgba(255,255,255,.18),transparent 58%);background-size:7px 7px,100% 100%}
+.stages li{transition:background-color .18s ease}
+.stageNum{display:inline-flex;align-items:center;gap:8px;color:#4e6971;font-weight:650}
+.stageNum::after{content:"";display:inline-block;width:11px;height:1px;background:rgba(93,107,109,.36)}
+.stages li:not(.activeStage) h3{color:#2a414b}
+/* Activation remains the sole stronger note. */
+.activeStage{background:rgba(136,165,169,.16);border-left-color:#607e86}
+.activeStage .stageNum{color:#355f6b}
+.activeStage .stageNum::after{background:#9b835e}
+/* Closing conditions: a small metallic index, not a row of decorations. */
+.referenceItem>span{color:#8d7652;font-variant-numeric:tabular-nums}
+.referenceItem{border-top-color:#c1c8c5}
+@media(max-width:690px){
+ .stageNum::after{width:7px}
+ .journey{background-size:9px 9px,100% 100%}
+}
+@media print{
+ .journey{background:#fff!important}
+ .stageNum::after{width:7px;background:#aeb6b5}
+ .source::before{background:#8e8578}
+ .activeStage{background:transparent!important;border-left-color:#6f8589}
+ .referenceItem{break-inside:avoid}
+}
+
+/* FW-TOV-5G — visible documentary structure, not ambient noise. */
+.source{border-top:1px solid #aaad9f;border-bottom:1px solid #aeb7b2;padding-block:25px 27px}
+.source::before{top:-2px;width:98px;height:3px;background:#9a8059}
+.source h2{color:#334b50}
+.journey{background:#d9dfdc;background-image:linear-gradient(90deg,rgba(63,87,96,.07) 0,transparent 28%),linear-gradient(180deg,rgba(255,255,255,.27),rgba(255,255,255,0) 30%);border-top:3px solid #7d999c;border-bottom:3px solid #849b9c}
+.journeyHead{padding-bottom:18px;border-bottom:1px solid #91a6a5;margin-bottom:0}
+.journeyHead .smallIndex{color:#8a714a}
+.stages{border-top:0}
+.stages li{padding:17px 10px 17px 0;border-bottom:1px solid #9fb0b0;align-items:start}
+.stageNum{position:relative;min-width:37px;font-size:16px;font-weight:700;color:#416773;letter-spacing:.045em}
+.stageNum::after{width:25px;height:2px;background:#b29a72;opacity:.9}
+.stages h3{font-size:16px;font-weight:700;color:#213a45}
+.stages li:nth-child(2n):not(.activeStage){background:linear-gradient(90deg,rgba(250,250,247,.17),transparent 72%)}
+.activeStage{background:linear-gradient(90deg,rgba(130,151,147,.115),rgba(130,151,147,.025) 76%,transparent)!important;border-left:2px solid rgba(143,119,79,.76);box-shadow:none;padding-left:12px!important;margin-left:-13px;margin-right:0;padding-right:10px!important}
+.activeStage .stageNum{color:#6e6c58}
+.activeStage .stageNum::after{background:#9d947e;opacity:.65}
+.activeStage h3{color:#223e49}
+.stageFlag{color:#657875;font-weight:600;letter-spacing:.065em}
+.references{border-top:1px solid #b3bbb6;padding-top:27px}
+.references h2{color:#263e49}
+.referenceItem{border-top:2px solid #bec7c1;padding-top:14px}
+.referenceItem>span{font-size:12px;font-weight:700;color:#8d714a}
+@media(max-width:690px){
+ .source{padding-block:22px 23px}
+ .journey{border-top-width:2px;border-bottom-width:2px}
+ .journeyHead{padding-bottom:14px}
+ .stages li{padding-block:15px}
+ .stageNum{font-size:14px}
+ .stageNum::after{width:13px}
+ .activeStage{margin-left:-8px;margin-right:0;padding-left:7px!important;padding-right:8px!important}
+}
+@media print{
+ .journey{background:#fff!important;border-top:1.5px solid #75888a;border-bottom:1.5px solid #75888a}
+ .journeyHead{padding-bottom:6px}
+ .stages li{padding-block:7px;background:none!important}
+ .stages li:nth-child(2n){background:none!important}
+ .stageNum{font-size:10px}
+ .stageNum::after{height:1px;width:9px}
+ .stages h3{font-size:11px}
+ .activeStage{background:transparent!important;border-left:2px solid #8b7048;box-shadow:none;margin-inline:0;padding-inline:7px!important}
+ .source::before{height:2px}
+ .referenceItem{border-top-width:1px;padding-top:6px}
+}
+
+/* FW-TOV-5H — one restrained field-trade plate within the procedure, not another Hero. */
+.passagePlate{margin:13px 0 5px;padding:0 0 8px;border-bottom:1px solid rgba(80,102,109,.35);max-width:100%;break-inside:avoid}
+.passagePlate img,.passagePlate svg{display:block;width:100%;max-width:660px;height:auto;max-height:145px;object-fit:contain;opacity:.88;filter:saturate(.5) contrast(.94)}
+.passagePlate figcaption{padding-top:1px;font:500 7px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.11em;color:#667879;text-align:right}
+@media(max-width:690px){.passagePlate{margin:9px 0 4px}.passagePlate img,.passagePlate svg{max-height:112px}.passagePlate figcaption{font-size:6px;letter-spacing:.055em}}
+@media print{.passagePlate{margin:3px 0 4px;padding-bottom:3px;break-inside:avoid}.passagePlate img,.passagePlate svg{max-height:65px;opacity:.68}.passagePlate figcaption{font-size:5.5pt}}
+
+/* FW-TOV-5I — compact field insignia and tactile mineral paper; no content changes. */
+.journey{
+  background-color:#dbe1dd;
+  background-image:
+    radial-gradient(circle at 14% 22%,rgba(79,77,67,.09) .55px,transparent 1px),
+    radial-gradient(circle at 67% 71%,rgba(87,93,87,.07) .45px,transparent 1px),
+    linear-gradient(116deg,rgba(248,245,237,.27),rgba(220,227,223,.15) 46%,rgba(241,238,226,.11));
+  background-size:11px 13px,17px 19px,100% 100%;
+}
+.passagePlate{margin:9px 0 6px;padding:8px 0 6px;border-bottom:1px solid rgba(90,109,111,.32)}
+.passagePlate img,.passagePlate svg{height:66px;max-height:66px;width:100%;max-width:660px;object-fit:contain;opacity:.80;filter:grayscale(.25) contrast(.88)}
+.passagePlate figcaption{font-size:5.5px;letter-spacing:.095em;line-height:1.2;opacity:.72;margin-top:0}
+@media(max-width:690px){
+ .journey{background-size:13px 15px,19px 21px,100% 100%}
+ .passagePlate{padding:4px 0 5px;margin:6px 0 4px}
+ .passagePlate img,.passagePlate svg{height:56px;max-height:56px}
+ .passagePlate figcaption{font-size:5.5px}
+}
+@media print{
+ .journey{background:#fff!important}
+ .passagePlate{margin:3px 0 2px;padding:0 0 3px}
+ .passagePlate img,.passagePlate svg{height:38px;max-height:38px;opacity:.82;filter:grayscale(1)}
+ .passagePlate figcaption{font-size:5pt}
+}
+
+
+/* FW-TOV-5J — quieter masthead study; restrained marginal passage memory. */
+.heroGraphite { max-width: 196px; justify-self: end; transform: translateX(-17px); }
+.heroGraphite img { max-width: 196px; max-height: 132px; }
+.heroGraphite figcaption { text-align: right; }
+/* Decorative drafting marks stay beneath the commercial copy, at the lower-left margin. */
+.references { position: relative; isolation: isolate; }
+.references::before {
+  content: "";
+  position: absolute;
+  width: min(210px, 32%);
+  height: 142px;
+  left: 7px;
+  bottom: 13px;
+  z-index: -1;
+  pointer-events: none;
+  opacity: .28;
+  background:
+    radial-gradient(ellipse at 15% 76%, transparent 0 17px, #9ba8a0 18px 18.6px, transparent 19px),
+    radial-gradient(ellipse at 15% 76%, transparent 0 42px, #a8aaa1 43px 43.6px, transparent 44px),
+    linear-gradient(151deg, transparent 47%, #889b9a 47.3% 47.7%, transparent 48%),
+    repeating-linear-gradient(0deg, transparent 0 20px, #9aa6a1 20.4px 20.8px, transparent 21px 35px);
+  -webkit-mask-image: linear-gradient(to top, #000 10%, transparent 100%);
+  mask-image: linear-gradient(to top, #000 10%, transparent 100%);
+}
+.references > * { position: relative; z-index: 1; }
+@media (max-width: 720px) {
+  .heroGraphite { width: min(49%, 177px); max-width: 177px; transform: translateX(-10px); }
+  .heroGraphite img { max-height: 112px; }
+  .references::before { width: 134px; height: 99px; left: 0; opacity: .19; }
+}
+@media (max-width: 410px) {
+  .heroGraphite { width: min(48%, 158px); }
+  .heroGraphite img { max-height: 98px; }
+}
+@media print {
+  .heroGraphite { max-width: 145px; transform: translateX(-9px); }
+  .heroGraphite img { max-height: 96px; }
+  .references::before { opacity: .14; width: 140px; height: 90px; }
+}
+
+
+/* FW-TOV-5O — controlled section rules and contained sand-dusk field. */
+/* Keep only one identity divider and one stage divider; no decorative doubled rules. */
+.masthead {position:relative; border-top:5px solid #354c52; border-bottom:2px solid #839491; padding-top:29px; padding-bottom:28px;
+ background:linear-gradient(to bottom,#30474f 0px,#30474f 121px,#e8e7de 121px,#e9e7de 100%)}
+.brandLine {position:relative;z-index:2; border:0; padding-bottom:12px; align-items:center}
+.brandLine strong {font-size:14px;letter-spacing:.1em;font-weight:700}
+.brandLine strong,.brandLine span,.documentIdentity,.documentIdentity span {color:#f1f0e8}
+.brandLine .instrumentMark {border-color:#aebbb4;color:#f1f0e8;background:#fff1}
+.documentIdentity {position:relative;z-index:2; border-top:1px solid rgba(231,232,222,.26);padding-top:11px;margin-top:0}
+/* Sand dusk belongs to the full doré field, not an almost invisible image-only effect. */
+.heroComposition {position:relative; isolation:isolate; overflow:hidden; margin-top:31px;margin-bottom:15px;
+ border:0; padding:18px 18px 28px 0; background:
+ radial-gradient(ellipse 53% 93% at 80% 52%,rgba(166,130,83,.24),transparent 82%),
+ radial-gradient(ellipse 36% 69% at 72% 75%,rgba(127,107,82,.12),transparent 86%)}
+.heroComposition::before {content:"";position:absolute;inset:0 0 0 54%;z-index:-1;pointer-events:none;
+ background-image:radial-gradient(rgba(116,90,62,.23) .6px,transparent .9px);background-size:8px 9px;opacity:.32;
+ -webkit-mask-image:radial-gradient(ellipse at 66% 50%,#000,transparent 74%);mask-image:radial-gradient(ellipse at 66% 50%,#000,transparent 74%)}
+.heroComposition::after {content:"";position:absolute;bottom:0;left:0;right:0;border-bottom:1px solid #aebbb6}
+.heroComposition .heading h1 {color:#203945;font-weight:650;letter-spacing:-.025em}
+.heroGraphite {position:relative;align-self:center;padding:4px 9px 4px 0;border:0}
+.heroGraphite img {filter:grayscale(.32) sepia(.13) saturate(.5) brightness(.91) contrast(1.07)}
+.keyFacts {border:0;padding-top:3px;gap:20px}
+.keyFacts strong {font-size:13.5px}
+/* TAP is a commercial fact, not a featured status badge. */
+.keyFacts div:nth-child(4) span {display:inline-flex;gap:7px;align-items:center;color:#816b4d}
+.keyFacts div:nth-child(4) span::before {content:"";width:20px;height:15px;flex:0 0 20px;
+ background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 28' fill='none' stroke='%23816b4d' stroke-width='1.9' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12l7-6 10 1 3 4 4-3 5 3 5 3'/%3E%3Cpath d='M10 13l8 8q3 2 5 0l8-8'/%3E%3Cpath d='M3 13l8 9M37 14l-8 9M17 16l6 6M22 12l-5 4'/%3E%3C/svg%3E") center/contain no-repeat;opacity:.85}
+.keyFacts div:nth-child(4) strong {font-weight:600;color:#34474d}
+/* One rule below journey heading; no inset rule on the etched insignia plate. */
+.journeyHead {border-bottom:1px solid #91a6a5;padding-bottom:16px}
+.passagePlate {border:0;width:100%;max-width:none;margin:4px 0 10px;padding:0;min-height:79px;
+ background:url('/french-ward/commercial-papers/tov-etched-documentary-marks.svg') center center/92% 79px no-repeat}
+.passagePlate img,.passagePlate svg {width:100%;max-width:none;height:79px;max-height:none;opacity:0;filter:none}
+.passagePlate figcaption {display:none}
+/* One clean full-width rule between sections; no floating gold or graphite accent. */
+.source {border-top:0;border-bottom:0}
+.source::before {content:none;display:none}
+.journey {border-top:2px solid #839b9c}
+.references {position:relative;isolation:isolate;padding-bottom:53px;border-top:0}
+.references::before {display:none}
+.references > * {position:relative;z-index:1}
+.references::after { content:""; display:block; position:absolute; width:270px; height:212px; left:4px; bottom:3px; background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20280%20220%22%20fill%3D%22none%22%20stroke%3D%22%23687e7d%22%20stroke-width%3D%221.1%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cg%20opacity%3D%22.82%22%3E%3Cpath%20d%3D%22M20%20169%20Q83%20135%20129%20149%20T248%2060%22%20stroke-dasharray%3D%223%206%22%2F%3E%3Cpath%20d%3D%22M21%20172%20L45%20161%20M131%20147%20L147%20139%20M236%2071%20L249%2060%22%2F%3E%3Cpath%20d%3D%22M245%2059%20l-17%205%209%205%22%2F%3E%3Ccircle%20cx%3D%2220%22%20cy%3D%22169%22%20r%3D%224%22%2F%3E%3Ccircle%20cx%3D%22245%22%20cy%3D%2259%22%20r%3D%224%22%2F%3E%3Cpath%20d%3D%22M5%20193%20H132%20M12%20184%20H80%20M12%20202%20H101%22%20opacity%3D%22.35%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22translate%2855%2019%29%22%20opacity%3D%22.7%22%3E%3Cpath%20d%3D%22M0%200%20H87%20L104%2017%20V94%20H0%20Z%22%2F%3E%3Cpath%20d%3D%22M87%200%20V17%20H104%22%2F%3E%3Cpath%20d%3D%22M13%2027%20H71%20M13%2036%20H83%20M13%2045%20H62%20M13%2054%20H78%22%20opacity%3D%22.6%22%2F%3E%3Crect%20x%3D%2213%22%20y%3D%2267%22%20width%3D%2235%22%20height%3D%2212%22%20rx%3D%221%22%2F%3E%3Cpath%20d%3D%22M54%2070%20H83%20M54%2077%20H73%22%20opacity%3D%22.7%22%2F%3E%3Ccircle%20cx%3D%2284%22%20cy%3D%2283%22%20r%3D%2217%22%2F%3E%3Ccircle%20cx%3D%2284%22%20cy%3D%2283%22%20r%3D%2211%22%2F%3E%3Cpath%20d%3D%22M78%2083%20l4%204%209-10%22%2F%3E%3C%2Fg%3E%3Cg%20transform%3D%22translate%28179%20122%29%22%20opacity%3D%22.7%22%3E%3Cpath%20d%3D%22M0%2043%20H70%20M8%2043%20V12%20M14%2043%20V22%20M20%2043%20V15%20M26%2043%20V24%20M32%2043%20V15%20M38%2043%20V20%20M44%2043%20V12%20M50%2043%20V24%20M56%2043%20V14%20M62%2043%20V22%22%2F%3E%3Cpath%20d%3D%22M6%209%20l12-7%2016%204%2012-5%2016%206%22%2F%3E%3Cpath%20d%3D%22M11%2056%20H66%20M17%2063%20H55%22%20opacity%3D%22.4%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E"); background-size:contain; background-repeat:no-repeat; background-position:left bottom; opacity:.26; pointer-events:none; z-index:0; -webkit-mask-image:linear-gradient(0deg,#000 10%,#000 72%,transparent 100%); mask-image:linear-gradient(0deg,#000 10%,#000 72%,transparent 100%); }
+
+@media(max-width:720px) {
+ .masthead {padding-top:22px;background:linear-gradient(to bottom,#30474f 0px,#30474f 109px,#e8e7de 109px,#e9e7de 100%)}
+ .brandLine {gap:9px;padding-bottom:9px}
+ .heroComposition {margin-top:24px;padding-top:18px;padding-bottom:21px}
+ .heroComposition::before {inset:0 0 0 28%}
+ .passagePlate {min-height:64px;background-size:96% 64px;margin:3px 0 7px}
+ .passagePlate img,.passagePlate svg {height:64px}
+ .references::after {width:155px;height:126px;opacity:.16}
+ .references {padding-bottom:31px}
+}
+@media(max-width:460px) {
+ .masthead {background:linear-gradient(to bottom,#30474f 0px,#30474f 145px,#e8e7de 145px,#e9e7de 100%)}
+ .brandLine,.documentIdentity {flex-wrap:wrap}
+ .heroComposition {margin-top:22px;padding:16px 0 17px}
+ .passagePlate {min-height:49px;background-size:100% 49px}
+ .passagePlate img,.passagePlate svg {height:49px}
+}
+@media print {
+ .masthead {background:linear-gradient(to bottom,#30474f 0px,#30474f 57px,#fff 57px,#fff 100%)!important; border-top:2px solid #354c52;padding-top:8px;padding-bottom:11px}
+ .brandLine strong,.brandLine span,.documentIdentity,.documentIdentity span {color:white}
+ .heroComposition {background:radial-gradient(ellipse at 81% 53%,#f0eadf,transparent 70%);padding:10px 0;margin:8px 0 6px}
+ .heroComposition::before {display:none}
+ .keyFacts div:nth-child(4) span::before {width:15px;height:11px;flex-basis:15px}
+ .passagePlate {min-height:43px;background-size:100% 43px;margin:2px 0 4px}
+ .passagePlate img,.passagePlate svg {height:43px}
+ .references {padding-bottom:10px}
+ .references::after {width:125px;height:95px;opacity:.12}
+}
+
+
+/* FW-TOV-5Q — right-side agreement engraving for stage 04; no new DOM. */
+.activeStage .stageFlag {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  justify-self: end;
+  min-width: 110px;
+  text-align: right;
+}
+.activeStage .stageFlag::after {
+  content: "";
+  display: block;
+  flex: 0 0 auto;
+  width: 48px;
+  height: 31px;
+  opacity: .64;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 50' fill='none' stroke='%23816b4d' stroke-width='1.65' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 19l14-11 15 2 6 7 9-7 13 2 13 10'/%3E%3Cpath d='M18 21l17 15c3 3 8 4 11 1l16-16'/%3E%3Cpath d='M5 20l14 16M75 23L61 38'/%3E%3Cpath d='M30 30l8 8M38 25l10 10M45 20l10 10' opacity='.65'/%3E%3Cpath d='M6 44h68' opacity='.22'/%3E%3C/svg%3E") center / contain no-repeat;
+}
+@media (max-width:690px) {
+  .activeStage .stageFlag {
+    grid-column: 2;
+    justify-self: end;
+    align-items: flex-end;
+    min-width: 0;
+    gap: 5px;
+    margin-top: 3px;
+  }
+  .activeStage .stageFlag::after { width: 39px; height: 25px; }
+}
+@media print {
+  .activeStage .stageFlag { gap: 3px; }
+  .activeStage .stageFlag::after { width: 27px; height: 18px; opacity: .66; }
+}
+
+
+/* FW-TOV / closing editorial correction: keep the source attribution intact on desktop. */
+@media(min-width:761px) {
+ .keyFacts { grid-template-columns:.79fr 1fr 1.66fr 1fr; column-gap:14px; }
+ .keyFacts div:nth-child(3) strong { white-space:nowrap; font-size:clamp(11px,1.18vw,13px); letter-spacing:-.025em; }
+}

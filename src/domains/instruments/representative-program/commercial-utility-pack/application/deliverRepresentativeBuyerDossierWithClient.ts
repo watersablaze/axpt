@@ -43,10 +43,10 @@ export async function deliverRepresentativeBuyerDossierWithClient(input: {
     const adminUrl = "https://www.axpt.io/admin/representative-program/buyer-dossiers";
     const materials = record.items.map((item: { label: string; resourceReference: string; resourceVersion: number }) =>
       item.label + " — " + item.resourceReference + " · Edition " + item.resourceVersion).join("\n");
-    const subject = channel === "recipient" ? "French-Ward | Your institutional documents" : "Buyer introduction — " + record.participant.displayName;
+    const subject = channel === "recipient" ? "French-Ward | Your selected documents" : "Buyer introduction — " + record.participant.displayName;
     const text = channel === "recipient" ? [
       "Hello " + record.recipientName + ",",
-      record.participant.displayName + " has introduced you to French-Ward. Your selected institutional documents are ready for review:",
+      record.participant.displayName + " has introduced you to French-Ward. Your selected documents are ready for review:",
       materials,
       "Review your documents: " + signIn,
       "To begin, open the link and enter " + record.recipientEmail + ". Request your six-digit access code, then enter it to open your documents. No password or additional access request is needed.",
@@ -76,7 +76,7 @@ export async function deliverRepresentativeBuyerDossierWithClient(input: {
           '<p style="margin:0 0 28px;color:#dcc38f;font-size:12px;letter-spacing:2px">FRENCH-WARD, INC.</p>' +
           '<h1 style="margin:0 0 24px;font-size:28px;line-height:1.3;color:#ffffff">Your documents are ready.</h1>' +
           '<p style="font-size:16px;line-height:1.8;color:#e4eaf2">Hello ' + escape(record.recipientName) + ',</p>' +
-          '<p style="font-size:16px;line-height:1.8;color:#e4eaf2">' + escape(record.participant.displayName) + ' has introduced you to French-Ward. The following institutional materials have been selected for your review.</p>' +
+          '<p style="font-size:16px;line-height:1.8;color:#e4eaf2">' + escape(record.participant.displayName) + ' has introduced you to French-Ward. The following materials have been selected for your review.</p>' +
           '<div style="margin:24px 0;padding:18px 20px;background:#091421;border-left:2px solid #bfa36b">' +
           record.items.map((item: { label: string; resourceReference: string; resourceVersion: number }) =>
             '<p style="margin:10px 0 18px;line-height:1.6;color:#ffffff;font-size:15px">' + escape(item.label) +

@@ -1,3 +1,4 @@
+import { isSameOriginMutation } from "@/domains/auth/isSameOriginMutation";
 import { findCommercialPaper } from "@/domains/instruments/representative-program/commercial-utility-pack/commercial-papers/catalog";
 import { NextResponse } from "next/server";
 import { z } from "zod";
@@ -45,7 +46,7 @@ export async function GET(request: Request) {
         canPresent: resource.canPresent, canTransmit: resource.canTransmit,
         commercialPaper: (() => {const paper = findCommercialPaper(resource.resourceId); return paper ? {
           status: paper.status, referenceStatus: paper.referenceStatus,
-          previewHref: "/admin/representative-program/commercial-papers/" + paper.key + "?hash=" + paper.contentHash,
+          previewHref: "/admin/representative-program/commercial-papers/" + paper.key + "?hash=" + paper.contentHash + (paper.publicationHash ? "&publicationHash=" + paper.publicationHash : ""),
         } : null;})()}))}}, 200);
   } catch (error) {return failure(error);}
 }
@@ -53,7 +54,7 @@ export async function POST(request: Request) {
   const principal = await getPrincipal();
   if (!principal) return json({ok: false}, 401);
   if (!isAdmin(principal)) return json({ok: false}, 403);
-  if (request.headers.get("origin") !== new URL(request.url).origin) return json({ok: false}, 403);
+  if (!isSameOriginMutation(request)) return json({ok: false}, 403);
   let body: unknown;
   try {
     const text = await request.text();

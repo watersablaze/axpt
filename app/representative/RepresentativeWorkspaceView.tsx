@@ -434,6 +434,7 @@ export default async function RepresentativeWorkspaceView({
                           </Link>
 
                           </div>
+                          {!operatorPreview && resource.canPresent && findCommercialPaper(resource.resourceId)?.key === "TRANSACTION_OVERVIEW" ? <Link href={`/api/representative/commercial-utility-packs/resources/${encodeURIComponent(resource.id)}/commercial-paper/present`} target="_blank" rel="noopener noreferrer" prefetch={false} className={cupStyles.openResource}>Present TOV ↗</Link> : null}
                           <CupMaterialUse id={resource.id}
                             canPresent={resource.canPresent}
                             canTransmit={resource.canTransmit}

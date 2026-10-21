@@ -1,0 +1,30 @@
+.surface { min-height:100vh; background:#0b1720; color:#dbe5e8; }
+.toolbar { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:16px; padding:18px 24px; border-bottom:1px solid #34454d; background:#101e28; }
+.identity { min-width:0; }
+.eyebrow { color:#91b5c0; font-size:10px; letter-spacing:.15em; text-transform:uppercase; }
+.identity h1 { margin:5px 0; font-size:18px; font-weight:600; line-height:1.4; }
+.identity p { margin:0; font-size:12px; color:#a8bbc2; }
+.controls { display:flex; flex-wrap:wrap; align-items:center; gap:8px; }
+.controls button,.controls a { border:1px solid #3d5965; border-radius:5px; background:#142a34; color:#d9e8ed; padding:8px 11px; font-size:12px; cursor:pointer; text-decoration:none; }
+.controls button:focus-visible,.controls a:focus-visible,.reviewInfo summary:focus-visible { outline:2px solid #b8e6f1; outline-offset:3px; }
+.switcher { display:flex; gap:3px; }
+.switcher button[aria-pressed="true"] { background:#285061; border-color:#82b5c7; color:white; }
+.reviewInfo { display:flex; flex-wrap:wrap; align-items:baseline; gap:10px 16px; padding:12px 24px; border-bottom:1px solid #34454d; background:#101b22; font-size:12px; }
+.reviewInfo p { margin:0; color:#a8bbc2; line-height:1.6; }
+.badge { color:#dfc28a; font-size:10px; text-transform:uppercase; letter-spacing:.1em; white-space:nowrap; }
+.reviewInfo details { flex:1 1 100%; }
+.reviewInfo summary { cursor:pointer; color:#a9ccd7; width:fit-content; }
+.reviewInfo dl { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px 24px; margin:16px 0 4px; }
+.reviewInfo dt { font-size:10px; color:#8da3ad; text-transform:uppercase; letter-spacing:.1em; }
+.reviewInfo dd { margin:4px 0 0; line-height:1.6; }
+.hash { font-family:monospace; overflow-wrap:anywhere; }
+.readingStage { min-width:0; }
+.htmlFrame { display:block; width:100%; height:80vh; min-height:420px; border:0; background:#0b1720; }
+.immersive { position:fixed; inset:0; z-index:1000; height:100dvh; overflow:auto; overscroll-behavior:contain; }
+.immersive .toolbar { position:sticky; top:0; z-index:10; padding:9px 18px; }
+.immersive .eyebrow { display:none; }
+.immersive .identity h1 { font-size:12px; margin:0; }
+.immersive .identity p { font-size:10px; }
+.immersive .htmlFrame { height:calc(100dvh - 100px); min-height:360px; }
+@media (max-width:640px) { .toolbar,.reviewInfo { padding:12px; } .identity h1 { font-size:16px; } .reviewInfo dl { grid-template-columns:1fr; } .controls { gap:6px; } }
+@media print { .toolbar,.reviewInfo { display:none; } .surface,.immersive { position:static; height:auto; overflow:visible; } }

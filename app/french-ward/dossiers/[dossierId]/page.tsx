@@ -15,7 +15,7 @@ export default async function BuyerDossierPage({ params }: { params: Promise<{ d
   const dossier = await loadRecipientBuyerDossierWithClient({ client: prisma, dossierId, userId: principal.userId, email: principal.email });
   if (!dossier) notFound();
   return <main className={styles.reception}>
-    <header className={styles.header}><Link href="/french-ward">FRENCH-WARD, INC.</Link><span>Institutional Documents</span></header>
+    <header className={styles.header}><Link href="/french-ward">FRENCH-WARD, INC.</Link><span>Selected Documents</span></header>
     <section className={styles.welcome}>
       <p className={styles.eyebrow}>Prepared for {dossier.recipientName}</p>
       <h1>Your French-Ward documents</h1>

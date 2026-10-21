@@ -11,7 +11,7 @@ export async function GET(request:Request,context:{params:Promise<{dossierId:str
  return respondSupportingDocument(request,async()=>{
   const dossier=await loadRecipientBuyerDossierWithClient({client:prisma,dossierId,userId:principal.userId,email:principal.email});
   const item=dossier?.items.find(entry=>entry.id===itemId);
-  if(!item?.available||!item.publication||["INSTITUTIONAL_PROFILE","SOURCE_AUTHORITY"].includes(item.publication.kind))return null;
+  if(!item?.available||!item.publication||["TRANSACTION_OVERVIEW","INSTITUTIONAL_PROFILE","SOURCE_AUTHORITY"].includes(item.publication.kind))return null;
   const record=await prisma.representativeBuyerDossier.findUnique({where:{id:dossierId},select:{actorUserId:true,items:{where:{id:itemId},select:{resourceReleaseId:true}}}});
   if(!record||record.items.length!==1)return null;
   const supporting=await loadRepresentativeSupportingDocumentWithClient({client:prisma,userId:record.actorUserId,resourceReleaseId:record.items[0].resourceReleaseId});

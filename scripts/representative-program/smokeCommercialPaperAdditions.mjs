@@ -63,9 +63,10 @@ for (const p of papers) {
 }
 assertCommercialPaperReleasePin({module:'DOCUMENTS',resourceType:'DOCUMENT',resourceId:'unrelated',metadata:{}});
 const hashes = Object.fromEntries(papers.map(p => [p.key, p.contentHash]));
-const request = {actorUserId:'admin',packageId:'pack',keys:papers.map(p => p.key),expectedContentHashes:hashes};
+const request = {actorUserId:'admin',packageId:'pack',keys:papers.map(p => p.key),expectedContentHashes:hashes,expectedPublicationHashes:Object.fromEntries(papers.filter(p=>p.publicationHash).map(p=>[p.key,p.publicationHash]))};
 const {state, client} = fixture();
 const parentBefore = JSON.stringify(state.pack);
+await assert.rejects(() => stageCommercialPapers({...request, client, expectedPublicationHashes:{TRANSACTION_OVERVIEW:"0".repeat(64)}}), /REVIEW_CHANGED/);
 const first = await stageCommercialPapers({...request,client});
 assert.equal(first.releasePerformed, false);
 assert.equal(state.rows.length, 2);
@@ -82,9 +83,9 @@ const releaseInput = {client,actorUserId:'admin',packageId:'pack',resourceReleas
 const review = await reviewSelectedCommercialUtilityPackAdditions(releaseInput);
 const before = frenchWardTransactionOverview.status;
 frenchWardTransactionOverview.status = before + ' changed';
-await assert.rejects(() => releaseSelectedCommercialUtilityPackAdditions({...releaseInput,reviewHash:review.reviewHash,reason:'Test release',confirmRelease:true}), /COMMERCIAL_PAPER_CHANGED/);
+await assert.rejects(() => releaseSelectedCommercialUtilityPackAdditions({...releaseInput,reviewHash:review.reviewHash,reason:'Test release',confirmRelease:true}), /COMMERCIAL_PAPER_CHANGED|TOV_PUBLICATION_CHANGED/);
 assert(state.rows.every(r => r.state === 'WITHHELD'));
-await assert.rejects(() => stageCommercialPapers({...request,client}), /REVIEW_CHANGED/);
+await assert.rejects(() => stageCommercialPapers({...request,client}), /REVIEW_CHANGED|TOV_PUBLICATION_CHANGED/);
 frenchWardTransactionOverview.status = before;
 state.rows[0].canPresent = true;
 await assert.rejects(() => releaseSelectedCommercialUtilityPackAdditions({...releaseInput,reviewHash:review.reviewHash,reason:'Test release',confirmRelease:true}), /REVIEW_CHANGED/);
@@ -115,7 +116,7 @@ f.state.rows.push({id:'old',packageId:'pack',module:'DOCUMENTS',resourceType:'ST
 await assert.rejects(() => stageCommercialPapers({...request,client:f.client}), /EXISTING_CONFLICT/);
 assert.equal(f.state.rows.length, 1); assert.equal(f.state.events.length, 0);
 const {resolveBuyerDossierSelection} = await import(base + 'application/resolveBuyerDossierSelection.ts');
-for (const paper of papers) {
+for (const paper of papers.filter(paper => paper.key !== "TRANSACTION_OVERVIEW")) {
   const denied = await resolveBuyerDossierSelection({resourceReleaseIds:['commercial-paper'], ports:{
     loadPublication: async () => ({resourceReleaseId:'commercial-paper',kind:paper.key,reference:paper.reference,
       version:paper.version,label:paper.title,recipientContentHash:paper.contentHash}),

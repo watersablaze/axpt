@@ -2,7 +2,7 @@
 import styles from "./operator-panels.module.css";
 import { useEffect, useRef, useState } from "react";
 type Paper = {key: string; reference: string; version: number; title: string; status: string;
-  referenceStatus: string | null; contentHash: string; previewHref: string};
+  referenceStatus: string | null; contentHash: string; publicationHash: string | null; previewHref: string};
 const endpoint = "/api/admin/representative-program/commercial-utility-packs/commercial-papers";
 export default function CommercialPaperAdditions({packageId, participantId, disabled, onStart, onComplete}: {
   packageId: string; participantId: string; disabled: boolean; onStart: () => void;
@@ -39,11 +39,20 @@ export default function CommercialPaperAdditions({packageId, participantId, disa
       const response = await fetch(endpoint, {method: "POST", cache: "no-store",
         headers: {"Content-Type": "application/json"}, body: JSON.stringify({packageId, keys: selected,
           expectedContentHashes: Object.fromEntries(papers.filter(paper => selected.includes(paper.key)).map(paper => [paper.key, paper.contentHash])),
+          expectedPublicationHashes: Object.fromEntries(papers.filter(paper => selected.includes(paper.key) && paper.publicationHash).map(paper => [paper.key, paper.publicationHash])),
           confirmPreparedStatus: true})});
       const payload = await response.json();
+      const diagnostic = typeof payload.diagnostic === "string" && /^[A-Z0-9_]+$/.test(payload.diagnostic) ? payload.diagnostic : "UNSPECIFIED";
+      const explanation: Record<string, string> = {
+        CUP_COMMERCIAL_PAPER_REVIEW_CHANGED: "The publication review is stale or incomplete. Reload the admin page and obtain a fresh candidate review.",
+        CUP_COMMERCIAL_PAPER_ADMIN_REQUIRED: "The database could not confirm the operator's admin role.",
+        CUP_COMMERCIAL_PAPER_PACKAGE_CONFLICT: "The current CUP/module state does not permit commercial additions.",
+        CUP_COMMERCIAL_PAPER_EXISTING_CONFLICT: "A stored addition has a different content pin or release state. It was not overwritten.",
+        CUP_TOV_PUBLICATION_CHANGED: "The current publication does not match its approved snapshot.",
+      };
       outcome = response.ok && payload.ok === true
         ? "Commercial papers staged as withheld additions. Review their separate release decision below."
-        : "Staging was not confirmed. Reload state and obtain a fresh candidate review before retrying.";
+        : (explanation[diagnostic] || "Staging was not confirmed. Inspect the diagnostic before retrying.") + ` [HTTP ${response.status} · ${diagnostic}]`;
     } catch { /* Reload persisted state even when the response is lost. */ }
     finally {
       inFlight.current = false;
@@ -79,7 +88,7 @@ export default function CommercialPaperAdditions({packageId, participantId, disa
         <div className={styles.decisionFooter}>
           <label className={styles.confirmation}><input type="checkbox" checked={confirmed}
             onChange={event => setConfirmed(event.target.checked)} />
-            <span>I acknowledge the prepared status and references. Staging does not issue or release these papers.</span>
+            <span>I acknowledge the publication status and references. Staging does not issue or release these papers.</span>
           </label>
           <p className={styles.toolCopy}>View becomes available after release. Download, presentation and transmission start withheld.</p>
           <button type="button" disabled={!confirmed || !selected.length} onClick={() => void stage()} className={styles.primaryButton}>Stage Selected Papers</button>

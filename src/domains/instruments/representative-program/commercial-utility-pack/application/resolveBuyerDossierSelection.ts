@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 
 export type BuyerDossierPublication = Readonly<{
   resourceReleaseId: string;
-  kind: "INSTITUTIONAL_PROFILE" | "SOURCE_AUTHORITY" | "DECLARATION_OF_TRUST" | "RESELLER_AGREEMENT" | "SANCTIONS_SCREENING";
+  kind: "TRANSACTION_OVERVIEW" | "INSTITUTIONAL_PROFILE" | "SOURCE_AUTHORITY" | "DECLARATION_OF_TRUST" | "RESELLER_AGREEMENT" | "SANCTIONS_SCREENING";
   reference: string;
   version: number;
   label: string;
@@ -33,7 +33,7 @@ export async function resolveBuyerDossierSelection(input: {
   for (const id of [...ids].sort()) {
     const publication = await input.ports.loadPublication(id);
     if (!publication || publication.resourceReleaseId !== id ||
-        !["INSTITUTIONAL_PROFILE", "SOURCE_AUTHORITY", "DECLARATION_OF_TRUST", "RESELLER_AGREEMENT", "SANCTIONS_SCREENING"].includes(publication.kind) ||
+        !["TRANSACTION_OVERVIEW", "INSTITUTIONAL_PROFILE", "SOURCE_AUTHORITY", "DECLARATION_OF_TRUST", "RESELLER_AGREEMENT", "SANCTIONS_SCREENING"].includes(publication.kind) ||
         !publication.reference.trim() || !publication.label.trim() ||
         !Number.isInteger(publication.version) || publication.version < 1 ||
         !/^[a-f0-9]{64}$/.test(publication.recipientContentHash)) {

@@ -1,3 +1,4 @@
+import { isSameOriginMutation } from "@/domains/auth/isSameOriginMutation";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
@@ -72,7 +73,7 @@ export async function POST(request: Request) {
   const principal = await getPrincipal();
   if (!principal) return json({ ok: false }, 401);
   if (!isAdmin(principal)) return json({ ok: false }, 403);
-  if (request.headers.get("origin") !== new URL(request.url).origin) {
+  if (!isSameOriginMutation(request)) {
     return json({ ok: false }, 403);
   }
 

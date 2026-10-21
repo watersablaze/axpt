@@ -1,7 +1,16 @@
+import { TovPublicationView } from "@/components/french-ward/transaction-overview/TovPublicationView";
 import type { CommercialPaper } from "@/domains/instruments/representative-program/commercial-utility-pack/commercial-papers/catalog";
 
-/** Structured CUP reader. The separately maintained commercial-paper plates remain untouched. */
+/** Shared presentation; callers retain responsibility for CUP authorization and edition-pin checks. */
 export default function CommercialPaperReview({paper, preview = false}: {paper: CommercialPaper; preview?: boolean}) {
+  if (paper.key === "TRANSACTION_OVERVIEW") return <div className="min-h-screen bg-[#0b1720]">
+    <aside className="border-b border-white/15 px-5 py-3 text-xs leading-5 text-slate-200" aria-label="CUP reading context">
+      <p>{preview ? "Operator preview · no release or representative access created." : "CUP reading copy · access does not issue this paper or authorize a transaction."}</p>
+      <p>{paper.reference} · Edition {String(paper.version).padStart(2, "0")} · {paper.status}</p>
+      <p>{paper.referenceStatus} · Presentation, transmission and download remain separately governed.</p>
+    </aside>
+    <TovPublicationView />
+  </div>;
   const content = paper.content;
   const sections = "orientation" in content
     ? content.sections.map(section => ({title: section.title, paragraphs: section.paragraphs as readonly string[]}))

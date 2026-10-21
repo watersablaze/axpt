@@ -1,3 +1,5 @@
+import { isSameOriginMutation } from "@/domains/auth/isSameOriginMutation";
+import { revokeRepresentativeBuyerDossierWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/application/revokeRepresentativeBuyerDossierWithClient";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
@@ -28,6 +30,11 @@ export async function GET(request: Request) {
   if (!principal) return json({ ok: false }, 401);
   const url = new URL(request.url);
   try {
+    if (url.searchParams.has("list")) {
+      if (url.searchParams.get("list") !== "recent" || [...url.searchParams.keys()].some(key=>key!=="list") || url.searchParams.getAll("list").length!==1) return json({ok:false},400);
+      const receipts = await prisma.representativeBuyerDossier.findMany({where:{actorUserId:principal.userId},orderBy:[{createdAt:"desc"},{id:"desc"}],take:20,select:{id:true,recipientName:true,recipientEmail:true,expiresAt:true,revokedAt:true,recipientDeliveryStatus:true,adminDeliveryStatus:true}});
+      return json({ok:true,receipts});
+    }
     const id = url.searchParams.get("dossierId");
     if (id !== null) {
       if (!id || id.length > 191) return json({ ok: false }, 400);
@@ -53,7 +60,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const principal = await getPrincipal();
   if (!principal) return json({ ok: false }, 401);
-  if (request.headers.get("origin") !== new URL(request.url).origin) return json({ ok: false }, 403);
+  if (!isSameOriginMutation(request)) return json({ ok: false }, 403);
   let body: unknown;
   try { const raw = await request.text(); if (Buffer.byteLength(raw,"utf8")>12000) return json({ok:false},413); body=JSON.parse(raw); }
   catch { return json({ok:false},400); }
@@ -79,4 +86,20 @@ export async function POST(request: Request) {
     if(error instanceof BuyerDossierError) return json({ok:false,error:error.code},error.code==="DOSSIER_RATE_LIMIT"?429:error.code==="INVALID_DOSSIER"?400:["IDEMPOTENCY_CONFLICT","DOSSIER_REVIEW_CHANGED"].includes(error.code)?409:error.code==="ADMIN_NOTIFICATION_NOT_CONFIGURED"?503:403);
     return json({ok:false,error:"DOSSIER_RETRY_REQUIRED"},503);
   }
+}
+
+/** Revoke the authenticated representative's own invitation; never accepts an actor identity. */
+export async function PATCH(request: Request) {
+  const principal = await getPrincipal();
+  if (!principal) return json({ok:false},401);
+  if (!isSameOriginMutation(request)) return json({ok:false},403);
+  let body: unknown;
+  try { const raw = await request.text(); if (Buffer.byteLength(raw,"utf8") > 1000) return json({ok:false},413); body = JSON.parse(raw); }
+  catch { return json({ok:false},400); }
+  const parsed = z.object({dossierId:z.string().trim().min(1).max(191),action:z.literal("REVOKE")}).strict().safeParse(body);
+  if (!parsed.success) return json({ok:false},400);
+  try {
+    const revoked = await revokeRepresentativeBuyerDossierWithClient({client:prisma,userId:principal.userId,dossierId:parsed.data.dossierId});
+    return revoked ? json({ok:true,receipt:await receipt(parsed.data.dossierId,principal.userId)}) : json({ok:false},404);
+  } catch { return json({ok:false,error:"REVOCATION_UNCONFIRMED"},503); }
 }
