@@ -349,9 +349,13 @@ export default function CommunicationsWorkspace({
   canManageConversations: boolean
   canCreateOperationalRooms: boolean
 }) {
+  const [linkedConversationError, setLinkedConversationError] =
+    useState<string | null>(null)
+
   const conversationSearchParams = useSearchParams()
   const linkedConversationId =
     conversationSearchParams.get("conversationId")
+  const conversationListGenerationRef = useRef(0)
   const pendingLinkedConversationRef =
     useRef<string | null>(null)
 
@@ -628,6 +632,7 @@ export default function CommunicationsWorkspace({
   const loadConversations =
     useCallback(
       async () => {
+        const listGeneration = ++conversationListGenerationRef.current
         try {
           const response =
             await fetch(
@@ -651,6 +656,8 @@ export default function CommunicationsWorkspace({
                 "COMMUNICATIONS_LIST_FAILED"
             )
           }
+
+          if (listGeneration !== conversationListGenerationRef.current) return
 
           setConversations(
             payload.conversations
@@ -692,7 +699,7 @@ export default function CommunicationsWorkspace({
 
             if (!permitted) {
               selectConversation(null)
-              setError(
+              setLinkedConversationError(
                 "The requested conversation is unavailable or you no longer have access."
               )
               return
@@ -703,12 +710,14 @@ export default function CommunicationsWorkspace({
 
           setError(null)
         } catch (cause) {
+          if (listGeneration !== conversationListGenerationRef.current) return
           setError(
             cause instanceof Error
               ? cause.message
               : "COMMUNICATIONS_LIST_FAILED"
           )
         } finally {
+          if (listGeneration !== conversationListGenerationRef.current) return
           setLoadingConversations(
             false
           )
@@ -877,6 +886,13 @@ export default function CommunicationsWorkspace({
 
           setError(null)
         } catch (cause) {
+          if (!isCurrentConversationLoad({
+            requestedConversationId: conversationId,
+            selectedConversationId: selectedConversationIdRef.current,
+            generation,
+            currentGeneration: timelineLoadGenerationRef.current,
+          })) return
+
           const message =
             cause instanceof Error
               ? cause.message
@@ -921,6 +937,7 @@ export default function CommunicationsWorkspace({
 
   useEffect(
     () => {
+      setLinkedConversationError(null)
       pendingLinkedConversationRef.current =
         linkedConversationId
       void loadConversations()
@@ -1963,7 +1980,13 @@ export default function CommunicationsWorkspace({
   }
 
   return (
-    <div className="relative flex h-full min-h-0 overflow-hidden rounded-xl border border-neutral-800 bg-black/40">
+    <div className="flex h-full min-h-0 flex-col gap-3">
+      {linkedConversationError ? (
+        <div role="alert" className="shrink-0 rounded-lg border border-amber-300/30 bg-amber-100/5 px-4 py-3 text-sm text-amber-100">
+          {linkedConversationError}
+        </div>
+      ) : null}
+      <div className="relative flex min-h-0 flex-1 overflow-hidden rounded-xl border border-neutral-800 bg-black/40">
       <aside className="flex w-[320px] shrink-0 flex-col border-r border-neutral-800">
         <div className="border-b border-neutral-800 px-4 py-4">
           <div className="flex items-center justify-between gap-3">
@@ -3078,6 +3101,7 @@ export default function CommunicationsWorkspace({
           </div>
         )}
       </aside>
+      </div>
     </div>
   )
 }
