@@ -4,27 +4,22 @@ import type { Principal } from "@/domains/auth/types"
 
 import type { CommunicationsDatabaseClient } from "../shared/databaseTypes"
 
-export async function markConversationReadWithClient({
+export async function markConversationReadForMemberWithClient({
   client,
-  principal,
+  userId,
   conversationId,
   throughMessageId,
 }: {
   client: CommunicationsDatabaseClient
-  principal: Principal
+  userId: string
   conversationId: string
   throughMessageId: string
 }) {
-  authorityKernel.require(
-    principal,
-    PERMISSIONS.COMMUNICATIONS_ACCESS
-  )
-
   const membership =
     await client.communicationMember.findFirst({
       where: {
         conversationId,
-        userId: principal.userId,
+        userId,
         leftAt: null,
       },
     })
@@ -78,7 +73,7 @@ export async function markConversationReadWithClient({
     where: {
       conversationId_userId: {
         conversationId,
-        userId: principal.userId,
+        userId,
       },
     },
 
@@ -88,5 +83,29 @@ export async function markConversationReadWithClient({
       lastReadAt:
         new Date(),
     },
+  })
+}
+
+export async function markConversationReadWithClient({
+  client,
+  principal,
+  conversationId,
+  throughMessageId,
+}: {
+  client: CommunicationsDatabaseClient
+  principal: Principal
+  conversationId: string
+  throughMessageId: string
+}) {
+  authorityKernel.require(
+    principal,
+    PERMISSIONS.COMMUNICATIONS_ACCESS
+  )
+
+  return markConversationReadForMemberWithClient({
+    client,
+    userId: principal.userId,
+    conversationId,
+    throughMessageId,
   })
 }
