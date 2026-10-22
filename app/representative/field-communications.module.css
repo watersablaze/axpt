@@ -242,6 +242,102 @@
   letter-spacing: 0.05em;
 }
 
+.reflection {
+  display: grid;
+  grid-template-columns: minmax(1rem, 1fr) minmax(0, 28rem) minmax(1rem, 1fr);
+  gap: 0.85rem;
+  align-items: center;
+  padding: 1.1rem 0.8rem;
+}
+
+.reflectionRule {
+  height: 1px;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(111, 139, 150, 0.2)
+    );
+}
+
+.reflectionRule:last-child {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(111, 139, 150, 0.2),
+      transparent
+    );
+}
+
+.reflectionRecord {
+  min-width: 0;
+  padding: 0.85rem 1rem;
+  border-top: 1px solid rgba(111, 139, 150, 0.2);
+  border-bottom: 1px solid rgba(111, 139, 150, 0.16);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(12, 29, 36, 0.52),
+      rgba(7, 19, 25, 0.28)
+    );
+  text-align: center;
+}
+
+.reflectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.reflectionBadge {
+  color: #a8b8bd;
+  font-size: 0.51rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.reflectionTime {
+  color: #607680;
+  font-size: 0.54rem;
+}
+
+.reflectionTitle {
+  margin: 0.65rem 0 0;
+  color: #d8c18d;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.reflectionProvenance {
+  margin: 0.45rem 0 0;
+  color: #718994;
+  font-size: 0.56rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.reflectionContext {
+  overflow: hidden;
+  margin: 0.45rem auto 0;
+  color: #627a84;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 0.54rem;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reflectionDoctrine {
+  margin: 0.6rem auto 0;
+  color: #667c85;
+  font-size: 0.57rem;
+  line-height: 1.55;
+}
+
 .empty {
   align-self: center;
   justify-self: center;
@@ -458,6 +554,20 @@
 
   .empty {
     padding: 3rem 1rem;
+  }
+
+  .reflection {
+    grid-template-columns: 1fr;
+    gap: 0.55rem;
+    padding-inline: 0;
+  }
+
+  .reflectionRule {
+    width: 100%;
+  }
+
+  .reflectionRecord {
+    padding-inline: 0.75rem;
   }
 }
 

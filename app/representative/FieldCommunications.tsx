@@ -33,6 +33,37 @@ type FieldMessage = {
   } | null;
 };
 
+type FieldInstitutionalReflection = {
+  id: string;
+  operationalRoomId: string;
+  sourceSystem: string;
+  sourceEventId: string;
+  sourceAggregateType: string;
+  sourceAggregateId: string;
+  sourceEventType: string;
+  sourceOccurredAt: string;
+  targetType: string;
+  targetSubtype: string;
+  targetId: string;
+  reflectionType: string;
+  reflectionCode: string;
+  createdAt: string;
+};
+
+type FieldTimelineItem =
+  | {
+      itemType: "MESSAGE";
+      id: string;
+      occurredAt: string;
+      message: FieldMessage;
+    }
+  | {
+      itemType: "INSTITUTIONAL_REFLECTION";
+      id: string;
+      occurredAt: string;
+      reflection: FieldInstitutionalReflection;
+    };
+
 type FieldState = {
   participant: {
     id: string;
@@ -47,6 +78,12 @@ type FieldState = {
     updatedAt: string;
   } | null;
   messages: FieldMessage[];
+  timeline?: {
+    conversationId: string;
+    messageCount: number;
+    reflectionCount: number;
+    items: FieldTimelineItem[];
+  };
 };
 
 type MessageType = "COMMENT" | "REQUEST" | "RESOURCE_COMMENT";
@@ -73,6 +110,16 @@ function formatDate(value: string) {
       timeZone: "UTC",
     }).format(date) + " UTC"
   );
+}
+
+function institutionalLabel(value: string) {
+  return value
+    .replaceAll("_", " ")
+    .toLowerCase()
+    .replace(
+      /\b\w/g,
+      (character) => character.toUpperCase(),
+    );
 }
 
 function readContextFromLocation(): FieldContext {
@@ -339,31 +386,85 @@ export default function FieldCommunications({
       <div className={styles.thread} aria-live="polite">
         {loading ? (
           <p className={styles.quiet}>Loading field record…</p>
-        ) : field && field.messages.length > 0 ? (
-          field.messages.map((message) => (
-            <article
-              key={message.id}
-              className={
-                message.sender.role === "REPRESENTATIVE"
-                  ? styles.messageRepresentative
-                  : styles.messageInstitution
-              }
-            >
-              <header className={styles.messageHeader}>
-                <strong>{message.sender.displayName}</strong>
+        ) : field?.timeline && field.timeline.items.length > 0 ? (
+          field.timeline.items.map((item) => {
+            if (item.itemType === "INSTITUTIONAL_REFLECTION") {
+              const reflection = item.reflection;
 
-                <span>{formatDate(message.createdAt)}</span>
-              </header>
+              return (
+                <aside
+                  key={`reflection:${reflection.id}`}
+                  className={styles.reflection}
+                  aria-label="Institutional observation"
+                >
+                  <div className={styles.reflectionRule} />
 
-              <p className={styles.messageBody}>{message.body}</p>
+                  <div className={styles.reflectionRecord}>
+                    <div className={styles.reflectionHead}>
+                      <span className={styles.reflectionBadge}>
+                        Institutional Observation
+                      </span>
 
-              {message.context ? (
-                <p className={styles.messageContext}>
-                  Context · {message.context.targetSubtype}
-                </p>
-              ) : null}
-            </article>
-          ))
+                      <span className={styles.reflectionTime}>
+                        {formatDate(reflection.sourceOccurredAt)}
+                      </span>
+                    </div>
+
+                    <p className={styles.reflectionTitle}>
+                      {institutionalLabel(reflection.reflectionCode)}
+                    </p>
+
+                    <p className={styles.reflectionProvenance}>
+                      {institutionalLabel(reflection.sourceSystem)}
+                      <span aria-hidden="true"> · </span>
+                      {institutionalLabel(reflection.sourceAggregateType)}
+                    </p>
+
+                    <p
+                      className={styles.reflectionContext}
+                      title={`${reflection.targetSubtype} · ${reflection.targetId}`}
+                    >
+                      Context · {institutionalLabel(reflection.targetSubtype)}
+                    </p>
+
+                    <p className={styles.reflectionDoctrine}>
+                      Recorded institutional outcome · no authority is created
+                      by this observation.
+                    </p>
+                  </div>
+
+                  <div className={styles.reflectionRule} />
+                </aside>
+              );
+            }
+
+            const message = item.message;
+
+            return (
+              <article
+                key={`message:${message.id}`}
+                className={
+                  message.sender.role === "REPRESENTATIVE"
+                    ? styles.messageRepresentative
+                    : styles.messageInstitution
+                }
+              >
+                <header className={styles.messageHeader}>
+                  <strong>{message.sender.displayName}</strong>
+
+                  <span>{formatDate(message.createdAt)}</span>
+                </header>
+
+                <p className={styles.messageBody}>{message.body}</p>
+
+                {message.context ? (
+                  <p className={styles.messageContext}>
+                    Context · {message.context.targetSubtype}
+                  </p>
+                ) : null}
+              </article>
+            );
+          })
         ) : (
           <div className={styles.empty}>
             <p>No field record has been opened yet.</p>
