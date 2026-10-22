@@ -136,16 +136,16 @@ function compareTimelineItems(
   return left.id.localeCompare(right.id);
 }
 
-export async function loadConversationTimelineWithClient({
+export async function loadConversationTimelineForMemberWithClient({
   client,
-  principal,
+  userId,
   conversationId,
   messageLimit,
   reflectionLimit,
 }: {
   client: CommunicationsDatabaseClient;
 
-  principal: Principal;
+  userId: string;
 
   conversationId: string;
 
@@ -153,12 +153,10 @@ export async function loadConversationTimelineWithClient({
 
   reflectionLimit?: number;
 }): Promise<CommunicationTimeline> {
-  authorityKernel.require(principal, PERMISSIONS.COMMUNICATIONS_ACCESS);
-
   await requireConversationMember(
     client as unknown as CommunicationMemberClient,
     conversationId,
-    principal.userId,
+    userId,
   );
 
   const boundedMessageLimit = normalizeLimit(
@@ -301,4 +299,35 @@ export async function loadConversationTimelineWithClient({
 
     reflectionCount: reflections.length,
   };
+}
+
+export async function loadConversationTimelineWithClient({
+  client,
+  principal,
+  conversationId,
+  messageLimit,
+  reflectionLimit,
+}: {
+  client: CommunicationsDatabaseClient;
+
+  principal: Principal;
+
+  conversationId: string;
+
+  messageLimit?: number;
+
+  reflectionLimit?: number;
+}): Promise<CommunicationTimeline> {
+  authorityKernel.require(
+    principal,
+    PERMISSIONS.COMMUNICATIONS_ACCESS,
+  );
+
+  return loadConversationTimelineForMemberWithClient({
+    client,
+    userId: principal.userId,
+    conversationId,
+    messageLimit,
+    reflectionLimit,
+  });
 }
