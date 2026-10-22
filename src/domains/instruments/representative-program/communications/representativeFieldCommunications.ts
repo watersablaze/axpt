@@ -6,6 +6,10 @@ import type { CommunicationsTransactionClient } from "@/domains/communications/s
 
 import { COMMUNICATION_EVENT_TYPE } from "@/domains/communications/events";
 
+import {
+  sendMessageInTransactionWithResult,
+} from "@/domains/communications/messages/sendMessageInTransaction";
+
 export const REPRESENTATIVE_FIELD_MESSAGE_TYPES = [
   "COMMENT",
   "REQUEST",
@@ -533,92 +537,59 @@ async function performRepresentativeFieldSend(
 
     const kind = messageKind(params.type);
 
-    const existing = await tx.communicationMessage.findUnique({
-      where: {
-        conversationId_senderUserId_clientMessageId: {
-          conversationId: operationalRoom.conversationId,
-          senderUserId: representativeUserId,
-          clientMessageId,
-        },
-      },
-    });
+    let sendResult;
 
-    if (existing) {
+    try {
+      sendResult =
+        await sendMessageInTransactionWithResult({
+          tx,
+          senderUserId: representativeUserId,
+          conversationId: operationalRoom.conversationId,
+          clientMessageId,
+          kind,
+          body,
+          workflowReference: {
+            targetType: pointer.targetType,
+            targetSubtype: pointer.targetSubtype,
+            targetId: pointer.targetId,
+          },
+          eventMetadata: {
+            participantId: participant.id,
+            source: "ARP_FIELD_COMMUNICATIONS",
+          },
+        });
+    } catch (error) {
       if (
-        existing.body !== body ||
-        existing.kind !== kind ||
-        existing.workflowTargetType !== pointer.targetType ||
-        existing.workflowTargetSubtype !== pointer.targetSubtype ||
-        existing.workflowTargetId !== pointer.targetId
+        error instanceof Error &&
+        error.message ===
+          "COMMUNICATION_MESSAGE_IDEMPOTENCY_COLLISION"
       ) {
-        throw new Error("ARP_FIELD_COMMUNICATIONS_IDEMPOTENCY_COLLISION");
+        throw new Error(
+          "ARP_FIELD_COMMUNICATIONS_IDEMPOTENCY_COLLISION"
+        );
       }
 
-      return {
-        participant,
-        operationalRoomId: operationalRoom.id,
-        conversationId: operationalRoom.conversationId,
-        message: existing,
-        created: false,
-      };
+      throw error;
     }
 
-    const message = await tx.communicationMessage.create({
-      data: {
-        conversationId: operationalRoom.conversationId,
-        senderUserId: representativeUserId,
-        clientMessageId,
-        kind,
-        body,
-        workflowTargetType: pointer.targetType,
-        workflowTargetSubtype: pointer.targetSubtype,
-        workflowTargetId: pointer.targetId,
-      },
-    });
+    const {
+      message,
+      created,
+    } = sendResult;
 
-    await tx.communicationConversation.update({
-      where: {
-        id: operationalRoom.conversationId,
-      },
-      data: {
-        updatedAt: message.createdAt,
-      },
-    });
-
-    await tx.domainEvent.create({
-      data: {
-        streamType: "COMMUNICATION_CONVERSATION",
-        streamId: operationalRoom.conversationId,
-        eventType: COMMUNICATION_EVENT_TYPE.MESSAGE_SENT,
-        payload: {
-          messageId: message.id,
-          conversationId: operationalRoom.conversationId,
-          senderUserId: representativeUserId,
-          kind: message.kind,
-          workflowReference: {
-            targetType: message.workflowTargetType,
-            targetSubtype: message.workflowTargetSubtype,
-            targetId: message.workflowTargetId,
-          },
-          createdAt: message.createdAt.toISOString(),
-        },
-        metadata: {
-          actorUserId: representativeUserId,
-          participantId: participant.id,
-          source: "ARP_FIELD_COMMUNICATIONS",
-        },
-        occurredAt: message.createdAt,
-      },
-    });
-
-    await params.onMessageCreated?.({ emailLog: tx.emailLog }, message.id);
+    if (created) {
+      await params.onMessageCreated?.(
+        { emailLog: tx.emailLog },
+        message.id,
+      );
+    }
 
     return {
       participant,
       operationalRoomId: operationalRoom.id,
       conversationId: operationalRoom.conversationId,
       message,
-      created: true,
+      created,
     };
   });
 }

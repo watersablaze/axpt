@@ -24,7 +24,7 @@ import {
   type CommunicationMessageWorkflowReference,
 } from "./messageWorkflowReference"
 
-export async function sendMessageInTransaction({
+export async function sendMessageInTransactionWithResult({
   tx,
   senderUserId,
   conversationId,
@@ -32,6 +32,7 @@ export async function sendMessageInTransaction({
   kind,
   body,
   workflowReference,
+  eventMetadata,
 }: {
   tx: CommunicationsTransactionClient
   senderUserId: string
@@ -41,6 +42,9 @@ export async function sendMessageInTransaction({
   body: string
   workflowReference:
     | CommunicationMessageWorkflowReference
+    | null
+  eventMetadata?:
+    | Readonly<Record<string, string>>
     | null
 }) {
   await requireConversationMember(
@@ -74,7 +78,10 @@ export async function sendMessageInTransaction({
       )
     }
 
-    return existing
+    return {
+      message: existing,
+      created: false,
+    } as const
   }
 
   await requireConversationWritable(
@@ -214,6 +221,7 @@ export async function sendMessageInTransaction({
       },
 
       metadata: {
+        ...(eventMetadata ?? {}),
         actorUserId:
           senderUserId,
       },
@@ -223,5 +231,21 @@ export async function sendMessageInTransaction({
     },
   })
 
-  return message
+  return {
+    message,
+    created: true,
+  } as const
+}
+
+export async function sendMessageInTransaction(
+  params: Parameters<
+    typeof sendMessageInTransactionWithResult
+  >[0]
+) {
+  const result =
+    await sendMessageInTransactionWithResult(
+      params
+    )
+
+  return result.message
 }
