@@ -16,6 +16,7 @@ import AuthorityRegister from "./AuthorityRegister";
 import RepresentativeSessionControl from "./RepresentativeSessionControl";
 
 import { loadRepresentativeWorkspaceSnapshotWithClient } from "@/domains/instruments/representative-program/application/loadRepresentativeWorkspaceSnapshotWithClient";
+import { loadRepresentativeFieldCommunicationsWithClient } from "@/domains/instruments/representative-program/communications/representativeFieldCommunications";
 
 import { prisma } from "@/infrastructure/db/prisma";
 import { loadRepresentativeCommercialUtilityPackSnapshotWithClient as loadRepresentativeCommercialUtilityPackWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/application/loadRepresentativeCommercialUtilityPackSnapshotWithClient";
@@ -98,7 +99,11 @@ export default async function RepresentativeWorkspaceView({
   const representativePreviewContinuation =
     representativePreviewLens ? "&lens=representative" : "";
 
-  const [workspace, commercialUtilityPack] =
+  const [
+    workspace,
+    commercialUtilityPack,
+    previewField,
+  ] =
     await Promise.all([
       loadRepresentativeWorkspaceSnapshotWithClient({
         client: prisma,
@@ -108,6 +113,12 @@ export default async function RepresentativeWorkspaceView({
         client: prisma,
         userId,
       }),
+      operatorPreview
+        ? loadRepresentativeFieldCommunicationsWithClient({
+            client: prisma,
+            userId,
+          })
+        : Promise.resolve(null),
     ]);
 
   if (!workspace) {
@@ -221,10 +232,7 @@ export default async function RepresentativeWorkspaceView({
         communications={
           <FieldCommunications
             previewMode={operatorPreview}
-            previewParticipant={{
-              docketReference: workspace.docketReference,
-              displayName: workspace.displayName,
-            }}
+            initialField={previewField}
           />
         }
         identity={

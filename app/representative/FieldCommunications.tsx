@@ -99,10 +99,7 @@ type MessageType = "COMMENT" | "REQUEST" | "RESOURCE_COMMENT";
 
 type FieldCommunicationsProps = {
   previewMode?: boolean;
-  previewParticipant?: {
-    docketReference: string;
-    displayName: string;
-  };
+  initialField?: FieldState | null;
 };
 
 function formatDate(value: string) {
@@ -178,34 +175,43 @@ function contextLabel(context: FieldContext) {
 
 export default function FieldCommunications({
   previewMode = false,
-  previewParticipant,
+  initialField = null,
 }: FieldCommunicationsProps = {}) {
-  const [field, setField] = useState<FieldState | null>(() =>
-    previewMode && previewParticipant
-      ? {
-          participant: {
-            id: "preview-participant",
-            docketReference: previewParticipant.docketReference,
-            displayName: previewParticipant.displayName,
-          },
-          room: null,
-          messages: [],
-          attention: {
-            unreadCount: 0,
-            lastReadMessageId: null,
-            lastReadAt: null,
-          },
-        }
-      : null,
-  );
+  const [field, setField] =
+    useState<FieldState | null>(
+      initialField,
+    );
 
-  const [loading, setLoading] = useState(!previewMode);
+  const [loading, setLoading] =
+    useState(
+      !previewMode &&
+      !initialField,
+    );
 
   const [error, setError] = useState<string | null>(null);
 
   const [sending, setSending] = useState(false);
 
   const [body, setBody] = useState("");
+
+  const [entryOpen, setEntryOpen] = useState(false);
+
+  const [
+    interactionPreview,
+    setInteractionPreview,
+  ] = useState(false);
+
+  const [
+    simulatedMessages,
+    setSimulatedMessages,
+  ] = useState<
+    Array<{
+      id: string;
+      body: string;
+      kind: MessageType;
+      createdAt: string;
+    }>
+  >([]);
 
   const [messageType, setMessageType] = useState<MessageType>("COMMENT");
 
@@ -216,6 +222,7 @@ export default function FieldCommunications({
   const realtime =
     useCommunicationsStream(
       "/api/representative/communications/stream",
+      !previewMode,
     );
 
   const effectiveMessageType = useMemo<MessageType>(
@@ -404,11 +411,44 @@ export default function FieldCommunications({
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (previewMode) {
+    const trimmed = body.trim();
+
+    if (
+      previewMode &&
+      interactionPreview
+    ) {
+      if (!trimmed) {
+        return;
+      }
+
+      setSimulatedMessages(
+        (current) => [
+          ...current,
+          {
+            id:
+              typeof crypto !==
+                "undefined" &&
+              typeof crypto.randomUUID ===
+                "function"
+                ? crypto.randomUUID()
+                : `preview-${Date.now()}`,
+            body: trimmed,
+            kind:
+              effectiveMessageType,
+            createdAt:
+              new Date().toISOString(),
+          },
+        ],
+      );
+
+      setBody("");
+      setEntryOpen(false);
       return;
     }
 
-    const trimmed = body.trim();
+    if (previewMode) {
+      return;
+    }
 
     if (!trimmed || sending) {
       return;
@@ -481,63 +521,88 @@ export default function FieldCommunications({
       className={styles.surface}
     >
       {previewMode ? (
-        <div className={styles.previewNotice} role="status">
-          <strong>Admin Preview</strong>
-          <span>
-            Representative actions are disabled. No communication will be
-            created or submitted from this preview.
-          </span>
+        <div
+          className={styles.previewNotice}
+          role="status"
+        >
+          <div>
+            <strong>
+              {interactionPreview
+                ? "INTERACTION_PREVIEW"
+                : "CANONICAL_VIEW"}
+            </strong>
+
+            <span>
+              {interactionPreview
+                ? "local simulation · no mutation · no representative authority"
+                : "canonical field record · representative actions withheld"}
+            </span>
+          </div>
+
+          <button
+            type="button"
+            className={styles.previewModeToggle}
+            onClick={() => {
+              setInteractionPreview(
+                (current) => !current,
+              );
+              setEntryOpen(false);
+              setBody("");
+              setSimulatedMessages([]);
+            }}
+          >
+            {interactionPreview
+              ? "RETURN TO CANONICAL VIEW"
+              : "OPEN INTERACTION PREVIEW"}
+          </button>
         </div>
       ) : null}
 
-      <header className={styles.header}>
-        <div>
-          <p className={styles.kicker}>Representative Field</p>
-
-          <h1 id="field-communications-title" className={styles.title}>
-            Field Communications
+      <header className={styles.terminalHeader}>
+        <div className={styles.terminalTitleRow}>
+          <h1
+            id="field-communications-title"
+            className={styles.terminalTitle}
+          >
+            FIELD://COMMUNICATIONS
           </h1>
 
-          <p className={styles.intro}>
-            Use this channel for representative comments, questions, resource
-            observations, and requests that should remain connected to your
-            French-Ward Program record.
-          </p>
+          <span className={styles.stateToken}>
+            {field?.room ? "OPEN" : "READY"}
+          </span>
         </div>
 
-        {field ? (
-          <div className={styles.record}>
-            <span>Program record</span>
-
-            <strong>{field.participant.docketReference}</strong>
-
-            {field.attention.unreadCount > 0 ? (
-              <span
-                className={styles.attention}
-                role="status"
-              >
-                New activity · {field.attention.unreadCount}
-              </span>
-            ) : null}
+        <dl className={styles.terminalMeta}>
+          <div>
+            <dt>representative</dt>
+            <dd>{field?.participant.displayName ?? "—"}</dd>
           </div>
-        ) : null}
-      </header>
 
-      <div className={styles.doctrine}>
-        <strong>Communication does not create authority.</strong>
+          <div>
+            <dt>record</dt>
+            <dd>{field?.participant.docketReference ?? "—"}</dd>
+          </div>
 
-        <span>
-          Appointment, delegated authority, resource permissions, and
-          transaction authority remain separately governed.
-        </span>
-      </div>
+          <div>
+            <dt>context</dt>
+            <dd>{contextLabel(context).replaceAll(" ", "_").toUpperCase()}</dd>
+          </div>
 
-      <div className={styles.contextBar}>
-        <div>
-          <span className={styles.contextLabel}>Field context</span>
-
-          <strong>{contextLabel(context)}</strong>
-        </div>
+          <div>
+            <dt>activity</dt>
+            <dd
+              className={
+                field?.attention.unreadCount
+                  ? styles.activityLive
+                  : undefined
+              }
+            >
+              {String(field?.attention.unreadCount ?? 0).padStart(2, "0")}
+              {" "}
+              UNREAD
+            </dd>
+          </div>
+        </dl>
 
         {context.type !== "WORKSPACE" ? (
           <button
@@ -545,15 +610,17 @@ export default function FieldCommunications({
             className={styles.contextClear}
             onClick={clearContext}
           >
-            Return to general field
+            CLEAR_CONTEXT
           </button>
         ) : null}
-      </div>
+      </header>
 
-      <div className={styles.thread} aria-live="polite">
+      <div className={styles.timeline} aria-live="polite">
         {loading ? (
-          <p className={styles.quiet}>Loading field record…</p>
-        ) : field?.timeline && field.timeline.items.length > 0 ? (
+          <div className={styles.loading}>
+            FIELD_RECORD::LOADING
+          </div>
+        ) : field?.timeline?.items?.length ? (
           field.timeline.items.map((item) => {
             if (item.itemType === "INSTITUTIONAL_REFLECTION") {
               const reflection = item.reflection;
@@ -562,45 +629,27 @@ export default function FieldCommunications({
                 <aside
                   key={`reflection:${reflection.id}`}
                   className={styles.reflection}
-                  aria-label="Institutional observation"
                 >
-                  <div className={styles.reflectionRule} />
-
-                  <div className={styles.reflectionRecord}>
-                    <div className={styles.reflectionHead}>
-                      <span className={styles.reflectionBadge}>
-                        Institutional Observation
-                      </span>
-
-                      <span className={styles.reflectionTime}>
-                        {formatDate(reflection.sourceOccurredAt)}
-                      </span>
-                    </div>
-
-                    <p className={styles.reflectionTitle}>
-                      {institutionalLabel(reflection.reflectionCode)}
-                    </p>
-
-                    <p className={styles.reflectionProvenance}>
-                      {institutionalLabel(reflection.sourceSystem)}
-                      <span aria-hidden="true"> · </span>
-                      {institutionalLabel(reflection.sourceAggregateType)}
-                    </p>
-
-                    <p
-                      className={styles.reflectionContext}
-                      title={`${reflection.targetSubtype} · ${reflection.targetId}`}
-                    >
-                      Context · {institutionalLabel(reflection.targetSubtype)}
-                    </p>
-
-                    <p className={styles.reflectionDoctrine}>
-                      Recorded institutional outcome · no authority is created
-                      by this observation.
-                    </p>
+                  <div className={styles.reflectionHead}>
+                    <span>:: institutional_observation</span>
+                    <time>{formatDate(reflection.createdAt)}</time>
                   </div>
 
-                  <div className={styles.reflectionRule} />
+                  <p className={styles.reflectionTitle}>
+                    {institutionalLabel(reflection.reflectionCode)}
+                  </p>
+
+                  <p className={styles.reflectionTrace}>
+                    {reflection.sourceSystem}
+                    {" / "}
+                    {reflection.sourceEventType}
+                  </p>
+
+                  <p className={styles.reflectionContext}>
+                    target: {reflection.targetSubtype}
+                    {" / "}
+                    {reflection.targetId}
+                  </p>
                 </aside>
               );
             }
@@ -610,23 +659,36 @@ export default function FieldCommunications({
             return (
               <article
                 key={`message:${message.id}`}
-                className={
+                className={[
+                  styles.dispatch,
                   message.sender.role === "REPRESENTATIVE"
-                    ? styles.messageRepresentative
-                    : styles.messageInstitution
-                }
+                    ? styles.dispatchRepresentative
+                    : styles.dispatchInstitution,
+                ].join(" ")}
               >
-                <header className={styles.messageHeader}>
-                  <strong>{message.sender.displayName}</strong>
+                <header className={styles.dispatchHeader}>
+                  <time>{formatDate(message.createdAt)}</time>
 
-                  <span>{formatDate(message.createdAt)}</span>
+                  <span>
+                    {message.sender.role === "FRENCH_WARD"
+                      ? "FW.ADMINISTRATION"
+                      : "REPRESENTATIVE"}
+                  </span>
+
+                  <span>{message.kind}</span>
                 </header>
 
-                <p className={styles.messageBody}>{message.body}</p>
+                <p className={styles.dispatchSender}>
+                  {message.sender.displayName}
+                </p>
+
+                <p className={styles.dispatchBody}>
+                  {message.body}
+                </p>
 
                 {message.context ? (
-                  <p className={styles.messageContext}>
-                    Context · {message.context.targetSubtype}
+                  <p className={styles.dispatchContext}>
+                    context: {message.context.targetSubtype}
                   </p>
                 ) : null}
               </article>
@@ -634,86 +696,201 @@ export default function FieldCommunications({
           })
         ) : (
           <div className={styles.empty}>
-            <p>No field record has been opened yet.</p>
-
-            <span>
-              The first submission establishes the representative
-              field thread.
-            </span>
+            <span>FIELD_CHANNEL::READY</span>
+            <p>No correspondence recorded.</p>
           </div>
         )}
+        {previewMode &&
+        interactionPreview &&
+        simulatedMessages.length
+          ? simulatedMessages.map(
+              (message) => (
+                <article
+                  key={message.id}
+                  className={[
+                    styles.dispatch,
+                    styles.dispatchRepresentative,
+                    styles.simulatedDispatch,
+                  ].join(" ")}
+                >
+                  <header
+                    className={styles.dispatchHeader}
+                  >
+                    <time>
+                      {formatDate(
+                        message.createdAt,
+                      )}
+                    </time>
+
+                    <span>
+                      REPRESENTATIVE
+                    </span>
+
+                    <span>
+                      {message.kind}
+                    </span>
+                  </header>
+
+                  <p
+                    className={
+                      styles.dispatchSender
+                    }
+                  >
+                    {field?.participant.displayName ??
+                      "Representative"}
+                  </p>
+
+                  <p
+                    className={
+                      styles.dispatchBody
+                    }
+                  >
+                    {message.body}
+                  </p>
+
+                  <p
+                    className={
+                      styles.simulatedFlag
+                    }
+                  >
+                    simulation:
+                    not_stored
+                  </p>
+                </article>
+              ),
+            )
+          : null}
       </div>
 
-      <form className={styles.composer} onSubmit={submit}>
-        <div className={styles.composerHead}>
-          <div>
-            <p className={styles.kicker}>Field Record Entry</p>
+      <aside
+        className={styles.authorityBoundary}
+        aria-label="Communication governance boundary"
+      >
+        <span className={styles.boundaryLabel}>
+          AUTHORITY_BOUNDARY
+        </span>
 
-            <h2>Record communication</h2>
-          </div>
+        <div className={styles.boundaryGrid}>
+          <span>communication != authority</span>
+          <span>appointment = separately governed</span>
+          <span>resources = separately governed</span>
+        </div>
+      </aside>
 
-          {context.type === "CUP_RESOURCE" ? (
-            <span className={styles.resourceContext}>Resource Comment</span>
-          ) : (
-            <label className={styles.typeControl}>
-              <span>Type</span>
+      <div className={styles.entryShell}>
+        {(
+          previewMode &&
+          !interactionPreview
+        ) ||
+        !entryOpen ? (
+          <button
+            type="button"
+            className={styles.entryTrigger}
+            disabled={
+              previewMode &&
+              !interactionPreview
+            }
+            onClick={() =>
+              setEntryOpen(true)
+            }
+          >
+            {previewMode &&
+            !interactionPreview
+              ? "FIELD ENTRY // PREVIEW"
+              : "+ ENTER COMMUNICATION"}
+          </button>
+        ) : (
+          <form
+            className={styles.composer}
+            onSubmit={submit}
+          >
+            <div className={styles.composerHead}>
+              <div>
+                <span className={styles.composerIndex}>
+                  FIELD_ENTRY
+                </span>
 
-              <select
-                value={messageType}
-                disabled={previewMode}
-                onChange={(event) =>
-                  setMessageType(event.target.value as MessageType)
+                <strong>
+                  {contextLabel(context)}
+                </strong>
+              </div>
+
+              {context.type === "CUP_RESOURCE" ? (
+                <span className={styles.resourceContext}>
+                  RESOURCE_COMMENT
+                </span>
+              ) : (
+                <label className={styles.typeControl}>
+                  <span>type</span>
+
+                  <select
+                    value={messageType}
+                    onChange={(event) =>
+                      setMessageType(
+                        event.target.value as MessageType,
+                      )
+                    }
+                  >
+                    <option value="COMMENT">COMMENT</option>
+                    <option value="REQUEST">QUESTION / REQUEST</option>
+                  </select>
+                </label>
+              )}
+            </div>
+
+            <label className={styles.messageControl}>
+              <span>message</span>
+
+              <textarea
+                value={body}
+                onChange={(event) => setBody(event.target.value)}
+                maxLength={10000}
+                rows={5}
+                autoFocus
+                placeholder={
+                  context.type === "CUP_RESOURCE"
+                    ? "Record a question or observation about this resource."
+                    : "Enter field communication."
+                }
+              />
+            </label>
+
+            <div className={styles.submitRow}>
+              <button
+                type="button"
+                className={styles.cancelEntry}
+                onClick={() => {
+                  setEntryOpen(false);
+                  setBody("");
+                }}
+              >
+                CANCEL
+              </button>
+
+              <button
+                type="submit"
+                disabled={
+                  sending ||
+                  !body.trim()
                 }
               >
-                <option value="COMMENT">Comment</option>
-
-                <option value="REQUEST">Question / Request</option>
-              </select>
-            </label>
-          )}
-        </div>
-
-        <label className={styles.messageControl}>
-          <span>Message</span>
-
-          <textarea
-            value={body}
-            disabled={previewMode}
-            onChange={(event) => setBody(event.target.value)}
-            maxLength={10000}
-            rows={7}
-            placeholder={
-              context.type === "CUP_RESOURCE"
-                ? "Record a question, observation, or comment about this resource."
-                : "Record a comment, question, observation, or request."
-            }
-          />
-        </label>
-
-        <div className={styles.submitRow}>
-          <p>
-            This submission becomes part of your representative communication
-            record.
-          </p>
-
-          <button
-            type="submit"
-            disabled={previewMode || sending || !body.trim()}
-          >
-            {previewMode
-              ? "Submission Disabled · Preview"
-              : sending
-                ? "Submitting…"
-                : "Submit to French-Ward"}
-          </button>
-        </div>
+                {previewMode &&
+                interactionPreview
+                  ? "SIMULATE ENTRY"
+                  : sending
+                    ? "SUBMITTING..."
+                    : "SUBMIT TO FRENCH-WARD"}
+              </button>
+            </div>
+          </form>
+        )}
 
         {error ? (
           <p role="alert" className={styles.error}>
             {error}
           </p>
         ) : null}
-      </form>
+      </div>
     </section>
   );
 }

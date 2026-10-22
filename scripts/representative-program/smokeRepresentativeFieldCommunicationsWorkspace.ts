@@ -48,17 +48,28 @@ assert.match(
 
 assert.match(
   workspace,
-  /communications=\{[\s\S]*<FieldCommunications[\s\S]*previewMode=\{operatorPreview\}/,
+  /communications=\{[\s\S]*<FieldCommunications[\s\S]*previewMode=\{operatorPreview\}[\s\S]*initialField=\{previewField\}/,
+);
+
+
+assert.match(
+  workspace,
+  /loadRepresentativeFieldCommunicationsWithClient/,
 );
 
 assert.match(
   workspace,
-  /docketReference: workspace\.docketReference/,
+  /operatorPreview[\s\S]*loadRepresentativeFieldCommunicationsWithClient/,
 );
 
 assert.match(
   workspace,
-  /displayName: workspace\.displayName/,
+  /initialField=\{previewField\}/,
+);
+
+assert.doesNotMatch(
+  field,
+  /id: "preview-participant"/,
 );
 
 assert.match(
@@ -83,12 +94,32 @@ assert.match(
 
 assert.match(
   field,
-  /disabled=\{previewMode \|\| sending \|\| !body\.trim\(\)\}/,
+  /previewMode\s*&&\s*!interactionPreview[\s\S]*\|\|[\s\S]*!entryOpen/,
 );
 
 assert.match(
   field,
-  /Submission Disabled · Preview/,
+  /FIELD ENTRY \/\/ PREVIEW/,
+);
+
+assert.match(
+  field,
+  /disabled=\{[\s\S]*previewMode[\s\S]*&&[\s\S]*!interactionPreview[\s\S]*\}/,
+);
+
+assert.match(
+  field,
+  /disabled=\{[\s\S]*sending[\s\S]*\|\|[\s\S]*!body\.trim\(\)[\s\S]*\}/,
+);
+
+assert.match(
+  field,
+  /if \(previewMode\) \{[\s\S]*return;/,
+);
+
+assert.match(
+  field,
+  /FIELD ENTRY \/\/ PREVIEW/,
 );
 
 console.log(

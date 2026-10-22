@@ -6,101 +6,163 @@ const field = readFileSync(
   "utf8",
 );
 
-const styles = readFileSync(
+const css = readFileSync(
   "app/representative/field-communications.module.css",
   "utf8",
 );
 
 assert.match(
   field,
-  /type FieldTimelineItem/,
+  /FIELD:\/\/COMMUNICATIONS/,
 );
 
 assert.match(
   field,
-  /itemType: "MESSAGE"/,
+  /\+ ENTER COMMUNICATION/,
 );
 
 assert.match(
   field,
-  /itemType: "INSTITUTIONAL_REFLECTION"/,
+  /FIELD ENTRY \/\/ PREVIEW/,
 );
 
 assert.match(
   field,
-  /field\?\.timeline && field\.timeline\.items\.length > 0/,
+  /const \[entryOpen, setEntryOpen\] = useState\(false\)/,
 );
 
 assert.match(
   field,
-  /field\.timeline\.items\.map/,
+  /message\.sender\.role === "FRENCH_WARD"/,
 );
 
 assert.match(
   field,
-  /Institutional Observation/,
+  /FW\.ADMINISTRATION/,
 );
 
 assert.match(
   field,
-  /reflection\.reflectionCode/,
+  /institutional_observation/,
 );
 
 assert.match(
   field,
-  /reflection\.sourceOccurredAt/,
+  /communication != authority/,
 );
 
 assert.match(
   field,
-  /reflection\.sourceSystem/,
+  /appointment = separately governed/,
 );
 
 assert.match(
   field,
-  /reflection\.sourceAggregateType/,
+  /resources = separately governed/,
 );
 
 assert.match(
   field,
-  /Recorded institutional outcome · no authority is created/,
+  /className=\{styles\.entryTrigger\}/,
 );
 
 assert.match(
   field,
-  /message\.sender\.role === "REPRESENTATIVE"/,
+  /onClick=\{\(\)\s*=>\s*setEntryOpen\(true\)\s*\}/,
 );
 
 assert.match(
   field,
-  /styles\.messageInstitution/,
+  /onSubmit=\{submit\}/,
+);
+
+assert.match(
+  css,
+  /\.terminalHeader\s*\{/,
+);
+
+assert.match(
+  css,
+  /\.terminalMeta\s*\{/,
+);
+
+assert.match(
+  css,
+  /\.dispatch\s*\{/,
+);
+
+assert.match(
+  css,
+  /\.authorityBoundary\s*\{/,
+);
+
+assert.match(
+  css,
+  /\.entryTrigger\s*\{/,
+);
+
+assert.match(
+  css,
+  /\.messageControl textarea\s*\{/,
+);
+
+assert.doesNotMatch(
+  css,
+  /font-size:\s*clamp\(1\.8rem/,
 );
 
 assert.doesNotMatch(
   field,
-  /field\.messages\.map/,
+  /<h1[^>]*className=\{styles\.title\}/,
+);
+
+
+
+assert.match(
+  field,
+  /INTERACTION_PREVIEW/,
 );
 
 assert.match(
-  styles,
-  /\.reflection\s*\{/,
+  field,
+  /OPEN INTERACTION PREVIEW/,
 );
 
 assert.match(
-  styles,
-  /\.reflectionRecord\s*\{/,
+  field,
+  /RETURN TO CANONICAL VIEW/,
 );
 
 assert.match(
-  styles,
-  /\.reflectionBadge\s*\{/,
+  field,
+  /SIMULATE ENTRY/,
 );
 
 assert.match(
-  styles,
-  /\.reflectionDoctrine\s*\{/,
+  field,
+  /setSimulatedMessages/,
+);
+
+assert.match(
+  field,
+  /previewMode &&[\s\S]*interactionPreview/,
+);
+
+assert.match(
+  field,
+  /simulation:[\s\S]*not_stored/,
+);
+
+assert.match(
+  css,
+  /\.previewModeToggle\s*\{/,
+);
+
+assert.match(
+  css,
+  /\.simulatedDispatch\s*\{/,
 );
 
 console.log(
-  "✓ ARP Field canonical timeline presentation contract passed",
+  "✓ ARP Field Terminal V1 presentation contract passed",
 );

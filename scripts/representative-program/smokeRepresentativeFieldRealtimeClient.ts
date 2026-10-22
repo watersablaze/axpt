@@ -26,7 +26,7 @@ assert.match(
 
 assert.match(
   hook,
-  /\}, \[endpoint\]\)/,
+  /\}, \[endpoint, enabled\]\)/,
 );
 
 /*
@@ -129,3 +129,8 @@ console.log({
   conversationGuardPresent: true,
   previewRealtimeInactive: true,
 });
+
+assert.match(
+  field,
+  /useCommunicationsStream\([\s\S]*!previewMode/,
+);

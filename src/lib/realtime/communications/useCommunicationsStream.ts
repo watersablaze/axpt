@@ -37,7 +37,8 @@ const initialState: CommunicationsRealtimeState = {
 }
 
 export function useCommunicationsStream(
-  endpoint = "/api/communications/stream"
+  endpoint = "/api/communications/stream",
+  enabled = true
 ) {
   const [state, setState] =
     useState<CommunicationsRealtimeState>(
@@ -50,6 +51,12 @@ export function useCommunicationsStream(
     )
 
   useEffect(() => {
+    if (!enabled) {
+      seenIds.current.clear()
+      setState(initialState)
+      return
+    }
+
     const source =
       new EventSource(
         endpoint
@@ -112,7 +119,7 @@ export function useCommunicationsStream(
     return () => {
       source.close()
     }
-  }, [endpoint])
+  }, [endpoint, enabled])
 
   return state
 }
