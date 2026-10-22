@@ -15,6 +15,10 @@ import {
   type CommunicationTimelineMessageItem,
 } from "@/domains/communications/timeline/loadConversationTimelineWithClient";
 
+import {
+  markConversationReadForMemberWithClient,
+} from "@/domains/communications/membership/markConversationReadWithClient";
+
 export const REPRESENTATIVE_FIELD_MESSAGE_TYPES = [
   "COMMENT",
   "REQUEST",
@@ -891,6 +895,125 @@ export async function loadRepresentativeFieldCommunicationsWithClient(params: {
           },
         ),
     },
+  };
+}
+
+export async function markRepresentativeFieldReadWithClient(params: {
+  client: PrismaClient;
+  userId: string;
+  throughMessageId: string;
+}) {
+  const throughMessageId =
+    normalizeRequired(
+      params.throughMessageId,
+      "ARP_FIELD_READ_MESSAGE_ID_INVALID",
+    );
+
+  const participant =
+    await resolveParticipant(
+      params.client,
+      params.userId,
+    );
+
+  const operator =
+    await requireInstitutionalOperator(
+      params.client,
+      participant,
+    );
+
+  const room =
+    await params.client.communicationOperationalRoom.findUnique({
+      where: {
+        createdByUserId_clientRoomId: {
+          createdByUserId:
+            operator.id,
+          clientRoomId:
+            roomClientId(
+              participant.id,
+            ),
+        },
+      },
+      include: {
+        conversation: {
+          include: {
+            members: {
+              where: {
+                leftAt: null,
+              },
+              select: {
+                userId: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+  if (!room) {
+    throw new Error(
+      "ARP_FIELD_COMMUNICATIONS_ROOM_NOT_FOUND",
+    );
+  }
+
+  if (
+    room.roomClass !==
+      "GENERAL_OPERATIONS" ||
+    room.conversation.status !==
+      "ACTIVE"
+  ) {
+    throw new Error(
+      "ARP_FIELD_COMMUNICATIONS_ROOM_TOPOLOGY_CONFLICT",
+    );
+  }
+
+  const activeMembers =
+    new Set(
+      room.conversation.members.map(
+        (
+          member: {
+            userId: string;
+          },
+        ) => member.userId,
+      ),
+    );
+
+  if (
+    !activeMembers.has(
+      operator.id,
+    ) ||
+    !activeMembers.has(
+      participant.userId!,
+    )
+  ) {
+    throw new Error(
+      "ARP_FIELD_COMMUNICATIONS_MEMBERSHIP_CONFLICT",
+    );
+  }
+
+  const membership =
+    await markConversationReadForMemberWithClient({
+      client:
+        params.client,
+      userId:
+        params.userId,
+      conversationId:
+        room.conversationId,
+      throughMessageId,
+    });
+
+  return {
+    participant: {
+      id:
+        participant.id,
+      docketReference:
+        participant.docketReference,
+    },
+    conversationId:
+      room.conversationId,
+    lastReadMessageId:
+      membership.lastReadMessageId,
+    lastReadAt:
+      membership.lastReadAt,
   };
 }
 
