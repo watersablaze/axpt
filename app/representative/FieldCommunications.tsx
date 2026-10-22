@@ -2,6 +2,10 @@
 
 import { FormEvent, useEffect, useMemo, useState } from "react";
 
+import {
+  useCommunicationsStream,
+} from "@/lib/realtime/communications/useCommunicationsStream";
+
 import styles from "./field-communications.module.css";
 
 type FieldContext =
@@ -209,12 +213,21 @@ export default function FieldCommunications({
     type: "WORKSPACE",
   });
 
+  const realtime =
+    useCommunicationsStream(
+      "/api/representative/communications/stream",
+    );
+
   const effectiveMessageType = useMemo<MessageType>(
     () => (context.type === "CUP_RESOURCE" ? "RESOURCE_COMMENT" : messageType),
     [context, messageType],
   );
 
-  async function load() {
+  async function load(
+    options?: {
+      acknowledgeMessages?: boolean;
+    },
+  ) {
     setLoading(true);
 
     setError(null);
@@ -255,7 +268,12 @@ export default function FieldCommunications({
               )
           : undefined;
 
+      const acknowledgeMessages =
+        options?.acknowledgeMessages ??
+        true;
+
       if (
+        acknowledgeMessages &&
         nextField.attention.unreadCount > 0 &&
         newestMessage
       ) {
@@ -333,6 +351,55 @@ export default function FieldCommunications({
 
     void load();
   }, [previewMode]);
+
+  /*
+   * Realtime is advisory only.
+   *
+   * Signals never mutate Field state directly.
+   * They trigger authoritative HTTP retrieval.
+   *
+   * Reflection freshness must never advance
+   * the representative message read marker.
+   */
+  useEffect(() => {
+    if (
+      previewMode ||
+      !realtime.lastSignal
+    ) {
+      return;
+    }
+
+    const signal =
+      realtime.lastSignal;
+
+    /*
+     * The representative SSE endpoint is already
+     * conversation-scoped server-side, but retain
+     * the client-side room check as a stale-signal
+     * guard across Field lifecycle transitions.
+     */
+    if (
+      field?.room?.conversationId &&
+      signal.conversationId !==
+        field.room.conversationId
+    ) {
+      return;
+    }
+
+    const isReflectionSignal =
+      signal.type ===
+      "COMMUNICATION_INSTITUTIONAL_REFLECTION_AVAILABLE";
+
+    void load({
+      acknowledgeMessages:
+        !isReflectionSignal,
+    });
+  }, [
+    previewMode,
+    realtime.revision,
+    realtime.lastSignal,
+    field?.room?.conversationId,
+  ]);
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
