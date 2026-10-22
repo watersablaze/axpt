@@ -10,6 +10,11 @@ import {
   sendMessageInTransactionWithResult,
 } from "@/domains/communications/messages/sendMessageInTransaction";
 
+import {
+  loadConversationTimelineForMemberWithClient,
+  type CommunicationTimelineMessageItem,
+} from "@/domains/communications/timeline/loadConversationTimelineWithClient";
+
 export const REPRESENTATIVE_FIELD_MESSAGE_TYPES = [
   "COMMENT",
   "REQUEST",
@@ -44,6 +49,13 @@ type ParticipantRecord = {
   displayName: string;
   userId: string | null;
   createdByUserId: string;
+};
+
+type FieldSenderRecord = {
+  id: string;
+  displayName: string | null;
+  name: string | null;
+  email: string;
 };
 
 type TargetPointer = {
@@ -657,27 +669,6 @@ export async function loadRepresentativeFieldCommunicationsWithClient(params: {
               role: true,
             },
           },
-          messages: {
-            orderBy: [
-              {
-                createdAt: "desc",
-              },
-              {
-                id: "desc",
-              },
-            ],
-            take,
-            include: {
-              sender: {
-                select: {
-                  id: true,
-                  displayName: true,
-                  name: true,
-                  email: true,
-                },
-              },
-            },
-          },
         },
       },
     },
@@ -715,6 +706,115 @@ export async function loadRepresentativeFieldCommunicationsWithClient(params: {
     throw new Error("ARP_FIELD_COMMUNICATIONS_MEMBERSHIP_CONFLICT");
   }
 
+  const timeline =
+    await loadConversationTimelineForMemberWithClient({
+      client: params.client,
+      userId: params.userId,
+      conversationId: room.conversationId,
+      messageLimit: take,
+      reflectionLimit: take,
+    });
+
+  const messageItems =
+    timeline.items.filter(
+      (
+        item,
+      ): item is CommunicationTimelineMessageItem =>
+        item.itemType === "MESSAGE",
+    );
+
+  const senderUserIds = [
+    ...new Set(
+      messageItems.map(
+        (item) => item.message.senderUserId,
+      ),
+    ),
+  ];
+
+  const senderRecords: FieldSenderRecord[] =
+    senderUserIds.length > 0
+      ? await params.client.user.findMany({
+          where: {
+            id: {
+              in: senderUserIds,
+            },
+          },
+          select: {
+            id: true,
+            displayName: true,
+            name: true,
+            email: true,
+          },
+        })
+      : [];
+
+  const senderByUserId =
+    new Map<string, FieldSenderRecord>(
+      senderRecords.map(
+        (sender: FieldSenderRecord) => [
+          sender.id,
+          sender,
+        ] as const,
+      ),
+    );
+
+  const messages =
+    messageItems.map((item) => {
+      const message =
+        item.message;
+
+      const sender =
+        senderByUserId.get(
+          message.senderUserId,
+        );
+
+      return {
+        id: message.id,
+        kind: message.kind,
+        body: message.body,
+        createdAt: message.createdAt,
+        sender: {
+          role:
+            message.senderUserId ===
+            participant.userId
+              ? ("REPRESENTATIVE" as const)
+              : ("FRENCH_WARD" as const),
+          displayName:
+            sender?.displayName ??
+            sender?.name ??
+            (
+              message.senderUserId ===
+              participant.userId
+                ? participant.displayName
+                : "French-Ward"
+            ),
+        },
+        context:
+          message.workflowTargetType &&
+          message.workflowTargetSubtype &&
+          message.workflowTargetId
+            ? {
+                targetType:
+                  message.workflowTargetType,
+                targetSubtype:
+                  message.workflowTargetSubtype,
+                targetId:
+                  message.workflowTargetId,
+              }
+            : null,
+      };
+    });
+
+  const messageById =
+    new Map(
+      messages.map(
+        (message) => [
+          message.id,
+          message,
+        ] as const,
+      ),
+    );
+
   return {
     participant: {
       id: participant.id,
@@ -741,34 +841,56 @@ export async function loadRepresentativeFieldCommunicationsWithClient(params: {
         }),
       ),
     },
-    messages: [...room.conversation.messages].reverse().map((message) => ({
-      id: message.id,
-      kind: message.kind,
-      body: message.body,
-      createdAt: message.createdAt,
-      sender: {
-        role:
-          message.senderUserId === participant.userId
-            ? ("REPRESENTATIVE" as const)
-            : ("FRENCH_WARD" as const),
-        displayName:
-          message.sender.displayName ??
-          message.sender.name ??
-          (message.senderUserId === participant.userId
-            ? participant.displayName
-            : "French-Ward"),
-      },
-      context:
-        message.workflowTargetType &&
-        message.workflowTargetSubtype &&
-        message.workflowTargetId
-          ? {
-              targetType: message.workflowTargetType,
-              targetSubtype: message.workflowTargetSubtype,
-              targetId: message.workflowTargetId,
+    messages,
+    timeline: {
+      conversationId:
+        timeline.conversationId,
+      messageCount:
+        timeline.messageCount,
+      reflectionCount:
+        timeline.reflectionCount,
+      items:
+        timeline.items.map(
+          (item) => {
+            if (
+              item.itemType ===
+              "MESSAGE"
+            ) {
+              const message =
+                messageById.get(
+                  item.message.id,
+                );
+
+              if (!message) {
+                throw new Error(
+                  "ARP_FIELD_COMMUNICATIONS_TIMELINE_MESSAGE_MISSING",
+                );
+              }
+
+              return {
+                itemType:
+                  "MESSAGE" as const,
+                id:
+                  item.id,
+                occurredAt:
+                  item.occurredAt,
+                message,
+              };
             }
-          : null,
-    })),
+
+            return {
+              itemType:
+                "INSTITUTIONAL_REFLECTION" as const,
+              id:
+                item.id,
+              occurredAt:
+                item.occurredAt,
+              reflection:
+                item.reflection,
+            };
+          },
+        ),
+    },
   };
 }
 
