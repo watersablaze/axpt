@@ -74,29 +74,41 @@ function decodePayload(
   }
 }
 
-export async function loadCommunicationRealtimeSignalsWithClient({
+export async function loadCommunicationRealtimeSignalsForMemberWithClient({
   client,
-  principal,
+  userId,
   since,
   limit = 100,
+  conversationIds,
 }: {
   client: CommunicationsDatabaseClient
-  principal: Principal
+  userId: string
   since: Date
   limit?: number
+  conversationIds?: readonly string[]
 }): Promise<CommunicationRealtimeRecord[]> {
-  authorityKernel.require(
-    principal,
-    PERMISSIONS.COMMUNICATIONS_ACCESS
-  )
+  if (
+    conversationIds &&
+    conversationIds.length === 0
+  ) {
+    return []
+  }
 
   const memberships =
     await client.communicationMember.findMany({
       where: {
-        userId:
-          principal.userId,
+        userId,
         leftAt:
           null,
+
+        ...(conversationIds
+          ? {
+              conversationId: {
+                in:
+                  [...conversationIds],
+              },
+            }
+          : {}),
 
         conversation: {
           status:
@@ -110,7 +122,7 @@ export async function loadCommunicationRealtimeSignalsWithClient({
       },
     })
 
-  const conversationIds =
+  const memberConversationIds =
     memberships.map(
       (
         membership:
@@ -120,7 +132,7 @@ export async function loadCommunicationRealtimeSignalsWithClient({
     )
 
   if (
-    conversationIds.length === 0
+    memberConversationIds.length === 0
   ) {
     return []
   }
@@ -142,7 +154,7 @@ export async function loadCommunicationRealtimeSignalsWithClient({
 
         streamId: {
           in:
-            conversationIds,
+            memberConversationIds,
         },
 
         eventType: {
@@ -209,4 +221,29 @@ export async function loadCommunicationRealtimeSignalsWithClient({
       }
     }
   )
+}
+
+export async function loadCommunicationRealtimeSignalsWithClient({
+  client,
+  principal,
+  since,
+  limit = 100,
+}: {
+  client: CommunicationsDatabaseClient
+  principal: Principal
+  since: Date
+  limit?: number
+}): Promise<CommunicationRealtimeRecord[]> {
+  authorityKernel.require(
+    principal,
+    PERMISSIONS.COMMUNICATIONS_ACCESS
+  )
+
+  return loadCommunicationRealtimeSignalsForMemberWithClient({
+    client,
+    userId:
+      principal.userId,
+    since,
+    limit,
+  })
 }
