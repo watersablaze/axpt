@@ -966,6 +966,99 @@ export async function loadRepresentativeFieldCommunicationsWithClient(params: {
   };
 }
 
+export async function resolveRepresentativeFieldRealtimeScopeWithClient(params: {
+  client: PrismaClient;
+  userId: string;
+}) {
+  const participant =
+    await resolveParticipant(
+      params.client,
+      params.userId,
+    );
+
+  const operator =
+    await requireInstitutionalOperator(
+      params.client,
+      participant,
+    );
+
+  const room =
+    await params.client.communicationOperationalRoom.findUnique({
+      where: {
+        createdByUserId_clientRoomId: {
+          createdByUserId:
+            operator.id,
+          clientRoomId:
+            roomClientId(
+              participant.id,
+            ),
+        },
+      },
+      include: {
+        conversation: {
+          include: {
+            members: {
+              where: {
+                leftAt: null,
+              },
+              select: {
+                userId: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+  if (!room) {
+    throw new Error(
+      "ARP_FIELD_COMMUNICATIONS_ROOM_NOT_FOUND",
+    );
+  }
+
+  if (
+    room.roomClass !==
+      "GENERAL_OPERATIONS" ||
+    room.conversation.status !==
+      "ACTIVE"
+  ) {
+    throw new Error(
+      "ARP_FIELD_COMMUNICATIONS_ROOM_TOPOLOGY_CONFLICT",
+    );
+  }
+
+  const activeMembers =
+    new Set(
+      room.conversation.members.map(
+        (
+          member: {
+            userId: string;
+          },
+        ) => member.userId,
+      ),
+    );
+
+  if (
+    !activeMembers.has(
+      operator.id,
+    ) ||
+    !activeMembers.has(
+      participant.userId!,
+    )
+  ) {
+    throw new Error(
+      "ARP_FIELD_COMMUNICATIONS_MEMBERSHIP_CONFLICT",
+    );
+  }
+
+  return {
+    participantId:
+      participant.id,
+    conversationId:
+      room.conversationId,
+  };
+}
+
 export async function markRepresentativeFieldReadWithClient(params: {
   client: PrismaClient;
   userId: string;
