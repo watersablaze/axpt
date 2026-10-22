@@ -62,6 +62,17 @@ type FieldSenderRecord = {
   email: string;
 };
 
+type FieldMemberRecord = {
+  userId: string;
+  role: unknown;
+  lastReadMessageId: string | null;
+  lastReadAt: Date | null;
+  lastReadMessage: {
+    id: string;
+    createdAt: Date;
+  } | null;
+};
+
 type TargetPointer = {
   targetType:
     | "REPRESENTATIVE_PROGRAM_PARTICIPANT"
@@ -671,6 +682,14 @@ export async function loadRepresentativeFieldCommunicationsWithClient(params: {
             select: {
               userId: true,
               role: true,
+              lastReadMessageId: true,
+              lastReadAt: true,
+              lastReadMessage: {
+                select: {
+                  id: true,
+                  createdAt: true,
+                },
+              },
             },
           },
         },
@@ -687,6 +706,11 @@ export async function loadRepresentativeFieldCommunicationsWithClient(params: {
       },
       room: null,
       messages: [],
+      attention: {
+        unreadCount: 0,
+        lastReadMessageId: null,
+        lastReadAt: null,
+      },
     };
   }
 
@@ -709,6 +733,43 @@ export async function loadRepresentativeFieldCommunicationsWithClient(params: {
   ) {
     throw new Error("ARP_FIELD_COMMUNICATIONS_MEMBERSHIP_CONFLICT");
   }
+
+  const representativeMembership =
+    (
+      room.conversation.members as FieldMemberRecord[]
+    ).find(
+      (member: FieldMemberRecord) =>
+        member.userId ===
+        params.userId,
+    );
+
+  if (!representativeMembership) {
+    throw new Error(
+      "ARP_FIELD_COMMUNICATIONS_MEMBERSHIP_CONFLICT",
+    );
+  }
+
+  const unreadCount =
+    await params.client.communicationMessage.count({
+      where: {
+        conversationId:
+          room.conversationId,
+        senderUserId: {
+          not:
+            params.userId,
+        },
+        ...(representativeMembership.lastReadMessage
+          ? {
+              createdAt: {
+                gt:
+                  representativeMembership
+                    .lastReadMessage
+                    .createdAt,
+              },
+            }
+          : {}),
+      },
+    });
 
   const timeline =
     await loadConversationTimelineForMemberWithClient({
@@ -846,6 +907,13 @@ export async function loadRepresentativeFieldCommunicationsWithClient(params: {
       ),
     },
     messages,
+    attention: {
+      unreadCount,
+      lastReadMessageId:
+        representativeMembership.lastReadMessageId,
+      lastReadAt:
+        representativeMembership.lastReadAt,
+    },
     timeline: {
       conversationId:
         timeline.conversationId,

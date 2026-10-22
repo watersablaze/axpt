@@ -104,6 +104,19 @@
   font-weight: 500;
 }
 
+.record .attention {
+  display: inline-block;
+  margin-top: 0.65rem;
+  padding: 0.22rem 0.38rem;
+  border: 1px solid rgba(197, 162, 95, 0.3);
+  color: #d6bd7e;
+  font-size: 0.5rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
 .thread {
   grid-area: thread;
   display: grid;

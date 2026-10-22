@@ -78,6 +78,11 @@ type FieldState = {
     updatedAt: string;
   } | null;
   messages: FieldMessage[];
+  attention: {
+    unreadCount: number;
+    lastReadMessageId: string | null;
+    lastReadAt: string | null;
+  };
   timeline?: {
     conversationId: string;
     messageCount: number;
@@ -181,6 +186,11 @@ export default function FieldCommunications({
           },
           room: null,
           messages: [],
+          attention: {
+            unreadCount: 0,
+            lastReadMessageId: null,
+            lastReadAt: null,
+          },
         }
       : null,
   );
@@ -224,7 +234,88 @@ export default function FieldCommunications({
         throw new Error("FIELD_COMMUNICATIONS_UNAVAILABLE");
       }
 
-      setField(payload.field);
+      const nextField =
+        payload.field as FieldState;
+
+      setField(nextField);
+
+      const newestMessage =
+        nextField.timeline
+          ? [...nextField.timeline.items]
+              .reverse()
+              .find(
+                (
+                  item,
+                ): item is Extract<
+                  FieldTimelineItem,
+                  { itemType: "MESSAGE" }
+                > =>
+                  item.itemType ===
+                  "MESSAGE",
+              )
+          : undefined;
+
+      if (
+        nextField.attention.unreadCount > 0 &&
+        newestMessage
+      ) {
+        try {
+          const readResponse =
+            await fetch(
+              "/api/representative/communications/read",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type":
+                    "application/json",
+                  Accept:
+                    "application/json",
+                },
+                body:
+                  JSON.stringify({
+                    throughMessageId:
+                      newestMessage.message.id,
+                  }),
+              },
+            );
+
+          const readPayload =
+            await readResponse.json();
+
+          if (
+            readResponse.ok &&
+            readPayload?.ok === true &&
+            readPayload?.read
+          ) {
+            setField(
+              (current) =>
+                current
+                  ? {
+                      ...current,
+                      attention: {
+                        unreadCount: 0,
+                        lastReadMessageId:
+                          readPayload.read
+                            .lastReadMessageId ??
+                          current.attention
+                            .lastReadMessageId,
+                        lastReadAt:
+                          readPayload.read
+                            .lastReadAt ??
+                          current.attention
+                            .lastReadAt,
+                      },
+                    }
+                  : current,
+            );
+          }
+        } catch {
+          /*
+           * Read acknowledgement is secondary
+           * to durable Field retrieval.
+           */
+        }
+      }
     } catch {
       setError("Field communications are temporarily unavailable.");
     } finally {
@@ -352,6 +443,15 @@ export default function FieldCommunications({
             <span>Program record</span>
 
             <strong>{field.participant.docketReference}</strong>
+
+            {field.attention.unreadCount > 0 ? (
+              <span
+                className={styles.attention}
+                role="status"
+              >
+                New activity · {field.attention.unreadCount}
+              </span>
+            ) : null}
           </div>
         ) : null}
       </header>
