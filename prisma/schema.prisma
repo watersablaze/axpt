@@ -3956,3 +3956,32 @@ model FrenchWardInquiryEvent {
 
   @@index([inquiryId, createdAt])
 }
+
+// GSAM-3L3B1 CANDIDATE REGISTRY — non-issuing documentary preservation only.
+// Immutable hash/storage records; issuance/grants require a separate, reviewed design.
+model GsamScoEdition {
+  id                 String                @id @default(cuid())
+  reference          String                @unique
+  quantityMt         Int
+  sourceSha256       String
+  pdfSha256          String
+  htmlSha256         String
+  pdfStorageKey      String?
+  htmlStorageKey     String?
+  state              String                @default("CANDIDATE")
+  createdAt          DateTime              @default(now())
+  events             GsamScoEditionEvent[]
+
+  @@index([state, createdAt])
+}
+
+model GsamScoEditionEvent {
+  id                 String          @id @default(cuid())
+  editionId          String
+  eventType          String
+  eventDetail        Json?
+  occurredAt         DateTime        @default(now())
+  edition            GsamScoEdition  @relation(fields: [editionId], references: [id], onDelete: Restrict)
+
+  @@index([editionId, occurredAt])
+}
