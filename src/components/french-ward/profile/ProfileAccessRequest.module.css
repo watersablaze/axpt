@@ -12,3 +12,15 @@
 .full{grid-column:1/-1}.form button{grid-column:1/-1;width:fit-content;min-height:44px;padding:13px 20px;border:1px solid #6b5439;background:#30271f;color:#f6efdf;font:600 10px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.1em;cursor:pointer}.form button:hover{background:#55412e}.form button:disabled{opacity:.6;cursor:wait}
 .error{grid-column:1/-1;color:#8b2921;font-size:13px;line-height:1.6}.notice{margin:22px 0;color:#796d5c;font-size:11px;line-height:1.8}.success{margin:28px 0;padding:24px;border:1px solid #9b9677;background:#e6e7da}.success p{font-size:14px;line-height:1.7}.returnNav{margin-top:28px;padding-top:20px;border-top:1px solid #c9bead}.returnNav a{color:#675039;font-size:10px;line-height:1.6;letter-spacing:.1em;text-decoration:none}.returnNav a span{margin-right:12px} .reception a:focus-visible,.form button:focus-visible{outline:2px solid #816341;outline-offset:5px}
 @media(max-width:600px){.reception{padding:28px 20px;border-inline:0}.head{padding-top:16px}.head h1{font-size:36px}.registerSection{padding:20px 14px}.registerIndex{font-size:8px;gap:10px}.registerIndex span:last-child{text-align:right}.form{grid-template-columns:1fr;gap:20px}.form input,.form textarea{font-size:16px}.signin{flex-direction:column}.form button{width:100%}}
+
+/* C2: compact shared reception, with comfortable mobile controls. */
+.reception{width:min(640px,calc(100% - 32px));padding:30px 34px;box-shadow:0 16px 60px #0003}
+.head{padding:14px 0 20px}.kicker{margin-bottom:16px;font-size:9px}
+.head h1{font-size:clamp(29px,3.5vw,38px);margin-bottom:14px;line-height:1.12}
+.head>p:last-child{font-size:12px;line-height:1.7}.signin{margin:17px 0;font-size:11px}
+.registerSection{padding:19px}.registerIndex{margin-bottom:19px;font-size:8px}
+.form{gap:16px 22px}.form label{font-size:9px;gap:5px}
+.form input,.form textarea{padding:9px 7px;font-size:14px;line-height:1.5}
+.form textarea{min-height:84px}.form button{padding:11px 16px;font-size:9px}
+.notice{margin:16px 0;font-size:10px;line-height:1.7}.returnNav{margin-top:19px;padding-top:16px}
+@media(max-width:600px){.reception{width:calc(100% - 24px);padding:24px 20px}.head h1{font-size:32px}.registerSection{padding:17px 13px}.form{gap:17px}.form input,.form textarea{font-size:16px;min-height:44px}.form textarea{min-height:88px}.registerIndex{flex-wrap:wrap}.registerIndex span:last-child{text-align:left}.signin{gap:7px}}

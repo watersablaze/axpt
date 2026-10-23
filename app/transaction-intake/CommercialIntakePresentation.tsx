@@ -3,6 +3,7 @@ import Link from "next/link";
 import TransactionIntakeForm from "./TransactionIntakeForm";
 import CommercialIntakeAccessRequest from "./CommercialIntakeAccessRequest";
 import styles from "./transaction-intake.module.css";
+import accessStyles from "./commercial-intake-access.module.css";
 
 export default function CommercialIntakePresentation({
   allowed, readOnly = false, interactivePreview = false, showPreviewNotice = true, backHref = "/representative",
@@ -13,6 +14,13 @@ export default function CommercialIntakePresentation({
   referralCode?: string; representativeName?: string; program?: string;
   initialName?: string; initialEmail?: string;
 }) {
+  if (!allowed) {
+    return (
+      <main className={accessStyles.page}>
+        <CommercialIntakeAccessRequest initialName={initialName} initialEmail={initialEmail} />
+      </main>
+    );
+  }
   return (
     <main className={styles.page}>
       <header className={styles.instrumentMasthead}>

@@ -5,7 +5,7 @@ import {
   useState,
 } from "react";
 
-import styles from "./commercial-intake-access.module.css";
+import styles from "../../src/components/french-ward/profile/ProfileAccessRequest.module.css";
 
 type Props = {
   initialName?: string;
@@ -143,228 +143,42 @@ export default function CommercialIntakeAccessRequest({
     }
   }
 
-  if (
-    state.status ===
-    "success"
-  ) {
-    return (
-      <section
-        className={
-          styles.panel
-        }
-      >
-        <p
-          className={
-            styles.eyebrow
-          }
-        >
-          Request Received
-        </p>
-
-        <h2>
-          Commercial intake
-          access is under
-          review.
-        </h2>
-
-        <p>
-          French-Ward
-          reviews commercial
-          intake access
-          individually.
-          Approval permits
-          access to the
-          controlled intake
-          process only.
-        </p>
-
-        <p
-          className={
-            styles.notice
-          }
-        >
-          Approval does not
-          constitute
-          transaction
-          acceptance,
-          appointment,
-          representation,
-          negotiation
-          authority, or
-          signing authority.
-        </p>
-      </section>
-    );
-  }
-
   return (
-    <section
-      className={
-        styles.panel
-      }
-    >
-      <p
-        className={
-          styles.eyebrow
-        }
-      >
-        Controlled
-        Commercial Entry
-      </p>
-
-      <h2>
-        Request Commercial
-        Intake Access
-      </h2>
-
-      <p
-        className={
-          styles.intro
-        }
-      >
-        The French-Ward
-        Letter of Intent and
-        Transaction Intake
-        is available through
-        individually reviewed
-        institutional access.
-      </p>
-
-      <div
-        className={
-          styles.signInPanel
-        }
-      >
-        <div>
-          <strong>
-            Already approved?
-          </strong>
-
-          <p>
-            Sign in with the
-            institutional email
-            associated with your
-            approved access.
-          </p>
-        </div>
-
-        <a
-          className={
-            styles.signInLink
-          }
-          href={
-            COMMERCIAL_INTAKE_SIGN_IN_HREF
-          }
-        >
-          Sign in with approved access
-        </a>
+    <section className={styles.reception} aria-labelledby="fw-intake-access-title">
+      <div className={styles.head}>
+        <p className={styles.kicker}>FRENCH-WARD, INC. / COMMERCIAL INTAKE</p>
+        <h1 id="fw-intake-access-title">Commercial <span>Intake Access</span></h1>
+        <p>Request access to French-Ward’s Letter of Intent and Transaction Intake to present a proposed transaction for review.</p>
       </div>
-
-      <form
-        className={
-          styles.form
-        }
-        onSubmit={
-          onSubmit
-        }
-      >
-        <label>
-          Name
-          <input
-            name="requesterName"
-            required
-            defaultValue={
-              initialName
-            }
-          />
-        </label>
-
-        <label>
-          Email
-          <input
-            name="requesterEmail"
-            type="email"
-            required
-            defaultValue={
-              initialEmail
-            }
-          />
-        </label>
-
-        <label>
-          Institution /
-          Organization
-          <input
-            name="institutionalAffiliation"
-            required
-          />
-        </label>
-
-        <label>
-          Capacity
-          <input
-            name="requesterCapacity"
-            required
-            placeholder="Director, buyer representative, principal, counsel…"
-          />
-        </label>
-
-        <label>
-          Purpose
-          <textarea
-            name="purpose"
-            required
-            rows={4}
-            placeholder="Briefly describe the proposed commercial purpose."
-          />
-        </label>
-
-        <button
-          type="submit"
-          disabled={
-            state.status ===
-            "submitting"
-          }
-        >
-          {state.status ===
-          "submitting"
-            ? "Submitting…"
-            : "Request Access"}
-        </button>
-
-        {state.status ===
-          "error" && (
-          <p
-            className={
-              styles.error
-            }
-            role="alert"
-          >
-            {
-              state.message
-            }
-          </p>
-        )}
-      </form>
-
-      <p
-        className={
-          styles.notice
-        }
-      >
-        Access permits use
-        of the defined
-        commercial-intake
-        channel only. It does
-        not establish a
-        transaction,
-        representation,
-        negotiation
-        authority, signing
-        authority, or any
-        obligation of
-        French-Ward.
-      </p>
+      {state.status === "success" ? (
+        <div className={styles.success} role="status">
+          <strong>Request received.</strong>
+          <p>Your commercial intake access request is awaiting review. French-Ward Administration will advise you on access.</p>
+        </div>
+      ) : (
+        <>
+          <div className={styles.signin}>
+            <span>Already approved?</span>
+            <a href={COMMERCIAL_INTAKE_SIGN_IN_HREF}>Sign in with your approved email ↗</a>
+          </div>
+          <div className={styles.registerSection} aria-label="Commercial intake access request">
+            <div className={styles.registerIndex} aria-hidden="true">
+              <span>FW / ACCESS REGISTER</span><span>COMMERCIAL INTAKE / REQUEST</span>
+            </div>
+            <form className={styles.form} onSubmit={onSubmit}>
+              <label>Name<input name="requesterName" required defaultValue={initialName} /></label>
+              <label>Email<input name="requesterEmail" type="email" required defaultValue={initialEmail} /></label>
+              <label>Institution / Organization<input name="institutionalAffiliation" required /></label>
+              <label>Capacity<input name="requesterCapacity" required placeholder="Your role or capacity" /></label>
+              <label className={styles.full}>Purpose of access<textarea name="purpose" required rows={3} placeholder="Briefly describe your proposed commercial purpose." /></label>
+              <button type="submit" disabled={state.status === "submitting"}>{state.status === "submitting" ? "Submitting…" : "REQUEST INTAKE ACCESS"}</button>
+              {state.status === "error" && <p className={styles.error} role="alert">{state.message}</p>}
+            </form>
+          </div>
+        </>
+      )}
+      <p className={styles.notice}>Access is reviewed individually. Access approval permits use of the intake form; proposed transactions remain subject to separate French-Ward review and agreement.</p>
+      <nav className={styles.returnNav} aria-label="Return to French-Ward"><a href="/french-ward"><span aria-hidden="true">←</span> RETURN TO FRENCH-WARD</a></nav>
     </section>
   );
 }
