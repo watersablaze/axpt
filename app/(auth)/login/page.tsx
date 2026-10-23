@@ -187,7 +187,8 @@ export default function LoginPage() {
         '/french-ward',
         '/french-ward/transaction-intake',
         '/transaction-intake',
-      ].includes(requestedPath)
+      ].includes(requestedPath) ||
+      /^\/french-ward\/dossiers\/[A-Za-z0-9-]{1,191}(?:\/publications\/[A-Za-z0-9-]{1,191})?$/.test(requestedPath)
         ? requestedDestination
         : '/french-ward'
 
