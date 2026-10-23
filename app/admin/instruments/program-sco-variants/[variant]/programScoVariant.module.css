@@ -1,0 +1,401 @@
+/* FW-SCO 2B: shared presentation for 100 MT and 1,000 MT, documentary rather than dashboard styling. */
+.workspace{padding:20px 16px 46px;font:400 13px/1.55 Arial,Helvetica,sans-serif;color:#27444e}
+.workspaceNav{max-width:1030px;margin:0 auto 12px;display:flex;align-items:center;justify-content:space-between;gap:14px;font-size:11px}
+.workspaceNav a{color:inherit}.workspaceNav span{font-weight:700;font-size:9px;letter-spacing:.09em;color:#60777c}
+.document{max-width:1030px;margin:auto;background:#eff2ef;box-shadow:0 12px 34px #0002;overflow:hidden}
+.masthead{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;background:#304c55;color:#edf1ed;padding:15px 28px;font-size:11px;letter-spacing:.075em}
+.masthead strong{display:flex;align-items:center;gap:10px}.masthead>span{font-size:9px;letter-spacing:.13em}
+.monogram{display:inline-grid;place-items:center;width:26px;height:26px;border:1px solid #adbdbe;color:#edf1ed;font-size:9px;letter-spacing:0}
+.documentGrid{display:grid;grid-template-columns:174px minmax(0,1fr)}
+.rail{padding:28px 17px 18px 22px;display:flex;flex-direction:column;gap:0;border-right:1px solid #bccac8;background:#e8eeeb;color:#47656d}
+.railLabel{font-weight:700;letter-spacing:.14em;font-size:9px;margin:0 0 24px}
+.railFact{border-top:1px solid #becbca;padding:12px 0 15px;display:grid;gap:6px}
+.railFact>span{font-size:8px;font-weight:700;letter-spacing:.12em;color:#617b82}
+.railFact strong{font-size:23px;letter-spacing:-.04em;line-height:1.12;color:#204551;white-space:nowrap}
+.railFact strong small{font-size:11px;letter-spacing:0}
+.railFact:nth-of-type(2) strong{font-size:18px}
+.railFact b{font-size:9px;line-height:1.5;overflow-wrap:anywhere;color:#304f59}
+.railFoot{margin-top:auto;border-top:1px solid #bccac8;padding-top:14px;font-size:9px;line-height:1.55;color:#667b7d}
+.content{padding:30px 36px 26px;min-width:0}
+.intro{border-left:2px solid #aab8b1;padding-left:18px;margin-bottom:19px}
+.eyebrow{display:block;color:#55727a;font-size:9px;letter-spacing:.15em;font-weight:700}
+.intro h1{font-size:clamp(31px,4.3vw,46px);letter-spacing:-.04em;line-height:1.07;margin:10px 0 8px;color:#173947}
+.subtitle{font:italic 25px/1.2 Georgia,serif;color:#66725f;margin:0 0 12px}
+.deck{font-size:12px;line-height:1.6;color:#506b73;margin:0;max-width:63ch}
+.quickFacts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid #9fb5b8;border-bottom:1px solid #9fb5b8;margin-bottom:12px}
+.quickFacts>div{padding:12px 12px 13px;border-right:1px solid #c6d1ce;display:grid;align-content:start;gap:6px}
+.quickFacts>div:first-child{padding-left:0}.quickFacts>div:last-child{border-right:0}
+.quickFacts span{font-size:8px;font-weight:700;letter-spacing:.1em;color:#607a82}
+.quickFacts strong{font-size:17px;line-height:1.24;color:#224652}
+.clause{display:grid;grid-template-columns:22px minmax(116px,.82fr) minmax(0,1.7fr);gap:12px;padding:13px 0;border-bottom:1px solid #c8d4d1}
+.clauseIndex{color:#66838a;font-size:9px;letter-spacing:.06em;font-weight:700;padding-top:2px}
+.clause h2{margin:0;font-size:11px;line-height:1.4;color:#21414d;letter-spacing:.018em}
+.clause p{margin:0;font-size:11.5px;line-height:1.55;color:#425f68}
+.programNote{margin-top:16px;padding:14px 18px 16px;background:#e5ecea;border-top:2px solid #789299;border-bottom:1px solid #c7d4d0}
+.programNote>span{display:block;font-size:8px;letter-spacing:.15em;font-weight:700;color:#5b7981}
+.programNote h2{font-size:15px;margin:5px 0 5px;color:#20404d}
+.programNote p{margin:0;font-size:11px;line-height:1.54;color:#45626b}
+.footer{margin-top:19px;padding-top:12px;border-top:1px solid #96aeb1;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:9px;letter-spacing:.025em;color:#587079}
+.footer strong{color:#365661}.footer strong span{font-weight:400}
+@media(max-width:760px){.documentGrid{grid-template-columns:1fr}.rail{padding:11px 19px 12px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 14px;border-right:0;border-bottom:1px solid #bdcbca}.railLabel,.railFoot{display:none}.railFact{padding:5px 0;border-top:0;gap:3px}.railFact strong{font-size:17px}.railFact:nth-of-type(2) strong{font-size:15px}.railFact b{font-size:8px}.content{padding:22px 20px}.clause{grid-template-columns:20px minmax(0,1fr);gap:4px 8px}.clause h2{grid-column:2}.clause p{grid-column:2}.clauseIndex{grid-column:1;grid-row:1/3}.intro{padding-left:12px}.intro h1{font-size:35px}}
+@media(max-width:430px){.workspace{padding:10px 7px 25px}.workspaceNav{font-size:9px}.workspaceNav span{font-size:7px}.masthead{padding:11px 13px;font-size:9px}.masthead>span{font-size:8px}.rail{grid-template-columns:1fr 1fr;gap:9px;padding:10px 14px}.railFact:nth-of-type(3){grid-column:1/-1}.content{padding:19px 14px}.intro h1{font-size:29px}.subtitle{font-size:21px}.deck{font-size:11px}.quickFacts>div{padding:9px 6px}.quickFacts strong{font-size:12px}.quickFacts span{font-size:7px}.clause p{font-size:10.5px}.programNote{padding:12px}.footer{font-size:8px}}
+@media print{.workspace{padding:0}.workspaceNav{display:none}.document{max-width:none;box-shadow:none;print-color-adjust:exact;-webkit-print-color-adjust:exact}.masthead{padding:10px 15px}.documentGrid{grid-template-columns:135px minmax(0,1fr)}.rail{padding:16px 9px}.railFact strong{font-size:16px}.railFact:nth-of-type(2) strong{font-size:14px}.content{padding:16px 20px}.intro h1{font-size:32px}.subtitle{font-size:19px}.clause{padding:8px 0;gap:8px;break-inside:avoid}.clause p{font-size:9.3px;line-height:1.38}.clause h2{font-size:9px}.programNote{margin-top:9px;padding:9px 12px;break-inside:avoid}.programNote p{font-size:9px}.footer{margin-top:10px}}
+
+
+/* FW-SCO 2H: shared geological memory in the rail; legibility above ornament. */
+.rail{position:relative;isolation:isolate;overflow:hidden}
+.rail::before{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  left:-12%;right:-35%;bottom:5%;height:53%;
+  background-image:linear-gradient(180deg,rgba(232,238,235,1) 0%,rgba(232,238,235,.12) 27%,rgba(232,238,235,.33) 66%,rgba(232,238,235,.9) 100%),url("/french-ward/commercial-papers/sco-mine-origin-atmosphere.png");
+  background-position:center,center;
+  background-size:cover,cover;
+  background-repeat:no-repeat;
+  opacity:.34;filter:grayscale(1) saturate(.25) contrast(.78);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 22%,#000 75%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 22%,#000 75%,transparent 100%);
+}
+.railLabel,.railFact,.railFoot{position:relative;z-index:1}
+.growthcorpIdentityBand{
+  display:flex;flex-wrap:wrap;align-items:baseline;column-gap:22px;row-gap:4px;
+  padding:11px 28px 12px;
+  background:#070827;color:#f6f5fc;border-bottom:1px solid #41476c;
+  font-size:10px;line-height:1.5;letter-spacing:.014em;
+}
+.growthcorpIdentityBand span{color:#f6f5fc}
+.growthcorpIdentityBand span:first-child{font-weight:600}
+@media(max-width:760px){
+  .rail::before{left:25%;right:-10%;top:-35%;bottom:-35%;height:auto;opacity:.22;
+    -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 48%,transparent 100%);
+    mask-image:linear-gradient(to right,transparent 0%,#000 48%,transparent 100%)}
+  .growthcorpIdentityBand{padding:9px 19px 10px;font-size:9px;column-gap:15px}
+}
+@media(max-width:430px){.growthcorpIdentityBand{padding:9px 14px;font-size:8.5px;gap:3px 12px}}
+@media print{
+  .rail::before{opacity:.17;filter:grayscale(1) contrast(.8)}
+  .growthcorpIdentityBand{padding:7px 14px;background:#070827!important;color:white!important;font-size:8px;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* FW-SCO 2I — review-and-authority inspired documentary section rhythm. */
+.content{padding-top:27px}
+.intro{padding-bottom:18px;margin-bottom:15px}
+.clauses{border-top:2px solid #78949a;margin-top:16px}
+.clause{
+  display:grid;
+  grid-template-columns:minmax(158px,.64fr) minmax(0,1.55fr);
+  column-gap:27px;
+  align-items:start;
+  padding:19px 0 20px;
+  border-bottom:1px solid #c2d0ce;
+}
+.clauseHead{display:flex;flex-direction:column;gap:7px;min-width:0}
+.clauseIndex{font-size:8px;font-weight:700;letter-spacing:.12em;color:#65808a;padding:0}
+.clause h2{font-size:13px;font-weight:700;line-height:1.36;letter-spacing:-.008em;color:#203f4b;margin:0}
+.clause p{font-size:12px;line-height:1.63;max-width:73ch;color:#3d5a64}
+.programNote{margin-top:21px;border-top:2px solid #78949a;padding:18px 20px 19px}
+.programNote h2{font-size:16px;line-height:1.32}
+.footer{margin-top:22px}
+@media(max-width:760px){
+  .content{padding-top:20px}
+  .clause{grid-template-columns:1fr;gap:8px;padding:15px 0 16px}
+  .clauseHead{gap:5px}
+  .clause h2{grid-column:auto;font-size:12.5px}
+  .clause p{grid-column:auto;font-size:11.5px;line-height:1.55}
+  .clauseIndex{grid-column:auto;grid-row:auto}
+  .programNote{margin-top:15px;padding:14px 15px}
+}
+@media(max-width:430px){
+  .clause{padding:12px 0 13px;gap:6px}
+  .clause h2{font-size:12px}
+  .clause p{font-size:10.7px;line-height:1.54}
+}
+@media print{
+  .clause{grid-template-columns:minmax(104px,.65fr) minmax(0,1.45fr);gap:11px;padding:9px 0;break-inside:avoid}
+  .clauseHead{gap:3px}
+  .clauseIndex{font-size:6px}
+  .clause h2{font-size:9.5px}
+  .clause p{font-size:9px;line-height:1.38}
+  .programNote{margin-top:10px;padding:10px 12px}
+}
+
+
+
+/* FW-SCO-2J: distinct commercial passage and unsigned institutional execution */
+.passage{margin:22px 0 0;padding:18px 0 17px;border-top:2px solid #77939a;border-bottom:1px solid #c1d0ce}
+.passageHeading span,.executionHeading>span{font:700 9px/1.3 Arial,Helvetica,sans-serif;letter-spacing:.16em;color:#5d7880}
+.passageHeading h2{margin:6px 0 14px;font:500 19px/1.25 Georgia,serif;color:#24424c}
+.passageSteps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));list-style:none;margin:0;padding:0;gap:14px}
+.passageSteps li{border-top:1px solid #c3d0cd;padding-top:9px;display:grid;grid-template-columns:22px 1fr;gap:5px;font-size:11px;line-height:1.5;color:#45616a}
+.passageSteps b{font-size:9px;color:#54737c}
+.execution{padding:20px 0 20px;margin-top:4px;border-bottom:1px solid #c2cfcd;break-inside:avoid}
+.executionHeading h2{font:500 20px/1.25 Georgia,serif;margin:5px 0 4px;color:#25424b}
+.executionHeading p{margin:0;max-width:76ch;font-size:10.5px;line-height:1.5;color:#6a7d80}
+.executionFields{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:42px;margin-top:23px}
+.executionSignature{display:grid;align-content:end;gap:4px}
+.signatureLine{display:block;border-bottom:1px solid #637c82;height:26px}
+.executionSignature strong{font-size:10px;color:#2c4c56;font-weight:700}
+.executionSignature small{font-size:9px;color:#617980}
+.executionMeta{display:grid;gap:15px;align-content:end}
+.executionMeta>div{display:grid;grid-template-columns:95px 1fr;gap:10px;align-items:end}
+.executionMeta span{font-size:8px;font-weight:700;letter-spacing:.1em;color:#68818a}
+.executionMeta i{border-bottom:1px solid #93a9ab;height:17px}
+.executionCaveat{margin:13px 0 0!important;font-size:9px;line-height:1.5;color:#6c7e80}
+@media(max-width:760px){.passage{margin-top:16px;padding:14px 0}.passageSteps{grid-template-columns:1fr;gap:5px}.passageSteps li{padding-top:6px}.executionFields{gap:20px;margin-top:14px}.executionHeading h2{font-size:17px}}
+@media(max-width:430px){.executionFields{grid-template-columns:1fr;gap:12px}.executionMeta>div{grid-template-columns:82px 1fr}.passageHeading h2{font-size:17px}}
+@media print{.passage{margin-top:9px;padding:8px 0}.passageHeading h2{font-size:13px;margin:3px 0 6px}.passageSteps{gap:7px}.passageSteps li{font-size:8px;line-height:1.3;grid-template-columns:14px 1fr;padding-top:4px}.passageSteps b{font-size:7px}.execution{margin:0;padding:9px 0}.executionHeading h2{font-size:13px;margin:2px 0}.executionHeading p,.executionCaveat{font-size:7.5px}.executionFields{margin-top:10px;gap:20px}.signatureLine{height:16px}.executionMeta{gap:7px}.executionSignature strong,.executionSignature small,.executionMeta span{font-size:7px}}
+
+/* FW-SCO-2K — structured commercial instrument, replacing the six-paragraph register. */
+.offerParticulars,.offerConditions,.offerPassage{padding:18px 0;border-top:1px solid #b8c9c8}
+.offerParticulars{border-top:2px solid #789399;margin-top:14px}
+.blockHeading{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-bottom:14px}
+.blockHeading>span{font:700 9px/1.3 Arial,Helvetica,sans-serif;letter-spacing:.14em;color:#5b7982}
+.blockHeading h2{margin:0;font:500 21px/1.25 Georgia,serif;color:#264651}
+.offerFacts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:1px solid #bac9c8;border-bottom:1px solid #bac9c8}
+.offerFacts>div{min-width:0;padding:13px 11px 15px;border-right:1px solid #cbd5d3;display:flex;flex-direction:column;gap:8px}
+.offerFacts>div:first-child{padding-left:0}.offerFacts>div:last-child{border-right:0}
+.offerFacts span{font-size:8px;font-weight:700;letter-spacing:.12em;color:#678089}
+.offerFacts strong{font-size:15px;line-height:1.22;color:#244852;font-weight:700}
+.offerSource,.offerQualification{font-size:11px;line-height:1.58;color:#536c73;margin:12px 0 0}
+.conditionRows{margin:0;padding:0;border-top:1px solid #c4d0ce}
+.conditionRows>div{display:grid;grid-template-columns:minmax(125px,.72fr) minmax(0,1.6fr);gap:18px;border-bottom:1px solid #ced8d5;padding:11px 0}
+.conditionRows dt{font-size:11px;font-weight:700;color:#294b56}
+.conditionRows dd{margin:0;font-size:11.5px;line-height:1.49;color:#425f69}
+.offerSteps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));list-style:none;gap:12px;margin:0;padding:0}
+.offerSteps li{border-top:1px solid #bfcecb;padding:10px 0 0;display:grid;gap:5px;font-size:11px;line-height:1.35;color:#3f5d67}
+.offerSteps b{font-size:9px;color:#5d7c84}
+@media(max-width:760px){.offerFacts{grid-template-columns:repeat(2,minmax(0,1fr))}.offerFacts>div:nth-child(2){border-right:0}.offerFacts>div:nth-child(-n+2){border-bottom:1px solid #ccd6d3}.blockHeading{display:block}.blockHeading h2{margin-top:4px}.conditionRows>div{grid-template-columns:1fr;gap:3px}.offerSteps{gap:8px}}
+@media(max-width:430px){.offerFacts strong{font-size:13px}.offerFacts>div{padding:10px 8px}.offerSteps{grid-template-columns:1fr;gap:7px}.offerSteps li{grid-template-columns:22px 1fr;gap:8px}.offerParticulars,.offerConditions,.offerPassage{padding:13px 0}}
+@media print{.offerParticulars,.offerConditions,.offerPassage{padding:8px 0}.blockHeading{margin-bottom:7px}.blockHeading h2{font-size:14px}.blockHeading>span{font-size:7px}.offerFacts>div{padding:7px 6px}.offerFacts span{font-size:6.5px}.offerFacts strong{font-size:10px}.offerSource,.offerQualification{font-size:8px;margin-top:6px}.conditionRows>div{padding:6px 0;gap:8px}.conditionRows dt,.conditionRows dd{font-size:8.5px;line-height:1.35}.offerSteps li{padding-top:5px;font-size:8px}.offerSteps b{font-size:7px}}
+
+/* FW-SCO-2L — identity rail replaces redundant quantitative rail. */
+.rail{
+  position:relative;isolation:isolate;overflow:hidden;
+  background:#243e46;color:#f0f3ed;
+  border-right:1px solid #566d72;
+  padding:30px 18px 19px 22px;
+  display:flex;flex-direction:column;gap:0;
+  min-height:100%;
+}
+.railGrowthcorp{background:#101932;border-right-color:#45516a}
+.rail::before{
+  content:"";position:absolute;z-index:-1;pointer-events:none;
+  left:-58%;right:-44%;top:28%;bottom:-9%;height:auto;
+  background-image:
+    linear-gradient(180deg,rgba(36,62,70,1) 0%,rgba(36,62,70,.40) 31%,rgba(36,62,70,.27) 62%,rgba(36,62,70,.93) 100%),
+    url("/french-ward/commercial-papers/sco-mine-origin-atmosphere.png");
+  background-size:cover,cover;background-position:center,center;
+  opacity:.44;filter:grayscale(.65) sepia(.12) saturate(.5) contrast(.87);
+  -webkit-mask-image:linear-gradient(to bottom,transparent 0%,#000 24%,#000 74%,transparent 100%);
+  mask-image:linear-gradient(to bottom,transparent 0%,#000 24%,#000 74%,transparent 100%);
+}
+.railGrowthcorp::before{
+  background-image:
+    linear-gradient(180deg,rgba(16,25,50,1) 0%,rgba(16,25,50,.37) 31%,rgba(16,25,50,.32) 65%,rgba(16,25,50,.95) 100%),
+    url("/french-ward/commercial-papers/sco-mine-origin-atmosphere.png");
+  filter:grayscale(.95) saturate(.18) contrast(.85);opacity:.39;
+}
+.railIdentity,.railBottom{position:relative;z-index:1;display:flex;flex-direction:column}
+.railLabel{font-size:8px;line-height:1.4;letter-spacing:.14em;color:#b9cbd0;font-weight:700;margin:0 0 26px}
+.railTitle{font:500 25px/1.11 Georgia,"Times New Roman",serif;letter-spacing:-.032em;color:#fff}
+.railOrigin{margin-top:12px;font-size:10px;letter-spacing:.025em;color:#d0dcda}
+.railBottom{margin-top:auto;padding-top:26px}
+.railClassLabel{border-top:1px solid rgba(221,232,230,.48);padding-top:12px;font:700 8px/1.4 Arial,sans-serif;letter-spacing:.12em;color:#bed0d2}
+.railClass{margin-top:7px;font:600 13px/1.3 Arial,sans-serif;color:#fff}
+.railPosture{margin-top:7px;font:400 9px/1.45 Arial,sans-serif;color:#d3dedc}
+.railReference{margin-top:18px;padding-top:9px;border-top:1px solid rgba(221,232,230,.3);font:500 8px/1.45 Arial,sans-serif;color:#b9c9cd;overflow-wrap:anywhere}
+@media(max-width:760px){
+  .rail{min-height:0;padding:14px 19px 13px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:center;border-right:0;border-bottom:1px solid #556c74}
+  .rail::before,.railGrowthcorp::before{left:18%;right:-15%;top:-65%;bottom:-75%;opacity:.24;
+    -webkit-mask-image:linear-gradient(to right,transparent 0%,#000 44%,transparent 100%);
+    mask-image:linear-gradient(to right,transparent 0%,#000 44%,transparent 100%)}
+  .railLabel{margin:0 0 5px;font-size:7px}
+  .railTitle{font-size:19px;line-height:1.05}
+  .railOrigin{margin-top:5px;font-size:9px}
+  .railBottom{margin:0;padding:0;text-align:right;align-items:flex-end}
+  .railClassLabel{border-top:0;padding-top:0;font-size:7px}
+  .railClass{font-size:11px;margin-top:4px}
+  .railPosture{font-size:8px;margin-top:4px}
+  .railReference{font-size:7px;margin-top:5px;padding:0;border-top:0;max-width:100%}
+}
+@media(max-width:430px){
+  .rail{padding:13px 14px 12px;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+  .railTitle{font-size:17px}.railClass{font-size:10px}.railReference{font-size:6.8px}
+}
+@media print{
+  .rail,.railGrowthcorp{background:#243e46!important;color:white!important;padding:15px 9px 12px;display:flex;min-height:100%;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .railGrowthcorp{background:#101932!important}
+  .rail::before{opacity:.25;filter:grayscale(1)}
+  .railLabel{font-size:6px;margin-bottom:13px;color:#d3dfdf}
+  .railTitle{font-size:17px;color:white}.railOrigin{font-size:7px;color:#dce8e6}
+  .railBottom{margin-top:auto;padding-top:12px;text-align:left;align-items:flex-start}
+  .railClassLabel{border-top:1px solid #93aab0;padding-top:6px;font-size:6px}
+  .railClass{font-size:9px;color:white}.railPosture{font-size:6.6px;color:#e2eae9}
+  .railReference{font-size:6px;color:#e0e6e7;margin-top:10px}
+}
+
+/* FW-SCO-2M — default SCO particulars strip + sandy concluding instrument */
+.offerFacts{
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:0;background:#edf1ee;border-top:1px solid #aebfbe;
+  border-bottom:1px solid #9eb4b6;
+}
+.offerFacts>div,.offerFacts>div:first-child{
+  min-width:0;display:flex;flex-direction:column;align-items:flex-start;
+  padding:13px 11px 15px;border-right:1px solid #c5d1cf;
+  gap:5px;
+}
+.offerFacts>div:last-child{border-right:0}
+.offerFacts span{font:700 8px/1.35 Arial,Helvetica,sans-serif;letter-spacing:.11em;color:#59747c}
+.offerFacts strong{font:700 15px/1.18 Arial,Helvetica,sans-serif;color:#204451;letter-spacing:-.014em}
+.offerFacts small{font:400 9px/1.45 Arial,Helvetica,sans-serif;color:#56727b}
+/* Sand is confined to progression and execution, not to the pricing register. */
+.sandPassage,.sandExecution{position:relative;isolation:isolate;padding:21px 20px 24px;margin-left:-20px;margin-right:-20px}
+.sandPassage{background:#e8dfcf;border-top:2px solid #b7a484;border-bottom:1px solid #c7b69b}
+.sandExecution{background:#f0e7d8;border-top:0;border-bottom:1px solid #c5b599}
+.sandPassage .blockHeading>span,.sandExecution .executionHeading>span{color:#776043}
+.sandPassage .blockHeading h2,.sandExecution .executionHeading h2{color:#453b2e}
+.sandPassage .offerSteps li{border-color:#bdaa89;color:#514a3d}
+.sandPassage .offerSteps b{color:#866d4a}
+.sandPassage .offerQualification,.sandExecution .executionHeading p,.sandExecution .executionCaveat{color:#655d50}
+.sandExecution .signatureLine{border-color:#8f7a61}
+@media(max-width:1080px){
+  .offerFacts{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .offerFacts>div:nth-child(3){border-right:0}
+  .offerFacts>div:nth-child(-n+3){border-bottom:1px solid #c5d1cf}
+}
+@media(max-width:760px){
+  .offerFacts{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .offerFacts>div:nth-child(3){border-right:1px solid #c5d1cf}
+  .offerFacts>div:nth-child(even){border-right:0}
+  .offerFacts>div:nth-child(-n+4){border-bottom:1px solid #c5d1cf}
+  .sandPassage,.sandExecution{padding:17px 16px 19px;margin-left:-16px;margin-right:-16px}
+}
+@media(max-width:430px){
+  .offerFacts strong{font-size:13px}
+  .offerFacts>div,.offerFacts>div:first-child{padding:11px 8px 12px;gap:4px}
+  .offerFacts small{font-size:8px}
+}
+@media print{
+  .offerFacts{grid-template-columns:repeat(5,minmax(0,1fr));background:#edf1ee!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .offerFacts>div,.offerFacts>div:first-child{padding:6px 5px;gap:2px}
+  .offerFacts>div:nth-child(n){border-bottom:0;border-right:1px solid #c5d1cf}
+  .offerFacts>div:last-child{border-right:0}
+  .offerFacts span{font-size:5.6px}.offerFacts strong{font-size:9px}.offerFacts small{font-size:6px}
+  .sandPassage,.sandExecution{margin-left:-10px;margin-right:-10px;padding:9px 10px 11px;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .sandPassage{background:#e8dfcf!important}.sandExecution{background:#f0e7d8!important}
+}
+
+
+/* FW-SCO-2N — unify GSAM masthead with institutional blue identity strip. */
+.mastheadGrowthcorp{
+  background:#070827;
+  color:#fff;
+  border-bottom:1px solid #303859;
+}
+.mastheadGrowthcorp strong,
+.mastheadGrowthcorp>span,
+.mastheadGrowthcorp .monogram{color:#fff}
+.mastheadGrowthcorp .monogram{border-color:#828ba9}
+.mastheadGrowthcorp + .growthcorpIdentityBand{
+  background:#070827;
+  border-bottom:1px solid #41476c;
+  color:#fff;
+}
+.mastheadGrowthcorp + .growthcorpIdentityBand span{color:#fff}
+@media print{
+  .mastheadGrowthcorp,.mastheadGrowthcorp + .growthcorpIdentityBand{
+    background:#070827!important;color:#fff!important;
+    -webkit-print-color-adjust:exact;print-color-adjust:exact;
+  }
+}
+
+
+/* FW-SCO-2O — Growthcorp single navy header, identity details under institution name. */
+.gsamHeaderStack{display:flex;flex-direction:column;gap:9px;min-width:0;flex:1}
+.gsamHeaderStack>strong{display:flex;align-items:center;gap:9px;flex-wrap:wrap;color:#fff}
+.gsamHeaderDetails{display:flex;align-items:center;flex-wrap:wrap;gap:5px 17px;padding-left:0;font-size:11px;line-height:1.5;letter-spacing:.025em;color:#e5e9f4}
+.gsamHeaderDetails>span{color:inherit}
+.mastheadGrowthcorp{align-items:flex-start;gap:16px}
+.mastheadGrowthcorp>.gsamHeaderStack+span{white-space:nowrap;color:#fff}
+@media(max-width:720px){
+  .mastheadGrowthcorp{flex-wrap:wrap}
+  .gsamHeaderDetails{gap:4px 11px;font-size:10px}
+  .mastheadGrowthcorp>.gsamHeaderStack+span{white-space:normal}
+}
+@media print{
+  .gsamHeaderDetails,.gsamHeaderStack>strong{color:#fff!important}
+}
+
+
+/* FW-SCO-2P — softening only: Growthcorp navy + sand; French-Ward sand only.
+   The French-Ward masthead, teal rail and all commercial-figure colors are untouched. */
+/* Both institutions: quieter sandy closing surfaces. */
+.sandPassage{background:#eee8dd;border-top-color:#c7bba7;border-bottom-color:#d7cab6}
+.sandExecution{background:#f5f0e7;border-bottom-color:#d7cab6}
+.sandPassage .blockHeading>span,.sandExecution .executionHeading>span{color:#7b6e5d}
+.sandPassage .blockHeading h2,.sandExecution .executionHeading h2{color:#50483e}
+.sandPassage .offerSteps li{border-color:#c7b9a2;color:#5b554b}
+.sandPassage .offerSteps b{color:#8a7963}
+.sandPassage .offerQualification,.sandExecution .executionHeading p,.sandExecution .executionCaveat{color:#6a6257}
+.sandExecution .signatureLine{border-color:#a99a83}
+/* Growthcorp only: less saturated, less severe navy, consistent across masthead and rail. */
+.mastheadGrowthcorp{background:#25324b;border-bottom-color:#536079}
+.railGrowthcorp{background:#28364d;border-right-color:#657184}
+.railGrowthcorp::before{
+ background-image:linear-gradient(180deg,rgba(40,54,77,1) 0%,rgba(40,54,77,.42) 31%,rgba(40,54,77,.35) 65%,rgba(40,54,77,.96) 100%),url("/french-ward/commercial-papers/sco-mine-origin-atmosphere.png");
+ opacity:.34;
+}
+.mastheadGrowthcorp .gsamHeaderDetails{color:#e0e5ec}
+@media print{
+ .mastheadGrowthcorp{background:#25324b!important;border-bottom-color:#536079!important}
+ .railGrowthcorp{background:#28364d!important}
+ .sandPassage{background:#eee8dd!important}
+ .sandExecution{background:#f5f0e7!important}
+}
+
+
+/* GSAM-3K4: PDF-only mineral isolation */
+@media print {
+  .railGrowthcorp::before {
+    background-image: none !important;
+  }
+}
+
+/* GSAM-3L2S2-SIGNATORY-BINDING: only the GSAM canvas renders this class. */
+.gsamAuthorizedSignature {
+  display: block;
+  width: 225px;
+  max-width: 100%;
+  height: 62px;
+  object-fit: contain;
+  object-position: left bottom;
+  opacity: 1;
+  filter: contrast(1.6) saturate(1.55);
+}
+.executionMeta strong {
+  font-size: 9px;
+  line-height: 1.35;
+  font-weight: 600;
+  color: #2c4c56;
+}
+@media print {
+  .gsamAuthorizedSignature { width: 156px; height: 41px; }
+  .executionMeta strong { font-size: 6.5px; line-height: 1.2; }
+}
+
+/* GSAM-3L2S3-EXECUTION-CLEANUP: GSAM-only presentation; French-Ward unchanged. */
+.gsamExecutionFields { grid-template-columns: minmax(0, 1fr); }
+.gsamSignatoryTitle {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  padding-bottom: 5px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid #acb9b3;
+  font-weight: 600;
+}
+@media print {
+  .gsamSignatoryTitle { padding-bottom: 3px; margin-bottom: 2px; }
+}
