@@ -44,10 +44,6 @@ export default async function PublicFrenchWardProfilePage() {
       <div className={styles.documentFrame}>
         {access.allowed ? (
           <>
-            <div className={styles.context}>
-              <span>Official institutional publication</span>
-              <span>Edition {String(profile.version).padStart(2, "0")}</span>
-            </div>
             <FrenchWardInstitutionalProfileView profile={profile} />
             <p className={styles.afterword}>
               For institutional correspondence: <a href="mailto:french-ward@axpt.io">french-ward@axpt.io</a>

@@ -1,3 +1,4 @@
+import reading from "@/components/french-ward/profile/FrenchWardInstitutionalProfileView.module.css";
 import CommercialPaperReview from "../../CommercialPaperReview";
 import { loadRepresentativeCommercialPaper } from "@/domains/instruments/representative-program/commercial-utility-pack/commercial-papers/loadRepresentativeCommercialPaper";
 import { SupportingDocumentView } from "../../SupportingDocumentView";
@@ -72,37 +73,32 @@ export default async function RepresentativeResourcePage({
     <main
       className={
         resource.kind === "INSTITUTIONAL_PROFILE"
-          ? "min-h-screen bg-[#0c1d25] px-4 py-8 text-[#eee7da] md:px-8"
+          ? reading.readerPage
           : boundaries.page
       }
     >
       <div
         className={
           resource.kind === "INSTITUTIONAL_PROFILE"
-            ? "mx-auto max-w-7xl"
+            ? reading.readerFrame
             : boundaries.frame
         }
       >
-        <Link
-          href="/representative"
-          className="text-sm text-[#d8c39b] underline underline-offset-4"
-        >
-          Back to Representative Workspace
-        </Link>
+        <nav className={resource.kind === "INSTITUTIONAL_PROFILE" ? reading.readerChrome : undefined} aria-label="Resource navigation">
+          <Link href="/representative" className="text-sm text-[#d8c39b] underline underline-offset-4">← Back to Workspace</Link>
+        </nav>
 
         <article
           className={
             resource.kind === "INSTITUTIONAL_PROFILE"
-              ? "mt-7"
+              ? "mt-0"
               : boundaries.record
           }
         >
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#b99657]">
-            French-Ward · Representative Field Resource
-          </p>
-          <p className="mt-3 break-words font-mono text-xs text-[#8d8377]">
-            {resource.packageReference}
-          </p>
+          {resource.kind !== "INSTITUTIONAL_PROFILE" ? <>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#b99657]">French-Ward · Representative Field Resource</p>
+            <p className="mt-3 break-words font-mono text-xs text-[#8d8377]">{resource.packageReference}</p>
+          </> : null}
 
           {resource.kind === "INSTITUTIONAL_PROFILE" ? (
             <>

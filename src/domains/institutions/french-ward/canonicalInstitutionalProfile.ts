@@ -48,7 +48,7 @@ export const FRENCH_WARD_INSTITUTIONAL_PROFILE:
 
     commercialActivities: [
       "Commercial Precious Metals Trading",
-      "Authorized Commodity Resale (subject to applicable appointments and governing instruments)",
+      "Authorized Commodity Resale",
       "Commercial Transaction Administration",
       "Settlement Coordination",
     ],
@@ -57,7 +57,7 @@ export const FRENCH_WARD_INSTITUTIONAL_PROFILE:
       "International Trade & Commercial Operations",
 
     publicDescription:
-      "French-Ward, Inc. undertakes international trade and commercial operations through an integrated practice of custodianship and commercial responsibility, developing source and counterparty relationships while coordinating documented authority, commercial commitments, delivery arrangements, and settlement preparation.",
+      "French-Ward connects trusted source relationships with international commerce through custodianship, accountable commitments, and coordinated delivery and settlement.",
 
     orientation:
       "French-Ward brings institutional direction and commercial execution into one governed practice. Its objective is the responsible advancement of commerce through attributable authority, documentary continuity, accountable relationships, and conditions sufficient for performance.",
@@ -74,15 +74,15 @@ export const FRENCH_WARD_INSTITUTIONAL_PROFILE:
     ],
 
     establishedSourceRelationships: [
-      "French-Ward's institutional practice includes its established relationship with Coopérative de Bafoula in the Republic of Mali, encompassing source-side commercial engagement, authorized resale activities, and international commercial coordination under the applicable governing instruments.",
-      "The relationship reflects French-Ward's integrated approach to custodianship and commercial responsibility, in which stewardship of source relationships, documentary continuity, commercial commitments, and accountable passage forms part of one institutional practice.",
-      "The relationship's custodial arrangements, reseller appointment, exclusivity, territorial reach, and specific commercial authorities are established and governed by their respective instruments. This Institutional Profile describes the relationship without independently enlarging or substituting for those authorities.",
+      "French-Ward's institutional practice includes its established relationship with Coopérative de Bafoula in the Republic of Mali, encompassing source-side commercial engagement, authorized resale activities, and international commercial coordination under the applicable governing instruments. French-Ward is appointed as the worldwide exclusive reseller channel for Coopérative de Bafoula under the applicable governing instruments.",
+      "The relationship is anchored in a Declaration of Trust & Custodianship, reflecting the confidence placed in French-Ward to steward the commercial passage of the cooperative’s assets. It brings custodianship and commercial responsibility together: respect for the source, continuity of records, and care in the commitments made on its behalf. This foundation supports a considered opening to wider global trade through accountable counterparties and arrangements that honor the cooperative’s interests.",
+      "The Declaration of Trust & Custodianship and the exclusive reseller mandate give documentary expression to this relationship, setting out custodial responsibilities, international commercial reach, and the terms through which French-Ward represents the cooperative’s source interests.",
     ],
 
     institutionalDefinition: [
       "French-Ward, Inc. is a Florida corporation engaged in international trade and commercial operations. Its custodial practice includes responsibility for commercial relationships, commitments, records, and the conditions of performance.",
-      "French-Ward's capacity in any particular relationship—including appointed reseller, contracting seller, or custodian—is established by applicable agreements and authority records. Its institutional discipline does not independently confer legal custody or transaction-specific authority.",
-      "French-Ward uses AXPT for institutional records, controlled access, commercial workflows, and transaction continuity. These systems do not establish or enlarge commercial authority.",
+      "French-Ward works as an appointed reseller, contracting seller, or custodian according to the needs and agreements of each relationship, bringing clear responsibilities and continuity to the passage from source engagement to performance.",
+      "French-Ward uses AXPT to connect its records, secure correspondence, commercial workflows, and transaction history, giving counterparties a consistent place to engage and follow their work.",
     ],
 
     // FW-PROFILE-5A: Identity disclosures, not grants of operative authority.
@@ -106,12 +106,12 @@ export const FRENCH_WARD_INSTITUTIONAL_PROFILE:
 
     counterpartyEngagement: [
       "Buyers, refineries, suppliers, financiers, and institutional partners may contact French-Ward through its designated commercial intake or authenticated correspondence channel to discuss a proposed engagement.",
-      "French-Ward reviews the proposed relationship and requirements before confirming next steps. An inquiry or submission does not constitute acceptance, allocation, or a binding commitment.",
+      "French-Ward reviews each proposed relationship and its requirements, then confirms the appropriate next steps directly with the counterparty.",
       "Qualification identifies the corporate, compliance, transaction, and delivery information required for the proposed relationship and relevant jurisdictions.",
     ],
 
     counterpartyDueDiligence:
-      "Commercial engagement is subject to appropriate counterparty identification, qualification, and transaction-specific review. Depending on the proposed relationship and applicable requirements, French-Ward may request corporate registration records, beneficial-ownership and authorized-signatory information, relevant licenses, source and material documentation, evidence of financial capacity, and supporting compliance records. Documentation is reviewed in relation to the proposed transaction, the applicable jurisdiction, and the responsibilities of the participating parties. Preliminary engagement or submission of materials does not itself constitute approval or authorization to proceed.",
+      "Commercial engagement is subject to appropriate counterparty identification, qualification, and transaction-specific review. Depending on the proposed relationship and applicable requirements, French-Ward may request corporate registration records, beneficial-ownership and authorized-signatory information, relevant licenses, source and material documentation, evidence of financial capacity, and supporting compliance records. Documentation is reviewed in relation to the proposed transaction, the applicable jurisdiction, and the responsibilities of the participating parties. French-Ward confirms readiness and the agreed next steps once the relevant review is complete.",
 
     documentaryReadiness: [
       "Following qualification and applicable authorization, French-Ward coordinates the source-authority, commercial, logistics, and settlement documentation required for the proposed transaction.",

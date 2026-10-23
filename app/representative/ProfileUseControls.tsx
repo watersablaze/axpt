@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import reading from "@/components/french-ward/profile/FrenchWardInstitutionalProfileView.module.css";
 import { useRef, useState } from "react";
 export default function ProfileUseControls({ resourceReleaseId, readOnly=false }: {resourceReleaseId:string;readOnly?:boolean}) {
   const [pending,setPending]=useState(false);
@@ -17,11 +18,9 @@ export default function ProfileUseControls({ resourceReleaseId, readOnly=false }
     } catch {setMessage("Presentation is unavailable under your current permissions.");}
     finally{inFlight.current=false;setPending(false);}
   }
-  const buttonClass="rounded border border-[#567ba0] px-4 py-2 text-sm text-[#eee7da] disabled:opacity-50";
-  return <section aria-label="Profile actions" className="my-3 flex flex-wrap items-center gap-3 rounded border border-[#30495c] px-4 py-3">
-    <p className="mr-auto text-sm text-[#eee7da]">Official Profile</p>
-    <button className={buttonClass} type="button" disabled={readOnly||pending} onClick={present}>Open for Presentation</button>
-    {readOnly?<span className="text-xs text-[#d8c39b]">Read-only preview · Buyer invitations are prepared from CUP.</span>:<Link className={buttonClass} href="/representative#buyer-invitation">Introduce a Buyer</Link>}
+  return <section aria-label="Profile actions" className={reading.readerActions}>
+    <button type="button" disabled={readOnly||pending} onClick={present}>Open for Presentation</button>
+    {readOnly?<span className="text-xs text-[#d8c39b]">Read-only preview · Buyer invitations are prepared from CUP.</span>:<Link href="/representative#buyer-invitation">Introduce a Buyer</Link>}
     <p role="status" aria-live="polite" className={message?"w-full text-sm text-[#d8c39b]":"sr-only"}>{message}</p>
   </section>;
 }

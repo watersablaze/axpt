@@ -1,3 +1,4 @@
+import reading from "@/components/french-ward/profile/FrenchWardInstitutionalProfileView.module.css";
 import CommercialPaperReview from "../../../../../../../representative/CommercialPaperReview";
 import { loadRepresentativeCommercialPaper } from "@/domains/instruments/representative-program/commercial-utility-pack/commercial-papers/loadRepresentativeCommercialPaper";
 import { SupportingDocumentView } from "../../../../../../../representative/SupportingDocumentView";
@@ -74,9 +75,12 @@ export default async function OperatorResourcePreview({
   );
 
   if (resource?.kind === "INSTITUTIONAL_PROFILE") {
-    return <main className="min-h-screen bg-[#0c1d25] px-4 py-8 text-[#eee7da]">
-      <div className="mx-auto max-w-7xl">
-        {navigation}
+    return <main className={reading.readerPage}>
+      <nav className={reading.readerChrome} aria-label="Operator profile navigation">
+        <Link href={base}>← Back to Workspace Preview</Link>
+        <p>Read-only preview · {participant.displayName}</p>
+      </nav>
+      <div className={reading.readerFrame}>
         <ProfileUseControls
           resourceReleaseId={resourceReleaseId}
           readOnly

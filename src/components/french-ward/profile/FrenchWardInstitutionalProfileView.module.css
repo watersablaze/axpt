@@ -2019,3 +2019,237 @@
   .identity h1{font-size:clamp(28px,7.1vw,33px)!important;max-width:16ch!important;}
 }
 @media print{.identity h1{color:#67513a!important;}}
+
+/* PROFILE-READING-P1 — shared reading navigation and compact host surfaces. */
+.readingIndex {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 4px 18px;
+  padding: 9px clamp(18px, 3vw, 32px);
+  border-block: 1px solid rgba(174, 191, 201, .25);
+  background: #101c25; overflow-x: auto; overscroll-behavior-x: contain;
+  scrollbar-width: thin; scrollbar-color: #526471 transparent;
+}
+.readingIndex a {
+  flex: 0 0 auto; min-height: 36px; display: inline-flex; align-items: center;
+  color: #ccd7dc; font: 500 12px/1.4 Arial, Helvetica, sans-serif;
+  text-decoration: none; border-bottom: 1px solid transparent;
+}
+.readingIndex a:hover { color: #ead4ad; border-bottom-color: #bd9e6f; }
+.readingIndex a:focus-visible, .returnToTop:focus-visible, .readerChrome a:focus-visible {
+  outline: 2px solid #91c6e1; outline-offset: 3px;
+}
+.publication :where(h2[id], section[id]) { scroll-margin-top: 80px; }
+.returnToTop { grid-column: 1 / -1; display: inline-block; margin-bottom: 16px; color: #d5c09b; font: 500 12px/1.5 Arial, Helvetica, sans-serif; }
+.readerPage { min-height: 100vh; background: #080c10; color: #e9ece9; }
+.readerChrome {
+  display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap;
+  gap: 8px 20px; padding: 12px max(18px, calc((100% - 1020px) / 2));
+  border-bottom: 1px solid #44505a; background: #101820;
+  font: 500 12px/1.5 Arial, Helvetica, sans-serif;
+}
+.readerChrome a { color: #d9c49f; text-decoration: none; }
+.readerChrome p { margin: 0; color: #b4c0c7; }
+.readerFrame { width: min(1020px, 100%); margin-inline: auto; padding-block: 12px 32px; }
+.readerActions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 16px; border-bottom: 1px solid #384a57; }
+.readerActions button, .readerActions a { min-height: 38px; display: inline-flex; align-items: center; border: 1px solid #617281; border-radius: 3px; padding: 7px 12px; background: transparent; color: #e0e7e9; font: 500 12px/1.5 Arial, Helvetica, sans-serif; text-decoration: none; }
+.readerActions button:disabled { opacity: .5; cursor: default; }
+.readerActions :is(a, button):focus-visible { outline: 2px solid #91c6e1; outline-offset: 3px; }
+.readerActions span, .readerActions p { margin: 0; font: 400 12px/1.5 Arial, Helvetica, sans-serif; color: #cbb894; }
+@media (max-width: 700px) {
+  .readerChrome { padding: 10px 16px; align-items: flex-start; }
+  .readerFrame { padding-top: 0; }
+  .readingIndex { gap: 14px; padding: 6px 16px; }
+  .readingIndex a { min-height: 42px; }
+}
+@media print {
+  .readingIndex, .returnToTop, .readerChrome, .readerActions { display: none !important; }
+  .readerPage, .readerFrame { background: white; padding: 0; width: 100%; }
+}
+
+/* PROFILE-P3 — hero balance, compact registers, recessed disclosures and full-width corporate record. */
+.cover {
+  background-image:linear-gradient(90deg,rgba(8,17,24,.97) 0%,rgba(8,17,24,.91) 31%,rgba(8,17,24,.69) 54%,rgba(8,17,24,.2) 80%,rgba(8,17,24,.1) 100%),linear-gradient(0deg,rgba(8,17,24,.35),transparent 65%),url('/french-ward/fw-profile-open-passage.webp')!important;
+}
+.identity h1 {color:#e0c8a1!important;text-shadow:0 2px 20px #0008!important;}
+.identity .classification {color:#eee3d0!important;}
+.identity .description {color:#d2dce0!important;text-shadow:0 1px 8px #0009;}
+.practiceInscription {display:inline-flex;align-items:center;gap:10px;color:#cbb48b;letter-spacing:.08em;}
+.practiceInscription i {display:block;flex:none;width:5px;height:5px;background:#c6ab7c;box-shadow:0 0 0 4px #c6ab7c12;transform:rotate(45deg);}
+.readingIndex {justify-content:center;column-gap:clamp(16px,2.4vw,28px);}
+.readingIndex a {justify-content:center;text-align:center;}
+.leadershipNode {display:block;width:5px;height:5px;margin:7px auto;border-radius:50%;background:#bda77f;box-shadow:0 0 0 4px #bda77f13;}
+.sourceAppointment {margin-top:18px!important;padding:13px 0 13px 16px;border-left:2px solid #bea06c;}
+.sourceAppointment>span {display:block;margin-bottom:6px;color:#baa780;font:600 10px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.08em;text-transform:uppercase;}
+.sourceAppointment strong {font:500 14px/1.7 Arial,Helvetica,sans-serif;color:#eadbc1;}
+.c6eSourceDetail,.c6dStandardsDisclosure {border:1px solid #48606a!important;border-top-color:#68746f!important;background:linear-gradient(130deg,#10232d,#08151e 75%)!important;box-shadow:inset 0 10px 24px -15px #000,inset 0 -15px 30px -22px #000,0 1px 0 #9ab2bb10!important;}
+.c6eSourceDetail>summary,.c6dStandardsDisclosure>summary {padding:12px 15px!important;min-height:49px!important;}
+.c6eSourceDetail[open],.c6dStandardsDisclosure[open] {background:linear-gradient(150deg,#10242e,#07131c 85%)!important;}
+.c6eSourceDetailBody,.c6dStandardsContent {padding:3px 17px 19px!important;border-top:1px solid #49616c55;}
+.c6eSourceDetail>summary:hover,.c6dStandardsDisclosure>summary:hover {background:#719eb70d;}
+.c6eActionLabel {color:#bac9ca!important;font-size:10px!important;letter-spacing:.025em!important;}
+.c5Capacity {padding-top:34px!important;padding-bottom:34px!important;}
+.c5Capacity>.folioHeading {margin-bottom:16px!important;}
+.c5Capacity .c6dPractice {grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)!important;gap:24px!important;padding-block:16px 18px!important;}
+.c6dPracticeLead {font-size:clamp(17px,1.8vw,21px)!important;line-height:1.55!important;margin-bottom:18px!important;max-width:40ch!important;}
+.c6dPracticeFields p {font-size:12px!important;line-height:1.7!important;}
+.practiceSummary {display:flex;justify-content:space-between;align-items:center;gap:12px;list-style:none;cursor:pointer;padding:0 0 10px;border-bottom:1px solid #748a9740;color:#dbe5e7;font:500 12px/1.5 Arial,Helvetica,sans-serif;}
+.practiceSummary::-webkit-details-marker {display:none;}
+.practiceSummary>span:last-child {color:#9eafb8;font-size:10px;white-space:nowrap;}
+.practiceSummary i {display:inline-block;margin-left:6px;font-style:normal;transition:transform .16s;}
+.c6dPracticeActivities[open] .practiceSummary i {transform:rotate(180deg);}
+.c5Responsibilities {margin-top:5px!important;}
+.c5Responsibilities li {padding-block:9px!important;gap:10px!important;}
+.c5Responsibilities p {font-size:13px!important;line-height:1.6!important;}
+.c6dPracticeStandards {margin-top:0!important;}
+.c6dPassageLine {padding-block:17px!important;}
+.c6dPassageLine .c5Stages {margin-top:10px!important;gap:10px!important;}
+.c6dPassageLine .c5Stages li {padding-block:8px!important;}
+.c6dDueDiligence {grid-template-columns:minmax(0,.65fr) minmax(0,1.35fr)!important;gap:24px!important;padding:22px 18px!important;margin-top:24px!important;background:linear-gradient(115deg,#152a35,#10212b);border:1px solid #6e939e40!important;border-left:2px solid #789aa8!important;}
+.c6dDueHeading {align-items:flex-start!important;}
+.c6dDueHeading h3 {font-size:17px!important;line-height:1.4!important;}
+.diligenceCopy {min-width:0;}
+.diligenceCopy p,.diligenceCopy li {margin:0;color:#d2e0e5;font:400 13px/1.75 Arial,Helvetica,sans-serif;}
+.diligenceCopy ul {margin:13px 0;padding-left:17px;display:grid;gap:10px;}
+.diligenceCopy li::marker {color:#bda67e;}
+.diligenceCopy .diligenceBoundary {padding-top:12px;border-top:1px solid #9cb0b62b;color:#e3d1b2;font-size:12px;}
+.c6dReadiness {display:block!important;padding-top:26px!important;padding-bottom:12px!important;}
+.c6dReadinessIntro h3 {margin:0 0 14px!important;font-size:17px!important;}
+.c6dReadiness .c5Evidence {margin:0!important;padding:0!important;list-style:none;}
+.c6dReadiness .c5Evidence li {display:grid!important;grid-template-columns:7px minmax(0,1fr)!important;gap:12px!important;padding:11px 0!important;border-bottom:1px solid #78919c30;}
+.c6dReadiness .c5Evidence p {font-size:13px!important;line-height:1.7!important;}
+.documentNode {width:4px;height:4px;margin-top:9px;border-radius:50%;background:#98b2be;}
+.c6bCorporateRecord {box-sizing:border-box;margin-inline:calc(-1 * clamp(24px,5.7vw,72px))!important;width:calc(100% + 2 * clamp(24px,5.7vw,72px))!important;padding:30px clamp(24px,5.7vw,72px)!important;border-top-color:#a48e6a66!important;background:linear-gradient(120deg,#0d1d27,#152b36)!important;}
+@media(max-width:760px) {
+ .masthead {display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;gap:16px!important;align-items:start!important;}
+ .masthead>span:first-child {max-width:none!important;justify-self:start!important;font-size:11px!important;}
+ .masthead .c6e1DocumentIdentity {max-width:none!important;justify-self:end!important;align-items:flex-end!important;text-align:right!important;}
+ .masthead .c6e1DocumentIdentity small {font-size:8px!important;white-space:nowrap;letter-spacing:0!important;}
+ .identity {padding-block:48px 52px!important;}
+ .identity h1 {max-width:18ch!important;margin-inline:auto!important;font-size:clamp(29px,7.7vw,44px)!important;text-align:center!important;}
+ .identity .classification {max-width:31ch!important;margin-inline:auto!important;text-align:center!important;}
+ .identity .description {max-width:38ch!important;margin-inline:auto!important;text-align:justify!important;text-align-last:center;hyphens:auto;line-height:1.8!important;}
+ .cover {background-image:linear-gradient(90deg,rgba(8,17,24,.8),rgba(8,17,24,.57)),linear-gradient(0deg,rgba(8,17,24,.6),transparent 75%),url('/french-ward/fw-profile-open-passage.webp')!important;}
+ .coverRecord {justify-content:center!important;text-align:center;}
+ .practiceInscription {font-size:8px;justify-content:center;}
+ .coverRecord>span:last-child {font-size:8px;}
+ .readingIndex {justify-content:flex-start;column-gap:0;}
+ .readingIndex a {flex:1 0 auto;padding-inline:12px;}
+ .c5Capacity .c6dPractice {grid-template-columns:minmax(0,1fr)!important;gap:18px!important;padding:12px 0 16px!important;}
+ .c5Capacity {padding-block:28px!important;}
+ .c6dPracticeLead {max-width:none!important;font-size:18px!important;}
+ .c5Engagement .c6dDueDiligence {grid-template-columns:minmax(0,1fr)!important;gap:15px!important;padding:20px 15px!important;}
+ .c5Engagement .c6dReadiness {padding-top:23px!important;}
+ .c6bCorporateRecord {padding-block:26px!important;}
+}
+@media(max-width:700px) {.c6bCorporateRecord {margin-inline:-22px!important;width:calc(100% + 44px)!important;padding-inline:22px!important;}}
+@media(prefers-reduced-motion:reduce) {.practiceSummary i {transition:none;}}
+@media print {
+ .cover {background:#fff!important;}
+ .practiceInscription,.sourceAppointment strong,.diligenceCopy :is(p,li),.practiceSummary {color:#24343b!important;}
+ .c6eSourceDetail,.c6dStandardsDisclosure,.c6dDueDiligence,.c6bCorporateRecord {background:#fff!important;box-shadow:none!important;}
+ .c6dPracticeActivities:not([open])>*:not(summary) {display:block!important;}
+ .c6bCorporateRecord {width:auto!important;margin-inline:0!important;}
+}
+
+/* P4 — warmer light, country study, documentary detail. */
+.entryBridge { background: linear-gradient(115deg, rgba(246,233,207,.1), transparent 72%) !important; }
+.scopeComposition { align-items: center !important; }
+.bridgeBoundary { max-width: 650px; line-height: 1.7 !important; }
+.sourceIdentity { position: relative; overflow: hidden; }
+.maliStudy { position: relative; margin: 22px auto 0 0; width: min(100%, 235px); color: #b9a177; }
+.maliStudy svg { display: block; width: 100%; opacity: .24; filter: drop-shadow(0 3px 12px rgba(211,180,119,.16)); }
+.maliStudy svg path:first-child { fill-opacity: .2; }
+.maliStudy svg path:last-child { stroke-opacity: .8; }
+.maliStudy span { display: block; margin-top: -2px; font-size: 9px; letter-spacing: .19em; color: #c7b493; opacity: .75; }
+.sourceIdentity::after { content: ""; position: absolute; width: 32px; height: 32px; border-top: 1px solid rgba(204,178,133,.3); border-left: 1px solid rgba(204,178,133,.3); left: 0; bottom: 15px; pointer-events: none; }
+.c6eSourceDetail, .c6dStandardsDisclosure { background: radial-gradient(ellipse at 10% 0%, rgba(163,145,105,.14), transparent 70%), linear-gradient(145deg,#222d31,#121c22) !important; border-top-color: rgba(213,188,145,.38) !important; }
+.c6eSourceDetailBody, .c6dStandardsContent { border-left: 1px solid rgba(207,185,144,.18); box-shadow: inset 18px 0 32px -28px rgba(246,225,184,.25); }
+.sourcePractice p, .sourceBoundary p { line-height: 1.85 !important; }
+.sourceRegisterLabel { color: #c6b08b !important; }
+.folioHeading { position: relative; }
+.folioHeading::after { content: ""; position: absolute; bottom: -1px; left: 0; width: 36px; height: 1px; background: #c4a574; opacity: .7; }
+@media(max-width:700px) { .maliStudy { width: 160px; margin-top: 18px; } .sourceIdentity::after { display: none; } }
+@media print { .maliStudy { color: #786c53; width: 130px; } .c6eSourceDetail, .c6dStandardsDisclosure { background: transparent !important; } .sourceRegisterLabel { color: #61553f !important; } }
+
+/* P5 — distinct identity bar and a more concise editorial opening. */
+.cover {
+  --hero-gutter: clamp(24px,5.7vw,72px);
+  padding-top: 0 !important;
+  padding-bottom: clamp(22px,3vw,38px) !important;
+  background-image: linear-gradient(90deg,rgba(6,15,22,.98) 0%,rgba(6,15,22,.92) 30%,rgba(6,15,22,.65) 51%,rgba(6,15,22,.12) 75%,rgba(6,15,22,.06) 100%),radial-gradient(ellipse at 69% 36%,rgba(219,190,136,.12),transparent 47%),url('/french-ward/fw-profile-open-passage.webp') !important;
+  background-size: cover,cover,cover !important;
+  background-position: center,center,center !important;
+}
+.cover .masthead {
+  margin-inline: calc(-1 * var(--hero-gutter)) !important;
+  padding: 20px var(--hero-gutter) 19px !important;
+  min-height: 78px;
+  background: linear-gradient(110deg,rgba(22,35,42,.98),rgba(10,22,29,.94));
+  border-top: 1px solid rgba(219,225,218,.23);
+  border-bottom: 1px solid rgba(219,225,218,.29) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05),0 5px 18px rgba(0,0,0,.16);
+  align-items: center !important;
+}
+.cover .identity { padding-top: clamp(49px,6.2vw,76px) !important; padding-bottom: clamp(42px,5.2vw,65px) !important; }
+.cover .identity h1 {
+  font-family: Georgia,'Times New Roman',serif !important;
+  font-size: clamp(36px,4.3vw,59px) !important;
+  font-weight: 400 !important;
+  line-height: 1.12 !important;
+  letter-spacing: -.025em !important;
+  max-width: 22ch !important;
+  color: #e8d4b0 !important;
+  text-wrap: initial !important;
+}
+.cover .identity .classification { margin-top: 22px !important; }
+.cover .identity .description {
+  max-width: 43ch !important;
+  margin-top: 23px !important;
+  line-height: 1.8 !important;
+  color: #e0e5e3 !important;
+}
+.cover .coverRecord { padding-top: 18px !important; padding-bottom: 0 !important; }
+@media(max-width:700px) {
+ .cover { --hero-gutter:22px; padding-inline:var(--hero-gutter) !important;
+  background-image:linear-gradient(90deg,rgba(6,15,22,.87),rgba(6,15,22,.61)),radial-gradient(ellipse at 74% 42%,rgba(219,190,136,.1),transparent 58%),url('/french-ward/fw-profile-open-passage.webp') !important;
+  background-position:center,center,60% center !important;
+ }
+ .cover .masthead { min-height:68px; padding-block:16px !important; gap:10px !important; }
+ .cover .identity { padding-block:40px 37px !important; }
+ .cover .identity h1 {font-size:clamp(29px,7.5vw,44px) !important;line-height:1.16 !important;max-width:22ch !important;}
+ .cover .identity .classification {margin-top:18px !important;}
+ .cover .identity .description {margin-top:20px !important;max-width:36ch !important;text-align:justify !important;text-align-last:center;}
+ .cover .coverRecord {padding-top:15px !important;}
+}
+@media print {
+ .cover {background:white !important;}
+ .cover .masthead {background:transparent;box-shadow:none;border-color:#aaa !important;}
+ .cover .identity h1 {color:#67513a !important;text-shadow:none !important;}
+ .cover .identity .description {color:#222 !important;text-shadow:none !important;}
+}
+
+/* P6 — translucent masthead veil and quiet light beneath the reading surfaces. */
+.cover .masthead {
+ background: linear-gradient(110deg,rgba(31,47,55,.50),rgba(13,29,37,.29)) !important;
+ -webkit-backdrop-filter: blur(8px);
+ backdrop-filter: blur(8px);
+ border-top-color: rgba(229,230,216,.24) !important;
+ border-bottom-color: rgba(225,225,209,.25) !important;
+ box-shadow: inset 0 1px 0 rgba(255,247,224,.07),0 4px 18px rgba(0,0,0,.08) !important;
+}
+.paper {
+ background-image: radial-gradient(ellipse 75% 28% at 9% 7%,rgba(200,180,135,.065),transparent 78%),radial-gradient(ellipse 65% 30% at 96% 46%,rgba(121,167,181,.065),transparent 80%),radial-gradient(ellipse 85% 28% at 32% 88%,rgba(208,185,136,.045),transparent 80%) !important;
+}
+.entryBridge {background:linear-gradient(115deg,rgba(213,194,153,.13),rgba(107,155,172,.035) 66%,transparent) !important;}
+.c6cLeadershipDisclosure {background-image:linear-gradient(110deg,rgba(203,184,146,.055),transparent 70%);}
+.sourceRelationships {background-image:radial-gradient(ellipse at 8% 35%,rgba(211,184,128,.055),transparent 65%);}
+.c6eSourceDetail, .c6dStandardsDisclosure {
+ background: radial-gradient(ellipse at 12% 0%,rgba(205,181,131,.18),transparent 73%),linear-gradient(145deg,#263238,#16232a) !important;
+ box-shadow:inset 0 1px 0 rgba(240,226,195,.065),inset 0 -18px 35px rgba(0,0,0,.13) !important;
+}
+.c6dDueDiligence {background-image:linear-gradient(110deg,rgba(212,192,150,.055),rgba(130,171,180,.025));}
+.c6bCorporateRecord {background:radial-gradient(ellipse at 85% 0%,rgba(161,182,177,.075),transparent 70%),linear-gradient(115deg,#10212a,#142832 65%,#10212a) !important;}
+@media print {
+ .cover .masthead {background:transparent !important;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:none !important;}
+ .paper,.entryBridge,.c6cLeadershipDisclosure,.sourceRelationships,.c6eSourceDetail,.c6dStandardsDisclosure,.c6dDueDiligence,.c6bCorporateRecord {background:transparent !important;box-shadow:none !important;}
+}
