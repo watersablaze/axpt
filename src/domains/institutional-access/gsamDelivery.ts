@@ -44,7 +44,7 @@ export async function sendGsamInvitation(actorUserId:string) {
    throw error;
  }
  const {subject,text,html}=renderGsamEmail();
- const from=process.env.DSI_FROM_EMAIL || process.env.FRENCH_WARD_EMAIL_FROM || process.env.RESEND_FROM_EMAIL;
+ const from=process.env.FRENCH_WARD_EMAIL_FROM || process.env.DSI_FROM_EMAIL || process.env.RESEND_FROM_EMAIL;
  if(!from || !process.env.RESEND_API_KEY){
    await prisma.gsamEmailDelivery.update({where:{id:delivery.id},data:{status:"FAILED",error:"MAIL_CONFIGURATION_UNAVAILABLE"}});
    throw new Error("MAIL_CONFIGURATION_UNAVAILABLE");
