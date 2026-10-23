@@ -29,7 +29,7 @@ export default async function GsamAdministrationPreview() {
     ...item,
     allowed: true,
     pdfUrl: `/admin/instruments/gsam-sco/preview/${item.slug}/pdf`,
-    htmlUrl: `/admin/instruments/gsam-sco/preview/${item.slug}/html`,
+    htmlUrl: `/admin/instruments/gsam-sco/preview/${item.slug}`,
   }));
 
   return <GsamRecipientRoomView documents={documents} />;
