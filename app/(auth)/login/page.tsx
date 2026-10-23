@@ -33,6 +33,7 @@ function getSafeDestination() {
         '/french-ward/profile',
         '/french-ward',
         '/french-ward/transaction-intake',
+        '/french-ward/instruments/gsam-sco',
         '/transaction-intake',
       ].includes(requested.split(/[?#]/)[0])
     )
@@ -186,6 +187,7 @@ export default function LoginPage() {
         '/french-ward/profile',
         '/french-ward',
         '/french-ward/transaction-intake',
+        '/french-ward/instruments/gsam-sco',
         '/transaction-intake',
       ].includes(requestedPath) ||
       /^\/french-ward\/dossiers\/[A-Za-z0-9-]{1,191}(?:\/publications\/[A-Za-z0-9-]{1,191})?$/.test(requestedPath)
@@ -193,6 +195,9 @@ export default function LoginPage() {
         : '/french-ward'
 
       const destination =
+        requestedPath === '/french-ward/instruments/gsam-sco'
+          ? requestedDestination
+          :
         requestedPath === '/french-ward/profile'
           ? requestedDestination
           : data.audience === 'REPRESENTATIVE'
