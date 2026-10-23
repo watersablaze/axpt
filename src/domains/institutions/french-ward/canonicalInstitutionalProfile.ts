@@ -26,7 +26,7 @@ export const FRENCH_WARD_INSTITUTIONAL_PROFILE:
       "FW-PROFILE-2026-001",
 
     version:
-      2,
+      3,
 
     status:
       FRENCH_WARD_INSTITUTIONAL_PROFILE_STATUS
