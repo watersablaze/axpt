@@ -21,3 +21,6 @@
   .documentFrame { padding-top:0; padding-bottom:32px; }
   .context { gap:12px; flex-wrap:wrap; font-size:9px; }
 }
+
+/* Reception field: the same ivory, graphite and bronze publication family. */
+.page:has([data-fw-profile-request]){background:radial-gradient(ellipse at 50% 0%,#5b4b38 0%,#171613 75%);padding:clamp(16px,4vw,48px) 0;color:#302b25}

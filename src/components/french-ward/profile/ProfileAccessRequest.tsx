@@ -45,32 +45,32 @@ export default function ProfileAccessRequest({ initialName = "", initialEmail = 
   return (
     <section data-fw-profile-request className={styles.reception} aria-labelledby="fw-profile-access-title">
       <div className={styles.head}>
-        <p className={styles.kicker}>FW / OFFICIAL PUBLICATION</p>
-        <h1 id="fw-profile-access-title">INSTITUTIONAL PROFILE <span>ACCESS</span></h1>
-        <p>Request the official French-Ward institutional publication. Access is reviewed individually.</p>
+        <p className={styles.kicker}>FRENCH-WARD, INC. / CORPORATE PROFILE</p>
+        <h1 id="fw-profile-access-title">Custodianship &amp; <span>Commercial Practice</span></h1>
+        <p>Discover French-Ward’s source relationships, leadership and commercial practice. Request access to the full corporate profile below.</p>
       </div>
       {state.status === "success" ? (
         <div className={styles.success} role="status">
           <strong>Request received.</strong>
-          <p>Your request is awaiting institutional review. Submission does not confer publication access or any representative or commercial authority.</p>
+          <p>Your request has been received for review. French-Ward Administration will advise you on access.</p>
         </div>
       ) : (
         <>
           <div className={styles.signin}>
             <span>Already approved?</span>
-            <a href="/login?next=%2Ffrench-ward%2Fprofile">Sign in with your approved institutional email ↗</a>
+            <a href="/login?next=%2Ffrench-ward%2Fprofile">Sign in with your approved email ↗</a>
           </div>
           <div className={styles.registerSection} aria-label="Publication access register">
             <div className={styles.registerIndex} aria-hidden="true">
               <span>FW / ACCESS REGISTER</span>
-              <span>01 / PUBLICATION</span>
+              <span>FULL PROFILE / ACCESS REQUEST</span>
             </div>
             <form className={styles.form} onSubmit={onSubmit}>
             <label>Name<input name="requesterName" required defaultValue={initialName} /></label>
             <label>Email<input type="email" name="requesterEmail" required defaultValue={initialEmail} /></label>
             <label>Institution / Organization<input name="institutionalAffiliation" required /></label>
-            <label>Capacity<input name="requesterCapacity" required placeholder="Your institutional role" /></label>
-            <label className={styles.full}>Purpose of access<textarea name="purpose" rows={4} required placeholder="Briefly explain your institutional interest." /></label>
+            <label>Capacity<input name="requesterCapacity" required placeholder="Your role or capacity" /></label>
+            <label className={styles.full}>Purpose of access<textarea name="purpose" rows={4} required placeholder="Briefly describe your interest in French-Ward." /></label>
             <button type="submit" disabled={state.status === "submitting"}>
               {state.status === "submitting" ? "Submitting…" : "REQUEST PROFILE ACCESS"}
             </button>
@@ -79,7 +79,7 @@ export default function ProfileAccessRequest({ initialName = "", initialEmail = 
           </div>
         </>
       )}
-      <p className={styles.notice}>Access is subject to individual review and approval. Publication access does not establish an appointment, representation, negotiation authority, signing authority, or any obligation of French-Ward.</p>
+      <p className={styles.notice}>The full profile is available by individual approval. Commercial inquiries and proposed transactions are reviewed separately.</p>
       <nav className={styles.returnNav} aria-label="Return to French-Ward">
         <a href="/french-ward"><span aria-hidden="true">←</span> RETURN TO FRENCH-WARD</a>
       </nav>
