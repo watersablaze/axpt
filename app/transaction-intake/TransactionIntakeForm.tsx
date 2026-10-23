@@ -5,6 +5,7 @@ import styles from "./transaction-intake.module.css";
 
 type Props = {
   readOnly?: boolean;
+  interactivePreview?: boolean;
   initialReferralCode?: string;
   initialRepresentativeName?: string;
   initialProgram?: string;
@@ -27,8 +28,6 @@ const roleOptions = [
 
 const programOptions = [
   "French-Ward Gold",
-  "Bafoula Cooperative",
-  "AXPT Strategic Intake",
   "General",
   "Other",
 ];
@@ -42,7 +41,7 @@ const transactionPurposeOptions = [
 ];
 
 const deliveryPathwayOptions = [
-  "CIF / Seller-coordinated delivery",
+  "CIP / Carriage and Insurance Paid To",
   "FOB / Buyer-coordinated export",
   "Local refinery delivery",
   "Local collection / handover",
@@ -61,6 +60,7 @@ const assayPostureOptions = [
 const settlementPathwayOptions = [
   "Direct settlement",
   "Escrow-controlled settlement",
+  "Other proposed arrangement",
   "To be determined",
 ];
 
@@ -89,6 +89,7 @@ function checked(formData: FormData, key: string) {
 
 export default function TransactionIntakeForm({
   readOnly = false,
+  interactivePreview = false,
   initialReferralCode = "",
   initialRepresentativeName = "",
   initialProgram = "",
@@ -123,7 +124,7 @@ export default function TransactionIntakeForm({
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (readOnly) return;
+    if (readOnly || interactivePreview) return;
 
     const form = event.currentTarget;
     const formData = new FormData(form);
@@ -579,7 +580,7 @@ export default function TransactionIntakeForm({
       setSubmitState({
         status: "error",
         message:
-          "Please provide the authorized submitter's name, email, and role.",
+          "Please provide the name, email, and capacity of the person submitting this intake.",
       });
       return;
     }
@@ -590,6 +591,11 @@ export default function TransactionIntakeForm({
         message:
           "Please identify the principal purchasing entity.",
       });
+      return;
+    }
+
+    if (payload.settlementPathway === "Other proposed arrangement" && !payload.settlementTimingRequirement) {
+      setSubmitState({status: "error", message: "Please describe the other proposed settlement arrangement in the settlement timing / arrangement details field."});
       return;
     }
 
@@ -700,7 +706,7 @@ export default function TransactionIntakeForm({
       className={styles.form}
       onSubmit={onSubmit}
     >
-      <fieldset disabled={readOnly} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
+      <fieldset disabled={readOnly && !interactivePreview} style={{ border: 0, padding: 0, margin: 0, minWidth: 0 }}>
       {/* 01 — STATUS */}
 
       <section
@@ -749,17 +755,20 @@ export default function TransactionIntakeForm({
           <span>Execution</span>
         </div>
 
+        <p className={styles.helper}>Referral details identify who introduced this opportunity to French-Ward. Record the buyer and its authorized representative separately in Section 02. If the introducer is also the buyer’s authorized representative, enter their details in both sections.</p>
+
         <div className={styles.grid}>
           <label>
             Program
             <select
               name="program"
-              defaultValue={initialProgram}
+              defaultValue={initialProgram === "Bafoula Cooperative" ? "French-Ward Gold" : initialProgram}
             >
               <option value="">
                 Select program
               </option>
 
+              {initialProgram && initialProgram !== "Bafoula Cooperative" && !programOptions.includes(initialProgram) ? <option value={initialProgram}>{initialProgram} (referred program)</option> : null}
               {programOptions.map((program) => (
                 <option
                   key={program}
@@ -780,7 +789,7 @@ export default function TransactionIntakeForm({
           </label>
 
           <label>
-            Issuing / referring representative
+            Introduced by — full name
             <input
               name="referredByName"
               defaultValue={
@@ -790,12 +799,12 @@ export default function TransactionIntakeForm({
           </label>
 
           <label>
-            Representative organization
+            Introducer organization
             <input name="referredByCompany" />
           </label>
 
           <label>
-            Representative email
+            Introducer email
             <input
               name="referredByEmail"
               type="email"
@@ -803,7 +812,7 @@ export default function TransactionIntakeForm({
           </label>
 
           <label>
-            Representative capacity
+            Introducer role / capacity
             <input
               name="referredByRole"
               placeholder="Introducer, mandate, coordinator..."
@@ -832,7 +841,7 @@ export default function TransactionIntakeForm({
         </header>
 
         <h3 className={styles.subheading}>
-          Principal Purchasing Entity
+          Buyer — Legal Purchasing Entity
         </h3>
 
         <div className={styles.grid}>
@@ -890,6 +899,7 @@ export default function TransactionIntakeForm({
         <h3 className={styles.subheading}>
           Authorized Buyer Representative
         </h3>
+        <p className={styles.helper}>Identify the individual authorized to act for the legal buyer above. This person may differ from the introducer and the person completing this form. Specify their capacity below.</p>
 
         <div className={styles.grid}>
           <label>
@@ -936,7 +946,7 @@ export default function TransactionIntakeForm({
 
         <div className={styles.choiceBlock}>
           <p className={styles.choiceLabel}>
-            Authority / Capacity
+            Buyer Representative — Declared Authority / Capacity
           </p>
 
           <p className={styles.choiceHelp}>
@@ -1251,6 +1261,7 @@ export default function TransactionIntakeForm({
                 ),
               )}
             </select>
+            <span className={styles.fieldHelp}>For CIP, identify the named destination in the delivery-point field below. The final delivery terms are confirmed in the transaction agreement.</span>
           </label>
 
           <label className={styles.wide}>
@@ -1422,8 +1433,9 @@ export default function TransactionIntakeForm({
           </label>
 
           <label>
-            Settlement timing / requirement
-            <input name="settlementTimingRequirement" />
+            Settlement timing / proposed arrangement details
+            <input name="settlementTimingRequirement" placeholder="Payment stage, timing, conditions, or other proposed arrangement" />
+            <span className={styles.fieldHelp}>State when payment is proposed and any conditions. If selecting “Other proposed arrangement,” describe it here. Do not enter bank account numbers or wallet addresses.</span>
           </label>
 
           <label>
@@ -1635,14 +1647,16 @@ export default function TransactionIntakeForm({
               Submission
             </p>
             <h2>
-              Declaration & Authorization
+              Submitted By & Declarations
             </h2>
           </div>
         </header>
 
+        <p className={styles.helper}>Enter the details of the person completing and submitting this intake. The submitter may be the buyer’s officer, its authorized representative, or another disclosed participant. Completing this form does not by itself identify that person as the buyer’s signatory.</p>
+
         <div className={styles.grid}>
           <label>
-            Authorized submitter full name *
+            Person submitting — full name *
             <input
               name="submitterName"
               required
@@ -1669,7 +1683,7 @@ export default function TransactionIntakeForm({
           </label>
 
           <label>
-            Submitter role *
+            Capacity of person submitting *
             <select
               name="submitterRole"
               required
@@ -1687,14 +1701,14 @@ export default function TransactionIntakeForm({
                   key={role}
                   value={role}
                 >
-                  {role}
+                  {role === "Buyer" ? "Buyer officer / principal" : role === "Buyer Representative" ? "Authorized buyer representative" : role === "Buyer Mandate" ? "Buyer mandate holder" : role}
                 </option>
               ))}
             </select>
           </label>
 
           <label>
-            Submitter company
+            Submitter’s organization
             <input name="submitterCompany" />
           </label>
 
@@ -1704,28 +1718,26 @@ export default function TransactionIntakeForm({
           </label>
 
           <label>
-            Purchasing entity
+            Buyer entity — from Section 02
             <input
               name="authorizedSubmitterEntity"
               value={buyerName}
               readOnly
             />
             <span className={styles.fieldHelp}>
-              Carried forward automatically from the
-              Principal Purchasing Entity above.
+              The legal buyer recorded in Section 02; this is not the submitter’s organization.
             </span>
           </label>
 
           <label>
-            Authorized representative
+            Buyer representative — from Section 02
             <input
               name="authorizedSubmitterRepresentative"
               value={buyerRepresentativeName}
               readOnly
             />
             <span className={styles.fieldHelp}>
-              Carried forward automatically from the
-              Authorized Buyer Representative above.
+              The buyer’s representative recorded in Section 02; this may be a different person from the submitter.
             </span>
           </label>
 
@@ -1802,7 +1814,7 @@ export default function TransactionIntakeForm({
           className={styles.submit}
           type="submit"
           disabled={
-            readOnly || submitState.status === "submitting"
+            readOnly || interactivePreview || submitState.status === "submitting"
           }
         >
           {submitState.status === "submitting"

@@ -5,11 +5,11 @@ import CommercialIntakeAccessRequest from "./CommercialIntakeAccessRequest";
 import styles from "./transaction-intake.module.css";
 
 export default function CommercialIntakePresentation({
-  allowed, readOnly = false, backHref = "/representative",
+  allowed, readOnly = false, interactivePreview = false, showPreviewNotice = true, backHref = "/representative",
   referralCode = "", representativeName = "", program = "",
   initialName = "", initialEmail = "",
 }: {
-  allowed: boolean; readOnly?: boolean; backHref?: string;
+  allowed: boolean; readOnly?: boolean; interactivePreview?: boolean; showPreviewNotice?: boolean; backHref?: string;
   referralCode?: string; representativeName?: string; program?: string;
   initialName?: string; initialEmail?: string;
 }) {
@@ -37,7 +37,7 @@ export default function CommercialIntakePresentation({
             <div>
               <p>French-Ward, Inc.</p>
               <span>
-                Secure Commodity Management
+                Commercial Relations & Transaction Preparation
               </span>
             </div>
           </div>
@@ -54,28 +54,25 @@ export default function CommercialIntakePresentation({
       <section className={styles.hero}>
         <div className={styles.heroInner}>
           <p className={styles.kicker}>
-            Preliminary Commercial Alignment
-            Instrument
+            French-Ward / Commercial Intake
           </p>
 
           <h1>
-            Letter of Intent
-            <span>&amp; Transaction Intake</span>
+            <span className={styles.desktopTitle}>Letter of Intent &amp; Transaction Intake</span>
+            <span className={styles.mobileTitle}><strong>LOI</strong><span>Transaction Intake</span></span>
           </h1>
 
           <p className={styles.heroLead}>
-            A controlled entry point for proposed
-            commodity transactions progressing through
-            French-Ward commercial review.
+            Complete the particulars below to present a proposed commodity transaction for French-Ward’s review.
           </p>
         </div>
       </section>
 
-      {readOnly ? (
-        <aside aria-label="LOI preview notice" className="mx-auto max-w-5xl px-6 py-4 text-sm text-[#eee7da]">
-          <Link href={backHref} className="text-[#e8cb91] underline underline-offset-4">← Back to CUP</Link>
-          <p className="mt-3">Read-only LOI preview · Fields and submission are disabled.</p>
-          <p className="mt-1">Include LOI access in the buyer invitation to let that recipient open and submit the form after sign-in.</p>
+      {readOnly && showPreviewNotice ? (
+        <aside aria-label="LOI preview notice" className={styles.previewNotice}>
+          <Link href={backHref} className={styles.previewReturn}>← Return to review</Link>
+          <p >Read-only LOI preview · Fields and submission are disabled.</p>
+          <p >Include LOI access in the buyer invitation to let that recipient open and submit the form after sign-in.</p>
         </aside>
       ) : null}
       {allowed ? (
@@ -109,6 +106,7 @@ export default function CommercialIntakePresentation({
 
           <TransactionIntakeForm
             readOnly={readOnly}
+            interactivePreview={interactivePreview}
             initialReferralCode={
               referralCode
             }

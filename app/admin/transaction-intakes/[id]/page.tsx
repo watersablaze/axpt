@@ -574,7 +574,7 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
           value={intake.settlementCurrencyAsset}
         />
         <Field
-          label="Settlement Timing"
+          label="Settlement Timing / Proposed Arrangement Details"
           value={intake.settlementTimingRequirement}
         />
         <Field
@@ -627,17 +627,17 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
         />
       </Section>
 
-      <Section title="07 · Authorized Submission">
+      <Section title="07 · Submission Context & Declarations">
         <Field
-          label="Authorized Submitter Entity"
+          label="Buyer Entity — Submission Snapshot"
           value={intake.authorizedSubmitterEntity}
         />
         <Field
-          label="Authorized Representative"
+          label="Buyer Representative — Submission Snapshot"
           value={intake.authorizedSubmitterRepresentative}
         />
         <Field
-          label="Authorized Position"
+          label="Submitter Position / Title"
           value={intake.authorizedSubmitterPosition}
         />
         <Field
@@ -658,7 +658,7 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
         />
       </Section>
 
-      <Section title="Ingress / Submitter">
+      <Section title="Person Who Submitted">
         <Field label="Submitter Name" value={intake.submitterName} />
         <Field label="Submitter Email" value={intake.submitterEmail} />
         <Field label="Phone / WhatsApp" value={intake.submitterPhone} />
