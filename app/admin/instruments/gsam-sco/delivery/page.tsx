@@ -1,0 +1,15 @@
+import {redirect} from "next/navigation";
+import {getPrincipal} from "@/domains/auth/getPrincipal";
+import {PERMISSIONS} from "@/domains/auth/permissions";
+import {prisma} from "@/infrastructure/db/prisma";
+import {GSAM_EMAIL,GSAM_DELIVERY_KEY,renderGsamEmail,verifyGsamDeliveryGrants} from "@/domains/institutional-access/gsamDelivery";
+import {DeliveryControl} from "./DeliveryControl";
+export const dynamic="force-dynamic";
+export default async function GsamDeliveryPage(){
+ const principal=await getPrincipal();if(!principal)redirect("/login?next=%2Fadmin%2Finstruments%2Fgsam-sco%2Fdelivery");
+ if(!principal.permissions.includes(PERMISSIONS.INSTITUTIONAL_ACCESS_MANAGE))return <main>Access denied</main>;
+ let ready=false;try{await verifyGsamDeliveryGrants();ready=true;}catch{}
+ const receipt=await prisma.gsamEmailDelivery.findUnique({where:{key:GSAM_DELIVERY_KEY}});
+ const rendered=renderGsamEmail();
+ return <main style={{maxWidth:850,margin:"40px auto",padding:24}}><h1>GSAM — Institutional Delivery</h1><p>Recipient: {GSAM_EMAIL}</p><p>100 MT and 1,000 MT · Both grants: {ready?"verified":"not ready"}</p><p>Delivery: {receipt?.status??"NOT SENT"} {receipt?.messageId?`· ${receipt.messageId}`:""}</p><h2>Message preview</h2><iframe title="GSAM institutional email" sandbox="" srcDoc={rendered.html} style={{width:"100%",height:650,border:"1px solid #777"}}/><h2>Operator action</h2>{ready&&!receipt?<DeliveryControl/>:<p>{receipt?"Existing delivery claim prevents another send.":"No send permitted until both grants validate."}</p>}</main>;
+}
