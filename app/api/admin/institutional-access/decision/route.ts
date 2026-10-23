@@ -3,6 +3,8 @@ import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { PERMISSIONS } from "@/domains/auth/permissions";
 import { decideProfileAccessWithClient } from "@/domains/institutional-access/manageProfileAccessWithClient";
 import { decideCommercialIntakeAccessWithClient } from "@/domains/institutional-access/manageCommercialIntakeAccessWithClient";
+import { decideInstitutionalAccessWithClient } from "@/domains/institutional-access/manageInstitutionalAccessWithClient";
+import { isGsamScoAccessResource } from "@/domains/institutional-access/gsamScoAccessResources";
 import { prisma } from "@/infrastructure/db/prisma";
 
 export async function POST(request: Request) {
@@ -43,7 +45,7 @@ export async function POST(request: Request) {
     const accessRequest =
       await prisma.institutionalAccessRequest.findUnique({
         where: { id: requestId },
-        select: { scope: true },
+        select: { scope: true, resourceReference: true, resourceVersion: true },
       });
 
     if (!accessRequest) {
@@ -53,12 +55,24 @@ export async function POST(request: Request) {
       );
     }
 
+    const isSCO = isGsamScoAccessResource(accessRequest.scope, accessRequest.resourceReference, accessRequest.resourceVersion);
     const decide =
       accessRequest.scope === "PROFILE_VIEW"
         ? decideProfileAccessWithClient
         : accessRequest.scope === "LOI_INTAKE_ACCESS"
           ? decideCommercialIntakeAccessWithClient
-          : null;
+          : isSCO
+            ? (args: Parameters<typeof decideInstitutionalAccessWithClient>[0]) =>
+                decideInstitutionalAccessWithClient({
+                  ...args,
+                  provisionRecipient: true,
+                  expectedResource: {
+                    scope: "SUPPORTING_DOCUMENT_VIEW",
+                    resourceReference: accessRequest.resourceReference,
+                    resourceVersion: accessRequest.resourceVersion,
+                  },
+                })
+            : null;
 
     if (!decide) {
       return NextResponse.json(

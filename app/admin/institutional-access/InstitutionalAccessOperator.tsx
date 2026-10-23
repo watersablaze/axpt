@@ -1,5 +1,7 @@
 "use client";
 
+import { PrepareGsamRecipient } from "./PrepareGsamRecipient";
+
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -35,6 +37,8 @@ export function InstitutionalAccessOperator({requests,grants}:{requests:Request[
     }catch(e){setFeedback(e instanceof Error?e.message:"Action failed.");}finally{setBusy(false);}
   }
   return <main style={{minHeight:"100vh",background:"#080e18",color:"#e9edf4",padding:"clamp(20px,4vw,50px)",fontFamily:"system-ui,sans-serif"}}>
+      <PrepareGsamRecipient />
+
     <div style={{maxWidth:1300,margin:"0 auto"}}>
       <p style={{letterSpacing:3,fontSize:11,color:"#a9bad2"}}>FRENCH-WARD / ADMINISTRATION</p>
       <h1 style={{fontSize:30,fontWeight:500,margin:"8px 0"}}>Institutional Access</h1>
