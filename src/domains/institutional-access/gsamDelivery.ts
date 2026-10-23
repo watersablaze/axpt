@@ -28,6 +28,12 @@ export async function verifyGsamDeliveryGrants() {
 
 export async function sendGsamInvitation(actorUserId:string) {
  const grantIds = await verifyGsamDeliveryGrants();
+ if (!process.env.RESEND_API_KEY ||
+     !(process.env.DSI_FROM_EMAIL ||
+       process.env.FRENCH_WARD_EMAIL_FROM ||
+       process.env.RESEND_FROM_EMAIL)) {
+   throw new Error("MAIL_CONFIGURATION_UNAVAILABLE");
+ }
  // Database unique key is the durable one-time delivery claim. Never release claim automatically on uncertain provider outcomes.
  let delivery;
  try {
@@ -45,7 +51,7 @@ export async function sendGsamInvitation(actorUserId:string) {
  }
  let status="DELIVERY_UNKNOWN",messageId:string|null=null,error:string|null=null;
  try {
-   const response=await resend.emails.send({from,to:GSAM_EMAIL,replyTo:"french-ward@axpt.io",subject,text,html,headers:{"Idempotency-Key":GSAM_DELIVERY_KEY}});
+   const response=await resend.emails.send({from,to:GSAM_EMAIL,replyTo:"french-ward@axpt.io",subject,text,html,},{idempotencyKey:GSAM_DELIVERY_KEY});
    if(response.error){status="FAILED";error="PROVIDER_REJECTED";} else if(response.data?.id){status="ACCEPTED";messageId=response.data.id;} else {error="PROVIDER_OUTCOME_UNKNOWN";}
  } catch {error="PROVIDER_OUTCOME_UNKNOWN";}
  await prisma.$transaction(async (tx: Pick<typeof prisma, "gsamEmailDelivery" | "emailLog" | "domainEvent">)=>{
