@@ -216,8 +216,16 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
     notFound();
   }
 
+  // FW-TXN-1B.8B: qualification does not authorize
+  // ordinary promotion of externally registered records.
+  const externallyRegistered = intake.events.some(
+    (event) => event.eventType === "EXTERNAL_INTAKE_REGISTERED"
+  );
+
   const canPromoteToOpportunity =
-    intake.status === "QUALIFIED" && !intake.promotedOpportunityId;
+    !externallyRegistered &&
+    intake.status === "QUALIFIED" &&
+    !intake.promotedOpportunityId;
 
   const allowedReviewStatuses =
     getAllowedTransactionIntakeReviewTransitions(intake.status);
@@ -346,12 +354,14 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
                   </div>
                 ) : (
                   <p className="mt-3 text-xs text-gray-500">
-                    Promotion is available once the intake status is Qualified.
+                    {externallyRegistered
+                      ? "External documentary registration is not opportunity promotion authority. A separate authorization decision is required."
+                      : "Promotion is available once the intake status is Qualified."}
                   </p>
                 )}
               </div>
 
-              {!intake.promotedOpportunity ? (
+              {!intake.promotedOpportunity && !externallyRegistered ? (
                 <form action={promoteIntakeToOpportunity}>
                   <input type="hidden" name="id" value={intake.id} />
 
