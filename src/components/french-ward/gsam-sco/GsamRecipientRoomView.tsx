@@ -11,18 +11,11 @@ export type GsamRoomDocument = {
 
 export function GsamRecipientRoomView({
   documents,
-  preview = false,
 }: {
   documents: GsamRoomDocument[];
-  preview?: boolean;
 }) {
   return (
     <main className={styles.shell}>
-      {preview && (
-        <div role="status" style={{padding:"12px 18px",marginBottom:18,border:"1px solid #9e865a",background:"#f4ecd9",color:"#463b2a",fontSize:13}}>
-          ADMINISTRATOR PREVIEW · James Crawford · No recipient session, grants or document availability are implied.
-        </div>
-      )}
       <header className={styles.header}>
         <span className={styles.eyebrow}>
           GROWTHCORP SOLUTIONS ASSET MANAGEMENT LIMITED
@@ -46,12 +39,7 @@ export function GsamRecipientRoomView({
               </h2>
             </div>
 
-            {item.allowed ? preview ? (
-              <nav className={styles.actions} aria-label={`${item.quantityMt} MT preview actions`}>
-                <span className={styles.primary} aria-disabled="true">Download PDF · Preview</span>
-                <span className={styles.secondary} aria-disabled="true">View Online · Preview</span>
-              </nav>
-            ) : (
+            {item.allowed ? (
               <nav
                 className={styles.actions}
                 aria-label={`${item.quantityMt} MT document actions`}
@@ -73,7 +61,8 @@ export function GsamRecipientRoomView({
       </div>
 
       <footer className={styles.footer}>
-        {preview ? "Administrator presentation preview only. No access has been granted and no invitation has been sent." : "For assistance, reply to the email that brought you here. Access is personal to your approved account."}
+        For assistance, reply to the email that brought you here.
+        Access is personal to your approved account.
       </footer>
     </main>
   );
