@@ -2,8 +2,8 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import styles from "./ControlDomainSurface.module.css";
 
-type Props = { title: string; description: string; rail?: ReactNode; children: ReactNode };
-export default function ControlDomainSurface({ title, description, rail, children }: Props) {
+type Props = { title: string; description: string; rail?: ReactNode; hideHeading?: boolean; children: ReactNode };
+export default function ControlDomainSurface({ title, description, rail, hideHeading = false, children }: Props) {
   const navigation = rail ?? (
     <nav aria-label="Related workspaces">
       <Link href="/admin/control-center">Command workspace ↗</Link>
@@ -13,10 +13,10 @@ export default function ControlDomainSurface({ title, description, rail, childre
   );
   return (
     <section className={styles.surface} aria-label={title}>
-      <header className={styles.heading}>
+      {!hideHeading && <header className={styles.heading}>
         <div><h1>{title}</h1><p>{description}</p></div>
         <Link href="/admin">Admin overview ↗</Link>
-      </header>
+      </header>}
       <div className={styles.body}>
         <aside className={`${styles.rail} ${styles.desktopRail}`} aria-label={`${title} navigation`}>
           {navigation}
