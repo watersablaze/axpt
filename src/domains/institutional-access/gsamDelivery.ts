@@ -2,6 +2,7 @@ import "server-only";
 import { prisma } from "@/infrastructure/db/prisma";
 import { resend } from "@/infrastructure/email/client";
 import { GSAM_SCO_REFERENCES } from "./gsamScoAccessResources";
+import { verifyGsamEdition2ArtifactsReady } from "@/domains/instruments/transaction-documents/gsamRecipientFrozenDocument";
 
 export const GSAM_EMAIL = "james.crawfordgcsam@protonmail.com";
 export const GSAM_URL = "https://www.axpt.io/login?next=%2Ffrench-ward%2Finstruments%2Fgsam-sco";
@@ -28,6 +29,7 @@ export async function verifyGsamDeliveryGrants() {
 
 export async function sendGsamInvitation(actorUserId:string) {
  const grantIds = await verifyGsamDeliveryGrants();
+ await verifyGsamEdition2ArtifactsReady();
  if (!process.env.RESEND_API_KEY ||
      !(process.env.DSI_FROM_EMAIL ||
        process.env.FRENCH_WARD_EMAIL_FROM ||
