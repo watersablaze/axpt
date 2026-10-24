@@ -105,12 +105,12 @@ export async function loadControlCenterInstrumentRegistry(): Promise<
     status: edition.state,
     currentVersion: edition.reference.endsWith("-002") ? 2 : 1,
     updatedAt: edition.createdAt,
-    domainState: "FROZEN COMMERCIAL EDITION",
+    domainState: edition.reference.endsWith("-002")
+      ? "EDITION 2 · VERIFIED CUSTODY"
+      : "EARLIER REGISTRY CANDIDATE",
     counterpartyName: "Growthcorp Solutions Asset Management Limited",
     operatorHref: edition.reference.endsWith("-002") ? "/admin/instruments/gsam-sco/preview" : null,
   }));
 
-  return [...canonical, ...editions].sort((a, b) =>
-    a.family.localeCompare(b.family) || b.updatedAt.getTime() - a.updatedAt.getTime() || a.reference.localeCompare(b.reference)
-  );
+  return [...canonical, ...editions];
 }
