@@ -1,6 +1,6 @@
 export const GSAM_SCO_REFERENCES = {
-  "GSAM-SCO-PROGRAM-100MT-2026-001": 1,
-  "GSAM-SCO-PROGRAM-1000MT-2026-001": 1,
+  "GSAM-SCO-PROGRAM-100MT-2026-002": 1,
+  "GSAM-SCO-PROGRAM-1000MT-2026-002": 1,
 } as const;
 
 export function isGsamScoAccessResource(scope: string, ref: string, version: number): boolean {
