@@ -28,6 +28,7 @@ export async function verifyGsamDeliveryGrants() {
 }
 
 export async function sendGsamInvitation(actorUserId:string) {
+ if (process.env.GSAM_SCO_RECIPIENT_RELEASE !== "enabled" || process.env.GSAM_SCO_FROZEN_EDITION_V2_READY !== "enabled") throw new Error("GSAM_ED2_RELEASE_CLOSED");
  const grantIds = await verifyGsamDeliveryGrants();
  await verifyGsamEdition2ArtifactsReady();
  if (!process.env.RESEND_API_KEY ||
