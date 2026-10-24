@@ -4,6 +4,7 @@ import bcrypt from "bcryptjs";
 import type { Principal } from "../auth/types";
 import { PERMISSIONS } from "../auth/permissions";
 import type { InstitutionalAccessScope } from "./resolveInstitutionalAccessWithClient";
+import { isGsamScoAccessResource } from "./gsamScoAccessResources";
 
 type ManagementTransaction = Pick<
   PrismaClient,
@@ -37,7 +38,8 @@ export async function requestInstitutionalAccessWithClient(params: {
   onRequested?: (tx: Pick<PrismaClient, "emailLog">, id: string) => Promise<unknown>;
 }) {
   if (
-    !["PROFILE_VIEW", "LOI_INTAKE_ACCESS"].includes(params.scope) ||
+    !(["PROFILE_VIEW", "LOI_INTAKE_ACCESS"].includes(params.scope) ||
+      isGsamScoAccessResource(params.scope, params.resourceReference, params.resourceVersion)) ||
     !Number.isInteger(params.resourceVersion) ||
     params.resourceVersion <= 0
   ) {
