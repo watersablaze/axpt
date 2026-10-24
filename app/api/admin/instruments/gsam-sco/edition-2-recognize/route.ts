@@ -1,5 +1,4 @@
 import { createHash } from "node:crypto";
-import type { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { PERMISSIONS } from "@/domains/auth/permissions";
@@ -70,7 +69,7 @@ export async function POST(request: Request) {
 
   try {
     // All-or-nothing DB recognition; repeated identical calls do not append duplicate events.
-    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    const result = await prisma.$transaction(async (tx: Pick<typeof prisma, "gsamScoEdition" | "gsamScoEditionEvent">) => {
       const records = [];
       for (const edition of editions) {
         const pdfStorageKey = keyFor(edition.pdfSha256, "pdf");
