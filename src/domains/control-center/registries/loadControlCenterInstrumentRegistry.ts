@@ -6,6 +6,7 @@ import { prisma } from "@/infrastructure/db/prisma";
 
 export type ControlCenterInstrumentRegistryEntry = {
   reference: string;
+  family: "INSTITUTIONAL_INSTRUMENT" | "COMMERCIAL_EDITION";
   kind: string;
   title: string;
   status: string;
@@ -33,7 +34,7 @@ type ControlCenterInstrumentRegistryRow = {
 export async function loadControlCenterInstrumentRegistry(): Promise<
   readonly ControlCenterInstrumentRegistryEntry[]
 > {
-  const instruments = await prisma.institutionalInstrument.findMany({
+  const [instruments, commercialEditions] = await Promise.all([prisma.institutionalInstrument.findMany({
     orderBy: [
       {
         updatedAt: "desc",
@@ -60,11 +61,15 @@ export async function loadControlCenterInstrumentRegistry(): Promise<
         select: { status: true },
       },
     },
-  });
+  }), prisma.gsamScoEdition.findMany({
+    select: { reference: true, quantityMt: true, state: true, createdAt: true },
+    orderBy: [{ quantityMt: "asc" }, { reference: "asc" }],
+  })]);
 
-  return instruments.map(
+  const canonical = instruments.map(
     (instrument: ControlCenterInstrumentRegistryRow) => ({
     reference: instrument.reference,
+    family: "INSTITUTIONAL_INSTRUMENT" as const,
     kind: instrument.kind,
     title: instrument.title,
     status: instrument.status,
@@ -88,5 +93,24 @@ export async function loadControlCenterInstrumentRegistry(): Promise<
             )}`
           : null,
     }),
+  );
+
+  // The directory composes read-only projections; neither registry owns the other.
+  // An edition being delivered does not alter its documentary CANDIDATE state.
+  const editions: ControlCenterInstrumentRegistryEntry[] = commercialEditions.map((edition) => ({
+    reference: edition.reference,
+    family: "COMMERCIAL_EDITION",
+    kind: "SOFT_CORPORATE_OFFER",
+    title: `Growthcorp Solutions Asset Management Limited — ${edition.quantityMt.toLocaleString("en-US")} MT Soft Corporate Offer`,
+    status: edition.state,
+    currentVersion: edition.reference.endsWith("-002") ? 2 : 1,
+    updatedAt: edition.createdAt,
+    domainState: "FROZEN COMMERCIAL EDITION",
+    counterpartyName: "Growthcorp Solutions Asset Management Limited",
+    operatorHref: edition.reference.endsWith("-002") ? "/admin/instruments/gsam-sco/preview" : null,
+  }));
+
+  return [...canonical, ...editions].sort((a, b) =>
+    a.family.localeCompare(b.family) || b.updatedAt.getTime() - a.updatedAt.getTime() || a.reference.localeCompare(b.reference)
   );
 }
