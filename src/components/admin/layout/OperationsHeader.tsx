@@ -11,6 +11,10 @@ import { getAdminPageMeta } from './OperationsNavConfig'
 export default function OperationsHeader() {
   const pathname = usePathname()
   const meta = getAdminPageMeta(pathname)
+  // FW-TXN-1B.6O
+  const compactRegistration =
+    pathname === '/admin/transaction-intakes/external-import'
+  const [mobileToolsOpen, setMobileToolsOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
   const [signOutFailed, setSignOutFailed] = useState(false)
 
@@ -42,7 +46,7 @@ export default function OperationsHeader() {
   }
 
   return (
-    <header className={styles.header}>
+    <header className={`${styles.header} ${compactRegistration ? styles.transactionCompact : ''}`}>
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-px"
         style={{ background: 'linear-gradient(90deg, transparent, rgba(164,137,215,.35) 20%, rgba(113,183,203,.45) 48%, rgba(190,184,137,.3) 78%, transparent)' }} />
 
@@ -74,7 +78,26 @@ export default function OperationsHeader() {
           </div>
         </div>
 
-        <div className="flex min-w-0 flex-wrap items-center gap-2">
+        {compactRegistration ? (
+          <button
+            type="button"
+            className={styles.transactionMobileToggle}
+            aria-controls="fw-transaction-header-tools"
+            aria-expanded={mobileToolsOpen}
+            onClick={() => setMobileToolsOpen((current) => !current)}
+          >
+            {mobileToolsOpen ? 'Close admin controls −' : 'Admin controls +'}
+          </button>
+        ) : null}
+
+        <div
+          id={compactRegistration ? 'fw-transaction-header-tools' : undefined}
+          className={`flex min-w-0 flex-wrap items-center gap-2 ${
+            compactRegistration
+              ? `${styles.transactionTools} ${mobileToolsOpen ? styles.transactionToolsOpen : ''}`
+              : ''
+          }`}
+        >
           <AdminAttention />
 
           <span

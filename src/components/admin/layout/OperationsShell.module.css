@@ -67,3 +67,12 @@
   overflow: hidden !important;
   background: #0c1116;
 }
+
+
+/* FW-TXN-1B.6O · isolated full-width French-Ward operating surface */
+.transactionImportSurface {
+  padding: 0 !important;
+  background: #141817 !important;
+  overflow: auto !important;
+  overscroll-behavior: contain;
+}
