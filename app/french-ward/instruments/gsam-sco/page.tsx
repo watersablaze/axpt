@@ -4,6 +4,7 @@ import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { prisma } from "@/infrastructure/db/prisma";
 import { resolveInstitutionalAccessWithClient } from "@/domains/institutional-access/resolveInstitutionalAccessWithClient";
 import { genericProgramScoVariants } from "@/domains/institutions/french-ward/genericProgramScoVariants";
+import { GSAM_SCO_REFERENCES } from "@/domains/institutional-access/gsamScoAccessResources";
 
 export const dynamic = "force-dynamic";
 export const metadata = { title: "Growthcorp | Your Commercial Documents", robots: { index: false, follow: false } };
@@ -28,7 +29,7 @@ export default async function GrowthcorpDocumentRoom() {
     access: await resolveInstitutionalAccessWithClient({
       client: prisma, identity: { userId: principal.userId, email: principal.email },
       scope: "SUPPORTING_DOCUMENT_VIEW", action: "VIEW",
-      resourceReference: item.record.reference, resourceVersion: 1,
+      resourceReference: `GSAM-SCO-PROGRAM-${item.record.quantityMt}MT-2026-002` as keyof typeof GSAM_SCO_REFERENCES, resourceVersion: 1,
     }),
   })));
   if (!permitted.some(item => item.access.allowed)) notFound();
