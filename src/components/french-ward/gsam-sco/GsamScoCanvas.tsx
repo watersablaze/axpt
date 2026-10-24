@@ -54,7 +54,7 @@ export default function GsamScoCanvas({ v }: { v: { quantityMt: number; referenc
               <div><span>PROPOSED PROGRAM</span><strong>{v.quantityMt.toLocaleString("en-US")} MT</strong><small>Indicative volume · allocation unconfirmed</small></div>
               <div><span>MINIMUM GOLD CONTENT</span><strong>96% Au</strong><small>Subject to final refinery assay</small></div>
               <div><span>INDICATIVE PRICE</span><strong>LBMA − 5%</strong><small>Final-assay payable gold</small></div>
-              <div><span>TRANSACTION TAP</span><strong>Conditional</strong><small>Export activation · Government-required passage</small></div>
+              <div><span>GOOD-FAITH TAP</span><strong>Conditional</strong><small>Export activation · Government-required passage</small></div>
             </div>
             <p className={s.offerSource}>{growthcorp ? "Presented by Growthcorp Solutions Asset Management Limited under its commercial mandate. Specific lots, allocation and tranche schedules are established through the governing transaction documents." : "Presented by French-Ward through its documented commercial relationship with Coopérative de Bafoula; lot particulars and allocation require confirmation."} Final purity and payable metal are subject to refinery assay and governing transaction documents.</p>
           </section>
@@ -64,8 +64,8 @@ export default function GsamScoCanvas({ v }: { v: { quantityMt: number; referenc
               <div><dt>Supply &amp; allocation</dt><dd>Proposed {v.quantityMt.toLocaleString("en-US")} MT program, subject to confirmed source capacity, allocation and mutually agreed tranches. No inventory is reserved by this offer.</dd></div>
               <div><dt>Price &amp; assay</dt><dd>Applicable LBMA Gold Price less 5% on final-assay payable gold. Fixing, adjustments and settlement calculation are to be agreed.</dd></div>
               <div><dt>Delivery &amp; settlement</dt><dd>Destination, export clearance, custody, refinery and payment mechanics are determined in the definitive transaction documents.</dd></div>
-              <div><dt>Transaction Activation Payment (TAP)</dt><dd>The Transaction Activation Payment (TAP) is a required component of the proposed transaction, supporting government-required export and shipment-release procedures for Malian gold, including export authorization (autorisation d’exportation), export intention filing (intention d’exportation), and customs formalities (formalités douanières). The applicable TAP amount, payment schedule and settlement treatment are established in the governing transaction agreement. This Soft Corporate Offer contains no remittance instructions and does not itself require immediate payment.</dd></div>
-              <div><dt>Documentary passage</dt><dd>Commercial qualification, source confirmation and governing agreements are required. A Transaction Overview may accompany an expressly authorized package.</dd></div>
+              <div><dt>Good-Faith Transaction Activation Payment (TAP)</dt><dd>The Good-Faith Transaction Activation Payment (TAP) is a required component of the proposed transaction, supporting government-required export and shipment-release procedures for Malian gold, including export authorization (autorisation d’exportation), export intention filing (intention d’exportation), and customs formalities (formalités douanières). The applicable TAP amount, payment schedule and settlement treatment are established in the governing transaction agreement. This Soft Corporate Offer contains no remittance instructions and does not itself require immediate payment.</dd></div>
+              <div><dt>Documentary passage</dt><dd>Commercial qualification, source confirmation and governing agreements are required.</dd></div>
             </dl>
           </section>
           <section className={`${s.offerPassage} ${s.sandPassage}`} aria-label="Commercial progression">
@@ -109,11 +109,10 @@ export default function GsamScoCanvas({ v }: { v: { quantityMt: number; referenc
                 </div>
               )}
             </div>
-            {growthcorp && <p className={s.executionCaveat}>James Crawford coordinates commercial correspondence and is the designated Vice President &amp; Authorized Signatory. Edition-specific authorization remains subject to institutional confirmation.</p>}
           </section>
           <footer className={s.footer}>
-            <strong>{growthcorp ? "GROWTHCORP SOLUTIONS ASSET MANAGEMENT LIMITED" : "FRENCH-WARD, INC."} <span>· {growthcorp ? "COMMERCIAL MANDATE / JAMES CRAWFORD" : "COMMERCIAL ADMINISTRATION"}</span></strong>
-            <span>{growthcorp ? "Commercial mandate · Offer" : "Commercial presentation · Offer"}</span>
+            <strong>{growthcorp ? "SOFT CORPORATE OFFER" : "FRENCH-WARD, INC."}</strong>
+            <span>{growthcorp ? `${v.quantityMt} MT · Institutional review` : "Commercial presentation · Offer"}</span>
           </footer>
         </div>
       </div>
