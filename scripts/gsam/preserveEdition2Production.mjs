@@ -10,7 +10,7 @@ if (!directory) throw new Error("GSAM_STAGE_REQUIRED");
 const required = ["AWS_ENDPOINT_URL_S3","AWS_REGION","AWS_ACCESS_KEY_ID","AWS_SECRET_ACCESS_KEY","AXPT_TRANSACTION_DOCUMENT_BUCKET"];
 for (const key of required) if (!process.env[key]?.trim()) throw new Error(`MISSING_STORAGE_CONFIG:${key}`);
 
-const endpoint = process.env.AWS_ENDPOINT_URL_S3.trim().replace(/\\/$/, "");
+const endpoint = process.env.AWS_ENDPOINT_URL_S3.trim().replace(/\/$/, "");
 if (endpoint !== "https://br-falling-fog-aech88q1.storage.c-2.us-east-2.aws.neon.tech")
   throw new Error("PRODUCTION_STORAGE_ENDPOINT_MISMATCH");
 if (process.env.AXPT_TRANSACTION_DOCUMENT_BUCKET !== "axpt-transaction-documents")
