@@ -97,7 +97,7 @@ export async function loadControlCenterInstrumentRegistry(): Promise<
 
   // The directory composes read-only projections; neither registry owns the other.
   // An edition being delivered does not alter its documentary CANDIDATE state.
-  const editions: ControlCenterInstrumentRegistryEntry[] = commercialEditions.map((edition) => ({
+  const editions: ControlCenterInstrumentRegistryEntry[] = commercialEditions.map((edition: { reference: string; quantityMt: number; state: string; createdAt: Date }) => ({
     reference: edition.reference,
     family: "COMMERCIAL_EDITION",
     kind: "SOFT_CORPORATE_OFFER",
