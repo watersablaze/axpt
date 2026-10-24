@@ -13,11 +13,11 @@ export default async function ControlCenterInstrumentsPage() {
   const instruments = await loadControlCenterInstrumentRegistry();
 
   return (
-    <ControlDomainSurface title="Institutional instrument registry" description="Canonical institutional records. Each instrument retains its own authority boundary."
+    <ControlDomainSurface title="Institutional instrument registry" description="Canonical records and commercial editions. Each maintains its authority boundary." hideHeading
       rail={<nav aria-label="Institutional instrument registry index">
         <h2>Records · {instruments.length}</h2>
         {instruments.map((instrument) => <a key={instrument.reference} href={`#${encodeURIComponent("instrument-" + instrument.reference)}`}>
-          {instrument.reference}
+          <span className="mr-2 text-[9px] uppercase opacity-60">{instrument.family === "COMMERCIAL_EDITION" ? "SCO" : "INST"}</span>{instrument.reference}
         </a>)}
         {instruments.length === 0 ? <p className="text-xs text-neutral-400">No records listed.</p> : null}
       </nav>}>
@@ -27,7 +27,7 @@ export default async function ControlCenterInstrumentsPage() {
       <section className="mt-6 overflow-hidden rounded-lg border border-stone-800">
         <div className="border-b border-stone-800 bg-black/20 px-4 py-3">
           <p className="text-[10px] uppercase tracking-[0.16em] text-stone-500">
-            Registered instruments · {instruments.length}
+            Federated documentary records · {instruments.length}
           </p>
         </div>
 
@@ -49,8 +49,8 @@ export default async function ControlCenterInstrumentsPage() {
                       {instrument.reference}
                     </p>
 
-                    <p className="text-[10px] uppercase tracking-[0.12em] text-stone-600">
-                      v{instrument.currentVersion}
+                    <p className="text-[10px] uppercase tracking-[0.12em] text-stone-500">
+                      {instrument.family === "COMMERCIAL_EDITION" ? "Commercial edition" : "Institutional instrument"} · v{instrument.currentVersion}
                     </p>
                   </div>
 
@@ -98,7 +98,7 @@ export default async function ControlCenterInstrumentsPage() {
                     href={instrument.operatorHref}
                     className="inline-flex border border-stone-700 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-stone-300 transition hover:border-amber-700 hover:text-amber-300"
                   >
-                    Open instrument
+                    {instrument.family === "COMMERCIAL_EDITION" ? "Review frozen editions" : "Open instrument"}
                   </Link>
                 ) : (
                   <span className="text-[10px] uppercase tracking-[0.12em] text-stone-600">
