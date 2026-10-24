@@ -87,6 +87,7 @@ export default function ControlCenterConstitutionalShell({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
+  const isInstrumentDirectory = pathname === "/admin/control-center/instruments"
 
   const domains = [
     ...PRIMARY_DOMAINS,
@@ -101,8 +102,15 @@ export default function ControlCenterConstitutionalShell({
     <section className={styles.shell}>
       <header className={styles.axis}>
         <div className={styles.identity}>
-          <span>CONTROL CENTER</span>
-          <strong>INSTITUTIONAL CONTROL PLANE</strong>
+          {isInstrumentDirectory ? (
+            <>
+              <Link href="/admin" className={styles.backNavigation}>← Admin</Link>
+              <span>Institutional instrument registry</span>
+              <strong>Canonical records and commercial editions · Independent authority boundaries</strong>
+            </>
+          ) : (
+            <><span>CONTROL CENTER</span><strong>INSTITUTIONAL CONTROL PLANE</strong></>
+          )}
         </div>
 
         <div className={styles.desktopNavigation}>
@@ -183,9 +191,9 @@ export default function ControlCenterConstitutionalShell({
           </nav>
         </details>
 
-        <div className={styles.location}>
+        {!isInstrumentDirectory && <div className={styles.location}>
           {getLocation(pathname)}
-        </div>
+        </div>}
       </header>
 
       <div className={`${styles.content} ${
