@@ -1,4 +1,5 @@
 import {redirect} from "next/navigation";
+import Link from "next/link";
 import {getPrincipal} from "@/domains/auth/getPrincipal";
 import {PERMISSIONS} from "@/domains/auth/permissions";
 import {prisma} from "@/infrastructure/db/prisma";
@@ -12,5 +13,5 @@ export default async function GsamDeliveryPage(){
  let ready=false;try{await verifyGsamDeliveryGrants();await verifyGsamEdition2ArtifactsReady();ready=true;}catch{}
  const receipt=await prisma.gsamEmailDelivery.findUnique({where:{key:GSAM_DELIVERY_KEY}});
  const rendered=renderGsamEmail();
- return <main style={{maxWidth:850,margin:"40px auto",padding:24}}><h1>GSAM — Institutional Delivery</h1><p>Recipient: {GSAM_EMAIL}</p><p>100 MT and 1,000 MT · Grants and frozen custody: {ready?"verified":"not ready"}</p><p>Delivery: {receipt?.status??"NOT SENT"} {receipt?.messageId?`· ${receipt.messageId}`:""}</p><h2>Message preview</h2><iframe title="GSAM institutional email" sandbox="" srcDoc={rendered.html} style={{width:"100%",height:650,border:"1px solid #777"}}/><h2>Operator action</h2>{ready&&!receipt?<DeliveryControl/>:<p>{receipt?"Existing delivery claim prevents another send.":"No send permitted until grants and all four Edition 2 artifacts validate."}</p>}</main>;
+ return <main style={{maxWidth:850,margin:"40px auto",padding:24}}><h1>GSAM — Institutional Delivery</h1><p>Recipient: {GSAM_EMAIL}</p><p>100 MT and 1,000 MT · Grants and frozen custody: {ready?"verified":"not ready"}</p><p>Delivery: {receipt?.status??"NOT SENT"} {receipt?.messageId?`· ${receipt.messageId}`:""}</p><p><Link href="/admin/instruments/gsam-sco/reception-preview">Preview James’s Reception Room →</Link></p><h2>Message preview</h2><iframe title="GSAM institutional email" sandbox="" srcDoc={rendered.html} style={{width:"100%",height:650,border:"1px solid #777"}}/><h2>Operator action</h2>{ready&&!receipt?<DeliveryControl/>:<p>{receipt?"Existing delivery claim prevents another send.":"No send permitted until grants and all four Edition 2 artifacts validate."}</p>}</main>;
 }
