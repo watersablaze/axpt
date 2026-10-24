@@ -130,3 +130,37 @@ export async function getAdminFrozenGsamDocument(
     fileStem: edition.fileStem,
   };
 }
+
+/**
+ * Read-only issuance readiness gate: validates both Edition 2 registry records
+ * and independently reads all four immutable provider objects.
+ * No recipient permissions are granted or changed here.
+ */
+export async function verifyGsamEdition2ArtifactsReady(): Promise<void> {
+  const store = createNeonObjectStorage();
+  if (!store) throw new Error("GSAM_ED2_STORAGE_UNAVAILABLE");
+
+  for (const variant of ["100-mt", "1000-mt"] as const) {
+    const expected = EDITIONS[variant];
+    const registered = await prisma.gsamScoEdition.findUnique({
+      where: { reference: expected.reference },
+    });
+    if (
+      !registered ||
+      registered.state !== "CANDIDATE" ||
+      registered.quantityMt !== (variant === "100-mt" ? 100 : 1000) ||
+      registered.pdfSha256 !== expected.pdf ||
+      registered.htmlSha256 !== expected.html ||
+      registered.pdfStorageKey !== `gsam/sco/sha256/${expected.pdf}.pdf` ||
+      registered.htmlStorageKey !== `gsam/sco/sha256/${expected.html}.html`
+    ) throw new Error("GSAM_ED2_REGISTRY_NOT_READY");
+
+    for (const kind of ["pdf", "html"] as const) {
+      await readVerifiedGsamArtifact(store, {
+        key: kind === "pdf" ? registered.pdfStorageKey : registered.htmlStorageKey,
+        sha256: expected[kind],
+        kind,
+      });
+    }
+  }
+}
