@@ -3,6 +3,7 @@ import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { PERMISSIONS } from "@/domains/auth/permissions";
 import { prisma } from "@/infrastructure/db/prisma";
 import { requestInstitutionalAccessWithClient } from "@/domains/institutional-access/manageInstitutionalAccessWithClient";
+import { GSAM_SCO_REFERENCES } from "@/domains/institutional-access/gsamScoAccessResources";
 
 const recipient = {
   requesterName: "James Crawford",
@@ -11,10 +12,7 @@ const recipient = {
   requesterCapacity: "Institutional document recipient",
 };
 
-const resources = [
-  "GSAM-SCO-PROGRAM-100MT-2026-001",
-  "GSAM-SCO-PROGRAM-1000MT-2026-001",
-] as const;
+const resources = Object.keys(GSAM_SCO_REFERENCES);
 
 export async function POST(request: Request) {
   const principal = await getPrincipal();
