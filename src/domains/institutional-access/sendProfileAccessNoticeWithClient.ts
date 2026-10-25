@@ -22,32 +22,128 @@ type MailResult = {
 
 export function renderProfileAccessNotice() {
   const subject = "French-Ward | Institutional Profile Access";
+
   const text = [
+    "French-Ward | Institutional Correspondence",
+    "",
+    "Institutional Profile Access",
+    "",
     "Your request to review the French-Ward Institutional Profile has been approved.",
     "",
-    "Access the Profile:",
+    "Access Institutional Profile:",
     PROFILE_ACCESS_URL,
     "",
-    "Please sign in using the email address associated with your request.",
+    "Sign in using the email address associated with your request.",
     "No further access request is required.",
     "",
     "Respectfully,",
-    "French-Ward Administration",
+    "French-Ward",
     "French-Ward, Inc.",
-  ].join("\n");
+  ].join("\\n");
 
-  const html = [
-    '<div style="font-family:Arial,sans-serif;color:#243b44;',
-    'font-size:14px;line-height:1.7;max-width:620px">',
-    '<p>Your request to review the French-Ward Institutional ',
-    'Profile has been approved.</p>',
-    '<p><a href="', PROFILE_ACCESS_URL,
-    '">Access the Institutional Profile</a></p>',
-    '<p>Please sign in using the email address associated ',
-    'with your request. No further access request is required.</p>',
-    '<p>Respectfully,<br>French-Ward Administration<br>',
-    'French-Ward, Inc.</p></div>',
-  ].join("");
+  const html = `
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Institutional Profile Access</title>
+</head>
+<body style="margin:0;padding:0;background:#eae8e2;">
+  <table role="presentation" cellpadding="0" cellspacing="0"
+    width="100%" style="border-collapse:collapse;background:#eae8e2;">
+    <tr>
+      <td align="center" style="padding:16px 10px;">
+        <table role="presentation" cellpadding="0" cellspacing="0"
+          width="100%" style="max-width:560px;border-collapse:collapse;">
+          <tr>
+            <td style="background:#142434;padding:19px 27px 17px;">
+              <div style="font-family:Georgia,serif;font-size:19px;
+                letter-spacing:2px;color:#f4efe5;">
+                FRENCH-WARD
+              </div>
+              <div style="font-family:Arial,sans-serif;font-size:10px;
+                letter-spacing:1.5px;color:#c7b28c;margin-top:5px;">
+                INSTITUTIONAL CORRESPONDENCE
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#f8f6f0;padding:24px 27px 20px;
+              font-family:Arial,sans-serif;color:#2e3d45;">
+              <div style="font-size:10px;letter-spacing:1.4px;
+                color:#92794f;font-weight:bold;">
+                ACCESS CONFIRMATION
+              </div>
+              <h1 style="font-family:Georgia,serif;font-weight:normal;
+                font-size:27px;line-height:1.2;color:#192b3a;
+                margin:10px 0 13px;">
+                Institutional Profile Access
+              </h1>
+              <div style="width:44px;height:2px;background:#b49761;
+                margin:0 0 19px;"></div>
+              <p style="font-size:15px;line-height:1.55;margin:0 0 19px;">
+                Your request to review the
+                <strong>French-Ward Institutional Profile</strong>
+                has been approved.
+              </p>
+              <table role="presentation" cellpadding="0"
+                cellspacing="0" width="100%">
+                <tr>
+                  <td align="center" bgcolor="#213c53"
+                    style="background:#213c53;border-radius:3px;">
+                    <a href="${PROFILE_ACCESS_URL}"
+                      style="display:block;padding:15px 12px;
+                      font-family:Arial,sans-serif;font-size:15px;
+                      line-height:1.3;font-weight:bold;
+                      color:#ffffff;text-decoration:none;">
+                      Access Institutional Profile &#8594;
+                    </a>
+                  </td>
+                </tr>
+              </table>
+              <p style="font-size:13px;line-height:1.6;color:#58636a;
+                margin:18px 0 15px;">
+                Sign in using the email address associated with your
+                request. <strong>No further access request is required.</strong>
+              </p>
+              <div style="border-top:1px solid #dcd5c8;
+                padding-top:13px;">
+                <div style="font-size:10px;letter-spacing:1px;
+                  font-weight:bold;color:#92794f;margin-bottom:7px;">
+                  DIRECT ACCESS LINK
+                </div>
+                <a href="${PROFILE_ACCESS_URL}"
+                  style="font-size:12px;line-height:1.5;color:#375970;
+                  text-decoration:underline;overflow-wrap:anywhere;
+                  word-break:break-word;">
+                  ${PROFILE_ACCESS_URL}
+                </a>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#f2efe7;padding:16px 27px 19px;
+              font-family:Arial,sans-serif;font-size:13px;
+              line-height:1.6;color:#45535a;">
+              Respectfully,<br>
+              <strong style="color:#223544;">French-Ward</strong><br>
+              French-Ward, Inc.
+            </td>
+          </tr>
+          <tr>
+            <td style="background:#142434;padding:11px 27px;
+              font-family:Arial,sans-serif;font-size:10px;
+              letter-spacing:1px;color:#c8c1b4;">
+              FRENCH-WARD &middot; INSTITUTIONAL ACCESS
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`.trim();
 
   return { subject, text, html };
 }
