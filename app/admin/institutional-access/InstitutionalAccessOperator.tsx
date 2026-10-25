@@ -108,6 +108,12 @@ export function InstitutionalAccessOperator({requests,grants,notices}:{requests:
           recipientEmail +
           ". Inbox delivery is not yet confirmed."
         );
+      } else if (status === "BLOCKED") {
+        setFeedback(
+          "Profile access notice blocked: recipient grant is no longer " +
+          "valid. No email was sent. Review access before proceeding."
+        );
+        setNoticeHold(requestId);
       } else if (status === "FAILED") {
         setFeedback(
           "Profile access notice was rejected by the provider. " +

@@ -60,6 +60,21 @@ function fixture(options = {}) {
     institutionalAccessRequest:{
       findUnique:async()=>request
     },
+    institutionalAccessGrant:{
+      findFirst:async()=>(
+        request.status==="APPROVED" &&
+        !grant.revokedAt &&
+        grant.issuedAt<=now &&
+        grant.expiresAt>now &&
+        grant.scope==="PROFILE_VIEW" &&
+        grant.recipientEmail===request.requesterEmail &&
+        grant.recipient.email===request.requesterEmail &&
+        grant.resourceReference===profile.reference &&
+        grant.resourceVersion===profile.version
+          ? {id:grant.id}
+          : null
+      ),
+    },
     profileAccessNoticeDelivery:{
       create:async({data})=>{
         if(records.has(data.deliveryKey))
@@ -72,6 +87,9 @@ function fixture(options = {}) {
         const record = {id:`notice-${records.size+1}`, ...data,
           messageId:null,error:null};
         records.set(data.deliveryKey,record);
+        if(options.revokeAfterClaim) {
+          grant.revokedAt=new Date(now);
+        }
         return record;
       },
       findUnique:async({where})=>records.get(where.deliveryKey)||null,
@@ -203,6 +221,28 @@ console.log("✓ Rejected and uncertain provider outcomes recorded without retry
   release();
   await pending;
   console.log("✓ Distinct keys cannot bypass a SENDING claim");
+}
+
+{
+  const f=fixture({revokeAfterClaim:true});
+  const result=await f.call(key("REVOKED-AFTER-CLAIM"));
+
+  assert.equal(result.status,"BLOCKED");
+  assert.equal(f.sent.length,0);
+  assert.equal(f.records.size,1);
+  assert.equal(f.emailLogs.length,0);
+  assert.equal(f.events.length,1);
+  assert.equal(
+    f.records.get(key("REVOKED-AFTER-CLAIM")).status,
+    "BLOCKED"
+  );
+  assert.equal(
+    f.events[0].eventType,
+    "PROFILE_ACCESS_NOTICE_DISPATCH_BLOCKED"
+  );
+
+  console.log("✓ Post-claim revocation blocks provider dispatch");
+  console.log("✓ Blocked claim closed and audited without an email log");
 }
 
 console.log("PROFILE_NOTICE_DELIVERY_SMOKE_OK");

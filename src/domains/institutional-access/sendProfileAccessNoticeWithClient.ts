@@ -173,6 +173,75 @@ export async function sendProfileAccessNoticeWithClient(input: {
     throw error;
   }
 
+
+  // Recheck the complete entitlement after the durable delivery claim
+  // and immediately before the external provider operation.
+  const dispatchNow = input.now ?? new Date();
+
+  const liveGrant = await client.institutionalAccessGrant.findFirst({
+    where: {
+      id: grant.id,
+      requestId: request.id,
+      recipientUserId: grant.recipientUserId,
+      recipientEmail: email,
+      scope: "PROFILE_VIEW",
+      resourceReference: profile.reference,
+      resourceVersion: profile.version,
+      issuedAt: { lte: dispatchNow },
+      expiresAt: { gt: dispatchNow },
+      revokedAt: null,
+      recipient: {
+        id: grant.recipientUserId,
+        email,
+      },
+      request: {
+        status: "APPROVED",
+        requesterEmail: email,
+        scope: "PROFILE_VIEW",
+        resourceReference: profile.reference,
+        resourceVersion: profile.version,
+      },
+    },
+    select: { id: true },
+  });
+
+  if (!liveGrant) {
+    // No message was sent. Close the claim and retain operator provenance.
+    await client.$transaction(async (tx: Pick<
+      PrismaClient,
+      "profileAccessNoticeDelivery" | "domainEvent"
+    >) => {
+      await tx.profileAccessNoticeDelivery.update({
+        where: { id: claim.id },
+        data: {
+          status: "BLOCKED",
+          error: "GRANT_NO_LONGER_VALID",
+        },
+      });
+
+      await tx.domainEvent.create({
+        data: {
+          streamType: "ProfileAccessNoticeDelivery",
+          streamId: claim.id,
+          eventType: "PROFILE_ACCESS_NOTICE_DISPATCH_BLOCKED",
+          payload: {
+            deliveryKey,
+            requestId,
+            grantId: grant.id,
+            actorUserId,
+            reason: "GRANT_NO_LONGER_VALID",
+          },
+        },
+      });
+    });
+
+    return {
+      status: "BLOCKED",
+      messageId: null,
+      alreadyAttempted: false,
+    };
+  }
+
   const { subject, text, html } = renderProfileAccessNotice();
 
   let status = "DELIVERY_UNKNOWN";
