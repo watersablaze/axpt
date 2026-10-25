@@ -5,6 +5,9 @@ import { prisma } from "@/infrastructure/db/prisma";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { promoteTransactionIntakeToOpportunity } from "@/domains/control-center/transaction-intakes/promoteTransactionIntakeToOpportunity";
 import {
+  readExternalIntakeProvenance,
+} from "@/domains/control-center/transaction-intakes/readExternalIntakeProvenance";
+import {
   canTransitionTransactionIntakeReviewStatus,
   getAllowedTransactionIntakeReviewTransitions,
   getTransactionIntakeStatusLabel,
@@ -222,6 +225,14 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
     (event) => event.eventType === "EXTERNAL_INTAKE_REGISTERED"
   );
 
+  const externalRegistrationEvent = intake.events.find(
+    (event) => event.eventType === "EXTERNAL_INTAKE_REGISTERED",
+  );
+
+  const externalProvenance = readExternalIntakeProvenance(
+    externalRegistrationEvent?.note,
+  );
+
   const canPromoteToOpportunity =
     !externallyRegistered &&
     intake.status === "QUALIFIED" &&
@@ -259,6 +270,106 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
             {getTransactionIntakeStatusLabel(intake.status)}
           </span>
         </div>
+
+        {externallyRegistered ? (
+          <section className="mt-8 rounded border border-amber-800/40 bg-gray-950 p-6">
+            <p className="text-xs uppercase tracking-[0.2em] text-amber-300">
+              External documentary intake
+            </p>
+            <h2 className="mt-2 text-xl font-semibold">
+              Transaction Workspace
+            </h2>
+            <p className="mt-2 max-w-3xl text-sm text-gray-400">
+              Registered documentary evidence and declared relationships.
+              Registration does not verify buyer authority, appoint an
+              intermediary, authorize settlement or permit ordinary
+              opportunity promotion.
+            </p>
+
+            <div className="mt-5 grid gap-4 md:grid-cols-3">
+              <div className="rounded border border-gray-800 bg-black p-4">
+                <p className="text-xs uppercase tracking-widest text-gray-500">
+                  Originating introduction
+                </p>
+                <p className="mt-2 font-semibold">
+                  {externalProvenance?.originator ||
+                    intake.referredByName || "Not recorded"}
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  Provenance only · No appointment implied
+                </p>
+              </div>
+              <div className="rounded border border-gray-800 bg-black p-4">
+                <p className="text-xs uppercase tracking-widest text-gray-500">
+                  Introduction channel
+                </p>
+                <p className="mt-2 font-semibold">
+                  {externalProvenance?.introductionChannelName ||
+                    "Not separately recorded"}
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  No intermediary authority established
+                </p>
+              </div>
+              <div className="rounded border border-gray-800 bg-black p-4">
+                <p className="text-xs uppercase tracking-widest text-gray-500">
+                  Prospective buyer
+                </p>
+                <p className="mt-2 font-semibold">
+                  {intake.buyerName || "Not recorded"}
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  Corporate and signing authority unverified
+                </p>
+              </div>
+            </div>
+
+            <div className="mt-4 rounded border border-gray-800 bg-black p-4">
+              <h3 className="font-semibold">Documentary custody</h3>
+              {externalProvenance ? (
+                <dl className="mt-3 grid gap-3 text-sm md:grid-cols-2">
+                  <div>
+                    <dt className="text-gray-500">Operational reference</dt>
+                    <dd className="mt-1 break-all">
+                      {externalProvenance.operationalReference}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-gray-500">Custody reference</dt>
+                    <dd className="mt-1 break-all">
+                      {externalProvenance.evidenceReference}
+                    </dd>
+                  </div>
+                  <div className="md:col-span-2">
+                    <dt className="text-gray-500">Source PDF SHA-256</dt>
+                    <dd className="mt-1 break-all font-mono text-xs">
+                      {externalProvenance.evidenceSha256}
+                    </dd>
+                  </div>
+                </dl>
+              ) : (
+                <p className="mt-3 text-sm text-amber-200">
+                  Registration provenance could not be interpreted.
+                  Review the source event before proceeding.
+                </p>
+              )}
+            </div>
+
+            <div className="mt-4 rounded border border-gray-800 p-4">
+              <h3 className="font-semibold">Next review requirements</h3>
+              <p className="mt-2 text-sm leading-6 text-gray-400">
+                Verify buyer identity and signatory authority; confirm
+                refinery and delivery particulars; review proposed
+                settlement conditions; retain documentary correspondence.
+                These are review requirements, not completed findings.
+              </p>
+              <p className="mt-3 text-xs text-amber-200">
+                Opportunity promotion remains withheld pending a
+                separately authorized process.
+              </p>
+            </div>
+          </section>
+        ) : null}
 
         <section className="mt-8 rounded border border-gray-800 bg-gray-950 p-6">
           <h2 className="text-xl font-semibold">Review Management</h2>
