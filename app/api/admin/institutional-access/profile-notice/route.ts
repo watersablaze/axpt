@@ -142,6 +142,17 @@ export async function POST(request: Request) {
       );
     }
 
+    if (message === "PROFILE_NOTICE_UNRESOLVED_ATTEMPT") {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            "Another notice is in progress or requires delivery reconciliation.",
+        },
+        { status: 409 }
+      );
+    }
+
     if (message === "PROFILE_NOTICE_KEY_CONFLICT") {
       return NextResponse.json(
         {

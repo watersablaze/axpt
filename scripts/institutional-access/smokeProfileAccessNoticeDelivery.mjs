@@ -63,13 +63,22 @@ function fixture(options = {}) {
     profileAccessNoticeDelivery:{
       create:async({data})=>{
         if(records.has(data.deliveryKey))
-          throw new Error("DUPLICATE_KEY");
+          throw Object.assign(new Error("DUPLICATE_KEY"), {code:"P2002"});
+        if([...records.values()].some(
+          r => r.grantId === data.grantId &&
+          ["SENDING","DELIVERY_UNKNOWN"].includes(r.status)
+        ))
+          throw Object.assign(new Error("ACTIVE_CLAIM"), {code:"P2002"});
         const record = {id:`notice-${records.size+1}`, ...data,
           messageId:null,error:null};
         records.set(data.deliveryKey,record);
         return record;
       },
       findUnique:async({where})=>records.get(where.deliveryKey)||null,
+      findFirst:async({where})=>[...records.values()].find(
+        r=>r.grantId===where.grantId &&
+        where.status.in.includes(r.status)
+      )||null,
       update:async({where,data})=>{
         const record = [...records.values()].find(x=>x.id===where.id);
         assert.ok(record);
@@ -162,6 +171,39 @@ console.log("✓ Pending, revoked, expired, mismatched scope/edition/identity de
   assert.equal(f.sent.length,1);
 }
 console.log("✓ Rejected and uncertain provider outcomes recorded without retry");
+
+{
+  const f=fixture({provider:"throw"});
+  assert.equal((await f.call()).status,"DELIVERY_UNKNOWN");
+  await assert.rejects(
+    f.call(key("COMPETING")),
+    /PROFILE_NOTICE_UNRESOLVED_ATTEMPT/
+  );
+  assert.equal(f.sent.length,1);
+  assert.equal(f.records.size,1);
+  console.log("✓ Different-key attempt blocked while outcome unresolved");
+}
+{
+  const f=fixture();
+  let release;
+  const pending = new Promise(resolve=>{release=resolve;});
+  const originalCreate=f.call;
+  // Simulate an unresolved database claim before provider completion.
+  const first=f.call(key("FIRST"));
+  // Existing normal mock sender may finish immediately; create an explicit
+  // unresolved claim to test the persistence invariant independently.
+  await first;
+  const record=f.records.get(key("FIRST"));
+  record.status="SENDING";
+  await assert.rejects(
+    f.call(key("SECOND")),
+    /PROFILE_NOTICE_UNRESOLVED_ATTEMPT/
+  );
+  assert.equal(f.sent.length,1);
+  release();
+  await pending;
+  console.log("✓ Distinct keys cannot bypass a SENDING claim");
+}
 
 console.log("PROFILE_NOTICE_DELIVERY_SMOKE_OK");
 console.log("No database mutation or real email delivery");

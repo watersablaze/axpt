@@ -148,6 +148,28 @@ export async function sendProfileAccessNoticeWithClient(input: {
       };
     }
     if (existing) throw new Error("PROFILE_NOTICE_KEY_CONFLICT");
+
+    // PostgreSQL partial unique index: one unresolved attempt per grant.
+    // A different delivery key cannot bypass the active claim.
+    const isUniqueConflict =
+      error !== null &&
+      typeof error === "object" &&
+      "code" in error &&
+      error.code === "P2002";
+
+    if (isUniqueConflict) {
+      const unresolved = await client.profileAccessNoticeDelivery.findFirst({
+        where: {
+          grantId: grant.id,
+          status: { in: ["SENDING", "DELIVERY_UNKNOWN"] },
+        },
+        select: { id: true },
+      });
+      if (unresolved) {
+        throw new Error("PROFILE_NOTICE_UNRESOLVED_ATTEMPT");
+      }
+    }
+
     throw error;
   }
 
