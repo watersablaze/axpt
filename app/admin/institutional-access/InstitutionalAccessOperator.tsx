@@ -8,10 +8,16 @@ import { useRouter } from "next/navigation";
 type Event = { id:string; type:string; occurredAt:string; reason:string|null };
 type Request = {id:string;requesterName:string;requesterEmail:string;institutionalAffiliation:string;requesterCapacity:string;purpose:string;scope:string;resourceReference:string;resourceVersion:number;status:string;createdAt:string;decisionReason:string|null;recipientUserId:string|null;grant:{id:string;expiresAt:string;revokedAt:string|null;recipientEmail:string}|null;events:Event[]};
 type Grant = {id:string;requestId:string;recipientEmail:string;scope:string;resourceReference:string;resourceVersion:number;issuedAt:string;expiresAt:string;revokedAt:string|null};
+type ProfileNotice = {
+  status: string;
+  messageId: string | null;
+  attemptedAt: string;
+};
+type ProfileNotices = Record<string, ProfileNotice>;
 const field: React.CSSProperties = {width:"100%", background:"#0c1421", color:"#edf1f7", border:"1px solid #33445b", padding:"10px 12px", borderRadius:4};
 const button: React.CSSProperties = {background:"#1b3552",color:"#fff",padding:"10px 14px",border:"1px solid #536b85",cursor:"pointer",borderRadius:4};
 
-export function InstitutionalAccessOperator({requests,grants}:{requests:Request[];grants:Grant[]}) {
+export function InstitutionalAccessOperator({requests,grants,notices}:{requests:Request[];grants:Grant[];notices:ProfileNotices}) {
   const router=useRouter();
   const [selected,setSelected]=useState(requests.find(r=>r.status==="PENDING")?.id ?? requests[0]?.id ?? "");
   const [reason,setReason]=useState("");
@@ -21,6 +27,10 @@ export function InstitutionalAccessOperator({requests,grants}:{requests:Request[
   const [feedback,setFeedback]=useState("");
   const [noticeHold,setNoticeHold]=useState<string|null>(null);
   const current=requests.find(r=>r.id===selected);
+  const currentNotice = current ? notices[current.id] : undefined;
+  const noticeNeedsReconciliation =
+    currentNotice?.status === "SENDING" ||
+    currentNotice?.status === "DELIVERY_UNKNOWN";
   async function mutate(action:"APPROVED"|"DECLINED"|"REVOKE", id:string) {
     const activeReason=action==="REVOKE"?revokeReason:reason;
     if(!activeReason.trim()) {setFeedback("A decision reason is required.");return;}
@@ -51,15 +61,20 @@ export function InstitutionalAccessOperator({requests,grants}:{requests:Request[
 
   async function sendProfileNotice() {
     if (!current || !profileNoticeEligible || busy ||
-        noticeHold === current.id) return;
+        noticeHold === current.id || noticeNeedsReconciliation) return;
 
     const requestId = current.id;
     const recipientEmail = current.requesterEmail;
 
+    const previous = currentNotice
+      ? " Previous attempt: " + currentNotice.status +
+        " at " + currentNotice.attemptedAt + "."
+      : " No previous attempt is recorded.";
+
     if (!window.confirm(
       "Send French-Ward Institutional Profile access instructions to " +
-      recipientEmail +
-      "? This creates an audited email delivery attempt."
+      recipientEmail + "?" + previous +
+      " This creates a separate, audited delivery attempt."
     )) return;
 
     // A new key represents one deliberate operator send.
@@ -98,7 +113,6 @@ export function InstitutionalAccessOperator({requests,grants}:{requests:Request[
           "Profile access notice was rejected by the provider. " +
           "Review the recorded delivery outcome before resending."
         );
-        setNoticeHold(requestId);
       } else {
         setFeedback(
           "Profile access notice outcome: " +
@@ -156,13 +170,37 @@ export function InstitutionalAccessOperator({requests,grants}:{requests:Request[
                 Approval and delivery are separate actions. The recipient
                 will receive the Profile sign-in link, not another access form.
               </p>
+              {currentNotice
+                ? <div style={{
+                    border:"1px solid #314860",
+                    padding:12,
+                    margin:"12px 0",
+                    fontSize:12,
+                    color:"#d6e0ec"
+                  }}>
+                    <strong>Latest notice: {currentNotice.status}</strong>
+                    <div>Attempted: {currentNotice.attemptedAt}</div>
+                    {currentNotice.messageId &&
+                      <div>Provider message: {currentNotice.messageId}</div>}
+                    {noticeNeedsReconciliation &&
+                      <p style={{color:"#e6bd82"}}>
+                        Delivery outcome requires reconciliation.
+                        Do not issue another notice yet.
+                      </p>}
+                  </div>
+                : <p style={{fontSize:12,color:"#99aac0"}}>
+                    No previous Profile notice recorded.
+                  </p>
+              }
               {profileNoticeEligible
                 ? <button
                     style={button}
-                    disabled={busy || noticeHold===current.id}
+                    disabled={busy || noticeHold===current.id || noticeNeedsReconciliation}
                     onClick={sendProfileNotice}
                   >
-                    Send Profile Access Notice
+                    {currentNotice
+                      ? "Send Another Profile Access Notice"
+                      : "Send Profile Access Notice"}
                   </button>
                 : <p style={{fontSize:12,color:"#c8ab82"}}>
                     No matching active grant is available for notice delivery.

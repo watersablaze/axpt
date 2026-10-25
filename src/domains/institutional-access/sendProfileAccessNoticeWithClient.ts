@@ -181,7 +181,10 @@ export async function sendProfileAccessNoticeWithClient(input: {
     // Do not repeat this delivery key.
   }
 
-  await client.$transaction(async tx => {
+  await client.$transaction(async (tx: Pick<
+    PrismaClient,
+    "profileAccessNoticeDelivery" | "emailLog" | "domainEvent"
+  >) => {
     await tx.profileAccessNoticeDelivery.update({
       where: { id: claim.id },
       data: { status, messageId, error: errorCode },
