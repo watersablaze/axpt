@@ -19,6 +19,7 @@ export function InstitutionalAccessOperator({requests,grants}:{requests:Request[
   const [revokeReason,setRevokeReason]=useState("");
   const [busy,setBusy]=useState(false);
   const [feedback,setFeedback]=useState("");
+  const [noticeHold,setNoticeHold]=useState<string|null>(null);
   const current=requests.find(r=>r.id===selected);
   async function mutate(action:"APPROVED"|"DECLINED"|"REVOKE", id:string) {
     const activeReason=action==="REVOKE"?revokeReason:reason;
@@ -36,6 +37,90 @@ export function InstitutionalAccessOperator({requests,grants}:{requests:Request[
       );setReason("");setRevokeReason("");setExpires("");router.refresh();
     }catch(e){setFeedback(e instanceof Error?e.message:"Action failed.");}finally{setBusy(false);}
   }
+
+  const profileNoticeEligible = Boolean(
+    current &&
+    current.status === "APPROVED" &&
+    current.scope === "PROFILE_VIEW" &&
+    current.grant &&
+    !current.grant.revokedAt &&
+    new Date(current.grant.expiresAt).getTime() > Date.now() &&
+    current.grant.recipientEmail.trim().toLowerCase() ===
+      current.requesterEmail.trim().toLowerCase()
+  );
+
+  async function sendProfileNotice() {
+    if (!current || !profileNoticeEligible || busy ||
+        noticeHold === current.id) return;
+
+    const requestId = current.id;
+    const recipientEmail = current.requesterEmail;
+
+    if (!window.confirm(
+      "Send French-Ward Institutional Profile access instructions to " +
+      recipientEmail +
+      "? This creates an audited email delivery attempt."
+    )) return;
+
+    // A new key represents one deliberate operator send.
+    // Never generate another key to retry the same request automatically.
+    const deliveryKey = window.crypto.randomUUID();
+
+    setBusy(true);
+    setFeedback("");
+
+    try {
+      const response = await fetch(
+        "/api/admin/institutional-access/profile-notice",
+        {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify({requestId,deliveryKey}),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || "Notice request failed.");
+      }
+
+      const status = result.result?.status;
+
+      if (status === "ACCEPTED") {
+        setFeedback(
+          "Profile access notice accepted by the email provider for " +
+          recipientEmail +
+          ". Inbox delivery is not yet confirmed."
+        );
+      } else if (status === "FAILED") {
+        setFeedback(
+          "Profile access notice was rejected by the provider. " +
+          "Review the recorded delivery outcome before resending."
+        );
+        setNoticeHold(requestId);
+      } else {
+        setFeedback(
+          "Profile access notice outcome: " +
+          String(status ?? "UNKNOWN") +
+          ". Check the delivery record before attempting another send."
+        );
+        setNoticeHold(requestId);
+      }
+
+      router.refresh();
+    } catch (error) {
+      setNoticeHold(requestId);
+      setFeedback(
+        (error instanceof Error ? error.message : "Notice request failed.") +
+        " Delivery may have been attempted. Verify the delivery " +
+        "record before resending."
+      );
+    } finally {
+      setBusy(false);
+    }
+  }
+
   return <main style={{minHeight:"100vh",background:"#080e18",color:"#e9edf4",padding:"clamp(20px,4vw,50px)",fontFamily:"system-ui,sans-serif"}}>
       <PrepareGsamRecipient />
 
@@ -60,6 +145,34 @@ export function InstitutionalAccessOperator({requests,grants}:{requests:Request[
             <label style={{display:"block",margin:"14px 0"}}>Approval expiration (local time)<input style={{...field,marginTop:6}} type="datetime-local" value={expires} onChange={e=>setExpires(e.target.value)}/></label>
             <div style={{display:"flex",gap:8,flexWrap:"wrap"}}><button style={button} disabled={busy||!expires||!reason.trim()} onClick={()=>mutate("APPROVED",current.id)}>Approve & issue grant</button><button style={button} disabled={busy||!reason.trim()} onClick={()=>mutate("DECLINED",current.id)}>Decline</button></div>
           </div>}
+          {current.status==="APPROVED" && current.scope==="PROFILE_VIEW" &&
+            <div style={{
+              borderTop:"1px solid #2c3f53",
+              paddingTop:20,
+              marginTop:20
+            }}>
+              <h3 style={{fontSize:15}}>Profile access notification</h3>
+              <p style={{fontSize:12,color:"#99aac0"}}>
+                Approval and delivery are separate actions. The recipient
+                will receive the Profile sign-in link, not another access form.
+              </p>
+              {profileNoticeEligible
+                ? <button
+                    style={button}
+                    disabled={busy || noticeHold===current.id}
+                    onClick={sendProfileNotice}
+                  >
+                    Send Profile Access Notice
+                  </button>
+                : <p style={{fontSize:12,color:"#c8ab82"}}>
+                    No matching active grant is available for notice delivery.
+                  </p>
+              }
+              <p style={{fontSize:11,color:"#99aac0",marginTop:10}}>
+                Each confirmed send is separately recorded. Verify the
+                previous delivery outcome before sending another notice.
+              </p>
+            </div>}
           {current.decisionReason&&<p>Decision reason: {current.decisionReason}</p>}
           <h3 style={{fontSize:14,marginTop:24}}>Event history</h3><ul>{current.events.map(e=><li key={e.id} style={{fontSize:12,marginBottom:8}}>{e.type} · {e.occurredAt.slice(0,19)} {e.reason&&`— ${e.reason}`}</li>)}</ul>
         </>:<p>Select a request.</p>}</section>
