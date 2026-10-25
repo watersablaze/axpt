@@ -200,9 +200,100 @@ async function main() {
 
   const provenance = JSON.parse(state.events[0].note);
 
+  assert.equal(provenance.version, 1);
   assert.match(
     provenance.requestFingerprint,
     /^[a-f0-9]{64}$/,
+  );
+  assert.equal(provenance.originator, "Mark");
+  assert.equal(provenance.introductionChannelName, undefined);
+
+  await assert.rejects(
+    registerExternalIntakeWithClient(client, {
+      ...input,
+      introductionChannelName: "Enver Gonuler",
+    }),
+    /FW_TXN_REGISTRATION_CONFLICT/,
+  );
+
+  assert.equal(state.intakes.length, 1);
+  assert.equal(state.events.length, 1);
+
+  const introducedInput = {
+    ...input,
+    operationalReference: "FW-TXN-ZKKM-CHAIN-TEST",
+    introductionChannelName: "Enver Gonuler",
+  };
+
+  const introduced = await registerExternalIntakeWithClient(
+    client,
+    introducedInput,
+  );
+
+  assert.equal(introduced.alreadyRegistered, false);
+  assert.equal(state.intakes.length, 2);
+  assert.equal(state.events.length, 2);
+  assert.equal(state.intakes[1].referredByName, "Mark");
+  assert.equal(state.intakes[1].referralConfirmed, false);
+  assert.equal(state.intakes[1].authorityToRepresent, false);
+  assert.equal(state.intakes[1].authorityToNegotiate, false);
+  assert.equal(state.intakes[1].authorityToSign, false);
+
+  const chainProvenance = JSON.parse(state.events[1].note);
+
+  assert.equal(chainProvenance.version, 2);
+  assert.equal(chainProvenance.originator, "Mark");
+  assert.equal(
+    chainProvenance.introductionChannelName,
+    "Enver Gonuler",
+  );
+  assert.equal(
+    chainProvenance.operationalReference,
+    introducedInput.operationalReference,
+  );
+  assert.match(
+    chainProvenance.requestFingerprint,
+    /^[a-f0-9]{64}$/,
+  );
+
+  const repeatedIntroduction =
+    await registerExternalIntakeWithClient(
+      client,
+      introducedInput,
+    );
+
+  assert.equal(repeatedIntroduction.alreadyRegistered, true);
+  assert.equal(repeatedIntroduction.intakeId, introduced.intakeId);
+  assert.equal(state.intakes.length, 2);
+  assert.equal(state.events.length, 2);
+
+  await assert.rejects(
+    registerExternalIntakeWithClient(client, {
+      ...introducedInput,
+      introductionChannelName: "Different Intermediary",
+    }),
+    /FW_TXN_REGISTRATION_CONFLICT/,
+  );
+
+  const { introductionChannelName: omitted, ...withoutChannel } =
+    introducedInput;
+
+  await assert.rejects(
+    registerExternalIntakeWithClient(client, withoutChannel),
+    /FW_TXN_REGISTRATION_CONFLICT/,
+  );
+
+  assert.equal(state.intakes.length, 2);
+  assert.equal(state.events.length, 2);
+
+  console.log(
+    "PASS: legacy registration remains immutable",
+  );
+  console.log(
+    "PASS: introduction chain persisted and replay is idempotent",
+  );
+  console.log(
+    "PASS: changed or removed intermediary rejected",
   );
 
   state.admin = false;
