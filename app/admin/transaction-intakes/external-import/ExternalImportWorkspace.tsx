@@ -59,6 +59,8 @@ const messageByError: Record<string, string> = {
 
 export default function ExternalImportWorkspace() {
   const [values, setValues] = useState<Values>(initialValues);
+  const [introductionChannelName, setIntroductionChannelName] =
+    useState("");
   const [file, setFile] = useState<File | null>(null);
   const [phase, setPhase] = useState<Phase>("entry");
   // FW-TXN-1B.6M: independently controlled documentary rail.
@@ -108,6 +110,12 @@ export default function ExternalImportWorkspace() {
 
       form.append("evidencePdf", file);
       form.append("confirmation", confirmation);
+      if (introductionChannelName.trim()) {
+        form.append(
+          "introductionChannelName",
+          introductionChannelName.trim(),
+        );
+      }
 
       const response = await fetch(
         "/api/admin/transaction-intakes/external-import",
@@ -202,6 +210,22 @@ export default function ExternalImportWorkspace() {
               <Section number="02" title="Parties and source" description="Record the origin of the instruction and the parties it identifies.">
                 <Fields group="parties" values={values} onChange={setValues} />
                 <Fields group="source" values={values} onChange={setValues} />
+                <label>
+                  <span>Introduction channel · optional</span>
+                  <input
+                    type="text"
+                    maxLength={2000}
+                    value={introductionChannelName}
+                    placeholder="Intermediary introducing the buyer"
+                    onChange={(event) =>
+                      setIntroductionChannelName(event.target.value)
+                    }
+                  />
+                  <small>
+                    Record an identified intermediary without implying
+                    representative, signing or compensation authority.
+                  </small>
+                </label>
               </Section>
               <Section number="03" title="Commercial particulars" description="Transcribe the stated terms faithfully; do not imply independent verification.">
                 <Fields group="terms" values={values} onChange={setValues} />
@@ -265,6 +289,13 @@ export default function ExternalImportWorkspace() {
                 <small>Operator transcription · Not independently verified</small>
               </div>
               <dl className={styles.review}>
+                <div>
+                  <dt>Introduction channel</dt>
+                  <dd>
+                    {introductionChannelName.trim() ||
+                      "Direct / not stated"}
+                  </dd>
+                </div>
                 {FIELDS.map((field) => (
                   <div key={field.name}>
                     <dt>{field.label}</dt>

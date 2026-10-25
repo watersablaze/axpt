@@ -141,7 +141,7 @@ export async function registerExternalIntakeWithClient(
       .digest("hex");
 
     const provenance = {
-      version: 1,
+      version: prepared.provenance.introductionChannelName ? 2 : 1,
       requestFingerprint,
       registrationMode: "OPERATOR_EXTERNAL_IMPORT",
       source: "EXTERNAL_EMAIL",
@@ -149,6 +149,12 @@ export async function registerExternalIntakeWithClient(
       evidenceReference: custodyReference,
       evidenceSha256: actualEvidenceHash,
       originator: prepared.intake.referredByName,
+      ...(prepared.provenance.introductionChannelName
+        ? {
+            introductionChannelName:
+              prepared.provenance.introductionChannelName,
+          }
+        : {}),
       operatorUserId: operator.id,
     };
 
@@ -184,6 +190,8 @@ export async function registerExternalIntakeWithClient(
           prepared.operationalReference ||
         recorded.originator !==
           prepared.intake.referredByName ||
+        recorded.introductionChannelName !==
+          provenance.introductionChannelName ||
         existing.submitterEmail !==
           prepared.intake.submitterEmail ||
         existing.buyerName !== prepared.intake.buyerName

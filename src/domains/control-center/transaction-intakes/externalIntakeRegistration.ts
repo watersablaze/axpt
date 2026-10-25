@@ -25,6 +25,7 @@ export type ExternalIntakeRegistrationInput = {
   destination: string;
 
   originatingCandidateName: string;
+  introductionChannelName?: string;
   deliveryTerms: string;
   settlementMethod: string;
 };
@@ -90,6 +91,14 @@ export function prepareExternalIntakeRegistration(
       ),
       evidenceSha256: sha256,
       registrationMode: "OPERATOR_EXTERNAL_IMPORT" as const,
+      ...(input.introductionChannelName?.trim()
+        ? {
+            introductionChannelName: required(
+              input.introductionChannelName,
+              "introductionChannelName",
+            ),
+          }
+        : {}),
     },
 
     intake: {

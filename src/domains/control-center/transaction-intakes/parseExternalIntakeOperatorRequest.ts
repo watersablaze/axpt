@@ -34,6 +34,7 @@ const allowedFields = new Set<string>([
   ...textFields,
   "confirmation",
   "evidencePdf",
+  "introductionChannelName",
 ]);
 
 function fail(reason: string, status = 400): never {
@@ -190,6 +191,22 @@ export function parseExternalIntakeOperatorForm(form: FormData): {
     fail("INVALID_SUBMITTER_EMAIL");
   }
 
+  const channelValue = form.get("introductionChannelName");
+
+  if (
+    channelValue !== null &&
+    (typeof channelValue !== "string" ||
+      !channelValue.trim() ||
+      channelValue.trim().length > 2_000)
+  ) {
+    fail("INVALID_INTRODUCTION_CHANNEL");
+  }
+
+  const introductionChannelName =
+    typeof channelValue === "string"
+      ? channelValue.trim()
+      : undefined;
+
   const evidence = form.get("evidencePdf");
 
   if (!(evidence instanceof File)) {
@@ -220,6 +237,7 @@ export function parseExternalIntakeOperatorForm(form: FormData): {
       monthlyQuantity: fields.monthlyQuantity,
       destination: fields.destination,
       originatingCandidateName: fields.originatingCandidateName,
+      introductionChannelName,
       deliveryTerms: fields.deliveryTerms,
       settlementMethod: fields.settlementMethod,
       evidenceBytes: new Uint8Array(),
