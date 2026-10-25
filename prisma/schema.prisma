@@ -3999,3 +3999,22 @@ model GsamEmailDelivery {
   updatedAt DateTime @updatedAt
   @@index([status, createdAt])
 }
+
+// Explicit recipient notice; independent of Profile approval and grant issuance.
+model ProfileAccessNoticeDelivery {
+  id             String   @id @default(cuid())
+  deliveryKey    String   @unique
+  requestId      String
+  grantId        String
+  actorUserId    String
+  recipientEmail String
+  status         String
+  messageId      String?
+  error          String?
+  attemptedAt    DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([requestId, attemptedAt])
+  @@index([grantId, attemptedAt])
+  @@index([status, attemptedAt])
+}
