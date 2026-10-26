@@ -4018,3 +4018,22 @@ model ProfileAccessNoticeDelivery {
   @@index([grantId, attemptedAt])
   @@index([status, attemptedAt])
 }
+
+model GsamInstitutionalParticipation {
+  id                      String   @id @default(cuid())
+  reference               String   @unique
+  institutionLegalName    String
+  representativeName      String
+  representativeCapacity  String
+  governingBasis          String
+  programScope            String
+  custodialContext        String?
+  documentationStatus     String   @default("PENDING_REVIEW")
+  accessStatus            String   @default("NOT_PROVISIONED")
+  createdByUserId         String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@index([institutionLegalName])
+  @@index([documentationStatus])
+}
