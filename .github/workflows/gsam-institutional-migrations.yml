@@ -1,0 +1,241 @@
+name: FW GSAM Institutional Migrations
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirmation:
+        description: "Enter FW-GSAM-ARP-1E.12 to authorize this release"
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: fw-gsam-institutional-production-migrations
+  cancel-in-progress: false
+
+jobs:
+  migrate:
+    name: Exact two-migration release
+    if: >-
+      github.ref == 'refs/heads/master' &&
+      inputs.confirmation == 'FW-GSAM-ARP-1E.12'
+    runs-on: ubuntu-latest
+    environment: GSAM-Production-Migrations
+    timeout-minutes: 15
+
+    env:
+      DATABASE_URL: ${{ secrets.GSAM_PRODUCTION_DATABASE_URL }}
+      PGCONNECT_TIMEOUT: "10"
+
+    steps:
+      - name: Checkout approved source
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - name: Install Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Validate connection identity
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import os
+          from urllib.parse import urlsplit, unquote
+
+          raw = os.environ.get("DATABASE_URL", "")
+          if not raw:
+              raise SystemExit("STOP: database secret missing")
+
+          url = urlsplit(raw)
+          expected = (
+              "ep-cold-shape-ae1i1fz6."
+              "c-2.us-east-2.aws.neon.tech"
+          )
+
+          if url.scheme not in ("postgresql", "postgres"):
+              raise SystemExit("STOP: invalid database protocol")
+          if url.hostname != expected:
+              raise SystemExit("STOP: production host mismatch")
+          if unquote(url.path.lstrip("/")) != "neondb":
+              raise SystemExit("STOP: production database mismatch")
+          if not url.username or not url.password:
+              raise SystemExit("STOP: credentials incomplete")
+
+          print("PASS: verified direct Neon production endpoint")
+          PY
+
+      - name: Verify exact sealed migrations
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import hashlib
+
+          expected = {
+              "20261025194500_gsam_institutional_participation":
+                  "7bc42f4e867c1b1244ca82cf9cc96f23d585d7a32a4010cb7c4affbdbc974c4d",
+              "20261025201000_gsam_participation_creator":
+                  "acc87aa28f45a17e0642a6c1f51843d1f291a6fdebe119497e88a366cba18408",
+          }
+
+          for name, digest in expected.items():
+              path = Path("prisma/migrations") / name / "migration.sql"
+              if not path.is_file():
+                  raise SystemExit(f"STOP: missing {name}")
+              actual = hashlib.sha256(path.read_bytes()).hexdigest()
+              if actual != digest:
+                  raise SystemExit(f"STOP: checksum mismatch {name}")
+              print(f"PASS: {name}")
+
+          print("Both sealed migration checksums verified")
+          PY
+
+      - name: Build isolated Prisma bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          ROOT="$RUNNER_TEMP/gsam-prisma-release"
+          mkdir -p "$ROOT/prisma/migrations"
+
+          cp prisma/migrations/migration_lock.toml \
+            "$ROOT/prisma/migrations/migration_lock.toml"
+
+          for name in \
+            20261025194500_gsam_institutional_participation \
+            20261025201000_gsam_participation_creator
+          do
+            mkdir -p "$ROOT/prisma/migrations/$name"
+            cp "prisma/migrations/$name/migration.sql" \
+              "$ROOT/prisma/migrations/$name/migration.sql"
+          done
+
+          cat > "$ROOT/prisma/schema.prisma" <<'PRISMA'
+          datasource db {
+            provider = "postgresql"
+            url      = env("DATABASE_URL")
+          }
+          PRISMA
+
+          COUNT="$(
+            find "$ROOT/prisma/migrations" \
+              -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' '
+          )"
+
+          test "$COUNT" = "2" || {
+            echo "STOP: unexpected migration count"
+            exit 1
+          }
+
+          echo "GSAM_PRISMA_ROOT=$ROOT" >> "$GITHUB_ENV"
+
+          echo "PASS: exact two-migration bundle constructed"
+
+      - name: Install pinned Prisma CLI
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          npm install \
+            --prefix "$RUNNER_TEMP/gsam-prisma-cli" \
+            --no-save --no-package-lock \
+            --no-audit --no-fund \
+            prisma@6.11.1
+
+          echo "GSAM_PRISMA_CLI=$RUNNER_TEMP/gsam-prisma-cli/node_modules/.bin/prisma" \
+            >> "$GITHUB_ENV"
+
+      - name: Verify production migration baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          RESULT="$(
+            psql "$DATABASE_URL" -X -A -t -q \
+              -v ON_ERROR_STOP=1 \
+              -c "
+                BEGIN READ ONLY;
+                SELECT
+                  (SELECT COUNT(*)
+                   FROM public._prisma_migrations
+                   WHERE finished_at IS NOT NULL
+                     AND rolled_back_at IS NULL),
+                  (SELECT COUNT(*)
+                   FROM public._prisma_migrations
+                   WHERE finished_at IS NULL
+                     AND rolled_back_at IS NULL),
+                  (SELECT COUNT(*)
+                   FROM public._prisma_migrations
+                   WHERE migration_name IN (
+                     '20261025194500_gsam_institutional_participation',
+                     '20261025201000_gsam_participation_creator'
+                   )),
+                  to_regclass(
+                    'public.\"GsamInstitutionalParticipation\"'
+                  ) IS NULL;
+                COMMIT;
+              "
+          )"
+
+          if [ "$RESULT" != "47|0|0|t" ]; then
+            echo "STOP: production migration baseline changed"
+            exit 1
+          fi
+
+          echo "PASS: production migration baseline 47|0|0|t"
+
+      - name: Apply exactly two migrations
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          "$GSAM_PRISMA_CLI" migrate deploy \
+            --schema "$GSAM_PRISMA_ROOT/prisma/schema.prisma"
+
+      - name: Verify production result
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          RESULT="$(
+            psql "$DATABASE_URL" -X -A -t -q \
+              -v ON_ERROR_STOP=1 \
+              -c "
+                BEGIN READ ONLY;
+                SELECT
+                  (SELECT COUNT(*)
+                   FROM public._prisma_migrations
+                   WHERE finished_at IS NOT NULL
+                     AND rolled_back_at IS NULL),
+                  (SELECT COUNT(*)
+                   FROM public._prisma_migrations
+                   WHERE finished_at IS NULL
+                     AND rolled_back_at IS NULL),
+                  (SELECT COUNT(*)
+                   FROM public._prisma_migrations
+                   WHERE migration_name IN (
+                     '20261025194500_gsam_institutional_participation',
+                     '20261025201000_gsam_participation_creator'
+                   )
+                   AND finished_at IS NOT NULL
+                   AND rolled_back_at IS NULL),
+                  to_regclass(
+                    'public.\"GsamInstitutionalParticipation\"'
+                  ) IS NOT NULL;
+                COMMIT;
+              "
+          )"
+
+          if [ "$RESULT" != "49|0|2|t" ]; then
+            echo "STOP: post-migration acceptance failed"
+            exit 1
+          fi
+
+          echo "FW_GSAM_PRODUCTION_MIGRATIONS_VERIFIED"
