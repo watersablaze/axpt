@@ -1,5 +1,6 @@
 import {createHash} from "node:crypto";
 import {TOV_PUBLICATION} from "./tovPublication";
+import {TOV_PUBLICATION_REVISION_03} from "./tovPublicationRevision03";
 import {TOV_PUBLICATION_REVISION_02} from "./tovPublicationRevision02";
 import {TOV_PUBLICATION_LEGACY} from "./tovPublicationLegacy";
 
@@ -7,7 +8,7 @@ const hash=(value:string)=>createHash("sha256").update(value).digest("hex");
 const object=(value:unknown):value is Record<string,unknown>=>!!value&&typeof value==="object"&&!Array.isArray(value);
 const esc=(value:string)=>value.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"})[c]!);
 
-type CopyRevision=2|3;
+type CopyRevision=2|3|4;
 export type TovCopyPin={
   schemaVersion:1;
   publicationRevision:CopyRevision;
@@ -20,11 +21,13 @@ export type TovCopyPin={
 };
 
 const publicationForCopy=(revision:CopyRevision)=>
-  revision===3?TOV_PUBLICATION:TOV_PUBLICATION_REVISION_02;
+  revision===4?TOV_PUBLICATION:
+  revision===3?TOV_PUBLICATION_REVISION_03:
+  TOV_PUBLICATION_REVISION_02;
 
 export function renderTovRepresentativeCopy(
   displayName:string,
-  publicationRevision:CopyRevision=3
+  publicationRevision:CopyRevision=4
 ) {
   if(!displayName.trim()||displayName.length>120)
     throw new Error("[TOV_COPY_IDENTITY_INVALID]");
@@ -50,10 +53,10 @@ export function createTovCopyPin(input:{
 }):TovCopyPin {
   return {
     schemaVersion:1,
-    publicationRevision:3,
+    publicationRevision:4,
     basePublicationHash:TOV_PUBLICATION.publicationHash,
     ...input,
-    publicationHash:hash(renderTovRepresentativeCopy(input.displayName,3))
+    publicationHash:hash(renderTovRepresentativeCopy(input.displayName,4))
   };
 }
 
@@ -71,7 +74,7 @@ export function resolveTovPublication(metadata:unknown):{
   if(Object.hasOwn(metadata,"tovRepresentativeCopy")) {
     const c=metadata.tovRepresentativeCopy;
     if(!object(c)||c.schemaVersion!==1||
-       (c.publicationRevision!==2&&c.publicationRevision!==3)||
+       (c.publicationRevision!==2&&c.publicationRevision!==3&&c.publicationRevision!==4)||
        !["resourceReleaseId","participantId","representativeUserId","displayName","publicationHash"]
          .every(k=>typeof c[k]==="string"&&String(c[k]).trim().length>0&&String(c[k]).length<=191))
       return null;
@@ -91,6 +94,7 @@ export function resolveTovPublication(metadata:unknown):{
 
   for(const artifact of [
     TOV_PUBLICATION,
+    TOV_PUBLICATION_REVISION_03,
     TOV_PUBLICATION_REVISION_02,
     TOV_PUBLICATION_LEGACY
   ]) {

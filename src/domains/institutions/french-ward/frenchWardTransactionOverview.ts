@@ -45,8 +45,8 @@ export const frenchWardTransactionOverview = {
       "id": "taxes-documentary-support",
       "title": "Taxes & documentary support",
       "paragraphs": [
-        "Actual applicable taxes, duties, permits and export obligations must be met before lawful dispatch. Governing documents allocate responsibility, funding, timing and evidence. TAP is a commercial activation contribution—not a government tax rate.",
-        "Supporting records include source/origin and authority evidence, invoice, export/fiscal documents, transport and customs records, assay and insurance evidence. TAP-funded charges are reconciled without duplicating Buyer obligations."
+        "Actual applicable taxes, duties, permits, export authorizations and other governmental or fiscal obligations must be satisfied before lawful dispatch. The Good-Faith TAP provides the transaction activation funding used to satisfy these authorized export and shipment-release requirements in accordance with the governing transaction documents. Those documents establish the applicable obligations, permitted uses, timing, evidence and reconciliation of TAP-funded expenditures.",
+        "The TAP is a commercial activation contribution and funding mechanism—not itself a government tax rate. Supporting records include source/origin and authority evidence, invoice, export/fiscal documents, transport and customs records, assay and insurance evidence. All TAP-funded charges are documented and reconciled, and no such charge is duplicated as a separate Buyer obligation."
       ]
     },
     {

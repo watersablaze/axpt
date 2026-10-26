@@ -1,5 +1,6 @@
 import {resolveTovPublication} from "../../../../institutions/french-ward/tovRepresentativeCopy";
 import { TOV_PUBLICATION } from "../../../../institutions/french-ward/tovPublication";
+import { TOV_PUBLICATION_REVISION_03 } from "../../../../institutions/french-ward/tovPublicationRevision03";
 import { TOV_PUBLICATION_REVISION_02 } from "../../../../institutions/french-ward/tovPublicationRevision02";
 import { TOV_PUBLICATION_LEGACY } from "../../../../institutions/french-ward/tovPublicationLegacy";
 import { createHash } from "node:crypto";
@@ -55,7 +56,8 @@ export function commercialPaperPinMatches(metadata: unknown, paper: CommercialPa
       ? (() => {
           const publication=resolveTovPublication(metadata);
           if(!publication)return false;
-          const expected=publication.publicationRevision===3?TOV_PUBLICATION:
+          const expected=publication.publicationRevision===4?TOV_PUBLICATION:
+            publication.publicationRevision===3?TOV_PUBLICATION_REVISION_03:
             publication.publicationRevision===2?TOV_PUBLICATION_REVISION_02:
             publication.publicationRevision===1?TOV_PUBLICATION_LEGACY:null;
           return expected!==null && pin.contentHash===expected.contentHash;
