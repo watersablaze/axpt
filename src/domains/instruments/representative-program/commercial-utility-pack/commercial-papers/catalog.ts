@@ -1,5 +1,7 @@
 import {resolveTovPublication} from "../../../../institutions/french-ward/tovRepresentativeCopy";
 import { TOV_PUBLICATION } from "../../../../institutions/french-ward/tovPublication";
+import { TOV_PUBLICATION_REVISION_02 } from "../../../../institutions/french-ward/tovPublicationRevision02";
+import { TOV_PUBLICATION_LEGACY } from "../../../../institutions/french-ward/tovPublicationLegacy";
 import { createHash } from "node:crypto";
 import { frenchWardTransactionOverview } from "../../../../institutions/french-ward/frenchWardTransactionOverview";
 import { FRENCH_WARD_STANDING_SCO } from "../../../../institutions/french-ward/frenchWardStandingSoftCorporateOffer";
@@ -48,10 +50,18 @@ export function commercialPaperPinMatches(metadata: unknown, paper: CommercialPa
   const pin = metadata.commercialPaper;
   return !!pin && typeof pin === "object" && "schemaVersion" in pin && pin.schemaVersion === (paper.publicationHash ? 2 : 1) &&
     "key" in pin && pin.key === paper.key && "reference" in pin && pin.reference === paper.reference &&
-    "version" in pin && pin.version === paper.version && "contentHash" in pin && pin.contentHash === paper.contentHash &&
-    (!paper.publicationHash || (paper.key==="TRANSACTION_OVERVIEW"
-      ? resolveTovPublication(metadata)!==null
-      : ("publicationHash" in pin && pin.publicationHash===paper.publicationHash)));
+    "version" in pin && pin.version === paper.version && "contentHash" in pin &&
+    (paper.key==="TRANSACTION_OVERVIEW"
+      ? (() => {
+          const publication=resolveTovPublication(metadata);
+          if(!publication)return false;
+          const expected=publication.publicationRevision===3?TOV_PUBLICATION:
+            publication.publicationRevision===2?TOV_PUBLICATION_REVISION_02:
+            publication.publicationRevision===1?TOV_PUBLICATION_LEGACY:null;
+          return expected!==null && pin.contentHash===expected.contentHash;
+        })()
+      : pin.contentHash===paper.contentHash &&
+        (!paper.publicationHash || ("publicationHash" in pin && pin.publicationHash===paper.publicationHash)));
 }
 /** Used in both reviewed-additions and direct module-release commands. */
 export function assertCommercialPaperReleasePin(resource: {
