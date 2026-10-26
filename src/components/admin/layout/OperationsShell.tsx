@@ -22,6 +22,9 @@ export default function OperationsShell({
     pathname === '/admin/control-center' ||
     pathname.startsWith('/admin/control-center/')
 
+  const institutionalAccessOwnsSurface =
+    pathname === '/admin/institutional-access'
+
   return (
     <div
       className="flex overflow-hidden bg-black text-white"
@@ -46,10 +49,14 @@ export default function OperationsShell({
       >
         <OperationsHeader />
         <main
-          className={`${externalRegistrationSurface ? styles.transactionImportSurface : sharedSurface ? styles.surface : controlCenterOwnsTopEdge ? styles.controlCenter : ""} min-h-0 min-w-0 flex-1 overflow-auto bg-neutral-950 px-3 pb-3 sm:px-6 sm:pb-6 ${
-            controlCenterOwnsTopEdge
-              ? 'pt-0 sm:pt-0'
-              : 'pt-3 sm:pt-6'
+          className={`${externalRegistrationSurface ? styles.transactionImportSurface : sharedSurface ? styles.surface : controlCenterOwnsTopEdge ? styles.controlCenter : ""} min-h-0 min-w-0 flex-1 overflow-auto bg-neutral-950 ${
+            institutionalAccessOwnsSurface
+              ? 'p-0'
+              : `px-3 pb-3 sm:px-6 sm:pb-6 ${
+                  controlCenterOwnsTopEdge
+                    ? 'pt-0 sm:pt-0'
+                    : 'pt-3 sm:pt-6'
+                }`
           }`}
           style={{
             minHeight: 0,
