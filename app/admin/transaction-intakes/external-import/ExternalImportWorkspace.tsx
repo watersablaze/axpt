@@ -210,7 +210,7 @@ export default function ExternalImportWorkspace() {
               <Section number="02" title="Parties and source" description="Record the origin of the instruction and the parties it identifies.">
                 <Fields group="parties" values={values} onChange={setValues} />
                 <Fields group="source" values={values} onChange={setValues} />
-                <label>
+                <label className={styles.field}>
                   <span>Introduction channel · optional</span>
                   <input
                     type="text"
