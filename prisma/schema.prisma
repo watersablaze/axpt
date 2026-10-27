@@ -76,6 +76,8 @@ model User {
   sentCommunicationMessages            CommunicationMessage[]         @relation("CommunicationMessageSender")
   createdCommunicationOperationalRooms CommunicationOperationalRoom[] @relation("CommunicationOperationalRoomCreator")
   createdCommunicationOperationalLinks CommunicationOperationalLink[] @relation("CommunicationOperationalLinkCreator")
+  authoredCommunicationChamberRecords CommunicationChamberRecord[] @relation("CommunicationChamberRecordAuthor")
+  recordedCommunicationChamberRecords CommunicationChamberRecord[] @relation("CommunicationChamberRecordRecorder")
 
   institutionalInstrumentsCreated InstitutionalInstrument[] @relation("InstitutionalInstrumentCreator")
   instrumentVersionsCreated       InstrumentVersion[]       @relation("InstrumentVersionCreator")
@@ -3396,6 +3398,23 @@ enum CommunicationMessageKind {
   DOCUMENT_REFERENCE
 }
 
+enum CommunicationChamberClass {
+  ADDRESS
+  NOTICE
+  PETITION
+  ACKNOWLEDGMENT
+  RESPONSE
+  DECISION_NOTICE
+}
+
+enum CommunicationChamberAddresseeType {
+  CHAMBER
+  COUNCIL
+  PARTICIPANT
+  PARTICIPANTS
+  OFFICE
+}
+
 model CommunicationConversation {
   id     String                          @id @default(cuid())
   kind   CommunicationConversationKind
@@ -3414,6 +3433,7 @@ model CommunicationConversation {
   members         CommunicationMember[]
   messages        CommunicationMessage[]
   operationalRoom CommunicationOperationalRoom?
+  chamberRecords  CommunicationChamberRecord[]
 
   @@index([createdByUserId, createdAt])
   @@index([status, updatedAt])
@@ -3456,11 +3476,64 @@ model CommunicationMessage {
   conversation CommunicationConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
   sender        User                        @relation("CommunicationMessageSender", fields: [senderUserId], references: [id])
   readMarkers   CommunicationMember[]       @relation("CommunicationLastReadMessage")
+  chamberRecord CommunicationChamberRecord?
 
   @@unique([conversationId, senderUserId, clientMessageId])
   @@index([conversationId, createdAt])
   @@index([senderUserId, createdAt])
   @@index([workflowTargetType, workflowTargetSubtype, workflowTargetId])
+}
+
+model CommunicationChamberRecord {
+  id String @id @default(cuid())
+
+  messageId         String @unique
+  conversationId    String
+  operationalRoomId String
+
+  communicationClass CommunicationChamberClass
+  subject            String
+
+  authorUserId    String
+  enteredByUserId String
+
+  // Frozen institutional capacity statement at record entry.
+  // This is not an authority grant and is not inferred from RBAC.
+  authorCapacityKey   String
+  authorCapacityLabel String
+
+  // V1 formal audience snapshot. This deliberately avoids
+  // inventing a universal Chamber or Office aggregate.
+  addresseeType     CommunicationChamberAddresseeType
+  addresseeSnapshot Json
+
+  // SHA-256 digest of the exact persisted CommunicationMessage.body.
+  bodyHash String
+
+  enteredIntoRecordAt DateTime @default(now())
+  createdAt           DateTime @default(now())
+
+  respondsToRecordId String?
+  supersedesRecordId String?
+
+  message         CommunicationMessage         @relation(fields: [messageId], references: [id], onDelete: Restrict)
+  conversation    CommunicationConversation    @relation(fields: [conversationId], references: [id], onDelete: Restrict)
+  operationalRoom CommunicationOperationalRoom @relation(fields: [operationalRoomId], references: [id], onDelete: Restrict)
+
+  author    User @relation("CommunicationChamberRecordAuthor", fields: [authorUserId], references: [id], onDelete: Restrict)
+  enteredBy User @relation("CommunicationChamberRecordRecorder", fields: [enteredByUserId], references: [id], onDelete: Restrict)
+
+  respondsTo CommunicationChamberRecord?  @relation("CommunicationChamberResponse", fields: [respondsToRecordId], references: [id], onDelete: Restrict)
+  responses  CommunicationChamberRecord[] @relation("CommunicationChamberResponse")
+
+  supersedes   CommunicationChamberRecord?  @relation("CommunicationChamberSupersession", fields: [supersedesRecordId], references: [id], onDelete: Restrict)
+  supersededBy CommunicationChamberRecord[] @relation("CommunicationChamberSupersession")
+
+  @@index([conversationId, enteredIntoRecordAt])
+  @@index([operationalRoomId, enteredIntoRecordAt])
+  @@index([authorUserId, enteredIntoRecordAt])
+  @@index([enteredByUserId, enteredIntoRecordAt])
+  @@index([communicationClass, enteredIntoRecordAt])
 }
 
 enum CommunicationOperationalRoomClass {
@@ -3500,6 +3573,7 @@ model CommunicationOperationalRoom {
 
   links          CommunicationOperationalLink[]
   reflections    CommunicationOperationalReflection[]
+  chamberRecords CommunicationChamberRecord[]
 
   @@unique([createdByUserId, clientRoomId])
   @@index([roomClass, updatedAt])
