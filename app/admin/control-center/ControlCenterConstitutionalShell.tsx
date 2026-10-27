@@ -63,9 +63,15 @@ function getLocation(pathname: string) {
   }
 
   if (pathname.startsWith('/admin/control-center/transactions/')) {
+    const reference = decodeURIComponent(
+      pathname.slice('/admin/control-center/transactions/'.length).split('/')[0] || ''
+    )
+
     return {
-      label: 'TRANSACTIONS / GOVERNED TRANSACTION RECORD',
-      description: null,
+      label: reference
+        ? `TRANSACTIONS / ${reference}`
+        : 'TRANSACTIONS / GOVERNED TRANSACTION RECORD',
+      description: 'Governed transaction record · operator-controlled institutional workspace.',
     }
   }
 

@@ -95,43 +95,26 @@ export default async function TransactionOperatorPage({
   return (
     <div className="min-h-screen bg-[#090d0c] text-stone-100">
       <header className="relative z-20 border-b border-stone-800 bg-[#090d0c]/88 backdrop-blur-xl backdrop-saturate-125">
-        <div className="mx-auto hidden max-w-7xl px-4 py-2.5 sm:block sm:px-6 lg:px-8">
-          <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-            <div className="min-w-0">
-              <p className="text-[9px] uppercase tracking-[0.2em] text-amber-300">
-                French-Ward · Transaction Control
-              </p>
-              <div className="mt-1 flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
-                <h1 className="font-mono text-sm font-medium text-white">
-                  {reference}
-                </h1>
-                <span className="text-[11px] text-stone-400">
-                  Inderaksh Gold Refinery FZ-LLC · Initial 50 KG Gold Doré
-                </span>
-              </div>
+        <div className="mx-auto hidden max-w-7xl px-4 sm:block sm:px-6 lg:px-8">
+          <div className="flex min-h-11 flex-wrap items-center justify-between gap-x-6 gap-y-2 py-2.5">
+            <div className="flex min-w-0 flex-wrap items-center gap-x-5 gap-y-1 text-[9px] uppercase tracking-[0.12em]">
+              <span className="text-amber-300">Documents · Review</span>
+              <span className="text-stone-300">Execution · Not Released</span>
+              <span className="text-cyan-300">Settlement · Active</span>
+              <span className="text-rose-300">Authority · Verification only</span>
             </div>
 
-            <div className="self-start rounded-sm border border-amber-900/70 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-amber-300 sm:shrink-0">
+            <span className="shrink-0 border border-amber-900/60 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-amber-300">
               Operator Control
-            </div>
-          </div>
-
-          <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1 border-t border-stone-800/80 pt-2 text-[9px] uppercase tracking-[0.12em]">
-            <span className="text-amber-300">Documents · Review</span>
-            <span className="text-stone-300">Execution · Not Released</span>
-            <span className="text-cyan-300">Settlement · Active</span>
-            <span className="text-rose-300">Authority · Verification only</span>
+            </span>
           </div>
         </div>
 
         <details className="group sm:hidden">
           <summary className="flex cursor-pointer list-none items-center justify-between gap-4 border-b border-amber-900/20 bg-[linear-gradient(90deg,rgba(12,27,22,0.78),rgba(9,16,14,0.62))] px-4 py-3 backdrop-blur-xl [&::-webkit-details-marker]:hidden">
             <div className="min-w-0">
-              <p className="truncate font-mono text-[12px] font-medium text-white">
-                {reference}
-              </p>
-              <p className="mt-1 truncate text-[9px] uppercase tracking-[0.14em] text-amber-200/70">
-                Inderaksh · Transaction Control
+              <p className="truncate text-[9px] uppercase tracking-[0.14em] text-amber-200/70">
+                Transaction control · current state
               </p>
             </div>
 
@@ -145,15 +128,11 @@ export default async function TransactionOperatorPage({
 
           <div className="border-b border-amber-900/20 bg-[#08100d]/72 px-4 py-4 shadow-[0_12px_28px_rgba(0,0,0,0.16)] backdrop-blur-2xl backdrop-saturate-150">
             <p className="text-[9px] uppercase tracking-[0.2em] text-amber-300">
-              French-Ward · Transaction Control
-            </p>
-
-            <p className="mt-2 font-mono text-sm font-medium text-white">
-              {reference}
+              Transaction state
             </p>
 
             <p className="mt-1 text-[11px] leading-5 text-stone-400">
-              Inderaksh Gold Refinery FZ-LLC · Initial 50 KG Gold Doré
+              Operator controls and current authority posture
             </p>
 
             <div className="mt-3 inline-flex rounded-sm border border-amber-900/70 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-amber-300">
