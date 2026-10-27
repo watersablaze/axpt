@@ -46,7 +46,7 @@ export default async function GrowthcorpRecipientDocument({
     identity: { userId: principal.userId, email: principal.email },
     scope: "SUPPORTING_DOCUMENT_VIEW",
     action: "VIEW",
-    resourceReference: program.reference,
+    resourceReference: `GSAM-SCO-PROGRAM-${program.quantityMt}MT-2026-002`,
     resourceVersion: 1,
   });
 
