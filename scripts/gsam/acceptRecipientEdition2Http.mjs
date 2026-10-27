@@ -145,6 +145,26 @@ export default {
     path.join(temporary, css),
   );
 
+  for (const kind of ["html", "pdf"]) {
+    const routeFile =
+      `app/api/french-ward/gsam-sco/[variant]/${kind}/route.ts`;
+
+    const target = path.join(temporary, routeFile);
+
+    let relative = path.relative(
+      path.dirname(target),
+      path.join(root, routeFile),
+    ).split(path.sep).join("/").replace(/\\.ts$/, "");
+
+    if (!relative.startsWith(".")) relative = "./" + relative;
+
+    write(
+      routeFile,
+      `export { GET } from ${JSON.stringify(relative)};\n` +
+      'export const dynamic = "force-dynamic";\n',
+    );
+  }
+
   write("app/api/acceptance-health/route.ts", `
 import { prisma } from "@/infrastructure/db/prisma";
 export async function GET() {
@@ -450,6 +470,38 @@ async function acceptance() {
   }
 
   console.log("PASS: Edition 2 recipient separation");
+
+  // Direct routes must independently deny recipients without
+  // a valid Edition 2 grant, regardless of room presentation.
+  for (const kind of ["html", "pdf"]) {
+    for (const variant of ["100-mt", "1000-mt"]) {
+      const url =
+        `/api/french-ward/gsam-sco/${variant}/${kind}`;
+
+      for (const person of [null, none, old, expired, revoked]) {
+        const response = await get(url, person?.cookie);
+        assert.equal(
+          response.status,
+          404,
+          `Expected ${kind} denial for ${variant}`,
+        );
+      }
+
+      const opposite =
+        variant === "100-mt" ? thousand : hundred;
+
+      assert.equal(
+        (await get(url, opposite.cookie)).status,
+        404,
+        `Cross-document ${kind} access not denied`,
+      );
+    }
+  }
+
+  console.log(
+    "PASS: direct HTML/PDF routes deny missing, " +
+    "invalid and cross-document grants",
+  );
 
   await stop();
   await start([false, true]);
