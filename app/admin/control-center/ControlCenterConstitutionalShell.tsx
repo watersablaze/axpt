@@ -79,8 +79,19 @@ function getLocation(pathname: string) {
     return { label: 'TREASURY / OPERATING SURFACE', description: null }
   }
 
+  if (pathname === '/admin/control-center/instruments') {
+    return {
+      label: 'INSTRUMENTS / INSTITUTIONAL INSTRUMENT REGISTRY',
+      description:
+        'Canonical institutional records. Each instrument retains its own authority boundary.',
+    }
+  }
+
   if (pathname.startsWith('/admin/control-center/instruments')) {
-    return { label: 'INSTRUMENTS / INSTITUTIONAL INSTRUMENT CONTROL', description: null }
+    return {
+      label: 'INSTRUMENTS / INSTITUTIONAL INSTRUMENT CONTROL',
+      description: null,
+    }
   }
 
   if (pathname.startsWith('/admin/control-center/execution')) {
