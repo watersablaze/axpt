@@ -9,7 +9,10 @@ export default function ControlCenterTransactionsPage() {
   const transactions = getControlCenterTransactionRegistry();
 
   return (
-    <ControlDomainSurface title="Transaction registry" description="Governed commercial records. Registry presence does not authorize execution, settlement, or movement of value."
+    <ControlDomainSurface
+      title="Transaction registry"
+      description="Governed commercial records. Registry presence does not authorize execution, settlement, or movement of value."
+      showHeading={false}
       rail={<nav aria-label="Transaction registry index">
         <h2>Records · {transactions.length}</h2>
         {transactions.map((transaction) => <a key={transaction.reference} href={`#${encodeURIComponent("transaction-" + transaction.reference)}`}>

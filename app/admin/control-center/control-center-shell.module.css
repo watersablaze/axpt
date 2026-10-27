@@ -395,3 +395,93 @@
   }
   .mobileDomainNavigation a {padding:9px 8px;}
 }
+
+/* CC-TXN-HEADER-1B · consolidated Control Center secondary surface bar */
+
+.location {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 18px;
+}
+
+.location > span {
+  flex: 0 0 auto;
+}
+
+.location > p {
+  min-width: 0;
+  margin: 0;
+  color: #708792;
+  font-size: 10px;
+  line-height: 1.45;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+@media (max-width: 900px) {
+  .location {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .location > p {
+    max-width: 100%;
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 720px) {
+  .location > p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* CC-TXN-HEADER-1C · emphasize consolidated transaction location strip */
+
+.location {
+  min-height: 38px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-top-color: rgba(147, 177, 193, .11);
+  border-bottom: 1px solid rgba(147, 177, 193, .12);
+  background:
+    linear-gradient(
+      90deg,
+      rgba(91, 142, 164, .07),
+      rgba(91, 142, 164, .018) 38%,
+      transparent 72%
+    );
+}
+
+.location > span {
+  color: #c7dce6;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .11em;
+  text-shadow: 0 0 18px rgba(135, 184, 201, .08);
+}
+
+.location > p {
+  color: #6f858f;
+  font-size: 9px;
+}
+
+@media (max-width: 720px) {
+  .location {
+    min-height: 34px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .location > span {
+    font-size: 9px;
+  }
+
+  .location > p {
+    font-size: 8px;
+  }
+}

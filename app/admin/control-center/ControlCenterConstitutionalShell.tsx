@@ -54,31 +54,42 @@ const SECONDARY_DOMAINS = [
 ] as const
 
 function getLocation(pathname: string) {
-  if (pathname.startsWith('/admin/control-center/transactions')) {
-    return 'TRANSACTIONS / GOVERNED TRANSACTION RECORD'
+  if (pathname === '/admin/control-center/transactions') {
+    return {
+      label: 'TRANSACTIONS / TRANSACTION REGISTRY',
+      description:
+        'Governed commercial records. Registry presence does not authorize execution, settlement, or movement of value.',
+    }
+  }
+
+  if (pathname.startsWith('/admin/control-center/transactions/')) {
+    return {
+      label: 'TRANSACTIONS / GOVERNED TRANSACTION RECORD',
+      description: null,
+    }
   }
 
   if (pathname.startsWith('/admin/control-center/treasury')) {
-    return 'TREASURY / OPERATING SURFACE'
+    return { label: 'TREASURY / OPERATING SURFACE', description: null }
   }
 
   if (pathname.startsWith('/admin/control-center/instruments')) {
-    return 'INSTRUMENTS / INSTITUTIONAL INSTRUMENT CONTROL'
+    return { label: 'INSTRUMENTS / INSTITUTIONAL INSTRUMENT CONTROL', description: null }
   }
 
   if (pathname.startsWith('/admin/control-center/execution')) {
-    return 'EXECUTION / OPERATING DOMAIN'
+    return { label: 'EXECUTION / OPERATING DOMAIN', description: null }
   }
 
   if (pathname.startsWith('/admin/control-center/spine')) {
-    return 'SPINE / EXECUTION LINEAGE'
+    return { label: 'SPINE / EXECUTION LINEAGE', description: null }
   }
 
   if (pathname.startsWith('/admin/control-center/system')) {
-    return 'SYSTEM / CONTROL PLANE'
+    return { label: 'SYSTEM / CONTROL PLANE', description: null }
   }
 
-  return 'COMMAND / INSTITUTIONAL OPERATING PICTURE'
+  return { label: 'COMMAND / INSTITUTIONAL OPERATING PICTURE', description: null }
 }
 
 export default function ControlCenterConstitutionalShell({
@@ -96,6 +107,8 @@ export default function ControlCenterConstitutionalShell({
   const activeDomain =
     domains.find((domain) => domain.match(pathname)) ??
     PRIMARY_DOMAINS[0]
+
+  const location = getLocation(pathname)
 
   return (
     <section className={styles.shell}>
@@ -184,7 +197,10 @@ export default function ControlCenterConstitutionalShell({
         </details>
 
         <div className={styles.location}>
-          {getLocation(pathname)}
+          <span>{location.label}</span>
+          {location.description ? (
+            <p>{location.description}</p>
+          ) : null}
         </div>
       </header>
 
