@@ -151,7 +151,7 @@ export default function ExternalImportWorkspace() {
   return (
     <main className={styles.workspace}>
       <header className={styles.header}>
-        <div className={styles.eyebrow}>French-Ward / Transactions</div>
+        <div className={styles.eyebrow}>French-Ward · Transaction Administration</div>
         <div className={styles.headerRow}>
           <div>
             <h1>External Transaction Registration</h1>
