@@ -2,6 +2,10 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import net from "node:net";
+import http from "node:http";
+import os from "node:os";
+import { createHash } from "node:crypto";
+import { validateGsamEdition2Stage } from "./gsamEdition2CustodyExecutor.mjs";
 import { spawn } from "node:child_process";
 import { createRequire } from "node:module";
 import { randomBytes, randomUUID } from "node:crypto";
@@ -49,6 +53,137 @@ const ids = {
 let temporary;
 let server;
 let output = "";
+let storageServer;
+let tamperedKey = null;
+const artifactBytes = new Map();
+
+const sha256 = bytes =>
+  createHash("sha256").update(bytes).digest("hex");
+
+async function prepareFrozenFixtures() {
+  const directory = path.join(
+    os.homedir(), "Desktop", "gsam-ed2-custody-stage"
+  );
+
+  const validated = await validateGsamEdition2Stage({
+    directory,
+  });
+
+  assert.equal(validated.length, 4);
+
+  // Custody registry is append-only. Reuse only the exact
+  // previously verified synthetic Edition 2 records.
+  // Never create, update, or delete registry entries.
+  assert.equal(
+    await prisma.gsamScoEdition.count(),
+    2,
+    "STOP: isolated edition registry contains unexpected records",
+  );
+
+  for (const artifact of validated) {
+    assert.equal(sha256(artifact.bytes), artifact.sha256);
+    assert.ok(!artifactBytes.has(artifact.key));
+    artifactBytes.set(artifact.key, Buffer.from(artifact.bytes));
+  }
+
+  for (const quantityMt of [100, 1000]) {
+    const entries = validated.filter(
+      entry => entry.quantityMt === quantityMt
+    );
+    assert.equal(entries.length, 2);
+
+    const pdf = entries.find(entry => entry.format === "pdf");
+    const html = entries.find(entry => entry.format === "html");
+    assert.ok(pdf && html);
+
+    const registered = await prisma.gsamScoEdition.findUnique({
+      where: { reference: pdf.reference },
+    });
+
+    assert.ok(
+      registered,
+      `STOP: missing isolated ${quantityMt} MT registry`,
+    );
+    assert.equal(registered.quantityMt, quantityMt);
+    assert.equal(registered.state, "CANDIDATE");
+    assert.equal(registered.sourceSha256, "0".repeat(64));
+    assert.equal(registered.pdfSha256, pdf.sha256);
+    assert.equal(registered.htmlSha256, html.sha256);
+    assert.equal(registered.pdfStorageKey, pdf.key);
+    assert.equal(registered.htmlStorageKey, html.key);
+  }
+
+  console.log(
+    "PASS: two existing append-only edition records verified"
+  );
+
+  return validated;
+}
+
+async function startStorageFixture() {
+  assert.equal(storageServer, undefined);
+
+  await new Promise((resolve, reject) => {
+    const probe = net.createServer();
+    probe.once("error", reject);
+    probe.listen(3100, "127.0.0.1", () => probe.close(resolve));
+  });
+
+  storageServer = http.createServer((req, res) => {
+    const url = new URL(req.url, "http://127.0.0.1:3100");
+    const prefix = "/gsam-local-acceptance/";
+
+    if (req.method !== "GET" ||
+        !url.pathname.startsWith(prefix)) {
+      res.writeHead(404);
+      res.end();
+      return;
+    }
+
+    const key = decodeURIComponent(
+      url.pathname.slice(prefix.length)
+    );
+    const original = artifactBytes.get(key);
+
+    if (!original) {
+      res.writeHead(404);
+      res.end();
+      return;
+    }
+
+    const bytes = key === tamperedKey
+      ? Buffer.from("tampered local acceptance artifact")
+      : original;
+
+    res.writeHead(200, {
+      "Content-Type": "application/octet-stream",
+      "Content-Length": bytes.byteLength,
+    });
+    res.end(bytes);
+  });
+
+  try {
+    await new Promise((resolve, reject) => {
+      storageServer.once("error", reject);
+      storageServer.listen(3100, "127.0.0.1", resolve);
+    });
+  } catch (error) {
+    storageServer.closeAllConnections();
+    storageServer = undefined;
+    throw error;
+  }
+}
+
+async function stopStorageFixture() {
+  if (!storageServer) return;
+  const current = storageServer;
+  storageServer = undefined;
+  current.closeAllConnections();
+  await new Promise((resolve, reject) =>
+    current.close(error => error ? reject(error) : resolve())
+  );
+}
+
 
 function redact(value) {
   return String(value)
@@ -199,6 +334,12 @@ async function start(flags) {
     DIRECT_URL: dbUrl,
     SIGNING_SECRET: secret,
     LOG_SECRET: randomBytes(48).toString("hex"),
+    NEXT_TELEMETRY_DISABLED: "1",
+    AWS_ENDPOINT_URL_S3: "http://127.0.0.1:3100",
+    AWS_REGION: "us-east-1",
+    AWS_ACCESS_KEY_ID: "LOCAL_INERT_ACCEPTANCE",
+    AWS_SECRET_ACCESS_KEY: "LOCAL_INERT_ACCEPTANCE",
+    AXPT_TRANSACTION_DOCUMENT_BUCKET: "gsam-local-acceptance",
     GSAM_SCO_RECIPIENT_RELEASE:
       flags[0] ? "enabled" : "disabled",
     GSAM_SCO_FROZEN_EDITION_V2_READY:
@@ -420,6 +561,9 @@ async function acceptance() {
     { revoked: true },
   );
 
+  const validated = await prepareFrozenFixtures();
+  await startStorageFixture();
+
   prepareApplication();
   await start([true, true]);
 
@@ -503,6 +647,88 @@ async function acceptance() {
     "invalid and cross-document grants",
   );
 
+  // Positive delivery through the real authenticated HTTP routes.
+  for (const artifact of validated) {
+    const variant =
+      artifact.quantityMt === 100 ? "100-mt" : "1000-mt";
+    const person = artifact.quantityMt === 100
+      ? hundred : thousand;
+
+    const response = await get(
+      `/api/french-ward/gsam-sco/${variant}/${artifact.format}`,
+      person.cookie,
+    );
+
+    assert.equal(
+      response.status, 200,
+      `Positive ${variant} ${artifact.format} delivery`
+    );
+
+    const received = Buffer.from(await response.arrayBuffer());
+
+    assert.equal(sha256(received), artifact.sha256);
+    assert.deepEqual(received, Buffer.from(artifact.bytes));
+    assert.equal(
+      response.headers.get("cache-control"), "private, no-store"
+    );
+    assert.equal(
+      response.headers.get("x-content-type-options"), "nosniff"
+    );
+    assert.equal(
+      response.headers.get("x-robots-tag"), "noindex, nofollow"
+    );
+
+    if (artifact.format === "pdf") {
+      assert.match(
+        response.headers.get("content-type") || "",
+        /^application\/pdf/
+      );
+      assert.match(
+        response.headers.get("content-disposition") || "",
+        /^attachment;/
+      );
+    } else {
+      assert.match(
+        response.headers.get("content-type") || "",
+        /^text\/html/
+      );
+      assert.match(
+        response.headers.get("content-disposition") || "",
+        /^inline;/
+      );
+      assert.match(
+        response.headers.get("content-security-policy") || "",
+        /default-src 'none'/
+      );
+    }
+  }
+
+  console.log(
+    "PASS: four authorized frozen HTML/PDF HTTP deliveries"
+  );
+  console.log(
+    "PASS: exact hashes, bytes, MIME and security headers"
+  );
+
+  // The real verifier must reject corrupted bytes over HTTP.
+  const pdf100 = validated.find(
+    item => item.quantityMt === 100 && item.format === "pdf"
+  );
+  assert.ok(pdf100);
+
+  tamperedKey = pdf100.key;
+  try {
+    const tampered = await get(
+      "/api/french-ward/gsam-sco/100-mt/pdf",
+      hundred.cookie,
+    );
+    assert.equal(tampered.status, 503);
+  } finally {
+    tamperedKey = null;
+  }
+
+  console.log("PASS: corrupted object rejected over HTTP");
+
   await stop();
   await start([false, true]);
 
@@ -522,8 +748,7 @@ async function acceptance() {
   console.log("PASS: both release controls fail closed");
 
   console.log(
-    "NOT COVERED: individual document HTTP delivery, " +
-    "storage integrity and document response headers",
+    "PASS: authorized document delivery and corruption denial"
   );
 }
 
@@ -562,6 +787,13 @@ try {
   process.exitCode = 1;
 } finally {
   await stop();
+
+  try {
+    await stopStorageFixture();
+  } catch (error) {
+    console.error("STORAGE CLEANUP FAILED:", redact(error));
+    process.exitCode = 1;
+  }
 
   try {
     await cleanup();
