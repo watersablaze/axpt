@@ -162,26 +162,53 @@ export default async function TransactionIntakesAdminPage({
   ].filter(Boolean).length;
 
   return (
-    <main className="min-h-screen bg-black text-white p-8">
-      <div className="mb-8">
-        <p className="text-sm uppercase tracking-[0.28em] text-gray-400">
-          AXPT Admin
-        </p>
-        <h1 className="mt-2 text-3xl font-bold">Transaction Intakes</h1>
-        <p className="mt-3 max-w-3xl text-gray-300">
-          Review buyer-side transaction intake submissions, referral
-          attribution, commercial structure, and readiness status before
-          qualification or promotion.
-        </p>
-      </div>
+    <main className="min-h-full bg-[#090d10] text-neutral-100">
+      <div className="mx-auto w-full max-w-[1500px] px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
+        <header className="border-b border-neutral-800/80 pb-5">
+          <p className="text-[9px] uppercase tracking-[0.18em] text-amber-300/75">
+            French-Ward · Transaction Administration
+          </p>
 
-      <section className="mb-6 rounded border border-gray-800 bg-gray-950 p-5">
+          <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <h1 className="text-xl font-medium text-white sm:text-2xl">
+                Transaction intake registry
+              </h1>
+
+              <p className="mt-2 max-w-3xl text-xs leading-5 text-neutral-500">
+                Review submitted commercial records, referral provenance, and readiness before qualification or promotion.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+              <Link
+                href="/admin/transaction-intakes/external-import"
+                className="border border-neutral-700/70 px-3 py-2 text-[10px] uppercase tracking-[0.12em] text-neutral-300 transition hover:border-neutral-500 hover:text-white"
+              >
+                External registration
+              </Link>
+
+              <Link
+                href="/admin/transaction-intakes/representatives"
+                className="border border-amber-800/50 bg-amber-950/[0.08] px-3 py-2 text-[10px] uppercase tracking-[0.12em] text-amber-200 transition hover:border-amber-600/70"
+              >
+                Representatives
+              </Link>
+            </div>
+          </div>
+        </header>
+
+      <section className="mt-6 border border-neutral-800/70 bg-[#0b1116] p-5">
         <div className="flex flex-wrap items-center justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold">Quick Review</h2>
-            <p className="mt-1 text-sm text-gray-400">
-              Filter the queue by review state, program, referral source, or
-              searchable transaction details.
+            <p className="text-[9px] uppercase tracking-[0.16em] text-neutral-600">
+              Queue controls
+            </p>
+            <h2 className="mt-1 text-base font-medium text-white">
+              Intake review queue
+            </h2>
+            <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-500">
+              Filter the working registry by review state, program, referral source, or searchable transaction details.
             </p>
           </div>
 
@@ -286,32 +313,26 @@ export default async function TransactionIntakesAdminPage({
         </form>
       </section>
 
-      <section className="mb-6 rounded border border-gray-800 bg-gray-950 p-5">
+      <section className="mt-4 border-y border-neutral-900 py-4">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <h2 className="text-lg font-semibold">Representative Link Guide</h2>
-            <p className="mt-1 max-w-3xl text-sm text-gray-400">
-              Issue buyer-safe intake links with a referral code, representative
-              name, and program. Submitted records can be filtered by referral
-              lane.
+            <p className="text-[9px] uppercase tracking-[0.16em] text-neutral-600">
+              Referral administration
+            </p>
+            <h2 className="mt-1 text-sm font-medium text-neutral-200">
+              Representative intake links
+            </h2>
+            <p className="mt-1 max-w-3xl text-xs leading-5 text-neutral-600">
+              Issue buyer-safe referral links and inspect submitted records by representative lane.
             </p>
           </div>
 
-          <div className="flex flex-wrap gap-2">
-            <Link
-              href="/admin/transaction-intakes/representatives"
-              className="rounded border border-amber-500/40 bg-amber-500/10 px-3 py-2 text-sm font-semibold text-amber-200 hover:bg-amber-500/20"
-            >
-              Manage Representatives
-            </Link>
-
-            <Link
-              href="/french-ward/transaction-intake"
-              className="rounded border border-blue-500/40 bg-blue-500/10 px-3 py-2 text-sm font-semibold text-blue-200 hover:bg-blue-500/20"
-            >
-              Open Public Intake
-            </Link>
-          </div>
+          <Link
+            href="/french-ward/transaction-intake"
+            className="text-[10px] uppercase tracking-[0.12em] text-neutral-500 transition hover:text-white"
+          >
+            Open public intake ↗
+          </Link>
         </div>
 
         <div className="mt-5">
@@ -352,7 +373,7 @@ export default async function TransactionIntakesAdminPage({
       </section>
 
       {activeFilterCount > 0 && (
-        <section className="mb-4 rounded border border-amber-500/30 bg-amber-500/5 p-4">
+        <section className="mt-4 border-l-2 border-amber-800/60 bg-amber-950/[0.05] px-4 py-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <p className="text-xs uppercase tracking-[0.18em] text-amber-300/80">
@@ -396,7 +417,23 @@ export default async function TransactionIntakesAdminPage({
         </section>
       )}
 
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-sm text-gray-400">
+      <section className="mt-7">
+        <div className="mb-3 flex flex-wrap items-end justify-between gap-4">
+          <div>
+            <p className="text-[9px] uppercase tracking-[0.16em] text-neutral-600">
+              Working register
+            </p>
+            <h2 className="mt-1 text-base font-medium text-white">
+              Intake records
+            </h2>
+          </div>
+
+          <div className="text-[10px] text-neutral-600">
+            {intakes.length} record{intakes.length === 1 ? "" : "s"}
+          </div>
+        </div>
+
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3 text-xs text-neutral-500">
         <p>
           Showing {intakes.length} intake{intakes.length === 1 ? "" : "s"}
           {activeFilterCount > 0
@@ -417,10 +454,10 @@ export default async function TransactionIntakesAdminPage({
           No transaction intakes found for the current filters.
         </div>
       ) : (
-        <div className="overflow-x-auto rounded border border-gray-800">
-          <table className="w-full min-w-[1320px] border-collapse bg-gray-950 text-sm">
+        <div className="overflow-x-auto border-y border-neutral-800/80">
+          <table className="w-full min-w-[1320px] border-collapse bg-transparent text-xs">
             <thead>
-              <tr className="border-b border-gray-800 text-left text-gray-300">
+              <tr className="border-b border-neutral-800/80 text-left text-[9px] uppercase tracking-[0.12em] text-neutral-600">
                 <th className="px-4 py-3">Reference</th>
                 <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Submitter / Buyer</th>
@@ -438,7 +475,7 @@ export default async function TransactionIntakesAdminPage({
               {intakes.map((intake) => (
                 <tr
                   key={intake.id}
-                  className="border-b border-gray-900 text-gray-200 hover:bg-gray-900/40"
+                  className="border-b border-neutral-900 text-neutral-300 transition hover:bg-white/[0.015]"
                 >
                   <td className="whitespace-nowrap px-4 py-3 font-mono text-xs">
                     <Link
@@ -542,7 +579,15 @@ export default async function TransactionIntakesAdminPage({
           </table>
         </div>
       )}
-      <RecentIntakeEmailLogPanel />
+      </section>
+
+      <section className="mt-8 border-t border-neutral-900 pt-5">
+        <p className="mb-3 text-[9px] uppercase tracking-[0.16em] text-neutral-600">
+          Delivery diagnostics
+        </p>
+        <RecentIntakeEmailLogPanel />
+      </section>
+      </div>
     </main>
   );
 }
