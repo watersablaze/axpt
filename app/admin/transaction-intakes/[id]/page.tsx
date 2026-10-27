@@ -168,11 +168,13 @@ function Field({
   }
 
   return (
-    <div className="rounded border border-gray-800 bg-gray-950 p-4">
-      <p className="text-xs uppercase tracking-[0.18em] text-gray-500">
+    <div className="min-w-0 border-t border-neutral-900 py-3">
+      <p className="text-[9px] uppercase tracking-[0.14em] text-neutral-600">
         {label}
       </p>
-      <p className="mt-2 text-gray-100">{displayValue}</p>
+      <p className="mt-1 break-words text-xs leading-5 text-neutral-300">
+        {displayValue}
+      </p>
     </div>
   );
 }
@@ -185,9 +187,13 @@ function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section className="mt-8">
-      <h2 className="mb-4 text-xl font-semibold">{title}</h2>
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{children}</div>
+    <section className="border-t border-neutral-800/80 py-6">
+      <h2 className="text-[11px] font-medium uppercase tracking-[0.14em] text-neutral-400">
+        {title}
+      </h2>
+      <div className="mt-3 grid gap-x-6 md:grid-cols-2 xl:grid-cols-3">
+        {children}
+      </div>
     </section>
   );
 }
@@ -245,31 +251,49 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
     allowedReviewStatuses.length > 0;
 
   return (
-    <main className="min-h-screen bg-black text-white p-8">
-      <div className="mb-8">
-        <Link
-          href="/admin/transaction-intakes"
-          className="text-sm text-blue-300 hover:text-blue-200"
-        >
-          ← Back to transaction intakes
-        </Link>
+    <main className="min-h-full bg-[#090d10] text-neutral-100">
+      <div className="mx-auto w-full max-w-7xl px-4 py-5 sm:px-6 sm:py-7 lg:px-8">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-neutral-800/80 pb-4">
+          <Link
+            href="/admin/transaction-intakes"
+            className="text-[10px] uppercase tracking-[0.14em] text-neutral-500 transition hover:text-neutral-200"
+          >
+            ← Transaction intake registry
+          </Link>
 
-        <p className="mt-6 text-sm uppercase tracking-[0.28em] text-gray-400">
-          Transaction Intake
-        </p>
-        <h1 className="mt-2 text-3xl font-bold">{intake.reference}</h1>
-        <p className="mt-2 text-gray-300">
-          Status: {getTransactionIntakeStatusLabel(intake.status)}
-        </p>
-        <div className="mt-4">
           <span
-            className={`inline-flex rounded-full border px-3 py-1 text-sm ${getTransactionIntakeStatusTone(
+            className={`inline-flex border px-2.5 py-1 text-[9px] uppercase tracking-[0.13em] ${getTransactionIntakeStatusTone(
               intake.status,
             )}`}
           >
             {getTransactionIntakeStatusLabel(intake.status)}
           </span>
         </div>
+
+        <header className="border-b border-neutral-800/80 py-5">
+          <p className="text-[9px] uppercase tracking-[0.18em] text-amber-300/75">
+            French-Ward · Transaction Intake
+          </p>
+
+          <h1 className="mt-2 break-all font-mono text-lg font-medium text-white sm:text-xl">
+            {intake.reference}
+          </h1>
+
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1 text-[10px] text-neutral-500">
+            <span>
+              Buyer · {intake.buyerName || "Not recorded"}
+            </span>
+            <span>
+              Commodity · {intake.commodity || "Not recorded"}
+            </span>
+            <span>
+              Received · {intake.createdAt.toLocaleString()}
+            </span>
+          </div>
+        </header>
+
+        <div className="grid gap-6 pt-6 xl:grid-cols-[minmax(0,1fr)_360px] xl:items-start">
+          <div className="min-w-0">
 
         {externallyRegistered ? (
           <section className="mt-8 rounded border border-amber-800/40 bg-gray-950 p-6">
@@ -287,7 +311,7 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
             </p>
 
             <div className="mt-5 grid gap-4 md:grid-cols-3">
-              <div className="rounded border border-gray-800 bg-black p-4">
+              <div className="border-t border-neutral-900 py-4">
                 <p className="text-xs uppercase tracking-widest text-gray-500">
                   Originating introduction
                 </p>
@@ -371,11 +395,16 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
           </section>
         ) : null}
 
-        <section className="mt-8 rounded border border-gray-800 bg-gray-950 p-6">
-          <h2 className="text-xl font-semibold">Review Management</h2>
-          <p className="mt-2 max-w-3xl text-sm text-gray-400">
-            Update the intake status and record internal review notes. These
-            notes are visible only on the admin surface.
+        <section className="border border-amber-900/35 bg-amber-950/[0.06] p-5">
+          <p className="text-[9px] uppercase tracking-[0.16em] text-amber-300/70">
+            Operator decision
+          </p>
+          <h2 className="mt-1 text-base font-medium text-white">
+            Review management
+          </h2>
+          <p className="mt-2 max-w-3xl text-xs leading-5 text-neutral-500">
+            Update the intake review state and preserve the reasoning behind the decision.
+            Internal notes remain administrative.
           </p>
 
           <form action={updateIntakeReview} className="mt-5 grid gap-4">
@@ -390,7 +419,7 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
                 <select
                   name="status"
                   defaultValue={intake.status}
-                  className="max-w-md rounded border border-gray-700 bg-black px-3 py-2 text-white"
+                  className="max-w-md border border-neutral-700/70 bg-[#080d11] px-3 py-2 text-xs text-neutral-200 outline-none focus:border-amber-700/70"
                 >
                   {allowedReviewStatuses.map((status) => (
                     <option key={status} value={status}>
@@ -419,14 +448,14 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
                 name="internalNotes"
                 defaultValue={intake.internalNotes || ""}
                 rows={6}
-                className="w-full rounded border border-gray-700 bg-black px-3 py-2 text-white"
+                className="w-full resize-y border border-neutral-700/70 bg-[#080d11] px-3 py-2.5 text-xs leading-5 text-neutral-200 outline-none placeholder:text-neutral-700 focus:border-amber-700/70"
                 placeholder="Add review notes, follow-up requirements, risk observations, document needs, or intermediary context..."
               />
             </label>
 
             <button
               type="submit"
-              className="w-fit rounded border border-amber-500/50 bg-amber-500/10 px-4 py-2 text-sm font-semibold text-amber-200 hover:bg-amber-500/20"
+              className="inline-flex min-h-9 w-fit items-center border border-amber-700/50 bg-amber-950/15 px-3 text-[10px] uppercase tracking-[0.12em] text-amber-100 transition hover:border-amber-500/70 hover:bg-amber-950/25"
             >
               Save Review Update
             </button>
@@ -488,10 +517,14 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
             </div>
           </div>
         </section>
-      </div>
 
-      <section className="mt-8 rounded border border-gray-800 bg-gray-950 p-6">
-        <h2 className="text-xl font-semibold">Review History</h2>
+      <section className="mt-7 border-t border-neutral-800/80 pt-6">
+        <p className="text-[9px] uppercase tracking-[0.16em] text-neutral-600">
+          Record
+        </p>
+        <h2 className="mt-1 text-base font-medium text-white">
+          Review history
+        </h2>
 
         {intake.events.length === 0 ? (
           <p className="mt-4 text-gray-400">No review events recorded yet.</p>
@@ -539,6 +572,72 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
           </div>
         )}
       </section>
+
+          </div>
+
+          <aside className="min-w-0 space-y-4 xl:sticky xl:top-5">
+            <section className="border border-neutral-800/70 bg-[#0b1116] p-4">
+              <p className="text-[9px] uppercase tracking-[0.16em] text-neutral-600">
+                Current posture
+              </p>
+
+              <dl className="mt-3 space-y-3 text-xs">
+                <div>
+                  <dt className="text-neutral-600">Review state</dt>
+                  <dd className="mt-1 text-neutral-200">
+                    {getTransactionIntakeStatusLabel(intake.status)}
+                  </dd>
+                </div>
+
+                <div>
+                  <dt className="text-neutral-600">Origin</dt>
+                  <dd className="mt-1 text-neutral-200">
+                    {externallyRegistered
+                      ? "External documentary registration"
+                      : "Submitted transaction intake"}
+                  </dd>
+                </div>
+
+                <div>
+                  <dt className="text-neutral-600">Opportunity posture</dt>
+                  <dd className="mt-1 text-neutral-200">
+                    {intake.promotedOpportunity
+                      ? "Promoted"
+                      : externallyRegistered
+                        ? "Withheld · separate authorization required"
+                        : canPromoteToOpportunity
+                          ? "Eligible for operator promotion"
+                          : "Not presently eligible"}
+                  </dd>
+                </div>
+              </dl>
+            </section>
+
+            <section className="border-l-2 border-amber-800/60 bg-amber-950/[0.06] px-4 py-3">
+              <p className="text-[9px] uppercase tracking-[0.14em] text-amber-300/70">
+                Authority boundary
+              </p>
+              <p className="mt-1 text-xs leading-5 text-neutral-500">
+                Intake review records disposition. It does not itself establish buyer authority,
+                representative authority, settlement authority, or physical-goods custody.
+              </p>
+            </section>
+          </aside>
+        </div>
+
+        <section className="mt-8">
+          <div className="border-b border-neutral-800/80 pb-4">
+            <p className="text-[9px] uppercase tracking-[0.17em] text-neutral-600">
+              Submitted record
+            </p>
+            <h2 className="mt-1 text-base font-medium text-white">
+              Intake particulars
+            </h2>
+            <p className="mt-2 max-w-3xl text-xs leading-5 text-neutral-500">
+              Documentary and declared information retained from the originating intake.
+              These fields are reference material for operator review.
+            </p>
+          </div>
 
       <Section title="01 · Counterparty Identity">
         <Field label="Buyer / Entity" value={intake.buyerName} />
@@ -845,6 +944,8 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
         <Field label="Created At" value={intake.createdAt} />
         <Field label="Updated At" value={intake.updatedAt} />
       </Section>
+        </section>
+      </div>
     </main>
   );
 }
