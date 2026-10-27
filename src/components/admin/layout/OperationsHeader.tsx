@@ -14,6 +14,14 @@ export default function OperationsHeader() {
   // FW-TXN-1B.6O
   const compactRegistration =
     pathname === '/admin/transaction-intakes/external-import'
+
+  const compactCommunications =
+    pathname.startsWith('/admin/communications')
+
+  const compactMobileHeader =
+    compactRegistration ||
+    compactCommunications
+
   const [mobileToolsOpen, setMobileToolsOpen] = useState(false)
   const [signingOut, setSigningOut] = useState(false)
   const [signOutFailed, setSignOutFailed] = useState(false)
@@ -46,7 +54,15 @@ export default function OperationsHeader() {
   }
 
   return (
-    <header className={`${styles.header} ${compactRegistration ? styles.transactionCompact : ''}`}>
+    <header
+      className={`${styles.header} ${
+        compactRegistration
+          ? styles.transactionCompact
+          : compactCommunications
+            ? styles.communicationsCompact
+            : ''
+      }`}
+    >
       <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 bottom-0 h-px"
         style={{ background: 'linear-gradient(90deg, transparent, rgba(164,137,215,.35) 20%, rgba(113,183,203,.45) 48%, rgba(190,184,137,.3) 78%, transparent)' }} />
 
@@ -78,24 +94,48 @@ export default function OperationsHeader() {
           </div>
         </div>
 
-        {compactRegistration ? (
+        {compactMobileHeader ? (
           <button
             type="button"
-            className={styles.transactionMobileToggle}
-            aria-controls="fw-transaction-header-tools"
+            className={
+              compactRegistration
+                ? styles.transactionMobileToggle
+                : styles.communicationsMobileToggle
+            }
+            aria-controls="operations-header-tools"
             aria-expanded={mobileToolsOpen}
-            onClick={() => setMobileToolsOpen((current) => !current)}
+            onClick={() =>
+              setMobileToolsOpen(
+                current => !current
+              )
+            }
           >
-            {mobileToolsOpen ? 'Close admin controls −' : 'Admin controls +'}
+            {compactCommunications
+              ? mobileToolsOpen
+                ? 'Close'
+                : 'Admin'
+              : mobileToolsOpen
+                ? 'Close admin controls −'
+                : 'Admin controls +'}
           </button>
         ) : null}
 
         <div
-          id={compactRegistration ? 'fw-transaction-header-tools' : undefined}
+          id="operations-header-tools"
           className={`flex min-w-0 flex-wrap items-center gap-2 ${
             compactRegistration
-              ? `${styles.transactionTools} ${mobileToolsOpen ? styles.transactionToolsOpen : ''}`
-              : ''
+              ? `${styles.transactionTools} ${
+                  mobileToolsOpen
+                    ? styles.transactionToolsOpen
+                    : ''
+                }`
+              : compactCommunications
+                ? `${styles.communicationsTools} ${
+                    mobileToolsOpen
+                      ? styles.communicationsToolsOpen
+                      : ''
+                  }`
+                : ''
           }`}
         >
           <AdminAttention />

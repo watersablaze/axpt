@@ -164,3 +164,79 @@
     display: flex;
   }
 }
+
+/* AXPT Communications · canonical compact mobile header */
+.communicationsMobileToggle {
+  display: none;
+}
+
+@media (max-width: 719px) {
+  .communicationsCompact {
+    padding: 5px 11px;
+  }
+
+  .communicationsCompact > div:nth-child(2) {
+    gap: 7px;
+    flex-wrap: nowrap;
+  }
+
+  .communicationsCompact .sigil {
+    width: 42px;
+    height: 32px;
+  }
+
+  .communicationsCompact .sigilImage {
+    width: 44px;
+    height: 34px;
+    max-width: none;
+    object-fit: contain;
+  }
+
+  .communicationsCompact .communicationsMobileToggle {
+    display: inline-flex;
+    min-height: 28px;
+    margin-left: auto;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(147,177,193,.17);
+    border-radius: 5px;
+    background: transparent;
+    padding: 4px 8px;
+    color: #9eafb6;
+    font-size: 8px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    box-shadow: none;
+  }
+
+  .communicationsCompact .communicationsTools {
+    display: none;
+    width: 100%;
+    margin-top: 4px;
+    padding: 6px 0 2px;
+    border-top: 1px solid rgba(120,140,150,.12);
+  }
+
+  .communicationsCompact .communicationsToolsOpen {
+    display: flex;
+  }
+
+  .communicationsCompact .communicationsTools nav {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+  }
+
+  .communicationsCompact .communicationsTools nav a,
+  .communicationsCompact .communicationsTools > button {
+    min-height: 27px;
+    justify-content: flex-start;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 3px 1px;
+    font-size: 9px;
+    box-shadow: none;
+  }
+}

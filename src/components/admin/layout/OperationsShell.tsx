@@ -25,6 +25,9 @@ export default function OperationsShell({
   const institutionalAccessOwnsSurface =
     pathname === '/admin/institutional-access'
 
+  const communicationsOwnsSurface =
+    pathname === '/admin/communications'
+
   return (
     <div
       className="flex overflow-hidden bg-black text-white"
@@ -50,7 +53,8 @@ export default function OperationsShell({
         <OperationsHeader />
         <main
           className={`${externalRegistrationSurface ? styles.transactionImportSurface : sharedSurface ? styles.surface : controlCenterOwnsTopEdge ? styles.controlCenter : ""} min-h-0 min-w-0 flex-1 overflow-auto bg-neutral-950 ${
-            institutionalAccessOwnsSurface
+            institutionalAccessOwnsSurface ||
+            communicationsOwnsSurface
               ? 'p-0'
               : `px-3 pb-3 sm:px-6 sm:pb-6 ${
                   controlCenterOwnsTopEdge

@@ -10,6 +10,7 @@ import {
 import { useSearchParams } from "next/navigation"
 
 import { useCommunicationsRealtime } from "@/lib/realtime/communications/CommunicationsProvider"
+import styles from "./CommunicationsWorkspace.module.css"
 import { isCurrentConversationLoad } from "@/domains/communications/client/isCurrentConversationLoad"
 import {
   COMMUNICATION_OPERATIONAL_ROOM_CLASSES,
@@ -294,6 +295,62 @@ function conversationLabel(
     .join(", ")
 }
 
+
+function conversationPrimaryLabel(
+  conversation: CommunicationConversation,
+  currentUserId: string
+) {
+  const activeOthers =
+    conversation.members.filter(
+      member =>
+        member.userId !== currentUserId &&
+        member.leftAt === null
+    )
+
+  if (activeOthers.length === 1) {
+    return userLabel(
+      activeOthers[0].user
+    )
+  }
+
+  return conversationLabel(
+    conversation,
+    currentUserId
+  )
+}
+
+function conversationSecondaryLabel(
+  conversation: CommunicationConversation,
+  currentUserId: string
+) {
+  const primary =
+    conversationPrimaryLabel(
+      conversation,
+      currentUserId
+    )
+
+  const canonical =
+    conversationLabel(
+      conversation,
+      currentUserId
+    )
+
+  if (
+    conversation.title &&
+    canonical !== primary
+  ) {
+    return conversation.title
+  }
+
+  if (conversation.operationalRoom) {
+    return operationalRoomClassLabel(
+      conversation.operationalRoom.roomClass
+    )
+  }
+
+  return "Direct conversation"
+}
+
 function communicationMessageKindLabel(
   kind: CommunicationMessageKind
 ) {
@@ -498,6 +555,25 @@ export default function CommunicationsWorkspace({
     useState(false)
 
   const [
+    newMenuOpen,
+    setNewMenuOpen,
+  ] =
+    useState(false)
+
+  const [
+    conversationQuery,
+    setConversationQuery,
+  ] =
+    useState("")
+
+  const [
+    recipientQuery,
+    setRecipientQuery,
+  ] =
+    useState("")
+
+
+  const [
     directoryUsers,
     setDirectoryUsers,
   ] =
@@ -605,6 +681,12 @@ export default function CommunicationsWorkspace({
   const conversationArchived =
     selectedConversation?.status ===
     "ARCHIVED"
+
+  const creationSurfaceOpen =
+    newMenuOpen ||
+    directoryOpen ||
+    operationalRoomOpen
+
 
   useEffect(
     () => {
@@ -1034,6 +1116,7 @@ export default function CommunicationsWorkspace({
     }
 
     setDirectoryOpen(true)
+    setNewMenuOpen(false)
 
     if (directoryUsers.length > 0) {
       return
@@ -1094,6 +1177,7 @@ export default function CommunicationsWorkspace({
     }
 
     setDirectoryOpen(false)
+    setNewMenuOpen(false)
     setOperationalRoomOpen(true)
     setLoadingDirectory(true)
 
@@ -1704,6 +1788,81 @@ export default function CommunicationsWorkspace({
         "ARCHIVED"
     )
 
+  const normalizedConversationQuery =
+    conversationQuery
+      .trim()
+      .toLowerCase()
+
+  const conversationMatchesQuery = (
+    conversation: CommunicationConversation
+  ) => {
+    if (!normalizedConversationQuery) {
+      return true
+    }
+
+    const latest =
+      conversation.messages[0]
+
+    const haystack = [
+      conversationPrimaryLabel(
+        conversation,
+        currentUserId
+      ),
+      conversationSecondaryLabel(
+        conversation,
+        currentUserId
+      ),
+      conversation.title ?? "",
+      conversation.operationalRoom
+        ? operationalRoomClassLabel(
+            conversation.operationalRoom.roomClass
+          )
+        : "",
+      latest?.body ?? "",
+    ]
+      .join(" ")
+      .toLowerCase()
+
+    return haystack.includes(
+      normalizedConversationQuery
+    )
+  }
+
+  const filteredActiveConversations =
+    activeConversations.filter(
+      conversationMatchesQuery
+    )
+
+  const filteredArchivedConversations =
+    archivedConversations.filter(
+      conversationMatchesQuery
+    )
+
+  const normalizedRecipientQuery =
+    recipientQuery
+      .trim()
+      .toLowerCase()
+
+  const filteredDirectoryUsers =
+    directoryUsers.filter(
+      user => {
+        if (!normalizedRecipientQuery) {
+          return true
+        }
+
+        return [
+          user.displayName ?? "",
+          user.name ?? "",
+          user.email,
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(
+            normalizedRecipientQuery
+          )
+      }
+    )
+
   function renderConversationRow(
     conversation: CommunicationConversation,
     archived = false
@@ -1721,16 +1880,14 @@ export default function CommunicationsWorkspace({
 
     return (
       <button
-        key={
-          conversation.id
-        }
+        key={conversation.id}
         type="button"
         onClick={() => {
           selectConversation(
             conversation.id
           )
         }}
-        className={`w-full border-b border-neutral-900 px-4 py-4 text-left transition ${
+        className={`w-full border-b border-neutral-900 px-3 py-3 text-left transition ${
           selected
             ? "bg-neutral-900"
             : archived
@@ -1738,33 +1895,48 @@ export default function CommunicationsWorkspace({
               : "bg-transparent hover:bg-neutral-950"
         }`}
       >
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2">
-              {unread ? (
-                <span
-                  aria-label={`${conversation.unreadCount} unread`}
-                  className="inline-flex min-w-5 shrink-0 items-center justify-center rounded-full border border-cyan-500/50 bg-cyan-500/15 px-1.5 py-0.5 text-[10px] font-medium text-cyan-300"
-                >
-                  {conversation.unreadCount}
-                </span>
-              ) : null}
+        <div className="flex min-w-0 items-start gap-2.5">
+          {unread ? (
+            <span
+              aria-label={`${conversation.unreadCount} unread`}
+              className="mt-1 inline-flex min-w-4 shrink-0 items-center justify-center rounded-full border border-cyan-500/50 bg-cyan-500/15 px-1 py-0.5 text-[8px] font-medium text-cyan-300"
+            >
+              {conversation.unreadCount}
+            </span>
+          ) : null}
 
+          <div className="min-w-0 flex-1">
+            <div className="flex min-w-0 items-start justify-between gap-2">
               <div
-                className={`truncate text-sm font-medium ${
+                className={`min-w-0 truncate text-[12px] font-medium leading-5 ${
                   archived
                     ? "text-neutral-400"
-                    : "text-white"
+                    : "text-neutral-100"
                 }`}
               >
-                {conversationLabel(
+                {conversationPrimaryLabel(
                   conversation,
                   currentUserId
                 )}
               </div>
 
+              <div className="shrink-0 pt-0.5 text-[8px] tabular-nums text-neutral-700">
+                {formatConversationTime(
+                  conversation.updatedAt
+                )}
+              </div>
+            </div>
+
+            <div className="mt-0.5 min-w-0 truncate text-[9px] uppercase tracking-[0.08em] text-neutral-600">
+              {conversationSecondaryLabel(
+                conversation,
+                currentUserId
+              )}
+            </div>
+
+            <div className="mt-1 flex min-w-0 items-center gap-2">
               {conversation.operationalRoom ? (
-                <span className="shrink-0 rounded-full border border-neutral-800 bg-neutral-950 px-1.5 py-0.5 text-[8px] uppercase tracking-[0.12em] text-neutral-500">
+                <span className="text-[8px] uppercase tracking-[0.15em] text-neutral-500">
                   {operationalRoomClassLabel(
                     conversation.operationalRoom.roomClass
                   )}
@@ -1772,23 +1944,17 @@ export default function CommunicationsWorkspace({
               ) : null}
 
               {archived ? (
-                <span className="shrink-0 rounded-full border border-neutral-800 px-1.5 py-0.5 text-[8px] uppercase tracking-[0.12em] text-neutral-600">
+                <span className="shrink-0 rounded border border-neutral-800 px-1.5 py-0.5 text-[7px] uppercase tracking-[0.1em] text-neutral-700">
                   Archived
                 </span>
               ) : null}
-            </div>
 
-            <div className="mt-1 truncate text-xs text-neutral-500">
-              {latest
-                ? latest.body
-                : "No messages yet"}
+              <div className="min-w-0 flex-1 truncate text-[10px] leading-4 text-neutral-600">
+                {latest
+                  ? latest.body
+                  : "No messages yet"}
+              </div>
             </div>
-          </div>
-
-          <div className="shrink-0 text-[10px] text-neutral-600">
-            {formatConversationTime(
-              conversation.updatedAt
-            )}
           </div>
         </div>
       </button>
@@ -1804,9 +1970,9 @@ export default function CommunicationsWorkspace({
     }
 
     return (
-      <div className="mt-5 border-t border-neutral-800 pt-4">
+      <section className="border-t border-neutral-800/80 px-4 py-3.5">
         <div className="text-[9px] uppercase tracking-[0.18em] text-neutral-600">
-          Room Governance
+          Governance
         </div>
 
 {selectedConversation.operationalRoom ? (
@@ -1822,7 +1988,7 @@ export default function CommunicationsWorkspace({
                                   !current
                               )
                             }}
-                            className="rounded-md border border-neutral-800 bg-neutral-950 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-neutral-500 transition hover:border-neutral-600 hover:text-neutral-300"
+                            className="text-[9px] uppercase tracking-[0.14em] text-cyan-300 transition hover:text-cyan-100"
                           >
                             {linkContextOpen
                               ? "Close Link Context"
@@ -1830,7 +1996,7 @@ export default function CommunicationsWorkspace({
                           </button>
 
                           {linkContextOpen ? (
-                            <div className="mt-3 grid max-w-xl grid-cols-1 gap-2 rounded-lg border border-neutral-800 bg-black/60 p-3 sm:grid-cols-2">
+                            <div className="mt-3 grid grid-cols-1 gap-2 border-t border-neutral-900 pt-3 sm:grid-cols-2">
                               <label className="block">
                                 <span className="mb-1 block text-[8px] uppercase tracking-[0.14em] text-neutral-600">
                                   Target
@@ -1967,7 +2133,7 @@ export default function CommunicationsWorkspace({
                 : "archive"
             )
           }}
-          className="mt-3 w-full rounded-md border border-neutral-800 bg-black/25 px-3 py-2 text-left text-[9px] uppercase tracking-[0.14em] text-neutral-500 transition hover:border-neutral-600 hover:text-neutral-300 disabled:cursor-wait disabled:opacity-50"
+          className="mt-4 w-full border-t border-neutral-900 pt-3 text-left text-[9px] uppercase tracking-[0.14em] text-neutral-600 transition hover:text-red-300 disabled:cursor-wait disabled:opacity-50"
         >
           {changingConversationStatus
             ? "Updating"
@@ -1975,82 +2141,183 @@ export default function CommunicationsWorkspace({
               ? "Reactivate Conversation"
               : "Archive Conversation"}
         </button>
-      </div>
+      </section>
     )
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-3">
+    <div className="flex h-full min-h-0 flex-col bg-[#080d13]">
       {linkedConversationError ? (
         <div role="alert" className="shrink-0 rounded-lg border border-amber-300/30 bg-amber-100/5 px-4 py-3 text-sm text-amber-100">
           {linkedConversationError}
         </div>
       ) : null}
-      <div className="relative flex min-h-0 flex-1 overflow-hidden rounded-xl border border-neutral-800 bg-black/40">
-      <aside className="flex w-[320px] shrink-0 flex-col border-r border-neutral-800">
-        <div className="border-b border-neutral-800 px-4 py-4">
-          <div className="flex items-center justify-between gap-3">
+      <div className={`relative bg-[#080d13] ${styles.console}`}>
+      <aside
+        className={`${styles.directory} ${
+          selectedConversation
+            ? styles.directorySelected
+            : ""
+        } ${
+          responsiveContextOpen
+            ? styles.directoryContextOpen
+            : ""
+        } bg-[#090f16]`}
+      >
+        <div className="border-b border-neutral-800 px-3 py-3">
+          <div className="min-w-0">
             <div>
-              <div className="text-xs uppercase tracking-[0.18em] text-neutral-500">
+              <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
                 Conversations
               </div>
-              <div className="mt-1 text-sm text-neutral-300">
-                Institutional direct messaging
+
+              <div className="mt-1 flex min-w-0 items-center gap-2">
+                <div className="truncate text-xs text-neutral-400">
+                  Institutional messaging
+                </div>
+
+                <span className="text-neutral-800">
+                  ·
+                </span>
+
+                <span
+                  className={`shrink-0 text-[8px] uppercase tracking-[0.14em] ${
+                    realtime.connected
+                      ? "text-emerald-400"
+                      : "text-neutral-600"
+                  }`}
+                >
+                  {realtime.connected
+                    ? "Live"
+                    : "Offline"}
+                </span>
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="mt-3">
               <button
                 type="button"
-                onClick={() => {
-                  setOperationalRoomOpen(
-                    false
-                  )
-
-                  void openDirectory()
-                }}
-                className="rounded-md border border-neutral-700 bg-neutral-950 px-2.5 py-1.5 text-[10px] uppercase tracking-[0.14em] text-neutral-300 transition hover:border-neutral-500 hover:text-white"
-              >
-                New
-              </button>
-
-              {canCreateOperationalRooms ? (
-                <button
-                  type="button"
+                aria-expanded={creationSurfaceOpen}
                   onClick={() => {
-                    void openOperationalRoom()
-                  }}
-                  className="rounded-md border border-neutral-700 bg-neutral-950 px-2.5 py-1.5 text-[10px] uppercase tracking-[0.14em] text-neutral-300 transition hover:border-neutral-500 hover:text-white"
-                >
-                  Room
-                </button>
-              ) : null}
+                    if (
+                      creationSurfaceOpen
+                    ) {
+                      setNewMenuOpen(false)
+                      setDirectoryOpen(false)
+                      setOperationalRoomOpen(false)
+                      return
+                    }
 
-              <div
-                className={`rounded-full border px-2 py-1 text-[10px] uppercase tracking-[0.16em] ${
-                  realtime.connected
-                    ? "border-emerald-900 bg-emerald-950/40 text-emerald-400"
-                    : "border-neutral-700 bg-neutral-950 text-neutral-500"
-                }`}
+                    setDirectoryOpen(false)
+                    setOperationalRoomOpen(false)
+                    setNewMenuOpen(true)
+                  }}
+                className="rounded-md border border-neutral-700 bg-neutral-950 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-neutral-300 transition hover:border-neutral-500 hover:text-white"
               >
-                {realtime.connected
-                  ? "Live"
-                  : "Offline"}
-              </div>
+                {creationSurfaceOpen
+                  ? "Close"
+                  : "+ New"}
+              </button>
             </div>
           </div>
         </div>
+
+        {conversations.length >= 5 ? (
+          <div className="border-b border-neutral-900 px-3 py-2">
+            <label className="block">
+              <span className="sr-only">
+                Search conversations
+              </span>
+
+              <input
+                type="search"
+                value={conversationQuery}
+                onChange={event =>
+                  setConversationQuery(
+                    event.target.value
+                  )
+                }
+                placeholder="Search conversations…"
+                className="w-full rounded-md border border-neutral-800 bg-[#0b1118] px-2.5 py-2 text-[11px] text-neutral-200 outline-none placeholder:text-neutral-700 focus:border-neutral-600"
+              />
+            </label>
+          </div>
+        ) : null}
+
+        {newMenuOpen ? (
+          <div className="border-b border-neutral-800 bg-[#0a0f15]">
+            <button
+              type="button"
+              onClick={() => {
+                setOperationalRoomOpen(
+                  false
+                )
+                setNewMenuOpen(
+                  false
+                )
+                void openDirectory()
+              }}
+              className="block w-full border-b border-neutral-900 px-3 py-3 text-left transition hover:bg-neutral-900/70"
+            >
+              <div className="text-[9px] uppercase tracking-[0.15em] text-neutral-200">
+                Start conversation
+              </div>
+
+              <div className="mt-1 text-[10px] leading-4 text-neutral-600">
+                Direct institutional correspondence with an eligible participant.
+              </div>
+            </button>
+
+            {canCreateOperationalRooms ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setDirectoryOpen(
+                    false
+                  )
+                  setNewMenuOpen(
+                    false
+                  )
+                  void openOperationalRoom()
+                }}
+                className="block w-full px-3 py-3 text-left transition hover:bg-neutral-900/70"
+              >
+                <div className="text-[9px] uppercase tracking-[0.15em] text-neutral-200">
+                  Create operational room
+                </div>
+
+                <div className="mt-1 text-[10px] leading-4 text-neutral-600">
+                  Governed coordination space with purpose, participants, and institutional context.
+                </div>
+              </button>
+            ) : null}
+          </div>
+        ) : null}
 
         {operationalRoomOpen ? (
           <div className="border-b border-neutral-800 bg-neutral-950/80">
             <div className="space-y-3 px-4 py-4">
               <div>
-                <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
-                  New Operational Room
+                <div className="flex items-center justify-between gap-3">
+                  <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
+                    Create Operational Room
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOperationalRoomOpen(false)
+                      setDirectoryOpen(false)
+                      setNewMenuOpen(true)
+                    }}
+                    className="shrink-0 text-[8px] uppercase tracking-[0.14em] text-neutral-600 transition hover:text-neutral-300"
+                  >
+                    Back to New
+                  </button>
                 </div>
 
                 <div className="mt-1 text-xs leading-5 text-neutral-600">
-                  Governed coordination space. Creating a room does not execute institutional action.
+                  Establish a governed coordination space for a defined purpose. Creating a room does not grant authority or execute institutional action.
                 </div>
               </div>
 
@@ -2110,7 +2377,7 @@ export default function CommunicationsWorkspace({
                   ) : directoryUsers.length ===
                     0 ? (
                     <div className="px-3 py-3 text-xs text-neutral-600">
-                      No eligible participants.
+                      No additional authorized participants are currently available for this room.
                     </div>
                   ) : (
                     directoryUsers.map(
@@ -2191,10 +2458,42 @@ export default function CommunicationsWorkspace({
 
         {directoryOpen ? (
           <div className="border-b border-neutral-800 bg-neutral-950/80">
-            <div className="px-4 py-3">
+            <div className="flex items-center justify-between gap-3 px-4 py-3">
               <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
-                New conversation
+                Start Conversation
               </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setDirectoryOpen(false)
+                  setOperationalRoomOpen(false)
+                  setNewMenuOpen(true)
+                }}
+                className="text-[8px] uppercase tracking-[0.14em] text-neutral-600 transition hover:text-neutral-300"
+              >
+                Back to New
+              </button>
+            </div>
+
+            <div className="border-t border-neutral-900 px-4 py-2">
+              <label className="block">
+                <span className="sr-only">
+                  Search eligible recipients
+                </span>
+
+                <input
+                  type="search"
+                  value={recipientQuery}
+                  onChange={event =>
+                    setRecipientQuery(
+                      event.target.value
+                    )
+                  }
+                  placeholder="Search people…"
+                  className="w-full rounded-md border border-neutral-800 bg-[#0b1118] px-2.5 py-2 text-xs text-neutral-200 outline-none placeholder:text-neutral-700 focus:border-neutral-600"
+                />
+              </label>
             </div>
 
             <div className="max-h-[260px] overflow-y-auto border-t border-neutral-900">
@@ -2202,12 +2501,12 @@ export default function CommunicationsWorkspace({
                 <div className="px-4 py-4 text-sm text-neutral-500">
                   Loading people…
                 </div>
-              ) : directoryUsers.length === 0 ? (
+              ) : filteredDirectoryUsers.length === 0 ? (
                 <div className="px-4 py-4 text-sm text-neutral-500">
                   No eligible recipients.
                 </div>
               ) : (
-                directoryUsers.map(
+                filteredDirectoryUsers.map(
                   (user) => (
                     <button
                       key={user.id}
@@ -2253,7 +2552,7 @@ export default function CommunicationsWorkspace({
             </div>
           ) : (
             <>
-              <div className="border-b border-neutral-900 bg-neutral-950/60 px-4 py-2.5">
+              <div className="border-b border-neutral-900 bg-neutral-950/60 px-3 py-2">
                 <div className="flex items-center justify-between">
                   <span className="text-[9px] uppercase tracking-[0.18em] text-neutral-500">
                     Active
@@ -2267,7 +2566,7 @@ export default function CommunicationsWorkspace({
 
               {activeConversations.length >
               0 ? (
-                activeConversations.map(
+                filteredActiveConversations.map(
                   conversation =>
                     renderConversationRow(
                       conversation
@@ -2294,7 +2593,7 @@ export default function CommunicationsWorkspace({
                     </div>
                   </div>
 
-                  {archivedConversations.map(
+                  {filteredArchivedConversations.map(
                     conversation =>
                       renderConversationRow(
                         conversation,
@@ -2308,17 +2607,40 @@ export default function CommunicationsWorkspace({
         </div>
       </aside>
 
-      <section className="flex min-w-0 flex-1 flex-col">
+      <section
+        className={`${styles.stage} ${
+          selectedConversation
+            ? styles.stageSelected
+            : styles.stageEmpty
+        } ${
+          responsiveContextOpen
+            ? styles.stageContextOpen
+            : ""
+        } bg-[#0a1017]`}
+      >
         {selectedConversation ? (
           <>
-            <div className="border-b border-neutral-800 px-5 py-4">
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0">
-                  <div className="flex items-center gap-3">
-                    <div className="text-xs uppercase tracking-[0.16em] text-neutral-500">
+            <div className={`${styles.threadMasthead} border-b border-neutral-800 bg-[#0b121a] px-3 py-2.5 sm:px-4 sm:py-3`}>
+              <div className="flex items-start justify-between gap-3 sm:gap-4">
+                <div className="flex min-w-0 items-start gap-3">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      selectConversation(null)
+                      setResponsiveContextOpen(false)
+                    }}
+                    className={`${styles.mobileBack} mt-0.5 shrink-0 rounded-md border border-neutral-700 bg-neutral-950 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-neutral-400 transition hover:border-neutral-500 hover:text-white`}
+                    aria-label="Back to conversations"
+                  >
+                    Back
+                  </button>
+
+                  <div className="min-w-0">
+                  <div className="flex min-w-0 items-center gap-2">
+                    <div className="truncate text-[8px] uppercase tracking-[0.14em] text-neutral-600 sm:text-[10px]">
                       {selectedConversation.operationalRoom
                         ? "Operational Room"
-                        : "Direct Conversation"}
+                        : "Direct"}
                     </div>
 
                     {selectedConversation.operationalRoom ? (
@@ -2336,14 +2658,30 @@ export default function CommunicationsWorkspace({
                     ) : null}
                   </div>
 
-                  <div className="mt-1 truncate text-base font-medium text-white">
-                    {conversationLabel(
-                      selectedConversation,
-                      currentUserId
-                    )}
-                  </div>
+                  <div className="mt-1 min-w-0">
+                    <div className="truncate text-sm font-medium text-white sm:hidden">
+                      {conversationPrimaryLabel(
+                        selectedConversation,
+                        currentUserId
+                      )}
+                    </div>
 
+                    <div className="mt-0.5 truncate text-[8px] uppercase tracking-[0.11em] text-neutral-600 sm:hidden">
+                      {conversationSecondaryLabel(
+                        selectedConversation,
+                        currentUserId
+                      )}
+                    </div>
+
+                    <div className="hidden truncate text-[15px] font-medium text-white sm:block">
+                      {conversationLabel(
+                        selectedConversation,
+                        currentUserId
+                      )}
+                    </div>
                   </div>
+                  </div>
+                </div>
 
                 <div className="flex shrink-0 items-center gap-2">
               <button
@@ -2358,7 +2696,7 @@ export default function CommunicationsWorkspace({
                       !current
                   )
                 }}
-                className="rounded-md border border-neutral-700 bg-neutral-950 px-3 py-2 text-[10px] uppercase tracking-[0.14em] text-neutral-400 transition hover:border-neutral-500 hover:text-white xl:hidden"
+                className="rounded-md border border-neutral-700 bg-neutral-950 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-neutral-400 transition hover:border-neutral-500 hover:text-white sm:px-3 sm:py-2 sm:text-[10px]"
               >
                 Context
               </button>
@@ -2366,7 +2704,7 @@ export default function CommunicationsWorkspace({
               </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-5 py-5">
+            <div className={`${styles.timeline} flex-1 overflow-y-auto px-3 py-3 sm:px-4 sm:py-4 lg:px-5`}>
               {loadingMessages ? (
                 <div className="text-sm text-neutral-500">
                   Loading history…
@@ -2477,13 +2815,13 @@ export default function CommunicationsWorkspace({
                           }`}
                         >
                           <div
-                            className={`max-w-[72%] rounded-xl border px-4 py-3 ${
+                            className={`${styles.messageBubble} ${
                               own
-                                ? "border-neutral-700 bg-neutral-800"
-                                : "border-neutral-800 bg-neutral-950"
-                            }`}
+                                ? `${styles.messageBubbleOwn} border-slate-600/55 bg-[#121a23]`
+                                : "border-neutral-700/70 bg-[#0b1016]"
+                            } rounded-lg border px-3 py-2 sm:px-4 sm:py-3`}
                           >
-                            <div className="mb-1 flex items-center gap-3 text-[10px] uppercase tracking-[0.12em] text-neutral-500">
+                            <div className={`${styles.messageMeta} mb-1.5 flex items-center gap-2.5 text-[9px] uppercase tracking-[0.14em] text-neutral-600`}>
                               {message.kind !==
                               "TEXT" ? (
                                 <span className="rounded border border-neutral-700 px-1.5 py-0.5 text-[9px] tracking-[0.14em] text-neutral-400">
@@ -2525,7 +2863,7 @@ export default function CommunicationsWorkspace({
                               </span>
                             </div>
 
-                            <div className="whitespace-pre-wrap break-words text-sm leading-6 text-neutral-100">
+                            <div className="whitespace-pre-wrap break-words text-[13px] leading-5 text-neutral-100 sm:text-[14px] sm:leading-6">
                               {message.body}
                             </div>
                           </div>
@@ -2537,7 +2875,7 @@ export default function CommunicationsWorkspace({
               )}
             </div>
 
-            <div className="border-t border-neutral-800 bg-black/60 p-4">
+            <div className="shrink-0 border-t border-neutral-700/80 bg-[#080d13] px-3 py-2 sm:px-4 sm:py-2.5">
               {error ? (
                 <div className="mb-3 rounded-lg border border-red-900/60 bg-red-950/20 px-3 py-2 text-xs text-red-300">
                   {error}
@@ -2575,13 +2913,13 @@ export default function CommunicationsWorkspace({
                 </div>
               ) : (
                 <>
-                  <div className="overflow-hidden rounded-xl border border-neutral-800 bg-neutral-950">
-                    <div className="flex items-center justify-between border-b border-neutral-900 px-3 py-2">
-                      <span className="text-[9px] uppercase tracking-[0.16em] text-neutral-600">
+                  <div className={`${styles.composerShell} bg-[#080d13]`}>
+                    <div className={`${styles.composerMetaRow} flex min-w-0 items-center gap-3 border-b border-neutral-800/70 py-2`}>
+                      <span className="shrink-0 text-[8px] uppercase tracking-[0.16em] text-neutral-700">
                         Classification
                       </span>
 
-                      <label className="min-w-0">
+                      <label className="min-w-0 overflow-hidden">
                         <select
                           value={
                             composerKind
@@ -2598,7 +2936,12 @@ export default function CommunicationsWorkspace({
                             sending
                           }
                           aria-label="Message classification"
-                          className="max-w-[260px] cursor-pointer appearance-none border-0 bg-neutral-950 px-2 py-1 text-right text-[9px] uppercase tracking-[0.14em] text-neutral-400 outline-none disabled:cursor-wait disabled:opacity-60"
+                          className="min-w-0 max-w-[180px] cursor-pointer appearance-none truncate rounded-md border border-slate-800 bg-[#0d141c] px-2.5 py-1.5 text-left text-[9px] uppercase tracking-[0.14em] text-slate-300 outline-none focus:border-cyan-800/60 disabled:cursor-wait disabled:opacity-60"
+                          style={{
+                            colorScheme: "dark",
+                            backgroundColor: "#0d141c",
+                            color: "#cbd5e1",
+                          }}
                         >
                           {COMMUNICATION_SENDABLE_MESSAGE_KINDS.map(
                             (
@@ -2625,12 +2968,12 @@ export default function CommunicationsWorkspace({
                     {selectedConversation?.operationalRoom &&
                     selectedConversation.operationalRoom.links.length >
                       0 ? (
-                      <div className="flex items-center justify-between border-b border-neutral-900 px-3 py-2">
-                        <span className="text-[9px] uppercase tracking-[0.16em] text-neutral-600">
-                          Context
-                        </span>
+                      <div className={`${styles.composerMetaRow} flex min-w-0 items-center gap-3 border-b border-neutral-800/70 py-2`}>
+                         <span className="shrink-0 text-[8px] uppercase tracking-[0.16em] text-neutral-700">
+                           Message Link
+                         </span>
 
-                        <label className="min-w-0">
+                        <label className="min-w-0 overflow-hidden">
                           <select
                             value={
                               composerWorkflowLinkId
@@ -2645,11 +2988,16 @@ export default function CommunicationsWorkspace({
                             disabled={
                               sending
                             }
-                            aria-label="Workflow context"
-                            className="max-w-[340px] cursor-pointer appearance-none border-0 bg-neutral-950 px-2 py-1 text-right text-[9px] uppercase tracking-[0.12em] text-neutral-400 outline-none disabled:cursor-wait disabled:opacity-60"
+                            aria-label="Message link"
+                            className="min-w-0 flex-1 cursor-pointer appearance-none truncate rounded-md border border-slate-800 bg-[#0d141c] px-2.5 py-1.5 text-left text-[9px] uppercase tracking-[0.12em] text-slate-300 outline-none focus:border-cyan-800/60 disabled:cursor-wait disabled:opacity-60"
+                            style={{
+                              colorScheme: "dark",
+                              backgroundColor: "#0d141c",
+                              color: "#cbd5e1",
+                            }}
                           >
                             <option value="">
-                              No linked context
+                              No linked object
                             </option>
 
                             {selectedConversation.operationalRoom.links.map(
@@ -2677,7 +3025,7 @@ export default function CommunicationsWorkspace({
                       </div>
                     ) : null}
 
-                    <div className="flex items-end gap-3 p-3">
+                    <div className={`${styles.composerEntryRow} flex flex-col gap-2 pt-2.5 sm:flex-row sm:items-stretch sm:gap-2`}>
                       <textarea
                         value={
                           composerBody
@@ -2706,7 +3054,14 @@ export default function CommunicationsWorkspace({
                         rows={2}
                         maxLength={10000}
                         disabled={sending}
-                        className="min-h-[52px] flex-1 resize-none border-0 bg-transparent px-1 py-1 text-sm leading-6 text-white outline-none placeholder:text-neutral-600 disabled:cursor-wait disabled:opacity-70"
+                        className={`${styles.composerBody} min-h-[56px] max-h-[150px] resize-y rounded-md border border-slate-700/50 bg-[#0d141c] px-3 py-2 text-sm leading-6 text-slate-100 caret-cyan-200 outline-none placeholder:text-slate-500 selection:bg-cyan-300/20 focus:border-cyan-700/60 focus:bg-[#0f1822] disabled:cursor-wait disabled:opacity-70`}
+                        style={{
+                          color: "#eef4fb",
+                          backgroundColor: "#0b1118",
+                          caretColor: "#9bd7f2",
+                          WebkitTextFillColor: "#eef4fb",
+                          colorScheme: "dark",
+                        }}
                       />
 
                       <button
@@ -2718,7 +3073,7 @@ export default function CommunicationsWorkspace({
                         onClick={() => {
                           void sendMessage()
                         }}
-                        className="shrink-0 rounded-md border border-neutral-700 bg-neutral-900 px-4 py-2.5 text-[10px] font-medium uppercase tracking-[0.14em] text-neutral-200 transition hover:border-neutral-600 hover:bg-neutral-800 hover:text-white disabled:cursor-not-allowed disabled:opacity-40"
+                        className={`${styles.sendButton} shrink-0 rounded-md border border-cyan-700/45 bg-cyan-950/30 px-3 py-2 text-[9px] font-medium uppercase tracking-[0.14em] text-cyan-100 transition hover:border-cyan-500/70 hover:bg-cyan-950/55 hover:text-white disabled:border-neutral-800 disabled:bg-neutral-950 disabled:text-neutral-700 disabled:cursor-not-allowed`}
                       >
                         {sending
                           ? "Sending"
@@ -2727,7 +3082,7 @@ export default function CommunicationsWorkspace({
                     </div>
                   </div>
 
-                  <div className="mt-2 px-1 text-[9px] uppercase tracking-[0.14em] text-neutral-700">
+                  <div className="mt-1.5 hidden px-1 text-[8px] uppercase tracking-[0.14em] text-neutral-700 sm:block">
                     Enter to send · Shift + Enter for line break
                   </div>
                 </>
@@ -2735,13 +3090,18 @@ export default function CommunicationsWorkspace({
             </div>
           </>
         ) : (
-          <div className="flex flex-1 items-center justify-center">
-            <div className="max-w-sm text-center">
-              <div className="text-sm text-neutral-300">
-                Select a conversation to open its durable history.
+          <div className="flex flex-1 items-center justify-center px-8">
+            <div className="max-w-md text-center">
+              <div className="text-[10px] uppercase tracking-[0.2em] text-neutral-600">
+                Communications
               </div>
-              <p className="mt-2 text-xs leading-5 text-neutral-600">
-                Unread communications remain unread until deliberately opened.
+              <div className="mt-3 text-base font-medium text-neutral-300">
+                Select a conversation
+              </div>
+              <p className="mt-2 text-xs leading-6 text-neutral-600">
+                Open a conversation from the rail to review its durable history,
+                operational context, and correspondence. Previewing the list does
+                not mark messages as read.
               </p>
             </div>
           </div>
@@ -2759,65 +3119,73 @@ export default function CommunicationsWorkspace({
                 false
               )
             }}
-            className="absolute inset-0 z-20 bg-black/35 xl:hidden"
+            className={`${styles.contextOverlay} absolute inset-0 z-40 bg-black/55 backdrop-blur-[1px]`}
           />
 
           <aside
             id="communications-responsive-context"
             aria-label="Room context"
-            className="absolute z-30 flex flex-col border-l border-neutral-700 bg-neutral-950 shadow-2xl xl:hidden"
-            style={{
-              top: 0,
-              bottom: 0,
-              right: 0,
-              left: "auto",
-              width: "320px",
-              maxWidth:
-                "calc(100% - 1.5rem)",
-            }}
+            className={`${styles.contextInspector} z-50 flex flex-col border-l border-neutral-700/80 bg-[#090f16] shadow-2xl`}
           >
-            <div className="flex items-start justify-between gap-4 border-b border-neutral-800 px-4 py-4">
-              <div className="min-w-0">
-                <div className="text-[9px] uppercase tracking-[0.18em] text-neutral-600">
-                  Room Context
+            <div className="shrink-0 border-b border-neutral-800 px-4 py-3.5">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0">
+                  <div className="text-[9px] uppercase tracking-[0.18em] text-neutral-600">
+                    Room Context
+                  </div>
+
+                  <div className="mt-2 truncate text-sm font-medium text-neutral-200">
+                    {conversationPrimaryLabel(
+                      selectedConversation,
+                      currentUserId
+                    )}
+                  </div>
+
+                  <div className="mt-1 truncate text-[9px] uppercase tracking-[0.12em] text-neutral-600">
+                    {conversationSecondaryLabel(
+                      selectedConversation,
+                      currentUserId
+                    )}
+                  </div>
+
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <span className="text-[8px] uppercase tracking-[0.14em] text-neutral-500">
+                      {selectedConversation.operationalRoom
+                        ? operationalRoomClassLabel(
+                            selectedConversation.operationalRoom.roomClass
+                          )
+                        : "Direct"}
+                    </span>
+
+                    <span className="text-neutral-800">
+                      ·
+                    </span>
+
+                    <span className={`text-[8px] uppercase tracking-[0.14em] ${
+                      conversationArchived
+                        ? "text-neutral-600"
+                        : "text-emerald-400"
+                    }`}>
+                      {conversationArchived
+                        ? "Archived"
+                        : "Active"}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="mt-2 truncate text-sm font-medium text-neutral-200">
-                  {conversationLabel(
-                    selectedConversation,
-                    currentUserId
-                  )}
-                </div>
-
-                <div className="mt-2 flex flex-wrap gap-2">
-                  <span className="rounded border border-neutral-800 bg-black/30 px-2 py-1 text-[9px] uppercase tracking-[0.12em] text-neutral-500">
-                    {selectedConversation.operationalRoom
-                      ? operationalRoomClassLabel(
-                          selectedConversation.operationalRoom.roomClass
-                        )
-                      : "Direct"}
-                  </span>
-
-                  <span className="rounded border border-neutral-800 bg-black/30 px-2 py-1 text-[9px] uppercase tracking-[0.12em] text-neutral-600">
-                    {conversationArchived
-                      ? "Archived"
-                      : "Active"}
-                  </span>
-                </div>
+                <button
+                  type="button"
+                  aria-label="Close room context"
+                  onClick={() => {
+                    setResponsiveContextOpen(
+                      false
+                    )
+                  }}
+                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-neutral-800 bg-black/20 text-sm text-neutral-500 transition hover:border-neutral-600 hover:text-neutral-200"
+                >
+                  ×
+                </button>
               </div>
-
-              <button
-                type="button"
-                aria-label="Close room context"
-                onClick={() => {
-                  setResponsiveContextOpen(
-                    false
-                  )
-                }}
-                className="shrink-0 rounded-md border border-neutral-800 bg-black/30 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-neutral-500 transition hover:border-neutral-600 hover:text-neutral-300"
-              >
-                Close
-              </button>
             </div>
 
             <div className="min-h-0 flex-1 overflow-y-auto">
@@ -2835,7 +3203,7 @@ export default function CommunicationsWorkspace({
 
                   {selectedConversation.operationalRoom.links.length >
                   0 ? (
-                    <div className="mt-3 space-y-2">
+                    <div className="mt-2 divide-y divide-neutral-900">
                       {selectedConversation.operationalRoom.links.map(
                         link => (
                           <div
@@ -2845,7 +3213,7 @@ export default function CommunicationsWorkspace({
                             title={
                               `${link.targetSubtype} · ${link.targetId}`
                             }
-                            className="rounded-lg border border-neutral-800 bg-black/35 px-3 py-2.5"
+                            className="py-2.5"
                           >
                             <div className="text-[9px] uppercase tracking-[0.13em] text-neutral-400">
                               {operationalTargetLabel(
@@ -2885,7 +3253,7 @@ export default function CommunicationsWorkspace({
                   </div>
                 </div>
 
-                <div className="mt-3 space-y-1">
+                <div className="mt-2 divide-y divide-neutral-900">
                   {selectedConversation.members
                     .filter(
                       member =>
@@ -2898,7 +3266,7 @@ export default function CommunicationsWorkspace({
                           key={
                             member.id
                           }
-                          className="rounded-lg px-2 py-2"
+                          className="py-2.5"
                         >
                           <div className="flex items-start justify-between gap-3">
                             <div className="min-w-0">
@@ -2925,182 +3293,20 @@ export default function CommunicationsWorkspace({
                     )}
                 </div>
               </div>
+
+              {renderRoomGovernance()}
             </div>
 
-            <div className="px-4 pb-4">
-          {renderRoomGovernance()}
-        </div>
-
-        <div className="border-t border-neutral-800 px-4 py-3">
+            <div className="shrink-0 border-t border-neutral-800 px-4 py-3">
               <div className="text-[9px] leading-4 text-neutral-700">
-                Room context is informational. Institutional action remains governed by its authoritative domain.
+                Room context is informational. Institutional authority remains
+                governed by the linked authoritative domain.
               </div>
             </div>
           </aside>
         </>
       ) : null}
 
-      <aside className="hidden w-[300px] shrink-0 flex-col border-l border-neutral-800 bg-neutral-950/35 xl:flex">
-        {selectedConversation ? (
-          <>
-            <div className="border-b border-neutral-800 px-4 py-4">
-              <div className="text-[9px] uppercase tracking-[0.18em] text-neutral-600">
-                Room Context
-              </div>
-
-              <div className="mt-2 text-sm font-medium text-neutral-200">
-                {conversationLabel(
-                  selectedConversation,
-                  currentUserId
-                )}
-              </div>
-
-              <div className="mt-2 flex flex-wrap gap-2">
-                <span className="rounded border border-neutral-800 bg-black/30 px-2 py-1 text-[9px] uppercase tracking-[0.12em] text-neutral-500">
-                  {selectedConversation.operationalRoom
-                    ? operationalRoomClassLabel(
-                        selectedConversation.operationalRoom.roomClass
-                      )
-                    : "Direct"}
-                </span>
-
-                <span className="rounded border border-neutral-800 bg-black/30 px-2 py-1 text-[9px] uppercase tracking-[0.12em] text-neutral-600">
-                  {conversationArchived
-                    ? "Archived"
-                    : "Active"}
-                </span>
-              </div>
-            </div>
-
-            {selectedConversation.operationalRoom ? (
-              <div className="border-b border-neutral-800 px-4 py-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="text-[9px] uppercase tracking-[0.18em] text-neutral-600">
-                    Institutional Context
-                  </div>
-
-                  <div className="text-[9px] tabular-nums text-neutral-700">
-                    {selectedConversation.operationalRoom.links.length}
-                  </div>
-                </div>
-
-                {selectedConversation.operationalRoom.links.length >
-                0 ? (
-                  <div className="mt-3 space-y-2">
-                    {selectedConversation.operationalRoom.links.map(
-                      link => (
-                        <div
-                          key={
-                            link.id
-                          }
-                          title={
-                            `${link.targetSubtype} · ${link.targetId}`
-                          }
-                          className="rounded-lg border border-neutral-800 bg-black/35 px-3 py-2.5"
-                        >
-                          <div className="text-[9px] uppercase tracking-[0.13em] text-neutral-400">
-                            {operationalTargetLabel(
-                              link
-                            )}
-                          </div>
-
-                          <div className="mt-1 truncate font-mono text-[10px] text-neutral-600">
-                            {link.targetId}
-                          </div>
-                        </div>
-                      )
-                    )}
-                  </div>
-                ) : (
-                  <div className="mt-3 text-xs leading-5 text-neutral-600">
-                    No institutional objects are linked to this room.
-                  </div>
-                )}
-              </div>
-            ) : null}
-
-            <div className="min-h-0 flex-1 overflow-y-auto px-4 py-4">
-              <div className="flex items-center justify-between gap-3">
-                <div className="text-[9px] uppercase tracking-[0.18em] text-neutral-600">
-                  Participants
-                </div>
-
-                <div className="text-[9px] tabular-nums text-neutral-700">
-                  {
-                    selectedConversation.members.filter(
-                      member =>
-                        member.leftAt ===
-                        null
-                    ).length
-                  }
-                </div>
-              </div>
-
-              <div className="mt-3 space-y-1">
-                {selectedConversation.members
-                  .filter(
-                    member =>
-                      member.leftAt ===
-                      null
-                  )
-                  .map(
-                    member => (
-                      <div
-                        key={
-                          member.id
-                        }
-                        className="rounded-lg border border-transparent px-2 py-2 hover:border-neutral-900 hover:bg-black/20"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div className="min-w-0">
-                            <div className="truncate text-xs text-neutral-300">
-                              {member.userId ===
-                              currentUserId
-                                ? "You"
-                                : userLabel(
-                                    member.user
-                                  )}
-                            </div>
-
-                            <div className="mt-0.5 truncate text-[10px] text-neutral-700">
-                              {member.user.email}
-                            </div>
-                          </div>
-
-                          <div className="shrink-0 text-[8px] uppercase tracking-[0.12em] text-neutral-700">
-                            {member.role}
-                          </div>
-                        </div>
-                      </div>
-                    )
-                  )}
-              </div>
-            </div>
-
-            <div className="px-4 pb-4">
-          {renderRoomGovernance()}
-        </div>
-
-        <div className="border-t border-neutral-800 px-4 py-3">
-              <div className="text-[9px] leading-4 text-neutral-700">
-                Room context is informational. Institutional action remains governed by its authoritative domain.
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="flex flex-1 items-center justify-center px-5">
-            <div className="text-center">
-              <div className="text-[9px] uppercase tracking-[0.18em] text-neutral-700">
-                Room Context
-              </div>
-
-              <div className="mt-2 text-xs leading-5 text-neutral-700">
-                Select a conversation to inspect its operational context.
-              </div>
-            </div>
-          </div>
-        )}
-      </aside>
       </div>
     </div>
   )
