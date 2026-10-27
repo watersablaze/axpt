@@ -274,11 +274,6 @@ export default async function GlobalMotherResponseReviewPage() {
     <main className={styles.page}>
       <div className={styles.workspace}>
         <header className={styles.instrumentBar}>
-          <div className={styles.instrumentIdentity}>
-            <span>Global Mother</span>
-            <strong>{instrument.reference}</strong>
-          </div>
-
           <div className={styles.instrumentState}>
             <span>UNDER DELIBERATION</span>
             <b>

@@ -87,6 +87,36 @@ function getLocation(pathname: string) {
     }
   }
 
+  if (pathname === '/admin/control-center/instruments/gm-kenya') {
+    return {
+      label: 'INSTRUMENTS / GM-KENYA-RCF-001',
+      description:
+        'Custodial and constitutional framework · deliberation and formation control.',
+    }
+  }
+
+  if (
+    pathname.startsWith(
+      '/admin/control-center/instruments/digital-settlement/'
+    )
+  ) {
+    const reference = decodeURIComponent(
+      pathname
+        .slice(
+          '/admin/control-center/instruments/digital-settlement/'.length
+        )
+        .split('/')[0] || ''
+    )
+
+    return {
+      label: reference
+        ? `INSTRUMENTS / ${reference}`
+        : 'INSTRUMENTS / DIGITAL SETTLEMENT INSTRUMENT',
+      description:
+        'Transaction-specific settlement instrument · bounded verification and authorization control.',
+    }
+  }
+
   if (pathname.startsWith('/admin/control-center/instruments')) {
     return {
       label: 'INSTRUMENTS / INSTITUTIONAL INSTRUMENT CONTROL',

@@ -3581,3 +3581,318 @@
     top: auto !important;
   }
 }
+
+/* =========================================================
+   GM-5B.6D — BOUNDED CONTROL CENTER WORKSPACE
+
+   Final layout authority for the GM operator surface.
+
+   The Control Center location strip owns canonical instrument
+   identity. The GM state bar, context rail and work stage share
+   one bounded institutional frame with deliberate outer gutters.
+   ========================================================= */
+
+.page {
+  --gm-shell-gutter: clamp(1rem, 2.15vw, 2.25rem);
+  --gm-shell-max: 96rem;
+
+  width: 100%;
+  min-width: 0;
+
+  padding:
+    0
+    var(--gm-shell-gutter)
+    2.5rem !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(3, 9, 12, .24),
+      transparent 14%,
+      transparent 86%,
+      rgba(3, 9, 12, .24)
+    ),
+    var(--gm-admin-deep);
+}
+
+/*
+ * One horizontal institutional frame.
+ *
+ * The bar, rail and work stage now resolve against the same
+ * max-width rather than separate viewport-relative planes.
+ */
+.workspace {
+  width: 100%;
+  max-width: var(--gm-shell-max) !important;
+
+  margin-inline: auto !important;
+  padding-top: 0 !important;
+
+  grid-template-columns:
+    minmax(16.5rem, 18.5rem)
+    minmax(0, 1fr) !important;
+
+  column-gap:
+    clamp(1.35rem, 2vw, 2.25rem) !important;
+
+  align-items: start;
+}
+
+/*
+ * The state bar remains the second Control Center layer, but its
+ * physical width is now the bounded workspace width.
+ */
+.instrumentBar {
+  position: sticky !important;
+
+  top: var(--cc-crown-height, 76px) !important;
+
+  left: auto !important;
+  right: auto !important;
+
+  width: 100% !important;
+  max-width: none !important;
+
+  min-height: var(--gm-bar-height);
+  height: auto;
+
+  margin:
+    0
+    0
+    .85rem !important;
+
+  padding-inline:
+    clamp(.95rem, 1.5vw, 1.35rem) !important;
+
+  box-sizing: border-box;
+
+  z-index: 35;
+}
+
+/*
+ * State-only bar: after identity moved into the Control Center
+ * strip, keep state compact and aligned from the left.
+ */
+.instrumentState {
+  width: 100%;
+
+  justify-content: flex-start !important;
+  gap:
+    .4rem
+    clamp(.9rem, 1.7vw, 1.5rem) !important;
+}
+
+/*
+ * The old ledger-plane treatment deliberately pulled the rail
+ * outside the workspace. That is no longer appropriate once the
+ * entire surface is governed by the shared Control Center frame.
+ */
+.contextRail {
+  margin-left: 0 !important;
+
+  width: 100%;
+  min-width: 0;
+
+  padding:
+    1rem
+    1.05rem
+    1.15rem !important;
+
+  top:
+    calc(
+      var(--cc-crown-height, 76px) +
+      var(--gm-bar-height) +
+      .85rem
+    ) !important;
+
+  max-height:
+    calc(
+      100dvh -
+      var(--cc-crown-height, 76px) -
+      var(--gm-bar-height) -
+      1.7rem
+    ) !important;
+
+  box-sizing: border-box;
+}
+
+/*
+ * Work stage receives its breathing room from the workspace gap
+ * and page gutter. Remove inherited lateral compensations.
+ */
+.workGrid {
+  min-width: 0;
+
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+
+  margin: 0 !important;
+}
+
+/*
+ * Both work columns remain internal to the stage.
+ */
+.accessColumn,
+.reviewColumn {
+  min-width: 0;
+}
+
+/*
+ * Anchor targets clear the actual two-layer sticky stack.
+ */
+#gm-overview,
+#gm-create-recipient,
+#gm-recipient-registry,
+#gm-responses,
+#gm-drafting,
+#gm-history {
+  scroll-margin-top:
+    calc(
+      var(--cc-crown-height, 76px) +
+      var(--gm-bar-height) +
+      1rem
+    ) !important;
+}
+
+/* ---------------------------------------------------------
+   TABLET
+   --------------------------------------------------------- */
+
+@media (max-width: 1000px) {
+  .page {
+    --gm-shell-gutter:
+      clamp(.9rem, 2vw, 1.4rem);
+
+    padding-inline:
+      var(--gm-shell-gutter) !important;
+  }
+
+  .workspace {
+    grid-template-columns:
+      1fr !important;
+
+    grid-template-areas:
+      "instrument"
+      "context"
+      "work" !important;
+
+    column-gap: 0 !important;
+  }
+
+  .contextRail {
+    position: relative !important;
+    top: auto !important;
+
+    max-height: none !important;
+
+    margin:
+      0
+      0
+      1rem !important;
+
+    padding:
+      .85rem
+      .95rem !important;
+  }
+
+  .workGrid {
+    width: 100%;
+  }
+}
+
+/* ---------------------------------------------------------
+   MOBILE
+   --------------------------------------------------------- */
+
+@media (max-width: 700px) {
+  .page {
+    --gm-shell-gutter: .75rem;
+
+    padding:
+      0
+      var(--gm-shell-gutter)
+      1.5rem !important;
+  }
+
+  .instrumentBar {
+    position: relative !important;
+    top: auto !important;
+
+    margin-bottom: .7rem !important;
+
+    padding:
+      .7rem
+      .8rem !important;
+  }
+
+  .instrumentState {
+    gap:
+      .35rem
+      .8rem !important;
+  }
+
+  .contextRail {
+    margin-bottom: .8rem !important;
+  }
+}
+/* =========================================================
+   GM-5B.6E — CONTROL CENTER CONTENT-SCROLLPORT STACK
+
+   ControlCenterConstitutionalShell keeps its axis outside the
+   scrolling .content region. GM therefore resolves sticky offsets
+   against the content scrollport itself, not against the full
+   Control Center crown height.
+   ========================================================= */
+
+.instrumentBar {
+  top: 0 !important;
+}
+
+/*
+ * Context rail begins immediately below the GM state bar.
+ */
+.contextRail {
+  top:
+    calc(
+      var(--gm-bar-height) +
+      .85rem
+    ) !important;
+
+  max-height:
+    calc(
+      100dvh -
+      var(--gm-bar-height) -
+      1.7rem
+    ) !important;
+}
+
+/*
+ * In-page navigation clears the GM state bar only. The Control
+ * Center axis is outside this scrollport and requires no offset.
+ */
+#gm-overview,
+#gm-create-recipient,
+#gm-recipient-registry,
+#gm-responses,
+#gm-drafting,
+#gm-history {
+  scroll-margin-top:
+    calc(
+      var(--gm-bar-height) +
+      1rem
+    ) !important;
+}
+
+@media (max-width: 1000px) {
+  .contextRail {
+    top: auto !important;
+    max-height: none !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .instrumentBar {
+    position: relative !important;
+    top: auto !important;
+  }
+}
