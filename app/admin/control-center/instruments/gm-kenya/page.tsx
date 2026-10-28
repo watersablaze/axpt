@@ -12,6 +12,8 @@ import { ChamberReminderControl } from "./ChamberReminderControl";
 import { globalMotherDraftingGate } from "@/domains/instruments/invariants/globalMotherDraftingGate";
 import { DraftingDecisionControl } from "./DraftingDecisionControl";
 import { ResponseWorkspace } from "./ResponseWorkspace";
+import { ChamberCommunicationsReadModel } from "./ChamberCommunicationsReadModel";
+import { loadGlobalMotherChamberCommunicationReadModel } from "@/domains/instruments/global-mother/loadGlobalMotherChamberCommunicationReadModel";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +36,9 @@ function positionsFrom(value: unknown): SavedPosition[] {
 export default async function GlobalMotherResponseReviewPage() {
   const principal = await getPrincipal();
   if (!isAdmin(principal)) notFound();
+
+  const chamberCommunications =
+    await loadGlobalMotherChamberCommunicationReadModel();
 
   const instrument = await prisma.institutionalInstrument.findUnique({
     where: { reference: globalMotherV4Definition.reference },
@@ -273,20 +278,6 @@ export default async function GlobalMotherResponseReviewPage() {
   return (
     <main className={styles.page}>
       <div className={styles.workspace}>
-        <header className={styles.instrumentBar}>
-          <div className={styles.instrumentState}>
-            <span>UNDER DELIBERATION</span>
-            <b>
-              V{globalMotherV4Definition.version} ·{" "}
-              {version?.status ?? "ABSENT"}
-            </b>
-            <b>
-              {respondedCount} / {activeCurrentGrants.length} RESPONSE SETS
-            </b>
-            <b>{awaitingCount} OUTSTANDING</b>
-            <b>FORMATION HOLD</b>
-          </div>
-        </header>
 
         <aside className={styles.contextRail}>
           <section
@@ -311,15 +302,16 @@ export default async function GlobalMotherResponseReviewPage() {
               </small>
             </div>
             <div>
-              <span>Bound grants</span>
+              <span>Legacy access</span>
               <strong>{currentGrants.length}</strong>
               <small>
+                V4 credential records ·{" "}
                 {currentGrants.filter((grant) => grant.firstAccessAt).length}{" "}
                 accessed
               </small>
             </div>
             <div>
-              <span>Response sets</span>
+              <span>Deliberation</span>
               <strong>{receipts.length}</strong>
               <small>{open} positions for discussion</small>
             </div>
@@ -327,33 +319,33 @@ export default async function GlobalMotherResponseReviewPage() {
 
           <nav
             className={styles.operatorRail}
-            aria-label="Global Mother operator workspace"
+            aria-label="Global Mother Chamber workspace"
           >
             <a href="#gm-overview">
               <span>Overview</span>
               <strong>{instrument.status}</strong>
             </a>
-            <a href="#gm-create-recipient">
-              <span>Create Recipient</span>
-              <strong>ISSUE</strong>
+            <a href="#gm-communications">
+              <span>Communications</span>
+              <strong>CHAMBER</strong>
             </a>
-            <a href="#gm-recipient-registry">
-              <span>Recipient Registry</span>
-              <strong>{currentGrants.length}</strong>
+            <a href="#gm-deliberation">
+              <span>Deliberation</span>
+              <strong>
+                {respondedCount} / {activeCurrentGrants.length}
+              </strong>
             </a>
-            <a href="#gm-responses">
-              <span>Responses</span>
-              <strong>{receipts.length}</strong>
-            </a>
-            <a href="#gm-drafting">
-              <span>Agreement / Formation</span>
+            <a href="#gm-formation">
+              <span>Formation</span>
               <strong>
                 {collectionComplete ? "REVIEW" : `HOLD · ${awaitingCount}`}
               </strong>
             </a>
-            <a href="#gm-history">
-              <span>History / Events</span>
-              <strong>{historicalReceipts.length}</strong>
+            <a href="#gm-record">
+              <span>Record</span>
+              <strong>
+                {currentGrants.length + historicalReceipts.length}
+              </strong>
             </a>
           </nav>
         </aside>
@@ -399,6 +391,121 @@ export default async function GlobalMotherResponseReviewPage() {
                 <IssueV4Control versionId={version.id} />
               ) : null}
             </section>
+          </div>
+          <div className={styles.reviewColumn}>
+            <div id="gm-communications">
+              <ChamberCommunicationsReadModel
+                model={chamberCommunications}
+              />
+            </div>
+
+            <section
+              id="gm-deliberation"
+              className={`${styles.section} ${styles.responseDomain}`}
+            >
+              <div className={styles.sectionHeading}>
+                <div>
+                  <span>03 / Deliberation</span>
+                  <h2>Attributable Deliberation Record</h2>
+                </div>
+                <small>
+                  {respondedCount} / {activeCurrentGrants.length} RECEIVED
+                </small>
+              </div>
+
+              <p className={styles.sectionLead}>
+                Inspect attributable positions individually or compare the
+                recorded institutional positions carried within this Chamber
+                relationship.
+              </p>
+
+              <ResponseWorkspace
+                entries={responseIndexEntries}
+                standing={responseStanding}
+              />
+            </section>
+            <details
+              id="gm-formation"
+              className={`${styles.section} ${styles.sectionDisclosure} ${styles.draftingDomain} ${draftingGate.ok ? styles.draftingReady : styles.draftingDormant}`}
+              open={draftingGate.ok}
+            >
+              <summary className={styles.sectionSummary}>
+                <div>
+                  <span>04 / Formation</span>
+                  <h2>Agreement Formation</h2>
+                </div>
+                <strong>
+                  {draftingGate.ok ? "READY FOR REVIEW" : "NOT ACTIVATED"}
+                </strong>
+              </summary>
+              <div className={styles.sectionBody}>
+                <p className={styles.draftingBoundary}>
+                  This is a separate formation domain. Framework issuance does
+                  not activate it. Recorded responses establish the review
+                  basis; only a separate operator decision can open preparation
+                  of a proposed Master Agreement.
+                </p>
+                {draftingDecisions.length ? (
+                  draftingDecisions.map((decision) => (
+                    <article className={styles.item} key={decision.id}>
+                      <div>
+                        <strong>
+                          {decision.standing === "OPEN_DRAFTING"
+                            ? "Proposed drafting opened"
+                            : "Held for review"}
+                        </strong>
+                        <span>
+                          {decision.actor.displayName ??
+                            decision.actor.name ??
+                            decision.actor.email}{" "}
+                          · {decision.recordedAt.toLocaleString()}
+                        </span>
+                        <p>{decision.rationale}</p>
+                        <small>
+                          {Array.isArray(decision.reviewedReceiptIds)
+                            ? decision.reviewedReceiptIds.length
+                            : 0}{" "}
+                          receipts reviewed
+                        </small>
+                      </div>
+                    </article>
+                  ))
+                ) : (
+                  <p>No drafting decision recorded.</p>
+                )}
+                {version?.status === "ISSUED" &&
+                instrument.currentVersion ===
+                  globalMotherV4Definition.version ? (
+                  <DraftingDecisionControl
+                    key={receipts.map((set) => set.id).join(":")}
+                    versionId={version.id}
+                    receiptIds={receipts.map((set) => set.id)}
+                    gate={draftingGate}
+                  />
+                ) : null}
+              </div>
+            </details>
+<details
+              id="gm-record"
+              className={`${styles.section} ${styles.sectionDisclosure} ${styles.legacyRecord}`}
+            >
+              <summary className={styles.sectionSummary}>
+                <div>
+                  <span>05 / Record</span>
+                  <h2>Legacy Access & Chamber Record</h2>
+                </div>
+                <strong>
+                  {currentGrants.length + historicalReceipts.length}
+                </strong>
+              </summary>
+
+              <div className={styles.sectionBody}>
+                <p className={styles.recordBoundary}>
+                  V1/V4 credential issuance, recipient access records and
+                  prior-version deliberation remain preserved as institutional
+                  provenance. They are inspectable and operable here, but they
+                  no longer define the living Chamber workspace.
+                </p>
 
             <section
               id="gm-create-recipient"
@@ -406,15 +513,15 @@ export default async function GlobalMotherResponseReviewPage() {
             >
               <div className={styles.sectionHeading}>
                 <div>
-                  <span>01 / Access issuance</span>
-                  <h2>Create Recipient</h2>
+                  <span>Legacy access operation</span>
+                  <h2>Issue V4 Credential</h2>
                 </div>
                 <small>NEW ACCESS GRANT</small>
               </div>
 
               <p className={styles.sectionLead}>
-                Issue a version-bound Chamber credential. Creation is separate
-                from inspection of existing recipient records.
+                Issue a version-bound legacy Chamber credential when this
+                historical access path must still be maintained.
               </p>
 
               {version?.status === "ISSUED" &&
@@ -429,8 +536,8 @@ export default async function GlobalMotherResponseReviewPage() {
             >
               <div className={styles.sectionHeading}>
                 <div>
-                  <span>02 / Access ledger</span>
-                  <h2>Recipient Registry</h2>
+                  <span>Legacy access ledger</span>
+                  <h2>Credential & Recipient Records</h2>
                 </div>
                 <small>
                   {currentGrants.length} RECORD
@@ -582,40 +689,16 @@ export default async function GlobalMotherResponseReviewPage() {
                 </>
               )}
             </section>
-          </div>
-          <div className={styles.reviewColumn}>
-            <section
-              id="gm-responses"
-              className={`${styles.section} ${styles.responseDomain}`}
-            >
-              <div className={styles.sectionHeading}>
-                <div>
-                  <span>03 / Deliberation record</span>
-                  <h2>Participant Responses</h2>
-                </div>
-                <small>
-                  {respondedCount} / {activeCurrentGrants.length} RECEIVED
-                </small>
-              </div>
 
-              <p className={styles.sectionLead}>
-                Inspect attributable positions individually or open all
-                submitted response sets for deliberative comparison.
-              </p>
 
-              <ResponseWorkspace
-                entries={responseIndexEntries}
-                standing={responseStanding}
-              />
-            </section>
             <details
               id="gm-history"
               className={`${styles.section} ${styles.sectionDisclosure}`}
             >
               <summary className={styles.sectionSummary}>
                 <div>
-                  <span>05 / History</span>
-                  <h2>Prior-version response history</h2>
+                  <span>Historical deliberation</span>
+                  <h2>Prior-Version Response Record</h2>
                 </div>
                 <strong>{historicalReceipts.length}</strong>
               </summary>
@@ -681,65 +764,7 @@ export default async function GlobalMotherResponseReviewPage() {
                 )}
               </div>
             </details>
-            <details
-              id="gm-drafting"
-              className={`${styles.section} ${styles.sectionDisclosure} ${styles.draftingDomain} ${draftingGate.ok ? styles.draftingReady : styles.draftingDormant}`}
-              open={draftingGate.ok}
-            >
-              <summary className={styles.sectionSummary}>
-                <div>
-                  <span>04 / Agreement & Formation</span>
-                  <h2>Master Agreement formation</h2>
-                </div>
-                <strong>
-                  {draftingGate.ok ? "READY FOR REVIEW" : "NOT ACTIVATED"}
-                </strong>
-              </summary>
-              <div className={styles.sectionBody}>
-                <p className={styles.draftingBoundary}>
-                  This is a separate formation domain. Framework issuance does
-                  not activate it. Recorded responses establish the review
-                  basis; only a separate operator decision can open preparation
-                  of a proposed Master Agreement.
-                </p>
-                {draftingDecisions.length ? (
-                  draftingDecisions.map((decision) => (
-                    <article className={styles.item} key={decision.id}>
-                      <div>
-                        <strong>
-                          {decision.standing === "OPEN_DRAFTING"
-                            ? "Proposed drafting opened"
-                            : "Held for review"}
-                        </strong>
-                        <span>
-                          {decision.actor.displayName ??
-                            decision.actor.name ??
-                            decision.actor.email}{" "}
-                          · {decision.recordedAt.toLocaleString()}
-                        </span>
-                        <p>{decision.rationale}</p>
-                        <small>
-                          {Array.isArray(decision.reviewedReceiptIds)
-                            ? decision.reviewedReceiptIds.length
-                            : 0}{" "}
-                          receipts reviewed
-                        </small>
-                      </div>
-                    </article>
-                  ))
-                ) : (
-                  <p>No drafting decision recorded.</p>
-                )}
-                {version?.status === "ISSUED" &&
-                instrument.currentVersion ===
-                  globalMotherV4Definition.version ? (
-                  <DraftingDecisionControl
-                    key={receipts.map((set) => set.id).join(":")}
-                    versionId={version.id}
-                    receiptIds={receipts.map((set) => set.id)}
-                    gate={draftingGate}
-                  />
-                ) : null}
+
               </div>
             </details>
           </div>

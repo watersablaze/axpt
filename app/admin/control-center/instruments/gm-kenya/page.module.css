@@ -702,8 +702,7 @@
 
 #gm-access,
 #gm-responses,
-#gm-history,
-#gm-drafting {
+#gm-history {
   scroll-margin-top: calc(var(--cc-crown-height, 76px) + 4rem);
 }
 
@@ -1169,8 +1168,7 @@
 
 #gm-access,
 #gm-responses,
-#gm-history,
-#gm-drafting {
+#gm-history {
   scroll-margin-top: calc(var(--cc-crown-height, 76px) + 1rem);
 }
 
@@ -1656,7 +1654,6 @@
 #gm-create-recipient,
 #gm-recipient-registry,
 #gm-responses,
-#gm-drafting,
 #gm-history {
   scroll-margin-top:
     calc(
@@ -3263,7 +3260,6 @@
 #gm-create-recipient,
 #gm-recipient-registry,
 #gm-responses,
-#gm-drafting,
 #gm-history {
   scroll-margin-top:
     calc(
@@ -3565,7 +3561,6 @@
 #gm-create-recipient,
 #gm-recipient-registry,
 #gm-responses,
-#gm-drafting,
 #gm-history {
   scroll-margin-top:
     calc(
@@ -3744,7 +3739,6 @@
 #gm-create-recipient,
 #gm-recipient-registry,
 #gm-responses,
-#gm-drafting,
 #gm-history {
   scroll-margin-top:
     calc(
@@ -3874,7 +3868,6 @@
 #gm-create-recipient,
 #gm-recipient-registry,
 #gm-responses,
-#gm-drafting,
 #gm-history {
   scroll-margin-top:
     calc(
@@ -3894,5 +3887,778 @@
   .instrumentBar {
     position: relative !important;
     top: auto !important;
+  }
+}
+
+/* =========================================================
+   GM-CHAMBER-ADMIN-3A.1 — LIVING CHAMBER INFORMATION ARCHITECTURE
+
+   Chamber = governed institutional communication workspace.
+   Instrument = relationship/source anchor.
+   Deliberation = attributable institutional positions.
+   Formation = downstream operator-governed drafting domain.
+   V1/V4 credential machinery = preserved institutional record.
+   ========================================================= */
+
+.chamberDomain {
+  position: relative;
+
+  border-top:
+    1px solid rgba(117, 167, 187, .38) !important;
+
+  background:
+    linear-gradient(
+      110deg,
+      rgba(80, 132, 153, .075),
+      rgba(80, 132, 153, .018) 52%,
+      transparent
+    ) !important;
+}
+
+.chamberDomain::before {
+  content: "";
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+
+  width: 2px;
+
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(115, 174, 196, .72),
+      rgba(115, 174, 196, .12)
+    );
+}
+
+.chamberPosture {
+  display: grid;
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  margin-top: .9rem;
+
+  border-top:
+    1px solid rgba(111, 158, 174, .17);
+
+  border-bottom:
+    1px solid rgba(111, 158, 174, .13);
+}
+
+.chamberPosture > div {
+  min-width: 0;
+
+  padding:
+    .8rem
+    .9rem
+    .85rem
+    0;
+}
+
+.chamberPosture > div + div {
+  padding-left: .9rem;
+
+  border-left:
+    1px solid rgba(111, 158, 174, .12);
+}
+
+.chamberPosture span,
+.chamberPosture small {
+  display: block;
+}
+
+.chamberPosture span {
+  color: #708995;
+
+  font-size: .5rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.chamberPosture strong {
+  display: block;
+
+  margin-top: .32rem;
+
+  color: #d8e0df;
+
+  font-size: .72rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.chamberPosture small {
+  margin-top: .22rem;
+
+  color: #70838b;
+
+  font-size: .58rem;
+  line-height: 1.5;
+}
+
+.chamberForwardNote {
+  max-width: 76ch;
+
+  margin:
+    .8rem
+    0
+    0 !important;
+
+  color: #81939a !important;
+
+  font-size: .63rem !important;
+  line-height: 1.65 !important;
+}
+
+/*
+ * V1/V4 access machinery remains available but no longer occupies
+ * the first-facing Chamber stage.
+ */
+.legacyRecord {
+  margin-top: .25rem;
+
+  border-top-color:
+    rgba(150, 132, 87, .18) !important;
+
+  background:
+    rgba(9, 14, 15, .22) !important;
+}
+
+.legacyRecord > .sectionSummary {
+  opacity: .86;
+}
+
+.legacyRecord > .sectionSummary h2 {
+  color: #aeb9b8 !important;
+}
+
+.legacyRecord > .sectionSummary span {
+  color: #827b68 !important;
+}
+
+.legacyRecord > .sectionBody {
+  padding-top: .25rem !important;
+}
+
+.recordBoundary {
+  max-width: 82ch;
+
+  margin:
+    .25rem
+    0
+    1rem !important;
+
+  padding:
+    .7rem
+    .8rem !important;
+
+  border-left:
+    1px solid rgba(160, 137, 80, .34);
+
+  background:
+    rgba(126, 102, 53, .035);
+
+  color: #7e8989 !important;
+
+  font-size: .61rem !important;
+  line-height: 1.65 !important;
+}
+
+.legacyRecord .createRecipientSection,
+.legacyRecord .registrySection {
+  margin-top: 1rem !important;
+
+  border-top-color:
+    rgba(133, 146, 146, .12) !important;
+
+  background:
+    transparent !important;
+}
+
+.legacyRecord .createRecipientSection {
+  padding-top: .9rem !important;
+}
+
+.legacyRecord .registrySection {
+  padding-top: 1rem !important;
+}
+
+/*
+ * Deliberation is a living Chamber domain, not merely a response
+ * inbox. Keep its existing ResponseWorkspace behavior unchanged.
+ */
+.responseDomain {
+  border-top-color:
+    rgba(111, 158, 174, .28) !important;
+}
+
+/* New Chamber anchors resolve against the GM state strip. */
+#gm-communications,
+#gm-deliberation,
+#gm-formation,
+#gm-record {
+  scroll-margin-top:
+    calc(
+      var(--gm-bar-height) +
+      1rem
+    ) !important;
+}
+
+@media (max-width: 900px) {
+  .chamberPosture {
+    grid-template-columns: 1fr;
+  }
+
+  .chamberPosture > div {
+    padding:
+      .7rem
+      0 !important;
+  }
+
+  .chamberPosture > div + div {
+    border-top:
+      1px solid rgba(111, 158, 174, .1);
+
+    border-left: 0;
+  }
+}
+
+/* =========================================================
+   GM-CHAMBER-ADMIN-6Q.1 — ORIENTATION PALETTE AUTHORITY
+
+   Structure is neutral.
+   Brass marks institutional orientation sparingly.
+   Domain color remains subordinate to hierarchy.
+   ========================================================= */
+
+.page {
+  --gm-surface-0: #0b0f11;
+  --gm-surface-1: #101518;
+  --gm-surface-2: #151a1d;
+
+  --gm-text-primary: #d9d8d2;
+  --gm-text-secondary: #8e999d;
+  --gm-text-quiet: #657176;
+
+  --gm-brass: #a89568;
+  --gm-brass-soft: rgba(168, 149, 104, .18);
+
+  --gm-line: rgba(150, 158, 159, .14);
+  --gm-line-strong: rgba(150, 158, 159, .22);
+
+  --gm-situated: #899b98;
+  --gm-formation: rgba(119, 102, 132, .22);
+
+  background:
+    linear-gradient(
+      180deg,
+      #0b0f11 0%,
+      #0a0e10 100%
+    ) !important;
+
+  color:
+    var(--gm-text-primary);
+}
+
+.contextRail {
+  border-color:
+    var(--gm-line) !important;
+
+  border-top-color:
+    var(--gm-brass-soft) !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(16, 21, 24, .98),
+      rgba(11, 15, 17, .98)
+    ) !important;
+
+  box-shadow:
+    none !important;
+}
+
+.contextRail .metrics > div,
+.contextRail .operatorRail {
+  border-color:
+    var(--gm-line) !important;
+}
+
+.contextRail .metrics span,
+.contextRail .operatorRail strong {
+  color:
+    var(--gm-brass) !important;
+}
+
+.contextRail .metrics strong,
+.sectionHeading h2,
+.sectionSummary h2 {
+  color:
+    var(--gm-text-primary) !important;
+}
+
+.contextRail .metrics small,
+.contextRail .operatorRail a,
+.sectionLead,
+.section > p {
+  color:
+    var(--gm-text-secondary) !important;
+}
+
+.contextRail .operatorRail a:hover,
+.contextRail .operatorRail a:focus-visible {
+  color:
+    var(--gm-text-primary) !important;
+
+  background:
+    rgba(255, 255, 255, .018) !important;
+}
+
+.workGrid .section {
+  border-color:
+    var(--gm-line) !important;
+
+  background:
+    transparent !important;
+}
+
+.chamberDomain {
+  border-top-color:
+    var(--gm-line-strong) !important;
+
+  background:
+    transparent !important;
+}
+
+.chamberDomain::before {
+  background:
+    linear-gradient(
+      to bottom,
+      var(--gm-brass),
+      transparent
+    ) !important;
+
+  opacity: .42;
+}
+
+.chamberPosture {
+  border-color:
+    var(--gm-line) !important;
+}
+
+.chamberPosture > div + div {
+  border-left-color:
+    var(--gm-line) !important;
+}
+
+.chamberPosture span {
+  color:
+    var(--gm-text-quiet) !important;
+}
+
+.chamberPosture strong {
+  color:
+    var(--gm-text-primary) !important;
+}
+
+.chamberPosture small,
+.chamberForwardNote {
+  color:
+    var(--gm-text-secondary) !important;
+}
+
+.responseDomain {
+  border-top-color:
+    var(--gm-line-strong) !important;
+}
+
+.draftingDomain {
+  border-top-color:
+    var(--gm-formation) !important;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(119, 102, 132, .055),
+      transparent 42%
+    ) !important;
+}
+
+.draftingDomain::before {
+  opacity: .34;
+}
+
+.legacyRecord {
+  border-top-color:
+    var(--gm-line) !important;
+
+  background:
+    rgba(255, 255, 255, .008) !important;
+}
+
+.legacyRecord > .sectionSummary {
+  opacity: .72;
+}
+
+.legacyRecord > .sectionSummary h2 {
+  color:
+    var(--gm-text-secondary) !important;
+}
+
+.legacyRecord > .sectionSummary span {
+  color:
+    var(--gm-text-quiet) !important;
+}
+
+.recordBoundary {
+  border-left-color:
+    var(--gm-line) !important;
+
+  background:
+    transparent !important;
+
+  color:
+    var(--gm-text-quiet) !important;
+}
+
+/*
+ * Source integrity remains visible but does not visually outrank
+ * the living Chamber domains.
+ */
+.integritySection {
+  border-top-color:
+    var(--gm-line) !important;
+
+  background:
+    transparent !important;
+}
+
+.integritySection > p {
+  color:
+    var(--gm-brass) !important;
+}
+
+/* =========================================================
+   GM-CHAMBER-ADMIN-6Q.2 — OVERVIEW / SOURCE INTEGRITY POSTURE
+
+   Source integrity remains operator-visible, but it is a datum
+   within Overview rather than the dominant Chamber stage.
+   ========================================================= */
+
+.integritySection {
+  margin-bottom:
+    .35rem !important;
+
+  padding:
+    .52rem 0
+    .62rem !important;
+
+  border:
+    0 !important;
+
+  border-top:
+    1px solid var(--gm-line) !important;
+
+  border-bottom:
+    1px solid var(--gm-line) !important;
+
+  background:
+    transparent !important;
+}
+
+.integritySection .sectionHeading,
+.integritySection .sectionSummary {
+  min-height: 0;
+}
+
+.integritySection .sectionHeading span,
+.integritySection .sectionSummary span {
+  color:
+    var(--gm-text-quiet) !important;
+
+  font-size:
+    .48rem !important;
+}
+
+.integritySection .sectionHeading h2,
+.integritySection .sectionSummary h2 {
+  color:
+    var(--gm-text-secondary) !important;
+
+  font-family:
+    Arial, sans-serif !important;
+
+  font-size:
+    .72rem !important;
+
+  font-weight:
+    600 !important;
+
+  letter-spacing:
+    .025em !important;
+}
+
+.integritySection .sectionHeading small,
+.integritySection .sectionSummary strong,
+.integritySection > p {
+  color:
+    var(--gm-brass) !important;
+
+  font-size:
+    .52rem !important;
+
+  font-weight:
+    600 !important;
+
+  letter-spacing:
+    .06em;
+}
+
+.integritySection > p {
+  max-width:
+    42rem;
+
+  margin:
+    .3rem 0 0 auto !important;
+
+  line-height:
+    1.45 !important;
+
+  opacity:
+    .78;
+}
+
+/* =========================================================
+   GM-CHAMBER-ADMIN-6Q.3B — COMPOUND CONTROL PLANE
+
+   The shared Control Center strip owns instrument identity.
+   This local row supplies state only and visually behaves as
+   the subordinate line of the same control plane.
+   ========================================================= */
+
+.page {
+  --gm-bar-height: 2.35rem;
+  --gm-stage-reading-max: 62rem;
+}
+
+.instrumentBar {
+  height:
+    var(--gm-bar-height) !important;
+
+  min-height:
+    var(--gm-bar-height) !important;
+
+  padding:
+    .32rem
+    clamp(.85rem, 1.4vw, 1.25rem) !important;
+
+  border-top:
+    0 !important;
+
+  border-bottom:
+    1px solid var(--gm-line) !important;
+
+  background:
+    rgba(11, 15, 17, .985) !important;
+
+  box-shadow:
+    none !important;
+
+  backdrop-filter:
+    none !important;
+}
+
+.instrumentState {
+  gap:
+    clamp(.75rem, 1.45vw, 1.35rem) !important;
+
+  min-width: 0;
+}
+
+.instrumentState span,
+.instrumentState b {
+  line-height:
+    1 !important;
+
+  white-space:
+    nowrap;
+}
+
+.instrumentState span {
+  color:
+    var(--gm-brass) !important;
+
+  font-size:
+    .49rem !important;
+
+  letter-spacing:
+    .105em !important;
+}
+
+.instrumentState b {
+  color:
+    var(--gm-text-quiet) !important;
+
+  font-size:
+    .49rem !important;
+
+  font-weight:
+    600 !important;
+
+  letter-spacing:
+    .075em !important;
+}
+
+/*
+ * The active work plane is a deliberate reading/decision field,
+ * not an infinitely expanding dashboard canvas.
+ */
+.workGrid {
+  width:
+    min(100%, var(--gm-stage-reading-max)) !important;
+
+  max-width:
+    var(--gm-stage-reading-max) !important;
+
+  margin-right:
+    auto !important;
+
+  padding-right:
+    clamp(.25rem, 1vw, .8rem);
+}
+
+.accessColumn,
+.reviewColumn {
+  width:
+    100%;
+
+  max-width:
+    var(--gm-stage-reading-max);
+}
+
+/*
+ * Living domains share the same bounded field. Tables and ledgers
+ * can still use the entire field without stretching to the viewport.
+ */
+#gm-overview,
+#gm-communications,
+#gm-deliberation,
+#gm-formation,
+#gm-record {
+  width:
+    100%;
+
+  max-width:
+    var(--gm-stage-reading-max);
+}
+
+@media (max-width: 1000px) {
+  .page {
+    --gm-stage-reading-max: 100%;
+  }
+
+  .workGrid {
+    padding-right: 0;
+  }
+
+  .instrumentState {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 700px) {
+  .page {
+    --gm-bar-height: auto;
+  }
+
+  .instrumentBar {
+    height: auto !important;
+    min-height: 0 !important;
+    padding-block: .5rem !important;
+  }
+
+  .instrumentState span,
+  .instrumentState b {
+    white-space: normal;
+  }
+}
+
+/* =========================================================
+   GM-CHAMBER-ADMIN-6Q.3D — SINGLE IDENTITY PLANE
+
+   The Control Center shell owns route/instrument identity.
+   GM no longer renders a second top state plane.
+   Live operating state remains in the left context rail.
+   ========================================================= */
+
+.page {
+  --gm-stage-reading-max: 54rem;
+  --gm-bar-height: 0px;
+}
+
+.workspace {
+  padding-top:
+    0 !important;
+}
+
+.instrumentBar {
+  display:
+    none !important;
+}
+
+.contextRail {
+  top:
+    1rem !important;
+
+  max-height:
+    calc(100dvh - 2rem) !important;
+}
+
+.workGrid {
+  width:
+    min(100%, var(--gm-stage-reading-max)) !important;
+
+  max-width:
+    var(--gm-stage-reading-max) !important;
+
+  padding-top:
+    .35rem !important;
+
+  padding-right:
+    0 !important;
+}
+
+#gm-overview,
+#gm-communications,
+#gm-deliberation,
+#gm-formation,
+#gm-record {
+  max-width:
+    var(--gm-stage-reading-max);
+}
+
+/*
+ * With the local fixed state strip gone, Chamber anchors only need
+ * ordinary local breathing room inside the Control Center scrollport.
+ */
+#gm-communications,
+#gm-deliberation,
+#gm-formation,
+#gm-record {
+  scroll-margin-top:
+    1rem !important;
+}
+
+@media (max-width: 1000px) {
+  .page {
+    --gm-stage-reading-max: 100%;
+  }
+
+  .contextRail {
+    top: auto !important;
+    max-height: none !important;
   }
 }

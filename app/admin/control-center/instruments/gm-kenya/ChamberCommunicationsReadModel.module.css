@@ -1,0 +1,355 @@
+.surface {
+  grid-column: 1 / -1;
+  margin: 0 0 .9rem;
+  padding: .9rem 0 1rem;
+  border-top: 1px solid rgba(203, 180, 125, .2);
+  border-bottom: 1px solid rgba(154, 174, 184, .12);
+}
+
+.heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.heading > div {
+  display: grid;
+  gap: .18rem;
+}
+
+.heading span,
+.emptyState > span,
+.roomStrip span {
+  color: #a99462;
+  font-size: .52rem;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.heading h2 {
+  margin: 0;
+  color: #ece8df;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.heading > strong {
+  color: #83969e;
+  font-size: .54rem;
+  letter-spacing: .1em;
+}
+
+.boundary {
+  max-width: 58rem;
+  margin: .55rem 0 .75rem;
+  color: #788b93;
+  font-size: .63rem;
+  line-height: 1.55;
+}
+
+.emptyState {
+  max-width: 58rem;
+  padding: .85rem 1rem;
+  border: 1px solid rgba(154, 174, 184, .11);
+  background: rgba(9, 24, 29, .18);
+}
+
+.emptyState h3 {
+  margin: .32rem 0 .35rem;
+  color: #dad6ce;
+  font-size: .8rem;
+  font-weight: 600;
+}
+
+.emptyState p {
+  margin: 0;
+  color: #7e9199;
+  font-size: .62rem;
+  line-height: 1.55;
+}
+
+.emptyState dl {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .4rem 1rem;
+  margin: .7rem 0 0;
+  padding-top: .6rem;
+  border-top: 1px solid rgba(154, 174, 184, .09);
+}
+
+.emptyState dl div {
+  display: grid;
+  gap: .12rem;
+}
+
+.emptyState dt {
+  color: #667981;
+  font-size: .48rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.emptyState dd {
+  margin: 0;
+  color: #a99b74;
+  font-size: .57rem;
+}
+
+.roomStrip {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr));
+  border-top: 1px solid rgba(154, 174, 184, .1);
+  border-bottom: 1px solid rgba(154, 174, 184, .1);
+}
+
+.roomStrip > div {
+  display: grid;
+  gap: .16rem;
+  padding: .55rem .65rem;
+  border-right: 1px solid rgba(154, 174, 184, .08);
+}
+
+.roomStrip > div:first-child {
+  padding-left: 0;
+}
+
+.roomStrip > div:last-child {
+  border-right: 0;
+}
+
+.roomStrip strong {
+  color: #d9d5cc;
+  font-size: .65rem;
+  font-weight: 600;
+}
+
+.timeline {
+  display: grid;
+  gap: .7rem;
+  margin-top: .8rem;
+}
+
+.entry {
+  padding: .7rem .8rem;
+  border-left: 2px solid rgba(128, 148, 157, .28);
+  background: rgba(8, 21, 26, .13);
+}
+
+.formalEntry {
+  border-left-color: rgba(190, 163, 101, .72);
+}
+
+.reflectionEntry {
+  border-left-color: rgba(118, 150, 158, .55);
+}
+
+.entry header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.entry header span,
+.entry footer span {
+  color: #788b93;
+  font-size: .48rem;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+}
+
+.entry h4 {
+  margin: .16rem 0 0;
+  color: #dedad2;
+  font-size: .72rem;
+  font-weight: 600;
+}
+
+.entry time {
+  color: #687b83;
+  font-size: .5rem;
+  white-space: nowrap;
+}
+
+.entry p {
+  max-width: 58rem;
+  margin: .5rem 0;
+  color: #9aa8ad;
+  font-size: .62rem;
+  line-height: 1.58;
+}
+
+.entry footer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .35rem .9rem;
+  padding-top: .4rem;
+  border-top: 1px solid rgba(154, 174, 184, .07);
+}
+
+.recordPosture {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .25rem .8rem;
+  margin-top: .45rem;
+}
+
+.recordPosture span,
+.recordPosture strong {
+  font-size: .52rem;
+}
+
+.recordPosture span {
+  color: #778a92;
+}
+
+.recordPosture strong {
+  color: #ad9d72;
+  font-weight: 600;
+}
+
+@media (max-width: 760px) {
+  .heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: .35rem;
+  }
+
+  .roomStrip,
+  .emptyState dl {
+    grid-template-columns: 1fr;
+  }
+
+  .roomStrip > div,
+  .roomStrip > div:first-child {
+    padding: .48rem 0;
+    border-right: 0;
+    border-bottom: 1px solid rgba(154, 174, 184, .07);
+  }
+
+  .roomStrip > div:last-child {
+    border-bottom: 0;
+  }
+
+  .entry header {
+    flex-direction: column;
+    gap: .25rem;
+  }
+}
+
+/* =========================================================
+   GM-CHAMBER-ADMIN-6Q.1 — COMMUNICATIONS PALETTE CONVERGENCE
+   ========================================================= */
+
+.surface {
+  border-top-color:
+    var(--gm-line-strong);
+
+  border-bottom-color:
+    var(--gm-line);
+}
+
+.heading span,
+.emptyState > span,
+.roomStrip span {
+  color:
+    var(--gm-brass);
+}
+
+.heading h2,
+.emptyState h3,
+.roomStrip strong,
+.entry h4 {
+  color:
+    var(--gm-text-primary);
+}
+
+.heading > strong {
+  color:
+    var(--gm-situated);
+}
+
+.boundary,
+.emptyState p,
+.entry p,
+.recordPosture span {
+  color:
+    var(--gm-text-secondary);
+}
+
+.emptyState {
+  border-color:
+    var(--gm-line);
+
+  background:
+    rgba(255, 255, 255, .012);
+}
+
+.emptyState dl,
+.roomStrip,
+.entry footer {
+  border-color:
+    var(--gm-line);
+}
+
+.emptyState dt,
+.entry header span,
+.entry footer span,
+.entry time {
+  color:
+    var(--gm-text-quiet);
+}
+
+.emptyState dd,
+.recordPosture strong {
+  color:
+    var(--gm-brass);
+}
+
+.roomStrip > div {
+  border-right-color:
+    var(--gm-line);
+}
+
+.entry {
+  border-left-color:
+    var(--gm-line-strong);
+
+  background:
+    rgba(255, 255, 255, .008);
+}
+
+.formalEntry {
+  border-left-color:
+    var(--gm-brass);
+}
+
+.reflectionEntry {
+  border-left-color:
+    var(--gm-situated);
+}
+
+@media (max-width: 760px) {
+  .roomStrip > div,
+  .roomStrip > div:first-child {
+    border-bottom-color:
+      var(--gm-line);
+  }
+}
+
+/* =========================================================
+   GM-CHAMBER-ADMIN-6Q.3B — BOUNDED COMMUNICATIONS FIELD
+   ========================================================= */
+
+.surface {
+  width: 100%;
+  max-width: var(--gm-stage-reading-max);
+}
+
+.boundary,
+.emptyState,
+.entry p {
+  max-width: 52rem;
+}
