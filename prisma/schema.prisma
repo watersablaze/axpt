@@ -114,6 +114,13 @@ model User {
   institutionalAccessEventsActed    InstitutionalAccessEvent[] @relation("InstitutionalAccessEventActor")
 
   wallets                                  Wallet?
+
+  gmChamberAdmissions         GlobalMotherChamberAdmission[] @relation("GMChamberAdmittedParticipant")
+  gmChamberCapacityVerifications GlobalMotherChamberAdmission[] @relation("GMChamberCapacityVerifier")
+  gmChamberAdmissionDecisions GlobalMotherChamberAdmission[] @relation("GMChamberAdmissionDecider")
+  gmChamberAdmissionRevocations GlobalMotherChamberAdmission[] @relation("GMChamberAdmissionRevoker")
+  gmChamberRoomBindings       GlobalMotherChamberRoomBinding[] @relation("GMChamberRoomBinder")
+  gmChamberRoomRevocations    GlobalMotherChamberRoomBinding[] @relation("GMChamberRoomRevoker")
 }
 
 // ============================================================================
@@ -3573,6 +3580,7 @@ model CommunicationOperationalRoom {
 
   links          CommunicationOperationalLink[]
   reflections    CommunicationOperationalReflection[]
+  globalMotherChamberBinding GlobalMotherChamberRoomBinding?
   chamberRecords CommunicationChamberRecord[]
 
   @@unique([createdByUserId, clientRoomId])
@@ -4091,4 +4099,66 @@ model ProfileAccessNoticeDelivery {
   @@index([requestId, attemptedAt])
   @@index([grantId, attemptedAt])
   @@index([status, attemptedAt])
+}
+
+model GlobalMotherChamberAdmission {
+  id                  String   @id @default(cuid())
+  instrumentReference String
+  cycleLabel          String
+  participantKey      String
+  institution         String
+  capacity            String
+
+  participantUserId   String?
+  capacityEvidenceReference String?
+  capacityVerifiedByUserId   String?
+  capacityVerifiedAt DateTime?
+
+  standing            String   @default("PREPARED")
+  admittedByUserId    String?
+  admittedAt          DateTime?
+  decisionReason      String?
+
+  revokedByUserId     String?
+  revokedAt           DateTime?
+  revocationReason    String?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  participant User? @relation("GMChamberAdmittedParticipant", fields: [participantUserId], references: [id], onDelete: Restrict)
+  capacityVerifier User? @relation("GMChamberCapacityVerifier", fields: [capacityVerifiedByUserId], references: [id], onDelete: Restrict)
+  admittedBy User? @relation("GMChamberAdmissionDecider", fields: [admittedByUserId], references: [id], onDelete: Restrict)
+  revokedBy User? @relation("GMChamberAdmissionRevoker", fields: [revokedByUserId], references: [id], onDelete: Restrict)
+
+  @@unique([instrumentReference, cycleLabel, participantKey])
+  @@index([participantUserId, standing])
+  @@index([standing, revokedAt])
+}
+
+model GlobalMotherChamberRoomBinding {
+  id                  String   @id @default(cuid())
+  instrumentReference String
+  cycleLabel          String
+
+  operationalRoomId   String?  @unique
+  standing            String   @default("PREPARED")
+
+  boundByUserId       String?
+  boundAt             DateTime?
+  bindingReason       String?
+
+  revokedByUserId     String?
+  revokedAt           DateTime?
+  revocationReason    String?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  operationalRoom CommunicationOperationalRoom? @relation(fields: [operationalRoomId], references: [id], onDelete: Restrict)
+  boundBy User? @relation("GMChamberRoomBinder", fields: [boundByUserId], references: [id], onDelete: Restrict)
+  revokedBy User? @relation("GMChamberRoomRevoker", fields: [revokedByUserId], references: [id], onDelete: Restrict)
+
+  @@unique([instrumentReference, cycleLabel])
+  @@index([standing, revokedAt])
 }
