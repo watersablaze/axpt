@@ -1,0 +1,242 @@
+.header {
+  position: relative;
+  z-index: 30;
+  flex-shrink: 0;
+  padding: 5px 20px;
+  background:
+    linear-gradient(110deg, rgba(111,80,159,.08), transparent 35%,
+      rgba(69,142,159,.07) 70%, rgba(162,126,71,.05)),
+    #0b1014;
+  border-bottom: 0;
+}
+.header::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0;
+  height: 2px;
+  pointer-events: none;
+  background: linear-gradient(90deg,
+    #8266ae20, #a38bc980 22%, #6ab7cba0 49%,
+    #83b9ab80 69%, #c5ac7180 88%, #c5ac7120);
+}
+.sigil {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 58px;
+  height: 52px;
+}
+.sigilImage {
+  width: 56px;
+  height: 50px;
+  object-fit: contain;
+}
+.header :global(nav a),
+.header :global(button) {
+  min-height: 34px;
+  border: 1px solid rgba(145,175,190,.15);
+  border-radius: 7px;
+  background: linear-gradient(120deg,
+    rgba(138,112,180,.065), rgba(93,165,180,.04));
+  color: #bdcbd1;
+  box-shadow: none;
+  transition: background-color 160ms ease, border-color 160ms ease,
+    color 160ms ease, box-shadow 160ms ease;
+}
+.header :global(nav a:hover),
+.header :global(button:hover) {
+  border-color: rgba(143,190,203,.42);
+  color: #eef7fa;
+  background: rgba(110,174,191,.09);
+  box-shadow: 0 0 16px rgba(100,174,193,.08);
+}
+.header :global(a:focus-visible),
+.header :global(button:focus-visible) {
+  outline: 2px solid #91bac9;
+  outline-offset: 3px;
+}
+@media(max-width:600px) {
+  .header { padding-inline: 12px; }
+}
+
+/* Sigil interaction */
+.sigil {
+  width: 70px;
+  height: 54px;
+}
+.sigilImage {
+  width: 68px;
+  height: 54px;
+  filter: drop-shadow(0 0 7px rgba(114,179,198,.2));
+}
+.header a:hover .sigilImage,
+.header a:focus-visible .sigilImage {
+  filter: drop-shadow(0 0 11px rgba(133,193,211,.34));
+}
+@media(prefers-reduced-motion:no-preference) {
+  .sigilImage {
+    transition: filter 200ms ease;
+  }
+  .header a:hover .sigilImage,
+  .header a:focus-visible .sigilImage {
+    animation: sigilActivate 480ms ease-out;
+  }
+  .header a:active .sigilImage {
+    animation: none;
+    transform: scale(.96);
+  }
+  @keyframes sigilActivate {
+    0%, 100% { transform: translateY(0); }
+    45% { transform: translateY(-2px); }
+    72% { transform: translateY(.5px); }
+  }
+}
+
+/* Larger Admin sigil */
+.sigil { width: 90px; height: 54px; }
+.sigilImage { width: 88px; height: 64px; max-width: none; flex-shrink: 0; }
+
+/* Unified Admin foundation */
+.header {
+  background:
+    linear-gradient(110deg,rgba(127,101,164,.075),
+      rgba(93,157,175,.045) 55%,rgba(165,146,100,.035)),
+    #0c1116;
+  box-shadow: none;
+}
+.header::after {
+  height: 1px;
+  opacity: .75;
+}
+.header :global(nav a),
+.header :global(button) {
+  background: rgba(151,183,198,.035);
+  border-color: rgba(147,177,193,.16);
+}
+
+
+/* FW-TXN-1B.6O · compact administrative identity, route-scoped */
+.transactionMobileToggle {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .transactionCompact {
+    padding: 5px 12px !important;
+    min-height: 0 !important;
+  }
+
+  .transactionCompact > div:nth-child(2) {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .transactionCompact .sigil {
+    width: 50px;
+    height: 36px;
+  }
+
+  .transactionCompact .sigilImage {
+    width: 51px;
+    height: 38px;
+    object-fit: contain;
+  }
+
+  .transactionCompact .transactionMobileToggle {
+    display: inline-flex;
+    margin-left: auto;
+    align-items: center;
+    border: 1px solid #424b46;
+    background: transparent;
+    padding: 7px 10px;
+    color: #d9c6a3;
+    font-size: 10px;
+  }
+
+  .transactionCompact .transactionTools {
+    display: none;
+    width: 100%;
+    padding: 7px 0 3px;
+    border-top: 1px solid #323b37;
+  }
+
+  .transactionCompact .transactionToolsOpen {
+    display: flex;
+  }
+}
+
+/* AXPT Communications · canonical compact mobile header */
+.communicationsMobileToggle {
+  display: none;
+}
+
+@media (max-width: 719px) {
+  .communicationsCompact {
+    padding: 5px 11px;
+  }
+
+  .communicationsCompact > div:nth-child(2) {
+    gap: 7px;
+    flex-wrap: nowrap;
+  }
+
+  .communicationsCompact .sigil {
+    width: 42px;
+    height: 32px;
+  }
+
+  .communicationsCompact .sigilImage {
+    width: 44px;
+    height: 34px;
+    max-width: none;
+    object-fit: contain;
+  }
+
+  .communicationsCompact .communicationsMobileToggle {
+    display: inline-flex;
+    min-height: 28px;
+    margin-left: auto;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(147,177,193,.17);
+    border-radius: 5px;
+    background: transparent;
+    padding: 4px 8px;
+    color: #9eafb6;
+    font-size: 8px;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    box-shadow: none;
+  }
+
+  .communicationsCompact .communicationsTools {
+    display: none;
+    width: 100%;
+    margin-top: 4px;
+    padding: 6px 0 2px;
+    border-top: 1px solid rgba(120,140,150,.12);
+  }
+
+  .communicationsCompact .communicationsToolsOpen {
+    display: flex;
+  }
+
+  .communicationsCompact .communicationsTools nav {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1px;
+  }
+
+  .communicationsCompact .communicationsTools nav a,
+  .communicationsCompact .communicationsTools > button {
+    min-height: 27px;
+    justify-content: flex-start;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 3px 1px;
+    font-size: 9px;
+    box-shadow: none;
+  }
+}
