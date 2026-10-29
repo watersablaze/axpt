@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import { PrismaClient } from "@prisma/client";
-import {
-  registerGsamInstitutionalParticipation as register,
-} from "../../src/domains/institutions/french-ward/gsam/registerGsamInstitutionalParticipation.ts";
+import registrationModule from "../../src/domains/institutions/french-ward/gsam/registerGsamInstitutionalParticipation.ts";
+
+const {
+  registerGsamInstitutionalParticipation: register,
+} = registrationModule;
 
 const EXPECTED_DB = "axpt_gsam_participation_acceptance_20261025";
 const REFERENCE = "FW-GSAM-JV-2026-001";
