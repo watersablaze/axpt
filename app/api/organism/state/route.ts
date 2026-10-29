@@ -1,6 +1,16 @@
-import { buildOrganismSnapshot } from "@/engines/runtime/server/organismSnapshotBuilder"
+import { NextResponse } from 'next/server'
 
 export async function GET() {
-  const snapshot = buildOrganismSnapshot()
-  return Response.json(snapshot)
+  return NextResponse.json(
+    {
+      ok: false,
+      error: 'ORGANISM_RUNTIME_NOT_AUTHORIZED',
+    },
+    {
+      status: 503,
+      headers: {
+        'Cache-Control': 'no-store',
+      },
+    },
+  )
 }
