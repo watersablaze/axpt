@@ -70,6 +70,7 @@ model User {
   tokenIssuanceRequests TokenIssuanceRequest[]   @relation("RequestsByUser")
   transactions          Transaction[]
   userRoles             UserRole[]
+  frenchWardGoverningOfficer FrenchWardGoverningOfficer?
 
   createdCommunicationConversations    CommunicationConversation[]    @relation("CommunicationConversationCreator")
   communicationMemberships             CommunicationMember[]          @relation("CommunicationMembership")
@@ -4180,4 +4181,43 @@ model GsamInstitutionalParticipation {
 
   @@index([institutionLegalName])
   @@index([documentationStatus])
+}
+
+/// French-Ward institutional governing standing.
+///
+/// This record identifies a person recognized by French-Ward in a governing
+/// officer capacity. It does not itself grant AXPT permissions, commercial
+/// authority, instrument authority, or resource access.
+model FrenchWardGoverningOfficer {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+
+  /// Stable French-Ward governance identity, independent of AXPT User.id.
+  reference           String   @unique
+
+  displayName         String
+  institutionalTitle  String
+  secondaryTitle      String?
+
+  /// Documentary or institutional basis relied upon for this recognition.
+  governingBasis      String
+
+  /// Optional provenance pointer to a legacy/operational source such as
+  /// IntakeRepresentative code FW-REP-001. This is evidence, not authority.
+  provenanceReference String?
+
+  status              String   @default("ACTIVE")
+
+  recognizedAt        DateTime @default(now())
+  endedAt             DateTime?
+
+  createdByUserId     String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user                User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([status])
+  @@index([displayName])
+  @@index([provenanceReference])
 }
