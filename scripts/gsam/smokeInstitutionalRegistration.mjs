@@ -1,8 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import {
-  registerGsamInstitutionalParticipation as register,
-} from "../../src/domains/institutions/french-ward/gsam/registerGsamInstitutionalParticipation.ts";
+import registrationModule from "../../src/domains/institutions/french-ward/gsam/registerGsamInstitutionalParticipation.ts";
+
+const {
+  registerGsamInstitutionalParticipation: register,
+} = registrationModule;
 
 function fixture() {
   let stored = null;
