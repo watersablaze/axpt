@@ -1,26 +1,11 @@
-import { NextResponse } from "next/server"
-import { prisma } from "@/lib/prisma"
+import { NextResponse } from 'next/server'
 
-export async function POST(req: Request) {
-  const body = await req.json()
-
-  const {
-    title,
-    fileName,
-    fileUrl,
-    caseId,
-    category
-  } = body
-
-  const doc = await prisma.document.create({
-    data: {
-      title,
-      fileName,
-      fileUrl,
-      caseId,
-      category
-    }
-  })
-
-  return NextResponse.json(doc)
+export async function POST() {
+  return NextResponse.json(
+    {
+      ok: false,
+      error: 'LEGACY_DOCUMENT_UPLOAD_DISABLED',
+    },
+    { status: 503 },
+  )
 }
