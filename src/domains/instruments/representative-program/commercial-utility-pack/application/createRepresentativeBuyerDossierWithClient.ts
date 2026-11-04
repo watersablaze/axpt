@@ -11,7 +11,7 @@ type Transaction = Parameters<typeof resolveRepresentativeBuyerDossierSelectionW
   "institutionalAccessRequest" | "institutionalAccessGrant" | "institutionalAccessEvent" | "domainEvent">;
 const fields = z.object({
   includeLoiAccess: z.boolean().optional().default(false),
-  resourceReleaseIds: z.array(z.string().trim().min(1).max(191)).min(1).max(5)
+  resourceReleaseIds: z.array(z.string().trim().min(1).max(191)).min(1).max(6)
     .refine(ids => new Set(ids).size === ids.length),
   reviewHash: z.string().regex(/^[a-f0-9]{64}$/),
   recipientName: z.string().trim().min(1).max(120),

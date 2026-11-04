@@ -18,6 +18,7 @@ function Material({ resourceReleaseId, resourceReference, resourceType, agreemen
   const [attempt, setAttempt] = useState(0);
   const publication = SUPPORTING_DOCUMENTS.find(entry => entry.reference === resourceReference);
   const query = new URLSearchParams();
+  query.set("embedded", "1");
   if (previewParticipantId) query.set("previewParticipantId", previewParticipantId);
   if (resourceType === "STRUCTURED_CONTENT") query.set("renderer", "structured");
   if (resourceType === "INSTITUTIONAL_INSTRUMENT") query.set("renderer", "institutional");

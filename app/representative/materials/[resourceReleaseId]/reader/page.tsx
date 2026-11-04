@@ -3,6 +3,7 @@ import { loadRepresentativeCommercialPaper } from "@/domains/instruments/represe
 import { withSourceAuthorityJoinGraph } from "@/infrastructure/db/sourceAuthorityJoinGraph";
 import { createLocalReadTiming } from "@/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/localReadTiming";
 import CupReaderReady from "../../../CupReaderReady";
+import CupReaderStatus from "../../../CupReaderStatus";
 import CupPdfReader from "../../../CupPdfReader";
 import { loadRepresentativeSupportingDocumentWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/loadRepresentativeSupportingDocumentWithClient";
 import boundaries from "../../../resources/[resourceReleaseId]/operating-boundaries.module.css";
@@ -27,17 +28,24 @@ export const runtime = "nodejs";
 
 export default async function CupPublicationReader({ params, searchParams }: {
   params: Promise<{ resourceReleaseId: string }>;
-  searchParams: Promise<{ previewParticipantId?: string | string[]; renderer?: string | string[] }>;
+  searchParams: Promise<{ previewParticipantId?: string | string[]; renderer?: string | string[]; embedded?: string | string[] }>;
 }) {
   const timing = createLocalReadTiming();
   const { resourceReleaseId } = await params;
   const query = await searchParams;
   const previewParticipantId = query.previewParticipantId;
   const renderer = query.renderer;
+  const embedded = query.embedded === "1";
   if (renderer !== undefined && renderer !== "structured" && renderer !== "institutional") notFound();
   if (!resourceReleaseId || resourceReleaseId.length > 191) notFound();
   const principal = await timing.measure("principal", () => getPrincipal());
-  if (!principal) redirect("/login?next=" + encodeURIComponent("/representative"));
+  if (!principal) {
+    if (embedded) return <main style={{ height: "100dvh", margin: 0 }}>
+      <CupReaderReady state="error" />
+      <CupReaderStatus error="Your session is unavailable. Sign in and reopen this material." />
+    </main>;
+    redirect("/login?next=" + encodeURIComponent("/representative"));
+  }
   let userId = principal.userId;
   if (previewParticipantId !== undefined) {
     if (typeof previewParticipantId !== "string" || !previewParticipantId ||

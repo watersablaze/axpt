@@ -24,7 +24,7 @@ export async function resolveBuyerDossierSelection(input: {
   ports: BuyerDossierSelectionPorts;
 }) {
   const ids = input.resourceReleaseIds;
-  if (!Array.isArray(ids) || !ids.length || ids.length > 5 ||
+  if (!Array.isArray(ids) || !ids.length || ids.length > 6 ||
       ids.some(id => typeof id !== "string" || !id.trim() || id !== id.trim() || id.length > 191) ||
       new Set(ids).size !== ids.length) {
     return { allowed: false as const, reason: "INVALID_SELECTION" };
