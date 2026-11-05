@@ -4221,3 +4221,87 @@ model FrenchWardGoverningOfficer {
   @@index([displayName])
   @@index([provenanceReference])
 }
+
+// FW Phase A · Institutional Matter Foundation
+
+enum InstitutionalMatterKind {
+  COMMERCIAL_TRANSACTION
+}
+
+enum InstitutionalMatterRecordKind {
+  INTAKE
+  OPPORTUNITY
+  DOSSIER
+}
+
+enum InstitutionalMatterEventType {
+  MATTER_ESTABLISHED
+  RECORD_LINKED
+  CURRENT_RECORD_ADVANCED
+}
+
+model InstitutionalMatter {
+  id        String @id @default(cuid())
+  reference String @unique
+
+  institutionalDomain     String
+  institutionalPrincipal  String
+  coordinationEnvironment String
+
+  matterKind InstitutionalMatterKind
+
+  currentRecordKind      InstitutionalMatterRecordKind
+  currentRecordId        String
+  currentRecordReference String
+
+  records InstitutionalMatterRecord[]
+  events  InstitutionalMatterEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([institutionalDomain, matterKind])
+  @@index([institutionalPrincipal])
+  @@index([currentRecordKind, currentRecordId])
+  @@index([updatedAt])
+}
+
+model InstitutionalMatterRecord {
+  id String @id @default(cuid())
+
+  matterId String
+
+  recordKind      InstitutionalMatterRecordKind
+  recordId        String
+  recordReference String
+
+  linkedBy String?
+  linkedAt DateTime @default(now())
+
+  matter InstitutionalMatter @relation(fields: [matterId], references: [id], onDelete: Cascade)
+
+  @@unique([recordKind, recordId])
+  @@unique([recordKind, recordReference])
+  @@index([matterId, linkedAt])
+  @@index([recordReference])
+}
+
+model InstitutionalMatterEvent {
+  id String @id @default(cuid())
+
+  matterId String
+
+  eventType InstitutionalMatterEventType
+
+  actor    String?
+  message  String?
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  matter InstitutionalMatter @relation(fields: [matterId], references: [id], onDelete: Cascade)
+
+  @@index([matterId, createdAt])
+  @@index([eventType])
+  @@index([actor])
+}
