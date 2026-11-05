@@ -419,8 +419,62 @@ async function main() {
     );
   }
 
+  {
+    const {
+      client,
+      credential,
+    } =
+      fixture();
+
+    const access =
+      await resolveFrenchWardCommercialIntakeRequestAccessWithClient({
+        client,
+
+        principal:
+          null,
+
+        credential,
+
+        action:
+          "SUBMIT_INTAKE",
+
+        now:
+          NOW,
+      });
+
+    assert.equal(
+      access.allowed,
+      true,
+    );
+
+    if (!access.allowed) {
+      throw new Error(
+        "expected invitation submission access",
+      );
+    }
+
+    assert.equal(
+      access.source,
+      "GOVERNING_LOI_CREDENTIAL",
+    );
+
+    assert.equal(
+      access.identity.userId,
+      "recipient-001",
+    );
+
+    assert.equal(
+      access.grantId,
+      "grant-invitation",
+    );
+
+    console.log(
+      "✓ verified invitation resolves exact identity + grant for SUBMIT_INTAKE",
+    );
+  }
+
   console.log(
-    "✓ FW-ACTIONS-1E.5B REQUEST ACCESS CONTRACT PASSED",
+    "✓ FW-ACTIONS-1E.5C REQUEST ACCESS CONTRACT PASSED",
   );
 }
 

@@ -616,7 +616,7 @@ export default function TransactionIntakeForm({
 
     try {
       const response = await fetch(
-        "/api/transaction-intake",
+        "/french-ward/transaction-intake/submit",
         {
           method: "POST",
           headers: {
