@@ -1,5 +1,6 @@
 import CommercialIntakePresentation from "./CommercialIntakePresentation";
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 
 
 import {
@@ -7,12 +8,12 @@ import {
 } from "@/domains/auth/getPrincipal";
 
 import {
-  resolveInstitutionalAccessWithClient,
-} from "@/domains/institutional-access/resolveInstitutionalAccessWithClient";
+  FRENCH_WARD_LOI_ACCESS_COOKIE,
+} from "@/domains/institutions/french-ward/commercial/loiInvitationCredential";
 
 import {
-  FRENCH_WARD_COMMERCIAL_INTAKE,
-} from "@/domains/institutions/french-ward/commercial";
+  resolveFrenchWardCommercialIntakeRequestAccessWithClient,
+} from "@/domains/institutions/french-ward/commercial/resolveFrenchWardCommercialIntakeRequestAccessWithClient";
 
 import {
   prisma,
@@ -46,46 +47,56 @@ export default async function TransactionIntakePage({
   const principal =
     await getPrincipal();
 
+  const cookieStore =
+    await cookies();
+
+  const credential =
+    cookieStore
+      .get(
+        FRENCH_WARD_LOI_ACCESS_COOKIE,
+      )
+      ?.value ??
+    null;
+
   const access =
-    principal
-      ? await resolveInstitutionalAccessWithClient({
-          client:
-            prisma,
+    await resolveFrenchWardCommercialIntakeRequestAccessWithClient({
+      client:
+        prisma,
 
-          identity: {
-            userId:
-              principal.userId,
+      principal:
+        principal
+          ? {
+              userId:
+                principal.userId,
 
-            email:
-              principal.email,
-          },
+              email:
+                principal.email,
 
-          scope:
-            FRENCH_WARD_COMMERCIAL_INTAKE
-              .accessScope,
+              displayName:
+                principal.displayName,
+            }
+          : null,
 
-          action:
-            "VIEW_FORM",
+      credential,
 
-          resourceReference:
-            FRENCH_WARD_COMMERCIAL_INTAKE
-              .reference,
-
-          resourceVersion:
-            FRENCH_WARD_COMMERCIAL_INTAKE
-              .version,
-        })
-      : {
-          allowed:
-            false,
-        } as const;
+      action:
+        "VIEW_FORM",
+    });
 
   return <CommercialIntakePresentation
     allowed={access.allowed}
     referralCode={referralCode}
     representativeName={representativeName}
     program={program}
-    initialName={principal?.displayName ?? ""}
-    initialEmail={principal?.email ?? ""}
+    initialName={
+      access.allowed
+        ? access.displayName
+        : principal?.displayName ?? ""
+    }
+    initialEmail={
+      access.allowed
+        ? access.email
+        : principal?.email ?? ""
+    }
   />;
 }

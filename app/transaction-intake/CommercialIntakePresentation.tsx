@@ -80,7 +80,7 @@ export default function CommercialIntakePresentation({
         <aside aria-label="LOI preview notice" className={styles.previewNotice}>
           <Link href={backHref} className={styles.previewReturn}>← Return to review</Link>
           <p >Read-only LOI preview · Fields and submission are disabled.</p>
-          <p >Include LOI access in the buyer invitation to let that recipient open and submit the form after sign-in.</p>
+          <p >Include LOI access in the buyer invitation to let that recipient open the form through their secure invitation.</p>
         </aside>
       ) : null}
       {allowed ? (
