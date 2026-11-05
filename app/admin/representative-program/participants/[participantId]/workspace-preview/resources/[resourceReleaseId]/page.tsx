@@ -55,7 +55,18 @@ export default async function OperatorResourcePreview({
     client: prisma, userId: participant.userId, resourceReleaseId,
   };
   const commercialPaper = await loadRepresentativeCommercialPaper(input);
-  if (commercialPaper) return <CommercialPaperReview paper={commercialPaper} preview />;
+  if (commercialPaper) return (
+    <main>
+      <nav
+        className={reading.readerChrome}
+        aria-label="Operator commercial paper navigation"
+      >
+        <Link href={base}>← Back to Workspace Preview</Link>
+        <p>Read-only preview · {participant.displayName}</p>
+      </nav>
+      <CommercialPaperReview paper={commercialPaper} preview />
+    </main>
+  );
   const supporting=await loadRepresentativeSupportingDocumentWithClient(input);
   if(supporting){const publication=supporting.publication;return <SupportingDocumentView
     title={publication.title} reference={publication.reference} version={publication.version} note={publication.disclosureNote}
