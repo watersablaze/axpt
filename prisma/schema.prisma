@@ -4305,3 +4305,42 @@ model InstitutionalMatterEvent {
   @@index([eventType])
   @@index([actor])
 }
+
+model FrenchWardLoiInvitation {
+  id                   String   @id @default(cuid())
+  actorUserId          String
+  governingReference   String
+
+  requestId            String   @unique
+  grantId              String   @unique
+  recipientUserId      String
+
+  recipientName        String
+  recipientEmail       String
+  recipientOrganization String
+  purpose              String
+
+  policy               String
+  inputHash            String
+  idempotencyKey       String
+
+  expiresAt            DateTime
+  revokedAt            DateTime?
+
+  /// Public recipient credential. Raw credential material is never persisted.
+  credentialHash       String?  @unique
+  credentialIssuedAt   DateTime?
+
+  deliveryStatus       String   @default("QUEUED")
+  messageId            String?
+  deliveryError        String?
+  attemptedAt          DateTime?
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@unique([actorUserId, idempotencyKey])
+  @@index([recipientEmail, expiresAt])
+  @@index([deliveryStatus, createdAt])
+  @@index([actorUserId, createdAt])
+}

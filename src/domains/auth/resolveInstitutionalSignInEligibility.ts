@@ -7,6 +7,10 @@ export type InstitutionalSignInEligibility =
     }
   | {
       eligible: true;
+      audience: "FRENCH_WARD_GOVERNING";
+    }
+  | {
+      eligible: true;
       audience: "REPRESENTATIVE";
     }
   | {
@@ -17,6 +21,12 @@ export type InstitutionalSignInEligibility =
 type EligibilityInput = {
   roles?: string[];
   permissions?: string[];
+
+  frenchWardGoverningStanding?: {
+    status: string;
+    endedAt?: Date | null;
+  } | null;
+
   representativeProgramParticipants?: Array<{
     standing: string;
   }>;
@@ -32,13 +42,17 @@ const REPRESENTATIVE_SIGN_IN_STANDINGS = new Set([
 /**
  * Authentication answers WHO MAY ESTABLISH AN AXPT SESSION.
  *
- * Authorization remains separate:
- * - Admin access is still governed by admin roles/permissions.
- * - Representative access is grounded in a canonical Program Participant.
+ * Audience priority:
  *
- * A suspended representative may authenticate so that their standing,
- * restrictions and institutional record remain visible. Suspension does
- * not imply exercisable authority.
+ * ADMIN
+ *   > FRENCH_WARD_GOVERNING
+ *   > REPRESENTATIVE
+ *
+ * Authorization remains separate.
+ *
+ * French-Ward governing standing establishes institutional
+ * recognition only. It does not grant AXPT permissions,
+ * commercial authority, instrument authority or resource access.
  */
 export function resolveInstitutionalSignInEligibility(
   input: EligibilityInput,
@@ -55,9 +69,22 @@ export function resolveInstitutionalSignInEligibility(
     };
   }
 
+  const governing =
+    input.frenchWardGoverningStanding;
+
+  if (
+    governing?.status === "ACTIVE" &&
+    governing.endedAt == null
+  ) {
+    return {
+      eligible: true,
+      audience: "FRENCH_WARD_GOVERNING",
+    };
+  }
+
   const representativeEligible =
     input.representativeProgramParticipants?.some(
-      (participant) =>
+      participant =>
         REPRESENTATIVE_SIGN_IN_STANDINGS.has(
           participant.standing,
         ),

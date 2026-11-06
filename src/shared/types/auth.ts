@@ -12,6 +12,7 @@ export type SessionTier =
   | BusinessTier
   | 'platform'
   | 'operations'
+  | 'french-ward-governance'
   | 'representative'
   | 'institutional-visitor'
 

@@ -1,67 +1,21 @@
-import { randomUUID } from 'node:crypto'
-
-import bcrypt from 'bcryptjs'
 import { NextResponse } from 'next/server'
 
-import { resolveInstitutionalVisitorSignInWithClient } from '@/domains/institutional-access/resolveInstitutionalVisitorSignInWithClient'
 import {
   createSessionCookie,
   createSessionToken,
 } from '@/lib/auth/session'
 import { prisma } from '@/infrastructure/db/prisma'
+import {
+  createInstitutionalPinVerificationDependencies,
+} from '@/domains/auth/institutionalPinVerificationAdapter'
+import {
+  verifyInstitutionalLoginPin,
+  type InstitutionalAudience,
+} from '@/domains/auth/verifyInstitutionalLoginPin'
 import type { SessionPayload } from '@/shared/types/auth'
 
-const MAX_ATTEMPTS = 5
-const SESSION_MAX_AGE_SECONDS =
-  60 * 60 * 24 * 7
-
-type TransactionClient = Omit<
-  typeof prisma,
-  | '$connect'
-  | '$disconnect'
-  | '$on'
-  | '$transaction'
-  | '$use'
-  | '$extends'
->
-
-type AuthRoleGrant = {
-  role: {
-    key: string
-    rolePermissions: Array<{
-      permission: {
-        key: string
-      }
-    }>
-  }
-}
-
-function normalizeEmail(value: unknown) {
-  if (typeof value !== 'string') return null
-
-  const email = value.trim().toLowerCase()
-
-  if (
-    email.length < 3 ||
-    email.length > 254 ||
-    !email.includes('@')
-  ) {
-    return null
-  }
-
-  return email
-}
-
-function normalizePin(value: unknown) {
-  if (typeof value !== 'string') return null
-
-  const pin = value.trim()
-
-  if (!/^\d{6}$/.test(pin)) {
-    return null
-  }
-
-  return pin
+const noStore = {
+  'Cache-Control': 'no-store',
 }
 
 function unauthorized() {
@@ -72,7 +26,21 @@ function unauthorized() {
     },
     {
       status: 401,
-    }
+      headers: noStore,
+    },
+  )
+}
+
+function unavailable() {
+  return NextResponse.json(
+    {
+      ok: false,
+      error: 'AUTH_PIN_VERIFY_NOT_OPERATIONAL',
+    },
+    {
+      status: 503,
+      headers: noStore,
+    },
   )
 }
 
@@ -89,6 +57,57 @@ function getRequestIp(request: Request) {
   )
 }
 
+function presentationForAudience(
+  audience: InstitutionalAudience,
+) {
+  if (audience === 'FRENCH_WARD_GOVERNING') {
+    return {
+      popupMessage:
+        'French-Ward institutional session established.',
+      docs: [] as SessionPayload['docs'],
+    }
+  }
+
+  if (audience === 'REPRESENTATIVE') {
+    return {
+      popupMessage:
+        'AXPT representative session established.',
+      docs: [] as SessionPayload['docs'],
+    }
+  }
+
+  if (audience === 'INSTITUTIONAL_VISITOR') {
+    return {
+      popupMessage:
+        'AXPT institutional visitor session established.',
+      docs: [] as SessionPayload['docs'],
+    }
+  }
+
+  return {
+    popupMessage:
+      'AXPT operator session established.',
+    docs: ['whitepaper'] as SessionPayload['docs'],
+  }
+}
+
+async function revokePersistedSession(
+  tokenId: string,
+) {
+  const now = new Date()
+
+  await prisma.session.updateMany({
+    where: {
+      tokenId,
+    },
+    data: {
+      status: 'invalidated',
+      invalidatedAt: now,
+      endedAt: now,
+    },
+  })
+}
+
 export async function POST(request: Request) {
   let body: unknown
 
@@ -101,282 +120,104 @@ export async function POST(request: Request) {
   const record =
     typeof body === 'object' &&
     body !== null
-      ? body
-      : null
+      ? body as Record<string, unknown>
+      : {}
 
-  const email = normalizeEmail(
-    record && 'email' in record
-      ? record.email
-      : null
-  )
-
-  const pin = normalizePin(
-    record && 'pin' in record
-      ? record.pin
-      : null
-  )
-
-  if (!email || !pin) {
-    return unauthorized()
-  }
-
-  const challenge =
-    await prisma.pinLoginRequest.findUnique({
-      where: {
-        email,
-      },
-    })
-
-  if (
-    !challenge ||
-    challenge.consumedAt ||
-    challenge.expiresAt <= new Date() ||
-    challenge.attemptCount >= MAX_ATTEMPTS
-  ) {
-    return unauthorized()
-  }
-
-  const validPin =
-    await bcrypt.compare(
-      pin,
-      challenge.pinHash
-    )
-
-  if (!validPin) {
-    const nextAttemptCount =
-      challenge.attemptCount + 1
-
-    await prisma.pinLoginRequest.updateMany({
-      where: {
-        id: challenge.id,
-        consumedAt: null,
-      },
-      data: {
-        attemptCount: {
-          increment: 1,
-        },
-        consumedAt:
-          nextAttemptCount >= MAX_ATTEMPTS
-            ? new Date()
-            : undefined,
-      },
-    })
-
-    return unauthorized()
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      email,
-    },
-    select: {
-      id: true,
-      email: true,
-      tier: true,
-      displayName: true,
-      name: true,
-      userRoles: {
-        where: {
-          isActive: true,
-          revokedAt: null,
-        },
-        select: {
-          role: {
-            select: {
-              key: true,
-              rolePermissions: {
-                select: {
-                  permission: {
-                    select: {
-                      key: true,
-                    },
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-      representativeProgramParticipants: {
-        select: {
-          standing: true,
-        },
-      },
-    },
-  })
-
-  if (!user) {
-    return unauthorized()
-  }
-
-  const roleGrants =
-    user.userRoles as AuthRoleGrant[]
-
-  const roles: string[] =
-    roleGrants.map(
-      (userRole) => userRole.role.key
-    )
-
-  const permissions: string[] =
-    Array.from(
-      new Set(
-        roleGrants.flatMap(
-          (userRole) =>
-            userRole.role.rolePermissions.map(
-              (rolePermission) =>
-                rolePermission.permission.key
-            )
-        )
-      )
-    )
-
-  const eligibility =
-    await resolveInstitutionalVisitorSignInWithClient({
-      client: prisma,
-      userId: user.id,
-      email,
-      roles,
-      permissions,
-      representativeProgramParticipants:
-        user.representativeProgramParticipants,
-    })
-
-  if (!eligibility.eligible) {
-    return unauthorized()
-  }
-
-  const tokenId = randomUUID()
-  const now = new Date()
-
-  const expiresAt = new Date(
-    now.getTime() +
-      SESSION_MAX_AGE_SECONDS * 1000
-  )
-
-  const userAgent =
-    request.headers.get('user-agent')
-
-  const ip = getRequestIp(request)
+  let result:
+    Awaited<
+      ReturnType<typeof verifyInstitutionalLoginPin>
+    >
 
   try {
-    await prisma.$transaction(
-      async (tx: TransactionClient) => {
-        const consumed =
-          await tx.pinLoginRequest.updateMany({
-            where: {
-              id: challenge.id,
-              email,
-              consumedAt: null,
-              expiresAt: {
-                gt: now,
-              },
-              attemptCount: {
-                lt: MAX_ATTEMPTS,
-              },
-            },
-            data: {
-              consumedAt: now,
-            },
-          })
-
-        if (consumed.count !== 1) {
-          throw new Error(
-            'AUTH_PIN_ALREADY_CONSUMED'
-          )
-        }
-
-        await tx.session.create({
-          data: {
-            userId: user.id,
-            tokenId,
-            status: 'active',
-            startedAt: now,
-            expiresAt,
-            ip,
-            userAgent,
-            deviceInfo: userAgent,
-          },
-        })
-      },
-      {
-        maxWait: 10000,
-        timeout: 30000,
-      }
-    )
+    result =
+      await verifyInstitutionalLoginPin(
+        createInstitutionalPinVerificationDependencies({
+          ip: getRequestIp(request),
+          userAgent:
+            request.headers.get('user-agent'),
+        }),
+        record.email,
+        record.pin,
+      )
   } catch (error) {
     console.error(
-      '[auth/login/verify] session transaction failed',
-      error
+      '[auth/login/verify] verification unavailable',
+      error,
     )
 
+    return unavailable()
+  }
+
+  if (!result.ok) {
     return unauthorized()
   }
 
-  const token = await createSessionToken({
-    userId: user.id,
-    tokenId,
-    tier:
-      eligibility.audience === 'REPRESENTATIVE'
-        ? 'representative'
-        : eligibility.audience === 'INSTITUTIONAL_VISITOR'
-          ? 'institutional-visitor'
-          : 'operations',
-    roles:
-      roles as SessionPayload['roles'],
-    displayName:
-      user.displayName ??
-      user.name ??
-      (eligibility.audience === 'REPRESENTATIVE'
-        ? 'Representative'
-        : eligibility.audience === 'INSTITUTIONAL_VISITOR'
-          ? 'Institutional Visitor'
-          : 'Operator'),
-    popupMessage:
-      eligibility.audience === 'REPRESENTATIVE'
-        ? 'AXPT representative session established.'
-        : eligibility.audience === 'INSTITUTIONAL_VISITOR'
-          ? 'AXPT institutional visitor session established.'
-          : 'AXPT operator session established.',
-    greeting: 'Welcome back',
-    email: user.email,
-    partner: 'AXPT',
-    docs:
-      eligibility.audience === 'ADMIN'
-        ? ['whitepaper']
-        : [],
-  })
+  const session = result.session
 
+  const presentation =
+    presentationForAudience(
+      session.audience,
+    )
+
+  /*
+   * Session persistence has already succeeded.
+   *
+   * Token signing and cookie issuance therefore form one
+   * fail-closed boundary: either both complete, or the newly
+   * persisted session is invalidated before this request can
+   * report success.
+   */
   try {
+    const token =
+      await createSessionToken({
+        userId: session.userId,
+        tokenId: session.tokenId,
+        tier: session.tier,
+        roles:
+          session.roles as SessionPayload['roles'],
+        displayName:
+          session.displayName,
+        email:
+          session.email,
+        popupMessage:
+          presentation.popupMessage,
+        greeting:
+          'Welcome back',
+        partner:
+          'AXPT',
+        docs:
+          presentation.docs,
+      })
+
     await createSessionCookie(token)
   } catch (error) {
-    await prisma.session.updateMany({
-      where: {
-        tokenId,
-      },
-      data: {
-        status: 'invalidated',
-        invalidatedAt: new Date(),
-        endedAt: new Date(),
-      },
-    })
+    console.error(
+      '[auth/login/verify] token or cookie issuance failed',
+      error,
+    )
 
-    throw error
+    try {
+      await revokePersistedSession(
+        session.tokenId,
+      )
+    } catch (revokeError) {
+      console.error(
+        '[auth/login/verify] persisted session revocation failed',
+        revokeError,
+      )
+    }
+
+    return unavailable()
   }
 
-  await prisma.user.update({
-    where: {
-      id: user.id,
+  return NextResponse.json(
+    {
+      ok: true,
+      audience: session.audience,
     },
-    data: {
-      lastLogin: now,
-      loginCount: {
-        increment: 1,
-      },
+    {
+      status: 200,
+      headers: noStore,
     },
-  })
-
-  return NextResponse.json({
-    ok: true,
-    audience: eligibility.audience,
-  })
+  )
 }

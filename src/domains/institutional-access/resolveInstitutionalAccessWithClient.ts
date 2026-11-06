@@ -33,9 +33,13 @@ export function institutionalScopeAllowsAction(
 }
 
 /**
- * identity must come from the canonical authenticated principal.
- * Resource reference, version, scope and action must come from
- * server-owned consumer configuration, never request-body claims.
+ * identity must come from a server-verified identity source:
+ * either the canonical authenticated principal or an exact,
+ * server-verified recipient invitation credential.
+ *
+ * Resource reference, version, scope, action and optional grantId
+ * must come from server-owned consumer configuration, never
+ * request-body claims.
  *
  * This resolver performs no writes and grants no ARP authority.
  * Mutation consumers must coordinate this check with their write

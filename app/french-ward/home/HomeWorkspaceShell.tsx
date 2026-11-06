@@ -12,7 +12,8 @@ import type {
   FrenchWardHomeProjection,
 } from "@/domains/institutions/french-ward/home/contracts";
 
-
+import SendLoiAction from "./actions/SendLoiAction";
+import RegisterBuyerTransactionAction from "./actions/RegisterBuyerTransactionAction";
 
 import MatterPassageField from "./MatterPassageField";
 import styles from "./home.module.css";
@@ -31,6 +32,11 @@ type ModuleId =
   | "people"
   | "actions";
 
+type ActionViewId =
+  | "send-loi"
+  | "register-buyer-transaction"
+  | "promote-intake";
+
 const MODULES: readonly {
   index: string;
   id: ModuleId;
@@ -41,7 +47,7 @@ const MODULES: readonly {
     index: "01",
     id: "home",
     label: "Home",
-    descriptor: "Current institutional field",
+    descriptor: "Home base for active stewardship and execution",
   },
   {
     index: "02",
@@ -95,6 +101,13 @@ export default function HomeWorkspaceShell({
 
   const [awarenessOpen, setAwarenessOpen] =
     useState(true);
+
+  const [
+    activeAction,
+    setActiveAction,
+  ] = useState<ActionViewId>(
+    "send-loi",
+  );
 
   const currentModule =
     MODULES.find(
@@ -271,10 +284,105 @@ export default function HomeWorkspaceShell({
           : styles.awarenessClosed
       }`}
     >
+      <header
+        className={
+          styles.workspaceCrown
+        }
+      >
+        <div
+          className={
+            styles.workspaceCrownBrand
+          }
+        >
+          <strong>
+            FRENCH-WARD
+          </strong>
+
+          <span>INC.</span>
+        </div>
+
+        <div
+          className={
+            styles.workspaceCrownIdentity
+          }
+        >
+          HOME WORKSPACE
+        </div>
+
+        <div
+          className={
+            styles.workspaceCrownOperator
+          }
+        >
+          <div
+            className={
+              styles.workspaceOperatorIdentity
+            }
+          >
+            <span>
+              {
+                home.participant
+                  .name
+              }
+            </span>
+
+            <small>
+              {
+                home.participant
+                  .institutionalTitle
+              }
+            </small>
+
+            {home.participant
+              .reference ? (
+                <code>
+                  {
+                    home.participant
+                      .reference
+                  }
+                </code>
+              ) : null}
+          </div>
+
+          <form
+            action="/api/auth/clear-session"
+            method="post"
+            className={
+              styles.workspaceSignOut
+            }
+          >
+            <button
+              type="submit"
+            >
+              SIGN OUT
+            </button>
+          </form>
+        </div>
+      </header>
+
       <aside
         className={styles.leftRail}
         aria-label="French-Ward institutional presence"
       >
+        <div
+          className={
+            styles.railEthos
+          }
+          data-rail="stewardship"
+        >
+          <span>
+            STEWARDSHIP / PRESENCE
+          </span>
+
+          <strong>
+            Stewards of Sovereign Wealth
+          </strong>
+
+          <p>
+            Stewardship precedes execution.
+            Authority remains attributable.
+          </p>
+        </div>
         <div
           className={
             styles.institutionBrand
@@ -295,7 +403,7 @@ export default function HomeWorkspaceShell({
           </div>
         </div>
 
-        <section className={styles.participant}>
+        <section className={styles.participant} data-capacity-card="true">
           <p className={styles.micro}>
             PRESENT / CAPACITY
           </p>
@@ -408,7 +516,7 @@ export default function HomeWorkspaceShell({
               <h1>
                 {currentModule.label ===
                 "Home"
-                  ? "Institutional Field"
+                  ? "Home Desk"
                   : currentModule.label}
               </h1>
 
@@ -1957,42 +2065,12 @@ export default function HomeWorkspaceShell({
           {activeModule ===
           "actions" ? (
             <section
-              className={
-                styles.moduleStage
-              }
-              aria-labelledby="actions-title"
+              className={`${styles.moduleStage} ${styles.actionsStage}`}
+              aria-label="Actions"
             >
-              <header
-                className={
-                  styles.moduleIntro
-                }
-              >
-                <p
-                  className={
-                    styles.micro
-                  }
-                >
-                  INSTITUTIONAL EXECUTION
-                </p>
 
-                <h2 id="actions-title">
-                  Actions
-                </h2>
 
-                <p
-                  className={
-                    styles.moduleGuide
-                  }
-                >
-                  Actions available from the
-                  current French-Ward governing
-                  posture. Availability is
-                  resolved from institutional
-                  authority on the server; this
-                  surface does not itself confer
-                  authority.
-                </p>
-              </header>
+
 
               <section
                 className={
@@ -2000,7 +2078,8 @@ export default function HomeWorkspaceShell({
                 }
                 aria-label="French-Ward action capability posture"
               >
-                <article
+                <button
+                  type="button"
                   className={
                     styles.actionPosture
                   }
@@ -2008,6 +2087,21 @@ export default function HomeWorkspaceShell({
                     actions.sendLoi
                       ? "true"
                       : "false"
+                  }
+                  data-current={
+                    activeAction ===
+                    "send-loi"
+                      ? "true"
+                      : "false"
+                  }
+                  aria-pressed={
+                    activeAction ===
+                    "send-loi"
+                  }
+                  onClick={() =>
+                    setActiveAction(
+                      "send-loi",
+                    )
                   }
                 >
                   <div>
@@ -2034,9 +2128,10 @@ export default function HomeWorkspaceShell({
                     intake invitation to a
                     named external recipient.
                   </p>
-                </article>
+                </button>
 
-                <article
+                <button
+                  type="button"
                   className={
                     styles.actionPosture
                   }
@@ -2044,6 +2139,21 @@ export default function HomeWorkspaceShell({
                     actions.registerBuyerTransaction
                       ? "true"
                       : "false"
+                  }
+                  data-current={
+                    activeAction ===
+                    "register-buyer-transaction"
+                      ? "true"
+                      : "false"
+                  }
+                  aria-pressed={
+                    activeAction ===
+                    "register-buyer-transaction"
+                  }
+                  onClick={() =>
+                    setActiveAction(
+                      "register-buyer-transaction",
+                    )
                   }
                 >
                   <div>
@@ -2072,9 +2182,10 @@ export default function HomeWorkspaceShell({
                     registration and custody
                     path.
                   </p>
-                </article>
+                </button>
 
-                <article
+                <button
+                  type="button"
                   className={
                     styles.actionPosture
                   }
@@ -2082,6 +2193,21 @@ export default function HomeWorkspaceShell({
                     actions.promoteIntakeToOpportunity
                       ? "true"
                       : "false"
+                  }
+                  data-current={
+                    activeAction ===
+                    "promote-intake"
+                      ? "true"
+                      : "false"
+                  }
+                  aria-pressed={
+                    activeAction ===
+                    "promote-intake"
+                  }
+                  onClick={() =>
+                    setActiveAction(
+                      "promote-intake",
+                    )
                   }
                 >
                   <div>
@@ -2112,10 +2238,119 @@ export default function HomeWorkspaceShell({
                     the exact governing
                     authority is present.
                   </p>
-                </article>
+                </button>
               </section>
 
+              {activeAction ===
+              "send-loi" ? (
+                actions.sendLoi ? (
+                  <section
+                    className={
+                      styles.actionExecutionPanel
+                    }
+                    aria-label="Send LOI workstation"
+                  >
+                    <SendLoiAction />
+                  </section>
+                ) : (
+                  <section
+                    className={
+                      styles.actionUnavailablePanel
+                    }
+                  >
+                    <span>
+                      COMMERCIAL ENTRY
+                    </span>
 
+                    <h3>
+                      Send LOI
+                    </h3>
+
+                    <strong>
+                      UNAVAILABLE
+                    </strong>
+
+                    <p>
+                      This action is unavailable
+                      from the current governing
+                      posture.
+                    </p>
+                  </section>
+                )
+              ) : null}
+
+              {activeAction ===
+              "register-buyer-transaction" ? (
+                actions.registerBuyerTransaction ? (
+                  <section
+                    className={
+                      styles.actionExecutionPanel
+                    }
+                    aria-label="Register buyer or transaction workstation"
+                  >
+                    <RegisterBuyerTransactionAction />
+                  </section>
+                ) : (
+                  <section
+                    className={
+                      styles.actionUnavailablePanel
+                    }
+                  >
+                    <span>
+                      TRANSACTION ENTRY
+                    </span>
+
+                    <h3>
+                      Register Buyer /
+                      Transaction
+                    </h3>
+
+                    <strong>
+                      UNAVAILABLE
+                    </strong>
+
+                    <p>
+                      Registration is unavailable
+                      from the current governing
+                      posture.
+                    </p>
+                  </section>
+                )
+              ) : null}
+
+              {activeAction ===
+              "promote-intake" ? (
+                <section
+                  className={
+                    styles.actionUnavailablePanel
+                  }
+                  aria-label="Promote Intake to Opportunity workstation"
+                >
+                  <span>
+                    LIFECYCLE PASSAGE
+                  </span>
+
+                  <h3>
+                    Promote Intake →
+                    Opportunity
+                  </h3>
+
+                  <strong>
+                    {actions.promoteIntakeToOpportunity
+                      ? "AVAILABLE"
+                      : actions.governing
+                        ? "RESTRICTED"
+                        : "UNAVAILABLE"}
+                  </strong>
+
+                  <p>
+                    Promotion is a distinct
+                    governing passage. Operative
+                    execution appears only when
+                    its exact authority exists.
+                  </p>
+                </section>
+              ) : null}
 
               <aside
                 className={
@@ -2128,7 +2363,7 @@ export default function HomeWorkspaceShell({
 
                 <p>
                   {actions.governing
-                    ? "Capability posture reflects the current authenticated governing identity. Execution controls are not mounted in this phase."
+                    ? "Capability posture reflects the current authenticated governing identity. Available controls execute only through their independently enforced institutional authority boundaries."
                     : "Administrative review may inspect this surface, but does not confer French-Ward governing or commercial execution authority."}
                 </p>
               </aside>
@@ -2149,16 +2384,13 @@ export default function HomeWorkspaceShell({
                 }
               >
                 <p
+                  id="people-title"
                   className={
                     styles.micro
                   }
                 >
                   INSTITUTIONAL PRESENCE
                 </p>
-
-                <h2 id="people-title">
-                  People
-                </h2>
 
                 <p
                   className={
@@ -2248,6 +2480,26 @@ export default function HomeWorkspaceShell({
             : "false"
         }
       >
+        <div
+          className={
+            styles.railEthos
+          }
+          data-rail="custodial"
+        >
+          <span>
+            CUSTODIAL / AWARENESS
+          </span>
+
+          <strong>
+            Custodians
+          </strong>
+
+          <p>
+            Custody preserves continuity.
+            Passage remains recorded.
+          </p>
+        </div>
+
         <button
           type="button"
           className={

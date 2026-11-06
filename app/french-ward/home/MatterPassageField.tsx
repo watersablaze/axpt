@@ -142,6 +142,125 @@ export default function MatterPassageField({
         </div>
       </header>
 
+      <section
+        className={
+          styles.mobilePassageNavigator
+        }
+        aria-label="Matter Passage mobile navigator"
+      >
+        <div
+          className={
+            styles.mobilePassageTrack
+          }
+        >
+          {PASSAGE.map(
+            (level, levelIndex) => {
+              const levelMatters =
+                matters.filter(
+                  (matter) =>
+                    passageIndex(matter) ===
+                    levelIndex,
+                );
+
+              return (
+                <div
+                  className={
+                    styles.mobilePassageLevel
+                  }
+                  data-passage={
+                    level.key
+                  }
+                  data-active={
+                    levelMatters.length > 0
+                      ? "true"
+                      : "false"
+                  }
+                  key={level.key}
+                >
+                  <div
+                    className={
+                      styles.mobilePassageStage
+                    }
+                  >
+                    <span
+                      className={
+                        styles.mobilePassageNode
+                      }
+                      aria-hidden="true"
+                    />
+
+                    <strong>
+                      {level.key}
+                    </strong>
+                  </div>
+
+                  <div
+                    className={
+                      styles.mobilePassageMatterField
+                    }
+                  >
+                    {levelMatters.map(
+                      (matter) => (
+                        <article
+                          className={
+                            styles.mobilePassageMatter
+                          }
+                          key={matter.id}
+                        >
+                          <strong>
+                            {matter.title}
+                          </strong>
+
+                          <code>
+                            {matter.reference}
+                          </code>
+
+                          <small>
+                            {matter.stage}
+                            {" · "}
+                            {matter.state}
+                          </small>
+                        </article>
+                      ),
+                    )}
+                  </div>
+                </div>
+              );
+            },
+          )}
+        </div>
+
+        {matters.length === 0 ? (
+          <div
+            className={
+              styles.mobilePassageQuiet
+            }
+          >
+            <span>
+              FIELD QUIET
+            </span>
+
+            <p>
+              No recorded matter passage.
+            </p>
+          </div>
+        ) : null}
+
+        <footer
+          className={
+            styles.mobilePassageReadout
+          }
+        >
+          <span>
+            PASSAGE / POSITION
+          </span>
+
+          <strong>
+            AS OF {ticks[3]}
+          </strong>
+        </footer>
+      </section>
+
       <div className={styles.instrumentField}>
         <div
           className={styles.fwSeal}
@@ -157,14 +276,28 @@ export default function MatterPassageField({
           className={styles.fieldCoordinates}
           aria-hidden="true"
         >
-          <span>POSITION</span>
-          <span>TIME / RECORDED PASSAGE</span>
+          <span
+            className={
+              styles.matterAxisPosition
+            }
+          >
+            POSITION
+          </span>
+
+          <span
+            className={
+              styles.matterAxisTime
+            }
+          >
+            TIME / RECORDED PASSAGE
+          </span>
         </div>
 
         <div className={styles.passageLevels}>
           {PASSAGE.map((level) => (
             <div
               className={styles.passageLevel}
+              data-passage={level.key}
               key={level.key}
             >
               <span className={styles.levelLabel}>
@@ -203,6 +336,14 @@ export default function MatterPassageField({
               className={styles.registrationMark}
               aria-hidden="true"
             />
+
+            <span
+              className={
+                styles.emptyFieldState
+              }
+            >
+              FIELD QUIET
+            </span>
 
             <p>
               NO RECORDED PASSAGE

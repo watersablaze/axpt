@@ -7,6 +7,9 @@ import { getSessionFromCookie } from '@/lib/auth/session'
 import type { Principal } from './types'
 import type { PermissionKey } from './permissions'
 import { resolveRepresentativeSessionValidity } from './resolveRepresentativeSessionValidity'
+import {
+  resolveFrenchWardGoverningSessionValidityWithClient,
+} from './resolveFrenchWardGoverningSessionValidityWithClient'
 
 export const getPrincipal = cache(async function getPrincipal(): Promise<Principal | null> {
   const session = await getSessionFromCookie()
@@ -61,6 +64,24 @@ export const getPrincipal = cache(async function getPrincipal(): Promise<Princip
         user.representativeProgramParticipants,
     })
 
+
+  const governingSessionRemainsValid =
+    await resolveFrenchWardGoverningSessionValidityWithClient({
+      client: prisma,
+      sessionTier: session.tier,
+      userId: user.id,
+    })
+
+  if (!governingSessionRemainsValid) {
+    console.log(
+      '[auth/getPrincipal] French-Ward governing session no longer eligible',
+      {
+        userId: user.id,
+      },
+    )
+
+    return null
+  }
 
   if (session.tier === 'institutional-visitor') {
     const visitorEligibility = await resolveInstitutionalVisitorSignInWithClient({

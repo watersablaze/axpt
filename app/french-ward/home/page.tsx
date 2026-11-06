@@ -140,12 +140,7 @@ export default async function FrenchWardHomePage({
   return (
     <HomeWorkspaceShell
       home={home}
-      actions={{
-        ...actions,
-        sendLoi: false,
-        registerBuyerTransaction: false,
-        promoteIntakeToOpportunity: false,
-      }}
+      actions={actions}
       initialModule={initialModule}
     />
   );

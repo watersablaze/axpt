@@ -10,7 +10,11 @@ import type {
   FrenchWardHomeMovement,
 } from "@/domains/institutions/french-ward/home/contracts";
 
-type MatterReadClient = PrismaClient;
+type MatterReadClient = Pick<
+  PrismaClient,
+  | "institutionalMatter"
+  | "transactionIntake"
+>;
 
 type IntakeEventRecord = {
   id: string;

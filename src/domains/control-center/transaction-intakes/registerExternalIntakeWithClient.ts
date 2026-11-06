@@ -6,17 +6,37 @@ import {
   type ExternalIntakeRegistrationInput,
 } from "./externalIntakeRegistration";
 
+import {
+  FRENCH_WARD_ACTION,
+  resolveFrenchWardActionAuthorityWithClient,
+} from "../../institutions/french-ward/governance/resolveFrenchWardActionAuthorityWithClient";
+
+export const EXTERNAL_INTAKE_AUTHORITY_MODE = {
+  ADMIN_EXTERNAL_IMPORT:
+    "ADMIN_EXTERNAL_IMPORT",
+
+  FRENCH_WARD_GOVERNING_REGISTER:
+    "FRENCH_WARD_GOVERNING_REGISTER",
+} as const;
+
+export type ExternalIntakeAuthorityMode =
+  (typeof EXTERNAL_INTAKE_AUTHORITY_MODE)[keyof typeof EXTERNAL_INTAKE_AUTHORITY_MODE];
+
 type RegistrationInput = Omit<
   ExternalIntakeRegistrationInput,
   "operatorEmail"
 > & {
   operatorUserId: string;
   evidenceBytes: Uint8Array;
+  authorityMode?: ExternalIntakeAuthorityMode;
 };
 
 type TransactionClient = Pick<
   PrismaClient,
-  "user" | "transactionIntake" | "transactionIntakeEvent"
+  | "user"
+  | "transactionIntake"
+  | "transactionIntakeEvent"
+  | "frenchWardGoverningOfficer"
 >;
 
 type RegistrationClient = Pick<PrismaClient, "$transaction">;
@@ -69,6 +89,20 @@ export async function registerExternalIntakeWithClient(
     "operatorUserId",
   );
 
+  const authorityMode =
+    input.authorityMode ??
+    EXTERNAL_INTAKE_AUTHORITY_MODE.ADMIN_EXTERNAL_IMPORT;
+
+  if (
+    !Object.values(EXTERNAL_INTAKE_AUTHORITY_MODE).includes(
+      authorityMode,
+    )
+  ) {
+    throw new Error(
+      "FW_TXN_REGISTRATION_AUTHORITY_MODE_INVALID",
+    );
+  }
+
   const evidenceBytes = input.evidenceBytes;
 
   if (
@@ -116,8 +150,31 @@ export async function registerExternalIntakeWithClient(
       },
     });
 
-    if (!operator?.isAdmin || !operator.email) {
+    if (!operator?.email) {
       throw new Error("FW_TXN_OPERATOR_UNAUTHORIZED");
+    }
+
+    if (
+      authorityMode ===
+      EXTERNAL_INTAKE_AUTHORITY_MODE.ADMIN_EXTERNAL_IMPORT
+    ) {
+      if (!operator.isAdmin) {
+        throw new Error("FW_TXN_OPERATOR_UNAUTHORIZED");
+      }
+    } else {
+      const authority =
+        await resolveFrenchWardActionAuthorityWithClient({
+          client: tx,
+          userId: operator.id,
+          action:
+            FRENCH_WARD_ACTION.REGISTER_BUYER_TRANSACTION,
+        });
+
+      if (!authority.allowed) {
+        throw new Error(
+          "FW_TXN_GOVERNING_REGISTRATION_AUTHORITY_REQUIRED",
+        );
+      }
     }
 
     const prepared = prepareExternalIntakeRegistration({

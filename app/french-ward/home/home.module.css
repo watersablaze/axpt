@@ -6853,3 +6853,11172 @@ strong {
     grid-template-columns: 1fr;
   }
 }
+
+/* ══════════════════════════════════════════════════════════
+   FW-ACTIONS-VIS-1B
+   DISTINCT ACTION WORKSTATIONS
+   Presentation only · no authority semantics
+   ══════════════════════════════════════════════════════════ */
+
+.actionsStage {
+  padding-bottom: 56px;
+}
+
+.actionAuthorityNotice {
+  min-height: 56px;
+  display: grid;
+  grid-template-columns:
+    38px
+    minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+  margin-top: 22px;
+  padding:
+    14px
+    18px;
+  border:
+    1px solid
+    rgba(190, 198, 195, .24);
+  border-radius: 6px;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--fw-electric), .035),
+      rgba(255,255,255,.018) 42%,
+      rgba(var(--fw-gold-light), .012)
+    );
+  box-shadow:
+    inset 0 1px 0
+    rgba(255,255,255,.018);
+}
+
+.actionAuthorityIcon {
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+  border:
+    1px solid
+    rgba(220,224,222,.6);
+  border-radius: 50%;
+  color:
+    rgba(235,238,236,.88);
+  font:
+    11px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+}
+
+.actionAuthorityNotice > div {
+  min-width: 0;
+}
+
+.actionAuthorityNotice strong {
+  display: block;
+  margin-bottom: 5px;
+  color:
+    rgba(var(--fw-gold-light), .76);
+  font:
+    7px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: .16em;
+}
+
+.actionAuthorityNotice p {
+  max-width: 820px;
+  margin: 0;
+  color:
+    rgba(220,224,222,.72);
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+/* Capability posture becomes three unmistakable cards. */
+
+.actionsStage .actionPostureField {
+  gap: 14px;
+  margin-top: 22px;
+  border: 0;
+}
+
+.actionsStage .actionPosture {
+  min-height: 190px;
+  padding:
+    20px
+    20px
+    22px;
+  border:
+    1px solid
+    rgba(190,198,195,.25);
+  border-radius: 7px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(18,34,40,.68),
+      rgba(8,18,22,.58)
+    );
+  box-shadow:
+    inset 0 1px 0
+      rgba(255,255,255,.025),
+    0 14px 34px
+      rgba(0,0,0,.10);
+}
+
+.actionsStage .actionPosture:last-child {
+  border-right:
+    1px solid
+    rgba(190,198,195,.25);
+}
+
+.actionsStage
+.actionPosture[data-current="true"] {
+  border-color:
+    rgba(var(--fw-gold-light), .72);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(28,50,57,.76),
+      rgba(11,25,30,.64)
+    );
+  box-shadow:
+    inset 0 0 0 1px
+      rgba(var(--fw-gold-light), .07),
+    0 18px 40px
+      rgba(0,0,0,.12);
+}
+
+.actionsStage .actionPosture::before {
+  left: 20px;
+  top: 18px;
+  width: 42px;
+}
+
+.actionsStage .actionPosture h3 {
+  margin-top: 25px;
+  font-size: 17px;
+}
+
+.actionsStage .actionPosture > strong {
+  width: fit-content;
+  margin-bottom: 18px;
+  padding:
+    5px
+    10px;
+  border:
+    1px solid
+    rgba(190,198,195,.20);
+  border-radius: 999px;
+  background:
+    rgba(255,255,255,.025);
+}
+
+.actionsStage
+.actionPosture[data-available="true"]
+> strong {
+  border-color:
+    rgba(var(--fw-electric), .42);
+  background:
+    rgba(var(--fw-electric), .07);
+  color:
+    rgba(var(--fw-electric), .94);
+}
+
+/* Expanded execution becomes a real workstation. */
+
+.actionExecutionPanel {
+  margin-top: 24px;
+  overflow: hidden;
+  border:
+    1px solid
+    rgba(190,198,195,.28);
+  border-radius: 7px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(20,39,46,.58),
+      rgba(9,21,25,.52)
+    );
+  box-shadow:
+    inset 0 1px 0
+      rgba(255,255,255,.025),
+    0 20px 42px
+      rgba(0,0,0,.10);
+}
+
+.actionExecutionPanel
+.sendLoiControl,
+.actionExecutionPanel
+.sendLoiReceipt {
+  margin-top: 0;
+  border: 0;
+  background: transparent;
+}
+
+.actionExecutionPanel
+.sendLoiHeading {
+  padding:
+    24px
+    22px
+    22px;
+}
+
+.actionExecutionPanel
+.sendLoiFields {
+  margin:
+    0
+    18px;
+  overflow: hidden;
+  border:
+    1px solid
+    rgba(190,198,195,.18);
+  border-radius: 5px;
+  background:
+    rgba(4,12,15,.24);
+}
+
+.actionsStage
+.sendLoiFields input,
+.actionsStage
+.sendLoiFields textarea {
+  border:
+    1px solid
+    rgba(190,198,195,.22);
+  border-radius: 4px;
+  padding:
+    10px
+    11px;
+  background:
+    rgba(255,255,255,.028);
+  transition:
+    border-color 120ms ease,
+    background 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.actionsStage
+.sendLoiFields input::placeholder,
+.actionsStage
+.sendLoiFields textarea::placeholder {
+  color:
+    rgba(220,224,222,.34);
+}
+
+.actionsStage
+.sendLoiFields input:focus,
+.actionsStage
+.sendLoiFields textarea:focus {
+  border-color:
+    rgba(var(--fw-electric), .58);
+  background:
+    rgba(var(--fw-electric), .025);
+  box-shadow:
+    0 0 0 1px
+      rgba(var(--fw-electric), .08);
+}
+
+.actionExecutionPanel
+.sendLoiExecution {
+  padding:
+    18px
+    22px
+    22px;
+}
+
+.actionsStage
+.sendLoiExecution button {
+  min-height: 38px;
+  border-radius: 4px;
+  border-color:
+    rgba(var(--fw-gold-light), .72);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(var(--fw-gold-light), .18),
+      rgba(var(--fw-gold-light), .08)
+    );
+}
+
+/* Secondary execution remains available without placing
+   a second full form in the user's immediate field. */
+
+.actionExecutionDisclosure {
+  margin-top: 18px;
+  overflow: hidden;
+  border:
+    1px solid
+    rgba(190,198,195,.26);
+  border-radius: 7px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(17,34,40,.52),
+      rgba(8,18,22,.46)
+    );
+}
+
+.actionExecutionDisclosure > summary {
+  min-height: 82px;
+  display: grid;
+  grid-template-columns:
+    minmax(240px, .82fr)
+    minmax(260px, 1fr)
+    auto;
+  gap: 28px;
+  align-items: center;
+  padding:
+    16px
+    20px;
+  list-style: none;
+  cursor: pointer;
+}
+
+.actionExecutionDisclosure
+> summary::-webkit-details-marker {
+  display: none;
+}
+
+.actionExecutionDisclosure
+> summary > div span {
+  display: block;
+  margin-bottom: 7px;
+  color:
+    rgba(var(--fw-gold-light), .72);
+  font:
+    7px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: .15em;
+}
+
+.actionExecutionDisclosure
+> summary > div strong {
+  display: block;
+  color: var(--text-primary);
+  font-size: 17px;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.actionExecutionDisclosure
+> summary > p {
+  max-width: 520px;
+  margin: 0;
+  color:
+    rgba(220,224,222,.66);
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.actionDisclosureCue {
+  min-width: 94px;
+  padding:
+    9px
+    11px;
+  border:
+    1px solid
+    rgba(190,198,195,.32);
+  border-radius: 4px;
+  color:
+    rgba(235,238,236,.82);
+  font:
+    7px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: .10em;
+  text-align: center;
+}
+
+.actionExecutionDisclosure[open]
+.actionDisclosureCue {
+  border-color:
+    rgba(var(--fw-gold-light), .54);
+  color:
+    rgba(var(--fw-gold-light), .92);
+}
+
+.actionExecutionDisclosure[open]
+> summary {
+  border-bottom:
+    1px solid
+    rgba(190,198,195,.18);
+}
+
+.actionExecutionPanelBody {
+  padding:
+    0
+    18px
+    18px;
+}
+
+.actionExecutionPanelBody
+.sendLoiControl,
+.actionExecutionPanelBody
+.sendLoiReceipt {
+  margin-top: 18px;
+  border:
+    1px solid
+    rgba(190,198,195,.16);
+  background:
+    rgba(4,12,15,.18);
+}
+
+/* Authority reminder becomes a quiet footer notice rather than
+   another visual section competing with the workstations. */
+
+.actionsStage .actionBoundary {
+  margin-top: 20px;
+  padding:
+    14px
+    16px;
+  border:
+    1px solid
+    rgba(190,198,195,.16);
+  border-radius: 5px;
+  background:
+    rgba(255,255,255,.012);
+}
+
+/* Modest tonal lift for the Actions workspace only.
+   Broader shell tonal reconciliation can follow after review. */
+
+.actionsStage {
+  background:
+    radial-gradient(
+      circle at 34% 18%,
+      rgba(var(--fw-electric), .028),
+      transparent 34%
+    );
+}
+
+@media (max-width: 900px) {
+  .actionsStage .actionPostureField {
+    gap: 10px;
+  }
+
+  .actionsStage .actionPosture {
+    min-height: 0;
+    border-right:
+      1px solid
+      rgba(190,198,195,.25);
+    border-bottom:
+      1px solid
+      rgba(190,198,195,.25);
+  }
+
+  .actionExecutionDisclosure
+  > summary {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+
+  .actionDisclosureCue {
+    justify-self: start;
+  }
+
+  .actionExecutionPanel
+  .sendLoiHeading {
+    padding:
+      20px
+      16px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiFields {
+    margin:
+      0
+      12px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiExecution {
+    padding:
+      16px;
+  }
+}
+
+@media (max-width: 620px) {
+  .actionAuthorityNotice {
+    grid-template-columns:
+      28px
+      minmax(0,1fr);
+    gap: 11px;
+    margin-top: 14px;
+    padding:
+      12px;
+  }
+
+  .actionsStage .actionPosture {
+    padding:
+      16px
+      15px
+      18px;
+  }
+
+  .actionExecutionPanel {
+    margin-top: 16px;
+  }
+
+  .actionExecutionDisclosure {
+    margin-top: 12px;
+  }
+
+  .actionExecutionDisclosure
+  > summary {
+    min-height: 0;
+    padding:
+      15px
+      14px;
+  }
+
+  .actionExecutionPanelBody {
+    padding:
+      0
+      10px
+      10px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-ACTIONS-VIS-1C
+   FIVE ORIENTATION ADJUSTMENTS
+   01 workspace lift
+   02 capacity card
+   03 header compression
+   04 capability compression
+   05 execution-form compression
+   ══════════════════════════════════════════════════════════ */
+
+/* ----------------------------------------------------------
+   01 · LIFT THE WORKSPACE ONE TONAL STEP
+   Dark institutional field remains intact, but center-stage
+   surfaces now occupy visibly separate depth levels.
+   ---------------------------------------------------------- */
+
+.center {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(9, 20, 24, .985),
+      rgba(7, 17, 21, .985)
+    );
+}
+
+.centerInner {
+  background:
+    radial-gradient(
+      circle at 42% 18%,
+      rgba(var(--fw-electric), .025),
+      transparent 38%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(255,255,255,.007),
+      rgba(255,255,255,.002)
+    );
+}
+
+.actionsStage .actionPosture {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(24, 46, 53, .76),
+      rgba(12, 29, 35, .70)
+    );
+}
+
+.actionsStage
+.actionPosture[data-current="true"] {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(34, 61, 69, .84),
+      rgba(15, 35, 41, .76)
+    );
+}
+
+.actionExecutionPanel {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(27, 52, 60, .76),
+      rgba(13, 31, 37, .70)
+    );
+}
+
+.actionExecutionPanel
+.sendLoiFields {
+  background:
+    rgba(12, 28, 34, .72);
+}
+
+/* ----------------------------------------------------------
+   02 · PRESENT / CAPACITY BECOMES A STABLE IDENTITY CARD
+   ---------------------------------------------------------- */
+
+.leftRail [data-capacity-card="true"] {
+  margin:
+    18px
+    -5px
+    18px;
+  padding:
+    16px
+    15px
+    17px;
+  border:
+    1px solid
+    rgba(190,198,195,.22);
+  border-top-color:
+    rgba(var(--fw-gold-light), .50);
+  border-radius: 6px;
+  background:
+    linear-gradient(
+      145deg,
+      rgba(var(--fw-gold-light), .025),
+      rgba(var(--fw-electric), .020) 56%,
+      rgba(255,255,255,.008)
+    );
+  box-shadow:
+    inset 0 1px 0
+      rgba(255,255,255,.018);
+}
+
+.leftRail [data-capacity-card="true"]
+code {
+  color:
+    rgba(220,224,222,.54);
+}
+
+/* ----------------------------------------------------------
+   03 · COMPRESS THE PAGE HEADER
+   One entrance, not two.
+   ---------------------------------------------------------- */
+
+.centerHead {
+  min-height: 0;
+  padding-top: 26px;
+  padding-bottom: 24px;
+}
+
+.actionsStage {
+  padding-top: 20px;
+}
+
+.actionsStage
+.moduleIntro {
+  padding-bottom: 16px;
+}
+
+.actionsStage
+.moduleIntro h2 {
+  margin-top: 7px;
+  margin-bottom: 7px;
+}
+
+.actionsStage
+.moduleGuide {
+  margin-top: 0;
+}
+
+.actionAuthorityNotice {
+  margin-top: 14px;
+  min-height: 48px;
+  padding:
+    11px
+    15px;
+}
+
+/* ----------------------------------------------------------
+   04 · CAPABILITY CARDS BECOME CONTROLS, NOT PLAQUES
+   ---------------------------------------------------------- */
+
+.actionsStage
+.actionPostureField {
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.actionsStage
+.actionPosture {
+  min-height: 148px;
+  padding:
+    17px
+    18px
+    18px;
+}
+
+.actionsStage
+.actionPosture::before {
+  top: 15px;
+}
+
+.actionsStage
+.actionPosture h3 {
+  margin:
+    20px
+    0
+    8px;
+  font-size: 16px;
+}
+
+.actionsStage
+.actionPosture > strong {
+  margin-bottom: 13px;
+  padding:
+    4px
+    9px;
+}
+
+.actionsStage
+.actionPosture > p:last-child {
+  font-size: 9px;
+  line-height: 1.52;
+}
+
+/* ----------------------------------------------------------
+   05 · TIGHTEN SEND LOI SO EXECUTION IS VISIBLE SOONER
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel {
+  margin-top: 18px;
+}
+
+.actionExecutionPanel
+.sendLoiHeading {
+  grid-template-columns:
+    minmax(210px, .8fr)
+    minmax(0, 1.2fr);
+  gap: 30px;
+  padding:
+    18px
+    20px
+    16px;
+}
+
+.actionExecutionPanel
+.sendLoiHeading h3 {
+  font-size: 18px;
+}
+
+.actionExecutionPanel
+.sendLoiHeading > p {
+  font-size: 9px;
+  line-height: 1.55;
+}
+
+.actionExecutionPanel
+.sendLoiFields {
+  margin:
+    0
+    16px;
+}
+
+.actionExecutionPanel
+.sendLoiFields label {
+  gap: 7px;
+  padding:
+    13px
+    15px;
+}
+
+.actionsStage
+.sendLoiFields input,
+.actionsStage
+.sendLoiFields textarea {
+  padding:
+    8px
+    9px;
+  font-size: 10px;
+}
+
+.actionsStage
+.sendLoiFields textarea {
+  min-height: 64px;
+}
+
+.actionExecutionPanel
+.sendLoiExecution {
+  gap: 22px;
+  padding:
+    13px
+    20px
+    15px;
+}
+
+.actionExecutionPanel
+.sendLoiExecution > p {
+  font-size: 8px;
+  line-height: 1.5;
+}
+
+.actionsStage
+.sendLoiExecution button {
+  min-height: 36px;
+  min-width: 154px;
+  padding:
+    10px
+    14px;
+}
+
+/* Keep the secondary workstation clearly subordinate. */
+
+.actionExecutionDisclosure {
+  margin-top: 14px;
+}
+
+.actionExecutionDisclosure
+> summary {
+  min-height: 68px;
+  padding:
+    13px
+    18px;
+}
+
+@media (max-width: 900px) {
+  .centerHead {
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+
+  .actionsStage {
+    padding-top: 14px;
+  }
+
+  .actionsStage
+  .actionPosture {
+    min-height: 0;
+  }
+
+  .actionExecutionPanel
+  .sendLoiHeading {
+    grid-template-columns: 1fr;
+    gap: 11px;
+  }
+}
+
+@media (max-width: 700px) {
+  .leftRail [data-capacity-card="true"] {
+    margin:
+      10px
+      0
+      14px;
+    padding:
+      13px
+      14px;
+  }
+
+  .centerInner {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255,255,255,.007),
+        rgba(255,255,255,.002)
+      );
+  }
+
+  .actionsStage
+  .actionPostureField {
+    margin-top: 14px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiFields {
+    margin:
+      0
+      10px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiFields label {
+    padding:
+      12px
+      11px;
+  }
+
+  .actionsStage
+  .sendLoiFields textarea {
+    min-height: 76px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-ACTIONS-VIS-1D.6
+   FIXED CROWN · SPACIOUS DARK FIELD · TRUE ACTION SELECTION
+   ══════════════════════════════════════════════════════════ */
+
+.workspace {
+  --fw-home-crown-height: 58px;
+}
+
+.workspaceCrown {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 160;
+  height: var(--fw-home-crown-height);
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns:
+    auto
+    minmax(0, 1fr)
+    auto;
+  align-items: center;
+  gap: 28px;
+  padding: 0 28px;
+  border-bottom:
+    1px solid
+    rgba(190,198,195,.15);
+  background:
+    rgba(4,12,15,.975);
+  backdrop-filter:
+    blur(10px);
+}
+
+.workspaceCrown::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 -1px;
+  height: 1px;
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--fw-gold-light), .10),
+      rgba(190,198,195,.055) 45%,
+      rgba(var(--fw-electric), .05) 78%,
+      transparent
+    );
+}
+
+.workspaceCrownBrand {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.workspaceCrownBrand strong {
+  color:
+    rgba(238,240,238,.90);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .08em;
+}
+
+.workspaceCrownBrand span {
+  color:
+    rgba(220,224,222,.40);
+  font:
+    6px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: .15em;
+}
+
+.workspaceCrownIdentity {
+  padding-left: 28px;
+  border-left:
+    1px solid
+    rgba(var(--fw-gold-light), .21);
+  color:
+    rgba(220,224,222,.58);
+  font:
+    8px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: .18em;
+}
+
+.workspaceCrownPosture {
+  color:
+    rgba(220,224,222,.40);
+  font:
+    7px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: .14em;
+}
+
+/* Identity now crowns the entire workspace. */
+.institutionBrand {
+  display: none;
+}
+
+.workspace {
+  box-sizing: border-box;
+  padding-top:
+    var(--fw-home-crown-height);
+}
+
+/* Dark material with extremely restrained subsurface light. */
+
+.center {
+  position: relative;
+  background:
+    radial-gradient(
+      ellipse at 27% 24%,
+      rgba(var(--fw-gold-light), .011),
+      transparent 35%
+    ),
+    radial-gradient(
+      ellipse at 72% 49%,
+      rgba(var(--fw-electric), .009),
+      transparent 40%
+    ),
+    linear-gradient(
+      180deg,
+      rgb(6,17,21),
+      rgb(5,14,17)
+    );
+}
+
+.center::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(
+      rgba(190,198,195,.014) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(190,198,195,.014) 1px,
+      transparent 1px
+    );
+  background-size:
+    52px 52px;
+  mask-image:
+    linear-gradient(
+      180deg,
+      rgba(0,0,0,.72),
+      rgba(0,0,0,.27) 72%,
+      transparent
+    );
+}
+
+.centerInner {
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+
+/* Three clear action positions. */
+
+.actionsStage {
+  padding-top: 10px;
+}
+
+.actionsStage
+.actionPostureField {
+  gap: 18px;
+  margin-top: 10px;
+  border: 0;
+}
+
+.actionsStage
+.actionPosture {
+  appearance: none;
+  width: 100%;
+  min-height: 126px;
+  box-sizing: border-box;
+  display: block;
+  padding: 17px 18px;
+  border:
+    1px solid
+    rgba(190,198,195,.19);
+  border-radius: 6px;
+  background:
+    rgba(10,25,30,.42);
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color 120ms ease,
+    background 120ms ease;
+}
+
+.actionsStage
+.actionPosture:hover {
+  border-color:
+    rgba(190,198,195,.31);
+  background:
+    rgba(13,31,36,.50);
+}
+
+.actionsStage
+.actionPosture[data-current="true"] {
+  border-color:
+    rgba(var(--fw-gold-light), .57);
+  background:
+    linear-gradient(
+      145deg,
+      rgba(var(--fw-gold-light), .020),
+      rgba(14,33,39,.56) 60%,
+      rgba(10,25,30,.48)
+    );
+  box-shadow:
+    inset 0 0 0 1px
+    rgba(var(--fw-gold-light), .018);
+}
+
+.actionsStage
+.actionPosture[data-current="true"]
+> strong {
+  border-color:
+    rgba(var(--fw-gold-light), .40);
+  background:
+    rgba(var(--fw-gold-light), .022);
+  color:
+    rgba(var(--fw-gold-light), .83);
+}
+
+.actionsStage
+.actionPosture h3 {
+  margin: 17px 0 8px;
+}
+
+/* Exactly one bounded workstation. */
+
+.actionExecutionPanel,
+.actionUnavailablePanel {
+  width:
+    min(100%, 1040px);
+  margin:
+    26px
+    auto
+    0;
+  box-sizing: border-box;
+  border:
+    1px solid
+    rgba(190,198,195,.21);
+  border-radius: 7px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(16,38,44,.61),
+      rgba(9,25,30,.57)
+    );
+  box-shadow:
+    0 22px 58px
+    rgba(0,0,0,.08);
+}
+
+.actionExecutionPanel
+.sendLoiControl,
+.actionExecutionPanel
+.sendLoiReceipt {
+  margin-top: 0;
+  border: 0;
+  background: transparent;
+}
+
+.actionExecutionPanel
+.sendLoiHeading {
+  padding:
+    18px
+    20px
+    15px;
+}
+
+.actionExecutionPanel
+.sendLoiFields {
+  margin:
+    0
+    16px;
+  background:
+    rgba(6,18,22,.35);
+}
+
+.actionExecutionPanel
+.sendLoiExecution {
+  padding:
+    13px
+    20px
+    16px;
+}
+
+.actionUnavailablePanel {
+  min-height: 204px;
+  display: grid;
+  align-content: center;
+  justify-items: start;
+  padding: 36px 40px;
+}
+
+.actionUnavailablePanel > span {
+  color:
+    rgba(var(--fw-gold-light), .55);
+  font:
+    7px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: .16em;
+}
+
+.actionUnavailablePanel h3 {
+  margin: 13px 0 12px;
+  color: var(--text-primary);
+  font-size: 21px;
+  font-weight: 450;
+}
+
+.actionUnavailablePanel strong {
+  width: fit-content;
+  margin-bottom: 16px;
+  padding: 5px 9px;
+  border:
+    1px solid
+    rgba(190,198,195,.20);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font:
+    7px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+}
+
+.actionUnavailablePanel p {
+  max-width: 620px;
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 10px;
+  line-height: 1.65;
+}
+
+.actionExecutionDisclosure {
+  display: none;
+}
+
+/* Doctrine remains present without becoming a full-width slab. */
+
+.actionsStage
+.actionBoundary {
+  width:
+    min(100%, 760px);
+  margin:
+    18px
+    auto
+    0;
+  background: transparent;
+}
+
+@media (max-width: 900px) {
+  .workspace {
+    --fw-home-crown-height: 54px;
+  }
+
+  .workspaceCrown {
+    gap: 16px;
+    padding: 0 18px;
+  }
+
+  .workspaceCrownIdentity {
+    padding-left: 16px;
+  }
+
+  .actionsStage
+  .actionPostureField {
+    gap: 10px;
+  }
+
+  .actionExecutionPanel,
+  .actionUnavailablePanel {
+    width: 100%;
+  }
+}
+
+@media (max-width: 700px) {
+  .workspaceCrown {
+    grid-template-columns:
+      minmax(0, 1fr)
+      auto;
+    padding: 0 14px;
+  }
+
+  .workspaceCrownIdentity {
+    display: none;
+  }
+
+  .actionsStage
+  .actionPostureField {
+    grid-template-columns: 1fr;
+  }
+
+  .actionsStage
+  .actionPosture {
+    min-height: 106px;
+  }
+
+  .actionUnavailablePanel {
+    padding: 28px 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actionsStage
+  .actionPosture {
+    transition: none;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-HOME-VIS-1E
+   SETTLING PASS · STEWARDSHIP · CUSTODIAL RAILS
+   COMPACT MODULE RHYTHM · MATTER CURRENT
+   ══════════════════════════════════════════════════════════ */
+
+/* ----------------------------------------------------------
+   GLOBAL MODULE RHYTHM
+   Reach the operating surface sooner.
+   ---------------------------------------------------------- */
+
+.centerInner {
+  padding-top: 22px;
+}
+
+.centerHead {
+  min-height: 0;
+  padding:
+    8px
+    0
+    18px;
+}
+
+.centerHead h1 {
+  margin-top: 5px;
+}
+
+.workspaceLead {
+  margin-top: 5px;
+  max-width: 540px;
+}
+
+.moduleStage {
+  margin-top: 12px;
+}
+
+.moduleIntro {
+  min-height: 0;
+  padding:
+    10px
+    0
+    14px;
+}
+
+.moduleIntro h2 {
+  margin-top: 5px;
+}
+
+.moduleGuide {
+  margin-top: 6px;
+  max-width: 620px;
+}
+
+/* ----------------------------------------------------------
+   LEFT + RIGHT RAIL IDENTITIES
+   Same system, different institutional character.
+   ---------------------------------------------------------- */
+
+.railEthos {
+  position: relative;
+  display: grid;
+  gap: 7px;
+  margin-bottom: 18px;
+  padding:
+    11px
+    12px
+    12px;
+  border:
+    1px solid
+    rgba(190,198,195,.12);
+  background:
+    rgba(255,255,255,.012);
+}
+
+.railEthos span {
+  font:
+    6px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: .16em;
+}
+
+.railEthos strong {
+  max-width: 190px;
+  font-size: 10px;
+  font-weight: 470;
+  line-height: 1.25;
+}
+
+/* Stewardship has a warmer registration edge. */
+
+.leftRail
+.railEthos[data-rail="stewardship"] {
+  border-left-color:
+    rgba(var(--fw-gold-light), .42);
+}
+
+.leftRail
+.railEthos[data-rail="stewardship"]::before {
+  content: "";
+  position: absolute;
+  left: -1px;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(var(--fw-gold-light), .48),
+      rgba(var(--fw-gold-light), .08)
+    );
+}
+
+.leftRail
+.railEthos[data-rail="stewardship"]
+span {
+  color:
+    rgba(var(--fw-gold-light), .56);
+}
+
+.leftRail
+.railEthos[data-rail="stewardship"]
+strong {
+  color:
+    rgba(235,232,218,.76);
+}
+
+/* Custodial awareness carries the cooler operational edge. */
+
+.rightRail
+.railEthos[data-rail="custodial"] {
+  border-right-color:
+    rgba(var(--fw-electric), .36);
+}
+
+.rightRail
+.railEthos[data-rail="custodial"]::after {
+  content: "";
+  position: absolute;
+  right: -1px;
+  top: 12px;
+  bottom: 12px;
+  width: 1px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(var(--fw-electric), .10),
+      rgba(var(--fw-electric), .42),
+      rgba(var(--fw-electric), .08)
+    );
+}
+
+.rightRail
+.railEthos[data-rail="custodial"]
+span {
+  color:
+    rgba(var(--fw-electric), .54);
+}
+
+.rightRail
+.railEthos[data-rail="custodial"]
+strong {
+  color:
+    rgba(218,231,232,.69);
+}
+
+/* Rails themselves should feel like two different instruments. */
+
+.leftRail {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(8,18,21,.98),
+      rgba(5,14,17,.99)
+    );
+  border-right-color:
+    rgba(var(--fw-gold-light), .10);
+}
+
+.rightRail {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(5,16,20,.985),
+      rgba(4,13,16,.995)
+    );
+  border-left-color:
+    rgba(var(--fw-electric), .10);
+}
+
+/* ----------------------------------------------------------
+   MATTERS · SETTLED TRADE-DESK RHYTHM
+   ---------------------------------------------------------- */
+
+.mattersSummary {
+  margin-top: 10px;
+}
+
+.mattersSummaryHead {
+  min-height: 54px;
+  padding:
+    11px
+    14px;
+}
+
+.matterMetrics {
+  gap: 0;
+}
+
+.matterMetric {
+  min-height: 72px;
+  padding:
+    13px
+    14px;
+}
+
+.matterMetric > span {
+  margin-bottom: 7px;
+}
+
+.matterMetric > strong {
+  font-size: 14px;
+}
+
+.matterFieldLedger {
+  margin-top: 14px;
+  padding-top: 0;
+}
+
+.matterFieldHead {
+  min-height: 0;
+  padding:
+    14px
+    4px
+    12px;
+}
+
+.matterLedgerRow {
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+.matterPassageIndex {
+  margin-top: 14px;
+}
+
+.matterContinuityRail {
+  position: relative;
+  min-height: 0;
+  padding:
+    15px
+    16px;
+  overflow: hidden;
+}
+
+.continuitySequence {
+  gap: 8px;
+}
+
+/* ----------------------------------------------------------
+   QUIET ELECTRICAL ACTIVITY
+   Movement lives only where the system is active.
+   ---------------------------------------------------------- */
+
+@keyframes fwMatterCurrent {
+  0% {
+    transform:
+      translateX(-115%);
+    opacity: 0;
+  }
+
+  16% {
+    opacity: .20;
+  }
+
+  50% {
+    opacity: .32;
+  }
+
+  84% {
+    opacity: .12;
+  }
+
+  100% {
+    transform:
+      translateX(215%);
+    opacity: 0;
+  }
+}
+
+@keyframes fwMatterRegistration {
+  0%,
+  100% {
+    opacity: .34;
+  }
+
+  50% {
+    opacity: .62;
+  }
+}
+
+/* Thin current passes underneath the continuity rail. */
+
+.matterContinuityRail::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 34%;
+  height: 1px;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(var(--fw-electric), .42),
+      rgba(var(--fw-gold-light), .15),
+      transparent
+    );
+  animation:
+    fwMatterCurrent
+    9s
+    linear
+    infinite;
+}
+
+/* Existing active indicators receive only a faint living pulse. */
+
+.matterMetric[data-active="true"]::after {
+  animation:
+    fwMatterRegistration
+    4.8s
+    ease-in-out
+    infinite;
+}
+
+/* ----------------------------------------------------------
+   HOME SURFACE
+   More "operating base" than abstract institutional field.
+   ---------------------------------------------------------- */
+
+.homeField,
+.homeStage {
+  margin-top: 10px;
+}
+
+/* Where Home uses section cards, settle them vertically. */
+
+.homeStage article,
+.homeField article {
+  padding-top: 16px;
+  padding-bottom: 16px;
+}
+
+/* ----------------------------------------------------------
+   ACTIONS
+   Keep current selector system, just slightly denser.
+   ---------------------------------------------------------- */
+
+.actionsStage
+.actionPostureField {
+  margin-top: 6px;
+}
+
+.actionsStage
+.actionPosture {
+  min-height: 116px;
+  padding:
+    15px
+    17px;
+}
+
+.actionExecutionPanel,
+.actionUnavailablePanel {
+  margin-top: 20px;
+}
+
+/* ----------------------------------------------------------
+   RECORDS / DOCUMENTS / PEOPLE
+   Same tighter vertical cadence.
+   ---------------------------------------------------------- */
+
+.recordsDeskHead {
+  min-height: 56px;
+}
+
+.peopleField {
+  margin-top: 10px;
+}
+
+.personRow {
+  min-height: 0;
+  padding-top: 14px;
+  padding-bottom: 14px;
+}
+
+/* ----------------------------------------------------------
+   ACCESSIBILITY / MOTION
+   ---------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .matterContinuityRail::after,
+  .matterMetric[data-active="true"]::after {
+    animation: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .centerInner {
+    padding-top: 16px;
+  }
+
+  .centerHead {
+    padding-bottom: 13px;
+  }
+
+  .railEthos {
+    margin-bottom: 12px;
+  }
+
+  .matterMetric {
+    min-height: 64px;
+  }
+
+  .matterContinuityRail {
+    padding:
+      13px
+      12px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-HOME-VIS-1F
+   INSCRIBED RAILS · LEGIBILITY · HOME DESK
+   ══════════════════════════════════════════════════════════ */
+
+/* ----------------------------------------------------------
+   RAILS ARE ARCHITECTURE, NOT CARDS
+   ---------------------------------------------------------- */
+
+.railEthos {
+  position: relative;
+  display: grid;
+  gap: 7px;
+  margin:
+    4px
+    4px
+    24px;
+  padding:
+    10px
+    2px
+    14px;
+  border: 0;
+  background: transparent;
+}
+
+.railEthos::before,
+.railEthos::after {
+  box-shadow: none !important;
+}
+
+.railEthos span {
+  font-size: 7px;
+  line-height: 1.2;
+  letter-spacing: .16em;
+}
+
+.railEthos strong {
+  max-width: 190px;
+  font-size: 11px;
+  line-height: 1.32;
+  font-weight: 500;
+}
+
+.railEthos p {
+  max-width: 188px;
+  margin:
+    3px
+    0
+    0;
+  color:
+    rgba(205,212,210,.48);
+  font-size: 8px;
+  line-height: 1.55;
+  letter-spacing: .012em;
+}
+
+/* Fine inscription rule, not a box. */
+
+.leftRail
+.railEthos[data-rail="stewardship"] {
+  padding-left: 13px;
+  border: 0;
+}
+
+.leftRail
+.railEthos[data-rail="stewardship"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 8px;
+  bottom: 10px;
+  width: 1px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(var(--fw-gold-light), .52),
+      rgba(var(--fw-gold-light), .08)
+    );
+}
+
+.leftRail
+.railEthos[data-rail="stewardship"]
+strong {
+  color:
+    rgba(237,234,220,.80);
+}
+
+/* Open custodial rail uses the opposite inscription edge. */
+
+.rightRail[data-open="true"]
+.railEthos[data-rail="custodial"] {
+  margin-left: 10px;
+  margin-right: 10px;
+  padding-right: 13px;
+  border: 0;
+  text-align: right;
+  justify-items: end;
+}
+
+.rightRail[data-open="true"]
+.railEthos[data-rail="custodial"]::after {
+  content: "";
+  position: absolute;
+  right: 0;
+  top: 8px;
+  bottom: 10px;
+  width: 1px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(var(--fw-electric), .10),
+      rgba(var(--fw-electric), .50),
+      rgba(var(--fw-electric), .08)
+    );
+}
+
+.rightRail[data-open="true"]
+.railEthos[data-rail="custodial"]
+strong {
+  color:
+    rgba(218,233,234,.76);
+}
+
+/* ----------------------------------------------------------
+   CLOSED AWARENESS RAIL
+   Becomes a custodial spine.
+   Do not attempt to compress open content.
+   ---------------------------------------------------------- */
+
+.rightRail[data-open="false"] {
+  overflow: hidden;
+}
+
+.rightRail[data-open="false"]
+.railEthos[data-rail="custodial"] {
+  position: absolute;
+  inset:
+    96px
+    0
+    72px;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+.rightRail[data-open="false"]
+.railEthos[data-rail="custodial"]
+> span,
+.rightRail[data-open="false"]
+.railEthos[data-rail="custodial"]
+> strong,
+.rightRail[data-open="false"]
+.railEthos[data-rail="custodial"]
+> p {
+  display: none;
+}
+
+.rightRail[data-open="false"]
+.railEthos[data-rail="custodial"]::before {
+  content: "CUSTODIANS";
+  display: block;
+  color:
+    rgba(var(--fw-electric), .44);
+  font:
+    8px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: .28em;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  transform:
+    rotate(180deg);
+}
+
+.rightRail[data-open="false"]
+.railEthos[data-rail="custodial"]::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 8%;
+  bottom: 8%;
+  width: 1px;
+  transform:
+    translateX(-50%);
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      rgba(var(--fw-electric), .14),
+      rgba(var(--fw-electric), .28),
+      rgba(var(--fw-electric), .12),
+      transparent
+    );
+  z-index: -1;
+}
+
+/* ----------------------------------------------------------
+   MODULE TITLES
+   Uppercase without becoming loud.
+   ---------------------------------------------------------- */
+
+.centerHead h1,
+.moduleIntro h2 {
+  text-transform: uppercase;
+  letter-spacing: .025em;
+}
+
+.centerHead h1 {
+  color:
+    rgba(241,239,227,.93);
+  font-weight: 470;
+}
+
+.moduleIntro h2 {
+  color:
+    rgba(230,234,230,.88);
+  font-weight: 480;
+}
+
+/* Small gold registration beneath primary module heading. */
+
+.centerHead h1::after {
+  content: "";
+  display: inline-block;
+  width: 22px;
+  height: 1px;
+  margin-left: 12px;
+  vertical-align: .32em;
+  background:
+    rgba(var(--fw-gold-light), .42);
+}
+
+/* Module index / context gets a little more life. */
+
+.centerHead .micro,
+.moduleIntro .micro {
+  color:
+    rgba(var(--fw-gold-light), .66);
+  font-size: 8px;
+  letter-spacing: .17em;
+}
+
+/* ----------------------------------------------------------
+   WORKSPACE SMALL-TYPE FLOOR
+   More legible without turning into oversized UI.
+   ---------------------------------------------------------- */
+
+.workspace {
+  --fw-small-readable: 9px;
+  --fw-micro-readable: 8px;
+}
+
+.workspaceLead,
+.moduleGuide,
+.sectionGuide,
+.personRow p,
+.actionPosture > p,
+.actionUnavailablePanel p,
+.sendLoiHeading p,
+.sendLoiExecution p {
+  color:
+    rgba(204,211,208,.68);
+  font-size:
+    var(--fw-small-readable);
+  line-height: 1.58;
+}
+
+.directoryLink {
+  font-size: 12px;
+}
+
+.directoryIndex {
+  font-size: 7px;
+}
+
+.micro {
+  font-size:
+    var(--fw-micro-readable);
+}
+
+.workspace code,
+.workspace small {
+  color:
+    rgba(193,202,200,.61);
+}
+
+/* Existing ultra-small operational labels get a modest lift. */
+
+.matterMetric > span,
+.matterFieldHead > span,
+.recordControl > span,
+.personRow > span,
+.sendLoiFields label > span,
+.actionPosture > div p {
+  font-size: 7px;
+  letter-spacing: .13em;
+}
+
+/* ----------------------------------------------------------
+   MATTER PASSAGE
+   Settle it into the desk rather than letting it float.
+   ---------------------------------------------------------- */
+
+.matterPassageIndex {
+  border-color:
+    rgba(190,198,195,.18);
+  background:
+    rgba(7,19,23,.30);
+}
+
+.matterPassageIndex::before {
+  opacity: .72;
+}
+
+.matterPassageIndex header {
+  padding-top: 14px;
+}
+
+.matterContinuityRail {
+  margin-top: 8px;
+}
+
+.continuitySequence {
+  align-items: center;
+}
+
+.continuitySequence span,
+.matterPassageIndex small {
+  font-size: 8px;
+  color:
+    rgba(192,201,199,.61);
+}
+
+/* Axis labels need to survive projected / older displays. */
+
+.matterPassageIndex text,
+.matterPassageIndex label {
+  color:
+    rgba(198,207,204,.64);
+}
+
+/* ----------------------------------------------------------
+   RAIL DISTINCTION
+   Left = warm stewardship.
+   Right = cool custodial signal.
+   ---------------------------------------------------------- */
+
+.leftRail {
+  box-shadow:
+    inset -1px 0
+    rgba(var(--fw-gold-light), .045);
+}
+
+.rightRail {
+  box-shadow:
+    inset 1px 0
+    rgba(var(--fw-electric), .055);
+}
+
+/* Current module retains clarity without excessive brightness. */
+
+.directoryLink[data-active="true"] {
+  color:
+    rgba(242,239,224,.92);
+}
+
+.directoryLink[data-active="true"]
+.directoryIndex {
+  color:
+    rgba(var(--fw-gold-light), .78);
+}
+
+/* ----------------------------------------------------------
+   RESPONSIVE
+   ---------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .workspace {
+    --fw-small-readable: 9px;
+    --fw-micro-readable: 8px;
+  }
+}
+
+@media (max-width: 700px) {
+  .railEthos p {
+    max-width: none;
+  }
+
+  .centerHead h1::after {
+    width: 14px;
+    margin-left: 8px;
+  }
+
+  .directoryLink {
+    font-size: 11px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-HOME-VIS-1G.2
+   TRADE-DESK LIFT · IDENTITY · MATTER AXES
+   ══════════════════════════════════════════════════════════ */
+
+.workspace {
+  --fw-header-blue:
+    rgba(184,220,226,.88);
+
+  --fw-header-blue-soft:
+    rgba(145,202,212,.68);
+
+  --fw-axis-blue:
+    rgba(126,202,216,.80);
+
+  --fw-axis-gold:
+    rgba(var(--fw-gold-light), .74);
+
+  --fw-readable-small:
+    10px;
+
+  --fw-readable-micro:
+    8px;
+}
+
+/* ----------------------------------------------------------
+   FIXED CROWN · CLEAR OPERATOR IDENTITY
+   ---------------------------------------------------------- */
+
+.workspaceCrown {
+  grid-template-columns:
+    auto
+    minmax(150px, 1fr)
+    auto;
+}
+
+.workspaceCrownOperator {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 15px;
+  min-width: 0;
+}
+
+.workspaceOperatorIdentity {
+  min-width: 0;
+  display: grid;
+  justify-items: end;
+  gap: 2px;
+  text-align: right;
+}
+
+.workspaceOperatorIdentity > span {
+  max-width: 220px;
+  overflow: hidden;
+  color:
+    rgba(220,233,231,.80);
+  font-size: 9px;
+  font-weight: 540;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workspaceOperatorIdentity > small {
+  color:
+    rgba(166,196,199,.58);
+  font-size: 8px;
+  line-height: 1.15;
+}
+
+.workspaceOperatorIdentity > code {
+  color:
+    rgba(var(--fw-electric), .58);
+  font-size: 7px;
+  letter-spacing: .07em;
+}
+
+.workspaceSignOut {
+  margin: 0;
+}
+
+.workspaceSignOut button {
+  min-height: 29px;
+  padding:
+    0
+    11px;
+  border:
+    1px solid
+    rgba(183,204,202,.21);
+  border-radius: 3px;
+  background:
+    rgba(255,255,255,.012);
+  color:
+    rgba(211,222,220,.69);
+  font:
+    7px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+  letter-spacing: .14em;
+  cursor: pointer;
+}
+
+.workspaceSignOut button:hover {
+  border-color:
+    rgba(var(--fw-electric), .40);
+  color:
+    rgba(216,237,238,.90);
+  background:
+    rgba(var(--fw-electric), .03);
+}
+
+/* ----------------------------------------------------------
+   COOL HEADER REGISTER
+   ---------------------------------------------------------- */
+
+.workspace h1,
+.workspace h2,
+.workspace h3 {
+  color:
+    var(--fw-header-blue);
+}
+
+.centerHead h1 {
+  color:
+    rgba(202,229,232,.96);
+}
+
+.moduleIntro h2,
+.matterPassageIndex h2,
+.mattersSummary h2,
+.recordsDeskHead h2 {
+  color:
+    var(--fw-header-blue);
+}
+
+.centerHead .micro,
+.moduleIntro .micro {
+  color:
+    rgba(104,193,210,.74);
+}
+
+.centerHead h1::after {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--fw-electric), .58),
+      rgba(var(--fw-gold-light), .24),
+      transparent
+    );
+}
+
+/* ----------------------------------------------------------
+   READABILITY FLOOR
+   ---------------------------------------------------------- */
+
+.workspaceLead,
+.moduleGuide,
+.sectionGuide,
+.actionPosture > p,
+.personRow p,
+.railEthos p,
+.matterPassageIndex p,
+.sendLoiHeading p,
+.sendLoiExecution p {
+  font-size:
+    var(--fw-readable-small);
+  line-height: 1.56;
+}
+
+.workspace .micro,
+.workspace small {
+  font-size:
+    var(--fw-readable-micro);
+}
+
+.directoryLink {
+  font-size: 12px;
+  letter-spacing: .025em;
+}
+
+.directoryIndex {
+  font-size: 8px;
+}
+
+.matterMetric > span,
+.matterFieldHead > span,
+.recordControl > span,
+.personRow > span,
+.actionPosture > div p {
+  font-size: 8px;
+}
+
+/* ----------------------------------------------------------
+   LUMINOUS RAIL / CENTER SEAMS
+   ---------------------------------------------------------- */
+
+.leftRail {
+  border-right-color:
+    rgba(var(--fw-electric), .08);
+
+  box-shadow:
+    inset -1px 0
+      rgba(var(--fw-electric), .10),
+    8px 0 20px
+      rgba(var(--fw-electric), .020);
+}
+
+.center {
+  box-shadow:
+    inset 1px 0
+      rgba(var(--fw-electric), .06),
+    inset -1px 0
+      rgba(var(--fw-electric), .05);
+}
+
+.rightRail {
+  border-left-color:
+    rgba(var(--fw-electric), .10);
+
+  box-shadow:
+    inset 1px 0
+      rgba(var(--fw-electric), .12),
+    -8px 0 20px
+      rgba(var(--fw-electric), .020);
+}
+
+.leftRail::after {
+  content: "";
+  position: absolute;
+  top: 8%;
+  right: -1px;
+  bottom: 8%;
+  width: 1px;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      rgba(var(--fw-electric), .10),
+      rgba(var(--fw-electric), .34) 48%,
+      rgba(var(--fw-gold-light), .08) 70%,
+      transparent
+    );
+}
+
+.rightRail::before {
+  content: "";
+  position: absolute;
+  top: 8%;
+  left: -1px;
+  bottom: 8%;
+  width: 1px;
+  pointer-events: none;
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      rgba(var(--fw-electric), .08),
+      rgba(var(--fw-electric), .29) 52%,
+      transparent
+    );
+}
+
+/* ----------------------------------------------------------
+   MATTER PASSAGE · PERIMETER PRESENCE
+   ---------------------------------------------------------- */
+
+.matterPassageIndex {
+  position: relative;
+  border-color:
+    rgba(176,202,201,.07);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(11,27,31,.32),
+      rgba(6,18,22,.19)
+    );
+
+  box-shadow:
+    inset 0 0 46px
+      rgba(var(--fw-electric), .013),
+    0 0 0 1px
+      rgba(var(--fw-electric), .016);
+}
+
+.matterPassageIndex::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  pointer-events: none;
+  border-radius: inherit;
+  padding: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--fw-electric), .15),
+      transparent 17%,
+      transparent 83%,
+      rgba(var(--fw-gold-light), .11)
+    );
+
+  mask:
+    linear-gradient(#000 0 0)
+      content-box,
+    linear-gradient(#000 0 0);
+
+  mask-composite:
+    exclude;
+
+  opacity: .56;
+}
+
+/* ----------------------------------------------------------
+   AXIS SYSTEM
+   ---------------------------------------------------------- */
+
+.matterPassageIndex svg {
+  overflow: visible;
+}
+
+.matterPassageIndex svg text {
+  fill:
+    rgba(188,205,203,.74);
+  font-size: 8px;
+  letter-spacing: .055em;
+}
+
+.matterPassageIndex
+svg text[transform*="rotate"] {
+  fill:
+    var(--fw-axis-blue);
+  font-size: 9px;
+  font-weight: 580;
+  letter-spacing: .16em;
+}
+
+.matterPassageIndex
+svg text[text-anchor="middle"] {
+  fill:
+    rgba(171,209,211,.76);
+}
+
+.matterPassageIndex
+svg text[text-anchor="start"],
+.matterPassageIndex
+svg text[text-anchor="end"] {
+  fill:
+    rgba(186,199,197,.68);
+}
+
+.matterPassageIndex svg line {
+  stroke:
+    rgba(139,187,192,.15);
+}
+
+.matterPassageIndex
+svg line:nth-of-type(5n) {
+  stroke:
+    rgba(var(--fw-electric), .19);
+}
+
+/* Header metrics gain stronger desk legibility. */
+
+.matterMetric > span {
+  color:
+    rgba(137,192,201,.67);
+}
+
+.matterMetric > strong {
+  color:
+    rgba(222,232,229,.85);
+  font-size: 15px;
+}
+
+.matterMetric[data-tone="attention"]
+> strong {
+  color:
+    rgba(var(--fw-gold-light), .86);
+}
+
+/* ----------------------------------------------------------
+   RESPONSIVE
+   ---------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .workspaceOperatorIdentity > code {
+    display: none;
+  }
+
+  .workspaceOperatorIdentity > small {
+    display: none;
+  }
+
+  .workspaceCrownOperator {
+    gap: 9px;
+  }
+}
+
+@media (max-width: 700px) {
+  .workspaceOperatorIdentity > span {
+    max-width: 120px;
+    font-size: 7px;
+  }
+
+  .workspaceSignOut button {
+    min-height: 26px;
+    padding:
+      0
+      8px;
+  }
+
+  .matterPassageIndex svg text {
+    font-size: 7px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-HOME-VIS-1H.2
+   ACTUAL AXIS SOURCE · OPEN MATTER FIELD
+   ══════════════════════════════════════════════════════════ */
+
+/* ----------------------------------------------------------
+   01 · PAGE + MODULE TITLES
+   Make the blue register visible, not theoretical.
+   ---------------------------------------------------------- */
+
+.workspace .centerHead h1 {
+  color:
+    rgb(145 211 228) !important;
+
+  text-shadow:
+    0 0 20px
+    rgba(64,168,196,.09);
+
+  font-weight: 470;
+}
+
+.workspace .moduleIntro h2,
+.workspace .matterPassageIndex h2,
+.workspace .mattersSummary h2,
+.workspace .recordsDeskHead h2 {
+  color:
+    rgb(134 201 219) !important;
+}
+
+.workspace .centerHead .micro,
+.workspace .moduleIntro .micro,
+.workspace
+.matterPassageIndex
+> header
+.micro {
+  color:
+    rgb(82 176 201) !important;
+}
+
+/* Keep ordinary body headings cooler than body copy,
+   but clearly below page-title prominence. */
+
+.workspace h3 {
+  color:
+    rgb(164 207 217);
+}
+
+/* ----------------------------------------------------------
+   02 · RAIL / CENTER SEAMS
+   ---------------------------------------------------------- */
+
+.leftRail {
+  border-right:
+    1px solid
+    rgba(74,181,207,.18) !important;
+
+  box-shadow:
+    inset -1px 0
+      rgba(69,184,211,.17),
+    10px 0 28px
+      rgba(42,153,184,.035);
+}
+
+.center {
+  box-shadow:
+    inset 1px 0
+      rgba(76,187,211,.12),
+    inset -1px 0
+      rgba(76,187,211,.10);
+}
+
+.rightRail {
+  border-left:
+    1px solid
+    rgba(74,181,207,.19) !important;
+
+  box-shadow:
+    inset 1px 0
+      rgba(69,184,211,.18),
+    -10px 0 28px
+      rgba(42,153,184,.035);
+}
+
+/* ----------------------------------------------------------
+   03 · MATTER PASSAGE FRAME
+   Stop reading as a rectangular card.
+   ---------------------------------------------------------- */
+
+.workspace .matterPassageIndex {
+  border:
+    0 !important;
+
+  outline:
+    0 !important;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 47%,
+      rgba(75,172,194,.020),
+      transparent 54%
+    ),
+    linear-gradient(
+      180deg,
+      rgba(9,25,30,.20),
+      rgba(5,16,20,.08)
+    ) !important;
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(91,192,214,.055),
+    inset 0 -1px 0
+      rgba(91,192,214,.028),
+    0 0 44px
+      rgba(54,157,184,.012) !important;
+}
+
+/* Remove previous hard perimeter behavior entirely. */
+
+.workspace
+.matterPassageIndex::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border: 0;
+  padding: 0;
+  mask: none;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(82,190,214,.17),
+      transparent 13%,
+      transparent 87%,
+      rgba(var(--fw-gold-light), .12)
+    )
+    top / 100% 1px
+    no-repeat,
+
+    linear-gradient(
+      90deg,
+      rgba(82,190,214,.055),
+      transparent 23%,
+      transparent 77%,
+      rgba(82,190,214,.04)
+    )
+    bottom / 100% 1px
+    no-repeat,
+
+    linear-gradient(
+      180deg,
+      rgba(82,190,214,.09),
+      transparent 24%,
+      transparent 76%,
+      rgba(82,190,214,.025)
+    )
+    left / 1px 100%
+    no-repeat,
+
+    linear-gradient(
+      180deg,
+      rgba(var(--fw-gold-light), .07),
+      transparent 24%,
+      transparent 76%,
+      rgba(82,190,214,.035)
+    )
+    right / 1px 100%
+    no-repeat;
+
+  opacity: .42;
+}
+
+/* Corner marks carry more of the frame identity. */
+
+.workspace
+.matterPassageIndex::before {
+  opacity: .86;
+  border-color:
+    rgba(var(--fw-gold-light), .48);
+}
+
+/* ----------------------------------------------------------
+   04 · COORDINATE SYSTEM
+   The actual axis titles are HTML spans, not SVG text.
+   ---------------------------------------------------------- */
+
+.workspace .fieldCoordinates {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* POSITION:
+   Pull left away from the stage labels.
+   Give it a distinct technical-blue identity. */
+
+.workspace .matterAxisPosition {
+  position: absolute;
+
+  left: 18px;
+  top: 50%;
+
+  transform:
+    translateY(-50%)
+    rotate(-90deg);
+
+  transform-origin:
+    center;
+
+  padding:
+    5px
+    9px;
+
+  background:
+    rgba(5,17,21,.74);
+
+  color:
+    rgb(94 197 219);
+
+  font:
+    9px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+
+  font-weight: 650;
+
+  letter-spacing:
+    .20em;
+
+  white-space: nowrap;
+
+  text-shadow:
+    0 0 12px
+    rgba(62,175,202,.12);
+}
+
+/* TIME:
+   Explicitly separate from date ticks and plot baseline. */
+
+.workspace .matterAxisTime {
+  position: absolute;
+
+  left: 50%;
+  bottom: 17px;
+
+  transform:
+    translateX(-50%);
+
+  padding:
+    5px
+    10px;
+
+  background:
+    rgba(5,17,21,.76);
+
+  color:
+    rgb(207 169 88);
+
+  font:
+    8px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+
+  font-weight: 620;
+
+  letter-spacing:
+    .17em;
+
+  white-space: nowrap;
+
+  text-shadow:
+    0 0 10px
+    rgba(var(--fw-gold-light), .08);
+}
+
+/* ----------------------------------------------------------
+   05 · STAGE + DATE TYPOGRAPHIC DIFFERENTIATION
+   ---------------------------------------------------------- */
+
+.workspace .passageLevel {
+  color:
+    rgb(151 184 191);
+}
+
+.workspace .passageLevel span,
+.workspace .passageLevel strong {
+  color:
+    inherit;
+}
+
+/* Stage names: cool and technical. */
+
+.workspace .passageLevels {
+  color:
+    rgb(148 186 194);
+}
+
+/* Date / temporal register: warmer and distinct. */
+
+.workspace .fieldTimeline,
+.workspace .fieldTime,
+.workspace .fieldDates {
+  color:
+    rgb(185 172 136);
+}
+
+/* Existing coordinate helper text should no longer inherit
+   one shared neutral treatment. */
+
+.workspace
+.fieldCoordinates
+span {
+  opacity: 1;
+}
+
+/* ----------------------------------------------------------
+   06 · MATTER HEADER METRICS
+   ---------------------------------------------------------- */
+
+.workspace
+.matterMetric
+> span {
+  color:
+    rgb(104 176 191);
+}
+
+.workspace
+.matterMetric
+> strong {
+  color:
+    rgb(217 230 228);
+
+  font-size:
+    15px;
+}
+
+.workspace
+.matterMetric[data-tone="attention"]
+> strong {
+  color:
+    rgb(211 172 82);
+}
+
+/* ----------------------------------------------------------
+   07 · CHART GRID
+   More subordinate after axis labels gain hierarchy.
+   ---------------------------------------------------------- */
+
+.workspace
+.matterPassageIndex
+.fieldGrid,
+.workspace
+.matterPassageIndex
+.passageGrid {
+  opacity: .70;
+}
+
+@media (max-width: 900px) {
+  .workspace .matterAxisPosition {
+    left: 11px;
+  }
+
+  .workspace .matterAxisTime {
+    bottom: 11px;
+  }
+}
+
+@media (max-width: 700px) {
+  .workspace .matterAxisPosition {
+    left: 6px;
+    font-size: 7px;
+    padding:
+      4px
+      6px;
+  }
+
+  .workspace .matterAxisTime {
+    bottom: 7px;
+    font-size: 7px;
+    padding:
+      4px
+      6px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-MATTER-FIELD-1A
+   COORDINATE FIELD RECOMPOSITION
+   The coordinates define the field; a box does not.
+   ══════════════════════════════════════════════════════════ */
+
+/* ----------------------------------------------------------
+   01 · OPEN THE ACTUAL MATTER PASSAGE ROOT
+   Earlier perimeter work targeted the wrong surface.
+   ---------------------------------------------------------- */
+
+.workspace .passage {
+  margin-top: 22px;
+
+  border:
+    0 !important;
+
+  border-top:
+    0 !important;
+
+  border-bottom:
+    0 !important;
+
+  outline:
+    0;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+}
+
+/* Instrument head remains the datum/readout,
+   but not the top edge of a card. */
+
+.workspace .instrumentHead {
+  min-height: 72px;
+
+  border-bottom:
+    1px solid
+    rgba(95,179,198,.11);
+
+  padding:
+    12px
+    0
+    15px;
+}
+
+/* ----------------------------------------------------------
+   02 · FIELD GEOMETRY
+   Dedicated left coordinate gutter + lower temporal gutter.
+   ---------------------------------------------------------- */
+
+.workspace .instrumentField {
+  --fw-plot-left: 132px;
+  --fw-plot-right: 22px;
+  --fw-plot-top: 20px;
+  --fw-plot-bottom: 66px;
+
+  position: relative;
+
+  min-height: 520px;
+
+  padding:
+    var(--fw-plot-top)
+    var(--fw-plot-right)
+    var(--fw-plot-bottom)
+    var(--fw-plot-left);
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      ellipse at 54% 48%,
+      rgba(63,161,184,.021),
+      transparent 40%
+    ),
+    radial-gradient(
+      ellipse at 53% 51%,
+      rgba(var(--fw-gold-light), .010),
+      transparent 28%
+    );
+
+  box-shadow:
+    none;
+}
+
+/* No visual perimeter around instrumentField. */
+
+.workspace .instrumentField::after {
+  inset:
+    var(--fw-plot-top)
+    var(--fw-plot-right)
+    var(--fw-plot-bottom)
+    var(--fw-plot-left);
+
+  opacity: .38;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(var(--fw-electric), .018) 50%,
+      transparent
+    );
+}
+
+/* ----------------------------------------------------------
+   03 · POSITIONAL GUTTER
+   POSITION gets its own datum lane.
+   Stage labels get their own lane.
+   Plot starts only after both.
+   ---------------------------------------------------------- */
+
+.workspace .passageLevels,
+.workspace .verticalTicks,
+.workspace .emptyField,
+.workspace .currentPositions {
+  left:
+    var(--fw-plot-left);
+
+  right:
+    var(--fw-plot-right);
+
+  top:
+    var(--fw-plot-top);
+
+  bottom:
+    var(--fw-plot-bottom);
+}
+
+/* Remove the old hard left wall. */
+
+.workspace .passageLevels {
+  border-left:
+    0 !important;
+}
+
+/* Replace it with a faded positional datum. */
+
+.workspace .passageLevels::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  top: 0;
+  bottom: 0;
+
+  width: 1px;
+
+  background:
+    linear-gradient(
+      180deg,
+      transparent,
+      rgba(99,190,210,.19) 9%,
+      rgba(99,190,210,.25) 50%,
+      rgba(99,190,210,.16) 91%,
+      transparent
+    );
+}
+
+/* Actual POSITION datum title.
+   It now occupies the far-left gutter by itself. */
+
+.workspace .matterAxisPosition {
+  left: 13px !important;
+
+  top: 50%;
+
+  padding:
+    6px
+    8px;
+
+  transform:
+    translateY(-50%)
+    rotate(-90deg);
+
+  background:
+    rgba(4,15,19,.86);
+
+  color:
+    rgb(92 201 224) !important;
+
+  font-size:
+    9px !important;
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    .21em !important;
+
+  box-shadow:
+    0 0 18px
+    rgba(54,164,193,.035);
+}
+
+/* Passage labels now live between POSITION and plot. */
+
+.workspace .levelLabel {
+  right:
+    calc(100% + 18px);
+
+  width:
+    82px;
+
+  color:
+    rgb(151 186 193);
+
+  font-size:
+    8px;
+
+  font-weight:
+    530;
+
+  letter-spacing:
+    .055em;
+
+  text-align:
+    right;
+}
+
+/* ----------------------------------------------------------
+   04 · TEMPORAL GUTTER
+   Dates and temporal datum no longer occupy the same line.
+   ---------------------------------------------------------- */
+
+.workspace .timeTicks {
+  left:
+    var(--fw-plot-left);
+
+  right:
+    var(--fw-plot-right);
+
+  bottom:
+    30px;
+
+  color:
+    rgb(174 170 150);
+
+  font-size:
+    8px;
+
+  letter-spacing:
+    .075em;
+}
+
+.workspace .timeTicks span {
+  color:
+    inherit;
+}
+
+.workspace .timeTicks span:last-child {
+  color:
+    rgb(205 194 161);
+}
+
+/* Datum title owns the bottom-most channel. */
+
+.workspace .matterAxisTime {
+  left: 50%;
+
+  bottom: 3px !important;
+
+  padding:
+    6px
+    11px;
+
+  transform:
+    translateX(-50%);
+
+  background:
+    rgba(4,15,19,.88);
+
+  color:
+    rgb(210 173 91) !important;
+
+  font-size:
+    8px !important;
+
+  font-weight:
+    650;
+
+  letter-spacing:
+    .18em !important;
+}
+
+/* Give the temporal datum a directional registration. */
+
+.workspace .matterAxisTime::after {
+  content: "";
+
+  display: inline-block;
+
+  width: 34px;
+  height: 1px;
+
+  margin-left: 10px;
+
+  vertical-align:
+    .28em;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--fw-gold-light), .50),
+      transparent
+    );
+}
+
+/* ----------------------------------------------------------
+   05 · GRID HIERARCHY
+   Stop treating every coordinate equally.
+   ---------------------------------------------------------- */
+
+.workspace .verticalTicks {
+  grid-template-columns:
+    repeat(4, 1fr);
+}
+
+/* Tertiary temporal guides */
+
+.workspace .verticalTicks i {
+  border-right:
+    1px solid
+    rgba(101,158,168,.025);
+}
+
+/* Primary central datum */
+
+.workspace .verticalTicks i:nth-child(2) {
+  border-right-color:
+    rgba(78,184,207,.16);
+
+  box-shadow:
+    1px 0 10px
+    rgba(60,166,194,.028);
+}
+
+/* Secondary guide */
+
+.workspace .verticalTicks i:nth-child(3) {
+  border-right-color:
+    rgba(105,165,174,.050);
+}
+
+/* Remove the right edge that completed the chart box. */
+
+.workspace .verticalTicks i:last-child {
+  border-right-color:
+    transparent !important;
+
+  box-shadow:
+    none;
+}
+
+/* Horizontal rows become coordinate signals,
+   not graph-paper rules. */
+
+.workspace .levelLine {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(124,164,170,.045),
+      rgba(101,172,185,.070) 42%,
+      rgba(143,166,166,.065) 72%,
+      transparent
+    );
+}
+
+/* Tiny positional registration tick remains. */
+
+.workspace .levelLine::before {
+  width: 5px;
+
+  background:
+    rgba(109,181,195,.22);
+}
+
+/* ----------------------------------------------------------
+   06 · PASSAGE FAMILIES
+   Subtle functional hierarchy, not rainbow categories.
+   ---------------------------------------------------------- */
+
+/* COMPLETION */
+
+.workspace
+.passageLevel[data-passage="SETTLEMENT"]
+.levelLabel {
+  color:
+    rgb(204 181 126);
+}
+
+.workspace
+.passageLevel[data-passage="SETTLEMENT"]
+.levelLine {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--fw-gold-light), .16),
+      rgba(143,182,185,.09) 46%,
+      transparent
+    );
+}
+
+/* VERIFICATION */
+
+.workspace
+.passageLevel[data-passage="ASSAY"]
+.levelLabel,
+.workspace
+.passageLevel[data-passage="REFINERY"]
+.levelLabel {
+  color:
+    rgb(148 198 207);
+}
+
+/* PHYSICAL PASSAGE */
+
+.workspace
+.passageLevel[data-passage="TRANSIT"]
+.levelLabel,
+.workspace
+.passageLevel[data-passage="EXPORT"]
+.levelLabel {
+  color:
+    rgb(124 184 199);
+}
+
+/* FINANCIAL PASSAGE */
+
+.workspace
+.passageLevel[data-passage="TREASURY"]
+.levelLabel,
+.workspace
+.passageLevel[data-passage="ESCROW"]
+.levelLabel {
+  color:
+    rgb(190 173 127);
+}
+
+.workspace
+.passageLevel[data-passage="TREASURY"]
+.levelLine {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--fw-gold-light), .14),
+      rgba(var(--fw-electric), .085) 48%,
+      transparent
+    );
+}
+
+/* FORMATION */
+
+.workspace
+.passageLevel[data-passage="SPA"]
+.levelLabel,
+.workspace
+.passageLevel[data-passage="KYC"]
+.levelLabel,
+.workspace
+.passageLevel[data-passage="INTAKE"]
+.levelLabel {
+  color:
+    rgb(151 187 194);
+}
+
+/* Intake retains a quiet live-system registration,
+   not a bright illuminated stripe. */
+
+.workspace
+.passageLevel[data-passage="INTAKE"]
+.levelLine {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--fw-electric), .10),
+      rgba(var(--fw-electric), .13) 58%,
+      rgba(var(--fw-gold-light), .09) 82%,
+      transparent
+    );
+
+  box-shadow:
+    0 0 8px
+    rgba(var(--fw-electric), .018);
+}
+
+/* ----------------------------------------------------------
+   07 · EMPTY FIELD
+   Coordinates remain the subject.
+   Emptiness becomes telemetry.
+   ---------------------------------------------------------- */
+
+.workspace .emptyField {
+  place-content:
+    center;
+
+  justify-items:
+    center;
+
+  text-align:
+    center;
+}
+
+/* Submerged seal should almost disappear when field is quiet. */
+
+.workspace .fwSeal {
+  opacity:
+    .22 !important;
+
+  filter:
+    saturate(.68)
+    contrast(.90);
+}
+
+/* Registration mark no longer dominates center field. */
+
+.workspace .registrationMark {
+  width: 18px;
+  height: 18px;
+
+  margin-bottom:
+    8px;
+
+  opacity:
+    .42;
+}
+
+.workspace .emptyFieldState {
+  margin-bottom:
+    5px;
+
+  color:
+    rgb(94 181 199);
+
+  font:
+    7px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+
+  letter-spacing:
+    .19em;
+
+  opacity:
+    .68;
+}
+
+.workspace .emptyField p {
+  margin: 0;
+
+  color:
+    rgba(198,205,201,.47);
+
+  font:
+    8px/1.2
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+
+  letter-spacing:
+    .16em;
+}
+
+/* ----------------------------------------------------------
+   08 · ACTUAL MATTER OBJECT GRAMMAR
+   Existing .position renderer becomes the field object.
+   ---------------------------------------------------------- */
+
+.workspace .position {
+  z-index: 5;
+
+  gap:
+    10px;
+
+  transform:
+    translateY(-50%);
+}
+
+/* Recorded history / approach trail */
+
+.workspace .position::before {
+  content: "";
+
+  position: absolute;
+
+  right:
+    calc(100% + 4px);
+
+  top: 50%;
+
+  width: 72px;
+  height: 1px;
+
+  transform:
+    translateY(-50%);
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      rgba(var(--fw-electric), .10),
+      rgba(var(--fw-electric), .30)
+    );
+}
+
+/* Current Matter node */
+
+.workspace .position > span,
+.workspace .positionNode {
+  width: 8px;
+  height: 8px;
+
+  border-radius:
+    50%;
+
+  background:
+    rgb(102 190 206);
+
+  box-shadow:
+    0 0 0 4px
+      rgba(81,174,194,.075),
+    0 0 14px
+      rgba(67,168,192,.08);
+}
+
+/* Canonical reference */
+
+.workspace .position strong,
+.workspace .position code {
+  color:
+    rgb(193 215 217);
+
+  font-size:
+    8px;
+
+  letter-spacing:
+    .06em;
+}
+
+/* Human title */
+
+.workspace .position small {
+  max-width:
+    180px;
+
+  color:
+    rgba(189,202,199,.64);
+
+  font-size:
+    8px;
+
+  line-height:
+    1.35;
+}
+
+/* Lifecycle detail remains subordinate */
+
+.workspace .positionLifecycle {
+  color:
+    rgba(113,188,201,.56) !important;
+
+  font-size:
+    7px !important;
+
+  letter-spacing:
+    .07em;
+}
+
+/* Quiet electrical pulse only around live Matter node. */
+
+@keyframes fwMatterNodeCurrent {
+  0%,
+  100% {
+    box-shadow:
+      0 0 0 4px
+        rgba(81,174,194,.06),
+      0 0 10px
+        rgba(67,168,192,.05);
+  }
+
+  50% {
+    box-shadow:
+      0 0 0 5px
+        rgba(81,174,194,.095),
+      0 0 16px
+        rgba(67,168,192,.09);
+  }
+}
+
+.workspace .position > span,
+.workspace .positionNode {
+  animation:
+    fwMatterNodeCurrent
+    4.6s
+    ease-in-out
+    infinite;
+}
+
+/* ----------------------------------------------------------
+   09 · FOOTER
+   Let it behave like a coordinate legend, not a card footer.
+   ---------------------------------------------------------- */
+
+.workspace .instrumentFoot {
+  min-height:
+    32px;
+
+  border-top:
+    1px solid
+    rgba(93,166,179,.075);
+
+  color:
+    rgba(158,181,181,.50);
+
+  font-size:
+    7px;
+
+  letter-spacing:
+    .14em;
+}
+
+/* ----------------------------------------------------------
+   10 · RESPONSIVE
+   Preserve datum separation at narrower widths.
+   ---------------------------------------------------------- */
+
+@media (max-width: 900px) {
+  .workspace .instrumentField {
+    --fw-plot-left: 112px;
+    --fw-plot-right: 14px;
+    --fw-plot-bottom: 60px;
+  }
+
+  .workspace .levelLabel {
+    width:
+      68px;
+
+    right:
+      calc(100% + 15px);
+  }
+
+  .workspace .matterAxisPosition {
+    left: 9px !important;
+  }
+}
+
+@media (max-width: 700px) {
+  .workspace .instrumentField {
+    --fw-plot-left: 94px;
+    --fw-plot-right: 8px;
+    --fw-plot-bottom: 56px;
+
+    min-height:
+      430px;
+  }
+
+  .workspace .levelLabel {
+    width:
+      58px;
+
+    font-size:
+      7px;
+
+    right:
+      calc(100% + 12px);
+  }
+
+  .workspace .matterAxisPosition {
+    left:
+      4px !important;
+
+    font-size:
+      7px !important;
+
+    padding:
+      4px
+      5px;
+  }
+
+  .workspace .matterAxisTime {
+    font-size:
+      7px !important;
+
+    padding:
+      4px
+      6px;
+  }
+
+  .workspace .position::before {
+    width:
+      38px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workspace .position > span,
+  .workspace .positionNode {
+    animation:
+      none;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-MATTER-FIELD-1B
+   FIELD-FIRST ENTRANCE
+   ══════════════════════════════════════════════════════════ */
+
+/* ----------------------------------------------------------
+   HOME ENTRANCE
+   Preserve identity, but stop spending the first viewport
+   explaining where the operator already is.
+   ---------------------------------------------------------- */
+
+.workspace .centerHead {
+  padding-top:
+    12px;
+
+  padding-bottom:
+    12px;
+}
+
+.workspace .centerHead h1 {
+  margin-top:
+    2px;
+
+  font-size:
+    clamp(30px, 3.3vw, 44px);
+
+  line-height:
+    .98;
+}
+
+.workspace .workspaceLead {
+  margin-top:
+    4px;
+
+  line-height:
+    1.35;
+}
+
+/* Home module begins almost immediately. */
+
+.workspace .moduleStage {
+  margin-top:
+    4px;
+}
+
+/* ----------------------------------------------------------
+   MATTER PASSAGE
+   The readout becomes a compact instrument header.
+   ---------------------------------------------------------- */
+
+.workspace .passage {
+  margin-top:
+    8px;
+}
+
+/* Instead of a large two-column introduction,
+   create one compact horizontal registration. */
+
+.workspace .instrumentHead {
+  min-height:
+    0;
+
+  grid-template-columns:
+    minmax(210px, .72fr)
+    minmax(440px, 1.45fr);
+
+  gap:
+    24px;
+
+  align-items:
+    center;
+
+  padding:
+    9px
+    0
+    10px;
+
+  border-bottom:
+    1px solid
+    rgba(93,178,197,.09);
+}
+
+/* FIELD / PASSAGE becomes metadata, not a heading tier. */
+
+.workspace
+.instrumentIdentity
+.micro {
+  margin:
+    0;
+
+  font-size:
+    7px;
+
+  line-height:
+    1;
+
+  letter-spacing:
+    .18em;
+}
+
+/* Matter Passage keeps identity but consumes less altitude. */
+
+.workspace
+.instrumentIdentity
+h2 {
+  margin:
+    4px
+    0
+    0;
+
+  font-size:
+    18px;
+
+  line-height:
+    1.05;
+}
+
+/* Description becomes a single quiet line on desktop. */
+
+.workspace
+.instrumentGuide {
+  max-width:
+    420px;
+
+  margin:
+    5px
+    0
+    0;
+
+  font-size:
+    8px;
+
+  line-height:
+    1.3;
+}
+
+/* ----------------------------------------------------------
+   READOUT STRIP
+   Treat metrics like telemetry rather than five cards.
+   ---------------------------------------------------------- */
+
+.workspace .instrumentStrip {
+  min-height:
+    0;
+
+  align-self:
+    stretch;
+
+  border-left:
+    1px solid
+    rgba(101,180,196,.10);
+}
+
+.workspace
+.instrumentStrip
+> div {
+  min-height:
+    38px;
+
+  display:
+    grid;
+
+  align-content:
+    center;
+
+  padding:
+    2px
+    12px
+    1px;
+
+  border-right:
+    1px solid
+    rgba(101,180,196,.09);
+}
+
+.workspace
+.instrumentStrip
+> div:last-child {
+  border-right:
+    0;
+}
+
+.workspace
+.instrumentStrip
+span {
+  font-size:
+    7px;
+
+  line-height:
+    1;
+
+  letter-spacing:
+    .13em;
+}
+
+.workspace
+.instrumentStrip
+strong {
+  margin-top:
+    6px;
+
+  font-size:
+    10px;
+
+  line-height:
+    1;
+}
+
+/* ----------------------------------------------------------
+   FIELD ITSELF
+   Pull coordinate surface upward and enlarge its share
+   of the first visible viewport.
+   ---------------------------------------------------------- */
+
+.workspace .instrumentField {
+  --fw-plot-top:
+    10px;
+
+  min-height:
+    540px;
+
+  margin-top:
+    0;
+}
+
+/* Passage coordinates now begin near the readout divider. */
+
+.workspace .passageLevels,
+.workspace .verticalTicks,
+.workspace .emptyField,
+.workspace .currentPositions {
+  top:
+    var(--fw-plot-top);
+}
+
+/* Slightly increase positional presence now that field moves up. */
+
+.workspace .levelLabel {
+  font-size:
+    8px;
+}
+
+/* ----------------------------------------------------------
+   REDUCE VERTICAL DISTANCE BELOW FIELD AS WELL
+   ---------------------------------------------------------- */
+
+.workspace .instrumentFoot {
+  min-height:
+    28px;
+}
+
+.workspace .nowField {
+  margin-top:
+    12px;
+}
+
+/* ----------------------------------------------------------
+   OPEN AWARENESS STATE
+   Avoid shrinking the field excessively when rail is open.
+   ---------------------------------------------------------- */
+
+.awarenessOpen
+.instrumentHead {
+  grid-template-columns:
+    minmax(190px, .68fr)
+    minmax(390px, 1.35fr);
+
+  gap:
+    18px;
+}
+
+/* ----------------------------------------------------------
+   NARROW VIEWPORTS
+   ---------------------------------------------------------- */
+
+@media (max-width: 1050px) {
+  .workspace .instrumentHead {
+    grid-template-columns:
+      1fr;
+
+    gap:
+      8px;
+
+    padding-bottom:
+      8px;
+  }
+
+  .workspace .instrumentStrip {
+    border-left:
+      0;
+
+    border-top:
+      1px solid
+      rgba(101,180,196,.09);
+
+    padding-top:
+      7px;
+  }
+
+  .workspace
+  .instrumentStrip
+  > div {
+    min-height:
+      34px;
+  }
+}
+
+@media (max-width: 700px) {
+  .workspace .centerHead {
+    padding-top:
+      8px;
+
+    padding-bottom:
+      9px;
+  }
+
+  .workspace .instrumentField {
+    min-height:
+      450px;
+  }
+
+  .workspace .instrumentGuide {
+    display:
+      none;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-HOME-MOBILE-1A
+   FIELD-FIRST MOBILE EDITION
+   ══════════════════════════════════════════════════════════ */
+
+@media (max-width: 700px) {
+
+  /* ========================================================
+     01 · INSTITUTIONAL ENTRANCE
+     Preserve identity without consuming the first viewport.
+     ======================================================== */
+
+  .workspace {
+    --fw-home-crown-height: 58px;
+  }
+
+  .workspaceCrown {
+    min-height:
+      var(--fw-home-crown-height);
+
+    padding:
+      0
+      15px;
+
+    gap:
+      10px;
+  }
+
+  .workspaceCrownBrand strong {
+    font-size:
+      11px;
+  }
+
+  .workspaceOperatorIdentity > span {
+    max-width:
+      150px;
+
+    font-size:
+      7px;
+  }
+
+  .workspaceOperatorIdentity > small,
+  .workspaceOperatorIdentity > code {
+    display:
+      none;
+  }
+
+  .workspaceSignOut button {
+    min-height:
+      28px;
+
+    padding:
+      0
+      9px;
+
+    font-size:
+      6px;
+  }
+
+  /* Stewardship becomes an inscription, not a preamble. */
+
+  .railEthos {
+    margin:
+      10px
+      20px
+      6px;
+
+    padding:
+      4px
+      0
+      5px
+      11px;
+
+    gap:
+      4px;
+  }
+
+  .railEthos span {
+    font-size:
+      6px;
+  }
+
+  .railEthos strong {
+    font-size:
+      9px;
+
+    line-height:
+      1.2;
+  }
+
+  .railEthos p {
+    display:
+      none;
+  }
+
+  /* Capacity remains explicit, but much shallower. */
+
+  .leftRail
+  [data-capacity-card="true"] {
+    margin:
+      8px
+      18px
+      10px;
+
+    padding:
+      11px
+      14px;
+
+    min-height:
+      0;
+  }
+
+  .leftRail
+  [data-capacity-card="true"]
+  h2,
+  .leftRail
+  [data-capacity-card="true"]
+  strong {
+    font-size:
+      16px;
+
+    line-height:
+      1.18;
+  }
+
+  .leftRail
+  [data-capacity-card="true"]
+  p {
+    margin-top:
+      6px;
+
+    font-size:
+      8px;
+  }
+
+  .leftRail
+  [data-capacity-card="true"]
+  code {
+    display:
+      none;
+  }
+
+  /* ========================================================
+     02 · MOBILE MODULE NAVIGATION
+     Deliberate horizontal navigation — never clipped.
+     ======================================================== */
+
+  .directory {
+    width:
+      100%;
+
+    overflow-x:
+      auto;
+
+    overflow-y:
+      hidden;
+
+    overscroll-behavior-inline:
+      contain;
+
+    scrollbar-width:
+      none;
+
+    border-top:
+      1px solid
+      rgba(101,180,196,.09);
+
+    border-bottom:
+      1px solid
+      rgba(101,180,196,.11);
+  }
+
+  .directory::-webkit-scrollbar {
+    display:
+      none;
+  }
+
+  .directory ul {
+    width:
+      max-content;
+
+    min-width:
+      100%;
+
+    display:
+      flex;
+
+    flex-wrap:
+      nowrap;
+
+    align-items:
+      stretch;
+
+    margin:
+      0;
+
+    padding:
+      0;
+  }
+
+  .directory li {
+    flex:
+      0
+      0
+      auto;
+  }
+
+  .directoryLink {
+    width:
+      auto;
+
+    min-width:
+      max-content;
+
+    min-height:
+      48px;
+
+    padding:
+      0
+      20px;
+
+    display:
+      flex;
+
+    align-items:
+      center;
+
+    justify-content:
+      center;
+
+    font-size:
+      10px;
+
+    white-space:
+      nowrap;
+  }
+
+  .directoryIndex {
+    display:
+      none;
+  }
+
+  .directoryLink[data-active="true"]::before {
+    left:
+      50%;
+
+    top:
+      auto;
+
+    bottom:
+      -1px;
+
+    width:
+      22px;
+
+    transform:
+      translateX(-50%);
+
+    background:
+      rgba(var(--fw-gold-light), .66);
+  }
+
+  .directoryLink::after {
+    display:
+      none;
+  }
+
+  /* ========================================================
+     03 · HOME ENTRANCE
+     Move rapidly into the instrument.
+     ======================================================== */
+
+  .centerInner {
+    padding:
+      14px
+      20px
+      0;
+  }
+
+  .centerHead {
+    padding:
+      8px
+      0
+      10px;
+  }
+
+  .centerHead h1 {
+    margin-top:
+      4px;
+
+    font-size:
+      32px;
+
+    line-height:
+      .96;
+
+    letter-spacing:
+      .015em;
+  }
+
+  .centerHead h1::after {
+    width:
+      15px;
+  }
+
+  .workspaceLead {
+    margin-top:
+      6px;
+
+    font-size:
+      8px;
+
+    line-height:
+      1.3;
+  }
+
+  .moduleStage {
+    margin-top:
+      2px;
+  }
+
+  /* ========================================================
+     04 · MATTER PASSAGE READOUT
+     One compact telemetry row.
+     ======================================================== */
+
+  .passage {
+    margin-top:
+      5px;
+  }
+
+  .instrumentHead {
+    display:
+      block;
+
+    padding:
+      8px
+      0
+      8px;
+
+    border-bottom:
+      1px solid
+      rgba(101,180,196,.08);
+  }
+
+  .instrumentIdentity h2 {
+    margin-top:
+      4px;
+
+    font-size:
+      17px;
+  }
+
+  .instrumentIdentity .micro {
+    font-size:
+      6px;
+  }
+
+  .instrumentGuide {
+    display:
+      none;
+  }
+
+  .instrumentStrip {
+    width:
+      100%;
+
+    margin-top:
+      9px;
+
+    display:
+      grid;
+
+    grid-template-columns:
+      repeat(5, minmax(0, 1fr));
+
+    border-top:
+      1px solid
+      rgba(101,180,196,.08);
+
+    border-left:
+      0;
+
+    padding-top:
+      0;
+  }
+
+  .instrumentStrip > div {
+    min-width:
+      0;
+
+    min-height:
+      42px;
+
+    padding:
+      8px
+      5px
+      5px;
+
+    border-right:
+      1px solid
+      rgba(101,180,196,.07);
+  }
+
+  .instrumentStrip > div:last-child {
+    border-right:
+      0;
+  }
+
+  .instrumentStrip span {
+    overflow:
+      hidden;
+
+    font-size:
+      5.5px;
+
+    letter-spacing:
+      .08em;
+
+    text-overflow:
+      ellipsis;
+
+    white-space:
+      nowrap;
+  }
+
+  .instrumentStrip strong {
+    margin-top:
+      6px;
+
+    font-size:
+      9px;
+  }
+
+  /* ========================================================
+     05 · MOBILE MATTER COORDINATE FIELD
+     Give the instrument almost the entire viewport width.
+     ======================================================== */
+
+  .instrumentField {
+    --fw-plot-left: 82px;
+    --fw-plot-right: 4px;
+    --fw-plot-top: 8px;
+    --fw-plot-bottom: 58px;
+
+    width:
+      calc(100% + 24px);
+
+    min-height:
+      470px;
+
+    margin:
+      0
+      -12px;
+
+    padding:
+      var(--fw-plot-top)
+      var(--fw-plot-right)
+      var(--fw-plot-bottom)
+      var(--fw-plot-left);
+
+    background:
+      radial-gradient(
+        ellipse at 56% 49%,
+        rgba(63,161,184,.024),
+        transparent 43%
+      );
+  }
+
+  /* Plot starts after a true positional gutter. */
+
+  .passageLevels,
+  .verticalTicks,
+  .emptyField,
+  .currentPositions {
+    left:
+      var(--fw-plot-left);
+
+    right:
+      var(--fw-plot-right);
+
+    top:
+      var(--fw-plot-top);
+
+    bottom:
+      var(--fw-plot-bottom);
+  }
+
+  .passageLevels::before {
+    opacity:
+      .72;
+  }
+
+  /* POSITION becomes a clean datum spine. */
+
+  .matterAxisPosition {
+    left:
+      0 !important;
+
+    padding:
+      4px
+      5px;
+
+    font-size:
+      6.5px !important;
+
+    letter-spacing:
+      .17em !important;
+
+    background:
+      rgba(4,15,19,.88);
+  }
+
+  /* Passage names remain readable inside limited width. */
+
+  .levelLabel {
+    right:
+      calc(100% + 9px);
+
+    width:
+      54px;
+
+    font-size:
+      6.5px;
+
+    letter-spacing:
+      .035em;
+  }
+
+  /* Simplify temporal drafting guides on mobile.
+     Keep the strong central datum only. */
+
+  .verticalTicks i {
+    border-right-color:
+      transparent !important;
+
+    box-shadow:
+      none !important;
+  }
+
+  .verticalTicks i:nth-child(2) {
+    border-right-color:
+      rgba(79,185,207,.16) !important;
+
+    box-shadow:
+      1px 0 9px
+      rgba(58,163,190,.025) !important;
+  }
+
+  /* Temporal ticks stay distinct and outside plot activity. */
+
+  .timeTicks {
+    left:
+      var(--fw-plot-left);
+
+    right:
+      var(--fw-plot-right);
+
+    bottom:
+      27px;
+
+    font-size:
+      6.5px;
+
+    letter-spacing:
+      .04em;
+  }
+
+  .matterAxisTime {
+    bottom:
+      1px !important;
+
+    padding:
+      4px
+      6px;
+
+    font-size:
+      6.5px !important;
+
+    letter-spacing:
+      .11em !important;
+  }
+
+  .matterAxisTime::after {
+    width:
+      18px;
+
+    margin-left:
+      6px;
+  }
+
+  /* Quiet state cannot dominate mobile field. */
+
+  .fwSeal {
+    width:
+      112px !important;
+
+    height:
+      112px !important;
+
+    opacity:
+      .13 !important;
+  }
+
+  .emptyFieldState {
+    font-size:
+      6px;
+
+    letter-spacing:
+      .14em;
+  }
+
+  .emptyField p {
+    font-size:
+      6.5px;
+
+    letter-spacing:
+      .11em;
+  }
+
+  .registrationMark {
+    width:
+      14px;
+
+    height:
+      14px;
+
+    margin-bottom:
+      6px;
+  }
+
+  /* Matter objects remain usable when the field is populated. */
+
+  .position {
+    gap:
+      6px;
+  }
+
+  .position::before {
+    width:
+      26px;
+  }
+
+  .position > span,
+  .positionNode {
+    width:
+      7px;
+
+    height:
+      7px;
+  }
+
+  .position strong,
+  .position code {
+    font-size:
+      6.5px;
+  }
+
+  .position small {
+    max-width:
+      105px;
+
+    font-size:
+      6.5px;
+  }
+
+  /* Footer becomes metadata, not another row of content. */
+
+  .instrumentFoot {
+    min-height:
+      25px;
+
+    gap:
+      8px;
+
+    padding:
+      0
+      2px;
+
+    font-size:
+      5.5px;
+
+    letter-spacing:
+      .08em;
+  }
+
+  /* ========================================================
+     06 · EMPTY HOME SNAPSHOTS
+     Empty state should not require long scrolling.
+     ======================================================== */
+
+  .nowField {
+    margin-top:
+      10px;
+  }
+
+  .moduleSubhead {
+    min-height:
+      48px;
+
+    padding:
+      10px
+      0;
+  }
+
+  .moduleSubhead h2 {
+    font-size:
+      17px;
+  }
+
+  .nowGrid {
+    display:
+      grid;
+
+    grid-template-columns:
+      1fr;
+  }
+
+  .nowCell {
+    min-height:
+      0;
+
+    padding:
+      13px
+      0;
+  }
+
+  .nowCell > span {
+    font-size:
+      6px;
+  }
+
+  .nowCell > strong {
+    margin-top:
+      7px;
+
+    font-size:
+      22px;
+  }
+
+  .nowCell p {
+    margin-top:
+      6px;
+
+    font-size:
+      7px;
+
+    line-height:
+      1.4;
+  }
+
+  /* Record Snapshot should collapse around its actual content. */
+
+  .transactionPreview {
+    min-height:
+      0 !important;
+
+    margin-top:
+      18px;
+
+    padding-bottom:
+      24px !important;
+  }
+
+  .transactionPreview
+  .moduleSubhead {
+    min-height:
+      48px;
+  }
+
+  /* ========================================================
+     07 · MOBILE AWARENESS
+     Rail becomes a compact terminal control.
+     ======================================================== */
+
+  .rightRail,
+  .rightRail[data-open="false"] {
+    min-height:
+      52px;
+
+    height:
+      auto;
+
+    padding:
+      0
+      20px;
+
+    border-top:
+      1px solid
+      rgba(75,177,201,.13);
+  }
+
+  .rightRail
+  .railEthos {
+    display:
+      none;
+  }
+
+  .rightRail
+  .railToggle,
+  .rightRail[data-open="false"]
+  .railToggle {
+    height:
+      52px;
+
+    min-height:
+      52px;
+
+    padding:
+      0;
+
+    flex-direction:
+      row;
+
+    justify-content:
+      space-between;
+
+    border-bottom:
+      0;
+  }
+
+  .rightRail[data-open="false"]
+  .railToggle span {
+    writing-mode:
+      horizontal-tb;
+
+    transform:
+      none;
+  }
+
+  .rightRail[data-open="false"]
+  .railToggle strong {
+    margin-top:
+      0;
+  }
+
+  /* Closed state should not reserve desktop rail acreage. */
+
+  .rightRail[data-open="false"]
+  .awarenessContent {
+    display:
+      none;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-HOME-VIS-1J
+   COMPACT CROWN · LIGHTWEIGHT IDENTITY
+   BALANCED NAV · MOBILE FIELD CHART
+   ══════════════════════════════════════════════════════════ */
+
+/* ----------------------------------------------------------
+   GLOBAL · REMOVE IDENTITY CARD CHARACTER
+   Identity becomes embedded operating context.
+   ---------------------------------------------------------- */
+
+.leftRail
+[data-capacity-card="true"] {
+  border:
+    0 !important;
+
+  border-radius:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+}
+
+.leftRail
+[data-capacity-card="true"]::before,
+.leftRail
+[data-capacity-card="true"]::after {
+  display:
+    none !important;
+}
+
+/* Keep a quiet left registration instead of a card. */
+
+.leftRail
+[data-capacity-card="true"] {
+  position:
+    relative;
+
+  padding-left:
+    14px !important;
+}
+
+.leftRail
+[data-capacity-card="true"]::before {
+  content:
+    "" !important;
+
+  display:
+    block !important;
+
+  position:
+    absolute;
+
+  left:
+    0;
+
+  top:
+    10px;
+
+  bottom:
+    10px;
+
+  width:
+    1px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(var(--fw-gold-light), .36),
+      rgba(var(--fw-gold-light), .05)
+    );
+}
+
+/* ----------------------------------------------------------
+   MOBILE ONLY
+   ---------------------------------------------------------- */
+
+@media (max-width: 700px) {
+
+  /* ========================================================
+     01 · COMPACT CROWN
+     ======================================================== */
+
+  .workspace {
+    --fw-home-crown-height:
+      52px;
+  }
+
+  .workspaceCrown {
+    height:
+      var(--fw-home-crown-height);
+
+    min-height:
+      var(--fw-home-crown-height);
+
+    padding:
+      0
+      14px;
+
+    gap:
+      8px;
+  }
+
+  .workspaceCrownBrand strong {
+    font-size:
+      10px;
+
+    letter-spacing:
+      .07em;
+  }
+
+  .workspaceCrownBrand span {
+    display:
+      none;
+  }
+
+  .workspaceOperatorIdentity {
+    gap:
+      0;
+  }
+
+  .workspaceOperatorIdentity > span {
+    max-width:
+      132px;
+
+    font-size:
+      6.5px;
+
+    line-height:
+      1;
+  }
+
+  .workspaceOperatorIdentity > small,
+  .workspaceOperatorIdentity > code {
+    display:
+      none;
+  }
+
+  .workspaceSignOut button {
+    min-height:
+      26px;
+
+    padding:
+      0
+      8px;
+
+    font-size:
+      5.5px;
+  }
+
+  /* ========================================================
+     02 · STEWARDSHIP + IDENTITY
+     One compact institutional band.
+     ======================================================== */
+
+  .railEthos {
+    margin:
+      8px
+      20px
+      3px;
+
+    padding:
+      3px
+      0
+      3px
+      10px;
+
+    gap:
+      3px;
+  }
+
+  .railEthos span {
+    font-size:
+      5.5px;
+  }
+
+  .railEthos strong {
+    font-size:
+      8.5px;
+  }
+
+  .railEthos p {
+    display:
+      none;
+  }
+
+  .leftRail
+  [data-capacity-card="true"] {
+    margin:
+      2px
+      20px
+      7px !important;
+
+    padding:
+      8px
+      0
+      8px
+      12px !important;
+
+    min-height:
+      0 !important;
+  }
+
+  .leftRail
+  [data-capacity-card="true"]
+  .micro {
+    font-size:
+      5.5px;
+  }
+
+  .leftRail
+  [data-capacity-card="true"]
+  h2,
+  .leftRail
+  [data-capacity-card="true"]
+  strong {
+    margin-top:
+      4px;
+
+    font-size:
+      13px;
+
+    line-height:
+      1.1;
+  }
+
+  .leftRail
+  [data-capacity-card="true"]
+  p {
+    margin-top:
+      4px;
+
+    font-size:
+      7px;
+  }
+
+  .leftRail
+  [data-capacity-card="true"]
+  code {
+    display:
+      none;
+  }
+
+  /* ========================================================
+     03 · BALANCED MOBILE NAV
+     Equal visual distribution, still horizontally resilient.
+     ======================================================== */
+
+  .directory {
+    overflow-x:
+      auto;
+
+    scroll-snap-type:
+      x proximity;
+
+    scrollbar-width:
+      none;
+  }
+
+  .directory ul {
+    display:
+      grid;
+
+    grid-auto-flow:
+      column;
+
+    grid-auto-columns:
+      minmax(92px, 1fr);
+
+    width:
+      max-content;
+
+    min-width:
+      100%;
+  }
+
+  .directory li {
+    min-width:
+      0;
+
+    scroll-snap-align:
+      start;
+  }
+
+  .directoryLink {
+    min-width:
+      92px;
+
+    min-height:
+      44px;
+
+    padding:
+      0
+      13px;
+
+    border-right:
+      1px solid
+      rgba(99,173,187,.055);
+
+    font-size:
+      9px;
+
+    letter-spacing:
+      .025em;
+  }
+
+  .directory li:last-child
+  .directoryLink {
+    border-right:
+      0;
+  }
+
+  /* ========================================================
+     04 · HOME INTRO
+     ======================================================== */
+
+  .centerInner {
+    padding:
+      11px
+      20px
+      0;
+  }
+
+  .centerHead {
+    padding:
+      5px
+      0
+      8px;
+  }
+
+  .centerHead .micro {
+    font-size:
+      6px;
+  }
+
+  .centerHead h1 {
+    margin-top:
+      3px;
+
+    font-size:
+      29px;
+  }
+
+  .workspaceLead {
+    margin-top:
+      5px;
+
+    font-size:
+      7.5px;
+  }
+
+  /* ========================================================
+     05 · COMPACT MATTER READOUT
+     ======================================================== */
+
+  .instrumentHead {
+    padding:
+      6px
+      0
+      7px;
+  }
+
+  .instrumentIdentity h2 {
+    font-size:
+      16px;
+  }
+
+  .instrumentStrip {
+    margin-top:
+      7px;
+
+    grid-template-columns:
+      repeat(5, minmax(0, 1fr));
+  }
+
+  .instrumentStrip > div {
+    min-height:
+      36px;
+
+    padding:
+      6px
+      4px
+      4px;
+  }
+
+  .instrumentStrip span {
+    font-size:
+      5px;
+  }
+
+  .instrumentStrip strong {
+    margin-top:
+      5px;
+
+    font-size:
+      8px;
+  }
+
+  /* ========================================================
+     06 · MOBILE APP CHART MODE
+     Sticky positional gutter + horizontally scrollable time.
+     ======================================================== */
+
+  .instrumentField {
+    --fw-plot-left:
+      78px;
+
+    --fw-plot-right:
+      8px;
+
+    --fw-plot-top:
+      8px;
+
+    --fw-plot-bottom:
+      56px;
+
+    width:
+      calc(100% + 40px);
+
+    min-height:
+      500px;
+
+    margin:
+      0
+      -20px;
+
+    padding:
+      0;
+
+    overflow:
+      hidden;
+
+    background:
+      radial-gradient(
+        ellipse at 58% 48%,
+        rgba(57,156,180,.026),
+        transparent 43%
+      );
+  }
+
+  /* Viewport for chart interaction. */
+
+  .mobileFieldStage {
+    position:
+      absolute;
+
+    inset:
+      0;
+
+    overflow:
+      hidden;
+  }
+
+  .mobilePlotScroller {
+    position:
+      absolute;
+
+    inset:
+      0;
+
+    overflow-x:
+      auto;
+
+    overflow-y:
+      hidden;
+
+    overscroll-behavior-inline:
+      contain;
+
+    scrollbar-width:
+      none;
+
+    -webkit-overflow-scrolling:
+      touch;
+  }
+
+  .mobilePlotScroller::-webkit-scrollbar {
+    display:
+      none;
+  }
+
+  /* Chart gets a real working width rather than being crushed
+     into the device width. */
+
+  .mobilePlotPlane {
+    position:
+      relative;
+
+    width:
+      max(100%, 620px);
+
+    height:
+      100%;
+
+    min-height:
+      500px;
+  }
+
+  /* Plot geometry now belongs to the wide inner plane. */
+
+  .passageLevels,
+  .verticalTicks,
+  .emptyField,
+  .currentPositions {
+    left:
+      112px;
+
+    right:
+      24px;
+
+    top:
+      10px;
+
+    bottom:
+      60px;
+  }
+
+  /* Position title occupies a stable gutter inside plot plane. */
+
+  .matterAxisPosition {
+    left:
+      8px !important;
+
+    font-size:
+      6.5px !important;
+
+    z-index:
+      8;
+  }
+
+  .levelLabel {
+    width:
+      66px;
+
+    right:
+      calc(100% + 13px);
+
+    font-size:
+      7px;
+  }
+
+  /* Dates remain attached to the scrollable time plane. */
+
+  .timeTicks {
+    left:
+      112px;
+
+    right:
+      24px;
+
+    bottom:
+      28px;
+
+    font-size:
+      7px;
+  }
+
+  .matterAxisTime {
+    left:
+      50%;
+
+    bottom:
+      2px !important;
+
+    font-size:
+      6.5px !important;
+  }
+
+  /* Only primary temporal guides on mobile. */
+
+  .verticalTicks i {
+    border-right-color:
+      transparent !important;
+  }
+
+  .verticalTicks i:nth-child(2) {
+    border-right-color:
+      rgba(74,181,204,.15) !important;
+  }
+
+  .verticalTicks i:nth-child(3) {
+    border-right-color:
+      rgba(110,167,178,.04) !important;
+  }
+
+  /* More usable vertical stage rhythm. */
+
+  .passageLevel {
+    min-height:
+      0;
+  }
+
+  .levelLine {
+    opacity:
+      .85;
+  }
+
+  /* --------------------------------------------------------
+     Mobile scroll affordance.
+     A subtle fade says there is more temporal field.
+     -------------------------------------------------------- */
+
+  .instrumentField::before {
+    content:
+      "";
+
+    position:
+      absolute;
+
+    right:
+      0;
+
+    top:
+      0;
+
+    bottom:
+      52px;
+
+    width:
+      34px;
+
+    z-index:
+      20;
+
+    pointer-events:
+      none;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(4,15,19,.76)
+      );
+  }
+
+  /* ========================================================
+     07 · EMPTY STATE
+     ======================================================== */
+
+  .fwSeal {
+    width:
+      104px !important;
+
+    height:
+      104px !important;
+
+    opacity:
+      .11 !important;
+  }
+
+  .emptyFieldState {
+    font-size:
+      5.5px;
+  }
+
+  .emptyField p {
+    font-size:
+      6px;
+  }
+
+  /* ========================================================
+     08 · LOWER HOME COMPRESSION
+     ======================================================== */
+
+  .nowField {
+    margin-top:
+      8px;
+  }
+
+  .moduleSubhead {
+    min-height:
+      44px;
+  }
+
+  .moduleSubhead h2 {
+    font-size:
+      16px;
+  }
+
+  .nowCell {
+    padding:
+      11px
+      0;
+  }
+
+  .nowCell > strong {
+    font-size:
+      20px;
+  }
+
+  .nowCell p {
+    font-size:
+      6.5px;
+  }
+
+  .transactionPreview {
+    margin-top:
+      13px;
+
+    padding-bottom:
+      18px !important;
+  }
+
+  /* ========================================================
+     09 · AWARENESS
+     ======================================================== */
+
+  .rightRail,
+  .rightRail[data-open="false"] {
+    min-height:
+      48px;
+
+    padding:
+      0
+      20px;
+  }
+
+  .rightRail
+  .railToggle,
+  .rightRail[data-open="false"]
+  .railToggle {
+    height:
+      48px;
+
+    min-height:
+      48px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-HOME-MOBILE-1B
+   STEWARDSHIP CROWN · MOBILE PASSAGE NAVIGATOR
+   ══════════════════════════════════════════════════════════ */
+
+/* ----------------------------------------------------------
+   01 · STEWARDSHIP BELONGS TO THE CROWN
+   ---------------------------------------------------------- */
+
+.workspaceCrownBrand {
+  position: relative;
+}
+
+.workspaceCrownStewardship {
+  display: block;
+
+  margin-top: 3px;
+
+  color:
+    rgba(var(--fw-gold-light), .52);
+
+  font:
+    6px/1.15
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+
+  font-weight: 450;
+
+  letter-spacing: .11em;
+}
+
+/* The former stewardship rail inscription is now redundant. */
+
+.leftRail
+.railEthos[data-rail="stewardship"] {
+  display: none !important;
+}
+
+/* Desktop brand becomes a two-line institutional signature. */
+
+.workspaceCrownBrand {
+  display: grid;
+
+  grid-template-columns:
+    auto auto;
+
+  align-items: baseline;
+
+  column-gap: 8px;
+}
+
+.workspaceCrownBrand
+.workspaceCrownStewardship {
+  grid-column:
+    1 / -1;
+}
+
+/* ----------------------------------------------------------
+   02 · MOBILE PASSAGE DOES NOT EXIST ON DESKTOP
+   ---------------------------------------------------------- */
+
+.mobilePassageNavigator {
+  display: none;
+}
+
+/* ----------------------------------------------------------
+   03 · MOBILE RESPONSIVE PROJECTION
+   ---------------------------------------------------------- */
+
+@media (max-width: 700px) {
+
+  /* ========================================================
+     CROWN
+     ======================================================== */
+
+  .workspace {
+    --fw-home-crown-height:
+      54px;
+  }
+
+  .workspaceCrown {
+    height:
+      var(--fw-home-crown-height);
+
+    min-height:
+      var(--fw-home-crown-height);
+
+    padding:
+      0
+      14px;
+  }
+
+  .workspaceCrownBrand {
+    gap:
+      0
+      6px;
+  }
+
+  .workspaceCrownBrand strong {
+    font-size:
+      10px;
+  }
+
+  .workspaceCrownStewardship {
+    margin-top:
+      3px;
+
+    font-size:
+      5px;
+
+    letter-spacing:
+      .08em;
+  }
+
+  /* Operator becomes pure session metadata. */
+
+  .workspaceOperatorIdentity > span {
+    max-width:
+      118px;
+
+    font-size:
+      6px;
+  }
+
+  .workspaceSignOut button {
+    min-height:
+      25px;
+
+    font-size:
+      5px;
+  }
+
+  /* ========================================================
+     CAPACITY
+     Reduce it to an operating identity strip.
+     ======================================================== */
+
+  .leftRail
+  [data-capacity-card="true"] {
+    margin:
+      7px
+      18px
+      6px !important;
+
+    padding:
+      7px
+      0
+      7px
+      11px !important;
+  }
+
+  .leftRail
+  [data-capacity-card="true"]
+  .micro {
+    font-size:
+      5px;
+  }
+
+  .leftRail
+  [data-capacity-card="true"]
+  h2,
+  .leftRail
+  [data-capacity-card="true"]
+  strong {
+    margin-top:
+      3px;
+
+    font-size:
+      11px;
+
+    line-height:
+      1.1;
+  }
+
+  .leftRail
+  [data-capacity-card="true"]
+  p {
+    margin-top:
+      3px;
+
+    font-size:
+      6px;
+  }
+
+  /* ========================================================
+     NAVIGATION
+     Equal operating tabs with intentional overflow.
+     ======================================================== */
+
+  .directory ul {
+    display:
+      flex;
+
+    width:
+      max-content;
+
+    min-width:
+      100%;
+
+    flex-wrap:
+      nowrap;
+  }
+
+  .directory li {
+    flex:
+      0
+      0
+      96px;
+  }
+
+  .directoryLink {
+    width:
+      96px;
+
+    min-width:
+      96px;
+
+    min-height:
+      42px;
+
+    padding:
+      0
+      8px;
+
+    justify-content:
+      center;
+
+    font-size:
+      8px;
+
+    text-align:
+      center;
+
+    scroll-snap-align:
+      start;
+  }
+
+  /* ========================================================
+     MATTER HEADER TELEMETRY
+     Balanced 3 + 2 layout; no truncation.
+     ======================================================== */
+
+  .instrumentStrip {
+    grid-template-columns:
+      repeat(6, minmax(0, 1fr));
+  }
+
+  .instrumentStrip > div:nth-child(1),
+  .instrumentStrip > div:nth-child(2),
+  .instrumentStrip > div:nth-child(3) {
+    grid-column:
+      span 2;
+  }
+
+  .instrumentStrip > div:nth-child(4),
+  .instrumentStrip > div:nth-child(5) {
+    grid-column:
+      span 3;
+  }
+
+  .instrumentStrip > div {
+    min-height:
+      34px;
+  }
+
+  .instrumentStrip span {
+    overflow:
+      visible;
+
+    font-size:
+      5px;
+
+    text-overflow:
+      clip;
+  }
+
+  /* ========================================================
+     DESKTOP COORDINATE FIELD OFF ON MOBILE
+     ======================================================== */
+
+  .instrumentField {
+    display:
+      none !important;
+  }
+
+  /* ========================================================
+     MOBILE PASSAGE NAVIGATOR
+     ======================================================== */
+
+  .mobilePassageNavigator {
+    display:
+      block;
+
+    position:
+      relative;
+
+    margin-top:
+      8px;
+
+    padding:
+      7px
+      0
+      0;
+  }
+
+  .mobilePassageTrack {
+    position:
+      relative;
+
+    padding:
+      5px
+      0
+      3px;
+  }
+
+  /* Continuous passage spine */
+
+  .mobilePassageTrack::before {
+    content:
+      "";
+
+    position:
+      absolute;
+
+    left:
+      111px;
+
+    top:
+      15px;
+
+    bottom:
+      15px;
+
+    width:
+      1px;
+
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--fw-gold-light), .17),
+        rgba(var(--fw-electric), .24) 45%,
+        rgba(var(--fw-electric), .12) 80%,
+        transparent
+      );
+  }
+
+  .mobilePassageLevel {
+    position:
+      relative;
+
+    display:
+      grid;
+
+    grid-template-columns:
+      112px
+      minmax(0, 1fr);
+
+    min-height:
+      43px;
+
+    align-items:
+      center;
+  }
+
+  .mobilePassageStage {
+    position:
+      relative;
+
+    min-width:
+      0;
+
+    display:
+      flex;
+
+    align-items:
+      center;
+
+    justify-content:
+      flex-end;
+
+    gap:
+      9px;
+
+    padding-right:
+      0;
+  }
+
+  .mobilePassageStage strong {
+    color:
+      rgb(142 188 198);
+
+    font:
+      7px/1
+      ui-monospace,
+      SFMono-Regular,
+      Menlo,
+      monospace;
+
+    font-weight:
+      550;
+
+    letter-spacing:
+      .055em;
+
+    text-align:
+      right;
+  }
+
+  .mobilePassageNode {
+    position:
+      relative;
+
+    z-index:
+      2;
+
+    width:
+      7px;
+
+    height:
+      7px;
+
+    flex:
+      0 0
+      7px;
+
+    border:
+      1px solid
+      rgba(107,190,207,.39);
+
+    border-radius:
+      50%;
+
+    background:
+      rgb(5 18 22);
+
+    transform:
+      translateX(4px);
+  }
+
+  /* Completion */
+
+  .mobilePassageLevel[data-passage="SETTLEMENT"]
+  .mobilePassageStage strong {
+    color:
+      rgb(205 179 116);
+  }
+
+  .mobilePassageLevel[data-passage="SETTLEMENT"]
+  .mobilePassageNode {
+    border-color:
+      rgba(var(--fw-gold-light), .58);
+  }
+
+  /* Financial passage */
+
+  .mobilePassageLevel[data-passage="TREASURY"]
+  .mobilePassageStage strong,
+  .mobilePassageLevel[data-passage="ESCROW"]
+  .mobilePassageStage strong {
+    color:
+      rgb(190 170 118);
+  }
+
+  /* Active Matter position */
+
+  .mobilePassageLevel[data-active="true"]
+  .mobilePassageNode {
+    background:
+      rgb(99 193 211);
+
+    border-color:
+      rgb(120 214 230);
+
+    box-shadow:
+      0 0 0 4px
+        rgba(85,184,205,.08),
+      0 0 13px
+        rgba(68,170,195,.10);
+  }
+
+  .mobilePassageMatterField {
+    min-width:
+      0;
+
+    padding:
+      4px
+      0
+      4px
+      16px;
+  }
+
+  .mobilePassageMatter {
+    min-width:
+      0;
+
+    padding:
+      8px
+      10px;
+
+    border-left:
+      1px solid
+      rgba(var(--fw-electric), .28);
+
+    background:
+      linear-gradient(
+        90deg,
+        rgba(var(--fw-electric), .025),
+        transparent
+      );
+  }
+
+  .mobilePassageMatter
+  + .mobilePassageMatter {
+    margin-top:
+      5px;
+  }
+
+  .mobilePassageMatter strong,
+  .mobilePassageMatter code,
+  .mobilePassageMatter small {
+    display:
+      block;
+  }
+
+  .mobilePassageMatter strong {
+    overflow:
+      hidden;
+
+    color:
+      rgb(197 218 218);
+
+    font-size:
+      8px;
+
+    line-height:
+      1.2;
+
+    text-overflow:
+      ellipsis;
+
+    white-space:
+      nowrap;
+  }
+
+  .mobilePassageMatter code {
+    margin-top:
+      4px;
+
+    overflow:
+      hidden;
+
+    color:
+      rgba(111,194,209,.70);
+
+    font-size:
+      6px;
+
+    letter-spacing:
+      .05em;
+
+    text-overflow:
+      ellipsis;
+
+    white-space:
+      nowrap;
+  }
+
+  .mobilePassageMatter small {
+    margin-top:
+      4px;
+
+    color:
+      rgba(176,193,190,.55);
+
+    font-size:
+      6px;
+  }
+
+  /* Quiet field telemetry */
+
+  .mobilePassageQuiet {
+    margin:
+      8px
+      0
+      5px
+      128px;
+
+    padding:
+      9px
+      0;
+
+    border-top:
+      1px solid
+      rgba(99,176,190,.07);
+
+    border-bottom:
+      1px solid
+      rgba(99,176,190,.07);
+  }
+
+  .mobilePassageQuiet span {
+    color:
+      rgb(88 181 201);
+
+    font:
+      6px/1
+      ui-monospace,
+      SFMono-Regular,
+      Menlo,
+      monospace;
+
+    letter-spacing:
+      .16em;
+  }
+
+  .mobilePassageQuiet p {
+    margin:
+      4px
+      0
+      0;
+
+    color:
+      rgba(184,197,194,.50);
+
+    font-size:
+      7px;
+  }
+
+  .mobilePassageReadout {
+    min-height:
+      30px;
+
+    display:
+      flex;
+
+    align-items:
+      center;
+
+    justify-content:
+      space-between;
+
+    gap:
+      12px;
+
+    margin-top:
+      4px;
+
+    border-top:
+      1px solid
+      rgba(103,174,187,.08);
+
+    color:
+      rgba(155,184,184,.50);
+
+    font:
+      5.5px/1
+      ui-monospace,
+      SFMono-Regular,
+      Menlo,
+      monospace;
+
+    letter-spacing:
+      .10em;
+  }
+
+  .mobilePassageReadout strong {
+    color:
+      rgba(var(--fw-gold-light), .61);
+
+    font-weight:
+      520;
+  }
+
+  /* ========================================================
+     REMOVE DESKTOP FIELD FOOTER ON MOBILE
+     Mobile navigator has its own readout.
+     ======================================================== */
+
+  .instrumentFoot {
+    display:
+      none;
+  }
+
+  /* ========================================================
+     HOME ARRIVAL
+     ======================================================== */
+
+  .centerHead {
+    padding-top:
+      5px;
+  }
+
+  .moduleStage {
+    margin-top:
+      0;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-HOME-MOBILE-1C
+   SINGLE IDENTITY CROWN · HOME RISE
+   COMPACT PASSAGE NAVIGATOR
+   ══════════════════════════════════════════════════════════ */
+
+@media (max-width: 700px) {
+
+  /* ========================================================
+     01 · ONE INSTITUTIONAL HEADER
+     ======================================================== */
+
+  .workspace {
+    --fw-home-crown-height:
+      56px;
+  }
+
+  .workspaceCrown {
+    height:
+      var(--fw-home-crown-height);
+
+    min-height:
+      var(--fw-home-crown-height);
+
+    padding:
+      0
+      14px;
+
+    align-items:
+      center;
+  }
+
+  /* Brand + stewardship become one compact signature. */
+
+  .workspaceCrownBrand {
+    display:
+      grid;
+
+    grid-template-columns:
+      auto;
+
+    align-content:
+      center;
+
+    gap:
+      3px;
+
+    min-width:
+      0;
+  }
+
+  .workspaceCrownBrand strong {
+    font-size:
+      10px;
+
+    line-height:
+      1;
+
+    letter-spacing:
+      .075em;
+  }
+
+  .workspaceCrownBrand > span {
+    display:
+      none;
+  }
+
+  .workspaceCrownStewardship {
+    display:
+      block !important;
+
+    margin:
+      0;
+
+    color:
+      rgba(var(--fw-gold-light), .62);
+
+    font-size:
+      5.5px;
+
+    line-height:
+      1;
+
+    letter-spacing:
+      .07em;
+
+    white-space:
+      nowrap;
+  }
+
+  /* Operator remains crown metadata only. */
+
+  .workspaceCrownOperator {
+    gap:
+      8px;
+  }
+
+  .workspaceOperatorIdentity > span {
+    max-width:
+      122px;
+
+    font-size:
+      6px;
+  }
+
+  .workspaceOperatorIdentity > small,
+  .workspaceOperatorIdentity > code {
+    display:
+      none;
+  }
+
+  .workspaceSignOut button {
+    min-height:
+      25px;
+
+    padding:
+      0
+      7px;
+
+    font-size:
+      5px;
+  }
+
+  /* ========================================================
+     02 · REMOVE REPEATED MOBILE IDENTITY
+     HOME DESK now rises into this space.
+     ======================================================== */
+
+  .leftRail
+  .railEthos[data-rail="stewardship"] {
+    display:
+      none !important;
+  }
+
+  .leftRail
+  [data-capacity-card="true"] {
+    display:
+      none !important;
+  }
+
+  /* Remove the dead institutional area that contained it. */
+
+  .leftRail {
+    padding-top:
+      0;
+  }
+
+  /* ========================================================
+     03 · NAVIGATION
+     Bring nav directly beneath the crown.
+     ======================================================== */
+
+  .directory {
+    margin-top:
+      0;
+
+    border-top:
+      0;
+  }
+
+  .directory ul {
+    min-height:
+      42px;
+  }
+
+  .directory li {
+    flex-basis:
+      25vw;
+
+    min-width:
+      94px;
+  }
+
+  .directoryLink {
+    width:
+      100%;
+
+    min-width:
+      94px;
+
+    min-height:
+      42px;
+
+    padding:
+      0
+      10px;
+
+    font-size:
+      8.5px;
+
+    letter-spacing:
+      .018em;
+  }
+
+  /* ========================================================
+     04 · HOME DESK RISES
+     ======================================================== */
+
+  .centerInner {
+    padding-top:
+      8px;
+  }
+
+  .centerHead {
+    padding:
+      4px
+      0
+      7px;
+  }
+
+  .centerHead h1 {
+    margin-top:
+      2px;
+
+    font-size:
+      28px;
+  }
+
+  .workspaceLead {
+    margin-top:
+      4px;
+  }
+
+  /* ========================================================
+     05 · MATTER HEADER
+     ======================================================== */
+
+  .passage {
+    margin-top:
+      2px;
+  }
+
+  .instrumentHead {
+    padding-top:
+      5px;
+
+    padding-bottom:
+      6px;
+  }
+
+  .instrumentIdentity h2 {
+    margin-top:
+      3px;
+
+    font-size:
+      15px;
+  }
+
+  .instrumentStrip {
+    margin-top:
+      6px;
+  }
+
+  .instrumentStrip > div {
+    min-height:
+      31px;
+
+    padding-top:
+      5px;
+
+    padding-bottom:
+      3px;
+  }
+
+  .instrumentStrip strong {
+    margin-top:
+      4px;
+  }
+
+  /* ========================================================
+     06 · COMPACT PASSAGE NAVIGATOR
+     Ten stages remain; excess vertical air does not.
+     ======================================================== */
+
+  .mobilePassageNavigator {
+    position:
+      relative;
+
+    margin-top:
+      5px;
+
+    padding-top:
+      2px;
+  }
+
+  .mobilePassageTrack {
+    position:
+      relative;
+
+    min-height:
+      326px;
+
+    padding:
+      4px
+      0;
+  }
+
+  .mobilePassageTrack::before {
+    left:
+      112px;
+
+    top:
+      12px;
+
+    bottom:
+      12px;
+  }
+
+  .mobilePassageLevel {
+    grid-template-columns:
+      112px
+      minmax(0, 1fr);
+
+    min-height:
+      32px;
+  }
+
+  .mobilePassageStage {
+    gap:
+      8px;
+  }
+
+  .mobilePassageStage strong {
+    font-size:
+      6.5px;
+
+    letter-spacing:
+      .045em;
+  }
+
+  .mobilePassageNode {
+    width:
+      6px;
+
+    height:
+      6px;
+
+    flex-basis:
+      6px;
+
+    transform:
+      translateX(3.5px);
+  }
+
+  /* ========================================================
+     07 · USE THE EMPTY RIGHT HALF
+     Quiet field becomes part of the navigator itself.
+     ======================================================== */
+
+  .mobilePassageQuiet {
+    position:
+      absolute;
+
+    left:
+      150px;
+
+    right:
+      8px;
+
+    top:
+      50%;
+
+    transform:
+      translateY(-50%);
+
+    margin:
+      0;
+
+    padding:
+      12px
+      0;
+
+    border-top:
+      1px solid
+      rgba(99,176,190,.07);
+
+    border-bottom:
+      1px solid
+      rgba(99,176,190,.07);
+
+    text-align:
+      left;
+  }
+
+  .mobilePassageQuiet span {
+    font-size:
+      6px;
+
+    letter-spacing:
+      .15em;
+  }
+
+  .mobilePassageQuiet p {
+    margin-top:
+      5px;
+
+    font-size:
+      6.5px;
+  }
+
+  /* Active Matters will naturally occupy this same right field,
+     replacing quiet-state telemetry. */
+
+  .mobilePassageMatterField {
+    padding-left:
+      14px;
+  }
+
+  /* ========================================================
+     08 · READOUT CLOSER TO TRACK
+     ======================================================== */
+
+  .mobilePassageReadout {
+    min-height:
+      26px;
+
+    margin-top:
+      0;
+
+    font-size:
+      5px;
+  }
+
+  /* ========================================================
+     09 · LOWER HOME
+     ======================================================== */
+
+  .nowField {
+    margin-top:
+      5px;
+  }
+
+  .moduleSubhead {
+    min-height:
+      40px;
+
+    padding:
+      8px
+      0;
+  }
+
+  .moduleSubhead h2 {
+    font-size:
+      15px;
+  }
+
+  .nowCell {
+    padding:
+      10px
+      0;
+  }
+
+  .transactionPreview {
+    margin-top:
+      10px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-HOME-MOBILE-1D
+   SIX-TAB NAV · LEFT PASSAGE SPINE · THIN FIELD HEAD
+   ══════════════════════════════════════════════════════════ */
+
+@media (max-width: 700px) {
+
+  /* ========================================================
+     01 · ALL SIX MODULES VISIBLE
+     No hidden Actions destination.
+     ======================================================== */
+
+  .directory {
+    overflow:
+      hidden;
+  }
+
+  .directory ul {
+    width:
+      100%;
+
+    min-width:
+      100%;
+
+    display:
+      grid;
+
+    grid-template-columns:
+      repeat(6, minmax(0, 1fr));
+
+    grid-auto-flow:
+      initial;
+  }
+
+  .directory li {
+    min-width:
+      0;
+
+    width:
+      auto;
+
+    flex:
+      none;
+  }
+
+  .directoryLink {
+    width:
+      100%;
+
+    min-width:
+      0;
+
+    min-height:
+      40px;
+
+    padding:
+      0
+      3px;
+
+    font-size:
+      6.5px;
+
+    letter-spacing:
+      .01em;
+
+    white-space:
+      nowrap;
+
+    overflow:
+      hidden;
+
+    text-overflow:
+      clip;
+  }
+
+  .directoryLink[data-active="true"]::before {
+    width:
+      17px;
+  }
+
+  /* ========================================================
+     02 · MATTER PASSAGE HEAD BECOMES A THIN INSTRUMENT BAND
+     ======================================================== */
+
+  .passage {
+    margin-top:
+      0;
+  }
+
+  .instrumentHead {
+    display:
+      grid;
+
+    grid-template-columns:
+      138px
+      minmax(0, 1fr);
+
+    align-items:
+      end;
+
+    gap:
+      10px;
+
+    padding:
+      3px
+      0
+      4px;
+
+    min-height:
+      0;
+
+    border-bottom:
+      1px solid
+      rgba(95,177,195,.08);
+  }
+
+  .instrumentIdentity {
+    align-self:
+      center;
+
+    min-width:
+      0;
+  }
+
+  .instrumentIdentity .micro {
+    margin:
+      0;
+
+    font-size:
+      5px;
+
+    line-height:
+      1;
+
+    letter-spacing:
+      .12em;
+  }
+
+  .instrumentIdentity h2 {
+    margin:
+      3px
+      0
+      0;
+
+    font-size:
+      13px;
+
+    line-height:
+      1;
+  }
+
+  .instrumentGuide {
+    display:
+      none;
+  }
+
+  /* Telemetry becomes one very thin row. */
+
+  .instrumentStrip {
+    display:
+      grid;
+
+    grid-template-columns:
+      repeat(5, minmax(0, 1fr));
+
+    margin:
+      0;
+
+    padding:
+      0;
+
+    border:
+      0;
+
+    align-self:
+      stretch;
+  }
+
+  .instrumentStrip > div,
+  .instrumentStrip > div:nth-child(1),
+  .instrumentStrip > div:nth-child(2),
+  .instrumentStrip > div:nth-child(3),
+  .instrumentStrip > div:nth-child(4),
+  .instrumentStrip > div:nth-child(5) {
+    grid-column:
+      auto;
+
+    min-height:
+      31px;
+
+    padding:
+      4px
+      4px
+      3px;
+
+    display:
+      grid;
+
+    align-content:
+      center;
+
+    border-right:
+      1px solid
+      rgba(99,174,189,.07);
+  }
+
+  .instrumentStrip > div:last-child {
+    border-right:
+      0;
+  }
+
+  .instrumentStrip span {
+    font-size:
+      4.5px;
+
+    line-height:
+      1;
+
+    letter-spacing:
+      .05em;
+
+    white-space:
+      nowrap;
+  }
+
+  .instrumentStrip strong {
+    margin-top:
+      4px;
+
+    font-size:
+      7px;
+
+    line-height:
+      1;
+  }
+
+  /* ========================================================
+     03 · PASSAGE SPINE MOVES LEFT
+     More usable Matter field to its right.
+     ======================================================== */
+
+  .mobilePassageTrack {
+    min-height:
+      306px;
+
+    padding:
+      2px
+      0;
+  }
+
+  .mobilePassageTrack::before {
+    left:
+      88px;
+
+    top:
+      9px;
+
+    bottom:
+      9px;
+  }
+
+  .mobilePassageLevel {
+    grid-template-columns:
+      88px
+      minmax(0, 1fr);
+
+    min-height:
+      30px;
+  }
+
+  .mobilePassageStage {
+    gap:
+      6px;
+  }
+
+  .mobilePassageStage strong {
+    font-size:
+      6px;
+
+    letter-spacing:
+      .035em;
+  }
+
+  .mobilePassageNode {
+    width:
+      6px;
+
+    height:
+      6px;
+
+    flex-basis:
+      6px;
+
+    transform:
+      translateX(3px);
+  }
+
+  /* Matter / quiet field starts sooner. */
+
+  .mobilePassageMatterField {
+    padding-left:
+      11px;
+  }
+
+  .mobilePassageQuiet {
+    left:
+      112px;
+
+    right:
+      6px;
+
+    padding:
+      9px
+      0;
+  }
+
+  .mobilePassageQuiet span {
+    font-size:
+      5.5px;
+  }
+
+  .mobilePassageQuiet p {
+    margin-top:
+      4px;
+
+    font-size:
+      6px;
+  }
+
+  /* ========================================================
+     04 · READOUT TIGHTENS UNDER THE TRACK
+     ======================================================== */
+
+  .mobilePassageReadout {
+    min-height:
+      23px;
+
+    margin-top:
+      0;
+
+    font-size:
+      4.5px;
+
+    letter-spacing:
+      .08em;
+  }
+
+  /* ========================================================
+     05 · HOME DESK → MATTER PASSAGE GAP
+     ======================================================== */
+
+  .centerHead {
+    padding-bottom:
+      5px;
+  }
+
+  .moduleStage {
+    margin-top:
+      0;
+  }
+
+  .centerHead + .moduleStage {
+    margin-top:
+      0;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-HOME-MOBILE-1E
+   FIXED MODULE BAR · THIN CONTINUITY
+   COMPACT PASSAGE · HORIZONTAL ACTION SELECTOR
+   ══════════════════════════════════════════════════════════ */
+
+@media (max-width: 700px) {
+
+  /* ========================================================
+     01 · FIXED UNIVERSAL MODULE NAV
+     Crown + module bar remain available while operating.
+     ======================================================== */
+
+  .directory {
+    position:
+      fixed;
+
+    z-index:
+      78;
+
+    top:
+      var(--fw-home-crown-height);
+
+    left:
+      0;
+
+    right:
+      0;
+
+    width:
+      100%;
+
+    height:
+      40px;
+
+    margin:
+      0;
+
+    overflow:
+      hidden;
+
+    background:
+      rgba(4,15,19,.975);
+
+    backdrop-filter:
+      blur(12px);
+
+    border-top:
+      1px solid
+      rgba(94,169,184,.07);
+
+    border-bottom:
+      1px solid
+      rgba(94,181,199,.15);
+
+    box-shadow:
+      0 7px 20px
+      rgba(0,0,0,.14);
+  }
+
+  .directory ul {
+    width:
+      100%;
+
+    height:
+      40px;
+
+    display:
+      grid;
+
+    grid-template-columns:
+      repeat(6, minmax(0, 1fr));
+
+    align-items:
+      stretch;
+  }
+
+  .directory li {
+    width:
+      auto;
+
+    min-width:
+      0;
+  }
+
+  .directoryLink {
+    width:
+      100%;
+
+    min-width:
+      0;
+
+    min-height:
+      40px;
+
+    height:
+      40px;
+
+    padding:
+      0
+      2px;
+
+    font-size:
+      6.5px;
+
+    letter-spacing:
+      .015em;
+
+    overflow:
+      hidden;
+
+    white-space:
+      nowrap;
+
+    text-align:
+      center;
+
+    justify-content:
+      center;
+
+    border-right:
+      1px solid
+      rgba(99,174,188,.045);
+  }
+
+  .directory li:last-child
+  .directoryLink {
+    border-right:
+      0;
+  }
+
+  .directoryLink[data-active="true"] {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(var(--fw-electric), .035),
+        transparent
+      );
+  }
+
+  .directoryLink[data-active="true"]::before {
+    bottom:
+      0;
+
+    width:
+      19px;
+  }
+
+  /* Fixed nav leaves normal document flow.
+     Reserve exactly its height before the workspace. */
+
+  .center {
+    padding-top:
+      40px;
+  }
+
+  /* ========================================================
+     02 · MATTER CONTINUITY
+     Thin register, not another hero surface.
+     ======================================================== */
+
+  .matterContinuityRail {
+    min-height:
+      0;
+
+    margin:
+      6px
+      0
+      8px;
+
+    padding:
+      8px
+      10px;
+
+    display:
+      grid;
+
+    grid-template-columns:
+      minmax(100px, .7fr)
+      minmax(0, 1.3fr);
+
+    align-items:
+      center;
+
+    gap:
+      12px;
+
+    overflow:
+      hidden;
+  }
+
+  .matterContinuityRail h2,
+  .matterContinuityRail h3 {
+    margin:
+      0;
+
+    font-size:
+      10px;
+
+    line-height:
+      1.1;
+  }
+
+  .matterContinuityRail p {
+    margin:
+      3px
+      0
+      0;
+
+    font-size:
+      6px;
+
+    line-height:
+      1.25;
+  }
+
+  .continuitySequence {
+    display:
+      grid;
+
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+
+    align-items:
+      center;
+
+    gap:
+      4px;
+  }
+
+  .continuitySequence > * {
+    min-width:
+      0;
+
+    padding:
+      0
+      4px;
+
+    font-size:
+      7px;
+
+    line-height:
+      1;
+
+    white-space:
+      nowrap;
+  }
+
+  /* Continuity is conceptual guidance.
+     Secondary prose should not dominate mobile. */
+
+  .matterContinuityRail
+  .sectionGuide {
+    display:
+      none;
+  }
+
+  /* ========================================================
+     03 · MATTER PASSAGE
+     Make the mobile instrument materially thinner.
+     ======================================================== */
+
+  .instrumentHead {
+    grid-template-columns:
+      116px
+      minmax(0, 1fr);
+
+    gap:
+      7px;
+
+    padding:
+      2px
+      0
+      3px;
+  }
+
+  .instrumentIdentity .micro {
+    font-size:
+      4.5px;
+  }
+
+  .instrumentIdentity h2 {
+    margin-top:
+      2px;
+
+    font-size:
+      12px;
+  }
+
+  .instrumentStrip > div,
+  .instrumentStrip > div:nth-child(1),
+  .instrumentStrip > div:nth-child(2),
+  .instrumentStrip > div:nth-child(3),
+  .instrumentStrip > div:nth-child(4),
+  .instrumentStrip > div:nth-child(5) {
+    min-height:
+      27px;
+
+    padding:
+      3px;
+  }
+
+  .instrumentStrip span {
+    font-size:
+      4px;
+
+    letter-spacing:
+      .035em;
+  }
+
+  .instrumentStrip strong {
+    margin-top:
+      3px;
+
+    font-size:
+      6.5px;
+  }
+
+  /* The passage instrument should read in one glance. */
+
+  .mobilePassageNavigator {
+    margin-top:
+      3px;
+
+    padding-top:
+      0;
+  }
+
+  .mobilePassageTrack {
+    min-height:
+      246px;
+
+    padding:
+      2px
+      0;
+  }
+
+  /* Move the spine decisively left. */
+
+  .mobilePassageTrack::before {
+    left:
+      73px;
+
+    top:
+      8px;
+
+    bottom:
+      8px;
+  }
+
+  .mobilePassageLevel {
+    grid-template-columns:
+      73px
+      minmax(0, 1fr);
+
+    min-height:
+      24px;
+  }
+
+  .mobilePassageStage {
+    gap:
+      5px;
+  }
+
+  .mobilePassageStage strong {
+    font-size:
+      5.5px;
+
+    letter-spacing:
+      .025em;
+  }
+
+  .mobilePassageNode {
+    width:
+      5px;
+
+    height:
+      5px;
+
+    flex-basis:
+      5px;
+
+    transform:
+      translateX(2.5px);
+  }
+
+  /* Main Matter / quiet field gets most horizontal space. */
+
+  .mobilePassageMatterField {
+    padding:
+      2px
+      0
+      2px
+      10px;
+  }
+
+  .mobilePassageQuiet {
+    left:
+      94px;
+
+    right:
+      4px;
+
+    padding:
+      8px
+      0;
+
+    border-top-color:
+      rgba(99,176,190,.055);
+
+    border-bottom-color:
+      rgba(99,176,190,.055);
+  }
+
+  .mobilePassageQuiet span {
+    font-size:
+      5px;
+  }
+
+  .mobilePassageQuiet p {
+    margin-top:
+      4px;
+
+    font-size:
+      5.5px;
+  }
+
+  .mobilePassageReadout {
+    min-height:
+      20px;
+
+    font-size:
+      4px;
+  }
+
+  /* ========================================================
+     04 · ACTIONS
+     Choices are a selector, not three stacked content cards.
+     ======================================================== */
+
+  .actionsStage {
+    padding-top:
+      4px;
+  }
+
+  .actionsStage
+  .actionAuthorityNotice {
+    margin:
+      5px
+      0
+      7px;
+
+    padding:
+      7px
+      9px;
+  }
+
+  .actionsStage
+  .actionAuthorityNotice p {
+    font-size:
+      6px;
+
+    line-height:
+      1.35;
+  }
+
+  .actionsStage
+  .actionPostureField {
+    display:
+      grid;
+
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+
+    gap:
+      5px;
+
+    margin-top:
+      4px;
+  }
+
+  .actionsStage
+  .actionPosture {
+    min-width:
+      0;
+
+    min-height:
+      88px;
+
+    padding:
+      9px
+      8px;
+
+    display:
+      grid;
+
+    grid-template-rows:
+      auto
+      1fr
+      auto;
+
+    align-content:
+      stretch;
+
+    border-radius:
+      3px;
+  }
+
+  /* Number / domain register */
+
+  .actionsStage
+  .actionPosture
+  > div {
+    min-width:
+      0;
+  }
+
+  .actionsStage
+  .actionPosture
+  > div
+  span {
+    font-size:
+      5px;
+  }
+
+  .actionsStage
+  .actionPosture
+  > div
+  p {
+    margin:
+      0;
+
+    overflow:
+      hidden;
+
+    font-size:
+      4.5px;
+
+    letter-spacing:
+      .055em;
+
+    text-overflow:
+      ellipsis;
+
+    white-space:
+      nowrap;
+  }
+
+  /* Action title is the primary selector language. */
+
+  .actionsStage
+  .actionPosture
+  h3 {
+    align-self:
+      center;
+
+    margin:
+      8px
+      0
+      6px;
+
+    font-size:
+      9px;
+
+    line-height:
+      1.16;
+
+    letter-spacing:
+      0;
+
+    text-transform:
+      none;
+  }
+
+  /* Long explanatory copy belongs to selected workstation,
+     not every choice. */
+
+  .actionsStage
+  .actionPosture
+  > p {
+    display:
+      none;
+  }
+
+  .actionsStage
+  .actionPosture
+  > strong {
+    align-self:
+      end;
+
+    width:
+      max-content;
+
+    max-width:
+      100%;
+
+    padding:
+      3px
+      5px;
+
+    font-size:
+      4.5px;
+
+    letter-spacing:
+      .08em;
+  }
+
+  /* Current action remains unmistakable without shouting. */
+
+  .actionsStage
+  .actionPosture[data-current="true"],
+  .actionsStage
+  .actionPosture[aria-pressed="true"] {
+    border-color:
+      rgba(var(--fw-gold-light), .54);
+
+    background:
+      linear-gradient(
+        145deg,
+        rgba(var(--fw-gold-light), .040),
+        rgba(var(--fw-electric), .020)
+      );
+
+    box-shadow:
+      inset 0 1px 0
+      rgba(var(--fw-gold-light), .05);
+  }
+
+  /* Workstation begins immediately beneath selector. */
+
+  .actionsStage
+  .actionExecutionPanel,
+  .actionsStage
+  .actionUnavailablePanel {
+    margin-top:
+      8px;
+
+    border-radius:
+      3px;
+  }
+
+  .sendLoiHeading {
+    padding:
+      11px
+      12px
+      9px;
+  }
+
+  .sendLoiHeading h3 {
+    font-size:
+      15px;
+  }
+
+  .sendLoiHeading p {
+    margin-top:
+      5px;
+
+    font-size:
+      7px;
+
+    line-height:
+      1.4;
+  }
+
+  .sendLoiFields {
+    gap:
+      0;
+  }
+
+  .sendLoiFields label {
+    padding:
+      9px
+      10px;
+  }
+
+  .sendLoiFields input,
+  .sendLoiFields textarea {
+    min-height:
+      38px;
+
+    margin-top:
+      6px;
+  }
+
+  .sendLoiFields textarea {
+    min-height:
+      82px;
+  }
+
+  .sendLoiExecution {
+    padding:
+      10px
+      11px;
+  }
+
+  /* ========================================================
+     05 · LOWER HOME COMPRESSION
+     Keep presentation moving.
+     ======================================================== */
+
+  .nowField {
+    margin-top:
+      3px;
+  }
+
+  .nowCell {
+    padding:
+      8px
+      0;
+  }
+
+  .transactionPreview {
+    margin-top:
+      8px;
+
+    padding-bottom:
+      14px !important;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-PEOPLE-MOBILE-1A
+   REMOVE DUPLICATE MODULE HEADING
+   ══════════════════════════════════════════════════════════ */
+
+@media (max-width: 700px) {
+
+  /* Module header already establishes PEOPLE.
+     Section keeps its institutional register and guide only. */
+
+  .peopleField
+  .moduleIntro
+  h2 {
+    display:
+      none;
+  }
+
+  .peopleField
+  .moduleIntro {
+    padding-top:
+      4px;
+
+    padding-bottom:
+      8px;
+  }
+
+  .peopleField
+  .moduleIntro
+  .micro {
+    margin-bottom:
+      4px;
+  }
+
+  .peopleField
+  .moduleIntro
+  .moduleGuide {
+    margin-top:
+      0;
+
+    max-width:
+      none;
+
+    font-size:
+      7px;
+
+    line-height:
+      1.4;
+  }
+
+  .peopleField {
+    margin-top:
+      4px;
+  }
+
+  .peopleField
+  .personRow {
+    padding-top:
+      11px;
+
+    padding-bottom:
+      11px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-ACTIONS-VIS-1F.1
+   REGISTRY FINISH · PEOPLE CLEANUP
+   ══════════════════════════════════════════════════════════ */
+
+/* ----------------------------------------------------------
+   PEOPLE — ONE MODULE IDENTITY
+   ---------------------------------------------------------- */
+
+.moduleStage[aria-labelledby="people-title"]
+.moduleIntro {
+  padding-bottom:
+    12px;
+}
+
+.moduleStage[aria-labelledby="people-title"]
+#people-title {
+  color:
+    rgb(100 192 211);
+
+  font-size:
+    8px;
+
+  font-weight:
+    560;
+
+  letter-spacing:
+    .16em;
+}
+
+.moduleStage[aria-labelledby="people-title"]
+.peopleField {
+  margin-top:
+    10px;
+}
+
+/* ----------------------------------------------------------
+   REGISTRY SECTION REGISTER
+   ---------------------------------------------------------- */
+
+.sendLoiFields
+[data-register-section] {
+  position:
+    relative;
+
+  margin-top:
+    20px;
+}
+
+.sendLoiFields
+[data-register-section]::before {
+  position:
+    absolute;
+
+  left:
+    14px;
+
+  top:
+    -14px;
+
+  z-index:
+    3;
+
+  padding:
+    0
+    7px;
+
+  background:
+    rgb(8 25 30);
+
+  color:
+    rgb(93 181 199);
+
+  font:
+    6px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+
+  letter-spacing:
+    .14em;
+}
+
+.sendLoiFields
+[data-register-section="reference"]::before {
+  content:
+    "01 · REFERENCE";
+}
+
+.sendLoiFields
+[data-register-section="submitter"]::before {
+  content:
+    "02 · SUBMITTER";
+}
+
+.sendLoiFields
+[data-register-section="submitter-detail"]::before {
+  content:
+    "SUBMITTER IDENTITY";
+}
+
+.sendLoiFields
+[data-register-section="counterparty"]::before {
+  content:
+    "03 · COUNTERPARTY / INTRODUCTION";
+}
+
+.sendLoiFields
+[data-register-section="transaction"]::before {
+  content:
+    "04 · TRANSACTION INDICATION";
+}
+
+.sendLoiFields
+[data-register-section="evidence"]::before {
+  content:
+    "05 · EVIDENCE";
+}
+
+/* ----------------------------------------------------------
+   LABEL HIERARCHY
+   ---------------------------------------------------------- */
+
+.sendLoiFields
+[data-register-field="true"]
+> span,
+.sendLoiFields
+[data-register-section]
+> span {
+  color:
+    rgb(191 171 116);
+
+  font-size:
+    7px;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    .12em;
+}
+
+.sendLoiFields input,
+.sendLoiFields textarea {
+  border-color:
+    rgba(127,181,189,.22);
+
+  background:
+    rgba(8,27,32,.48);
+
+  color:
+    rgba(226,234,231,.88);
+}
+
+.sendLoiFields input:focus,
+.sendLoiFields textarea:focus {
+  outline:
+    none;
+
+  border-color:
+    rgba(var(--fw-electric), .55);
+
+  box-shadow:
+    inset 0 0 20px
+      rgba(var(--fw-electric), .022),
+    0 0 0 1px
+      rgba(var(--fw-electric), .055);
+}
+
+/* ----------------------------------------------------------
+   SUBMITTER CAPACITY
+   ---------------------------------------------------------- */
+
+.registerCapacityField {
+  position:
+    relative;
+
+  margin:
+    20px
+    0
+    0;
+
+  padding:
+    15px;
+
+  border:
+    1px solid
+    rgba(127,181,189,.17);
+
+  background:
+    rgba(7,23,28,.28);
+}
+
+.registerCapacityField legend {
+  padding:
+    0
+    7px;
+
+  color:
+    rgb(191 171 116);
+
+  font:
+    7px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+
+  font-weight:
+    600;
+
+  letter-spacing:
+    .12em;
+
+  text-transform:
+    uppercase;
+}
+
+.registerCapacityChoices {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap:
+    8px;
+}
+
+.registerCapacityChoices label {
+  position:
+    relative;
+
+  cursor:
+    pointer;
+}
+
+.registerCapacityChoices input {
+  position:
+    absolute;
+
+  opacity:
+    0;
+
+  pointer-events:
+    none;
+}
+
+.registerCapacityChoices
+label
+> span {
+  min-height:
+    70px;
+
+  display:
+    grid;
+
+  align-content:
+    center;
+
+  gap:
+    5px;
+
+  padding:
+    10px
+    11px;
+
+  border:
+    1px solid
+    rgba(128,179,186,.17);
+
+  background:
+    rgba(255,255,255,.007);
+}
+
+.registerCapacityChoices
+label
+> span
+strong {
+  color:
+    rgba(206,220,218,.82);
+
+  font-size:
+    9px;
+
+  font-weight:
+    550;
+}
+
+.registerCapacityChoices
+label
+> span
+small {
+  color:
+    rgba(170,190,188,.50);
+
+  font-size:
+    7px;
+
+  line-height:
+    1.35;
+}
+
+.registerCapacityChoices
+input:checked
++ span {
+  border-color:
+    rgba(var(--fw-electric), .58);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(var(--fw-electric), .055),
+      rgba(var(--fw-gold-light), .018)
+    );
+
+  box-shadow:
+    inset 0 0 0 1px
+      rgba(var(--fw-electric), .055);
+}
+
+.registerCapacityChoices
+input:checked
++ span
+strong {
+  color:
+    rgb(151 210 223);
+}
+
+.registerCapacityField
+> p {
+  margin:
+    10px
+    0
+    0;
+
+  color:
+    rgba(174,192,190,.50);
+
+  font-size:
+    7px;
+
+  line-height:
+    1.45;
+}
+
+/* ----------------------------------------------------------
+   EVIDENCE INPUT
+   ---------------------------------------------------------- */
+
+.sendLoiFields
+input[type="file"] {
+  min-height:
+    54px;
+
+  padding:
+    10px;
+
+  border-style:
+    dashed;
+
+  cursor:
+    pointer;
+}
+
+.sendLoiFields
+input[type="file"]::file-selector-button {
+  margin-right:
+    11px;
+
+  padding:
+    8px
+    11px;
+
+  border:
+    1px solid
+    rgba(var(--fw-electric), .35);
+
+  border-radius:
+    2px;
+
+  background:
+    rgba(var(--fw-electric), .035);
+
+  color:
+    rgba(202,222,220,.84);
+
+  font:
+    7px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+
+  letter-spacing:
+    .09em;
+}
+
+/* ----------------------------------------------------------
+   EXECUTION REGION
+   ---------------------------------------------------------- */
+
+.sendLoiExecution {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(7,23,28,.17),
+      rgba(255,255,255,.002)
+    );
+}
+
+.sendLoiExecution p {
+  color:
+    rgba(180,198,195,.60);
+
+  font-size:
+    8px;
+
+  line-height:
+    1.5;
+}
+
+.sendLoiExecution button {
+  border-color:
+    rgba(var(--fw-gold-light), .56);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(var(--fw-gold-light), .045),
+      rgba(var(--fw-electric), .020)
+    );
+}
+
+/* ----------------------------------------------------------
+   MOBILE
+   ---------------------------------------------------------- */
+
+@media (max-width: 700px) {
+
+  .moduleStage[aria-labelledby="people-title"]
+  .moduleIntro {
+    padding-bottom:
+      6px;
+  }
+
+  .moduleStage[aria-labelledby="people-title"]
+  .peopleField {
+    margin-top:
+      3px;
+  }
+
+  .registerCapacityField {
+    padding:
+      10px;
+  }
+
+  .registerCapacityChoices {
+    grid-template-columns:
+      1fr
+      1fr;
+  }
+
+  .registerCapacityChoices
+  label:last-child {
+    grid-column:
+      1 / -1;
+  }
+
+  .registerCapacityChoices
+  label
+  > span {
+    min-height:
+      56px;
+
+    padding:
+      8px
+      9px;
+  }
+
+  .sendLoiFields
+  [data-register-section] {
+    margin-top:
+      17px;
+  }
+
+  .sendLoiFields
+  [data-register-section]::before {
+    left:
+      8px;
+
+    top:
+      -12px;
+
+    font-size:
+      5px;
+  }
+
+  .sendLoiFields
+  [data-register-field="true"]
+  > span,
+  .sendLoiFields
+  [data-register-section]
+  > span {
+    font-size:
+      6px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-ACTIONS-VIS-1G
+   REGISTRY WORKSTATION LAYOUT RECOVERY
+   ══════════════════════════════════════════════════════════ */
+
+/* ----------------------------------------------------------
+   01 · REGISTRY PANEL
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiControl {
+  overflow:
+    hidden;
+}
+
+.actionExecutionPanel
+.sendLoiHeading {
+  grid-template-columns:
+    minmax(250px, .72fr)
+    minmax(360px, 1.28fr);
+
+  align-items:
+    start;
+
+  gap:
+    28px;
+
+  padding:
+    17px
+    18px
+    15px;
+}
+
+.actionExecutionPanel
+.sendLoiHeading
+> div {
+  min-width:
+    0;
+}
+
+.actionExecutionPanel
+.sendLoiHeading
+> div
+> span {
+  color:
+    rgba(var(--fw-gold-light), .72);
+
+  font-size:
+    6px;
+
+  letter-spacing:
+    .15em;
+}
+
+.actionExecutionPanel
+.sendLoiHeading h3 {
+  margin-top:
+    8px;
+
+  max-width:
+    390px;
+
+  color:
+    rgb(156 208 218);
+
+  font-size:
+    20px;
+
+  line-height:
+    1.08;
+}
+
+.actionExecutionPanel
+.sendLoiHeading
+> p {
+  max-width:
+    580px;
+
+  margin:
+    2px
+    0
+    0;
+
+  color:
+    rgba(188,203,200,.62);
+
+  font-size:
+    8px;
+
+  line-height:
+    1.5;
+}
+
+/* ----------------------------------------------------------
+   02 · THREE-COLUMN DESK
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiFields {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  align-items:
+    stretch;
+
+  gap:
+    0;
+
+  padding:
+    0
+    18px
+    18px;
+
+  background:
+    rgba(5,19,23,.12);
+}
+
+/* Ordinary fields remain one desk cell. */
+
+.actionExecutionPanel
+.sendLoiFields
+> label {
+  min-width:
+    0;
+
+  margin:
+    0 !important;
+
+  padding:
+    14px
+    14px
+    15px;
+
+  border-right:
+    1px solid
+    rgba(126,178,184,.11);
+
+  border-bottom:
+    1px solid
+    rgba(126,178,184,.11);
+
+  background:
+    rgba(255,255,255,.002);
+}
+
+/* Remove every third cell's right edge. */
+
+.actionExecutionPanel
+.sendLoiFields
+> label:nth-of-type(3n) {
+  border-right:
+    0;
+}
+
+/* ----------------------------------------------------------
+   03 · INTENTIONAL ROW PLACEMENT
+   ---------------------------------------------------------- */
+
+/* ROW 01
+   Reference / Submitter name / Submitter email */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="operationalReference"]
+) {
+  grid-column:
+    1;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="submitterName"]
+) {
+  grid-column:
+    2;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="submitterEmail"]
+) {
+  grid-column:
+    3;
+}
+
+/* ROW 02
+   Capacity selector owns the complete desk width. */
+
+.actionExecutionPanel
+.registerCapacityField {
+  grid-column:
+    1 / -1;
+
+  width:
+    auto;
+
+  min-width:
+    0;
+
+  margin:
+    0 !important;
+
+  padding:
+    14px
+    14px
+    15px;
+
+  border:
+    0;
+
+  border-bottom:
+    1px solid
+    rgba(126,178,184,.12);
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(var(--fw-electric), .015),
+      rgba(var(--fw-gold-light), .010),
+      rgba(var(--fw-electric), .015)
+    );
+}
+
+/* Suppress section-tag pseudo positioning here.
+   The fieldset legend itself is the register. */
+
+.actionExecutionPanel
+.registerCapacityField::before {
+  display:
+    none;
+}
+
+.actionExecutionPanel
+.registerCapacityField legend {
+  margin-left:
+    0;
+
+  padding:
+    0;
+
+  color:
+    rgb(193 173 114);
+
+  font-size:
+    7px;
+
+  font-weight:
+    620;
+
+  letter-spacing:
+    .13em;
+}
+
+/* Capacity choices become one deliberate selector rail. */
+
+.actionExecutionPanel
+.registerCapacityChoices {
+  width:
+    100%;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap:
+    0;
+
+  margin-top:
+    10px;
+
+  border:
+    1px solid
+    rgba(125,183,191,.15);
+}
+
+.actionExecutionPanel
+.registerCapacityChoices label {
+  min-width:
+    0;
+
+  margin:
+    0;
+
+  padding:
+    0;
+
+  border-right:
+    1px solid
+    rgba(125,183,191,.13);
+}
+
+.actionExecutionPanel
+.registerCapacityChoices label:last-child {
+  border-right:
+    0;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices
+label
+> span {
+  min-height:
+    66px;
+
+  display:
+    grid;
+
+  grid-template-rows:
+    auto
+    auto;
+
+  align-content:
+    center;
+
+  gap:
+    5px;
+
+  padding:
+    11px
+    14px;
+
+  border:
+    0;
+
+  background:
+    transparent;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices
+label
+> span
+strong {
+  overflow:
+    hidden;
+
+  color:
+    rgba(208,221,218,.76);
+
+  font-size:
+    8px;
+
+  font-weight:
+    590;
+
+  letter-spacing:
+    .025em;
+
+  line-height:
+    1.15;
+
+  text-overflow:
+    ellipsis;
+
+  white-space:
+    nowrap;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices
+label
+> span
+small {
+  color:
+    rgba(164,187,184,.49);
+
+  font-size:
+    6px;
+
+  line-height:
+    1.3;
+}
+
+/* Checked state is unmistakable but restrained. */
+
+.actionExecutionPanel
+.registerCapacityChoices
+input:checked
++ span {
+  background:
+    linear-gradient(
+      145deg,
+      rgba(var(--fw-electric), .075),
+      rgba(var(--fw-gold-light), .020)
+    );
+
+  box-shadow:
+    inset 0 -2px 0
+      rgba(var(--fw-electric), .52);
+}
+
+.actionExecutionPanel
+.registerCapacityChoices
+input:checked
++ span
+strong {
+  color:
+    rgb(157 215 226);
+}
+
+/* Capacity note lives beneath control, not inside options. */
+
+.actionExecutionPanel
+.registerCapacityField
+> p {
+  max-width:
+    760px;
+
+  margin:
+    9px
+    0
+    0;
+
+  color:
+    rgba(165,188,185,.46);
+
+  font-size:
+    6px;
+
+  line-height:
+    1.4;
+}
+
+/* ROW 03
+   Buyer / Commodity / Destination */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="buyerName"]
+) {
+  grid-column:
+    1;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="commodity"]
+) {
+  grid-column:
+    2;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="destination"]
+) {
+  grid-column:
+    3;
+}
+
+/* ROW 04
+   Trial / Monthly / Settlement */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="trialQuantity"]
+) {
+  grid-column:
+    1;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="monthlyQuantity"]
+) {
+  grid-column:
+    2;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="settlementMethod"]
+) {
+  grid-column:
+    3;
+}
+
+/* ROW 05
+   Originating candidate / Introduction channel */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="originatingCandidateName"]
+) {
+  grid-column:
+    1 / span 1;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="introductionChannelName"]
+) {
+  grid-column:
+    2 / -1;
+
+  border-right:
+    0;
+}
+
+/* ROW 06
+   Delivery terms */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  textarea[name="deliveryTerms"]
+) {
+  grid-column:
+    1 / -1;
+
+  border-right:
+    0;
+}
+
+/* ROW 07
+   Documentary evidence */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="evidencePdf"]
+) {
+  grid-column:
+    1 / -1;
+
+  border-right:
+    0;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(var(--fw-electric), .018),
+      rgba(var(--fw-gold-light), .010)
+    );
+}
+
+/* ----------------------------------------------------------
+   04 · SECTION PSEUDO LABELS
+   Do not let the section tags collide with cells.
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiFields
+[data-register-section] {
+  margin-top:
+    0;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+[data-register-section]::before {
+  left:
+    14px;
+
+  top:
+    4px;
+
+  padding:
+    0;
+
+  background:
+    transparent;
+
+  color:
+    rgba(var(--fw-electric), .52);
+
+  font-size:
+    5px;
+}
+
+/* Reserve a little extra top space where a section begins. */
+
+.actionExecutionPanel
+.sendLoiFields
+[data-register-section] {
+  padding-top:
+    24px;
+}
+
+/* Capacity field uses legend instead. */
+
+.actionExecutionPanel
+.registerCapacityField {
+  padding-top:
+    14px !important;
+}
+
+/* ----------------------------------------------------------
+   05 · LABELS
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiFields
+label
+> span {
+  display:
+    block;
+
+  margin:
+    0
+    0
+    8px;
+
+  color:
+    rgb(187 171 126);
+
+  font:
+    7px/1
+    ui-monospace,
+    SFMono-Regular,
+    Menlo,
+    monospace;
+
+  font-weight:
+    620;
+
+  letter-spacing:
+    .11em;
+
+  text-transform:
+    uppercase;
+}
+
+.actionExecutionPanel
+.sendLoiFields input,
+.actionExecutionPanel
+.sendLoiFields textarea {
+  width:
+    100%;
+
+  min-width:
+    0;
+
+  margin:
+    0;
+
+  border-color:
+    rgba(125,180,187,.23);
+
+  background:
+    rgba(9,29,34,.55);
+}
+
+.actionExecutionPanel
+.sendLoiFields input {
+  min-height:
+    40px;
+}
+
+.actionExecutionPanel
+.sendLoiFields textarea {
+  min-height:
+    88px;
+}
+
+/* ----------------------------------------------------------
+   06 · EVIDENCE SURFACE
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiFields
+input[type="file"] {
+  min-height:
+    58px;
+
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  padding:
+    11px
+    12px;
+
+  border:
+    1px dashed
+    rgba(var(--fw-electric), .27);
+
+  background:
+    rgba(var(--fw-electric), .010);
+}
+
+.actionExecutionPanel
+.sendLoiFields
+input[type="file"]::file-selector-button {
+  margin-right:
+    13px;
+
+  padding:
+    9px
+    13px;
+
+  border:
+    1px solid
+    rgba(var(--fw-electric), .42);
+
+  background:
+    rgba(var(--fw-electric), .035);
+
+  color:
+    rgb(177 211 216);
+}
+
+/* ----------------------------------------------------------
+   07 · EXECUTION FOOTER
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiExecution {
+  display:
+    grid;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  align-items:
+    center;
+
+  gap:
+    24px;
+
+  padding:
+    13px
+    18px;
+
+  border-top:
+    1px solid
+    rgba(129,182,188,.13);
+}
+
+.actionExecutionPanel
+.sendLoiExecution p {
+  max-width:
+    760px;
+
+  margin:
+    0;
+}
+
+.actionExecutionPanel
+.sendLoiExecution button {
+  min-width:
+    184px;
+
+  min-height:
+    40px;
+
+  margin:
+    0;
+}
+
+/* ----------------------------------------------------------
+   MOBILE
+   Single-column workflow; capacity selector stays deliberate.
+   ---------------------------------------------------------- */
+
+@media (max-width: 700px) {
+
+  .actionExecutionPanel
+  .sendLoiHeading {
+    display:
+      block;
+
+    padding:
+      12px
+      12px
+      10px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiHeading h3 {
+    font-size:
+      16px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiHeading
+  > p {
+    margin-top:
+      7px;
+
+    font-size:
+      7px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiFields {
+    display:
+      block;
+
+    padding:
+      0
+      11px
+      12px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiFields
+  > label {
+    width:
+      100%;
+
+    padding:
+      13px
+      10px;
+
+    border-right:
+      0;
+  }
+
+  .actionExecutionPanel
+  .registerCapacityField {
+    width:
+      100%;
+
+    padding:
+      12px
+      10px
+      13px !important;
+  }
+
+  /* On mobile: three concise stacked options.
+     Better touch targets than compressed horizontal tiles. */
+
+  .actionExecutionPanel
+  .registerCapacityChoices {
+    grid-template-columns:
+      1fr;
+
+    gap:
+      0;
+  }
+
+  .actionExecutionPanel
+  .registerCapacityChoices label {
+    border-right:
+      0;
+
+    border-bottom:
+      1px solid
+      rgba(125,183,191,.12);
+  }
+
+  .actionExecutionPanel
+  .registerCapacityChoices label:last-child {
+    border-bottom:
+      0;
+  }
+
+  .actionExecutionPanel
+  .registerCapacityChoices
+  label
+  > span {
+    min-height:
+      48px;
+
+    grid-template-columns:
+      118px
+      minmax(0, 1fr);
+
+    grid-template-rows:
+      auto;
+
+    align-items:
+      center;
+
+    gap:
+      10px;
+
+    padding:
+      8px
+      10px;
+  }
+
+  .actionExecutionPanel
+  .registerCapacityChoices
+  label
+  > span
+  strong {
+    font-size:
+      7px;
+  }
+
+  .actionExecutionPanel
+  .registerCapacityChoices
+  label
+  > span
+  small {
+    font-size:
+      6px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiExecution {
+    display:
+      block;
+
+    padding:
+      11px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiExecution button {
+    width:
+      100%;
+
+    min-width:
+      0;
+
+    margin-top:
+      11px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-ACTIONS-VIS-1H
+   RESTRAINT PASS
+   ══════════════════════════════════════════════════════════ */
+
+/* ----------------------------------------------------------
+   01 · ACTIONS BECOME A FLAT SELECTOR RAIL
+   Lose the card-deck feeling.
+   ---------------------------------------------------------- */
+
+.actionsStage
+.actionPostureField {
+  max-width:
+    980px;
+
+  margin:
+    12px
+    auto
+    0;
+
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap:
+    0;
+
+  border-top:
+    1px solid
+    rgba(127,178,186,.14);
+
+  border-bottom:
+    1px solid
+    rgba(127,178,186,.14);
+
+  background:
+    transparent;
+}
+
+.actionsStage
+.actionPosture {
+  min-height:
+    108px;
+
+  padding:
+    14px
+    16px;
+
+  border:
+    0 !important;
+
+  border-right:
+    1px solid
+    rgba(127,178,186,.11) !important;
+
+  border-radius:
+    0 !important;
+
+  background:
+    transparent !important;
+
+  box-shadow:
+    none !important;
+}
+
+.actionsStage
+.actionPosture:last-child {
+  border-right:
+    0 !important;
+}
+
+/* Current action is registered by line + faint field lift. */
+
+.actionsStage
+.actionPosture[data-current="true"],
+.actionsStage
+.actionPosture[aria-pressed="true"] {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(var(--fw-gold-light), .024),
+      rgba(var(--fw-electric), .012)
+    ) !important;
+
+  box-shadow:
+    inset 0 -2px 0
+      rgba(var(--fw-gold-light), .58) !important;
+}
+
+.actionsStage
+.actionPosture h3 {
+  margin-top:
+    15px;
+
+  color:
+    rgb(157 207 217);
+
+  font-size:
+    15px;
+
+  line-height:
+    1.15;
+}
+
+.actionsStage
+.actionPosture
+> p {
+  max-width:
+    290px;
+
+  margin-top:
+    10px;
+
+  color:
+    rgba(179,197,194,.57);
+
+  font-size:
+    7px;
+
+  line-height:
+    1.45;
+}
+
+/* ----------------------------------------------------------
+   02 · NARROWER WORKSTATION
+   Form should float in the field, not occupy every pixel.
+   ---------------------------------------------------------- */
+
+.actionsStage
+.actionExecutionPanel,
+.actionsStage
+.actionUnavailablePanel {
+  width:
+    min(980px, calc(100% - 40px));
+
+  max-width:
+    980px;
+
+  margin:
+    18px
+    auto
+    0;
+
+  border-radius:
+    0 !important;
+
+  box-shadow:
+    none !important;
+}
+
+.actionsStage
+.actionExecutionPanel
+.sendLoiControl {
+  border-radius:
+    0 !important;
+}
+
+/* Header becomes calmer and more compact. */
+
+.actionExecutionPanel
+.sendLoiHeading {
+  padding:
+    16px
+    18px
+    14px;
+
+  gap:
+    24px;
+
+  border-bottom:
+    1px solid
+    rgba(128,179,186,.11);
+}
+
+.actionExecutionPanel
+.sendLoiHeading
+> div
+> span {
+  font-size:
+    7px;
+
+  letter-spacing:
+    .14em;
+}
+
+.actionExecutionPanel
+.sendLoiHeading h3 {
+  font-size:
+    18px;
+}
+
+.actionExecutionPanel
+.sendLoiHeading
+> p {
+  max-width:
+    500px;
+
+  font-size:
+    7px;
+
+  line-height:
+    1.45;
+}
+
+/* ----------------------------------------------------------
+   03 · CAPACITY SELECTOR BECOMES QUIET
+   Same radio values; dramatically less interface.
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.registerCapacityField {
+  padding:
+    12px
+    14px
+    13px !important;
+
+  background:
+    transparent;
+
+  border-bottom:
+    1px solid
+    rgba(126,178,184,.10);
+}
+
+.actionExecutionPanel
+.registerCapacityField legend {
+  color:
+    rgb(200 177 111);
+
+  font-size:
+    8px;
+
+  letter-spacing:
+    .12em;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices {
+  margin-top:
+    8px;
+
+  border:
+    0;
+
+  gap:
+    18px;
+
+  grid-template-columns:
+    repeat(3, auto);
+
+  justify-content:
+    start;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices label {
+  border:
+    0;
+
+  width:
+    auto;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices
+label
+> span {
+  min-height:
+    0;
+
+  display:
+    flex;
+
+  align-items:
+    baseline;
+
+  gap:
+    7px;
+
+  padding:
+    7px
+    9px;
+
+  border:
+    0;
+
+  background:
+    transparent;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices
+label
+> span::before {
+  content:
+    "○";
+
+  flex:
+    0
+    0
+    auto;
+
+  color:
+    rgba(var(--fw-electric), .48);
+
+  font-size:
+    9px;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices
+input:checked
++ span {
+  background:
+    transparent;
+
+  box-shadow:
+    none;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices
+input:checked
++ span::before {
+  content:
+    "●";
+
+  color:
+    rgb(100 196 214);
+}
+
+.actionExecutionPanel
+.registerCapacityChoices
+label
+> span
+strong {
+  color:
+    rgba(207,221,218,.78);
+
+  font-size:
+    8px;
+
+  line-height:
+    1;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices
+label
+> span
+small {
+  color:
+    rgba(164,185,182,.42);
+
+  font-size:
+    6px;
+
+  line-height:
+    1;
+}
+
+.actionExecutionPanel
+.registerCapacityField
+> p {
+  margin-top:
+    6px;
+
+  font-size:
+    5.5px;
+
+  opacity:
+    .72;
+}
+
+/* ----------------------------------------------------------
+   04 · GOLD LABELS GET ACTUAL PRESENCE
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiFields
+label
+> span,
+.actionExecutionPanel
+.registerCapacityField legend {
+  color:
+    rgb(203 180 115);
+
+  font-size:
+    8px;
+
+  font-weight:
+    640;
+
+  letter-spacing:
+    .11em;
+
+  text-shadow:
+    0 0 10px
+    rgba(var(--fw-gold-light), .035);
+}
+
+.actionExecutionPanel
+.sendLoiFields
+[data-register-section]::before {
+  color:
+    rgba(var(--fw-electric), .60);
+
+  font-size:
+    6px;
+
+  letter-spacing:
+    .13em;
+}
+
+/* ----------------------------------------------------------
+   05 · INPUTS
+   Slightly less bulky.
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiFields
+> label {
+  padding:
+    12px
+    12px
+    13px;
+}
+
+.actionExecutionPanel
+.sendLoiFields input {
+  min-height:
+    36px;
+}
+
+.actionExecutionPanel
+.sendLoiFields textarea {
+  min-height:
+    76px;
+}
+
+/* Evidence surface also becomes restrained. */
+
+.actionExecutionPanel
+.sendLoiFields
+input[type="file"] {
+  min-height:
+    48px;
+
+  padding:
+    8px
+    10px;
+}
+
+/* ----------------------------------------------------------
+   06 · FOOTER
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiExecution {
+  padding:
+    11px
+    14px;
+
+  gap:
+    18px;
+}
+
+.actionExecutionPanel
+.sendLoiExecution p {
+  font-size:
+    6.5px;
+
+  line-height:
+    1.45;
+}
+
+.actionExecutionPanel
+.sendLoiExecution button {
+  min-width:
+    168px;
+
+  min-height:
+    36px;
+}
+
+/* ----------------------------------------------------------
+   MOBILE
+   ---------------------------------------------------------- */
+
+@media (max-width: 700px) {
+
+  .actionsStage
+  .actionPostureField {
+    width:
+      100%;
+
+    margin-top:
+      8px;
+
+    grid-template-columns:
+      repeat(3, minmax(0, 1fr));
+  }
+
+  .actionsStage
+  .actionPosture {
+    min-height:
+      72px;
+
+    padding:
+      9px
+      7px;
+  }
+
+  .actionsStage
+  .actionPosture h3 {
+    margin-top:
+      8px;
+
+    font-size:
+      8px;
+  }
+
+  .actionsStage
+  .actionPosture
+  > p {
+    display:
+      none;
+  }
+
+  .actionsStage
+  .actionExecutionPanel,
+  .actionsStage
+  .actionUnavailablePanel {
+    width:
+      100%;
+
+    max-width:
+      none;
+
+    margin-top:
+      10px;
+  }
+
+  .actionExecutionPanel
+  .registerCapacityChoices {
+    display:
+      flex;
+
+    flex-wrap:
+      wrap;
+
+    gap:
+      4px
+      10px;
+  }
+
+  .actionExecutionPanel
+  .registerCapacityChoices
+  label
+  > span {
+    padding:
+      6px
+      4px;
+  }
+
+  .actionExecutionPanel
+  .registerCapacityChoices
+  label
+  > span
+  small {
+    display:
+      none;
+  }
+
+  .actionExecutionPanel
+  .sendLoiFields
+  label
+  > span {
+    font-size:
+      7px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-ACTIONS-VIS-1I
+   FINAL REGISTRY SIMPLIFICATION
+   TWO-COLUMN WORKSTATION · READABLE OPERATOR LANGUAGE
+   ══════════════════════════════════════════════════════════ */
+
+/* ----------------------------------------------------------
+   01 · ACTION SELECTOR
+   Choice, not explanation.
+   ---------------------------------------------------------- */
+
+.actionsStage
+.actionPostureField {
+  max-width:
+    860px;
+
+  margin-top:
+    10px;
+}
+
+.actionsStage
+.actionPosture {
+  min-height:
+    78px;
+
+  padding:
+    12px
+    14px;
+}
+
+.actionsStage
+.actionPosture
+> p {
+  display:
+    none;
+}
+
+.actionsStage
+.actionPosture h3 {
+  margin:
+    11px
+    0
+    8px;
+
+  font-size:
+    14px;
+
+  line-height:
+    1.15;
+}
+
+.actionsStage
+.actionPosture
+> strong {
+  font-size:
+    7px;
+
+  letter-spacing:
+    .08em;
+}
+
+/* Small category language remains secondary,
+   but never unreadably tiny. */
+
+.actionsStage
+.actionPosture
+> div
+p {
+  font-size:
+    7px;
+
+  letter-spacing:
+    .08em;
+}
+
+/* ----------------------------------------------------------
+   02 · NARROWER REGISTRY WORKSTATION
+   ---------------------------------------------------------- */
+
+.actionsStage
+.actionExecutionPanel,
+.actionsStage
+.actionUnavailablePanel {
+  width:
+    min(860px, calc(100% - 48px));
+
+  max-width:
+    860px;
+
+  margin-top:
+    14px;
+}
+
+/* ----------------------------------------------------------
+   03 · REGISTRY HEADER
+   One identity + one short boundary statement.
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiHeading {
+  display:
+    grid;
+
+  grid-template-columns:
+    minmax(0, 1fr);
+
+  gap:
+    7px;
+
+  padding:
+    15px
+    16px
+    13px;
+}
+
+.actionExecutionPanel
+.sendLoiHeading
+> div
+> span {
+  font-size:
+    8px;
+
+  letter-spacing:
+    .13em;
+}
+
+.actionExecutionPanel
+.sendLoiHeading h3 {
+  max-width:
+    none;
+
+  margin-top:
+    6px;
+
+  font-size:
+    19px;
+
+  line-height:
+    1.08;
+}
+
+.actionExecutionPanel
+.sendLoiHeading
+> p {
+  max-width:
+    660px;
+
+  margin:
+    0;
+
+  font-size:
+    9px;
+
+  line-height:
+    1.45;
+
+  color:
+    rgba(190,205,202,.68);
+}
+
+/* ----------------------------------------------------------
+   04 · TWO-COLUMN FORM DESK
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiFields {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  padding:
+    0
+    16px
+    16px;
+}
+
+/* Reset prior 3-column placements. */
+
+.actionExecutionPanel
+.sendLoiFields
+> label {
+  grid-column:
+    auto !important;
+
+  border-right:
+    1px solid
+    rgba(126,178,184,.10);
+}
+
+.actionExecutionPanel
+.sendLoiFields
+> label:nth-of-type(2n) {
+  border-right:
+    0;
+}
+
+/* ----------------------------------------------------------
+   05 · REFERENCE
+   Operational reference gets full width.
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="operationalReference"]
+) {
+  grid-column:
+    1 / -1 !important;
+
+  border-right:
+    0;
+}
+
+/* ----------------------------------------------------------
+   06 · SUBMITTER
+   Name + Email together.
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="submitterName"]
+) {
+  grid-column:
+    1 !important;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="submitterEmail"]
+) {
+  grid-column:
+    2 !important;
+
+  border-right:
+    0;
+}
+
+/* ----------------------------------------------------------
+   07 · CAPACITY
+   One readable inline operator choice row.
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.registerCapacityField {
+  grid-column:
+    1 / -1;
+
+  padding:
+    12px
+    14px
+    13px !important;
+}
+
+.actionExecutionPanel
+.registerCapacityField legend {
+  font-size:
+    8px;
+
+  letter-spacing:
+    .11em;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices {
+  display:
+    flex;
+
+  align-items:
+    center;
+
+  flex-wrap:
+    wrap;
+
+  gap:
+    8px
+    22px;
+
+  margin-top:
+    8px;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices label {
+  flex:
+    0
+    0
+    auto;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices
+label
+> span {
+  display:
+    inline-flex;
+
+  align-items:
+    center;
+
+  gap:
+    7px;
+
+  min-height:
+    30px;
+
+  padding:
+    5px
+    3px;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices
+label
+> span::before {
+  font-size:
+    11px;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices
+label
+> span
+strong {
+  font-size:
+    8px;
+
+  font-weight:
+    600;
+
+  line-height:
+    1.1;
+
+  white-space:
+    nowrap;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices
+label
+> span
+small {
+  display:
+    none;
+}
+
+/* Authority caveat remains readable but subordinate. */
+
+.actionExecutionPanel
+.registerCapacityField
+> p {
+  max-width:
+    700px;
+
+  margin-top:
+    6px;
+
+  font-size:
+    7px;
+
+  line-height:
+    1.4;
+
+  color:
+    rgba(171,191,188,.52);
+}
+
+/* ----------------------------------------------------------
+   08 · COUNTERPARTY
+   Buyer / Commodity
+   Destination / Introduction Channel
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="buyerName"]
+) {
+  grid-column:
+    1 !important;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="commodity"]
+) {
+  grid-column:
+    2 !important;
+
+  border-right:
+    0;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="destination"]
+) {
+  grid-column:
+    1 !important;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="introductionChannelName"]
+) {
+  grid-column:
+    2 !important;
+
+  border-right:
+    0;
+}
+
+/* ----------------------------------------------------------
+   09 · TRANSACTION
+   Trial / Monthly
+   Settlement / Originating Candidate
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="trialQuantity"]
+) {
+  grid-column:
+    1 !important;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="monthlyQuantity"]
+) {
+  grid-column:
+    2 !important;
+
+  border-right:
+    0;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="settlementMethod"]
+) {
+  grid-column:
+    1 !important;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="originatingCandidateName"]
+) {
+  grid-column:
+    2 !important;
+
+  border-right:
+    0;
+}
+
+/* ----------------------------------------------------------
+   10 · TERMS / EVIDENCE
+   Full-width closing surfaces.
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  textarea[name="deliveryTerms"]
+),
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="evidencePdf"]
+) {
+  grid-column:
+    1 / -1 !important;
+
+  border-right:
+    0;
+}
+
+/* ----------------------------------------------------------
+   11 · IMPORTANT LANGUAGE READABILITY
+   No critical 5–6px operator language.
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiFields
+label
+> span {
+  font-size:
+    8px;
+
+  font-weight:
+    640;
+
+  letter-spacing:
+    .10em;
+
+  line-height:
+    1.2;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+[data-register-section]::before {
+  font-size:
+    7px;
+
+  font-weight:
+    560;
+
+  letter-spacing:
+    .10em;
+}
+
+.actionExecutionPanel
+.sendLoiFields input,
+.actionExecutionPanel
+.sendLoiFields textarea {
+  font-size:
+    10px;
+}
+
+.actionExecutionPanel
+.sendLoiFields input::placeholder,
+.actionExecutionPanel
+.sendLoiFields textarea::placeholder {
+  font-size:
+    9px;
+}
+
+/* ----------------------------------------------------------
+   12 · INPUTS QUIETER
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiFields
+> label {
+  padding:
+    12px
+    12px
+    13px;
+}
+
+.actionExecutionPanel
+.sendLoiFields input {
+  min-height:
+    36px;
+
+  border-color:
+    rgba(126,178,184,.18);
+}
+
+.actionExecutionPanel
+.sendLoiFields textarea {
+  min-height:
+    74px;
+
+  border-color:
+    rgba(126,178,184,.18);
+}
+
+/* ----------------------------------------------------------
+   13 · SECTION REGISTER EMPHASIS
+   Stronger gold belongs to structure, not every word.
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiFields
+[data-register-section]::before,
+.actionExecutionPanel
+.registerCapacityField legend {
+  color:
+    rgb(205 180 109);
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label
+> span {
+  color:
+    rgba(206,191,148,.78);
+}
+
+/* ----------------------------------------------------------
+   14 · EXECUTION FOOTER
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiExecution {
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+
+  padding:
+    11px
+    14px;
+}
+
+.actionExecutionPanel
+.sendLoiExecution p {
+  font-size:
+    8px;
+
+  line-height:
+    1.45;
+}
+
+.actionExecutionPanel
+.sendLoiExecution button {
+  min-width:
+    164px;
+
+  min-height:
+    36px;
+
+  font-size:
+    8px;
+}
+
+/* ----------------------------------------------------------
+   MOBILE
+   Readable single-column desk.
+   ---------------------------------------------------------- */
+
+@media (max-width: 700px) {
+
+  .actionsStage
+  .actionPosture {
+    min-height:
+      66px;
+  }
+
+  .actionsStage
+  .actionPosture h3 {
+    font-size:
+      9px;
+  }
+
+  .actionsStage
+  .actionPosture
+  > div
+  p,
+  .actionsStage
+  .actionPosture
+  > strong {
+    font-size:
+      6.5px;
+  }
+
+  .actionsStage
+  .actionExecutionPanel,
+  .actionsStage
+  .actionUnavailablePanel {
+    width:
+      100%;
+
+    max-width:
+      none;
+  }
+
+  .actionExecutionPanel
+  .sendLoiHeading
+  > div
+  > span {
+    font-size:
+      7px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiHeading h3 {
+    font-size:
+      16px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiHeading
+  > p {
+    font-size:
+      8px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiFields {
+    display:
+      block;
+
+    padding:
+      0
+      10px
+      12px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiFields
+  > label {
+    width:
+      100%;
+
+    border-right:
+      0;
+
+    padding:
+      11px
+      9px
+      12px;
+  }
+
+  .actionExecutionPanel
+  .registerCapacityField {
+    width:
+      100%;
+
+    padding:
+      11px
+      9px
+      12px !important;
+  }
+
+  .actionExecutionPanel
+  .registerCapacityChoices {
+    gap:
+      5px
+      14px;
+  }
+
+  .actionExecutionPanel
+  .registerCapacityChoices
+  label
+  > span
+  strong {
+    font-size:
+      7.5px;
+  }
+
+  .actionExecutionPanel
+  .registerCapacityField
+  > p {
+    font-size:
+      7px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiFields
+  label
+  > span {
+    font-size:
+      7.5px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiFields
+  [data-register-section]::before {
+    font-size:
+      6.5px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiExecution {
+    display:
+      block;
+  }
+
+  .actionExecutionPanel
+  .sendLoiExecution p {
+    font-size:
+      7.5px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiExecution button {
+    width:
+      100%;
+
+    margin-top:
+      10px;
+
+    font-size:
+      8px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════
+   FW-ACTIONS-VIS-1J
+   OPERATOR GUIDANCE · EXPLICIT REGISTRY ROWS
+   ══════════════════════════════════════════════════════════ */
+
+/* ----------------------------------------------------------
+   READABLE FIELD HELP
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.registerFieldHelp {
+  display:
+    block;
+
+  margin-top:
+    7px;
+
+  color:
+    rgba(178,198,195,.60);
+
+  font-size:
+    8px;
+
+  line-height:
+    1.4;
+
+  letter-spacing:
+    0;
+
+  text-transform:
+    none;
+}
+
+.actionExecutionPanel
+.registerFieldHelp
+span {
+  display:
+    block;
+
+  margin-top:
+    3px;
+
+  color:
+    rgba(116,190,204,.68);
+
+  font-size:
+    8px;
+
+  line-height:
+    1.35;
+}
+
+/* ----------------------------------------------------------
+   EXPLICIT ROW CONTRACT
+   Prevent CSS Grid auto-placement from creating gaps.
+   ---------------------------------------------------------- */
+
+/* 01 · Reference */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="operationalReference"]
+) {
+  grid-column:
+    1 / -1 !important;
+
+  grid-row:
+    1;
+}
+
+/* 02 · Submitter identity */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="submitterName"]
+) {
+  grid-column:
+    1 !important;
+
+  grid-row:
+    2;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="submitterEmail"]
+) {
+  grid-column:
+    2 !important;
+
+  grid-row:
+    2;
+}
+
+/* 03 · Submitter capacity */
+
+.actionExecutionPanel
+.registerCapacityField {
+  grid-column:
+    1 / -1;
+
+  grid-row:
+    3;
+}
+
+/* 04 · Counterparty */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="buyerName"]
+) {
+  grid-column:
+    1 !important;
+
+  grid-row:
+    4;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="commodity"]
+) {
+  grid-column:
+    2 !important;
+
+  grid-row:
+    4;
+}
+
+/* 05 · Quantity */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="trialQuantity"]
+) {
+  grid-column:
+    1 !important;
+
+  grid-row:
+    5;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="monthlyQuantity"]
+) {
+  grid-column:
+    2 !important;
+
+  grid-row:
+    5;
+}
+
+/* 06 · Destination / origin */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="destination"]
+) {
+  grid-column:
+    1 !important;
+
+  grid-row:
+    6;
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="originatingCandidateName"]
+) {
+  grid-column:
+    2 !important;
+
+  grid-row:
+    6;
+}
+
+/* 07 · Introduction / settlement
+   This explicitly removes the visible gap. */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="introductionChannelName"]
+) {
+  grid-column:
+    1 !important;
+
+  grid-row:
+    7;
+
+  border-right:
+    1px solid
+    rgba(126,178,184,.10);
+}
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="settlementMethod"]
+) {
+  grid-column:
+    2 !important;
+
+  grid-row:
+    7;
+
+  border-right:
+    0;
+}
+
+/* 08 · Delivery */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  textarea[name="deliveryTerms"]
+) {
+  grid-column:
+    1 / -1 !important;
+
+  grid-row:
+    8;
+}
+
+/* 09 · Evidence */
+
+.actionExecutionPanel
+.sendLoiFields
+label:has(
+  input[name="evidencePdf"]
+) {
+  grid-column:
+    1 / -1 !important;
+
+  grid-row:
+    9;
+}
+
+/* ----------------------------------------------------------
+   IMPORTANT LABELS
+   Maintain adult institutional readability.
+   ---------------------------------------------------------- */
+
+.actionExecutionPanel
+.sendLoiFields
+label
+> span {
+  font-size:
+    8.5px;
+
+  line-height:
+    1.2;
+}
+
+.actionExecutionPanel
+.registerCapacityField legend {
+  font-size:
+    8.5px;
+}
+
+.actionExecutionPanel
+.registerCapacityChoices
+label
+> span
+strong {
+  font-size:
+    8.5px;
+}
+
+.actionExecutionPanel
+.registerCapacityField
+> p {
+  max-width:
+    720px;
+
+  font-size:
+    8px;
+
+  line-height:
+    1.45;
+}
+
+/* Slightly more breathing room now that helpers exist. */
+
+.actionExecutionPanel
+.sendLoiFields
+> label {
+  padding:
+    13px
+    12px
+    14px;
+}
+
+/* ----------------------------------------------------------
+   MOBILE
+   Explicit rows are irrelevant once block layout activates,
+   but guidance must remain readable.
+   ---------------------------------------------------------- */
+
+@media (max-width: 700px) {
+
+  .actionExecutionPanel
+  .sendLoiFields
+  > label {
+    grid-row:
+      auto !important;
+
+    grid-column:
+      auto !important;
+  }
+
+  .actionExecutionPanel
+  .registerCapacityField {
+    grid-row:
+      auto;
+
+    grid-column:
+      auto;
+  }
+
+  .actionExecutionPanel
+  .registerFieldHelp,
+  .actionExecutionPanel
+  .registerFieldHelp
+  span {
+    font-size:
+      7.5px;
+  }
+
+  .actionExecutionPanel
+  .sendLoiFields
+  label
+  > span,
+  .actionExecutionPanel
+  .registerCapacityField legend {
+    font-size:
+      8px;
+  }
+
+  .actionExecutionPanel
+  .registerCapacityField
+  > p {
+    font-size:
+      7.5px;
+  }
+}

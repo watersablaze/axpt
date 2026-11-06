@@ -8,7 +8,12 @@ export async function resolveInstitutionalVisitorSignInWithClient(params: {
   email: string;
   roles?: string[];
   permissions?: string[];
+  frenchWardGoverningStanding?: {
+    status: string;
+    endedAt?: Date | null;
+  } | null;
   representativeProgramParticipants?: Array<{ standing: string }>;
+  now?: Date;
 }) {
   const existing = resolveInstitutionalSignInEligibility(params);
   if (existing.eligible) return existing;
@@ -16,7 +21,7 @@ export async function resolveInstitutionalVisitorSignInWithClient(params: {
   const email = params.email.trim().toLowerCase();
   if (!params.userId || !email) return existing;
 
-  const now = new Date();
+  const now = params.now ?? new Date();
   const candidates = await params.client.institutionalAccessGrant.findMany({
     where: {
       recipientUserId: params.userId,
