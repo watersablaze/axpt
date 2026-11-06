@@ -347,6 +347,17 @@ export async function POST(
     );
   }
 
+  if (!invitationId) {
+    return json(
+      {
+        ok: false,
+        error:
+          "FW_LOI_ISSUANCE_UNCONFIRMED",
+      },
+      503,
+    );
+  }
+
   try {
     const delivery =
       await deliverFrenchWardLoiInvitationWithClient({
