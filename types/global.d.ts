@@ -20,6 +20,11 @@ declare module '@prisma/client' {
   }
 
   interface PrismaClient {
+    frenchWardGoverningOfficer:
+      import("@axpt/source-authority-join")
+        .PrismaClient["frenchWardGoverningOfficer"];
+    transactionIntake: import("@axpt/source-authority-join").PrismaClient["transactionIntake"];
+    institutionalMatter: import("@axpt/source-authority-join").PrismaClient["institutionalMatter"];
     [prop: string]: any;
     liveStream: any;
     nommoState: any;

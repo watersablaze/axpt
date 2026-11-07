@@ -464,7 +464,7 @@ export async function loadFrenchWardHomeWithClient(params: {
   const loadedDurableIntakeMatters =
     await Promise.all(
       durableIntakeMatterRecords.map(
-        async (matter) => {
+        async (matter: { reference: string }) => {
           const loaded =
             await loadFrenchWardMatterWithClient({
               client,

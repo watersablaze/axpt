@@ -324,7 +324,7 @@ export async function deliverFrenchWardLoiInvitationWithClient(
 
   const claim =
     await input.client.$transaction(
-      async (tx) => {
+      async (tx: import("@axpt/source-authority-join").Prisma.TransactionClient) => {
         await tx.$queryRaw`
           SELECT id
           FROM "FrenchWardLoiInvitation"
@@ -744,7 +744,7 @@ export async function deliverFrenchWardLoiInvitationWithClient(
   }
 
   await input.client.$transaction(
-    async (tx) => {
+    async (tx: import("@axpt/source-authority-join").Prisma.TransactionClient) => {
       const updated =
         await tx.frenchWardLoiInvitation.updateMany({
           where: {

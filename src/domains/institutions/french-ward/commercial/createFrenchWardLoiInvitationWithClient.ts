@@ -141,7 +141,7 @@ export async function createFrenchWardLoiInvitationWithClient(
     );
 
   return input.client.$transaction(
-    async (tx) => {
+    async (tx: import("@axpt/source-authority-join").Prisma.TransactionClient) => {
       await tx.$queryRaw`
         SELECT pg_advisory_xact_lock(
           hashtextextended(
