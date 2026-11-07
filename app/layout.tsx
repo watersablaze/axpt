@@ -39,12 +39,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <OrganismStateProvider>
           <LayerProvider>
-            <div
-                id="app-content"
-                style={{
-                  visibility: 'hidden',
-                }}
-              >
+            <div id="app-content">
                 <DocumentReadyGate />
                 {children}
               </div>

@@ -1,4 +1,3 @@
-import { resend } from "@/infrastructure/email/client";
 import {
   renderAxptAccessCodeEmail,
 } from "@/infrastructure/email/institutionalEmail";
@@ -39,6 +38,9 @@ export async function sendLoginPin({
       securityNote:
         "This code confirms only this authentication event. It does not change your account, role, standing, appointment, or authority. If you did not request access, no action is required.",
     });
+
+  const { resend } =
+    await import("@/infrastructure/email/client");
 
   const response =
     await resend.emails.send({
