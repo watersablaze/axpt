@@ -1596,3 +1596,19 @@
   transform:
     translateX(3px);
 }
+
+
+/* BCM-AXPT-REL-7F.2D.2 · Authenticated entrance */
+.enterWorkspace {
+  background: transparent;
+  border-left: 0;
+  border-right: 0;
+  cursor: pointer;
+  text-align: left;
+}
+
+.enterWorkspace:disabled,
+.sceneControls .nextButton:disabled {
+  opacity: 0.65;
+  cursor: wait;
+}

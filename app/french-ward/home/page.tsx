@@ -67,6 +67,21 @@ export default async function FrenchWardHomePage({
     redirect("/french-ward");
   }
 
+  const completed =
+    await prisma.frenchWardOrientationCompletion.findUnique({
+      where: {
+        userId_orientationVersion: {
+          userId: principal.userId,
+          orientationVersion: "FW-ORIENTATION-V1",
+        },
+      },
+      select: { id: true },
+    });
+
+  if (!completed) {
+    redirect("/french-ward/orientation");
+  }
+
   const [
     sendLoiAuthority,
     registerBuyerTransactionAuthority,

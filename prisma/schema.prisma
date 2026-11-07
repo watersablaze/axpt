@@ -71,6 +71,7 @@ model User {
   transactions          Transaction[]
   userRoles             UserRole[]
   frenchWardGoverningOfficer FrenchWardGoverningOfficer?
+  frenchWardOrientationCompletions FrenchWardOrientationCompletion[]
 
   createdCommunicationConversations    CommunicationConversation[]    @relation("CommunicationConversationCreator")
   communicationMemberships             CommunicationMember[]          @relation("CommunicationMembership")
@@ -4188,6 +4189,18 @@ model GsamInstitutionalParticipation {
 /// This record identifies a person recognized by French-Ward in a governing
 /// officer capacity. It does not itself grant AXPT permissions, commercial
 /// authority, instrument authority, or resource access.
+model FrenchWardOrientationCompletion {
+  id                 String   @id @default(cuid())
+  userId             String
+  orientationVersion String
+  completedAt        DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, orientationVersion])
+  @@index([orientationVersion, completedAt])
+}
+
 model FrenchWardGoverningOfficer {
   id                  String   @id @default(cuid())
   userId              String   @unique

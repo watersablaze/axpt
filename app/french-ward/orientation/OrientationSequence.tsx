@@ -39,6 +39,37 @@ export function OrientationSequence({
   const [scene, setScene] =
     useState(0);
 
+  const [entering, setEntering] = useState(false);
+  const [entryError, setEntryError] = useState(false);
+
+  async function completeAndEnter() {
+    if (entering) return;
+
+    setEntering(true);
+    setEntryError(false);
+
+    try {
+      const response = await fetch(
+        "/api/french-ward/orientation/complete",
+        {
+          method: "POST",
+          credentials: "same-origin",
+          cache: "no-store",
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error("ORIENTATION_COMPLETION_FAILED");
+      }
+
+      window.location.assign("/french-ward/home");
+    } catch {
+      setEntryError(true);
+      setEntering(false);
+    }
+  }
+
+
   const [direction, setDirection] =
     useState<
       "forward" | "backward"
@@ -376,7 +407,11 @@ export function OrientationSequence({
         ) : null}
 
         {scene === 3 ? (
-          <EntryScene />
+          <EntryScene
+            onEnter={completeAndEnter}
+            entering={entering}
+            entryError={entryError}
+          />
         ) : null}
       </div>
 
@@ -415,14 +450,19 @@ export function OrientationSequence({
             Continue →
           </button>
         ) : (
-          <a
-            href="/french-ward/home"
-            className={
-              styles.nextButton
-            }
+          <button
+            type="button"
+            onClick={completeAndEnter}
+            disabled={entering}
+            className={styles.nextButton}
+            aria-live="polite"
           >
-            Enter French-Ward →
-          </a>
+            {entering
+              ? "Entering…"
+              : entryError
+                ? "Entrance unavailable · Retry"
+                : "Enter French-Ward →"}
+          </button>
         )}
       </footer>
     </main>
@@ -862,7 +902,15 @@ function MatterBlock({
   );
 }
 
-function EntryScene() {
+function EntryScene({
+  onEnter,
+  entering,
+  entryError,
+}: {
+  onEnter: () => void;
+  entering: boolean;
+  entryError: boolean;
+}) {
   return (
     <section
       className={`${styles.scene} ${styles.entryScene}`}
@@ -924,25 +972,27 @@ function EntryScene() {
           <span />
         </div>
 
-        <a
-          href="/french-ward/home"
-          className={
-            styles.enterWorkspace
-          }
+        <button
+          type="button"
+          onClick={onEnter}
+          disabled={entering}
+          className={styles.enterWorkspace}
+          aria-live="polite"
         >
           <span>
-            Enter French-Ward
+            {entering
+              ? "Entering…"
+              : entryError
+                ? "Entrance unavailable · Retry"
+                : "Enter French-Ward"}
           </span>
-
           <span
-            className={
-              styles.entryArrow
-            }
+            className={styles.entryArrow}
             aria-hidden="true"
           >
             →
           </span>
-        </a>
+        </button>
 
         <div
           className={
