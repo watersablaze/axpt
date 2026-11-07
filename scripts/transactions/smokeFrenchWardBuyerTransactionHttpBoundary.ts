@@ -309,7 +309,7 @@ function harness(
       prisma,
 
       resolveFrenchWardActionAuthorityWithClient:
-        (async input => {
+        (async (input: any) => {
           calls.authority +=
             1;
 
@@ -376,7 +376,7 @@ function harness(
         }) as any,
 
       registerFrenchWardBuyerTransactionWithCustody:
-        (async input => {
+        (async (input: any) => {
           calls.wrapper +=
             1;
 
