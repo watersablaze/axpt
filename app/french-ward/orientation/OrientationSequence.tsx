@@ -323,7 +323,7 @@ export function OrientationSequence({
       <header
         className={styles.brandRail}
       >
-        <span>French-Ward</span>
+        <span><span className={styles.institutionName}>FRENCH-WARD</span></span>
         <span>
           Private Orientation
         </span>
@@ -461,7 +461,7 @@ export function OrientationSequence({
               ? "Entering…"
               : entryError
                 ? "Entrance unavailable · Retry"
-                : "Enter French-Ward →"}
+                : <>Enter <span className={styles.institutionName}>FRENCH-WARD</span> →</>}
           </button>
         )}
       </footer>
@@ -495,14 +495,14 @@ function ArrivalScene({
         <h1>
           Welcome to
           <br />
-          French-Ward.
+          <span className={styles.institutionName}>FRENCH-WARD</span>.
         </h1>
 
         <p
           className={styles.lead}
         >
           You are entering the
-          French-Ward workspace
+          <span className={styles.institutionName}>FRENCH-WARD</span> workspace
           inside AXPT.
         </p>
 
@@ -633,7 +633,7 @@ function ContinuityScene() {
         <p
           className={styles.lead}
         >
-          French-Ward work is
+          <span className={styles.institutionName}>FRENCH-WARD</span> work is
           held as connected
           institutional context.
         </p>
@@ -759,7 +759,7 @@ function MatterScene() {
         >
           <div>
             <p>
-              French-Ward matter
+              <span className={styles.institutionName}>FRENCH-WARD</span> matter
             </p>
 
             <h2>
@@ -847,7 +847,7 @@ function MatterScene() {
           >
             <p>
               Determine the next
-              French-Ward
+              <span className={styles.institutionName}>FRENCH-WARD</span>
               institutional
               response to the
               requested mandate
@@ -939,7 +939,7 @@ function EntryScene({
             styles.entryLead
           }
         >
-          French-Ward is already
+          <span className={styles.institutionName}>FRENCH-WARD</span> is already
           organized around the
           people, matters,
           records and
@@ -984,7 +984,7 @@ function EntryScene({
               ? "Entering…"
               : entryError
                 ? "Entrance unavailable · Retry"
-                : "Enter French-Ward"}
+                : <>Enter <span className={styles.institutionName}>FRENCH-WARD</span></>}
           </span>
           <span
             className={styles.entryArrow}

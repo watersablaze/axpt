@@ -1612,3 +1612,331 @@
   opacity: 0.65;
   cursor: wait;
 }
+
+
+/* BCM-AXPT-REL-6C.4
+   Orientation presentation · institutional typography
+   and mobile content-flow acceptance.
+*/
+
+.institutionName {
+  display: inline-block;
+  white-space: nowrap;
+  font-size: 0.82em;
+  font-weight: 650;
+  letter-spacing: 0.045em;
+  line-height: 1.15;
+  vertical-align: baseline;
+}
+
+/* Tablet and mobile: the scene must grow with its content.
+   The existing stage remains the scroll container.
+*/
+@media (max-width: 980px) {
+  .sceneStage {
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    min-height: 0;
+  }
+
+  .scene {
+    height: auto;
+    min-height: 100%;
+  }
+
+  .arrivalScene,
+  .continuityScene,
+  .matterScene,
+  .entryScene {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: start;
+    align-content: start;
+  }
+
+  .matterScene > div,
+  .matterCard {
+    min-width: 0;
+  }
+}
+
+/* Phone composition: preserve the grid/axis language,
+   but return typography and information to normal flow.
+*/
+@media (max-width: 640px) {
+  .sceneStage {
+    inset: 90px 20px 76px;
+    padding-bottom: 16px;
+  }
+
+  .arrivalScene,
+  .continuityScene,
+  .matterScene,
+  .entryScene {
+    gap: 28px;
+    padding-bottom: 28px;
+  }
+
+  .scene h1 {
+    font-size: clamp(30px, 8.5vw, 38px);
+    line-height: 1.12;
+    letter-spacing: -0.035em;
+  }
+
+  .eyebrow {
+    margin-bottom: 14px;
+  }
+
+  .lead {
+    margin-top: 18px;
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .quiet {
+    margin-top: 12px;
+    font-size: 13px;
+    line-height: 1.6;
+  }
+
+  .matterScene {
+    gap: 26px;
+  }
+
+  .matterCard {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  .matterHeader {
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 18px;
+  }
+
+  .matterHeader > div {
+    min-width: 0;
+  }
+
+  .matterHeader h2 {
+    font-size: clamp(19px, 5.3vw, 24px);
+    line-height: 1.25;
+    overflow-wrap: anywhere;
+  }
+
+  .matterBlock {
+    padding: 18px;
+  }
+
+  .moduleRow {
+    grid-template-columns: 25px minmax(0, 1fr);
+    gap: 8px 12px;
+  }
+
+  .moduleRow p {
+    grid-column: 2;
+    min-width: 0;
+  }
+
+  .entryScene {
+    gap: 24px;
+  }
+
+  .enterWorkspace {
+    font-size: clamp(19px, 5.2vw, 24px);
+    gap: 12px;
+  }
+
+  .sceneControls {
+    bottom: max(12px, env(safe-area-inset-bottom));
+    gap: 10px;
+  }
+
+  .sceneControls .nextButton {
+    min-width: 0;
+    padding: 10px 12px;
+  }
+
+  .institutionName {
+    font-size: 0.86em;
+    letter-spacing: 0.025em;
+  }
+}
+
+
+/* BCM-AXPT-REL-6C.5
+   Quiet continuity inscription and narrowing-desktop flow.
+*/
+
+.continuityStatement {
+  margin-top: 24px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(13px, 1.15vw, 16px);
+  font-weight: 400;
+  line-height: 1.85;
+  letter-spacing: 0.055em;
+}
+
+.continuityStatement strong {
+  display: inline-block;
+  margin-top: 7px;
+  font-family: inherit;
+  font-size: 0.88em;
+  font-weight: 500;
+  line-height: 1.65;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+/* Reflow before desktop minimum-width columns collide. */
+@media (min-width: 981px) and (max-width: 1240px) {
+  .sceneStage {
+    overflow-x: hidden;
+    overflow-y: auto;
+    min-height: 0;
+    overscroll-behavior-y: contain;
+  }
+
+  .scene {
+    height: auto;
+    min-height: 100%;
+  }
+
+  .arrivalScene,
+  .continuityScene,
+  .matterScene,
+  .entryScene {
+    grid-template-columns: minmax(0, 1fr);
+    align-content: start;
+    align-items: start;
+    gap: 32px;
+    padding-bottom: 36px;
+  }
+
+  .arrivalScene > *,
+  .continuityScene > *,
+  .matterScene > *,
+  .entryScene > * {
+    min-width: 0;
+  }
+
+  .scene h1 {
+    font-size: clamp(39px, 4.8vw, 58px);
+    line-height: 1.08;
+  }
+
+  .matterCard,
+  .moduleRail {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  .continuityStatement {
+    margin-top: 20px;
+    font-size: 13px;
+    line-height: 1.8;
+  }
+
+  .continuityStatement strong {
+    font-size: 12px;
+    letter-spacing: 0.095em;
+  }
+}
+
+
+/* BCM-AXPT-REL-6C.6
+   Desktop containment: expansive field,
+   restrained institutional composition.
+*/
+
+@media (min-width: 981px) {
+  .sceneStage {
+    inset:
+      clamp(128px, 15vh, 165px)
+      max(6vw, calc((100vw - 1160px) / 2))
+      clamp(86px, 11vh, 112px);
+  }
+
+  .scene h1 {
+    font-size: clamp(40px, 4.2vw, 68px);
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+  }
+
+  .lead {
+    margin-top: 25px;
+    font-size: clamp(15px, 1.25vw, 19px);
+    line-height: 1.55;
+  }
+
+  .quiet {
+    margin-top: 14px;
+    font-size: clamp(12px, 1vw, 15px);
+  }
+
+  .arrivalScene {
+    gap: clamp(30px, 4.2vw, 65px);
+  }
+
+  .continuityScene {
+    gap: clamp(30px, 4.2vw, 65px);
+  }
+
+  .matterScene {
+    gap: clamp(25px, 3.5vw, 52px);
+  }
+
+  .entryScene {
+    gap: clamp(35px, 5vw, 75px);
+  }
+
+  .matterHeader {
+    gap: 18px;
+    padding: 19px 22px;
+  }
+
+  .matterHeader h2 {
+    font-size: clamp(21px, 1.9vw, 29px);
+  }
+
+  .matterBlock {
+    min-height: 130px;
+    padding: 18px 22px;
+  }
+
+  .moduleRow {
+    gap: 10px;
+    padding: 14px 5px;
+  }
+
+  .continuityStatement {
+    margin-top: 22px;
+    font-size: clamp(13px, 1.05vw, 15px);
+  }
+
+  .enterWorkspace {
+    font-size: clamp(23px, 2.25vw, 34px);
+  }
+}
+
+/* Earlier reflow threshold stays authoritative
+   for its single-column structure.
+*/
+@media (min-width: 981px) and (max-width: 1240px) {
+  .scene {
+    height: auto;
+    min-height: 100%;
+  }
+
+  .arrivalScene,
+  .continuityScene,
+  .matterScene,
+  .entryScene {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+    align-content: start;
+  }
+}
