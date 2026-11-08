@@ -14,7 +14,15 @@ type Participant = {
   institutionalTitle: string;
   secondaryTitle: string | null;
   reference: string | null;
-  governing: boolean;
+  kind:
+    | "GOVERNING"
+    | "INSTITUTIONAL"
+    | "ADMINISTRATIVE_REVIEW";
+  capacityClass:
+    | "STRATEGIC"
+    | "OPERATIONS"
+    | "FIDUCIARY"
+    | null;
 };
 
 type OrientationSequenceProps = {

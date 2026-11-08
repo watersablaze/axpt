@@ -2417,7 +2417,15 @@ export default function HomeWorkspaceShell({
                   }
                 >
                   <span>
-                    GOVERNING
+                    {home.participant.kind ===
+                    "GOVERNING"
+                      ? "GOVERNING"
+                      : home.participant.kind ===
+                          "INSTITUTIONAL"
+                        ? home.participant
+                            .capacityClass ??
+                          "INSTITUTIONAL"
+                        : "ADMIN REVIEW"}
                   </span>
 
                   <div>
@@ -2704,7 +2712,8 @@ export default function HomeWorkspaceShell({
             </dl>
           </section>
 
-          {!home.participant.governing ? (
+          {home.participant.kind ===
+          "ADMINISTRATIVE_REVIEW" ? (
             <div
               className={
                 styles.reviewNotice
@@ -2714,6 +2723,18 @@ export default function HomeWorkspaceShell({
               not infer French-Ward
               governing or commercial
               standing.
+            </div>
+          ) : home.participant.kind ===
+            "INSTITUTIONAL" ? (
+            <div
+              className={
+                styles.reviewNotice
+              }
+            >
+              Institutional participation
+              does not infer French-Ward
+              governing or commercial
+              authority.
             </div>
           ) : null}
         </div>

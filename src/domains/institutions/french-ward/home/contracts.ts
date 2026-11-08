@@ -3,8 +3,17 @@ export type FrenchWardHomeParticipant = {
   institutionalTitle: string;
   secondaryTitle: string | null;
   reference: string | null;
-  governing: boolean;
-  administrativeReview: boolean;
+
+  kind:
+    | "GOVERNING"
+    | "INSTITUTIONAL"
+    | "ADMINISTRATIVE_REVIEW";
+
+  capacityClass:
+    | "STRATEGIC"
+    | "OPERATIONS"
+    | "FIDUCIARY"
+    | null;
 };
 
 export type FrenchWardHomeMovement = {
