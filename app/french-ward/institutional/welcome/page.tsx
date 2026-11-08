@@ -346,6 +346,54 @@ FrenchWardInstitutionalWelcomePage() {
           </p>
         </section>
 
+        <section
+          className={
+            styles.acceptance
+          }
+          aria-labelledby="acceptance-title"
+        >
+          <div>
+            <p
+              className={
+                styles.smallIndex
+              }
+            >
+              Acceptance
+            </p>
+
+            <h2
+              id="acceptance-title"
+            >
+              Enter in this capacity
+            </h2>
+
+            <p>
+              Continue only if the institutional identity
+              and capacity above correctly describe the
+              participation prepared for you.
+            </p>
+          </div>
+
+          <form
+            method="post"
+            action="/french-ward/institutional/welcome/accept"
+          >
+            <button
+              type="submit"
+              className={
+                styles.acceptButton
+              }
+            >
+              Accept &amp; Continue
+              <span
+                aria-hidden="true"
+              >
+                →
+              </span>
+            </button>
+          </form>
+        </section>
+
         <footer
           className={
             styles.footer
@@ -356,7 +404,7 @@ FrenchWardInstitutionalWelcomePage() {
           </span>
 
           <span>
-            Invitation review only · No acceptance recorded
+            Institutional invitation · Acceptance required
           </span>
         </footer>
       </section>

@@ -209,3 +209,109 @@
     border-left: 0;
   }
 }
+
+.acceptance {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    auto;
+  align-items: end;
+  gap: 34px;
+  padding:
+    clamp(28px, 5vw, 48px);
+  border-top:
+    1px solid #304550;
+  background:
+    rgba(18, 39, 49, 0.42);
+}
+
+.acceptance .smallIndex {
+  margin-top: 0;
+}
+
+.acceptance h2 {
+  margin: 10px 0 0;
+  color: #eee7da;
+  font-family:
+    Georgia,
+    "Times New Roman",
+    serif;
+  font-size:
+    clamp(23px, 3vw, 30px);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.acceptance p:not(.smallIndex) {
+  max-width: 58ch;
+  margin: 12px 0 0;
+  color: #aebfc7;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.acceptance form {
+  margin: 0;
+}
+
+.acceptButton {
+  display: inline-flex;
+  min-height: 48px;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  white-space: nowrap;
+  border:
+    1px solid
+    rgba(214, 189, 142, 0.72);
+  background:
+    rgba(197, 161, 107, 0.08);
+  padding:
+    0 21px;
+  color: #e5cfaa;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
+}
+
+.acceptButton:hover {
+  border-color: #ddc28f;
+  background:
+    rgba(197, 161, 107, 0.15);
+  color: #f2dfbb;
+  transform:
+    translateX(2px);
+}
+
+.acceptButton:focus-visible {
+  outline:
+    2px solid #dfc28d;
+  outline-offset:
+    4px;
+}
+
+.acceptButton span {
+  font-size: 15px;
+  line-height: 1;
+}
+
+@media (max-width: 620px) {
+  .acceptance {
+    grid-template-columns:
+      1fr;
+    align-items: stretch;
+    gap: 24px;
+  }
+
+  .acceptButton {
+    width: 100%;
+  }
+}
