@@ -71,6 +71,7 @@ model User {
   transactions          Transaction[]
   userRoles             UserRole[]
   frenchWardGoverningOfficer FrenchWardGoverningOfficer?
+  frenchWardInstitutionalParticipant FrenchWardInstitutionalParticipant?
   frenchWardOrientationCompletions FrenchWardOrientationCompletion[]
 
   createdCommunicationConversations    CommunicationConversation[]    @relation("CommunicationConversationCreator")
@@ -4199,6 +4200,61 @@ model FrenchWardOrientationCompletion {
 
   @@unique([userId, orientationVersion])
   @@index([orientationVersion, completedAt])
+}
+
+enum FrenchWardInstitutionalCapacityClass {
+  STRATEGIC
+  OPERATIONS
+  FIDUCIARY
+}
+
+/// Durable French-Ward internal institutional recognition.
+///
+/// This record establishes that an existing canonical AXPT User is
+/// recognized as a participant inside French-Ward in a specific
+/// institutional capacity.
+///
+/// It does NOT itself grant:
+/// - AXPT roles or permissions;
+/// - French-Ward governing standing;
+/// - commercial action authority;
+/// - instrument authority;
+/// - institutional resource access.
+model FrenchWardInstitutionalParticipant {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+
+  /// Stable French-Ward participant identity, independent of AXPT User.id.
+  reference           String   @unique
+
+  displayName         String
+  institutionalTitle  String
+  secondaryTitle      String?
+
+  capacityClass       FrenchWardInstitutionalCapacityClass
+
+  /// Documentary or institutional basis relied upon for recognition.
+  recognitionBasis    String
+
+  /// Optional historical or documentary provenance pointer.
+  /// Provenance is evidence and does not itself create authority.
+  provenanceReference String?
+
+  status              String   @default("ACTIVE")
+
+  recognizedAt        DateTime @default(now())
+  endedAt             DateTime?
+
+  createdByUserId     String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user                User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([status])
+  @@index([capacityClass, status])
+  @@index([displayName])
+  @@index([provenanceReference])
 }
 
 model FrenchWardGoverningOfficer {
