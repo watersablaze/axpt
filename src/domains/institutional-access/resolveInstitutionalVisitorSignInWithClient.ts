@@ -12,6 +12,10 @@ export async function resolveInstitutionalVisitorSignInWithClient(params: {
     status: string;
     endedAt?: Date | null;
   } | null;
+  frenchWardInstitutionalParticipant?: {
+    status: string;
+    endedAt?: Date | null;
+  } | null;
   representativeProgramParticipants?: Array<{ standing: string }>;
   now?: Date;
 }) {
