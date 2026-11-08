@@ -13,6 +13,7 @@ export type SessionTier =
   | 'platform'
   | 'operations'
   | 'french-ward-governance'
+  | 'french-ward-institutional'
   | 'representative'
   | 'institutional-visitor'
 
