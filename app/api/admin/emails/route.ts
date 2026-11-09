@@ -6,7 +6,7 @@ import {
   getRecentEmailLogs,
   countEmailsByType,
   searchEmailLogs,
-} from '@/infrastructure/email';
+} from '@/infrastructure/email/emailLogService';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
