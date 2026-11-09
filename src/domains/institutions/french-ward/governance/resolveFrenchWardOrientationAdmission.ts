@@ -2,6 +2,10 @@ import type {
   FrenchWardCurrentGoverningStanding,
 } from "./loadCurrentFrenchWardGoverningStandingWithClient";
 
+import type {
+  FrenchWardCurrentInstitutionalParticipant,
+} from "../participants/loadCurrentFrenchWardInstitutionalParticipantWithClient";
+
 export type FrenchWardOrientationAdmission =
   | Readonly<{
       admitted: true;
@@ -10,6 +14,10 @@ export type FrenchWardOrientationAdmission =
   | Readonly<{
       admitted: true;
       mode: "GOVERNING";
+    }>
+  | Readonly<{
+      admitted: true;
+      mode: "INSTITUTIONAL";
     }>
   | Readonly<{
       admitted: false;
@@ -31,14 +39,20 @@ export type FrenchWardOrientationAdmission =
  * ADMIN may conduct/review institutional orientation without
  * being represented as a French-Ward governing officer.
  *
- * A non-admin principal must hold current ACTIVE French-Ward
- * governing standing.
+ * A non-admin principal must hold either:
+ * - current ACTIVE French-Ward governing standing; or
+ * - current ACTIVE French-Ward institutional participation.
+ *
+ * Governing standing retains precedence when both are present.
  */
 export function resolveFrenchWardOrientationAdmission(
   input: {
     admin: boolean;
     governingStanding:
       FrenchWardCurrentGoverningStanding | null;
+
+    institutionalParticipant:
+      FrenchWardCurrentInstitutionalParticipant | null;
   },
 ): FrenchWardOrientationAdmission {
   if (input.admin) {
@@ -54,6 +68,15 @@ export function resolveFrenchWardOrientationAdmission(
     return {
       admitted: true,
       mode: "GOVERNING",
+    };
+  }
+
+  if (
+    input.institutionalParticipant?.active === true
+  ) {
+    return {
+      admitted: true,
+      mode: "INSTITUTIONAL",
     };
   }
 

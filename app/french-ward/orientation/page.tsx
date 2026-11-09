@@ -18,6 +18,9 @@ import {
   resolveFrenchWardOrientationAdmission,
 } from "@/domains/institutions/french-ward/governance/resolveFrenchWardOrientationAdmission";
 import {
+  loadCurrentFrenchWardInstitutionalParticipantWithClient,
+} from "@/domains/institutions/french-ward/participants/loadCurrentFrenchWardInstitutionalParticipantWithClient";
+import {
   prisma,
 } from "@/infrastructure/db/prisma";
 
@@ -52,11 +55,18 @@ export default async function FrenchWardOrientationPage() {
       userId: principal.userId,
     });
 
+  const institutionalParticipant =
+    await loadCurrentFrenchWardInstitutionalParticipantWithClient({
+      client: prisma,
+      userId: principal.userId,
+    });
+
   const admission =
     resolveFrenchWardOrientationAdmission({
       admin:
         isAdmin(principal),
       governingStanding,
+      institutionalParticipant,
     });
 
   if (!admission.admitted) {
@@ -84,24 +94,38 @@ export default async function FrenchWardOrientationPage() {
         name:
           governingStanding?.active
             ? governingStanding.displayName
-            : principal.displayName ??
-              "Authenticated participant",
+            : institutionalParticipant?.active
+              ? institutionalParticipant.displayName
+              : principal.displayName ??
+                "Authenticated participant",
         institutionalTitle:
           governingStanding?.active
             ? governingStanding.institutionalTitle
-            : "Platform Administration",
+            : institutionalParticipant?.active
+              ? institutionalParticipant.institutionalTitle
+              : "Platform Administration",
         secondaryTitle:
           governingStanding?.active
             ? governingStanding.secondaryTitle
-            : null,
+            : institutionalParticipant?.active
+              ? institutionalParticipant.secondaryTitle
+              : null,
         reference:
           governingStanding?.active
             ? governingStanding.reference
+            : institutionalParticipant?.active
+              ? institutionalParticipant.reference
+              : null,
+        kind:
+          governingStanding?.active
+            ? "GOVERNING"
+            : institutionalParticipant?.active
+              ? "INSTITUTIONAL"
+              : "ADMINISTRATIVE_REVIEW",
+        capacityClass:
+          institutionalParticipant?.active
+            ? institutionalParticipant.capacityClass
             : null,
-        governing:
-          Boolean(
-            governingStanding?.active,
-          ),
       }}
     />
   );

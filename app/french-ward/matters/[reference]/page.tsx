@@ -12,6 +12,9 @@ import {
 import {
   loadFrenchWardMatterWithClient,
 } from "@/domains/institutions/french-ward/matters/loadFrenchWardMatterWithClient";
+import {
+  loadCurrentFrenchWardInstitutionalParticipantWithClient,
+} from "@/domains/institutions/french-ward/participants/loadCurrentFrenchWardInstitutionalParticipantWithClient";
 import { prisma } from "@/lib/prisma";
 
 import styles from "./matter.module.css";
@@ -108,6 +111,15 @@ export default async function FrenchWardMatterPage({
         principal.userId,
     });
 
+  const institutionalParticipant =
+    await loadCurrentFrenchWardInstitutionalParticipantWithClient({
+      client:
+        prisma,
+
+      userId:
+        principal.userId,
+    });
+
   const adminReview =
     principal.roles.includes(
       "ADMIN_PLATFORM",
@@ -115,7 +127,8 @@ export default async function FrenchWardMatterPage({
 
   if (
     !adminReview &&
-    !governingStanding?.active
+    !governingStanding?.active &&
+    !institutionalParticipant?.active
   ) {
     redirect(
       "/french-ward",
@@ -150,19 +163,30 @@ export default async function FrenchWardMatterPage({
           title:
             governingStanding.institutionalTitle,
 
-          governing:
-            true,
+          kind:
+            "GOVERNING" as const,
         }
-      : {
-          name:
-            "Platform Administration",
+      : institutionalParticipant?.active
+        ? {
+            name:
+              institutionalParticipant.displayName,
 
-          title:
-            "Administrative Review",
+            title:
+              institutionalParticipant.institutionalTitle,
 
-          governing:
-            false,
-        };
+            kind:
+              "INSTITUTIONAL" as const,
+          }
+        : {
+            name:
+              "Platform Administration",
+
+            title:
+              "Administrative Review",
+
+            kind:
+              "ADMINISTRATIVE_REVIEW" as const,
+          };
 
   return (
     <main

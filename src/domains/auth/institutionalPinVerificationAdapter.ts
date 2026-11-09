@@ -25,6 +25,7 @@ type TransactionClient = Pick<
   | 'session'
   | 'institutionalAccessGrant'
   | 'frenchWardGoverningOfficer'
+  | 'frenchWardInstitutionalParticipant'
 >
 
 function flattenAuthority(input: {
@@ -70,6 +71,10 @@ function tierForAudience(
     return 'french-ward-governance'
   }
 
+  if (audience === 'FRENCH_WARD_INSTITUTIONAL') {
+    return 'french-ward-institutional'
+  }
+
   if (audience === 'REPRESENTATIVE') {
     return 'representative'
   }
@@ -87,6 +92,10 @@ function fallbackDisplayName(
 ) {
   if (audience === 'FRENCH_WARD_GOVERNING') {
     return 'French-Ward Officer'
+  }
+
+  if (audience === 'FRENCH_WARD_INSTITUTIONAL') {
+    return 'French-Ward Participant'
   }
 
   if (audience === 'REPRESENTATIVE') {
@@ -216,6 +225,17 @@ export function createInstitutionalPinVerificationDependencies(
               },
             })
 
+          const institutionalParticipant =
+            await tx.frenchWardInstitutionalParticipant.findUnique({
+              where: {
+                userId: user.id,
+              },
+              select: {
+                status: true,
+                endedAt: true,
+              },
+            })
+
           const eligibility =
             await resolveInstitutionalVisitorSignInWithClient({
               client: tx,
@@ -225,6 +245,8 @@ export function createInstitutionalPinVerificationDependencies(
               permissions,
               frenchWardGoverningStanding:
                 governingStanding,
+              frenchWardInstitutionalParticipant:
+                institutionalParticipant,
               representativeProgramParticipants:
                 user.representativeProgramParticipants,
               now,

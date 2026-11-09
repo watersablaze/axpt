@@ -71,7 +71,11 @@ model User {
   transactions          Transaction[]
   userRoles             UserRole[]
   frenchWardGoverningOfficer FrenchWardGoverningOfficer?
+  frenchWardInstitutionalParticipant FrenchWardInstitutionalParticipant?
   frenchWardOrientationCompletions FrenchWardOrientationCompletion[]
+  frenchWardInstitutionalInvitationsIssued FrenchWardInstitutionalInvitation[] @relation("FrenchWardInstitutionalInvitationIssuer")
+  frenchWardInstitutionalInvitationsAccepted FrenchWardInstitutionalInvitation[] @relation("FrenchWardInstitutionalInvitationAcceptor")
+  frenchWardInstitutionalInvitationsRevoked FrenchWardInstitutionalInvitation[] @relation("FrenchWardInstitutionalInvitationRevoker")
 
   createdCommunicationConversations    CommunicationConversation[]    @relation("CommunicationConversationCreator")
   communicationMemberships             CommunicationMember[]          @relation("CommunicationMembership")
@@ -4199,6 +4203,121 @@ model FrenchWardOrientationCompletion {
 
   @@unique([userId, orientationVersion])
   @@index([orientationVersion, completedAt])
+}
+
+enum FrenchWardInstitutionalCapacityClass {
+  STRATEGIC
+  OPERATIONS
+  FIDUCIARY
+}
+
+/// Durable French-Ward internal institutional recognition.
+///
+/// This record establishes that an existing canonical AXPT User is
+/// recognized as a participant inside French-Ward in a specific
+/// institutional capacity.
+///
+/// It does NOT itself grant:
+/// - AXPT roles or permissions;
+/// - French-Ward governing standing;
+/// - commercial action authority;
+/// - instrument authority;
+/// - institutional resource access.
+model FrenchWardInstitutionalParticipant {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+
+  /// Stable French-Ward participant identity, independent of AXPT User.id.
+  reference           String   @unique
+
+  displayName         String
+  institutionalTitle  String
+  secondaryTitle      String?
+
+  capacityClass       FrenchWardInstitutionalCapacityClass
+
+  /// Documentary or institutional basis relied upon for recognition.
+  recognitionBasis    String
+
+  /// Optional historical or documentary provenance pointer.
+  /// Provenance is evidence and does not itself create authority.
+  provenanceReference String?
+
+  status              String   @default("ACTIVE")
+
+  recognizedAt        DateTime @default(now())
+  endedAt             DateTime?
+
+  createdByUserId     String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user                User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([status])
+  @@index([capacityClass, status])
+  @@index([displayName])
+  @@index([provenanceReference])
+}
+
+/// Controlled invitation into French-Ward internal institutional participation.
+///
+/// An invitation records French-Ward's intention to recognize a specific
+/// person in a specific institutional capacity if that invitation is accepted.
+///
+/// It does NOT itself grant:
+/// - authentication eligibility;
+/// - AXPT roles or permissions;
+/// - French-Ward governing standing;
+/// - commercial action authority;
+/// - instrument authority;
+/// - institutional resource access.
+///
+/// Raw credential material is never persisted.
+model FrenchWardInstitutionalInvitation {
+  id                   String   @id @default(cuid())
+  reference            String   @unique
+
+  recipientEmail       String
+  recipientDisplayName String
+
+  /// Intended eventual French-Ward participant reference.
+  /// Multiple invitations may target the same participant identity when
+  /// an earlier invitation expires or is revoked.
+  participantReference String
+
+  institutionalTitle   String
+  secondaryTitle       String?
+  capacityClass        FrenchWardInstitutionalCapacityClass
+
+  recognitionBasis     String
+  provenanceReference  String?
+
+  credentialHash       String   @unique
+  expiresAt            DateTime
+
+  issuedByUserId       String
+  issuedAt             DateTime @default(now())
+
+  acceptedByUserId     String?
+  acceptedAt           DateTime?
+
+  revokedByUserId      String?
+  revokedAt             DateTime?
+  revocationReason     String?
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  issuedBy   User  @relation("FrenchWardInstitutionalInvitationIssuer", fields: [issuedByUserId], references: [id], onDelete: Restrict)
+  acceptedBy User? @relation("FrenchWardInstitutionalInvitationAcceptor", fields: [acceptedByUserId], references: [id], onDelete: Restrict)
+  revokedBy  User? @relation("FrenchWardInstitutionalInvitationRevoker", fields: [revokedByUserId], references: [id], onDelete: Restrict)
+
+  @@index([recipientEmail, expiresAt])
+  @@index([participantReference, issuedAt])
+  @@index([issuedByUserId, issuedAt])
+  @@index([acceptedByUserId, acceptedAt])
+  @@index([revokedAt, expiresAt])
 }
 
 model FrenchWardGoverningOfficer {

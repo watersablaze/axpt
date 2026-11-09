@@ -99,6 +99,12 @@ export function createInstitutionalPinRequestDependencies(
                 endedAt: true,
               },
             },
+            frenchWardInstitutionalParticipant: {
+              select: {
+                status: true,
+                endedAt: true,
+              },
+            },
             representativeProgramParticipants: {
               select: {
                 standing: true,
@@ -127,6 +133,8 @@ export function createInstitutionalPinRequestDependencies(
           permissions,
           frenchWardGoverningStanding:
             user.frenchWardGoverningOfficer,
+          frenchWardInstitutionalParticipant:
+            user.frenchWardInstitutionalParticipant,
           representativeProgramParticipants:
             user.representativeProgramParticipants,
           now: decisionTime,

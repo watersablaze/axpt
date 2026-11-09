@@ -11,6 +11,10 @@ export type InstitutionalSignInEligibility =
     }
   | {
       eligible: true;
+      audience: "FRENCH_WARD_INSTITUTIONAL";
+    }
+  | {
+      eligible: true;
       audience: "REPRESENTATIVE";
     }
   | {
@@ -23,6 +27,11 @@ type EligibilityInput = {
   permissions?: string[];
 
   frenchWardGoverningStanding?: {
+    status: string;
+    endedAt?: Date | null;
+  } | null;
+
+  frenchWardInstitutionalParticipant?: {
     status: string;
     endedAt?: Date | null;
   } | null;
@@ -46,6 +55,7 @@ const REPRESENTATIVE_SIGN_IN_STANDINGS = new Set([
  *
  * ADMIN
  *   > FRENCH_WARD_GOVERNING
+ *   > FRENCH_WARD_INSTITUTIONAL
  *   > REPRESENTATIVE
  *
  * Authorization remains separate.
@@ -79,6 +89,19 @@ export function resolveInstitutionalSignInEligibility(
     return {
       eligible: true,
       audience: "FRENCH_WARD_GOVERNING",
+    };
+  }
+
+  const participant =
+    input.frenchWardInstitutionalParticipant;
+
+  if (
+    participant?.status === "ACTIVE" &&
+    participant.endedAt == null
+  ) {
+    return {
+      eligible: true,
+      audience: "FRENCH_WARD_INSTITUTIONAL",
     };
   }
 
