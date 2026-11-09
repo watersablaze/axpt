@@ -6,9 +6,17 @@ import {
 import bcrypt from "bcryptjs";
 
 import type {
-  Prisma,
   PrismaClient,
 } from "@prisma/client";
+
+type InvitationAcceptanceTransaction = Pick<
+  PrismaClient,
+  | "$queryRaw"
+  | "user"
+  | "frenchWardInstitutionalInvitation"
+  | "frenchWardInstitutionalParticipant"
+  | "domainEvent"
+>;
 
 import {
   hashFrenchWardInstitutionalInvitationCredential,
@@ -112,7 +120,7 @@ acceptFrenchWardInstitutionalInvitationWithClient(
     );
 
   return params.client.$transaction(
-    async (tx: Prisma.TransactionClient) => {
+    async (tx: InvitationAcceptanceTransaction) => {
       /*
        * Serialize all acceptance attempts against this exact invitation.
        * Only the credential hash reaches SQL.
