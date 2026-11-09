@@ -90,13 +90,13 @@ function createHarness() {
           ),
 
         acceptedByUserId:
-          null,
+          null as string | null,
 
         acceptedAt:
-          null,
+          null as Date | null,
 
         revokedByUserId:
-          null,
+          null as string | null,
 
         revokedAt:
           null,
