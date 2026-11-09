@@ -186,7 +186,12 @@ issueFrenchWardInstitutionalInvitationWithClient(
 
   const result =
     await params.client.$transaction(
-      async tx => {
+      async (tx: Pick<
+      PrismaClient,
+      | "domainEvent"
+      | "frenchWardInstitutionalInvitation"
+      | "user"
+    >) => {
         const issuer =
           await tx.user.findUnique({
             where: {

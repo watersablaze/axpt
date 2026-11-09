@@ -88,7 +88,13 @@ revokeFrenchWardInstitutionalInvitationWithClient(
   }
 
   return params.client.$transaction(
-    async tx => {
+    async (tx: Pick<
+      PrismaClient,
+      | "$queryRaw"
+      | "domainEvent"
+      | "frenchWardInstitutionalInvitation"
+      | "user"
+    >) => {
       /*
        * Serialize revocation against acceptance and other revocation
        * attempts for this exact invitation.
