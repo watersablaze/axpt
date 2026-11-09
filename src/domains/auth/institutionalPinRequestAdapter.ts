@@ -52,11 +52,31 @@ function flattenAuthority(
   }
 }
 
+/**
+ * Vercel previews must not send institutional PINs.
+ * An incomplete Vercel environment identity also fails closed.
+ * Production and local rehearsal retain their existing adapters.
+ */
+function isVercelNonProductionRuntime(): boolean {
+  return (
+    process.env.VERCEL_ENV === 'preview' ||
+    process.env.VERCEL_ENV === 'development' ||
+    (
+      process.env.VERCEL === '1' &&
+      process.env.VERCEL_ENV !== 'production'
+    )
+  )
+}
+
 export function createInstitutionalPinRequestDependencies(
   decisionTime: Date,
 ): InstitutionalPinRequestDependencies {
   return {
     transportReady() {
+      if (isVercelNonProductionRuntime()) {
+        return false
+      }
+
       return Boolean(
         process.env.RESEND_API_KEY?.trim(),
       )
@@ -170,6 +190,12 @@ export function createInstitutionalPinRequestDependencies(
     },
 
     async deliver(input) {
+      if (isVercelNonProductionRuntime()) {
+        throw new Error(
+          'INSTITUTIONAL_PIN_PREVIEW_DELIVERY_DISABLED',
+        )
+      }
+
       await sendLoginPin(input)
     },
 
