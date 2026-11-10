@@ -32,6 +32,7 @@ function getSafeDestination() {
       [
         '/french-ward/profile',
         '/french-ward',
+        '/french-ward/home',
         '/french-ward/orientation',
         '/french-ward/transaction-intake',
         '/french-ward/instruments/gsam-sco',
