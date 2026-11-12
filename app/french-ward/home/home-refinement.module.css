@@ -1,0 +1,73 @@
+/* French-Ward Home presentation refinement V1.
+ * Only visual affordances; no change to authority or data.
+ */
+
+.awarenessEntry {
+  min-width: 178px;
+  min-height: 44px;
+  padding: 11px 14px;
+  border: 1px solid rgba(94, 183, 222, .48);
+  border-radius: 3px;
+  background: rgba(94, 183, 222, .095);
+  color: var(--bone);
+  justify-content: space-between;
+  text-align: left;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.awarenessEntry span {
+  color: var(--bone);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .095em;
+}
+
+.awarenessEntry strong {
+  font-size: 17px;
+  color: #8fd2ed;
+}
+
+.awarenessEntry:hover,
+.awarenessEntry:focus-visible {
+  background: rgba(94, 183, 222, .17);
+  border-color: #8fd2ed;
+}
+
+.railControl {
+  min-height: 44px;
+  border: 1px solid rgba(94, 183, 222, .42);
+  padding: 9px 12px;
+  background: rgba(94, 183, 222, .10);
+  color: var(--bone);
+}
+
+.railControl span {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+}
+
+.railControl strong {
+  color: #8fd2ed;
+  font-size: 17px;
+}
+
+.railControl:hover,
+.railControl:focus-visible {
+  border-color: #8fd2ed;
+  background: rgba(94, 183, 222, .19);
+}
+
+.awarenessEntry:focus-visible,
+.railControl:focus-visible {
+  outline: 2px solid #8fd2ed;
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .railControl {
+    width: 100%;
+    min-height: 44px;
+    justify-content: space-between;
+  }
+}
