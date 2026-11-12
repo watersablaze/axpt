@@ -11,6 +11,9 @@ import {
   loadFrenchWardHomeWithClient,
 } from "@/domains/institutions/french-ward/home/loadFrenchWardHomeWithClient";
 import {
+  loadCurrentFrenchWardInstitutionalParticipantWithClient,
+} from "@/domains/institutions/french-ward/participants/loadCurrentFrenchWardInstitutionalParticipantWithClient";
+import {
   FRENCH_WARD_ACTION,
   resolveFrenchWardActionAuthorityWithClient,
 } from "@/domains/institutions/french-ward/governance/resolveFrenchWardActionAuthorityWithClient";
@@ -57,12 +60,19 @@ export default async function FrenchWardHomePage({
       userId: principal.userId,
     });
 
+  const institutionalParticipant =
+    await loadCurrentFrenchWardInstitutionalParticipantWithClient({
+      client: prisma,
+      userId: principal.userId,
+    });
+
   const adminReview =
     principal.roles.includes("ADMIN_PLATFORM");
 
   if (
     !adminReview &&
-    !governingStanding?.active
+    !governingStanding?.active &&
+    !institutionalParticipant?.active
   ) {
     redirect("/french-ward");
   }
@@ -137,19 +147,41 @@ export default async function FrenchWardHomePage({
               governingStanding.secondaryTitle,
             reference:
               governingStanding.reference,
-            governing: true,
-            administrativeReview: false,
+            kind:
+              "GOVERNING",
+            capacityClass:
+              null,
           }
-        : {
-            name: "Platform Administration",
-            institutionalTitle:
-              "Administrative Review",
-            secondaryTitle: null,
-            reference: null,
-            governing: false,
-            administrativeReview:
-              adminReview,
-          },
+        : institutionalParticipant?.active
+          ? {
+              name:
+                institutionalParticipant.displayName,
+              institutionalTitle:
+                institutionalParticipant.institutionalTitle,
+              secondaryTitle:
+                institutionalParticipant.secondaryTitle,
+              reference:
+                institutionalParticipant.reference,
+              kind:
+                "INSTITUTIONAL",
+              capacityClass:
+                institutionalParticipant.capacityClass,
+            }
+          : {
+              name:
+                principal.displayName?.trim() ||
+                principal.email,
+              institutionalTitle:
+                "Administrative Review",
+              secondaryTitle:
+                null,
+              reference:
+                null,
+              kind:
+                "ADMINISTRATIVE_REVIEW",
+              capacityClass:
+                null,
+            },
     });
 
   return (

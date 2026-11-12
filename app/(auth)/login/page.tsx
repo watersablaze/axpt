@@ -32,6 +32,8 @@ function getSafeDestination() {
       [
         '/french-ward/profile',
         '/french-ward',
+        '/french-ward/home',
+        '/french-ward/orientation',
         '/french-ward/transaction-intake',
         '/french-ward/instruments/gsam-sco',
         '/transaction-intake',
@@ -200,6 +202,12 @@ export default function LoginPage() {
           :
         requestedPath === '/french-ward/profile'
           ? requestedDestination
+          : data.audience === 'FRENCH_WARD_INSTITUTIONAL'
+            ? (
+                requestedPath === '/french-ward/orientation'
+                  ? requestedDestination
+                  : '/french-ward/orientation'
+              )
           : data.audience === 'REPRESENTATIVE'
           ? (
               requestedDestination.startsWith('/representative')

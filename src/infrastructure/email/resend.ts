@@ -1,3 +1,7 @@
-import { Resend } from 'resend';
-
-const resend = new Resend(process.env.RESEND_API_KEY ?? "")
+/**
+ * Legacy email infrastructure entrypoint.
+ *
+ * No outbound provider should initialize when this
+ * module is imported.
+ */
+export {};

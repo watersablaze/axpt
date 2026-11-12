@@ -731,8 +731,11 @@ export async function loadFrenchWardHomeWithClient(params: {
     attention,
     recentMovement,
     documents:
-      participant.governing ||
-      participant.administrativeReview
+      (
+        participant.kind === "GOVERNING" ||
+        participant.kind === "INSTITUTIONAL" ||
+        participant.kind === "ADMINISTRATIVE_REVIEW"
+      )
         ? projectFrenchWardHomeDocuments()
         : [],
   };

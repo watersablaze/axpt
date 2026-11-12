@@ -10,6 +10,9 @@ import { resolveRepresentativeSessionValidity } from './resolveRepresentativeSes
 import {
   resolveFrenchWardGoverningSessionValidityWithClient,
 } from './resolveFrenchWardGoverningSessionValidityWithClient'
+import {
+  resolveFrenchWardInstitutionalSessionValidityWithClient,
+} from './resolveFrenchWardInstitutionalSessionValidityWithClient'
 
 export const getPrincipal = cache(async function getPrincipal(): Promise<Principal | null> {
   const session = await getSessionFromCookie()
@@ -75,6 +78,24 @@ export const getPrincipal = cache(async function getPrincipal(): Promise<Princip
   if (!governingSessionRemainsValid) {
     console.log(
       '[auth/getPrincipal] French-Ward governing session no longer eligible',
+      {
+        userId: user.id,
+      },
+    )
+
+    return null
+  }
+
+  const institutionalSessionRemainsValid =
+    await resolveFrenchWardInstitutionalSessionValidityWithClient({
+      client: prisma,
+      sessionTier: session.tier,
+      userId: user.id,
+    })
+
+  if (!institutionalSessionRemainsValid) {
+    console.log(
+      '[auth/getPrincipal] French-Ward institutional session no longer eligible',
       {
         userId: user.id,
       },

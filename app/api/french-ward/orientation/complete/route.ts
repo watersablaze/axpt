@@ -8,6 +8,9 @@ import {
 import {
   resolveFrenchWardOrientationAdmission,
 } from "@/domains/institutions/french-ward/governance/resolveFrenchWardOrientationAdmission";
+import {
+  loadCurrentFrenchWardInstitutionalParticipantWithClient,
+} from "@/domains/institutions/french-ward/participants/loadCurrentFrenchWardInstitutionalParticipantWithClient";
 import { prisma } from "@/infrastructure/db/prisma";
 
 export const runtime = "nodejs";
@@ -36,9 +39,16 @@ export async function POST() {
         userId: principal.userId,
       });
 
+    const institutionalParticipant =
+      await loadCurrentFrenchWardInstitutionalParticipantWithClient({
+        client: prisma,
+        userId: principal.userId,
+      });
+
     const admission = resolveFrenchWardOrientationAdmission({
       admin: isAdmin(principal),
       governingStanding,
+      institutionalParticipant,
     });
 
     if (!admission.admitted) {

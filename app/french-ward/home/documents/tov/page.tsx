@@ -22,6 +22,10 @@ import {
 } from "@/domains/institutions/french-ward/governance/loadCurrentFrenchWardGoverningStandingWithClient";
 
 import {
+  loadCurrentFrenchWardInstitutionalParticipantWithClient,
+} from "@/domains/institutions/french-ward/participants/loadCurrentFrenchWardInstitutionalParticipantWithClient";
+
+import {
   prisma,
 } from "@/lib/prisma";
 
@@ -51,6 +55,12 @@ FrenchWardHomeTovDocumentPage() {
       userId: principal.userId,
     });
 
+  const institutionalParticipant =
+    await loadCurrentFrenchWardInstitutionalParticipantWithClient({
+      client: prisma,
+      userId: principal.userId,
+    });
+
   const administrativeReview =
     principal.roles.includes(
       "ADMIN_PLATFORM",
@@ -58,6 +68,7 @@ FrenchWardHomeTovDocumentPage() {
 
   if (
     !standing?.active &&
+    !institutionalParticipant?.active &&
     !administrativeReview
   ) {
     redirect(

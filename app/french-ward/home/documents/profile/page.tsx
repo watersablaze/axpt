@@ -24,6 +24,9 @@ import {
 import {
   projectFrenchWardInstitutionalProfile,
 } from "@/domains/institutions/french-ward/projectFrenchWardInstitutionalProfile";
+import {
+  loadCurrentFrenchWardInstitutionalParticipantWithClient,
+} from "@/domains/institutions/french-ward/participants/loadCurrentFrenchWardInstitutionalParticipantWithClient";
 
 import {
   prisma,
@@ -55,6 +58,12 @@ FrenchWardHomeProfileDocumentPage() {
       userId: principal.userId,
     });
 
+  const institutionalParticipant =
+    await loadCurrentFrenchWardInstitutionalParticipantWithClient({
+      client: prisma,
+      userId: principal.userId,
+    });
+
   const administrativeReview =
     principal.roles.includes(
       "ADMIN_PLATFORM",
@@ -62,6 +71,7 @@ FrenchWardHomeProfileDocumentPage() {
 
   if (
     !standing?.active &&
+    !institutionalParticipant?.active &&
     !administrativeReview
   ) {
     redirect(

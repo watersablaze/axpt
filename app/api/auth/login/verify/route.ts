@@ -68,6 +68,14 @@ function presentationForAudience(
     }
   }
 
+  if (audience === 'FRENCH_WARD_INSTITUTIONAL') {
+    return {
+      popupMessage:
+        'French-Ward institutional session established.',
+      docs: [] as SessionPayload['docs'],
+    }
+  }
+
   if (audience === 'REPRESENTATIVE') {
     return {
       popupMessage:

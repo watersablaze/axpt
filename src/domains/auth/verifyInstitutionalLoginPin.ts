@@ -1,12 +1,14 @@
 export type InstitutionalAudience =
   | 'ADMIN'
   | 'FRENCH_WARD_GOVERNING'
+  | 'FRENCH_WARD_INSTITUTIONAL'
   | 'REPRESENTATIVE'
   | 'INSTITUTIONAL_VISITOR'
 
 export type InstitutionalSessionTier =
   | 'operations'
   | 'french-ward-governance'
+  | 'french-ward-institutional'
   | 'representative'
   | 'institutional-visitor'
 
