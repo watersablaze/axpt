@@ -17,6 +17,7 @@ import RegisterBuyerTransactionAction from "./actions/RegisterBuyerTransactionAc
 
 import MatterPassageField from "./MatterPassageField";
 import styles from "./home.module.css";
+import refinement from "./home-refinement.module.css";
 
 type Props = {
   home: FrenchWardHomeProjection;
@@ -100,7 +101,7 @@ export default function HomeWorkspaceShell({
     useState<ModuleId>(initialModule);
 
   const [awarenessOpen, setAwarenessOpen] =
-    useState(true);
+    useState(false);
 
   const [
     activeAction,
@@ -533,8 +534,11 @@ export default function HomeWorkspaceShell({
 
             <button
               type="button"
-              className={
-                styles.awarenessToggle
+              className={`${styles.awarenessToggle} ${refinement.awarenessEntry}`}
+              aria-label={
+                awarenessOpen
+                  ? "Close Awareness Panel"
+                  : "Open Awareness Panel"
               }
               aria-expanded={
                 awarenessOpen
@@ -547,13 +551,13 @@ export default function HomeWorkspaceShell({
               }
             >
               <span>
-                AWARENESS
+                {awarenessOpen
+                  ? "CLOSE AWARENESS PANEL"
+                  : "OPEN AWARENESS PANEL"}
               </span>
 
               <strong aria-hidden="true">
-                {awarenessOpen
-                  ? "→"
-                  : "←"}
+                {awarenessOpen ? "×" : "↗"}
               </strong>
             </button>
           </header>
@@ -2502,9 +2506,13 @@ export default function HomeWorkspaceShell({
 
         <button
           type="button"
-          className={
-            styles.railToggle
+          className={`${styles.railToggle} ${refinement.railControl}`}
+          aria-label={
+            awarenessOpen
+              ? "Close Awareness Panel"
+              : "Open Awareness Panel"
           }
+          aria-controls="fw-awareness-content"
           aria-expanded={
             awarenessOpen
           }
@@ -2516,24 +2524,26 @@ export default function HomeWorkspaceShell({
         >
           <span>
             {awarenessOpen
-              ? "CLOSE"
-              : "AWARENESS"}
+              ? "CLOSE PANEL"
+              : "OPEN AWARENESS"}
           </span>
 
           <strong>
             {awarenessOpen
-              ? "→"
-              : "←"}
+              ? "×"
+              : "↗"}
           </strong>
         </button>
 
         <div
+          id="fw-awareness-content"
           className={
             styles.awarenessContent
           }
           aria-hidden={
             !awarenessOpen
           }
+          inert={!awarenessOpen}
         >
           <section
             className={
