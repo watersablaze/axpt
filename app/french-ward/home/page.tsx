@@ -141,7 +141,9 @@ export default async function FrenchWardHomePage({
             administrativeReview: false,
           }
         : {
-            name: "Platform Administration",
+            name:
+              principal.displayName?.trim() ||
+              principal.email,
             institutionalTitle:
               "Administrative Review",
             secondaryTitle: null,
