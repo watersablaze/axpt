@@ -30,6 +30,12 @@ export type IssueFrenchWardInstitutionalInvitationInput =
 
     issuedByUserId: string;
 
+    /**
+     * Optional for legacy invitation-only callers.
+     * Required by the future email-enabled issuance entrypoint.
+     */
+    deliveryKey?: string;
+
     now?: Date;
   }>;
 
@@ -172,6 +178,18 @@ issueFrenchWardInstitutionalInvitationWithClient(
     );
   }
 
+  const deliveryKey =
+    input.deliveryKey?.trim() ?? null;
+
+  if (
+    deliveryKey !== null &&
+    !/^[a-zA-Z0-9_-]{16,128}$/.test(deliveryKey)
+  ) {
+    throw new Error(
+      "[FW_INSTITUTIONAL_INVITATION_DELIVERY_KEY_INVALID]",
+    );
+  }
+
   /*
    * Raw credential is created before persistence but is never supplied
    * to Prisma or DomainEvent payloads.
@@ -190,6 +208,7 @@ issueFrenchWardInstitutionalInvitationWithClient(
       PrismaClient,
       | "domainEvent"
       | "frenchWardInstitutionalInvitation"
+      | "frenchWardInstitutionalInvitationDelivery"
       | "user"
     >) => {
         const issuer =
@@ -347,6 +366,38 @@ issueFrenchWardInstitutionalInvitationWithClient(
                   true,
               },
             });
+
+        /*
+         * The invitation and its initial delivery claim commit
+         * together. Failure to create either rolls back both.
+         *
+         * The raw credential and access URL never enter
+         * this delivery record.
+         */
+        if (deliveryKey !== null) {
+          await tx
+            .frenchWardInstitutionalInvitationDelivery
+            .create({
+              data: {
+                invitationId:
+                  invitation.id,
+
+                deliveryKey,
+
+                issuerUserId:
+                  issuedByUserId,
+
+                recipientEmail:
+                  invitation.recipientEmail,
+
+                status:
+                  "SENDING",
+
+                claimedAt:
+                  now,
+              },
+            });
+        }
 
         await tx.domainEvent.create({
           data: {

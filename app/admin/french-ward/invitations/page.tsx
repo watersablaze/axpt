@@ -69,7 +69,7 @@ export default async function InstitutionalInvitationsPage() {
 
   return (
     <InvitationWorkspace
-      previewOnly
+      previewOnly={false}
       issuerEligible={issuer?.isAdmin === true}
       records={invitations.map(invitation => {
         const delivery = deliveryByInvitation.get(invitation.id);
