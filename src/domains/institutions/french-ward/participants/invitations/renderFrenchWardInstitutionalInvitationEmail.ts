@@ -100,11 +100,10 @@ export function renderFrenchWardInstitutionalInvitationEmail(
     `Prepared for: ${name}`,
     `Invitation reference: ${reference}`,
     "",
-    "Welcome to French-Ward. Use your private link to confirm your details and continue to Orientation and the workspace for our work together.",
+    "Welcome to French-Ward. Use your private link to confirm your details and sign in to our workspace.",
     "",
-    `Prepared title: ${title}`,
+    `French-Ward title: ${title}`,
     ...(secondaryTitle ? [`Additional title: ${secondaryTitle}`] : []),
-    `Capacity class: ${input.capacityClass}`,
     "",
     "Open your private invitation:",
     accessUrl,
@@ -130,11 +129,10 @@ export function renderFrenchWardInstitutionalInvitationEmail(
     <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase">FRENCH-WARD, INC.</p>
     <h1 style="font-weight:normal;font-size:28px;margin:26px 0">Private Institutional Invitation</h1>
     <p>Prepared for <strong>${escapeHtml(name)}</strong></p>
-    <p>Welcome to French-Ward. Use your private link to confirm your details and continue to Orientation and the workspace for our work together.</p>
+    <p>Welcome to French-Ward. Use your private link to confirm your details and sign in to our workspace.</p>
     <section style="border-top:1px solid #514b42;border-bottom:1px solid #514b42;padding:20px 0;margin:24px 0">
-      <p>Prepared title: ${escapeHtml(title)}</p>
+      <p>French-Ward title: ${escapeHtml(title)}</p>
       ${secondaryTitle ? `<p>Additional title: ${escapeHtml(secondaryTitle)}</p>` : ""}
-      <p>Capacity: ${escapeHtml(input.capacityClass)}</p>
       <p>Reference: ${escapeHtml(reference)}</p>
     </section>
     <p>

@@ -43,29 +43,6 @@ export const metadata: Metadata = {
   },
 };
 
-function capacityLabel(
-  capacityClass:
-    | "STRATEGIC"
-    | "OPERATIONS"
-    | "FIDUCIARY",
-) {
-  if (
-    capacityClass ===
-    "STRATEGIC"
-  ) {
-    return "Strategic";
-  }
-
-  if (
-    capacityClass ===
-    "OPERATIONS"
-  ) {
-    return "Operations";
-  }
-
-  return "Fiduciary";
-}
-
 function formatDate(
   date: Date,
 ) {
@@ -173,10 +150,8 @@ FrenchWardInstitutionalWelcomePage() {
               styles.intro
             }
           >
-            You have been invited to enter French-Ward
-            in a recognized institutional capacity.
-            Review the identity and capacity prepared
-            for you before continuing.
+            Your French-Ward workspace is ready.
+            Confirm your details below to continue.
           </p>
         </header>
 
@@ -233,20 +208,6 @@ FrenchWardInstitutionalWelcomePage() {
               styles.definitionGrid
             }
           >
-            <div>
-              <dt>
-                Institutional Capacity
-              </dt>
-
-              <dd>
-                {
-                  capacityLabel(
-                    invitation.capacityClass,
-                  )
-                }
-              </dd>
-            </div>
-
             <div>
               <dt>
                 Participant Reference
@@ -364,13 +325,13 @@ FrenchWardInstitutionalWelcomePage() {
             <h2
               id="acceptance-title"
             >
-              Enter in this capacity
+              Confirm your details
             </h2>
 
             <p>
-              Continue only if the institutional identity
-              and capacity above correctly describe the
-              participation prepared for you.
+              Check your name and title above. After accepting,
+              request your sign-in code using the email address
+              that received this invitation.
             </p>
           </div>
 
@@ -384,7 +345,7 @@ FrenchWardInstitutionalWelcomePage() {
                 styles.acceptButton
               }
             >
-              Accept &amp; Continue
+              Accept &amp; Sign In
               <span
                 aria-hidden="true"
               >
