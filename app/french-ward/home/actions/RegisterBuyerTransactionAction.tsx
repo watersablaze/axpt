@@ -246,109 +246,38 @@ export default function RegisterBuyerTransactionAction() {
   }
 
   if (receipt) {
+    const { intake } = receipt;
+    const existing = intake.alreadyRegistered;
+
     return (
       <section
-        className={
-          styles.sendLoiReceipt
-        }
+        className={styles.loiOutcomeCard}
+        data-sent={!existing}
+        aria-label="Buyer registration receipt"
         aria-live="polite"
       >
-        <div>
-          <span>
-            REGISTRATION RECORDED
-          </span>
-
-          <strong>
-            {receipt.intake.status}
-          </strong>
+        <div className={styles.loiOutcomeHeading}>
+          {!existing && <span aria-hidden="true">✓</span>}
+          <h2>{existing ? "Intake already registered" : "Intake registered"}</h2>
         </div>
-
         <p>
-          The introduced commercial
-          matter has been recorded as an
-          Intake. Registration preserves
-          documentary continuity only; it
-          does not establish buyer
-          authority, representative
-          authority, transaction approval,
-          or Opportunity status.
+          {existing
+            ? "This registration matches an existing intake. Its reference and current status are below."
+            : "The transaction details and supporting PDF have been recorded for French-Ward review."}
         </p>
-
-        <dl>
+        <dl className={styles.loiOutcomeDetails}>
           <div>
-            <dt>
-              Intake
-            </dt>
-
-            <dd>
-              {receipt.intake.reference}
-            </dd>
-          </div>
-
-          <div>
-            <dt>
-              Status
-            </dt>
-
-            <dd>
-              {receipt.intake.status}
-            </dd>
-          </div>
-
-          <div>
-            <dt>
-              Existing
-            </dt>
-
-            <dd>
-              {receipt.intake
-                .alreadyRegistered
-                ? "YES"
-                : "NO"}
-            </dd>
+            <dt>Intake reference</dt>
+            <dd>{intake.reference}</dd>
           </div>
         </dl>
-
-        <dl>
+        <dl className={styles.loiOutcomeDetails}>
           <div>
-            <dt>
-              Buyer authority
-            </dt>
-
-            <dd>
-              {receipt
-                .buyerAuthorityVerified
-                ? "VERIFIED"
-                : "UNVERIFIED"}
-            </dd>
-          </div>
-
-          <div>
-            <dt>
-              Representative authority
-            </dt>
-
-            <dd>
-              {receipt
-                .representativeAuthorityGranted
-                ? "GRANTED"
-                : "NOT GRANTED"}
-            </dd>
-          </div>
-
-          <div>
-            <dt>
-              Opportunity
-            </dt>
-
-            <dd>
-              {receipt
-                .opportunityPromoted
-                ? "CREATED"
-                : "NOT CREATED"}
-            </dd>
+            <dt>Review status</dt>
+            <dd>{intake.status === "SUBMITTED" ? "Submitted for review" : intake.status}</dd>
           </div>
         </dl>
+        <p>Buyer authority, representative authority, and Opportunity promotion are handled separately.</p>
       </section>
     );
   }
