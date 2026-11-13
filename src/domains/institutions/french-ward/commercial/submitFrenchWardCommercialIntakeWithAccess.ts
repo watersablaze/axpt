@@ -10,7 +10,7 @@ import {
 } from "@/domains/institutions/french-ward/commercial";
 
 import { prisma } from "@/infrastructure/db/prisma";
-import { createTransactionIntakeReference } from "@/lib/intakeReference";
+import { createTransactionIntakeReference } from "../../../../../lib/intakeReference";
 import { sendTransactionIntakeConfirmation } from "@/domains/control-center/transaction-intakes/sendTransactionIntakeConfirmation";
 import { sendTransactionIntakeInternalNotification } from "@/domains/control-center/transaction-intakes/sendTransactionIntakeInternalNotification";
 

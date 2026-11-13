@@ -54,7 +54,7 @@ function fixture() {
       ),
 
     revokedAt:
-      null,
+      null as Date | null,
   };
 
   const grant = {

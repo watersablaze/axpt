@@ -45,6 +45,16 @@ export async function consumeInstitutionalAccessWithClient<T>(params: {
   action: "SUBMIT_INTAKE";
   resourceReference: string;
   resourceVersion: number;
+
+  /**
+   * Optional server-owned exact grant binding.
+   *
+   * Public invitation credentials must supply this so a credential
+   * cannot float across another live grant belonging to the same
+   * recipient identity.
+   */
+  grantId?: string;
+
   execute: (
     tx: InstitutionalAccessTransactionClient,
   ) => Promise<{ value: T; intakeId: string; intakeReference: string }>;
@@ -52,12 +62,21 @@ export async function consumeInstitutionalAccessWithClient<T>(params: {
   return params.client.$transaction(async (tx: InstitutionalAccessTransactionClient) => {
     await lockRecipient(tx, params.identity.userId);
     if (params.scope === "LOI_INTAKE_ACCESS") {
-      // Hold parent invitations stable through the protected submission.
-      // A concurrent dossier revocation waits for this transaction to finish.
+      // Hold representative dossier parents stable when they exist.
+      // Standalone governing invitations have no representative dossier.
       await tx.$queryRaw`SELECT d.id FROM "RepresentativeBuyerDossier" d
         JOIN "InstitutionalAccessGrant" g ON g.id = d."loiAccessGrantId"
         WHERE g."recipientUserId" = ${params.identity.userId}
         ORDER BY d.id FOR SHARE OF d`;
+
+      if (params.grantId) {
+        // Hold the exact governing invitation stable through submission.
+        // Grant revocation / invitation invalidation must serialize against
+        // the protected intake write.
+        await tx.$queryRaw`SELECT i.id FROM "FrenchWardLoiInvitation" i
+          WHERE i."grantId" = ${params.grantId}
+          FOR SHARE OF i`;
+      }
     }
 
     const now = new Date();
@@ -68,6 +87,7 @@ export async function consumeInstitutionalAccessWithClient<T>(params: {
       action: params.action,
       resourceReference: params.resourceReference,
       resourceVersion: params.resourceVersion,
+      grantId: params.grantId,
       now,
     });
 

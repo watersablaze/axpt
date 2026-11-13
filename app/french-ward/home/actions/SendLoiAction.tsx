@@ -288,68 +288,37 @@ export default function SendLoiAction() {
   }
 
   if (receipt) {
+    const status = receipt.delivery.status;
+    const sent = status === "ACCEPTED";
+    const logged = status === "LOGGED_ONLY";
+    const headline = sent
+      ? "LOI invitation sent"
+      : logged
+        ? "Invitation recorded. No email sent."
+        : statusLabel(status);
+    const detail = sent
+      ? "The email provider accepted your invitation for delivery."
+      : logged
+        ? "This invitation was recorded in log mode."
+        : "Check the delivery status before trying again.";
+
     return (
       <section
-        className={
-          styles.sendLoiReceipt
-        }
+        className={styles.loiOutcomeCard}
+        data-sent={sent}
+        aria-label="LOI invitation receipt"
         aria-live="polite"
       >
-        <div>
-          <span>
-            INVITATION RECORDED
-          </span>
-
-          <strong>
-            {statusLabel(
-              receipt.delivery
-                .status,
-            )}
-          </strong>
+        <div className={styles.loiOutcomeHeading}>
+          {sent && <span aria-hidden="true">✓</span>}
+          <h2>{headline}</h2>
         </div>
-
-        <p>
-          Recipient access was
-          processed under the
-          governing LOI invitation
-          record. This receipt does
-          not itself represent
-          transaction acceptance or
-          approval.
-        </p>
-
-        <dl>
+        <p>{detail}</p>
+        {receipt.replay && <p>Showing the result of the original request.</p>}
+        <dl className={styles.loiOutcomeDetails}>
           <div>
-            <dt>
-              Invitation
-            </dt>
-
-            <dd>
-              {receipt.invitationId}
-            </dd>
-          </div>
-
-          <div>
-            <dt>
-              Delivery
-            </dt>
-
-            <dd>
-              {receipt.delivery
-                .status}
-            </dd>
-          </div>
-
-          <div>
-            <dt>
-              Replay
-            </dt>
-
-            <dd>
-              {receipt.replay
-                ? "YES"
-                : "NO"}
-            </dd>
+            <dt>Invitation reference</dt>
+            <dd>{receipt.invitationId}</dd>
           </div>
         </dl>
       </section>

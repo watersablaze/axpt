@@ -18202,3 +18202,62 @@ strong {
     flex-wrap: wrap;
   }
 }
+
+
+.loiOutcomeCard {
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  border: 1px solid rgba(117, 185, 206, 0.3);
+  border-radius: 0.5rem;
+  background: #102127;
+  color: #dbe8eb;
+}
+
+.loiOutcomeCard[data-sent="true"] {
+  border-color: rgba(235, 190, 103, 0.48);
+  background: linear-gradient(120deg, #282518, #102127 65%);
+  box-shadow: 0 0 24px rgba(235, 190, 103, 0.08);
+}
+
+.loiOutcomeHeading {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+
+.loiOutcomeHeading > span {
+  display: grid;
+  flex: 0 0 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  color: #edc476;
+}
+
+.loiOutcomeHeading > h2 {
+  margin: 0;
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  line-height: 1.2;
+}
+
+.loiOutcomeCard > p {
+  margin: 0.85rem 0 0;
+  line-height: 1.55;
+}
+
+.loiOutcomeDetails {
+  margin: 1.5rem 0 0;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(185, 215, 224, 0.2);
+}
+
+.loiOutcomeDetails dt {
+  font-size: 0.8rem;
+  color: #a9c0c8;
+}
+
+.loiOutcomeDetails dd {
+  margin: 0.35rem 0 0;
+  overflow-wrap: anywhere;
+  font-size: 0.9rem;
+}

@@ -1,6 +1,4 @@
-import type {
-  PrismaClient,
-} from "@prisma/client";
+import type { prisma } from "@/infrastructure/db/prisma";
 
 import {
   resolveInstitutionalAccessWithClient,
@@ -20,8 +18,10 @@ type PrincipalIdentity = {
   displayName?: string | null;
 };
 
-type RequestAccessClient =
-  PrismaClient;
+type RequestAccessClient = Pick<
+  typeof prisma,
+  "frenchWardLoiInvitation" | "institutionalAccessGrant"
+>;
 
 export async function resolveFrenchWardCommercialIntakeRequestAccessWithClient(
   input: {

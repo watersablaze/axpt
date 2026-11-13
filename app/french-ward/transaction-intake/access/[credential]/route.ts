@@ -95,24 +95,11 @@ export async function GET(
     return unavailable();
   }
 
-  const destination =
-    request.nextUrl.clone();
-
-  destination.pathname =
-    FRENCH_WARD_LOI_ACCESS_PATH;
-
-  /*
-   * Strip the bearer secret and any accidental query data
-   * before the recipient reaches the intake presentation.
-   */
-  destination.search =
-    "";
-
-  const response =
-    NextResponse.redirect(
-      destination,
-      303,
-    );
+  // Keep the redirect on the host that receives the access cookie.
+  const response = new NextResponse(null, {
+    status: 303,
+    headers: { Location: FRENCH_WARD_LOI_ACCESS_PATH },
+  });
 
   response.cookies.set(
     FRENCH_WARD_LOI_ACCESS_COOKIE,
