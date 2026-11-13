@@ -202,6 +202,13 @@ export default function LoginPage() {
           :
         requestedPath === '/french-ward/profile'
           ? requestedDestination
+          : data.audience === 'FRENCH_WARD_GOVERNING'
+            ? (
+                requestedPath === '/french-ward/home' ||
+                requestedPath === '/french-ward/orientation'
+                  ? requestedDestination
+                  : '/french-ward/home'
+              )
           : data.audience === 'FRENCH_WARD_INSTITUTIONAL'
             ? (
                 requestedPath === '/french-ward/orientation'
