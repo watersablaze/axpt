@@ -4476,3 +4476,25 @@ model FrenchWardLoiInvitation {
   @@index([deliveryStatus, createdAt])
   @@index([actorUserId, createdAt])
 }
+
+/// One non-replayable delivery claim for one institutional invitation.
+/// This record never contains the raw bearer credential or access URL.
+/// FAILED or DELIVERY_UNKNOWN require governed invitation revocation
+/// and new issuance, not reconstruction of the original credential.
+model FrenchWardInstitutionalInvitationDelivery {
+  id                String   @id @default(uuid())
+  invitationId      String   @unique
+  deliveryKey       String   @unique
+  issuerUserId      String
+  recipientEmail    String
+  status            String
+  providerMessageId String?
+  providerErrorCode String?
+  claimedAt         DateTime @default(now())
+  resolvedAt        DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([status, claimedAt])
+  @@index([issuerUserId, claimedAt])
+}
