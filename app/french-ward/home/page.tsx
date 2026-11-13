@@ -136,6 +136,7 @@ export default async function FrenchWardHomePage({
   const home =
     await loadFrenchWardHomeWithClient({
       client: prisma,
+      canViewLiveMatters: adminReview || Boolean(governingStanding?.active),
 
       participant: governingStanding?.active
         ? {

@@ -100,8 +100,7 @@ export function renderFrenchWardInstitutionalInvitationEmail(
     `Prepared for: ${name}`,
     `Invitation reference: ${reference}`,
     "",
-    "You are invited to review your proposed institutional",
-    "participation within French-Ward, Inc. through AXPT.",
+    "Welcome to French-Ward. Use your private link to confirm your details and continue to Orientation and the workspace for our work together.",
     "",
     `Prepared title: ${title}`,
     ...(secondaryTitle ? [`Additional title: ${secondaryTitle}`] : []),
@@ -131,7 +130,7 @@ export function renderFrenchWardInstitutionalInvitationEmail(
     <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase">FRENCH-WARD, INC.</p>
     <h1 style="font-weight:normal;font-size:28px;margin:26px 0">Private Institutional Invitation</h1>
     <p>Prepared for <strong>${escapeHtml(name)}</strong></p>
-    <p>French-Ward has prepared an invitation for you to review your proposed institutional participation within AXPT.</p>
+    <p>Welcome to French-Ward. Use your private link to confirm your details and continue to Orientation and the workspace for our work together.</p>
     <section style="border-top:1px solid #514b42;border-bottom:1px solid #514b42;padding:20px 0;margin:24px 0">
       <p>Prepared title: ${escapeHtml(title)}</p>
       ${secondaryTitle ? `<p>Additional title: ${escapeHtml(secondaryTitle)}</p>` : ""}

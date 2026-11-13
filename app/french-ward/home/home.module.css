@@ -18022,3 +18022,183 @@ strong {
       7.5px;
   }
 }
+
+/* Home Desk instrument bars and awareness rail */
+.workspace .center .centerHead:has(+ [aria-label="French-Ward Home"]) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  padding: 14px clamp(12px, 2vw, 24px);
+  align-items: center;
+  border: 1px solid rgba(94, 183, 222, .21);
+  border-left: 2px solid rgba(94, 183, 222, .65);
+  background: linear-gradient(90deg, #11252e, #0b181e);
+}
+
+.workspace .center .centerHead:has(+ [aria-label="French-Ward Home"]) h1 {
+  margin-block: 4px;
+  font-size: clamp(25px, 3.2vw, 44px);
+  line-height: 1.05;
+}
+
+.workspace .center .centerHead:has(+ [aria-label="French-Ward Home"]) h1::after {
+  content: none;
+}
+
+.workspace .center [aria-label="French-Ward Home"] .passage,
+.workspace .center [aria-label="French-Ward Home"] .instrumentHead {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+
+.workspace .center [aria-label="French-Ward Home"] .passage {
+  padding-inline: 0;
+}
+
+.workspace .center [aria-label="French-Ward Home"] .instrumentHead {
+  padding: 12px clamp(12px, 2vw, 24px);
+  border: 1px solid rgba(247, 200, 100, .27);
+  border-left: 2px solid #e5b957;
+  background: linear-gradient(90deg, #27251b, #131b1d 72%);
+  box-shadow: 0 0 14px rgba(247, 200, 100, .09);
+}
+
+.workspace .center [aria-label="French-Ward Home"] .instrumentHead h2 {
+  color: #efcc81;
+}
+
+.workspace .center [aria-label="French-Ward Home"]
+.instrumentStrip > div:nth-child(3) strong:not(:empty) {
+  color: #efcc81;
+}
+
+.workspace .rightRail[data-open="true"] {
+  position: relative;
+  padding-top: 54px;
+  border-left-color: rgba(var(--fw-awareness-blue), .52);
+  background:
+    linear-gradient(
+      100deg,
+      rgba(var(--fw-awareness-blue), .14),
+      rgba(var(--fw-awareness-blue), .035) 70%
+    ),
+    #08151b;
+  box-shadow: inset 7px 0 24px rgba(var(--fw-awareness-blue), .10);
+}
+
+.workspace .rightRail[data-open="true"] .railToggle {
+  position: absolute;
+  z-index: 2;
+  top: 10px;
+  right: 12px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  min-height: 40px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid rgba(var(--fw-awareness-blue), .50);
+  border-radius: 3px;
+  background: #102832;
+  color: #a5dff4;
+}
+
+.workspace .rightRail[data-open="true"] .railToggle span {
+  display: none;
+}
+
+.workspace .rightRail[data-open="true"] .railToggle strong {
+  display: block;
+  font-size: 22px;
+  line-height: 1;
+}
+
+.workspace .rightRail[data-open="true"] .railToggle:focus-visible {
+  outline: 2px solid #a5dff4;
+  outline-offset: 3px;
+}
+
+@media (max-width: 700px) {
+  .workspace .center .centerHead:has(+ [aria-label="French-Ward Home"]) {
+    flex-wrap: wrap;
+  }
+
+  .workspace .center [aria-label="French-Ward Home"] .instrumentHead {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Module headers, active ticks, and awareness close */
+.workspace .center .centerHead:not(:has(+ [aria-label="French-Ward Home"])) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  padding: 12px clamp(12px, 2vw, 24px);
+  align-items: center;
+  border: 1px solid rgba(94, 183, 222, .14);
+  border-left: 2px solid rgba(94, 183, 222, .34);
+  background: linear-gradient(90deg, #0f2028, #0a151a);
+}
+
+.workspace .center .centerHead:not(:has(+ [aria-label="French-Ward Home"])) h1 {
+  margin-block: 4px;
+  font-size: clamp(24px, 2.6vw, 36px);
+  line-height: 1.1;
+}
+
+.workspace .center .centerHead:not(:has(+ [aria-label="French-Ward Home"])) h1::after {
+  content: none;
+}
+
+.workspace .center .matterMetric[data-active="true"],
+.workspace .center .recordControl[data-active="true"] {
+  border-color: rgba(239, 204, 129, .48);
+  background-color: rgba(229, 185, 87, .09);
+  box-shadow: inset 0 -2px #e5b957, 0 0 12px rgba(229, 185, 87, .12);
+}
+
+.workspace .center .matterMetric[data-active="true"] > span,
+.workspace .center .matterMetric[data-active="true"] > strong,
+.workspace .center .recordControl[data-active="true"] > span,
+.workspace .center .recordControl[data-active="true"] > strong,
+.workspace .center .passageLevel[data-active="true"] .levelLabel,
+.workspace .center .mobilePassageLevel[data-active="true"] strong {
+  color: #efcc81;
+  text-shadow: 0 0 10px rgba(229, 185, 87, .34);
+}
+
+.workspace .center .passageLevel[data-active="true"] .levelLine {
+  background-color: #e5b957;
+  box-shadow: 0 0 8px rgba(229, 185, 87, .45);
+}
+
+.workspace .centerHead .awarenessToggle[aria-expanded="true"] {
+  display: none;
+}
+
+.workspace .rightRail[data-open="true"] .railToggle {
+  grid-template-columns: minmax(0, 1fr);
+  justify-content: center;
+  justify-items: center;
+}
+
+.workspace .rightRail[data-open="true"] .railToggle strong {
+  position: static;
+  width: auto;
+  margin: 0;
+  padding: 0;
+  justify-self: center;
+  text-align: center;
+  transform: none;
+}
+
+@media (max-width: 700px) {
+  .workspace .center .centerHead {
+    flex-wrap: wrap;
+  }
+}

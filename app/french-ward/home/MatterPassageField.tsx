@@ -294,10 +294,13 @@ export default function MatterPassageField({
         </div>
 
         <div className={styles.passageLevels}>
-          {PASSAGE.map((level) => (
+          {PASSAGE.map((level, levelIndex) => (
             <div
               className={styles.passageLevel}
               data-passage={level.key}
+              data-active={matters.some(
+                (matter) => passageIndex(matter) === levelIndex,
+              )}
               key={level.key}
             >
               <span className={styles.levelLabel}>

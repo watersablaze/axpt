@@ -509,7 +509,7 @@ function ArrivalScene({
         <p
           className={styles.lead}
         >
-          You are entering the
+          You are entering the{" "}
           <span className={styles.institutionName}>FRENCH-WARD</span> workspace
           inside AXPT.
         </p>

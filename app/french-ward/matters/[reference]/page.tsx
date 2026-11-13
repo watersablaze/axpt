@@ -135,6 +135,10 @@ export default async function FrenchWardMatterPage({
     );
   }
 
+  if (!adminReview && !governingStanding?.active) {
+    notFound();
+  }
+
   const loaded =
     await loadFrenchWardMatterWithClient({
       client:

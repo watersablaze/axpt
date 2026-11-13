@@ -267,8 +267,20 @@ function movementFromIntakeEvent(
 export async function loadFrenchWardHomeWithClient(params: {
   client: PrismaClient;
   participant: FrenchWardHomeParticipant;
+  canViewLiveMatters?: boolean;
 }): Promise<FrenchWardHomeProjection> {
-  const { client, participant } = params;
+  const { client, participant, canViewLiveMatters } = params;
+
+  if (!canViewLiveMatters) {
+    return {
+      participant,
+      institution: { name: "French-Ward, Inc." },
+      matters: [],
+      attention: [],
+      recentMovement: [],
+      documents: projectFrenchWardHomeDocuments(),
+    };
+  }
 
   const [
     intakeRecords,
