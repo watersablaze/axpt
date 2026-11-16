@@ -98,7 +98,7 @@ export default async function FrenchWardHomePage({
     ? await prisma.frenchWardBulletinPost.findMany({
         where: { publishedAt: { not: null } },
         orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
-        select: { id: true, title: true, body: true, publishedAt: true },
+        select: { id: true, title: true, body: true, publishedAt: true, urgent: true, pdfName: true },
       })
     : null;
 

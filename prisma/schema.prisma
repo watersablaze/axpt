@@ -4507,6 +4507,9 @@ model FrenchWardBulletinPost {
   title        String
   body         String
   publishedAt  DateTime?
+  urgent       Boolean   @default(false)
+  pdfName      String?
+  pdfBytes     Bytes?
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 

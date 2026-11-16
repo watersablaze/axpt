@@ -17,6 +17,7 @@ import RegisterBuyerTransactionAction from "./actions/RegisterBuyerTransactionAc
 
 import MatterPassageField from "./MatterPassageField";
 import styles from "./home.module.css";
+import { BulletinBoard } from "./BulletinBoard";
 import refinement from "./home-refinement.module.css";
 
 type Props = {
@@ -28,6 +29,8 @@ type Props = {
     title: string;
     body: string;
     publishedAt: string;
+    urgent: boolean;
+    pdfName: string | null;
   }[] | null;
 };
 
@@ -575,23 +578,7 @@ export default function HomeWorkspaceShell({
           </header>
 
           {activeModule === "bulletin" && bulletinPosts !== null ? (
-            <section className={styles.moduleStage} aria-label="Bulletin Board">
-              <div className="mx-auto grid max-w-3xl gap-5">
-                {bulletinPosts.length === 0 && <p>No bulletins published yet.</p>}
-                {bulletinPosts.map((post) => (
-                  <article
-                    key={post.id}
-                    className="min-w-0 space-y-3 rounded-lg border border-white/15 bg-white/5 p-5 sm:p-7"
-                  >
-                    <time dateTime={post.publishedAt} className="text-sm text-amber-200">
-                      {post.publishedAt.slice(0, 10)} UTC
-                    </time>
-                    <h2 className="break-words text-xl font-semibold">{post.title}</h2>
-                    <p className="whitespace-pre-wrap break-words leading-relaxed">{post.body}</p>
-                  </article>
-                ))}
-              </div>
-            </section>
+            <BulletinBoard posts={bulletinPosts} />
           ) : null}
 
           {activeModule === "home" ? (
