@@ -72,7 +72,13 @@ export function BulletinBoard({ posts }: { posts: readonly BulletinPost[] }) {
     setSelectedId(id);
     const reader = document.getElementById("bulletin-latest");
     reader?.focus({ preventScroll: true });
-    reader?.scrollIntoView({ block: "start" });
+    reader?.closest<HTMLElement>("[data-fw-workspace-center]")?.scrollTo({
+      top: 0,
+      behavior: "instant",
+    });
+    if (window.scrollY > 0) {
+      window.scrollTo({ top: 0, behavior: "instant" });
+    }
   }
 
   return (

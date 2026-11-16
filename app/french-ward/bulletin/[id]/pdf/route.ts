@@ -1,4 +1,5 @@
 import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { PERMISSIONS } from "@/domains/auth/permissions";
 import {
   loadCurrentFrenchWardGoverningStandingWithClient,
 } from "@/domains/institutions/french-ward/governance/loadCurrentFrenchWardGoverningStandingWithClient";
@@ -17,7 +18,10 @@ export async function GET(
     client: prisma,
     userId: principal.userId,
   });
-  if (!standing?.active) {
+  if (
+    !standing?.active &&
+    !principal.permissions.includes(PERMISSIONS.FRENCH_WARD_BULLETIN_PUBLISH)
+  ) {
     return new Response(null, { status: 404, headers: privateHeaders });
   }
 

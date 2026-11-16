@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import HomeWorkspaceShell from "./HomeWorkspaceShell";
 
 import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { PERMISSIONS } from "@/domains/auth/permissions";
 import {
   loadCurrentFrenchWardGoverningStandingWithClient,
 } from "@/domains/institutions/french-ward/governance/loadCurrentFrenchWardGoverningStandingWithClient";
@@ -59,6 +60,9 @@ export default async function FrenchWardHomePage({
 
   const adminReview =
     principal.roles.includes("ADMIN_PLATFORM");
+  const canReadBulletin =
+    Boolean(governingStanding?.active) ||
+    principal.permissions.includes(PERMISSIONS.FRENCH_WARD_BULLETIN_PUBLISH);
 
   if (
     !adminReview &&
@@ -90,11 +94,11 @@ export default async function FrenchWardHomePage({
       : resolvedSearchParams?.module ===
           "actions"
         ? "actions"
-        : resolvedSearchParams?.module === "bulletin" && governingStanding?.active
+        : resolvedSearchParams?.module === "bulletin" && canReadBulletin
           ? "bulletin"
           : undefined;
 
-  const bulletinPosts = governingStanding?.active
+  const bulletinPosts = canReadBulletin
     ? await prisma.frenchWardBulletinPost.findMany({
         where: { publishedAt: { not: null } },
         orderBy: [{ publishedAt: "desc" }, { id: "desc" }],

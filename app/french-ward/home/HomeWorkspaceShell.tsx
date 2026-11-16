@@ -519,7 +519,7 @@ export default function HomeWorkspaceShell({
         </div>
       </aside>
 
-      <section className={styles.center}>
+      <section className={styles.center} data-fw-workspace-center>
         <div className={styles.centerInner}>
           <header
             className={styles.centerHead}
