@@ -16,6 +16,7 @@ datasource db {
 }
 
 model User {
+  frenchWardBulletinPosts FrenchWardBulletinPost[]
   buyerDossiersIssued RepresentativeBuyerDossier[] @relation("BuyerDossierActor")
   buyerDossiersReceived RepresentativeBuyerDossier[] @relation("BuyerDossierRecipient")
 
@@ -4497,4 +4498,17 @@ model FrenchWardInstitutionalInvitationDelivery {
 
   @@index([status, claimedAt])
   @@index([issuerUserId, claimedAt])
+}
+
+model FrenchWardBulletinPost {
+  id           String    @id @default(cuid())
+  authorUserId String
+  author       User      @relation(fields: [authorUserId], references: [id], onDelete: Restrict)
+  title        String
+  body         String
+  publishedAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([publishedAt, id])
 }

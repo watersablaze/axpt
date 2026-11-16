@@ -39,15 +39,6 @@ export default async function FrenchWardHomePage({
   const resolvedSearchParams =
     await searchParams;
 
-  const initialModule =
-    resolvedSearchParams?.module ===
-    "documents"
-      ? "documents"
-      : resolvedSearchParams?.module ===
-          "actions"
-        ? "actions"
-        : undefined;
-
   if (!principal) {
     redirect(
       "/login?next=%2Ffrench-ward%2Fhome",
@@ -91,6 +82,25 @@ export default async function FrenchWardHomePage({
   if (!completed) {
     redirect("/french-ward/orientation");
   }
+
+  const initialModule =
+    resolvedSearchParams?.module ===
+    "documents"
+      ? "documents"
+      : resolvedSearchParams?.module ===
+          "actions"
+        ? "actions"
+        : resolvedSearchParams?.module === "bulletin" && governingStanding?.active
+          ? "bulletin"
+          : undefined;
+
+  const bulletinPosts = governingStanding?.active
+    ? await prisma.frenchWardBulletinPost.findMany({
+        where: { publishedAt: { not: null } },
+        orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
+        select: { id: true, title: true, body: true, publishedAt: true },
+      })
+    : null;
 
   const [
     sendLoiAuthority,
@@ -190,6 +200,11 @@ export default async function FrenchWardHomePage({
       home={home}
       actions={actions}
       initialModule={initialModule}
+      bulletinPosts={bulletinPosts?.flatMap((post) =>
+        post.publishedAt
+          ? [{ ...post, publishedAt: post.publishedAt.toISOString() }]
+          : [],
+      ) ?? null}
     />
   );
 }

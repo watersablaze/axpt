@@ -23,6 +23,12 @@ type Props = {
   home: FrenchWardHomeProjection;
   actions: FrenchWardHomeActionPosture;
   initialModule?: ModuleId;
+  bulletinPosts: readonly {
+    id: string;
+    title: string;
+    body: string;
+    publishedAt: string;
+  }[] | null;
 };
 
 type ModuleId =
@@ -31,7 +37,8 @@ type ModuleId =
   | "records"
   | "documents"
   | "people"
-  | "actions";
+  | "actions"
+  | "bulletin";
 
 type ActionViewId =
   | "send-loi"
@@ -80,6 +87,12 @@ const MODULES: readonly {
     label: "Actions",
     descriptor: "Authorized institutional execution",
   },
+  {
+    index: "07",
+    id: "bulletin",
+    label: "Bulletin Board",
+    descriptor: "Deal updates and workspace notices",
+  },
 ];
 
 function humanize(value: string) {
@@ -96,6 +109,7 @@ export default function HomeWorkspaceShell({
   home,
   actions,
   initialModule = "home",
+  bulletinPosts,
 }: Props) {
   const [activeModule, setActiveModule] =
     useState<ModuleId>(initialModule);
@@ -447,7 +461,7 @@ export default function HomeWorkspaceShell({
           </p>
 
           <ul>
-            {MODULES.map((module) => {
+            {MODULES.filter((module) => module.id !== "bulletin" || bulletinPosts !== null).map((module) => {
               const active =
                 activeModule === module.id;
 
@@ -559,6 +573,26 @@ export default function HomeWorkspaceShell({
               </strong>
             </button>
           </header>
+
+          {activeModule === "bulletin" && bulletinPosts !== null ? (
+            <section className={styles.moduleStage} aria-label="Bulletin Board">
+              <div className="mx-auto grid max-w-3xl gap-5">
+                {bulletinPosts.length === 0 && <p>No bulletins published yet.</p>}
+                {bulletinPosts.map((post) => (
+                  <article
+                    key={post.id}
+                    className="min-w-0 space-y-3 rounded-lg border border-white/15 bg-white/5 p-5 sm:p-7"
+                  >
+                    <time dateTime={post.publishedAt} className="text-sm text-amber-200">
+                      {post.publishedAt.slice(0, 10)} UTC
+                    </time>
+                    <h2 className="break-words text-xl font-semibold">{post.title}</h2>
+                    <p className="whitespace-pre-wrap break-words leading-relaxed">{post.body}</p>
+                  </article>
+                ))}
+              </div>
+            </section>
+          ) : null}
 
           {activeModule === "home" ? (
             <section
