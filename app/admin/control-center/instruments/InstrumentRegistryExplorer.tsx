@@ -48,6 +48,7 @@ export default function InstrumentRegistryExplorer({ records }: { records: reado
   const [collection, setCollection] = useState<Collection>("all");
   const [family, setFamily] = useState<Family | "all">("all");
   const [expandedReference, setExpandedReference] = useState<string | null>(null);
+  const [density, setDensity] = useState<"comfortable" | "compact">("comfortable");
   const filtered = useMemo(() => {
     const needle = search.trim().toLocaleLowerCase();
     return records.filter((record) => {
@@ -63,7 +64,18 @@ export default function InstrumentRegistryExplorer({ records }: { records: reado
   const grouped = FAMILIES.map((entry) => ({
     ...entry, records: filtered.filter((record) => familyOf(record) === entry.key),
   })).filter((entry) => entry.records.length > 0);
-  const reset = () => { setSearch(""); setCollection("all"); setFamily("all"); };
+  const familyCounts = FAMILIES.map((item) => ({
+    ...item,
+    count: records.filter((record) =>
+      (collection === "all" ||
+        (collection === "eco-nommo" ? isEcoNommoReference(record.reference) : !isEcoNommoReference(record.reference))) &&
+      (!search.trim() || [record.reference, record.title, record.kind, record.status,
+        record.domainState ?? "", record.counterpartyName ?? ""]
+        .some((value) => value.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase()))) &&
+      familyOf(record) === item.key,
+    ).length,
+  }));
+  const reset = () => { setSearch(""); setCollection("all"); setFamily("all"); setExpandedReference(null); };
 
   return (
     <ControlDomainSurface
@@ -71,10 +83,23 @@ export default function InstrumentRegistryExplorer({ records }: { records: reado
       description="Canonical institutional records. Each instrument retains its own authority boundary."
       showHeading={false}
       rail={
-        <nav aria-label="Registry orientation">
-          <h2>Instrument directory</h2>
-          <p className="text-xs leading-5 text-slate-400">Search, filter, and inspect existing records in the main panel.</p>
-          <p className="text-xs leading-5 text-slate-500">Specialist workspaces retain their own permissions and authority.</p>
+        <nav aria-label="Instrument family navigation">
+          <h2>Browse instruments · {records.length}</h2>
+          <button type="button" aria-pressed={family === "all"}
+            onClick={() => setFamily("all")}
+            className={`w-full rounded px-2 py-2 text-left text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 ${family === "all" ? "bg-cyan-900/20 text-cyan-100" : "text-slate-300 hover:bg-white/5"}`}>
+            All instrument families <span className="float-right tabular-nums">{familyCounts.reduce((sum, item) => sum + item.count, 0)}</span>
+          </button>
+          {familyCounts.map((item) => (
+            <button key={item.key} type="button" aria-pressed={family === item.key}
+              onClick={() => setFamily(item.key)}
+              className={`w-full rounded px-2 py-2 text-left text-xs leading-5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 ${family === item.key ? "bg-cyan-900/20 text-cyan-100" : "text-slate-300 hover:bg-white/5"}`}>
+              <span className="flex items-start justify-between gap-2">
+                <span>{item.label}</span><span className="tabular-nums text-slate-400">{item.count}</span>
+              </span>
+            </button>
+          ))}
+          <p className="pt-3 text-[11px] leading-5 text-slate-500">Counts respect search and collection filters. Specialist workspaces retain their own authority.</p>
         </nav>
       }
     >
@@ -109,11 +134,22 @@ export default function InstrumentRegistryExplorer({ records }: { records: reado
             </div>
           </div>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-            <p aria-live="polite" className="text-xs text-slate-400">{filtered.length} of {records.length} registered records</p>
-            {(search || collection !== "all" || family !== "all") && (
-              <button type="button" onClick={reset}
-                className="rounded border border-slate-700 px-3 py-1.5 text-xs text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">Clear filters</button>
-            )}
+            <p aria-live="polite" aria-atomic="true" className="text-xs text-slate-400">
+              {filtered.length} of {records.length} registered {records.length === 1 ? "record" : "records"}
+            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <fieldset className="flex items-center gap-1 rounded border border-slate-700 p-1">
+                <legend className="sr-only">Record display density</legend>
+                <button type="button" aria-pressed={density === "comfortable"} onClick={() => setDensity("comfortable")}
+                  className={`rounded px-2 py-1 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 ${density === "comfortable" ? "bg-slate-700 text-white" : "text-slate-400"}`}>Detailed</button>
+                <button type="button" aria-pressed={density === "compact"} onClick={() => setDensity("compact")}
+                  className={`rounded px-2 py-1 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300 ${density === "compact" ? "bg-slate-700 text-white" : "text-slate-400"}`}>Compact</button>
+              </fieldset>
+              {(search || collection !== "all" || family !== "all") && (
+                <button type="button" onClick={reset}
+                  className="rounded border border-slate-700 px-3 py-1.5 text-xs text-slate-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">Clear filters</button>
+              )}
+            </div>
           </div>
           <p className="mt-2 text-[11px] text-slate-500">Eco-Nommo collection recognition is provisional and reference-based, not proof of institutional ownership or legal effect.</p>
         </div>
@@ -130,13 +166,13 @@ export default function InstrumentRegistryExplorer({ records }: { records: reado
                 <h2 className="text-xs font-semibold uppercase tracking-wider text-slate-200">{group.label}</h2>
                 <p className="mt-1 text-xs text-slate-500">{group.description}</p>
               </div>
-              <span className="text-xs text-slate-500">{group.records.length} records</span>
+              <span className="text-xs text-slate-500">{group.records.length} {group.records.length === 1 ? "record" : "records"}</span>
             </header>
             {group.records.map((record) => {
               const expanded = expandedReference === record.reference;
               const panelId = "instrument-detail-" + record.reference.replace(/[^a-zA-Z0-9-]/g, "-");
               return (
-                <article key={record.reference} className="border-b border-slate-700/50 px-4 py-4 last:border-b-0">
+                <article key={record.reference} className={`border-b border-slate-700/50 px-4 last:border-b-0 ${density === "compact" ? "py-2.5" : "py-4"}`}>
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <p className="font-mono text-xs text-amber-300">{record.reference} <span className="ml-2 text-slate-500">V{record.currentVersion}</span></p>
@@ -144,16 +180,17 @@ export default function InstrumentRegistryExplorer({ records }: { records: reado
                     </div>
                     <button type="button" aria-expanded={expanded} aria-controls={panelId}
                       onClick={() => setExpandedReference(expanded ? null : record.reference)}
+                      aria-label={`${expanded ? "Close" : "Show"} details for ${record.title}, ${record.reference}`}
                       className="rounded border border-slate-700 px-3 py-2 text-xs text-slate-200 hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">
                       {expanded ? "Close details" : "Record details"}
                     </button>
                   </div>
-                  <div className="mt-3 grid gap-3 text-xs sm:grid-cols-3">
-                    <div><p className="text-slate-500">Kind</p><p className="mt-1 text-slate-200">{humanize(record.kind)}</p></div>
-                    <div><p className="text-slate-500">Record status</p><p className="mt-1 text-slate-200">{humanize(record.status)}</p></div>
-                    <div><p className="text-slate-500">Domain state</p><p className="mt-1 text-slate-200">{record.domainState ? humanize(record.domainState) : "No operator surface"}</p></div>
+                  <div className={`grid gap-x-3 text-xs sm:grid-cols-3 ${density === "compact" ? "mt-2 gap-y-1" : "mt-3 gap-y-3"}`}>
+                    {density === "comfortable" && <div><p className="text-slate-500">Kind</p><p className="mt-1 text-slate-200">{humanize(record.kind)}</p></div>}
+                    <div><p className={density === "compact" ? "sr-only" : "text-slate-500"}>Record status</p><p className={density === "compact" ? "text-slate-300" : "mt-1 text-slate-200"}>{humanize(record.status)}</p></div>
+                    {density === "comfortable" && <div><p className="text-slate-500">Domain state</p><p className="mt-1 text-slate-200">{record.domainState ? humanize(record.domainState) : "No operator surface"}</p></div>}
                   </div>
-                  {expanded && <div id={panelId} className="mt-4 space-y-2 rounded border border-slate-700/50 bg-black/20 p-4 text-xs text-slate-300">
+                  {expanded && <div id={panelId} role="region" aria-label={`Details for ${record.reference}`} className="mt-4 space-y-2 rounded border border-slate-700/50 bg-black/20 p-4 text-xs text-slate-300">
                     <p><span className="text-slate-500">Reference: </span>{record.reference}</p>
                     <p><span className="text-slate-500">Current version: </span>V{record.currentVersion}; edition history is not exposed by this read model.</p>
                     <p><span className="text-slate-500">Counterparty: </span>{record.counterpartyName ?? "Not specified"}</p>
