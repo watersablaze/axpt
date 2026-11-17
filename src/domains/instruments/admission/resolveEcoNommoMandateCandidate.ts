@@ -150,7 +150,7 @@ export function resolveEcoNommoMandateCandidate(
         mandateEvidence.issuerAuthenticationReference !== candidate.evidenceIssuerAuthenticationReference ||
         mandateEvidence.issuerCompetenceReference !== candidate.evidenceIssuerCompetenceReference ||
         mandateEvidence.holderAcceptanceReference !== candidate.evidenceHolderAcceptanceReference ||
-        mandateEvidence.independentVerifierUserId !== verifier?.userId)
+        (verifier !== null && mandateEvidence.independentVerifierUserId !== verifier.userId))
       conflicted.push("MANDATE_EVIDENCE_BINDING_MISMATCH");
   }
 
