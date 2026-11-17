@@ -9,6 +9,8 @@ export type DirectoryRecord = {
 export default function RepresentativeRecordDirectory({selectedIntakeId, onSelect, refreshKey = 0}: {
   selectedIntakeId: string | null; onSelect: (intakeId: string, record?: DirectoryRecord) => void; refreshKey?: number;
 }) {
+  const [view, setView] = useState<"all" | "active">("all");
+  const directoryView = useRef<"all" | "active">("all");
   const [records, setRecords] = useState<DirectoryRecord[]>([]);
   const [search, setSearch] = useState(""), [activeQuery, setActiveQuery] = useState("");
   const [internalId, setInternalId] = useState("");
@@ -22,7 +24,7 @@ export default function RepresentativeRecordDirectory({selectedIntakeId, onSelec
     setBusy(true); setError("");
     if (!after) {setRecords([]); setNextCursor(null); setActiveQuery(q);}
     try {
-      const params = new URLSearchParams(); if (q) params.set("q", q); if (after) params.set("after", after);
+      const params = new URLSearchParams({view: directoryView.current}); if (q) params.set("q", q); if (after) params.set("after", after);
       const response = await fetch("/api/admin/representative-program/record-directory?" + params,
         {cache: "no-store", signal: abort.signal});
       const payload = await response.json();
@@ -42,11 +44,25 @@ export default function RepresentativeRecordDirectory({selectedIntakeId, onSelec
   function submit(event: FormEvent<HTMLFormElement>) {event.preventDefault(); void load(search.trim());}
   return <div className={styles.directory} aria-busy={busy}>
     <div className={styles.directoryControls}>
+      <div className={styles.searchActions} role="group" aria-label="Record directory view">
+        <button type="button" aria-pressed={view === "all"} onClick={() => {
+          directoryView.current = "all";
+          setView("all");
+          setSearch("");
+          void load("");
+        }}>All records</button>
+        <button type="button" aria-pressed={view === "active"} onClick={() => {
+          directoryView.current = "active";
+          setView("active");
+          setSearch("");
+          void load("");
+        }}>Active reps</button>
+      </div>
       <form onSubmit={submit} className={styles.searchForm}>
         <label htmlFor="arp-record-search">Find a record</label>
         <input id="arp-record-search" value={search} maxLength={100} onChange={event => setSearch(event.target.value)} placeholder="Name, email or reference" />
         <div className={styles.searchActions}><button type="submit" disabled={busy}>Search</button>
-          <button type="button" disabled={busy} onClick={() => {setSearch(""); void load("");}}>All Records</button>
+          <button type="button" disabled={busy} onClick={() => {setSearch(""); void load("");}}>Clear search</button>
           <button type="button" disabled={busy} onClick={() => void load(activeQuery)} aria-label="Refresh record directory">↻</button></div>
       </form>
       <details className={styles.exactLookup}><summary>Open by internal ID</summary><form onSubmit={event => {
@@ -54,7 +70,7 @@ export default function RepresentativeRecordDirectory({selectedIntakeId, onSelec
       }}><label htmlFor="arp-exact-id">Internal intake ID</label><input id="arp-exact-id" value={internalId} required maxLength={191}
           onChange={event => setInternalId(event.target.value)} placeholder="Intake ID" /><button type="submit">Open Record</button></form></details>
     </div>
-    <div className={styles.directoryList} tabIndex={0} aria-label="Existing intake records">
+    <div className={styles.directoryList} tabIndex={0} aria-label={view === "active" ? "Active representative register" : "Existing intake records"}>
       {error ? <p role="alert" className={styles.error}>{error}</p> : null}
       <ul>{records.map(record => <li key={record.id}>
         <button type="button" className={styles.recordRow} aria-pressed={selectedIntakeId === record.id} onClick={() => onSelect(record.id, record)}>
@@ -65,7 +81,7 @@ export default function RepresentativeRecordDirectory({selectedIntakeId, onSelec
           {record.admittedParticipant ? <span className={styles.rowParticipant}>{record.admittedParticipant.docketReference} · {record.admittedParticipant.standing.replaceAll("_", " ")}</span> : null}
         </button>
       </li>)}</ul>
-      {!busy && !error && records.length === 0 ? <p role="status" className={styles.directoryEmpty}>{activeQuery ? "No records match this search." : "No intake records were returned from this environment."}</p> : null}
+      {!busy && !error && records.length === 0 ? <p role="status" className={styles.directoryEmpty}>{activeQuery ? "No records match this search." : view === "active" ? "No active representatives were returned from this environment." : "No intake records were returned from this environment."}</p> : null}
       {nextCursor ? <button type="button" className={styles.loadMore} disabled={busy} onClick={() => void load(activeQuery, nextCursor)}>Load More Records</button> : null}
     </div>
     <p role="status" className={styles.directoryCount}>{busy ? "Loading records…" : `${records.length} ${records.length === 1 ? "record" : "records"} shown${nextCursor ? " · More available" : ""}`}</p>

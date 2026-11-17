@@ -18,19 +18,33 @@ export async function GET(request: Request) {
   if (!principal) return json({ok: false, error: "UNAUTHORIZED"}, 401);
   if (!isAdmin(principal)) return json({ok: false, error: "FORBIDDEN"}, 403);
   const query = new URL(request.url).searchParams;
-  if ([...query.keys()].some(key => !["q", "after"].includes(key)) ||
-      query.getAll("q").length > 1 || query.getAll("after").length > 1) return json({ok: false}, 400);
+  if ([...query.keys()].some(key => !["q", "after", "view"].includes(key)) ||
+      query.getAll("q").length > 1 || query.getAll("after").length > 1 || query.getAll("view").length > 1) return json({ok: false}, 400);
   const q = (query.get("q") ?? "").trim(), after = query.get("after");
+  const view = query.get("view") ?? "all";
+  if (!["all", "active"].includes(view)) return json({ok: false}, 400);
   if (q.length > 100 || (after !== null && (!after.trim() || after.length > 191))) return json({ok: false}, 400);
   try {
+    const now = new Date();
     const rows: RecordRow[] = await prisma.representativeOnboardingIntake.findMany({
-      where: q ? {OR: [
+      where: {
+        ...(view === "active" ? {admittedParticipant: {is: {
+          standing: "ACTIVE" as const,
+          appointments: {some: {
+            instrument: {status: {in: ["EXECUTED" as const, "ACTIVE" as const]}},
+            effectiveAt: {lte: now},
+            endedAt: null,
+            OR: [{expiresAt: null}, {expiresAt: {gt: now}}],
+          }},
+        }}} : {}),
+        ...(q ? {OR: [
         {candidateDisplayName: {contains: q, mode: "insensitive"}},
         {candidateEmail: {contains: q, mode: "insensitive"}},
         {reference: {contains: q, mode: "insensitive"}},
         {admittedParticipant: {is: {docketReference: {contains: q, mode: "insensitive"}}}},
         {admittedParticipant: {is: {user: {is: {email: {contains: q, mode: "insensitive"}}}}}},
-      ]} : {},
+        ]} : {}),
+      },
       orderBy: [{createdAt: "desc"}, {id: "desc"}], take: 26,
       ...(after ? {cursor: {id: after}, skip: 1} : {}),
       select: {id: true, reference: true, candidateDisplayName: true, candidateEmail: true, status: true,
