@@ -115,6 +115,7 @@ export default async function FrenchWardHomePage({
         select: {
           id: true,
           appointmentClass: true,
+          effectiveAt: true,
           expiresAt: true,
           participant: { select: { displayName: true, docketReference: true } },
           instrument: { select: { reference: true } },
@@ -230,6 +231,7 @@ export default async function FrenchWardHomePage({
       initialModule={initialModule}
       arpAppointments={arpAppointments?.map((appointment) => ({
         ...appointment,
+        effectiveAt: appointment.effectiveAt?.toISOString() ?? null,
         expiresAt: appointment.expiresAt?.toISOString() ?? null,
       })) ?? null}
       bulletinPosts={bulletinPosts?.flatMap((post) =>
