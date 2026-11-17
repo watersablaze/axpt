@@ -60,6 +60,7 @@ export default async function FrenchWardHomePage({
 
   const adminReview =
     principal.roles.includes("ADMIN_PLATFORM");
+  const canReadArpRegister = Boolean(governingStanding?.active);
   const canReadBulletin =
     Boolean(governingStanding?.active) ||
     principal.permissions.includes(PERMISSIONS.FRENCH_WARD_BULLETIN_PUBLISH);
@@ -96,7 +97,30 @@ export default async function FrenchWardHomePage({
         ? "actions"
         : resolvedSearchParams?.module === "bulletin" && canReadBulletin
           ? "bulletin"
-          : undefined;
+          : resolvedSearchParams?.module === "arp" && canReadArpRegister
+            ? "arp"
+            : undefined;
+
+  const now = new Date();
+  const arpAppointments = canReadArpRegister
+    ? await prisma.representativeProgramAppointment.findMany({
+        where: {
+          participant: { standing: "ACTIVE" },
+          instrument: { status: { in: ["EXECUTED", "ACTIVE"] } },
+          effectiveAt: { lte: now },
+          endedAt: null,
+          OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+        },
+        orderBy: [{ participant: { displayName: "asc" } }, { id: "asc" }],
+        select: {
+          id: true,
+          appointmentClass: true,
+          expiresAt: true,
+          participant: { select: { displayName: true, docketReference: true } },
+          instrument: { select: { reference: true } },
+        },
+      })
+    : null;
 
   const bulletinPosts = canReadBulletin
     ? await prisma.frenchWardBulletinPost.findMany({
@@ -204,6 +228,10 @@ export default async function FrenchWardHomePage({
       home={home}
       actions={actions}
       initialModule={initialModule}
+      arpAppointments={arpAppointments?.map((appointment) => ({
+        ...appointment,
+        expiresAt: appointment.expiresAt?.toISOString() ?? null,
+      })) ?? null}
       bulletinPosts={bulletinPosts?.flatMap((post) =>
         post.publishedAt
           ? [{ ...post, publishedAt: post.publishedAt.toISOString() }]

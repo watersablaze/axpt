@@ -17,6 +17,7 @@ import RegisterBuyerTransactionAction from "./actions/RegisterBuyerTransactionAc
 
 import MatterPassageField from "./MatterPassageField";
 import styles from "./home.module.css";
+import { ArpRegister, type ArpRegisterEntry } from "./ArpRegister";
 import { BulletinBoard } from "./BulletinBoard";
 import refinement from "./home-refinement.module.css";
 
@@ -24,6 +25,7 @@ type Props = {
   home: FrenchWardHomeProjection;
   actions: FrenchWardHomeActionPosture;
   initialModule?: ModuleId;
+  arpAppointments: readonly ArpRegisterEntry[] | null;
   bulletinPosts: readonly {
     id: string;
     title: string;
@@ -41,7 +43,8 @@ type ModuleId =
   | "documents"
   | "people"
   | "actions"
-  | "bulletin";
+  | "bulletin"
+  | "arp";
 
 type ActionViewId =
   | "send-loi"
@@ -96,6 +99,12 @@ const MODULES: readonly {
     label: "Bulletin Board",
     descriptor: "Deal updates and workspace notices",
   },
+  {
+    index: "08",
+    id: "arp",
+    label: "ARP Register",
+    descriptor: "Current appointments in the Authorized Representation Program",
+  },
 ];
 
 function humanize(value: string) {
@@ -113,6 +122,7 @@ export default function HomeWorkspaceShell({
   actions,
   initialModule = "home",
   bulletinPosts,
+  arpAppointments,
 }: Props) {
   const [activeModule, setActiveModule] =
     useState<ModuleId>(initialModule);
@@ -464,7 +474,10 @@ export default function HomeWorkspaceShell({
           </p>
 
           <ul>
-            {MODULES.filter((module) => module.id !== "bulletin" || bulletinPosts !== null).map((module) => {
+            {MODULES.filter((module) =>
+              (module.id !== "bulletin" || bulletinPosts !== null) &&
+              (module.id !== "arp" || arpAppointments !== null),
+            ).map((module) => {
               const active =
                 activeModule === module.id;
 
@@ -589,6 +602,10 @@ export default function HomeWorkspaceShell({
 
           {activeModule === "bulletin" && bulletinPosts !== null ? (
             <BulletinBoard posts={bulletinPosts} />
+          ) : null}
+
+          {activeModule === "arp" && arpAppointments !== null ? (
+            <ArpRegister appointments={arpAppointments} />
           ) : null}
 
           {activeModule === "home" ? (

@@ -1,0 +1,33 @@
+.entries {
+  display: grid;
+  gap: 12px;
+  padding: 0;
+  list-style: none;
+}
+
+.entry {
+  padding: 16px;
+  border: 1px solid rgba(143, 210, 237, .24);
+  background: rgba(143, 210, 237, .05);
+  overflow-wrap: anywhere;
+}
+
+.entry h3,
+.entry p {
+  margin: 0 0 8px;
+}
+
+.details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr));
+  gap: 12px;
+  margin: 16px 0 0;
+}
+
+.details dt {
+  font-size: .85em;
+}
+
+.details dd {
+  margin: 4px 0 0;
+}
