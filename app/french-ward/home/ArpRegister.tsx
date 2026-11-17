@@ -30,23 +30,23 @@ export function ArpRegister({
 }) {
   return (
     <section className={styles.moduleStage} aria-labelledby="arp-appointments">
-      <h2 id="arp-appointments">Active appointments</h2>
+      <h2 id="arp-appointments" className={registerStyles.heading}>Active appointments</h2>
       {appointments.length === 0 ? (
-        <p>There are no active appointments to display.</p>
+        <p className={registerStyles.empty}>There are no active appointments to display.</p>
       ) : (
         <ul className={registerStyles.entries}>
           {appointments.map(({ id, participant, appointmentClass, instrument, expiresAt }) => (
             <li key={id} className={registerStyles.entry}>
               <h3>{participant.displayName}</h3>
-              <p>{appointmentLabels[appointmentClass]}</p>
+              <p className={registerStyles.capacity}>{appointmentLabels[appointmentClass]}</p>
               <dl className={registerStyles.details}>
                 <div>
                   <dt>Representative docket</dt>
-                  <dd>{participant.docketReference}</dd>
+                  <dd><code>{participant.docketReference}</code></dd>
                 </div>
                 <div>
                   <dt>Appointment reference</dt>
-                  <dd>{instrument.reference}</dd>
+                  <dd><code>{instrument.reference}</code></dd>
                 </div>
                 <div>
                   <dt>Expiry</dt>
