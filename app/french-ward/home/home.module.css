@@ -18598,3 +18598,58 @@ strong {
     margin-block-start: 0;
   }
 }
+
+.liveLinks {
+  margin: 1.25rem 1rem 0;
+  padding-block-start: 0.875rem;
+  border-block-start: 1px solid rgba(145, 202, 222, .2);
+}
+
+.liveLinks ul {
+  display: grid;
+  gap: .125rem;
+  margin-block-start: .375rem;
+  list-style: none;
+  padding: 0;
+}
+
+.liveLinks a {
+  display: inline-block;
+  padding: .375rem 0;
+  color: #b8dce2;
+  font-size: .8125rem;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+
+.liveLinks a:focus-visible {
+  outline: 2px solid #e5b957;
+  outline-offset: 3px;
+}
+
+.workspace .center [aria-label="French-Ward Home"] .instrumentHead {
+  box-sizing: border-box;
+  width: calc(100% + 2 * var(--module-gutter));
+  margin-inline: calc(-1 * var(--module-gutter));
+  padding-inline: var(--module-gutter);
+}
+
+.workspace .center [aria-label="French-Ward Home"] .instrumentField {
+  box-sizing: border-box;
+  width: calc(100% + 2 * var(--module-gutter));
+  margin-inline: calc(-1 * var(--module-gutter));
+}
+
+@media (min-width: 701px) {
+  .workspace .center [aria-label="French-Ward Home"] .instrumentField {
+    --fw-plot-right: max(24px, var(--module-gutter));
+  }
+}
+
+@media (max-width: 700px) {
+  .liveLinks ul {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 1rem;
+  }
+}

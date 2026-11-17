@@ -509,6 +509,16 @@ export default function HomeWorkspaceShell({
           </ul>
         </nav>
 
+        <nav className={styles.liveLinks} aria-label="French-Ward Live">
+          <p className={styles.micro}>French-Ward Live</p>
+          <ul>
+            <li><Link href="/french-ward">French-Ward</Link></li>
+            <li><Link href="/french-ward/profile">Institutional profile</Link></li>
+            <li><Link href="/french-ward/transaction-intake">Transaction intake</Link></li>
+            <li><Link href="/french-ward/inquiry">Inquiry</Link></li>
+          </ul>
+        </nav>
+
         <div className={styles.railFoot}>
           <div>
             HOME / INSTITUTIONAL FIELD

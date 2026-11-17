@@ -1,4 +1,5 @@
 import { revalidatePath } from "next/cache";
+import BulletinSuccessNotice from "./BulletinSuccessNotice";
 import { notFound, redirect } from "next/navigation";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { PERMISSIONS } from "@/domains/auth/permissions";
@@ -156,13 +157,13 @@ export default async function BulletinEditor({
       </header>
 
       {(savedDraft || publishedPost || updatedPost) && (
-        <p role="status" className="rounded border border-emerald-400/30 bg-emerald-400/10 px-4 py-3 text-sm [overflow-wrap:anywhere]">
+        <BulletinSuccessNotice>
           {updatedPost
             ? `Changes saved and visible to officers: ${updatedPost.title}`
             : publishedPost
               ? `Published to officers: ${publishedPost.title}`
               : `Draft saved: ${savedDraft?.title}`}
-        </p>
+        </BulletinSuccessNotice>
       )}
       {error === "draft-unavailable" && (
         <p role="alert" className="rounded border border-amber-400/30 px-4 py-3 text-sm">
