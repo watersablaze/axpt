@@ -87,7 +87,14 @@ test("missing instrument is distinct from missing authority", async () => {
 });
 test("missing holder and duplicate holder fail closed", async () => {
   const row = fixture();
-  const missing = await load(create({ ...row, parties: [] }).client);
+  // Missing holder plus an authority referencing that absent party is a
+  // conflict, not merely an incomplete record. Preserve fail-closed priority.
+  const missingWithOrphan = await load(create({ ...row, parties: [] }).client);
+  assert.equal(missingWithOrphan.standing, "SOURCE_CONFLICTED");
+  assert.ok(missingWithOrphan.reasons.includes("AUTHORITY_HOLDER_PARTY_NOT_FOUND"));
+  nonoperative(missingWithOrphan);
+  // Without the orphan authority, a missing holder is incomplete only.
+  const missing = await load(create({ ...row, parties: [], authorities: [] }).client);
   assert.equal(missing.standing, "SOURCE_INCOMPLETE");
   assert.ok(missing.reasons.includes("HOLDER_PARTY_NOT_FOUND"));
   nonoperative(missing);
