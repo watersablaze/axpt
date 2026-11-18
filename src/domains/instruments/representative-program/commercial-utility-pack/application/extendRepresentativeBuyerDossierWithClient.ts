@@ -1,5 +1,8 @@
-import type { Prisma, PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 import { loadRecipientBuyerDossierWithClient } from "./loadRecipientBuyerDossierWithClient";
+type Transaction = Parameters<typeof loadRecipientBuyerDossierWithClient>[0]["client"] &
+  Pick<PrismaClient, "$queryRaw" | "domainEvent">;
+
 
 export type BuyerDossierExtensionDays = 14 | 30 | 60;
 const DAY = 86400000;
@@ -22,7 +25,7 @@ export async function extendRepresentativeBuyerDossierWithClient(input: {
       !Number.isFinite(new Date(input.expectedExpiresAt).getTime())) {
     throw new Error("BUYER_DOSSIER_EXTENSION_INVALID");
   }
-  return input.client.$transaction(async (tx: Prisma.TransactionClient) => {
+  return input.client.$transaction(async (tx: Transaction) => {
     await tx.$queryRaw`SELECT id FROM "RepresentativeBuyerDossier" WHERE id = ${input.dossierId} FOR UPDATE`;
     const dossier = await tx.representativeBuyerDossier.findUnique({
       where: { id: input.dossierId },
