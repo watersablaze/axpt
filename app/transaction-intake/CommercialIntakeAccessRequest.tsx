@@ -150,6 +150,39 @@ export default function CommercialIntakeAccessRequest({
         <h1 id="fw-intake-access-title">Commercial <span>Intake Access</span></h1>
         <p>Request access to French-Ward’s Letter of Intent and Transaction Intake to present a proposed transaction for review.</p>
       </div>
+      <div className={styles.accessGrid}>
+        <aside className={styles.readinessPanel} aria-label="Commercial readiness notices">
+          <p className={styles.readinessKicker}>Before You Request Access</p>
+          <h2>Commercial Readiness</h2>
+          <div className={styles.readinessItem}>
+            <span className={styles.readinessIcon} aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="7" width="18" height="14" rx="1"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2M3 13h18"/></svg>
+            </span>
+            <div>
+              <h3>Custodial Review</h3>
+              <p>French-Ward coordinates commercial passage in a custodial capacity. Access and intake do not confer title or transaction acceptance.</p>
+            </div>
+          </div>
+          <div className={styles.readinessItem}>
+            <span className={styles.readinessIcon} aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3 9 5-9 5-9-5 9-5ZM3 12l9 5 9-5M3 16l9 5 9-5"/></svg>
+            </span>
+            <div>
+              <h3>Productive Intake</h3>
+              <p>Structured intake organizes buyer interest, reduces back-and-forth, and supports efficient qualification and next-step coordination.</p>
+            </div>
+          </div>
+          <div className={styles.readinessItem}>
+            <span className={styles.readinessIcon} aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2 20 6v6c0 5-3.5 8-8 10-4.5-2-8-5-8-10V6l8-4Z"/><path d="m8.5 12 2.5 2.5 4.5-5"/></svg>
+            </span>
+            <div>
+              <h3>Good-Faith TAP Required</h3>
+              <p>Good-Faith TAP (Transaction Authorization Payment) is required under the applicable transaction terms for export preparation. No payment is requested at this access gate.</p>
+            </div>
+          </div>
+        </aside>
+        <div className={styles.requestColumn}>
       {state.status === "success" ? (
         <div className={styles.success} role="status">
           <strong>Request received.</strong>
@@ -177,6 +210,8 @@ export default function CommercialIntakeAccessRequest({
           </div>
         </>
       )}
+        </div>
+      </div>
       <p className={styles.notice}>Access is reviewed individually. Access approval permits use of the intake form; proposed transactions remain subject to separate French-Ward review and agreement.</p>
       <nav className={styles.returnNav} aria-label="Return to French-Ward"><a href="/french-ward"><span aria-hidden="true">←</span> RETURN TO FRENCH-WARD</a></nav>
     </section>
