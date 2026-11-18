@@ -925,9 +925,7 @@ export default function HomeWorkspaceShell({
           {activeModule ===
           "matters" ? (
             <section
-              className={
-                styles.moduleStage
-              }
+              className={`${styles.moduleStage} ${styles.mattersStage}`}
               aria-labelledby="matters-title"
             >
               <header

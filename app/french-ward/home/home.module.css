@@ -19118,3 +19118,78 @@ strong {
   margin: .125rem 0 0;
   overflow-wrap: anywhere;
 }
+
+/* Matters directory */
+.mattersStage :is(.mattersSummary, .matterFieldLedger) {
+  border: 1px solid #527282;
+  background: #142833;
+}
+
+.mattersStage :is(.mattersSummaryHead, .matterFieldHead, .matterColumnHead) {
+  background: #1a3441;
+  border-color: #527282;
+}
+
+.mattersStage :is(h2, .matterIdentity strong, .matterStage, .matterMetric > strong) {
+  color: #edf7f9;
+}
+
+.mattersStage :is(.moduleGuide, .micro, .mattersSummaryHead > span, .matterFieldHead p, .matterFieldHead > span, .matterColumnHead, .matterIdentity span, .matterMaterial, .matterPosition, .matterMovement, .matterAttention, .emptyLedger, .matterMetric > span, .matterMetric > small) {
+  color: #c3d5dc;
+}
+
+.mattersStage .matterMetrics {
+  gap: .5rem;
+}
+
+.mattersStage .matterMetric {
+  min-height: 44px;
+  border: 1px solid #527282;
+  background: #162d39;
+}
+
+.mattersStage .matterMetric:hover,
+.mattersStage .matterMetric[data-active="true"] {
+  border-color: #8dbdcb;
+  background: #234552;
+}
+
+.mattersStage .matterMetric[data-active="true"] {
+  box-shadow: inset 0 -3px #edcc87;
+}
+
+.mattersStage :is(.matterMetric[data-tone="attention"] > strong, .matterRecordBadge) {
+  color: #edcc87;
+}
+
+.mattersStage .matterLedgerRow {
+  border-color: #527282;
+  background: #142833;
+}
+
+.mattersStage .matterLedgerRow:hover,
+.mattersStage .matterLedgerRow:focus-within {
+  background: #1a3441;
+}
+
+.mattersStage .openMatter {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding-inline: .75rem;
+  border: 1px solid #72a4b6;
+  border-radius: 4px;
+  background: #162d39;
+  color: #bdeaf2;
+}
+
+.mattersStage .openMatter:hover {
+  background: #234552;
+  color: #edf7f9;
+}
+
+.mattersStage :is(.matterMetric, .openMatter):focus-visible {
+  outline: 2px solid #9ce5f5;
+  outline-offset: 2px;
+}

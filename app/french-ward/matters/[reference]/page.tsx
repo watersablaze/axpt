@@ -332,7 +332,7 @@ export default async function FrenchWardMatterPage({
         >
           <div>
             <dt>
-              Stage
+              Matter stage
             </dt>
 
             <dd>
@@ -344,7 +344,7 @@ export default async function FrenchWardMatterPage({
 
           <div>
             <dt>
-              State
+              Intake review status
             </dt>
 
             <dd>
@@ -433,8 +433,9 @@ export default async function FrenchWardMatterPage({
 
               <dd>
                 {
-                  homeMatter.quantityKg ??
-                  "Not recorded"
+                  homeMatter.quantityKg
+                    ? `${homeMatter.quantityKg} kg`
+                    : "Not recorded"
                 }
               </dd>
             </div>
