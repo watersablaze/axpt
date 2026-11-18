@@ -170,6 +170,34 @@ export default async function InstitutionalAccessAdminPage({
     });
   }
 
+  const loiNoticeRows = requests.length
+    ? await prisma.commercialIntakeAccessNoticeDelivery.findMany({
+        where: {
+          requestId: { in: requests.map((request) => request.id) },
+        },
+        orderBy: [{ attemptedAt: "desc" }, { id: "desc" }],
+        select: {
+          requestId: true,
+          status: true,
+          providerMessageId: true,
+          attemptedAt: true,
+        },
+      })
+    : [];
+
+  const latestLoiNoticeByRequest = new Map<
+    string,
+    { status: string; messageId: string | null; attemptedAt: string }
+  >();
+  for (const notice of loiNoticeRows) {
+    if (latestLoiNoticeByRequest.has(notice.requestId)) continue;
+    latestLoiNoticeByRequest.set(notice.requestId, {
+      status: notice.status,
+      messageId: notice.providerMessageId,
+      attemptedAt: notice.attemptedAt.toISOString(),
+    });
+  }
+
   const pendingEmails = [
     ...new Set(
       requests
@@ -206,6 +234,7 @@ export default async function InstitutionalAccessAdminPage({
     <InstitutionalAccessOperator
       initialRequestId={requestedRequestId || null}
       notices={Object.fromEntries(latestNoticeByRequest)}
+      loiNotices={Object.fromEntries(latestLoiNoticeByRequest)}
       requests={requests.map((request) => ({
         id: request.id,
         requesterName: request.requesterName,

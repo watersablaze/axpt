@@ -178,11 +178,13 @@ export function InstitutionalAccessOperator({
   requests,
   grants,
   notices,
+  loiNotices,
   initialRequestId,
 }: {
   requests: Request[];
   grants: Grant[];
   notices: ProfileNotices;
+  loiNotices: ProfileNotices;
   initialRequestId: string | null;
 }) {
   const router = useRouter();
@@ -359,6 +361,8 @@ export function InstitutionalAccessOperator({
     setNoticeHold,
   ] = useState<string | null>(null);
 
+  const [loiNoticeHold, setLoiNoticeHold] = useState<string | null>(null);
+
   const selectedRequest =
     requests.find(
       (request) =>
@@ -431,6 +435,20 @@ export function InstitutionalAccessOperator({
       "SENDING" ||
     currentNotice?.status ===
       "DELIVERY_UNKNOWN";
+
+  const currentLoiNotice = selectedGrantRequest
+    ? loiNotices[selectedGrantRequest.id]
+    : undefined;
+  const loiNoticeNeedsReconciliation =
+    currentLoiNotice?.status === "SENDING" ||
+    currentLoiNotice?.status === "DELIVERY_UNKNOWN";
+  const loiNoticeEligible = Boolean(
+    selectedGrant &&
+    selectedGrant.scope === "LOI_INTAKE_ACCESS" &&
+    selectedGrant.state === "CURRENT" &&
+    selectedGrantRequest?.status === "APPROVED" &&
+    selectedGrantRequest.isCurrentResource,
+  );
 
   const profileNoticeEligible =
     Boolean(
@@ -682,6 +700,75 @@ export function InstitutionalAccessOperator({
         title:
           "Operation not completed",
         detail: message,
+      });
+    } finally {
+      setBusy(false);
+      setBusyAction(null);
+    }
+  }
+
+  async function sendLoiNotice() {
+    if (
+      !selectedGrantRequest ||
+      !loiNoticeEligible ||
+      busy ||
+      loiNoticeHold === selectedGrantRequest.id ||
+      loiNoticeNeedsReconciliation
+    ) return;
+
+    const requestId = selectedGrantRequest.id;
+    const recipientEmail = selectedGrantRequest.requesterEmail;
+    const previous = currentLoiNotice
+      ? ` Previous attempt: ${currentLoiNotice.status} at ${currentLoiNotice.attemptedAt}.`
+      : " No previous system notice is recorded.";
+    if (!window.confirm(
+      `Send commercial intake access instructions to ${recipientEmail}?${previous} This creates an audited email attempt. Provider acceptance does not prove inbox delivery.`,
+    )) return;
+
+    const deliveryKey = window.crypto.randomUUID();
+    setBusy(true);
+    setBusyAction("NOTICE");
+    setOperationReceipt({
+      tone: "working",
+      title: "Requesting LOI notice delivery…",
+      detail: `Sending to approved recipient ${recipientEmail}.`,
+    });
+    try {
+      const response = await fetch("/api/admin/institutional-access/loi-notice", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ requestId, deliveryKey }),
+      });
+      const result = await response.json();
+      if (!response.ok || !result.ok) {
+        throw new Error(result.error || "Notice request failed.");
+      }
+      const status = String(result.result?.status ?? "UNKNOWN");
+      if (status === "ACCEPTED") {
+        setOperationReceipt({
+          tone: "success",
+          title: "LOI access notice accepted by email provider",
+          detail: `${recipientEmail} · Inbox delivery is not independently confirmed.`,
+        });
+      } else {
+        setOperationReceipt({
+          tone: status === "FAILED" || status === "BLOCKED" ? "error" : "working",
+          title: `LOI notice outcome · ${status}`,
+          detail: "Inspect the recorded delivery before attempting another send.",
+        });
+        if (["SENDING", "DELIVERY_UNKNOWN", "BLOCKED"].includes(status)) {
+          setLoiNoticeHold(requestId);
+        }
+      }
+      router.refresh();
+    } catch (error) {
+      setLoiNoticeHold(requestId);
+      setOperationReceipt({
+        tone: "error",
+        title: "LOI delivery unresolved",
+        detail:
+          (error instanceof Error ? error.message : "Request failed.") +
+          " Verify the delivery record before resending.",
       });
     } finally {
       setBusy(false);
@@ -1844,6 +1931,40 @@ export function InstitutionalAccessOperator({
                         View request &
                         event history
                       </button>
+                    )}
+
+                    {selectedGrant.scope === "LOI_INTAKE_ACCESS" && (
+                      <div style={{
+                        borderTop: "1px solid #2b3e52",
+                        marginTop: 17,
+                        paddingTop: 15,
+                      }}>
+                        <h3 style={{ fontSize: 13, margin: "0 0 8px" }}>
+                          Commercial intake access notice
+                        </h3>
+                        <p style={{ ...muted, fontSize: 11, lineHeight: 1.5 }}>
+                          {currentLoiNotice
+                            ? `Latest: ${currentLoiNotice.status} · ${shortDate(currentLoiNotice.attemptedAt)}`
+                            : "No system email notice recorded."}
+                        </p>
+                        <button
+                          style={{ ...subtleButton, width: "100%", marginTop: 8 }}
+                          type="button"
+                          disabled={!loiNoticeEligible || busy || loiNoticeNeedsReconciliation ||
+                            loiNoticeHold === selectedGrantRequest?.id}
+                          onClick={sendLoiNotice}
+                        >
+                          {busyAction === "NOTICE"
+                            ? "Requesting email-provider acceptance…"
+                            : currentLoiNotice?.status === "ACCEPTED"
+                              ? "Send another access notice"
+                              : "Send commercial intake access notice"}
+                        </button>
+                        <p style={{ ...muted, fontSize: 11, lineHeight: 1.5, marginTop: 8 }}>
+                          Requires a current approved grant. Provider acceptance is not proof of inbox delivery.
+                          Unresolved attempts are held for reconciliation.
+                        </p>
+                      </div>
                     )}
 
                     {selectedGrant.scope ===
