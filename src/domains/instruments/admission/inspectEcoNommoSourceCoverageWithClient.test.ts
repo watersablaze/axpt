@@ -109,7 +109,7 @@ test("missing issuer governing recognition never becomes issuer competence", asy
     client: fake, sessionUserId: "holder-user", admission, candidate: mandate, at,
   });
   assert.equal(result.findings[1].coverage, "MISSING");
-  assert.equal(result.findings[0].coverage, "UNQUALIFIED");
+  assert.equal(result.findings[0].coverage, "MISSING");
   noGrant(result);
 });
 test("mismatched actor does not initiate institutional reads", async () => {
