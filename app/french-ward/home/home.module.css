@@ -18713,11 +18713,55 @@ strong {
   }
 }
 
+.liveLinksToggle {
+  display: none;
+}
+
 @media (max-width: 700px) {
+  .liveLinksHeading {
+    display: none;
+  }
+
+  .liveLinksToggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    width: 100%;
+    min-height: 44px;
+    padding: .375rem 0;
+    color: #b8dce2;
+    font-size: .8125rem;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .liveLinksToggle::after {
+    content: "";
+    width: .45em;
+    height: .45em;
+    border-right: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+    transform: rotate(45deg);
+  }
+
+  .liveLinksToggle[aria-expanded="true"]::after {
+    transform: rotate(225deg);
+  }
+
+  .liveLinksToggle:focus-visible {
+    outline: 2px solid #e5b957;
+    outline-offset: 3px;
+  }
+
   .liveLinks ul {
     display: flex;
     flex-wrap: wrap;
     column-gap: 1rem;
+  }
+
+  .liveLinksToggle[aria-expanded="false"] + ul {
+    display: none;
   }
 }
 

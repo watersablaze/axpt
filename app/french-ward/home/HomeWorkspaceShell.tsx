@@ -132,6 +132,8 @@ export default function HomeWorkspaceShell({
   const [awarenessOpen, setAwarenessOpen] =
     useState(false);
 
+  const [liveLinksOpen, setLiveLinksOpen] = useState(false);
+
   const [
     activeAction,
     setActiveAction,
@@ -525,8 +527,17 @@ export default function HomeWorkspaceShell({
         </nav>
 
         <nav className={styles.liveLinks} aria-label="French-Ward Live">
-          <p className={styles.micro}>French-Ward Live</p>
-          <ul>
+          <p className={`${styles.micro} ${styles.liveLinksHeading}`}>French-Ward Live</p>
+          <button
+            type="button"
+            className={styles.liveLinksToggle}
+            aria-expanded={liveLinksOpen}
+            aria-controls="french-ward-live-links"
+            onClick={() => setLiveLinksOpen((open) => !open)}
+          >
+            French-Ward Live
+          </button>
+          <ul id="french-ward-live-links">
             <li><Link href="/french-ward">French-Ward</Link></li>
             <li><Link href="/french-ward/profile">Institutional profile</Link></li>
             <li><Link href="/french-ward/transaction-intake">Transaction intake</Link></li>
