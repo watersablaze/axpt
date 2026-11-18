@@ -1,0 +1,167 @@
+.register {
+  container-type: inline-size;
+}
+
+.heading {
+  padding-block: 16px 12px;
+}
+
+.heading span,
+.details dt,
+.entries code {
+  color: #a8bec5;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(230px, 1fr) minmax(0, 2fr);
+  align-items: start;
+  gap: 16px;
+}
+
+.directory,
+.record,
+.empty {
+  padding: clamp(16px, 2vw, 24px);
+  border: 1px solid rgba(143, 210, 237, .24);
+  background: rgba(143, 210, 237, .05);
+  overflow-wrap: anywhere;
+}
+
+.directory label {
+  display: block;
+  font-size: .85rem;
+}
+
+.directory input {
+  box-sizing: border-box;
+  width: 100%;
+  margin: 8px 0 12px;
+  padding: 9px 10px;
+  border: 1px solid rgba(143, 210, 237, .35);
+  background: #0a1419;
+  color: inherit;
+  font: inherit;
+}
+
+.entries {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.entries li + li {
+  border-top: 1px solid rgba(143, 210, 237, .14);
+}
+
+.entries button,
+.back {
+  border: 1px solid transparent;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.entries button {
+  display: grid;
+  gap: 4px;
+  width: 100%;
+  padding: 9px 10px;
+  text-align: start;
+  overflow-wrap: anywhere;
+}
+
+.entries button[aria-current],
+.entries button:hover,
+.back:hover {
+  border-color: rgba(143, 210, 237, .35);
+  background: rgba(143, 210, 237, .1);
+}
+
+.entries button:focus-visible,
+.directory input:focus-visible,
+.back:focus-visible {
+  outline: 2px solid #8fd2ed;
+  outline-offset: 2px;
+}
+
+.entries code,
+.details dt {
+  font-size: .8rem;
+}
+
+.record h3 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.capacity {
+  margin: 4px 0 0;
+  font-size: .95rem;
+}
+
+.details {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+  gap: 16px 24px;
+  margin: 16px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid rgba(143, 210, 237, .18);
+}
+
+.details dd {
+  margin: 5px 0 0;
+  font-size: .9rem;
+}
+
+.details code {
+  font-size: inherit;
+}
+
+.empty {
+  margin: 0;
+}
+
+.back {
+  display: none;
+}
+
+@container (max-width: 900px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .layout[data-detail-open="false"] .record,
+  .layout[data-detail-open="true"] .directory {
+    display: none;
+  }
+
+  .back {
+    display: inline-block;
+    margin-bottom: 16px;
+    padding: 6px 8px;
+    border-color: rgba(143, 210, 237, .35);
+  }
+}
+
+@container (max-width: 480px) {
+  .details {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .directory input {
+    font-size: 1rem;
+  }
+
+  .back {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 900px) {
+  .register[aria-labelledby="arp-appointments"] {
+    min-height: 0;
+  }
+}

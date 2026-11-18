@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
+
 import type {
   FrenchWardHomeMatter,
 } from "@/domains/institutions/french-ward/home/contracts";
@@ -8,6 +11,7 @@ type Props = {
   matters: FrenchWardHomeMatter[];
   attentionCount: number;
   movementCount: number;
+  rehearsal: boolean;
 };
 
 const PASSAGE = [
@@ -62,7 +66,32 @@ export default function MatterPassageField({
   matters,
   attentionCount,
   movementCount,
+  rehearsal,
 }: Props) {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const detailRef = useRef<HTMLElement>(null);
+  const selected = matters.find((matter) => matter.id === selectedId);
+
+  const triggerRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (selectedId) {
+      detailRef.current?.focus();
+    } else {
+      triggerRef.current?.focus({ preventScroll: true });
+    }
+  }, [selectedId]);
+
+  function openMatter(event: MouseEvent<HTMLButtonElement>, id: string) {
+    triggerRef.current = event.currentTarget;
+    setSelectedId(id);
+  }
+
+  function closeMatter() {
+    setSelectedId(null);
+  }
+
+  const movement = selected?.lastMovement;
   const ticks = [
     dateTick(30),
     dateTick(20),
@@ -77,33 +106,15 @@ export default function MatterPassageField({
     >
       <header className={styles.instrumentHead}>
         <div className={styles.instrumentIdentity}>
-          <p className={styles.micro}>
-            FIELD / PASSAGE
-          </p>
-
           <h2 id="matter-passage-title">
             Matter Passage
           </h2>
-
-          <p className={styles.instrumentGuide}>
-            Where active French-Ward matters stand as they
-            move from intake toward settlement.
-          </p>
         </div>
 
         <div
           className={styles.instrumentStrip}
           aria-label="French-Ward field readout"
         >
-          <div>
-            <span>FIELD</span>
-            <strong>
-              {matters.length
-                .toString()
-                .padStart(2, "0")}
-            </strong>
-          </div>
-
           <div>
             <span>OPEN</span>
             <strong>
@@ -113,7 +124,7 @@ export default function MatterPassageField({
             </strong>
           </div>
 
-          <div>
+          <div data-attention={attentionCount > 0}>
             <span>ATTENTION</span>
             <strong>
               {attentionCount
@@ -142,331 +153,386 @@ export default function MatterPassageField({
         </div>
       </header>
 
-      <section
-        className={
-          styles.mobilePassageNavigator
-        }
-        aria-label="Matter Passage mobile navigator"
-      >
-        <div
-          className={
-            styles.mobilePassageTrack
-          }
-        >
-          {PASSAGE.map(
-            (level, levelIndex) => {
-              const levelMatters =
-                matters.filter(
-                  (matter) =>
-                    passageIndex(matter) ===
-                    levelIndex,
-                );
+      {rehearsal ? (
+        <p className={styles.passageRehearsal}>Rehearsal · Synthetic matters</p>
+      ) : null}
 
-              return (
-                <div
-                  className={
-                    styles.mobilePassageLevel
-                  }
-                  data-passage={
-                    level.key
-                  }
-                  data-active={
-                    levelMatters.length > 0
-                      ? "true"
-                      : "false"
-                  }
-                  key={level.key}
-                >
-                  <div
-                    className={
-                      styles.mobilePassageStage
-                    }
-                  >
-                    <span
-                      className={
-                        styles.mobilePassageNode
-                      }
-                      aria-hidden="true"
-                    />
-
-                    <strong>
-                      {level.key}
-                    </strong>
-                  </div>
-
-                  <div
-                    className={
-                      styles.mobilePassageMatterField
-                    }
-                  >
-                    {levelMatters.map(
-                      (matter) => (
-                        <article
-                          className={
-                            styles.mobilePassageMatter
-                          }
-                          key={matter.id}
-                        >
-                          <strong>
-                            {matter.title}
-                          </strong>
-
-                          <code>
-                            {matter.reference}
-                          </code>
-
-                          <small>
-                            {matter.stage}
-                            {" · "}
-                            {matter.state}
-                          </small>
-                        </article>
-                      ),
-                    )}
-                  </div>
-                </div>
-              );
-            },
-          )}
-        </div>
-
-        {matters.length === 0 ? (
-          <div
+      <div className={styles.passageMap}>
+        <div inert={Boolean(selected)}>
+          <section
             className={
-              styles.mobilePassageQuiet
+              styles.mobilePassageNavigator
             }
+            aria-label="Matter Passage mobile navigator"
           >
-            <span>
-              FIELD QUIET
-            </span>
-
-            <p>
-              No recorded matter passage.
-            </p>
-          </div>
-        ) : null}
-
-        <footer
-          className={
-            styles.mobilePassageReadout
-          }
-        >
-          <span>
-            PASSAGE / POSITION
-          </span>
-
-          <strong>
-            AS OF {ticks[3]}
-          </strong>
-        </footer>
-      </section>
-
-      <div className={styles.instrumentField}>
-        <div
-          className={styles.fwSeal}
-          aria-hidden="true"
-        >
-          <img
-            src="/FW/french-ward_V3.2.png"
-            alt=""
-          />
-        </div>
-
-        <div
-          className={styles.fieldCoordinates}
-          aria-hidden="true"
-        >
-          <span
-            className={
-              styles.matterAxisPosition
-            }
-          >
-            POSITION
-          </span>
-
-          <span
-            className={
-              styles.matterAxisTime
-            }
-          >
-            TIME / RECORDED PASSAGE
-          </span>
-        </div>
-
-        <div className={styles.passageLevels}>
-          {PASSAGE.map((level, levelIndex) => (
             <div
-              className={styles.passageLevel}
-              data-passage={level.key}
-              data-active={matters.some(
-                (matter) => passageIndex(matter) === levelIndex,
-              )}
-              key={level.key}
-            >
-              <span className={styles.levelLabel}>
-                {level.key}
-              </span>
-
-              <span className={styles.levelLine} />
-            </div>
-          ))}
-        </div>
-
-        <div
-          className={styles.verticalTicks}
-          aria-hidden="true"
-        >
-          <i />
-          <i />
-          <i />
-          <i />
-        </div>
-
-        <div
-          className={styles.timeTicks}
-          aria-hidden="true"
-        >
-          {ticks.map((tick) => (
-            <span key={tick}>
-              {tick}
-            </span>
-          ))}
-        </div>
-
-        {matters.length === 0 ? (
-          <div className={styles.emptyField}>
-            <span
-              className={styles.registrationMark}
-              aria-hidden="true"
-            />
-
-            <span
               className={
-                styles.emptyFieldState
+                styles.mobilePassageTrack
               }
             >
-              FIELD QUIET
-            </span>
+              {PASSAGE.map(
+                (level, levelIndex) => {
+                  const levelMatters =
+                    matters.filter(
+                      (matter) =>
+                        passageIndex(matter) ===
+                        levelIndex,
+                    );
 
-            <p>
-              NO RECORDED PASSAGE
-            </p>
-          </div>
-        ) : (
-          <div className={styles.currentPositions}>
-            {matters.map((matter, index) => {
-              const level =
-                passageIndex(matter);
-
-              if (level < 0) {
-                return null;
-              }
-
-              const top =
-                ((level + 0.5) /
-                  PASSAGE.length) *
-                100;
-
-              const left =
-                62 + ((index % 4) * 7);
-
-              const buyer =
-                matter.parties.find(
-                  (party) =>
-                    party.role ===
-                    "BUYER",
-                );
-
-              const introduction =
-                matter.parties.find(
-                  (party) =>
-                    party.role ===
-                    "INTRODUCTION_CHANNEL",
-                );
-
-              return (
-                <div
-                  className={styles.position}
-                  key={matter.id}
-                  style={{
-                    top: `${top}%`,
-                    left: `${left}%`,
-                  }}
-                  tabIndex={0}
-                  aria-label={`${PASSAGE[level].key}: ${matter.title}`}
-                >
-                  <span
-                    className={
-                      styles.positionNode
-                    }
-                    aria-hidden="true"
-                  />
-
-                  <div
-                    className={
-                      styles.positionSummary
-                    }
-                  >
-                    <strong
+                  return (
+                    <div
                       className={
-                        styles.positionLabel
+                        styles.mobilePassageLevel
                       }
-                    >
-                      {PASSAGE[level].key}
-                    </strong>
-
-                    <span
-                      className={
-                        styles.positionBuyer
+                      data-passage={
+                        level.key
                       }
+                      data-active={
+                        levelMatters.length > 0
+                          ? "true"
+                          : "false"
+                      }
+                      key={level.key}
                     >
-                      {buyer?.legalName ??
-                        matter.title}
-                    </span>
-
-                    {introduction ? (
-                      <small
+                      <div
                         className={
-                          styles.positionRelation
+                          styles.mobilePassageStage
                         }
                       >
-                        Introduction ·{" "}
-                        {
-                          introduction
-                            .legalName
+                        <span
+                          className={
+                            styles.mobilePassageNode
+                          }
+                          aria-hidden="true"
+                        />
+
+                        <strong>
+                          {level.key}
+                        </strong>
+                      </div>
+
+                      <div
+                        className={
+                          styles.mobilePassageMatterField
                         }
-                      </small>
-                    ) : null}
-                  </div>
+                      >
+                        {levelMatters.map(
+                          (matter) => (
+                            <button
+                              type="button"
+                              aria-pressed={selectedId === matter.id}
+                              onClick={(event) => openMatter(event, matter.id)}
+                              className={
+                                styles.mobilePassageMatter
+                              }
+                              key={matter.id}
+                            >
+                              <strong>
+                                {matter.title}
+                              </strong>
 
-                  <div
-                    className={
-                      styles.positionDetail
-                    }
-                  >
-                    <small>
-                      {matter.title}
-                    </small>
+                              <code>
+                                {matter.reference}
+                              </code>
 
-                    <code>
-                      {matter.reference}
-                    </code>
+                              <small>
+                                {matter.stage}
+                                {" · "}
+                                {matter.state}
+                              </small>
+                            </button>
+                          ),
+                        )}
+                      </div>
+                    </div>
+                  );
+                },
+              )}
+            </div>
 
-                    <small
-                      className={
-                        styles.positionLifecycle
-                      }
-                    >
-                      {matter.stage}
-                      {" · "}
-                      {matter.state}
-                    </small>
-                  </div>
+            {matters.length === 0 ? (
+              <div
+                className={
+                  styles.mobilePassageQuiet
+                }
+              >
+                <span>
+                  FIELD QUIET
+                </span>
+
+                <p>
+                  No recorded matter passage.
+                </p>
+              </div>
+            ) : null}
+
+            <footer
+              className={
+                styles.mobilePassageReadout
+              }
+            >
+              <span>
+                PASSAGE / POSITION
+              </span>
+
+              <strong>
+                AS OF {ticks[3]}
+              </strong>
+            </footer>
+          </section>
+
+          <div className={styles.instrumentField}>
+            <div
+              className={styles.fwSeal}
+              aria-hidden="true"
+            >
+              <img
+                src="/FW/french-ward_V3.2.png"
+                alt=""
+              />
+            </div>
+
+            <div
+              className={styles.fieldCoordinates}
+              aria-hidden="true"
+            >
+              <span
+                className={
+                  styles.matterAxisPosition
+                }
+              >
+                POSITION
+              </span>
+
+              <span
+                className={
+                  styles.matterAxisTime
+                }
+              >
+                TIME / RECORDED PASSAGE
+              </span>
+            </div>
+
+            <div className={styles.passageLevels}>
+              {PASSAGE.map((level, levelIndex) => (
+                <div
+                  className={styles.passageLevel}
+                  data-passage={level.key}
+                  data-active={matters.some(
+                    (matter) => passageIndex(matter) === levelIndex,
+                  )}
+                  key={level.key}
+                >
+                  <span className={styles.levelLabel}>
+                    {level.key}
+                  </span>
+
+                  <span className={styles.levelLine} />
                 </div>
-              );
-            })}
+              ))}
+            </div>
+
+            <div
+              className={styles.verticalTicks}
+              aria-hidden="true"
+            >
+              <i />
+              <i />
+              <i />
+              <i />
+            </div>
+
+            <div
+              className={styles.timeTicks}
+              aria-hidden="true"
+            >
+              {ticks.map((tick) => (
+                <span key={tick}>
+                  {tick}
+                </span>
+              ))}
+            </div>
+
+            {matters.length === 0 ? (
+              <div className={styles.emptyField}>
+                <span
+                  className={styles.registrationMark}
+                  aria-hidden="true"
+                />
+
+                <span
+                  className={
+                    styles.emptyFieldState
+                  }
+                >
+                  FIELD QUIET
+                </span>
+
+                <p>
+                  NO RECORDED PASSAGE
+                </p>
+              </div>
+            ) : (
+              <div className={styles.currentPositions}>
+                {matters.map((matter, index) => {
+                  const level =
+                    passageIndex(matter);
+
+                  if (level < 0) {
+                    return null;
+                  }
+
+                  const top =
+                    ((level + 0.5) /
+                      PASSAGE.length) *
+                    100;
+
+                  const left =
+                    62 + ((index % 4) * 7);
+
+                  const buyer =
+                    matter.parties.find(
+                      (party) =>
+                        party.role ===
+                        "BUYER",
+                    );
+
+                  const introduction =
+                    matter.parties.find(
+                      (party) =>
+                        party.role ===
+                        "INTRODUCTION_CHANNEL",
+                    );
+
+                  return (
+                    <div
+                      className={styles.position}
+                      key={matter.id}
+                      style={{
+                        top: `${top}%`,
+                        left: `min(${left}%, calc(100% - 12rem))`,
+                      }}
+                    >
+                      <button
+                        type="button"
+                        className={styles.passageMarker}
+                        aria-label={`${PASSAGE[level].key}: ${matter.title}, ${matter.reference}`}
+                        aria-pressed={selectedId === matter.id}
+                        onClick={(event) => openMatter(event, matter.id)}
+                      >
+                        <span
+                          className={
+                            styles.positionNode
+                          }
+                          aria-hidden="true"
+                        />
+
+                        <span
+                          className={
+                            styles.positionSummary
+                          }
+                        >
+                          <strong
+                            className={
+                              styles.positionLabel
+                            }
+                          >
+                            {PASSAGE[level].key}
+                          </strong>
+
+                          <span
+                            className={
+                              styles.positionBuyer
+                            }
+                          >
+                            {buyer?.legalName ??
+                              matter.title}
+                          </span>
+
+                          {introduction ? (
+                            <small
+                              className={
+                                styles.positionRelation
+                              }
+                            >
+                              Introduction ·{" "}
+                              {
+                                introduction
+                                  .legalName
+                              }
+                            </small>
+                          ) : null}
+                        </span>
+
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
           </div>
-        )}
+        </div>
+
+        {selected ? (
+          <div className={styles.passageOverlay}>
+            <button
+              type="button"
+              className={styles.passageScrim}
+              tabIndex={-1}
+              aria-label="Dismiss matter details"
+              onClick={closeMatter}
+            />
+            <section
+              ref={detailRef}
+              className={styles.passageDetail}
+              tabIndex={-1}
+              role="dialog"
+              aria-labelledby="passage-selection-title"
+              onKeyDown={(event) => {
+                if (event.key === "Escape") {
+                  event.stopPropagation();
+                  closeMatter();
+                }
+              }}
+            >
+              <header className={styles.passageDetailHeader}>
+                <h3 id="passage-selection-title">{selected.title}</h3>
+                <button type="button" onClick={closeMatter}>Close</button>
+              </header>
+              <p>{selected.reference}</p>
+              <dl>
+                <div>
+                  <dt>Current stage</dt>
+                  <dd>{selected.stage.replaceAll("_", " ")} · {selected.state.replaceAll("_", " ")}</dd>
+                </div>
+                <div>
+                  <dt>Last recorded movement</dt>
+                  <dd>
+                    {movement ? (
+                      <>
+                        <time dateTime={movement.occurredAt}>
+                          {new Date(movement.occurredAt).toLocaleString("en-GB", {
+                            dateStyle: "medium",
+                            timeStyle: "short",
+                            timeZone: "UTC",
+                          })} UTC
+                        </time>
+                        {" · "}{movement.message}
+                      </>
+                    ) : "No recorded movement"}
+                  </dd>
+                </div>
+              </dl>
+              {!rehearsal && selected.reference.startsWith("AXPT-MAT-") ? (
+                <Link href={`/french-ward/matters/${encodeURIComponent(selected.reference)}`} prefetch={false}>
+                  Open Matter →
+                </Link>
+              ) : (
+                <p>{rehearsal ? "Synthetic rehearsal record" : "Canonical matter record pending"}</p>
+              )}
+            </section>
+          </div>
+        ) : null}
       </div>
 
       <footer className={styles.instrumentFoot}>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import HomeWorkspaceShell from "./HomeWorkspaceShell";
+import { createPassageRehearsalMatters } from "./passageRehearsal";
 
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { PERMISSIONS } from "@/domains/auth/permissions";
@@ -33,6 +34,7 @@ export default async function FrenchWardHomePage({
 }: {
   searchParams?: Promise<{
     module?: string;
+    passageRehearsal?: string;
   }>;
 }) {
   const principal = await getPrincipal();
@@ -60,6 +62,7 @@ export default async function FrenchWardHomePage({
 
   const adminReview =
     principal.roles.includes("ADMIN_PLATFORM");
+  const canReadArpRegister = Boolean(governingStanding?.active);
   const canReadBulletin =
     Boolean(governingStanding?.active) ||
     principal.permissions.includes(PERMISSIONS.FRENCH_WARD_BULLETIN_PUBLISH);
@@ -96,7 +99,31 @@ export default async function FrenchWardHomePage({
         ? "actions"
         : resolvedSearchParams?.module === "bulletin" && canReadBulletin
           ? "bulletin"
-          : undefined;
+          : resolvedSearchParams?.module === "arp" && canReadArpRegister
+            ? "arp"
+            : undefined;
+
+  const now = new Date();
+  const arpAppointments = canReadArpRegister
+    ? await prisma.representativeProgramAppointment.findMany({
+        where: {
+          participant: { standing: "ACTIVE" },
+          instrument: { status: { in: ["EXECUTED", "ACTIVE"] } },
+          effectiveAt: { lte: now },
+          endedAt: null,
+          OR: [{ expiresAt: null }, { expiresAt: { gt: now } }],
+        },
+        orderBy: [{ participant: { displayName: "asc" } }, { id: "asc" }],
+        select: {
+          id: true,
+          appointmentClass: true,
+          effectiveAt: true,
+          expiresAt: true,
+          participant: { select: { displayName: true, docketReference: true } },
+          instrument: { select: { reference: true } },
+        },
+      })
+    : null;
 
   const bulletinPosts = canReadBulletin
     ? await prisma.frenchWardBulletinPost.findMany({
@@ -202,8 +229,19 @@ export default async function FrenchWardHomePage({
   return (
     <HomeWorkspaceShell
       home={home}
+      passageRehearsal={
+        process.env.NODE_ENV === "development" &&
+        resolvedSearchParams?.passageRehearsal === "1"
+          ? createPassageRehearsalMatters(now)
+          : undefined
+      }
       actions={actions}
       initialModule={initialModule}
+      arpAppointments={arpAppointments?.map((appointment) => ({
+        ...appointment,
+        effectiveAt: appointment.effectiveAt?.toISOString() ?? null,
+        expiresAt: appointment.expiresAt?.toISOString() ?? null,
+      })) ?? null}
       bulletinPosts={bulletinPosts?.flatMap((post) =>
         post.publishedAt
           ? [{ ...post, publishedAt: post.publishedAt.toISOString() }]

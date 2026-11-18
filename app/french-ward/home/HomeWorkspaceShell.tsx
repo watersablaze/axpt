@@ -17,13 +17,16 @@ import RegisterBuyerTransactionAction from "./actions/RegisterBuyerTransactionAc
 
 import MatterPassageField from "./MatterPassageField";
 import styles from "./home.module.css";
+import { ArpRegister, type ArpRegisterEntry } from "./ArpRegister";
 import { BulletinBoard } from "./BulletinBoard";
 import refinement from "./home-refinement.module.css";
 
 type Props = {
   home: FrenchWardHomeProjection;
   actions: FrenchWardHomeActionPosture;
+  passageRehearsal?: FrenchWardHomeProjection["matters"];
   initialModule?: ModuleId;
+  arpAppointments: readonly ArpRegisterEntry[] | null;
   bulletinPosts: readonly {
     id: string;
     title: string;
@@ -41,7 +44,8 @@ type ModuleId =
   | "documents"
   | "people"
   | "actions"
-  | "bulletin";
+  | "bulletin"
+  | "arp";
 
 type ActionViewId =
   | "send-loi"
@@ -96,6 +100,12 @@ const MODULES: readonly {
     label: "Bulletin Board",
     descriptor: "Deal updates and workspace notices",
   },
+  {
+    index: "08",
+    id: "arp",
+    label: "ARP Register",
+    descriptor: "Current appointments in the Authorized Representation Program",
+  },
 ];
 
 function humanize(value: string) {
@@ -113,12 +123,16 @@ export default function HomeWorkspaceShell({
   actions,
   initialModule = "home",
   bulletinPosts,
+  arpAppointments,
+  passageRehearsal,
 }: Props) {
   const [activeModule, setActiveModule] =
     useState<ModuleId>(initialModule);
 
   const [awarenessOpen, setAwarenessOpen] =
     useState(false);
+
+  const [liveLinksOpen, setLiveLinksOpen] = useState(false);
 
   const [
     activeAction,
@@ -464,7 +478,10 @@ export default function HomeWorkspaceShell({
           </p>
 
           <ul>
-            {MODULES.filter((module) => module.id !== "bulletin" || bulletinPosts !== null).map((module) => {
+            {MODULES.filter((module) =>
+              (module.id !== "bulletin" || bulletinPosts !== null) &&
+              (module.id !== "arp" || arpAppointments !== null),
+            ).map((module) => {
               const active =
                 activeModule === module.id;
 
@@ -506,6 +523,25 @@ export default function HomeWorkspaceShell({
                 </li>
               );
             })}
+          </ul>
+        </nav>
+
+        <nav className={styles.liveLinks} aria-label="French-Ward Live">
+          <p className={`${styles.micro} ${styles.liveLinksHeading}`}>French-Ward Live</p>
+          <button
+            type="button"
+            className={styles.liveLinksToggle}
+            aria-expanded={liveLinksOpen}
+            aria-controls="french-ward-live-links"
+            onClick={() => setLiveLinksOpen((open) => !open)}
+          >
+            French-Ward Live
+          </button>
+          <ul id="french-ward-live-links">
+            <li><Link href="/french-ward">French-Ward</Link></li>
+            <li><Link href="/french-ward/profile">Institutional profile</Link></li>
+            <li><Link href="/french-ward/transaction-intake">Transaction intake</Link></li>
+            <li><Link href="/french-ward/inquiry">Inquiry</Link></li>
           </ul>
         </nav>
 
@@ -581,6 +617,10 @@ export default function HomeWorkspaceShell({
             <BulletinBoard posts={bulletinPosts} />
           ) : null}
 
+          {activeModule === "arp" && arpAppointments !== null ? (
+            <ArpRegister appointments={arpAppointments} />
+          ) : null}
+
           {activeModule === "home" ? (
             <section
               className={
@@ -589,14 +629,12 @@ export default function HomeWorkspaceShell({
               aria-label="French-Ward Home"
             >
               <MatterPassageField
-                matters={home.matters}
-                attentionCount={
-                  home.attention.length
-                }
-                movementCount={
-                  home.recentMovement
-                    .length
-                }
+                matters={passageRehearsal ?? home.matters}
+                rehearsal={Boolean(passageRehearsal)}
+                attentionCount={passageRehearsal ? 0 : home.attention.length}
+                movementCount={passageRehearsal
+                  ? passageRehearsal.filter((matter) => matter.lastMovement).length
+                  : home.recentMovement.length}
               />
 
               <section

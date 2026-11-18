@@ -18046,35 +18046,6 @@ strong {
   content: none;
 }
 
-.workspace .center [aria-label="French-Ward Home"] .passage,
-.workspace .center [aria-label="French-Ward Home"] .instrumentHead {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: none;
-  margin-inline: 0;
-}
-
-.workspace .center [aria-label="French-Ward Home"] .passage {
-  padding-inline: 0;
-}
-
-.workspace .center [aria-label="French-Ward Home"] .instrumentHead {
-  padding: 12px clamp(12px, 2vw, 24px);
-  border: 1px solid rgba(247, 200, 100, .27);
-  border-left: 2px solid #e5b957;
-  background: linear-gradient(90deg, #27251b, #131b1d 72%);
-  box-shadow: 0 0 14px rgba(247, 200, 100, .09);
-}
-
-.workspace .center [aria-label="French-Ward Home"] .instrumentHead h2 {
-  color: #efcc81;
-}
-
-.workspace .center [aria-label="French-Ward Home"]
-.instrumentStrip > div:nth-child(3) strong:not(:empty) {
-  color: #efcc81;
-}
-
 .workspace .rightRail[data-open="true"] {
   position: relative;
   padding-top: 54px;
@@ -18597,4 +18568,532 @@ strong {
   .center [data-bulletin-index-layout] > [data-bulletin-rail] {
     margin-block-start: 0;
   }
+}
+
+.liveLinks {
+  margin: 1.25rem 1rem 0;
+  padding-block-start: 0.875rem;
+  border-block-start: 1px solid rgba(145, 202, 222, .2);
+}
+
+.liveLinks ul {
+  display: grid;
+  gap: .125rem;
+  margin-block-start: .375rem;
+  list-style: none;
+  padding: 0;
+}
+
+.liveLinks a {
+  display: inline-block;
+  padding: .375rem 0;
+  color: #b8dce2;
+  font-size: .8125rem;
+  text-decoration: underline;
+  text-underline-offset: .2em;
+}
+
+.liveLinks a:focus-visible {
+  outline: 2px solid #e5b957;
+  outline-offset: 3px;
+}
+
+/* Join the Home Desk header and Matter Passage across the center surface. */
+.workspace .center .centerInner > .centerHead:has(+ [aria-label="French-Ward Home"]) {
+  border-bottom: 0;
+  max-width: none;
+}
+
+.workspace .center [aria-label="French-Ward Home"] {
+  margin-block-start: 0;
+}
+
+.workspace .center [aria-label="French-Ward Home"] .passage {
+  box-sizing: border-box;
+  width: calc(100% + 2 * var(--module-gutter));
+  margin: 0 calc(-1 * var(--module-gutter));
+  padding-inline: 0;
+}
+
+.workspace .center [aria-label="French-Ward Home"] .passage::before {
+  content: none;
+}
+
+.workspace .center [aria-label="French-Ward Home"] .instrumentHead {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 32rem);
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+  min-height: 0;
+  padding: 0.5rem var(--module-gutter);
+  border-block: 1px solid rgba(145, 202, 222, .23);
+  background: linear-gradient(90deg, #1e2927, #12262e 58%, #0e2028);
+  box-shadow: none;
+}
+
+.workspace .center [aria-label="French-Ward Home"] .instrumentHead h2 {
+  margin: 0;
+  color: #efcc81;
+  font-size: clamp(1rem, 1.45vw, 1.25rem);
+  line-height: 1.2;
+}
+
+.workspace .center [aria-label="French-Ward Home"] .instrumentStrip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.workspace .center [aria-label="French-Ward Home"] .instrumentStrip > div:nth-child(n) {
+  display: grid;
+  grid-column: auto;
+  align-content: center;
+  gap: 0.25rem;
+  min-width: 0;
+  min-height: 0;
+  padding: 0.125rem clamp(4px, 1vw, 12px);
+  border: 0;
+  border-inline-start: 1px solid rgba(145, 202, 222, .18);
+}
+
+.workspace .center [aria-label="French-Ward Home"] .instrumentStrip span {
+  color: #aec2c7;
+  font-size: clamp(0.5625rem, 1vw, 0.6875rem);
+  line-height: 1.15;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.workspace .center [aria-label="French-Ward Home"] .instrumentStrip strong {
+  margin: 0;
+  color: #dbe9ea;
+  font-size: 0.75rem;
+  line-height: 1.15;
+  overflow-wrap: anywhere;
+}
+
+.workspace .center [aria-label="French-Ward Home"] .instrumentStrip [data-attention="true"] strong {
+  color: #efcc81;
+}
+
+.workspace .center [aria-label="French-Ward Home"] .instrumentField {
+  box-sizing: border-box;
+  width: 100%;
+  margin-inline: 0;
+}
+
+.workspace .center [aria-label="French-Ward Home"] .instrumentFoot {
+  margin-inline: var(--module-gutter);
+}
+
+@media (min-width: 701px) {
+  .workspace .center [aria-label="French-Ward Home"] .instrumentField {
+    --fw-plot-left: clamp(112px, 8vw, 128px);
+    --fw-plot-right: clamp(18px, 1.5vw, 26px);
+  }
+}
+
+@media (max-width: 700px) {
+  .workspace .center [aria-label="French-Ward Home"] .instrumentHead {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .workspace .center [aria-label="French-Ward Home"] .instrumentStrip > div:first-child {
+    border-inline-start: 0;
+    padding-inline-start: 0;
+  }
+
+  .workspace .center [aria-label="French-Ward Home"] .mobilePassageNavigator {
+    margin-inline: 12px;
+  }
+}
+
+.liveLinksToggle {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .liveLinksHeading {
+    display: none;
+  }
+
+  .liveLinksToggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    width: 100%;
+    min-height: 44px;
+    padding: .375rem 0;
+    color: #b8dce2;
+    font-size: .8125rem;
+    text-align: left;
+    cursor: pointer;
+  }
+
+  .liveLinksToggle::after {
+    content: "";
+    width: .45em;
+    height: .45em;
+    border-right: 1px solid currentColor;
+    border-bottom: 1px solid currentColor;
+    transform: rotate(45deg);
+  }
+
+  .liveLinksToggle[aria-expanded="true"]::after {
+    transform: rotate(225deg);
+  }
+
+  .liveLinksToggle:focus-visible {
+    outline: 2px solid #e5b957;
+    outline-offset: 3px;
+  }
+
+  .liveLinks ul {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: 1rem;
+  }
+
+  .liveLinksToggle[aria-expanded="false"] + ul {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .workspace .leftRail .directory {
+    position: static;
+    height: auto;
+    overflow: visible;
+  }
+
+  .workspace .directory ul {
+    height: auto;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .workspace .directory .directoryLink {
+    height: auto;
+    min-height: 44px;
+    padding: 6px 4px;
+    font-size: .7rem;
+    line-height: 1.2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .workspace .leftRail .liveLinks {
+    margin: 0;
+    padding: 10px var(--module-gutter, 18px);
+  }
+
+  .workspace .center {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .workspace .center:has(#arp-appointments) .centerInner {
+    min-height: 0;
+    padding-bottom: 24px;
+  }
+
+  .workspace .center:has(#arp-appointments) .centerHead {
+    justify-content: space-between;
+    gap: 10px 16px;
+  }
+
+  .workspace .center:has(#arp-appointments) .centerHead .awarenessToggle {
+    display: flex;
+    min-height: 44px;
+  }
+}
+
+/* Home Desk instrument finish */
+.workspace .center .centerInner > .centerHead:has(+ [aria-label="French-Ward Home"]) {
+  background:
+    linear-gradient(90deg, #11252e 15%, transparent 68%),
+    repeating-linear-gradient(0deg, transparent 0 5px, rgb(113 205 228 / .07) 5px 6px),
+    repeating-linear-gradient(90deg, transparent 0 19px, rgb(113 205 228 / .05) 19px 20px),
+    linear-gradient(105deg, #11252e, #163744 73%, #0b181e);
+}
+
+.workspace .center [aria-label="French-Ward Home"] :is(.instrumentField, .mobilePassageNavigator) {
+  background:
+    radial-gradient(ellipse at 59% 4%, rgb(40 161 193 / .16), transparent 57%),
+    radial-gradient(ellipse at 98% 80%, rgb(45 109 168 / .13), transparent 50%),
+    #08161d;
+  box-shadow: inset 0 1px rgb(129 215 234 / .22), inset 0 -1px rgb(129 215 234 / .12);
+}
+
+.workspace .center [aria-label="French-Ward Home"] .emptyField {
+  color: #b4cfd6;
+}
+
+/* Actions use the full center surface, with readable workstations inside it. */
+.workspace .center:has(.actionsStage) {
+  background: linear-gradient(145deg, #152c36, #0f2029 72%);
+  color-scheme: dark;
+}
+
+.workspace .center:has(.actionsStage) .centerInner {
+  background: transparent;
+}
+
+.workspace .center:has(.actionsStage) .centerInner > .centerHead {
+  background: #132c38;
+  border-color: #4c7180;
+}
+
+.workspace .center .actionsStage {
+  margin-block-start: 0;
+  padding-block: clamp(1rem, 2.2vw, 2rem) 3rem;
+  background: none;
+}
+
+.workspace .center .actionsStage :is(.actionPostureField, .actionExecutionPanel, .actionUnavailablePanel, .actionBoundary) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+
+.workspace .center .actionsStage .actionPostureField {
+  gap: .75rem;
+  margin-block-start: 0;
+}
+
+.workspace .center .actionsStage .actionPosture {
+  min-width: 0;
+  min-height: 0;
+  padding: 1rem;
+  border: 1px solid #527282;
+  border-radius: 4px;
+  background: #162d39;
+  box-shadow: none;
+  overflow-wrap: anywhere;
+}
+
+.workspace .center .actionsStage .actionPosture[data-current="true"] {
+  border-color: #8dbdcb;
+  background: #234552;
+  box-shadow: inset 0 -3px #edcc87;
+}
+
+.workspace .center .actionsStage .actionPosture h3 {
+  color: #edf7f9;
+  font-size: 1rem;
+}
+
+.workspace .center .actionsStage .actionPosture > div p {
+  color: #becfd6;
+  font-size: .625rem;
+}
+
+.workspace .center .actionsStage .actionPosture > strong {
+  color: #e2e9ec;
+  border-color: #77919c;
+  font-size: .6875rem;
+}
+
+.workspace .center .actionsStage .actionPosture[data-available="true"] > strong {
+  color: #bdeaf2;
+  border-color: #72a4b6;
+}
+
+.workspace .center .actionsStage :is(.actionExecutionPanel, .actionUnavailablePanel, .actionBoundary) {
+  border: 1px solid #527282;
+  background: #142833;
+}
+
+.workspace .center .actionsStage :is(.sendLoiHeading, .sendLoiExecution) {
+  background: #1a3441;
+}
+
+.workspace .center .actionsStage :is(.sendLoiHeading h3, .actionUnavailablePanel h3) {
+  color: #edf7f9;
+}
+
+.workspace .center .actionsStage :is(.sendLoiHeading p, .sendLoiExecution p, .actionBoundary p, .actionUnavailablePanel p, .registerFieldHelp, .registerFieldHelp span, .registerCapacityField p) {
+  color: #c3d5dc;
+  font-size: .8125rem;
+  line-height: 1.55;
+}
+
+.workspace .center .actionsStage :is(.sendLoiFields > label > span:first-child, .registerCapacityField legend, .actionBoundary > span) {
+  color: #e8d29f;
+  font-size: .75rem;
+  line-height: 1.4;
+}
+
+.workspace .center .actionsStage .sendLoiFields :is(input:not([type="radio"]), textarea, select) {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  border-color: #688b9b;
+  background: #0e222d;
+  color: #f0f8f9;
+  font-size: 1rem;
+}
+
+.workspace .center .actionsStage .sendLoiFields :is(input, textarea)::placeholder {
+  color: #a5bbc5;
+}
+
+.workspace .center .actionsStage .sendLoiExecution button {
+  min-height: 44px;
+  padding-inline: 1rem;
+  font-size: .75rem;
+}
+
+.workspace .center .actionsStage .sendLoiExecution button:enabled {
+  border-color: #edcc87;
+  background: #edcc87;
+  color: #182a32;
+}
+
+.workspace .center .actionsStage .sendLoiExecution button:enabled:hover {
+  background: #ffe1a0;
+}
+
+.workspace .center .actionsStage :is(button, input, select, textarea):focus-visible {
+  outline: 2px solid #9ce5f5;
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  .workspace .center .actionsStage .actionPostureField {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Matter Passage selection */
+.passageMarker {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.passageMarker .positionSummary {
+  box-sizing: border-box;
+  width: clamp(9rem, 14vw, 11rem);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.passageMarker:focus-visible,
+.mobilePassageMatter:focus-visible,
+.passageDetail:focus-visible {
+  outline: 2px solid #9ce5f5;
+  outline-offset: 2px;
+}
+
+.passageMarker[aria-pressed="true"] .positionSummary,
+.mobilePassageMatter[aria-pressed="true"] {
+  border-color: #edcc87;
+}
+
+.mobilePassageMatter {
+  width: 100%;
+  min-height: 44px;
+  cursor: pointer;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.passageRehearsal,
+.passageDetail {
+  margin: .75rem var(--module-gutter);
+  padding: .75rem 1rem;
+  background: #142d38;
+  color: #e5f3f6;
+  border: 1px solid #527282;
+}
+
+.passageDetail dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: .75rem;
+  margin-block: .75rem;
+}
+
+.passageDetail dt {
+  color: #b9d5dd;
+  font-weight: 600;
+}
+
+.passageDetail dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.passageDetail a {
+  color: #9ce5f5;
+  text-decoration: underline;
+}
+
+.passageMap {
+  position: relative;
+  isolation: isolate;
+}
+
+.passageOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.passageScrim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: rgb(3 11 16 / .55);
+  cursor: pointer;
+}
+
+.passageOverlay .passageDetail {
+  position: relative;
+  width: min(100%, 36rem);
+  box-sizing: border-box;
+  max-height: 100%;
+  overflow: auto;
+  margin: 0;
+  border-color: #7395a5;
+  border-radius: .375rem;
+  background: rgb(20 45 56 / .88);
+  box-shadow: 0 1rem 3rem rgb(0 0 0 / .35);
+  backdrop-filter: blur(5px);
+}
+
+.passageDetailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: .75rem;
+}
+
+.passageDetailHeader button {
+  min-height: 44px;
+  padding-inline: .75rem;
+  border: 1px solid #7395a5;
+  border-radius: .25rem;
+  background: #153442;
+  color: #e5f3f6;
+  cursor: pointer;
+}
+
+.passageDetailHeader button:focus-visible {
+  outline: 2px solid #9ce5f5;
+  outline-offset: 2px;
 }
