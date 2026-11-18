@@ -178,7 +178,7 @@ export default function CommercialIntakeAccessRequest({
             </span>
             <div>
               <h3>Good-Faith TAP Required</h3>
-              <p>Good-Faith TAP (Transaction Authorization Payment) is required under the applicable transaction terms for export preparation. No payment is requested at this access gate.</p>
+              <p>Good-Faith <strong>TAP</strong> (Transaction Authorization Payment) is required for export authorization and customs processing. This payment is credited on the final invoice. No payment is requested at this access gate.</p>
             </div>
           </div>
         </aside>
