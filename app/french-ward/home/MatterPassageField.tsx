@@ -77,33 +77,15 @@ export default function MatterPassageField({
     >
       <header className={styles.instrumentHead}>
         <div className={styles.instrumentIdentity}>
-          <p className={styles.micro}>
-            FIELD / PASSAGE
-          </p>
-
           <h2 id="matter-passage-title">
             Matter Passage
           </h2>
-
-          <p className={styles.instrumentGuide}>
-            Where active French-Ward matters stand as they
-            move from intake toward settlement.
-          </p>
         </div>
 
         <div
           className={styles.instrumentStrip}
           aria-label="French-Ward field readout"
         >
-          <div>
-            <span>FIELD</span>
-            <strong>
-              {matters.length
-                .toString()
-                .padStart(2, "0")}
-            </strong>
-          </div>
-
           <div>
             <span>OPEN</span>
             <strong>
@@ -113,7 +95,7 @@ export default function MatterPassageField({
             </strong>
           </div>
 
-          <div>
+          <div data-attention={attentionCount > 0}>
             <span>ATTENTION</span>
             <strong>
               {attentionCount
