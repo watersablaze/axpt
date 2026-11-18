@@ -91,7 +91,8 @@ export default function MatterPassageField({
     setSelectedId(null);
   }
 
-  const movement = selected?.lastMovement;
+  const movements = selected?.passageMovements ??
+    (selected?.lastMovement ? [selected.lastMovement] : []);
   const ticks = [
     dateTick(30),
     dateTick(20),
@@ -505,24 +506,26 @@ export default function MatterPassageField({
                   <dt>Current stage</dt>
                   <dd>{selected.stage.replaceAll("_", " ")} · {selected.state.replaceAll("_", " ")}</dd>
                 </div>
-                <div>
-                  <dt>Last recorded movement</dt>
-                  <dd>
-                    {movement ? (
-                      <>
-                        <time dateTime={movement.occurredAt}>
-                          {new Date(movement.occurredAt).toLocaleString("en-GB", {
-                            dateStyle: "medium",
-                            timeStyle: "short",
-                            timeZone: "UTC",
-                          })} UTC
-                        </time>
-                        {" · "}{movement.message}
-                      </>
-                    ) : "No recorded movement"}
-                  </dd>
-                </div>
               </dl>
+              <h4>Recent recorded movements</h4>
+              {movements.length ? (
+                <ol className={styles.passageMovementList}>
+                  {movements.map((movement) => (
+                    <li key={movement.id}>
+                      <time dateTime={movement.occurredAt}>
+                        {new Date(movement.occurredAt).toLocaleString("en-GB", {
+                          dateStyle: "medium",
+                          timeStyle: "short",
+                          timeZone: "UTC",
+                        })} UTC
+                      </time>
+                      <p>{movement.message}</p>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <p>No recorded movement</p>
+              )}
               {!rehearsal && selected.reference.startsWith("AXPT-MAT-") ? (
                 <Link href={`/french-ward/matters/${encodeURIComponent(selected.reference)}`} prefetch={false}>
                   Open Matter →

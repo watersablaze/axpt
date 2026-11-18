@@ -32,6 +32,10 @@ export function createPassageRehearsalMatters(now: Date): FrenchWardHomeMatter[]
     intake,
     {
       ...escrow,
+      passageMovements: [
+        { id: "rehearsal-movement", message: "Sample escrow funding recorded.", occurredAt: new Date(now.getTime() - 86_400_000).toISOString() },
+        { id: "rehearsal-escrow-opened", message: "Sample escrow opened.", occurredAt: new Date(now.getTime() - 172_800_000).toISOString() },
+      ],
       lastMovement: {
         id: "rehearsal-movement",
         matterId: escrow.id,

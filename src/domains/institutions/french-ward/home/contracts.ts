@@ -62,6 +62,7 @@ export type FrenchWardHomeMatter = {
     legalName: string;
   }[];
   lastMovement: FrenchWardHomeMovement | null;
+  passageMovements?: Pick<FrenchWardHomeMovement, "id" | "message" | "occurredAt">[];
   pendingAttentionCount: number;
 };
 

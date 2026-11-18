@@ -30,6 +30,7 @@ const groups = [
     links: [
       ["/admin/institutional-access", "Institutional access", "Review Profile and LOI access requests and manage grants."],
       ["/admin/representative-program", "Representative Program", "Candidate intake, agreements, appointments, and participant workspaces."],
+      ["/admin/french-ward/bulletin", "French-Ward Bulletin Board", "Manage drafts and published notices."],
       ["/admin/initiatives", "Initiatives", "Review and maintain initiative records."],
     ],
   },

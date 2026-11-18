@@ -19097,3 +19097,24 @@ strong {
   outline: 2px solid #9ce5f5;
   outline-offset: 2px;
 }
+
+.passageMovementList {
+  margin: .5rem 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.passageMovementList li {
+  padding-block: .5rem;
+  border-top: 1px solid rgb(115 149 165 / .4);
+}
+
+.passageMovementList time {
+  color: #b9d5dd;
+  font-size: .875em;
+}
+
+.passageMovementList p {
+  margin: .125rem 0 0;
+  overflow-wrap: anywhere;
+}

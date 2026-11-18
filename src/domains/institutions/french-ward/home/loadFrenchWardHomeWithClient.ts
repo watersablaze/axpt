@@ -387,10 +387,8 @@ export async function loadFrenchWardHomeWithClient(params: {
         },
 
         events: {
-          orderBy: {
-            createdAt: "desc",
-          },
-          take: 1,
+          orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+          take: 5,
           select: {
             id: true,
             eventType: true,
@@ -501,11 +499,20 @@ export async function loadFrenchWardHomeWithClient(params: {
       ),
     );
 
+  function passageMovement({ id, message, occurredAt }: FrenchWardHomeMovement) {
+    return { id, message, occurredAt };
+  }
+
   const intakeMatters:
     FrenchWardHomeMatter[] =
       loadedDurableIntakeMatters.map(
-        loaded =>
-          loaded.homeMatter,
+        loaded => ({
+          ...loaded.homeMatter,
+          passageMovements: [...loaded.movement]
+            .sort((a, b) => b.occurredAt.localeCompare(a.occurredAt) || b.id.localeCompare(a.id))
+            .slice(0, 5)
+            .map(passageMovement),
+        }),
       );
 
   /*
@@ -589,6 +596,11 @@ export async function loadFrenchWardHomeWithClient(params: {
           }),
         ),
 
+        passageMovements: dossier.events.map(({ id, message, createdAt }) => ({
+          id,
+          message,
+          occurredAt: createdAt.toISOString(),
+        })),
         lastMovement: event
           ? {
               id: event.id,
