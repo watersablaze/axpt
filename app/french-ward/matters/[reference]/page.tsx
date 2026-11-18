@@ -344,7 +344,7 @@ export default async function FrenchWardMatterPage({
 
           <div>
             <dt>
-              Intake review status
+              {homeMatter.recordKind === "OPPORTUNITY" ? "Opportunity status" : "Intake review status"}
             </dt>
 
             <dd>
@@ -361,9 +361,7 @@ export default async function FrenchWardMatterPage({
 
             <dd>
               {
-                matter
-                  .canonicalRecord
-                  .kind
+                homeMatter.recordKind
               }
             </dd>
           </div>
@@ -570,7 +568,7 @@ export default async function FrenchWardMatterPage({
         <dl className={styles.facts}>
           <div>
             <dt>Intake review status</dt>
-            <dd>{humanize(homeMatter.state)}</dd>
+            <dd>{humanize(loaded.intakeStatus ?? homeMatter.state)}</dd>
           </div>
           {linkedAccess ? (
             <>
@@ -612,12 +610,9 @@ export default async function FrenchWardMatterPage({
             styles.recordNote
           }
         >
-          This Intake currently
-          holds the Matter&apos;s
-          transaction record. The
-          Matter remains continuous
-          as the transaction
-          progresses.
+          {homeMatter.recordKind === "OPPORTUNITY"
+            ? "This intake remains the original record for the Matter’s current Opportunity."
+            : "This intake currently holds the Matter’s transaction record."}
         </p>
       </section>
 

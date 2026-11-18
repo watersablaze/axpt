@@ -64,6 +64,8 @@ export type FrenchWardLoadedMatter = {
   };
 
   homeMatter: FrenchWardHomeMatter;
+  intakeStatus?: string;
+  currentOpportunityId?: string;
 
   movement: FrenchWardHomeMovement[];
 };
@@ -128,6 +130,10 @@ function intakeMovementMessage(
     "INTERNAL_NOTE_UPDATED"
   ) {
     return "Internal transaction review updated.";
+  }
+
+  if (event.eventType === "PROMOTED_TO_OPPORTUNITY") {
+    return "Matter advanced from Intake to Opportunity.";
   }
 
   return event.eventType
@@ -228,6 +234,12 @@ export async function loadFrenchWardMatterWithClient(
         matterKind:
           true,
 
+        records: {
+          where: { recordKind: "INTAKE" },
+          select: { recordId: true, recordReference: true },
+          take: 2,
+        },
+
         currentRecordKind:
           true,
 
@@ -258,25 +270,23 @@ export async function loadFrenchWardMatterWithClient(
     );
   }
 
-  /*
-   * This milestone intentionally resolves only Intake-rooted
-   * Matters. Opportunity identity requires a separate proof
-   * before durable Matter advancement is introduced.
-   */
-  if (
-    matter.currentRecordKind !==
-    "INTAKE"
-  ) {
-    throw new Error(
-      "FW_MATTER_CURRENT_RECORD_KIND_UNSUPPORTED",
-    );
+  const atOpportunity = matter.currentRecordKind === "OPPORTUNITY";
+  if (matter.currentRecordKind !== "INTAKE" && !atOpportunity) {
+    throw new Error("FW_MATTER_CURRENT_RECORD_KIND_UNSUPPORTED");
   }
+
+  const [origin] = matter.records;
+  if (atOpportunity && (!origin || matter.records.length !== 1)) {
+    throw new Error("FW_MATTER_ORIGINAL_INTAKE_AMBIGUOUS");
+  }
+  const intakeId = atOpportunity && origin ? origin.recordId : matter.currentRecordId;
+  const intakeReference = atOpportunity && origin ? origin.recordReference : matter.currentRecordReference;
 
   const intake =
     await params.client.transactionIntake.findUnique({
       where: {
         id:
-          matter.currentRecordId,
+          intakeId,
       },
 
       select: {
@@ -291,6 +301,9 @@ export async function loadFrenchWardMatterWithClient(
         quantity: true,
         trialQuantity: true,
         submitterEmail: true,
+        promotedOpportunity: {
+          select: { id: true, title: true, status: true, commodity: true, origin: true, quantityKg: true },
+        },
 
         events: {
           orderBy: {
@@ -319,14 +332,18 @@ export async function loadFrenchWardMatterWithClient(
   }
 
   if (
-    intake.id !==
-      matter.currentRecordId ||
-    intake.reference !==
-      matter.currentRecordReference
+    intake.id !== intakeId || intake.reference !== intakeReference
   ) {
     throw new Error(
       "FW_MATTER_CURRENT_RECORD_IDENTITY_MISMATCH",
     );
+  }
+
+  const opportunity = atOpportunity ? intake.promotedOpportunity : null;
+  if (atOpportunity && (!opportunity ||
+      opportunity.id !== matter.currentRecordId ||
+      opportunity.id !== matter.currentRecordReference)) {
+    throw new Error("FW_MATTER_CURRENT_OPPORTUNITY_IDENTITY_MISMATCH");
   }
 
   const typedIntake =
@@ -467,7 +484,18 @@ export async function loadFrenchWardMatterWithClient(
       },
     },
 
-    homeMatter,
+    homeMatter: opportunity ? {
+      ...homeMatter,
+      title: opportunity.title,
+      recordKind: "OPPORTUNITY",
+      stage: "EMERGING",
+      state: opportunity.status,
+      commodity: opportunity.commodity,
+      origin: opportunity.origin,
+      quantityKg: opportunity.quantityKg,
+    } : homeMatter,
+    intakeStatus: typedIntake.status,
+    currentOpportunityId: opportunity?.id,
 
     movement,
   };

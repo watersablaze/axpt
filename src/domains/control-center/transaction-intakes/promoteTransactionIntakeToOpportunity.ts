@@ -234,11 +234,71 @@ function buildOpportunityNotes(input: {
   return sections.join("\n\n");
 }
 
+async function advanceFrenchWardMatter(
+  tx: typeof prisma,
+  intake: { id: string; reference: string },
+  opportunityId: string,
+  actor: string | null,
+) {
+  const origin = await tx.institutionalMatterRecord.findUnique({
+    where: { recordKind_recordId: { recordKind: "INTAKE", recordId: intake.id } },
+    include: { matter: true },
+  });
+  const matter = origin?.matter;
+  if (!matter || matter.institutionalDomain !== "FRENCH_WARD" ||
+      matter.institutionalPrincipal !== "French-Ward, Inc." ||
+      matter.coordinationEnvironment !== "AXPT" ||
+      matter.matterKind !== "COMMERCIAL_TRANSACTION") return;
+
+  if (origin.recordReference !== intake.reference) {
+    throw new Error("FW_MATTER_INTAKE_IDENTITY_MISMATCH");
+  }
+  if (matter.currentRecordKind !== "INTAKE") return;
+  if (matter.currentRecordId !== intake.id || matter.currentRecordReference !== intake.reference) {
+    throw new Error("FW_MATTER_CURRENT_RECORD_IDENTITY_MISMATCH");
+  }
+
+  const advanced = await tx.institutionalMatter.updateMany({
+    where: {
+      id: matter.id,
+      currentRecordKind: "INTAKE",
+      currentRecordId: intake.id,
+      currentRecordReference: intake.reference,
+    },
+    data: {
+      currentRecordKind: "OPPORTUNITY",
+      currentRecordId: opportunityId,
+      currentRecordReference: opportunityId,
+    },
+  });
+  if (advanced.count !== 1) throw new Error("FW_MATTER_ADVANCEMENT_CONFLICT");
+
+  await tx.institutionalMatterRecord.create({
+    data: {
+      matterId: matter.id,
+      recordKind: "OPPORTUNITY",
+      recordId: opportunityId,
+      recordReference: opportunityId,
+      linkedBy: actor,
+    },
+  });
+  await tx.institutionalMatterEvent.create({
+    data: {
+      matterId: matter.id,
+      eventType: "CURRENT_RECORD_ADVANCED",
+      actor,
+      message: "Matter advanced from Intake to Opportunity.",
+      metadata: { intakeId: intake.id, intakeReference: intake.reference, opportunityId },
+    },
+  });
+}
+
 export async function promoteTransactionIntakeToOpportunity({
   intakeId,
   actorEmail,
 }: PromoteTransactionIntakeInput): Promise<PromotedOpportunityResult> {
   return prisma.$transaction(async (tx: typeof prisma) => {
+    await tx.$queryRaw`SELECT id FROM "TransactionIntake" WHERE id = ${intakeId} FOR UPDATE`;
     const intake = await tx.transactionIntake.findUnique({
       where: {
         id: intakeId,
@@ -273,6 +333,8 @@ export async function promoteTransactionIntakeToOpportunity({
       if (!intake.promotedOpportunity) {
         throw new Error("PROMOTED_OPPORTUNITY_NOT_FOUND");
       }
+
+      await advanceFrenchWardMatter(tx, intake, intake.promotedOpportunity.id, actorEmail ?? null);
 
       return {
         intakeId: intake.id,
@@ -410,6 +472,8 @@ export async function promoteTransactionIntakeToOpportunity({
         note: `Promoted to opportunity ${opportunity.title}.`,
       },
     });
+
+    await advanceFrenchWardMatter(tx, intake, opportunity.id, actorEmail ?? null);
 
     return {
       intakeId: intake.id,
