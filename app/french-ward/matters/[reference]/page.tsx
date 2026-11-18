@@ -6,6 +6,7 @@ import {
 } from "next/navigation";
 
 import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { PERMISSIONS } from "@/domains/auth/permissions";
 import {
   loadCurrentFrenchWardGoverningStandingWithClient,
 } from "@/domains/institutions/french-ward/governance/loadCurrentFrenchWardGoverningStandingWithClient";
@@ -157,6 +158,44 @@ export default async function FrenchWardMatterPage({
     homeMatter,
     movement,
   } = loaded;
+
+  const canManageAccess = principal.permissions.includes(
+    PERMISSIONS.INSTITUTIONAL_ACCESS_MANAGE,
+  );
+  const submissionEvents = canManageAccess
+    ? await prisma.institutionalAccessEvent.findMany({
+        where: {
+          type: "INTAKE_SUBMITTED",
+          request: { scope: "LOI_INTAKE_ACCESS" },
+          grant: { is: { scope: "LOI_INTAKE_ACCESS" } },
+          AND: [
+            { metadata: { path: ["intakeId"], equals: matter.canonicalRecord.id } },
+            { metadata: { path: ["intakeReference"], equals: matter.canonicalRecord.reference } },
+          ],
+        },
+        select: {
+          requestId: true,
+          request: { select: { status: true } },
+          grant: { select: { requestId: true, revokedAt: true, expiresAt: true } },
+        },
+        take: 2,
+      })
+    : [];
+  const [submission] = submissionEvents;
+  const linkedAccess =
+    submissionEvents.length === 1 &&
+    submission?.grant &&
+    submission.grant.requestId === submission.requestId
+      ? {
+          requestId: submission.requestId,
+          requestStatus: submission.request.status,
+          grantStatus: submission.grant.revokedAt
+            ? "Revoked"
+            : submission.grant.expiresAt <= new Date()
+              ? "Expired"
+              : "Unexpired",
+        }
+      : null;
 
   const participant =
     governingStanding?.active
@@ -481,11 +520,11 @@ export default async function FrenchWardMatterPage({
                 styles.index
               }
             >
-              03 / Current Record
+              03 / Buyer Lifecycle
             </p>
 
             <h2>
-              Current Record
+              Buyer Lifecycle
             </h2>
           </div>
 
@@ -521,6 +560,44 @@ export default async function FrenchWardMatterPage({
             </code>
           </div>
         </div>
+
+        <dl className={styles.facts}>
+          <div>
+            <dt>Intake review status</dt>
+            <dd>{humanize(homeMatter.state)}</dd>
+          </div>
+          {linkedAccess ? (
+            <>
+              <div>
+                <dt>Access request</dt>
+                <dd>{humanize(linkedAccess.requestStatus)}</dd>
+              </div>
+              <div>
+                <dt>Submission grant</dt>
+                <dd>{linkedAccess.grantStatus}</dd>
+              </div>
+            </>
+          ) : null}
+        </dl>
+
+        {canManageAccess ? (
+          linkedAccess ? (
+            <p className={styles.recordNote}>
+              <Link
+                className={styles.back}
+                href={`/admin/institutional-access?requestId=${encodeURIComponent(linkedAccess.requestId)}`}
+              >
+                Open access request →
+              </Link>
+            </p>
+          ) : (
+            <p className={styles.recordNote}>
+              {submissionEvents.length > 1
+                ? "Multiple access records match this intake."
+                : "No linked access record."}
+            </p>
+          )
+        ) : null}
 
         <p
           className={
