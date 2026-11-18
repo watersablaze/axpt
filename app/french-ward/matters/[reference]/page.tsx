@@ -19,6 +19,7 @@ import {
 } from "@/domains/institutions/french-ward/participants/loadCurrentFrenchWardInstitutionalParticipantWithClient";
 import { prisma } from "@/lib/prisma";
 
+import { loadBuyerLifecycleRehearsal } from "../buyerLifecycleRehearsal";
 import styles from "./matter.module.css";
 
 export const dynamic =
@@ -141,7 +142,8 @@ export default async function FrenchWardMatterPage({
     notFound();
   }
 
-  const loaded =
+  const rehearsal = loadBuyerLifecycleRehearsal(reference);
+  const loaded = rehearsal?.loaded ??
     await loadFrenchWardMatterWithClient({
       client:
         prisma,
@@ -163,7 +165,7 @@ export default async function FrenchWardMatterPage({
   const canManageAccess = isAdmin(principal) && principal.permissions.includes(
     PERMISSIONS.INSTITUTIONAL_ACCESS_MANAGE,
   );
-  const submissionEvents = canManageAccess
+  const submissionEvents = canManageAccess && !rehearsal
     ? await prisma.institutionalAccessEvent.findMany({
         where: {
           type: "INTAKE_SUBMITTED",
@@ -183,7 +185,7 @@ export default async function FrenchWardMatterPage({
       })
     : [];
   const [submission] = submissionEvents;
-  const linkedAccess =
+  const recordedAccess =
     submissionEvents.length === 1 &&
     submission?.grant &&
     submission.grant.requestId === submission.requestId
@@ -197,6 +199,8 @@ export default async function FrenchWardMatterPage({
               : "Unexpired",
         }
       : null;
+
+  const linkedAccess = canManageAccess && rehearsal ? rehearsal.access : recordedAccess;
 
   const participant =
     governingStanding?.active
@@ -245,12 +249,12 @@ export default async function FrenchWardMatterPage({
       >
         <div>
           <Link
-            href="/french-ward/home"
+            href={rehearsal ? "/french-ward/home?buyerLifecycleRehearsal=1" : "/french-ward/home"}
             className={
               styles.back
             }
           >
-            ← French-Ward Home
+            {rehearsal ? "← Rehearsal Matters" : "← French-Ward Home"}
           </Link>
 
           <span
@@ -582,7 +586,9 @@ export default async function FrenchWardMatterPage({
         </dl>
 
         {canManageAccess ? (
-          linkedAccess ? (
+          linkedAccess && rehearsal ? (
+            <p className={styles.recordNote}>Synthetic access request · {linkedAccess.requestId}</p>
+          ) : linkedAccess ? (
             <p className={styles.recordNote}>
               <Link
                 className={styles.back}
