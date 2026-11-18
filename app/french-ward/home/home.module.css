@@ -18653,3 +18653,52 @@ strong {
     column-gap: 1rem;
   }
 }
+
+@media (max-width: 700px) {
+  .workspace .leftRail .directory {
+    position: static;
+    height: auto;
+    overflow: visible;
+  }
+
+  .workspace .directory ul {
+    height: auto;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .workspace .directory .directoryLink {
+    height: auto;
+    min-height: 44px;
+    padding: 6px 4px;
+    font-size: .7rem;
+    line-height: 1.2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .workspace .leftRail .liveLinks {
+    margin: 0;
+    padding: 10px var(--module-gutter, 18px);
+  }
+
+  .workspace .center {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .workspace .center:has(#arp-appointments) .centerInner {
+    min-height: 0;
+    padding-bottom: 24px;
+  }
+
+  .workspace .center:has(#arp-appointments) .centerHead {
+    justify-content: space-between;
+    gap: 10px 16px;
+  }
+
+  .workspace .center:has(#arp-appointments) .centerHead .awarenessToggle {
+    display: flex;
+    min-height: 44px;
+  }
+}

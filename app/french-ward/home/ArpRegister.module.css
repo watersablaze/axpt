@@ -144,3 +144,24 @@
     border-color: rgba(143, 210, 237, .35);
   }
 }
+
+@container (max-width: 480px) {
+  .details {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .directory input {
+    font-size: 1rem;
+  }
+
+  .back {
+    min-height: 44px;
+  }
+}
+
+@media (max-width: 900px) {
+  .register[aria-labelledby="arp-appointments"] {
+    min-height: 0;
+  }
+}
