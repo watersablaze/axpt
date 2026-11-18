@@ -1,4 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
+import { loadRecipientBuyerDossierWithClient } from "./loadRecipientBuyerDossierWithClient";
 
 export type BuyerDossierExtensionDays = 14 | 30 | 60;
 const DAY = 86400000;
@@ -49,6 +50,15 @@ export async function extendRepresentativeBuyerDossierWithClient(input: {
       grant.recipientEmail !== dossier.recipientEmail ||
       grant.request.status !== "APPROVED")) {
       throw new Error("BUYER_DOSSIER_EXTENSION_GRANT_CONFLICT");
+    }
+    const current = await loadRecipientBuyerDossierWithClient({
+      client: tx, dossierId: dossier.id,
+      userId: dossier.recipientUserId, email: dossier.recipientEmail, at: now,
+    });
+    if (!current || current.items.length !== dossier.items.length ||
+        current.items.some(item => !item.available) ||
+        (current.loiAccess && !current.loiAccess.available)) {
+      throw new Error("BUYER_DOSSIER_EXTENSION_ACCESS_UNAVAILABLE");
     }
     const expiresAt = new Date(dossier.expiresAt.getTime() + input.days * DAY);
     if (expiresAt.getTime() - now.getTime() > LIMIT) {
