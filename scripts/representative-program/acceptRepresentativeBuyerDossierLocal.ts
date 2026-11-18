@@ -1,4 +1,6 @@
 import { FRENCH_WARD_COMMERCIAL_INTAKE } from "../../src/domains/institutions/french-ward/commercial";
+import { extendRepresentativeBuyerDossierWithClient } from "../../src/domains/instruments/representative-program/commercial-utility-pack/application/extendRepresentativeBuyerDossierWithClient";
+import { retryRepresentativeBuyerDossierAccessNoticeWithClient } from "../../src/domains/instruments/representative-program/commercial-utility-pack/application/retryRepresentativeBuyerDossierAccessNoticeWithClient";
 import { commercialPapers, commercialPaperMetadata } from "../../src/domains/instruments/representative-program/commercial-utility-pack/commercial-papers/catalog";
 import { consumeInstitutionalAccessWithClient } from "../../src/domains/institutional-access/consumeInstitutionalAccessWithClient";
 import { SUPPORTING_DOCUMENTS } from "../../src/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/catalog";
@@ -280,6 +282,54 @@ async function main() {
   const sixVisible = await loadRecipientBuyerDossierWithClient(sixRecipient);
   assert.equal(sixVisible?.items.length, 6);
   assert.ok(sixVisible.items.every(item => item.available && !item.canDownload));
+
+  const originalSixExpiry = six.dossier.expiresAt.toISOString();
+  const extension = await extendRepresentativeBuyerDossierWithClient({
+    client, dossierId: six.dossier.id, operatorUserId: actorId,
+    days: 30, expectedExpiresAt: originalSixExpiry,
+  });
+  assert.equal(extension.extendedGrantCount, 6);
+  assert.equal(new Date(extension.expiresAt).getTime() -
+    new Date(originalSixExpiry).getTime(), 30 * 86400000);
+  assert.equal((await loadRecipientBuyerDossierWithClient(sixRecipient))?.items.filter(item=>item.available).length, 6);
+  await assert.rejects(() => extendRepresentativeBuyerDossierWithClient({
+    client, dossierId: six.dossier.id, operatorUserId: actorId,
+    days: 30, expectedExpiresAt: originalSixExpiry,
+  }), /BUYER_DOSSIER_EXTENSION_UNAVAILABLE/);
+  const extendedGrants = await client.institutionalAccessGrant.findMany({
+    where: { id: { in: six.dossier.items.map((item:{grantId:string})=>item.grantId) } },
+  });
+  assert.ok(extendedGrants.every(grant=>grant.expiresAt.toISOString()===extension.expiresAt));
+
+  await client.representativeBuyerDossier.update({
+    where: { id: six.dossier.id }, data: {
+      recipientDeliveryStatus: "FAILED", recipientDeliveryError: "ACCESS_UNAVAILABLE",
+    },
+  });
+  let sentCount = 0;
+  const sendNotice = async () => {
+    sentCount++;
+    return { accepted: true, messageId: "disposable-test-message" };
+  };
+  const retried = await retryRepresentativeBuyerDossierAccessNoticeWithClient({
+    client, dossierId: six.dossier.id, operatorUserId: actorId,
+    from: "test@example.invalid", replyTo: "test@example.invalid", send: sendNotice,
+  });
+  assert.equal(retried.status, "ACCEPTED");
+  assert.equal(sentCount, 1);
+  await assert.rejects(() => retryRepresentativeBuyerDossierAccessNoticeWithClient({
+    client, dossierId: six.dossier.id, operatorUserId: actorId,
+    from: "test@example.invalid", replyTo: "test@example.invalid", send: sendNotice,
+  }), /BUYER_DOSSIER_RETRY_NOT_ELIGIBLE/);
+  assert.equal(sentCount, 1);
+  assert.equal(await client.domainEvent.count({
+    where: { streamId: six.dossier.id, eventType: "REPRESENTATIVE_BUYER_DOSSIER_ACCESS_EXTENDED" },
+  }), 1);
+  assert.equal(await client.domainEvent.count({
+    where: { streamId: six.dossier.id, eventType: "BUYER_DOSSIER_RECIPIENT_RETRY_RECORDED" },
+  }), 1);
+  console.log("✓ Dossier extension preserves exact six grants, denies stale replay, and one recoverable notice retry is audited without duplicate send.");
+
   assert.equal(new Set(sixVisible.items.map(item => item.reference)).size, 6);
   const tovItem = six.dossier.items.find((item:{kind:string}) => item.kind === "TRANSACTION_OVERVIEW");
   assert.ok(tovItem, "Six-material dossier includes TOV");
