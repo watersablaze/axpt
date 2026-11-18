@@ -196,8 +196,12 @@ export default function LoginPage() {
         ? requestedDestination
         : '/french-ward'
 
+      // Preserve explicitly validated buyer-document return paths for every
+      // authenticated audience. The dossier/page enforces recipient authorization.
       const destination =
-        requestedPath === '/french-ward/instruments/gsam-sco'
+        /^\/french-ward\/dossiers\/[A-Za-z0-9-]{1,191}(?:\/publications\/[A-Za-z0-9-]{1,191})?$/.test(requestedPath)
+          ? requestedDestination
+          : requestedPath === '/french-ward/instruments/gsam-sco'
           ? requestedDestination
           :
         requestedPath === '/french-ward/profile'
