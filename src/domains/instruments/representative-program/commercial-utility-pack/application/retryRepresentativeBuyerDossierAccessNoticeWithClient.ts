@@ -39,7 +39,7 @@ export async function retryRepresentativeBuyerDossierAccessNoticeWithClient(inpu
         dossier.items.length < 1 || dossier.items.length > 6) {
       throw new Error("BUYER_DOSSIER_RETRY_NOT_ELIGIBLE");
     }
-    const ids = [...dossier.items.map(item => item.grantId),
+    const ids = [...dossier.items.map((item: { grantId: string }) => item.grantId),
       ...(dossier.loiAccessGrantId ? [dossier.loiAccessGrantId] : [])].sort();
     await tx.$queryRaw`SELECT id FROM "InstitutionalAccessGrant" WHERE id = ANY(${ids}::text[]) ORDER BY id FOR SHARE`;
     const view = await loadRecipientBuyerDossierWithClient({
