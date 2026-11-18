@@ -299,7 +299,7 @@ async function main() {
   const extendedGrants = await client.institutionalAccessGrant.findMany({
     where: { id: { in: six.dossier.items.map((item:{grantId:string})=>item.grantId) } },
   });
-  assert.ok(extendedGrants.every(grant=>grant.expiresAt.toISOString()===extension.expiresAt));
+  assert.ok(extendedGrants.every((grant:{expiresAt:Date})=>grant.expiresAt.toISOString()===extension.expiresAt));
 
   await client.representativeBuyerDossier.update({
     where: { id: six.dossier.id }, data: {
