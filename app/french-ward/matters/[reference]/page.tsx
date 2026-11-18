@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { revalidatePath } from "next/cache";
 import {
   notFound,
   redirect,
@@ -18,6 +19,19 @@ import {
   loadCurrentFrenchWardInstitutionalParticipantWithClient,
 } from "@/domains/institutions/french-ward/participants/loadCurrentFrenchWardInstitutionalParticipantWithClient";
 import { prisma } from "@/lib/prisma";
+import { promoteTransactionIntakeToOpportunity } from "@/domains/control-center/transaction-intakes/promoteTransactionIntakeToOpportunity";
+import {
+  FRENCH_WARD_ACTION,
+  resolveFrenchWardActionAuthorityWithClient,
+} from "@/domains/institutions/french-ward/governance/resolveFrenchWardActionAuthorityWithClient";
+
+function resolvePromotionAuthority(userId: string) {
+  return resolveFrenchWardActionAuthorityWithClient({
+    client: prisma,
+    userId,
+    action: FRENCH_WARD_ACTION.PROMOTE_INTAKE_TO_OPPORTUNITY,
+  });
+}
 
 import { loadBuyerLifecycleRehearsal } from "../buyerLifecycleRehearsal";
 import styles from "./matter.module.css";
@@ -161,6 +175,53 @@ export default async function FrenchWardMatterPage({
     homeMatter,
     movement,
   } = loaded;
+
+  const isPersistedIntake = !rehearsal && homeMatter.recordKind === "INTAKE";
+  const promotionAuthority = isPersistedIntake
+    ? await resolvePromotionAuthority(principal.userId)
+    : null;
+  const qualified = (loaded.intakeStatus ?? homeMatter.state) === "QUALIFIED";
+  const externalRegistration = promotionAuthority?.allowed && qualified
+    ? await prisma.transactionIntakeEvent.findFirst({
+        where: {
+          intakeId: matter.canonicalRecord.id,
+          eventType: "EXTERNAL_INTAKE_REGISTERED",
+        },
+        select: { id: true },
+      })
+    : null;
+  const canPromote = promotionAuthority?.allowed && qualified && !externalRegistration;
+
+  async function promoteMatter() {
+    "use server";
+
+    const actor = await getPrincipal();
+    if (!actor || !(await resolvePromotionAuthority(actor.userId)).allowed) {
+      notFound();
+    }
+
+    const current = await loadFrenchWardMatterWithClient({
+      client: prisma,
+      matterReference: reference,
+    });
+    if (!current) {
+      notFound();
+    }
+
+    await promoteTransactionIntakeToOpportunity({
+      intakeId: current.matter.canonicalRecord.id,
+      actorEmail: actor.email,
+      expectedMatterId: current.matter.id,
+    });
+
+    const matterPath = `/french-ward/matters/${encodeURIComponent(reference)}`;
+    revalidatePath("/french-ward/home");
+    revalidatePath(matterPath);
+    revalidatePath("/admin/transaction-intakes");
+    revalidatePath(`/admin/transaction-intakes/${encodeURIComponent(current.matter.canonicalRecord.id)}`);
+    revalidatePath("/admin/control-center");
+    redirect(matterPath);
+  }
 
   const canManageAccess = isAdmin(principal) && principal.permissions.includes(
     PERMISSIONS.INSTITUTIONAL_ACCESS_MANAGE,
@@ -583,6 +644,22 @@ export default async function FrenchWardMatterPage({
             </>
           ) : null}
         </dl>
+
+        {promotionAuthority?.allowed ? (
+          canPromote ? (
+            <form action={promoteMatter}>
+              <button type="submit" className={styles.promoteButton}>
+                Promote to Opportunity
+              </button>
+            </form>
+          ) : (
+            <p className={styles.recordNote}>
+              {externalRegistration
+                ? "Externally registered intakes require a separate promotion authorization."
+                : "Promotion is available after the intake is qualified in AXPT Admin."}
+            </p>
+          )
+        ) : null}
 
         {canManageAccess ? (
           linkedAccess && rehearsal ? (

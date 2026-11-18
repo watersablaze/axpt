@@ -5,6 +5,7 @@ import type { OpportunitySource } from "@/domains/control-center/opportunities/t
 type PromoteTransactionIntakeInput = {
   intakeId: string;
   actorEmail?: string | null;
+  expectedMatterId?: string;
 };
 
 type PromotedOpportunityResult = {
@@ -239,6 +240,7 @@ async function advanceFrenchWardMatter(
   intake: { id: string; reference: string },
   opportunityId: string,
   actor: string | null,
+  expectedMatterId?: string,
 ) {
   const origin = await tx.institutionalMatterRecord.findUnique({
     where: { recordKind_recordId: { recordKind: "INTAKE", recordId: intake.id } },
@@ -248,12 +250,26 @@ async function advanceFrenchWardMatter(
   if (!matter || matter.institutionalDomain !== "FRENCH_WARD" ||
       matter.institutionalPrincipal !== "French-Ward, Inc." ||
       matter.coordinationEnvironment !== "AXPT" ||
-      matter.matterKind !== "COMMERCIAL_TRANSACTION") return;
+      matter.matterKind !== "COMMERCIAL_TRANSACTION") {
+    if (expectedMatterId) throw new Error("FW_MATTER_PROMOTION_TARGET_MISMATCH");
+    return;
+  }
+
+  if (expectedMatterId && matter.id !== expectedMatterId) {
+    throw new Error("FW_MATTER_PROMOTION_TARGET_MISMATCH");
+  }
 
   if (origin.recordReference !== intake.reference) {
     throw new Error("FW_MATTER_INTAKE_IDENTITY_MISMATCH");
   }
-  if (matter.currentRecordKind !== "INTAKE") return;
+  if (matter.currentRecordKind !== "INTAKE") {
+    if (expectedMatterId && (matter.currentRecordKind !== "OPPORTUNITY" ||
+        matter.currentRecordId !== opportunityId ||
+        matter.currentRecordReference !== opportunityId)) {
+      throw new Error("FW_MATTER_PROMOTION_TARGET_MISMATCH");
+    }
+    return;
+  }
   if (matter.currentRecordId !== intake.id || matter.currentRecordReference !== intake.reference) {
     throw new Error("FW_MATTER_CURRENT_RECORD_IDENTITY_MISMATCH");
   }
@@ -296,6 +312,7 @@ async function advanceFrenchWardMatter(
 export async function promoteTransactionIntakeToOpportunity({
   intakeId,
   actorEmail,
+  expectedMatterId,
 }: PromoteTransactionIntakeInput): Promise<PromotedOpportunityResult> {
   return prisma.$transaction(async (tx: typeof prisma) => {
     await tx.$queryRaw`SELECT id FROM "TransactionIntake" WHERE id = ${intakeId} FOR UPDATE`;
@@ -334,7 +351,7 @@ export async function promoteTransactionIntakeToOpportunity({
         throw new Error("PROMOTED_OPPORTUNITY_NOT_FOUND");
       }
 
-      await advanceFrenchWardMatter(tx, intake, intake.promotedOpportunity.id, actorEmail ?? null);
+      await advanceFrenchWardMatter(tx, intake, intake.promotedOpportunity.id, actorEmail ?? null, expectedMatterId);
 
       return {
         intakeId: intake.id,
@@ -473,7 +490,7 @@ export async function promoteTransactionIntakeToOpportunity({
       },
     });
 
-    await advanceFrenchWardMatter(tx, intake, opportunity.id, actorEmail ?? null);
+    await advanceFrenchWardMatter(tx, intake, opportunity.id, actorEmail ?? null, expectedMatterId);
 
     return {
       intakeId: intake.id,
