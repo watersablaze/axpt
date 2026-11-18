@@ -343,6 +343,16 @@ async function main() {
   assert.equal((await loadRecipientBuyerDossierWithClient(sixRecipient))?.items.filter(item => item.available).length, 6);
   await client.representativeBuyerDossier.update({where:{id:six.dossier.id},data:{revokedAt:new Date()}});
   assert.equal(await loadRecipientBuyerDossierWithClient(sixRecipient), null);
+  await assert.rejects(() => extendRepresentativeBuyerDossierWithClient({
+    client, dossierId: six.dossier.id, operatorUserId: actorId,
+    days: 14, expectedExpiresAt: extension.expiresAt,
+  }), /BUYER_DOSSIER_EXTENSION_UNAVAILABLE/);
+  await assert.rejects(() => retryRepresentativeBuyerDossierAccessNoticeWithClient({
+    client, dossierId: six.dossier.id, operatorUserId: actorId,
+    from: "test@example.invalid", replyTo: "test@example.invalid", send: sendNotice,
+  }), /BUYER_DOSSIER_RETRY_NOT_ELIGIBLE/);
+  assert.equal(sentCount, 1);
+
   console.log("✓ Six-material real database dossier resolves six grants including TOV; wrong identity, individual grant revocation and whole-dossier revocation fail closed.");
 
   const supportingItems=five.dossier.items.filter((item:{kind:string})=>["DECLARATION_OF_TRUST","RESELLER_AGREEMENT","SANCTIONS_SCREENING"].includes(item.kind));
