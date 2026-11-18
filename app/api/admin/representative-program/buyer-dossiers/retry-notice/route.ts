@@ -21,7 +21,12 @@ export async function POST(request: Request) {
     return json({ ok: false }, 403);
   }
   if (!isSameOriginMutation(request)) return json({ ok: false }, 403);
-  if (!process.env.RESEND_API_KEY?.trim()) return json({ ok: false, error: "PROVIDER_NOT_CONFIGURED" }, 503);
+  const mode = process.env.REPRESENTATIVE_BUYER_DOSSIER_EMAIL_MODE ??
+    process.env.REPRESENTATIVE_PROFILE_INVITATION_EMAIL_MODE ??
+    process.env.REPRESENTATIVE_ONBOARDING_EMAIL_MODE ?? "log";
+  if (mode !== "send" || !process.env.RESEND_API_KEY?.trim()) {
+    return json({ ok: false, error: "PROVIDER_NOT_CONFIGURED" }, 503);
+  }
   let body: unknown;
   try {
     const raw = await request.text();
