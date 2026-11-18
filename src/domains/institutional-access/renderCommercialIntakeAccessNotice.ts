@@ -37,8 +37,11 @@ export function renderCommercialIntakeAccessNotice(input: {
     "Access the Letter of Intent and Transaction Intake:",
     COMMERCIAL_INTAKE_ACCESS_URL,
     "",
-    "Sign in using the same email address provided in your access request.",
-    "This approval permits intake access; it does not constitute transaction acceptance.",
+    "Sign in using the email address associated with your approved access request.",
+    "Complete the intake with the information relevant to your proposed transaction structure, providing as much detail as is currently available.",
+    "",
+    "This intake is non-binding and serves to streamline commercial review, organize transaction information, and support efficient next-step coordination.",
+    "Access approval does not constitute transaction acceptance.",
     "",
     "Regards,",
     "French-Ward, Inc.",
@@ -57,7 +60,9 @@ export function renderCommercialIntakeAccessNotice(input: {
       <p>Thank you for engaging French-Ward's commercial intake process. Your access request has been approved.</p>
       <h1 style="font-family:Georgia,serif;font-size:26px;font-weight:normal">Commercial Intake Access</h1>
       <p><a href="${COMMERCIAL_INTAKE_ACCESS_URL}" style="display:inline-block;background:#382a1d;color:#fff;padding:14px 18px;text-decoration:none">Access LOI &amp; Transaction Intake</a></p>
-      <p style="font-size:13px">Sign in using the same email address provided in your request.</p>
+      <p style="font-size:13px;line-height:1.6">Sign in using the email address associated with your approved access request.</p>
+      <p style="font-size:13px;line-height:1.6">Complete the intake with the information relevant to your proposed transaction structure, providing as much detail as is currently available.</p>
+      <p style="font-size:13px;line-height:1.6">This intake is <strong>non-binding</strong> and serves to streamline commercial review, organize transaction information, and support efficient next-step coordination.</p>
       <p style="font-size:12px;color:#746657">Access approval does not constitute transaction acceptance.</p>
       <p>Regards,<br><strong>French-Ward, Inc.</strong><br>Commercial Coordination &amp; Custodial Oversight</p>
     </div>
