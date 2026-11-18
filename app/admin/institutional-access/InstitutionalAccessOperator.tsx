@@ -273,7 +273,9 @@ export function InstitutionalAccessOperator({
   const initialMode: Mode =
     initialRequest?.status === "PENDING"
       ? "DECIDE"
-      : "MANAGE";
+      : initialRequestId
+        ? "HISTORY"
+        : "MANAGE";
 
   const [mode, setMode] =
     useState<Mode>(initialMode);

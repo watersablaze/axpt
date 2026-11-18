@@ -40,8 +40,9 @@ export default async function InstitutionalAccessAdminPage({
     );
   }
 
-  const [requests, grants] = await Promise.all([
+  const loadRequests = (requestId?: string) =>
     prisma.institutionalAccessRequest.findMany({
+      where: requestId ? { id: requestId } : undefined,
       orderBy: [
         { createdAt: "desc" },
         { id: "desc" },
@@ -71,8 +72,10 @@ export default async function InstitutionalAccessAdminPage({
           },
         },
       },
-    }),
+    });
 
+  const [recentRequests, grants] = await Promise.all([
+    loadRequests(),
     prisma.institutionalAccessGrant.findMany({
       orderBy: [
         { issuedAt: "desc" },
@@ -128,6 +131,14 @@ export default async function InstitutionalAccessAdminPage({
       },
     }),
   ]);
+
+  const requests = requestedRequestId && !recentRequests.some(({ id }) => id === requestedRequestId)
+    ? [...await loadRequests(requestedRequestId), ...recentRequests]
+    : recentRequests;
+
+  if (requestedRequestId && !requests.some(({ id }) => id === requestedRequestId)) {
+    return <main style={{ padding: 32 }}>Access request not found.</main>;
+  }
 
   const noticeRows = requests.length
     ? await prisma.profileAccessNoticeDelivery.findMany({
@@ -204,6 +215,7 @@ export default async function InstitutionalAccessAdminPage({
 
   return (
     <InstitutionalAccessOperator
+      key={requestedRequestId || "directory"}
       initialRequestId={requestedRequestId || null}
       notices={Object.fromEntries(latestNoticeByRequest)}
       requests={requests.map((request) => ({
