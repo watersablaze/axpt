@@ -77,13 +77,13 @@ export async function inspectEcoNommoSourceCoverageWithClient(params: Readonly<{
     recognition.recognizedStanding.issuer === "ACTIVE";
   const findings: EcoNommoCoverageFinding[] = [
     { key: "ISSUER_COMPETENCE", source: "InstrumentAuthority + issuer recognition",
-      coverage: "UNQUALIFIED", gaps: ["INDEPENDENT_ISSUER_COMPETENCE_AUTHENTICATION"], authenticated: false },
+      coverage: recognition.recognizedStanding.issuer === "ACTIVE" ? "UNQUALIFIED" : "MISSING", gaps: ["INDEPENDENT_ISSUER_COMPETENCE_AUTHENTICATION"], authenticated: false },
     { key: "INSTITUTIONAL_BINDINGS", source: "FrenchWardInstitutionalParticipant + FrenchWardGoverningOfficer",
       coverage: sourceBound || !recognized ? "MISSING" : "STRUCTURAL_ONLY",
       gaps: ["CANONICAL_INSTITUTION_ID_BINDING", "AUTHENTICATED_DELEGATION"],
       authenticated: false },
     { key: "DOCUMENT_SCOPE", source: "Eco-Nommo admission and documentary mandate contracts",
-      coverage: "STRUCTURAL_ONLY", gaps: ["SCOPE_BOUND_TO_AUTHENTICATED_MANDATE"],
+      coverage: params.candidate ? "STRUCTURAL_ONLY" : "MISSING", gaps: ["SCOPE_BOUND_TO_AUTHENTICATED_MANDATE"],
       authenticated: false },
     { key: "CUSTODY_DIGEST", source: "InstrumentEvidence URI/contentHash/recordedByUserId",
       coverage: "UNQUALIFIED", gaps: ["TRUSTED_CUSTODY_READ", "INDEPENDENT_DIGEST_RECOMPUTATION"],
