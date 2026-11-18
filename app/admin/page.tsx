@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { PERMISSIONS } from "@/domains/auth/permissions";
 import { Suspense } from "react";
 import styles from "@/components/admin/layout/AdminDeskColumns.module.css";
 import AdminSurfaceHeader from "@/components/admin/layout/AdminSurfaceHeader";
@@ -30,7 +32,6 @@ const groups = [
     links: [
       ["/admin/institutional-access", "Institutional access", "Review Profile and LOI access requests and manage grants."],
       ["/admin/representative-program", "Representative Program", "Candidate intake, agreements, appointments, and participant workspaces."],
-      ["/admin/french-ward/bulletin", "French-Ward Bulletin Board", "Manage drafts and published notices."],
       ["/admin/initiatives", "Initiatives", "Review and maintain initiative records."],
     ],
   },
@@ -45,7 +46,10 @@ const groups = [
   },
 ];
 
-export default function AdminPage() {
+export default async function AdminPage() {
+  const principal = await getPrincipal();
+  const canPublishBulletin = principal?.permissions.includes(PERMISSIONS.FRENCH_WARD_BULLETIN_PUBLISH);
+
   return (
     <div className="w-full min-w-0 space-y-6 pb-4">
       <AdminSurfaceHeader
@@ -92,7 +96,12 @@ export default function AdminPage() {
               </h3>
               <p className="mt-2 text-xs leading-5 text-neutral-500">{group.description}</p>
               <ul className="mt-3 divide-y divide-neutral-800 border-y border-neutral-800">
-                {group.links.map(([href, title, description]) => (
+                {[
+                  ...group.links,
+                  ...(group.title === "Institutional administration" && canPublishBulletin
+                    ? [["/admin/french-ward/bulletin", "French-Ward Bulletin Board", "Manage drafts and published notices."]]
+                    : []),
+                ].map(([href, title, description]) => (
                   <li key={href}>
                     <Link href={href} className="group flex items-start justify-between gap-4 px-2 py-3 transition-colors hover:bg-white/[.035] focus-visible:outline focus-visible:outline-2 focus-visible:outline-cyan-300">
                       <div className="min-w-0">
