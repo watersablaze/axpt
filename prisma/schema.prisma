@@ -4108,6 +4108,26 @@ model ProfileAccessNoticeDelivery {
   @@index([status, attemptedAt])
 }
 
+// Explicit LOI intake access correspondence. Independent of approval and grant issuance.
+// Provider acceptance is not proof of inbox delivery or recipient access.
+model CommercialIntakeAccessNoticeDelivery {
+  id                String   @id @default(cuid())
+  deliveryKey       String   @unique
+  requestId         String
+  grantId           String
+  actorUserId       String
+  recipientEmail    String
+  status            String   @default("SENDING")
+  providerMessageId String?
+  errorCode         String?
+  attemptedAt       DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([requestId, attemptedAt])
+  @@index([grantId, attemptedAt])
+  @@index([status, attemptedAt])
+}
+
 model GlobalMotherChamberAdmission {
   id                  String   @id @default(cuid())
   instrumentReference String
