@@ -6,6 +6,7 @@ import {
 } from "next/navigation";
 
 import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { isAdmin } from "@/domains/auth/isAdmin";
 import { PERMISSIONS } from "@/domains/auth/permissions";
 import {
   loadCurrentFrenchWardGoverningStandingWithClient,
@@ -159,7 +160,7 @@ export default async function FrenchWardMatterPage({
     movement,
   } = loaded;
 
-  const canManageAccess = principal.permissions.includes(
+  const canManageAccess = isAdmin(principal) && principal.permissions.includes(
     PERMISSIONS.INSTITUTIONAL_ACCESS_MANAGE,
   );
   const submissionEvents = canManageAccess
