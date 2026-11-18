@@ -35,10 +35,10 @@ export async function extendRepresentativeBuyerDossierWithClient(input: {
     if (!dossier || dossier.revokedAt || dossier.expiresAt <= now ||
         dossier.expiresAt.toISOString() !== input.expectedExpiresAt ||
         dossier.items.length < 1 || dossier.items.length > 6 ||
-        new Set(dossier.items.map(item => item.grantId)).size !== dossier.items.length) {
+        new Set(dossier.items.map((item: { grantId: string }) => item.grantId)).size !== dossier.items.length) {
       throw new Error("BUYER_DOSSIER_EXTENSION_UNAVAILABLE");
     }
-    const ids = [...dossier.items.map(item => item.grantId),
+    const ids = [...dossier.items.map((item: { grantId: string }) => item.grantId),
       ...(dossier.loiAccessGrantId ? [dossier.loiAccessGrantId] : [])].sort();
     await tx.$queryRaw`SELECT id FROM "InstitutionalAccessGrant" WHERE id = ANY(${ids}::text[]) ORDER BY id FOR UPDATE`;
     const grants = await tx.institutionalAccessGrant.findMany({
@@ -46,7 +46,7 @@ export async function extendRepresentativeBuyerDossierWithClient(input: {
       select: { id: true, requestId: true, recipientUserId: true, recipientEmail: true,
         revokedAt: true, expiresAt: true, request: { select: { status: true } } },
     });
-    if (grants.length !== ids.length || grants.some(grant =>
+    if (grants.length !== ids.length || grants.some((grant: { revokedAt: Date | null; expiresAt: Date; recipientUserId: string; recipientEmail: string; request: { status: string } }) =>
       grant.revokedAt !== null || grant.expiresAt <= now ||
       grant.expiresAt.getTime() !== dossier.expiresAt.getTime() ||
       grant.recipientUserId !== dossier.recipientUserId ||
