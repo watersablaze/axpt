@@ -18769,3 +18769,161 @@ strong {
     min-height: 44px;
   }
 }
+
+/* Home Desk instrument finish */
+.workspace .center .centerInner > .centerHead:has(+ [aria-label="French-Ward Home"]) {
+  background:
+    linear-gradient(90deg, #11252e 15%, transparent 68%),
+    repeating-linear-gradient(0deg, transparent 0 5px, rgb(113 205 228 / .07) 5px 6px),
+    repeating-linear-gradient(90deg, transparent 0 19px, rgb(113 205 228 / .05) 19px 20px),
+    linear-gradient(105deg, #11252e, #163744 73%, #0b181e);
+}
+
+.workspace .center [aria-label="French-Ward Home"] :is(.instrumentField, .mobilePassageNavigator) {
+  background:
+    radial-gradient(ellipse at 59% 4%, rgb(40 161 193 / .16), transparent 57%),
+    radial-gradient(ellipse at 98% 80%, rgb(45 109 168 / .13), transparent 50%),
+    #08161d;
+  box-shadow: inset 0 1px rgb(129 215 234 / .22), inset 0 -1px rgb(129 215 234 / .12);
+}
+
+.workspace .center [aria-label="French-Ward Home"] .emptyField {
+  color: #b4cfd6;
+}
+
+/* Actions use the full center surface, with readable workstations inside it. */
+.workspace .center:has(.actionsStage) {
+  background: linear-gradient(145deg, #152c36, #0f2029 72%);
+  color-scheme: dark;
+}
+
+.workspace .center:has(.actionsStage) .centerInner {
+  background: transparent;
+}
+
+.workspace .center:has(.actionsStage) .centerInner > .centerHead {
+  background: #132c38;
+  border-color: #4c7180;
+}
+
+.workspace .center .actionsStage {
+  margin-block-start: 0;
+  padding-block: clamp(1rem, 2.2vw, 2rem) 3rem;
+  background: none;
+}
+
+.workspace .center .actionsStage :is(.actionPostureField, .actionExecutionPanel, .actionUnavailablePanel, .actionBoundary) {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+
+.workspace .center .actionsStage .actionPostureField {
+  gap: .75rem;
+  margin-block-start: 0;
+}
+
+.workspace .center .actionsStage .actionPosture {
+  min-width: 0;
+  min-height: 0;
+  padding: 1rem;
+  border: 1px solid #527282;
+  border-radius: 4px;
+  background: #162d39;
+  box-shadow: none;
+  overflow-wrap: anywhere;
+}
+
+.workspace .center .actionsStage .actionPosture[data-current="true"] {
+  border-color: #8dbdcb;
+  background: #234552;
+  box-shadow: inset 0 -3px #edcc87;
+}
+
+.workspace .center .actionsStage .actionPosture h3 {
+  color: #edf7f9;
+  font-size: 1rem;
+}
+
+.workspace .center .actionsStage .actionPosture > div p {
+  color: #becfd6;
+  font-size: .625rem;
+}
+
+.workspace .center .actionsStage .actionPosture > strong {
+  color: #e2e9ec;
+  border-color: #77919c;
+  font-size: .6875rem;
+}
+
+.workspace .center .actionsStage .actionPosture[data-available="true"] > strong {
+  color: #bdeaf2;
+  border-color: #72a4b6;
+}
+
+.workspace .center .actionsStage :is(.actionExecutionPanel, .actionUnavailablePanel, .actionBoundary) {
+  border: 1px solid #527282;
+  background: #142833;
+}
+
+.workspace .center .actionsStage :is(.sendLoiHeading, .sendLoiExecution) {
+  background: #1a3441;
+}
+
+.workspace .center .actionsStage :is(.sendLoiHeading h3, .actionUnavailablePanel h3) {
+  color: #edf7f9;
+}
+
+.workspace .center .actionsStage :is(.sendLoiHeading p, .sendLoiExecution p, .actionBoundary p, .actionUnavailablePanel p, .registerFieldHelp, .registerFieldHelp span, .registerCapacityField p) {
+  color: #c3d5dc;
+  font-size: .8125rem;
+  line-height: 1.55;
+}
+
+.workspace .center .actionsStage :is(.sendLoiFields > label > span:first-child, .registerCapacityField legend, .actionBoundary > span) {
+  color: #e8d29f;
+  font-size: .75rem;
+  line-height: 1.4;
+}
+
+.workspace .center .actionsStage .sendLoiFields :is(input:not([type="radio"]), textarea, select) {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 44px;
+  border-color: #688b9b;
+  background: #0e222d;
+  color: #f0f8f9;
+  font-size: 1rem;
+}
+
+.workspace .center .actionsStage .sendLoiFields :is(input, textarea)::placeholder {
+  color: #a5bbc5;
+}
+
+.workspace .center .actionsStage .sendLoiExecution button {
+  min-height: 44px;
+  padding-inline: 1rem;
+  font-size: .75rem;
+}
+
+.workspace .center .actionsStage .sendLoiExecution button:enabled {
+  border-color: #edcc87;
+  background: #edcc87;
+  color: #182a32;
+}
+
+.workspace .center .actionsStage .sendLoiExecution button:enabled:hover {
+  background: #ffe1a0;
+}
+
+.workspace .center .actionsStage :is(button, input, select, textarea):focus-visible {
+  outline: 2px solid #9ce5f5;
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  .workspace .center .actionsStage .actionPostureField {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
