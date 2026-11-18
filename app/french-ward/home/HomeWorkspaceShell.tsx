@@ -24,6 +24,7 @@ import refinement from "./home-refinement.module.css";
 type Props = {
   home: FrenchWardHomeProjection;
   actions: FrenchWardHomeActionPosture;
+  passageRehearsal?: FrenchWardHomeProjection["matters"];
   initialModule?: ModuleId;
   arpAppointments: readonly ArpRegisterEntry[] | null;
   bulletinPosts: readonly {
@@ -123,6 +124,7 @@ export default function HomeWorkspaceShell({
   initialModule = "home",
   bulletinPosts,
   arpAppointments,
+  passageRehearsal,
 }: Props) {
   const [activeModule, setActiveModule] =
     useState<ModuleId>(initialModule);
@@ -616,14 +618,12 @@ export default function HomeWorkspaceShell({
               aria-label="French-Ward Home"
             >
               <MatterPassageField
-                matters={home.matters}
-                attentionCount={
-                  home.attention.length
-                }
-                movementCount={
-                  home.recentMovement
-                    .length
-                }
+                matters={passageRehearsal ?? home.matters}
+                rehearsal={Boolean(passageRehearsal)}
+                attentionCount={passageRehearsal ? 0 : home.attention.length}
+                movementCount={passageRehearsal
+                  ? passageRehearsal.filter((matter) => matter.lastMovement).length
+                  : home.recentMovement.length}
               />
 
               <section

@@ -1,3 +1,6 @@
+import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
+
 import type {
   FrenchWardHomeMatter,
 } from "@/domains/institutions/french-ward/home/contracts";
@@ -8,6 +11,7 @@ type Props = {
   matters: FrenchWardHomeMatter[];
   attentionCount: number;
   movementCount: number;
+  rehearsal: boolean;
 };
 
 const PASSAGE = [
@@ -62,7 +66,17 @@ export default function MatterPassageField({
   matters,
   attentionCount,
   movementCount,
+  rehearsal,
 }: Props) {
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const detailRef = useRef<HTMLElement>(null);
+  const selected = matters.find((matter) => matter.id === selectedId);
+
+  useEffect(() => {
+    if (selectedId) detailRef.current?.focus();
+  }, [selectedId]);
+
+  const movement = selected?.lastMovement;
   const ticks = [
     dateTick(30),
     dateTick(20),
@@ -124,6 +138,10 @@ export default function MatterPassageField({
         </div>
       </header>
 
+      {rehearsal ? (
+        <p className={styles.passageRehearsal}>Rehearsal · Synthetic matters</p>
+      ) : null}
+
       <section
         className={
           styles.mobilePassageNavigator
@@ -183,7 +201,10 @@ export default function MatterPassageField({
                   >
                     {levelMatters.map(
                       (matter) => (
-                        <article
+                        <button
+                          type="button"
+                          aria-pressed={selectedId === matter.id}
+                          onClick={() => setSelectedId(matter.id)}
                           className={
                             styles.mobilePassageMatter
                           }
@@ -202,7 +223,7 @@ export default function MatterPassageField({
                             {" · "}
                             {matter.state}
                           </small>
-                        </article>
+                        </button>
                       ),
                     )}
                   </div>
@@ -372,84 +393,109 @@ export default function MatterPassageField({
                   key={matter.id}
                   style={{
                     top: `${top}%`,
-                    left: `${left}%`,
+                    left: `min(${left}%, calc(100% - 12rem))`,
                   }}
-                  tabIndex={0}
-                  aria-label={`${PASSAGE[level].key}: ${matter.title}`}
                 >
-                  <span
-                    className={
-                      styles.positionNode
-                    }
-                    aria-hidden="true"
-                  />
-
-                  <div
-                    className={
-                      styles.positionSummary
-                    }
+                  <button
+                    type="button"
+                    className={styles.passageMarker}
+                    aria-label={`${PASSAGE[level].key}: ${matter.title}, ${matter.reference}`}
+                    aria-pressed={selectedId === matter.id}
+                    onClick={() => setSelectedId(matter.id)}
                   >
-                    <strong
+                    <span
                       className={
-                        styles.positionLabel
+                        styles.positionNode
                       }
-                    >
-                      {PASSAGE[level].key}
-                    </strong>
+                      aria-hidden="true"
+                    />
 
                     <span
                       className={
-                        styles.positionBuyer
+                        styles.positionSummary
                       }
                     >
-                      {buyer?.legalName ??
-                        matter.title}
-                    </span>
-
-                    {introduction ? (
-                      <small
+                      <strong
                         className={
-                          styles.positionRelation
+                          styles.positionLabel
                         }
                       >
-                        Introduction ·{" "}
-                        {
-                          introduction
-                            .legalName
+                        {PASSAGE[level].key}
+                      </strong>
+
+                      <span
+                        className={
+                          styles.positionBuyer
                         }
-                      </small>
-                    ) : null}
-                  </div>
+                      >
+                        {buyer?.legalName ??
+                          matter.title}
+                      </span>
 
-                  <div
-                    className={
-                      styles.positionDetail
-                    }
-                  >
-                    <small>
-                      {matter.title}
-                    </small>
+                      {introduction ? (
+                        <small
+                          className={
+                            styles.positionRelation
+                          }
+                        >
+                          Introduction ·{" "}
+                          {
+                            introduction
+                              .legalName
+                          }
+                        </small>
+                      ) : null}
+                    </span>
 
-                    <code>
-                      {matter.reference}
-                    </code>
-
-                    <small
-                      className={
-                        styles.positionLifecycle
-                      }
-                    >
-                      {matter.stage}
-                      {" · "}
-                      {matter.state}
-                    </small>
-                  </div>
+                  </button>
                 </div>
               );
             })}
           </div>
         )}
       </div>
+
+      {selected ? (
+        <section
+          ref={detailRef}
+          className={styles.passageDetail}
+          tabIndex={-1}
+          aria-labelledby="passage-selection-title"
+        >
+          <h3 id="passage-selection-title">{selected.title}</h3>
+          <p>{selected.reference}</p>
+          <dl>
+            <div>
+              <dt>Current stage</dt>
+              <dd>{selected.stage.replaceAll("_", " ")} · {selected.state.replaceAll("_", " ")}</dd>
+            </div>
+            <div>
+              <dt>Last recorded movement</dt>
+              <dd>
+                {movement ? (
+                  <>
+                    <time dateTime={movement.occurredAt}>
+                      {new Date(movement.occurredAt).toLocaleString("en-GB", {
+                        dateStyle: "medium",
+                        timeStyle: "short",
+                        timeZone: "UTC",
+                      })} UTC
+                    </time>
+                    {" · "}{movement.message}
+                  </>
+                ) : "No recorded movement"}
+              </dd>
+            </div>
+          </dl>
+          {!rehearsal && selected.reference.startsWith("AXPT-MAT-") ? (
+            <Link href={`/french-ward/matters/${encodeURIComponent(selected.reference)}`} prefetch={false}>
+              Open Matter →
+            </Link>
+          ) : (
+            <p>{rehearsal ? "Synthetic rehearsal record" : "Canonical matter record pending"}</p>
+          )}
+        </section>
+      ) : null}
 
       <footer className={styles.instrumentFoot}>
         <span>

@@ -18927,3 +18927,70 @@ strong {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* Matter Passage selection */
+.passageMarker {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  cursor: pointer;
+  text-align: left;
+}
+
+.passageMarker .positionSummary {
+  box-sizing: border-box;
+  width: clamp(9rem, 14vw, 11rem);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.passageMarker:focus-visible,
+.mobilePassageMatter:focus-visible,
+.passageDetail:focus-visible {
+  outline: 2px solid #9ce5f5;
+  outline-offset: 2px;
+}
+
+.passageMarker[aria-pressed="true"] .positionSummary,
+.mobilePassageMatter[aria-pressed="true"] {
+  border-color: #edcc87;
+}
+
+.mobilePassageMatter {
+  width: 100%;
+  min-height: 44px;
+  cursor: pointer;
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.passageRehearsal,
+.passageDetail {
+  margin: .75rem var(--module-gutter);
+  padding: .75rem 1rem;
+  background: #142d38;
+  color: #e5f3f6;
+  border: 1px solid #527282;
+}
+
+.passageDetail dl {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: .75rem;
+  margin-block: .75rem;
+}
+
+.passageDetail dt {
+  color: #b9d5dd;
+  font-weight: 600;
+}
+
+.passageDetail dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.passageDetail a {
+  color: #9ce5f5;
+  text-decoration: underline;
+}

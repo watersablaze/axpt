@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import HomeWorkspaceShell from "./HomeWorkspaceShell";
+import { createPassageRehearsalMatters } from "./passageRehearsal";
 
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { PERMISSIONS } from "@/domains/auth/permissions";
@@ -33,6 +34,7 @@ export default async function FrenchWardHomePage({
 }: {
   searchParams?: Promise<{
     module?: string;
+    passageRehearsal?: string;
   }>;
 }) {
   const principal = await getPrincipal();
@@ -227,6 +229,12 @@ export default async function FrenchWardHomePage({
   return (
     <HomeWorkspaceShell
       home={home}
+      passageRehearsal={
+        process.env.NODE_ENV === "development" &&
+        resolvedSearchParams?.passageRehearsal === "1"
+          ? createPassageRehearsalMatters(now)
+          : undefined
+      }
       actions={actions}
       initialModule={initialModule}
       arpAppointments={arpAppointments?.map((appointment) => ({
