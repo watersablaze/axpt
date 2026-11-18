@@ -131,7 +131,7 @@ export function assessEcoNommoDelegationProvenance(
       conflicts.push("ISSUER_COMPETENCE_SCOPE_CONFLICT");
     const from = instant(power.effectiveAt), end = power.expiresAt === null ? null : instant(power.expiresAt);
     if (from === null || from > at.getTime() ||
-        (power.expiresAt !== null && (end === null || end <= at.getTime() || end <= from)))
+        (power.expiresAt !== null && (end === null || end <= at.getTime() || (from !== null && end <= from))))
       conflicts.push("ISSUER_COMPETENCE_WINDOW_CONFLICT");
   }
 
@@ -200,7 +200,7 @@ export function assessEcoNommoDelegationProvenance(
     const from = instant(lifecycle.effectiveAt);
     const end = lifecycle.expiresAt === null ? null : instant(lifecycle.expiresAt);
     if (from === null || from > at.getTime() ||
-      (lifecycle.expiresAt !== null && (end === null || end <= at.getTime() || end <= from)))
+      (lifecycle.expiresAt !== null && (end === null || end <= at.getTime() || (from !== null && end <= from))))
       conflicts.push("MANDATE_LIFECYCLE_WINDOW_CONFLICT");
   }
 
