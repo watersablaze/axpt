@@ -148,7 +148,10 @@ export async function sendCommercialIntakeAccessNoticeWithClient(input: {
   });
 
   if (!liveGrant) {
-    await client.$transaction(async (tx) => {
+    await client.$transaction(async (tx: Pick<
+    PrismaClient,
+    "commercialIntakeAccessNoticeDelivery" | "domainEvent" | "emailLog"
+  >) => {
       await tx.commercialIntakeAccessNoticeDelivery.update({
         where: { id: claim.id },
         data: { status: "BLOCKED", errorCode: "GRANT_NO_LONGER_VALID" },
@@ -196,7 +199,10 @@ export async function sendCommercialIntakeAccessNoticeWithClient(input: {
     // An exception does not establish whether the provider accepted the email.
   }
 
-  await client.$transaction(async (tx) => {
+  await client.$transaction(async (tx: Pick<
+    PrismaClient,
+    "commercialIntakeAccessNoticeDelivery" | "domainEvent" | "emailLog"
+  >) => {
     await tx.commercialIntakeAccessNoticeDelivery.update({
       where: { id: claim.id },
       data: { status, providerMessageId: messageId, errorCode },
