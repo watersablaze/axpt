@@ -1,6 +1,9 @@
-import type { Prisma, PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 import { renderRepresentativeBuyerDossierMessage, type BuyerDossierMessage } from "./deliverRepresentativeBuyerDossierWithClient";
 import { loadRecipientBuyerDossierWithClient } from "./loadRecipientBuyerDossierWithClient";
+type Transaction = Parameters<typeof loadRecipientBuyerDossierWithClient>[0]["client"] &
+  Pick<PrismaClient, "$queryRaw" | "domainEvent" | "emailLog">;
+
 
 type Send = (message: BuyerDossierMessage) => Promise<{ accepted: boolean; messageId?: string }>;
 /**
@@ -19,7 +22,7 @@ export async function retryRepresentativeBuyerDossierAccessNoticeWithClient(inpu
   if (!input.dossierId || input.dossierId.length > 191 || !input.operatorUserId) {
     throw new Error("BUYER_DOSSIER_RETRY_INVALID");
   }
-  const record = await input.client.$transaction(async (tx: Prisma.TransactionClient) => {
+  const record = await input.client.$transaction(async (tx: Transaction) => {
     await tx.$queryRaw`SELECT id FROM "RepresentativeBuyerDossier" WHERE id = ${input.dossierId} FOR UPDATE`;
     const dossier = await tx.representativeBuyerDossier.findUnique({
       where: { id: input.dossierId },
@@ -84,7 +87,7 @@ export async function retryRepresentativeBuyerDossierAccessNoticeWithClient(inpu
     status = "DELIVERY_UNKNOWN";
     error = "PROVIDER_OUTCOME_UNKNOWN";
   }
-  await input.client.$transaction(async (tx: Prisma.TransactionClient) => {
+  await input.client.$transaction(async (tx: Transaction) => {
     const updated = await tx.representativeBuyerDossier.updateMany({
       where: { id: record.id, recipientDeliveryStatus: "SENDING" },
       data: { recipientDeliveryStatus: status, recipientMessageId: messageId,
