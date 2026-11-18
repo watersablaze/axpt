@@ -11,6 +11,11 @@ export type BuyerDossierItemAccessRecord = {
     request: { status: string; requesterEmail: string; scope: string; resourceReference: string; resourceVersion: number };
   };
 };
+/** Issuance accepts 1–6 distinct CUP materials; recipient resolution must use the same bound. */
+export function buyerDossierItemCountAllowsAccess(count: number) {
+  return Number.isInteger(count) && count >= 1 && count <= 6;
+}
+
 export function buyerDossierIdentityAllowsAccess(input: {
   dossier: BuyerDossierAccessRecord; userId: string; email: string; at: Date;
 }) {
