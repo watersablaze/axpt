@@ -127,7 +127,7 @@
   display: none;
 }
 
-@container (max-width: 660px) {
+@container (max-width: 900px) {
   .layout {
     grid-template-columns: minmax(0, 1fr);
   }
