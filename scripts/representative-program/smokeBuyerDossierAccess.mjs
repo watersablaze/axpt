@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
-import { buyerDossierIdentityAllowsAccess, buyerDossierItemAllowsAccess } from '../../src/domains/instruments/representative-program/commercial-utility-pack/application/buyerDossierAccessPolicy.ts';
+import { buyerDossierIdentityAllowsAccess, buyerDossierItemAllowsAccess, buyerDossierItemCountAllowsAccess } from '../../src/domains/instruments/representative-program/commercial-utility-pack/application/buyerDossierAccessPolicy.ts';
+for (const count of [1, 5, 6]) assert.equal(buyerDossierItemCountAllowsAccess(count), true, `accepted item count ${count}`);
+for (const count of [0, 7, -1, 1.5, NaN]) assert.equal(buyerDossierItemCountAllowsAccess(count), false, `rejected item count ${count}`);
 const at=new Date('2026-10-15T12:00:00Z');
 const dossier={recipientUserId:'buyer',recipientEmail:'buyer@example.invalid',recipient:{email:'buyer@example.invalid'},expiresAt:new Date(at.getTime()+60000),revokedAt:null};
 const item={kind:'SOURCE_AUTHORITY',grantId:'grant',resourceReference:'BAF-SAI',resourceVersion:1,recipientContentHash:'a'.repeat(64),grant:{id:'grant',recipientUserId:'buyer',recipientEmail:'buyer@example.invalid',scope:'SOURCE_AUTHORITY_VIEW',resourceReference:'BAF-SAI',resourceVersion:1,issuedAt:new Date(at.getTime()-60000),expiresAt:new Date(at.getTime()+60000),revokedAt:null,request:{status:'APPROVED',requesterEmail:'buyer@example.invalid',scope:'SOURCE_AUTHORITY_VIEW',resourceReference:'BAF-SAI',resourceVersion:1}}};
