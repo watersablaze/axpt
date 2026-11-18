@@ -7,6 +7,7 @@ type InstitutionalAccessTransactionClient = Pick<
   | "institutionalAccessGrant"
   | "institutionalAccessEvent"
   | "transactionIntake"
+  | "institutionalMatter"
 >;
 import type { Principal } from "../auth/types";
 import {
