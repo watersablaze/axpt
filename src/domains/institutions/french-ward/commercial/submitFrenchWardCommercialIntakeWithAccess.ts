@@ -298,6 +298,27 @@ export async function submitFrenchWardCommercialIntakeWithAccess(
       },
     });
 
+            await tx.institutionalMatter.create({
+              data: {
+                reference: created.reference.replace(/^AXPT-INT-/, "AXPT-MAT-"),
+                institutionalDomain: "FRENCH_WARD",
+                institutionalPrincipal: "French-Ward, Inc.",
+                coordinationEnvironment: "AXPT",
+                matterKind: "COMMERCIAL_TRANSACTION",
+                currentRecordKind: "INTAKE",
+                currentRecordId: created.id,
+                currentRecordReference: created.reference,
+                records: {
+                  create: {
+                    recordKind: "INTAKE",
+                    recordId: created.id,
+                    recordReference: created.reference,
+                    linkedBy: accessContext.identity.userId,
+                  },
+                },
+              },
+            });
+
             return {
               value:
                 created,
