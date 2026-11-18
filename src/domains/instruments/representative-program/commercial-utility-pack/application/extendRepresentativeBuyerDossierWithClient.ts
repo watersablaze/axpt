@@ -63,15 +63,6 @@ export async function extendRepresentativeBuyerDossierWithClient(input: {
       where: { id: dossier.id },
       data: { expiresAt },
     });
-    for (const grant of grants) {
-      await tx.institutionalAccessEvent.create({
-        data: { requestId: grant.requestId, grantId: grant.id,
-          type: "GRANTED", actorUserId: input.operatorUserId,
-          reason: "ACCESS_EXPIRATION_EXTENDED",
-          metadata: { dossierId: dossier.id, operation: "EXTEND_EXPIRATION",
-            previousExpiresAt: dossier.expiresAt.toISOString(), expiresAt: expiresAt.toISOString() } },
-      });
-    }
     await tx.domainEvent.create({
       data: { streamType: "RepresentativeBuyerDossier", streamId: dossier.id,
         eventType: "REPRESENTATIVE_BUYER_DOSSIER_ACCESS_EXTENDED",
