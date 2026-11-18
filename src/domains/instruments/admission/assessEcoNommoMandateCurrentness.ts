@@ -87,7 +87,7 @@ export function assessEcoNommoMandateCurrentness(
     seenIds.add(r.recordId);
     const from = instant(r.effectiveAt);
     const to = r.expiresAt === null ? null : instant(r.expiresAt);
-    if (from === null || (r.expiresAt !== null && (to === null || to <= from)))
+    if (from === null || (r.expiresAt !== null && (to === null || (from !== null && to <= from))))
       conflicted.push("LIFECYCLE_INTERVAL_MALFORMED");
     for (const field of [r.withdrawnAt, r.suspendedAt, r.revokedAt]) {
       if (field !== null && instant(field) === null)
