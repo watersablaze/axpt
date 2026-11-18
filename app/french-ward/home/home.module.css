@@ -18994,3 +18994,62 @@ strong {
   color: #9ce5f5;
   text-decoration: underline;
 }
+
+.passageMap {
+  position: relative;
+  isolation: isolate;
+}
+
+.passageOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+}
+
+.passageScrim {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: rgb(3 11 16 / .55);
+  cursor: pointer;
+}
+
+.passageOverlay .passageDetail {
+  position: relative;
+  width: min(100%, 36rem);
+  box-sizing: border-box;
+  max-height: 100%;
+  overflow: auto;
+  margin: 0;
+  border-color: #7395a5;
+  border-radius: .375rem;
+  background: rgb(20 45 56 / .88);
+  box-shadow: 0 1rem 3rem rgb(0 0 0 / .35);
+  backdrop-filter: blur(5px);
+}
+
+.passageDetailHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: .75rem;
+}
+
+.passageDetailHeader button {
+  min-height: 44px;
+  padding-inline: .75rem;
+  border: 1px solid #7395a5;
+  border-radius: .25rem;
+  background: #153442;
+  color: #e5f3f6;
+  cursor: pointer;
+}
+
+.passageDetailHeader button:focus-visible {
+  outline: 2px solid #9ce5f5;
+  outline-offset: 2px;
+}
