@@ -1,7 +1,7 @@
 import { resolveInstitutionalAccessWithClient } from "@/domains/institutional-access/resolveInstitutionalAccessWithClient";
 import { FRENCH_WARD_COMMERCIAL_INTAKE } from "@/domains/institutions/french-ward/commercial";
 import type { PrismaClient } from "@prisma/client";
-import { buyerDossierIdentityAllowsAccess, buyerDossierItemAllowsAccess } from "./buyerDossierAccessPolicy";
+import { buyerDossierIdentityAllowsAccess, buyerDossierItemAllowsAccess, buyerDossierItemCountAllowsAccess } from "./buyerDossierAccessPolicy";
 import { loadBuyerDossierPublicationWithClient } from "./loadBuyerDossierPublicationWithClient";
 type Client = Pick<PrismaClient, "representativeBuyerDossier" | "institutionalAccessGrant"> &
   Parameters<typeof loadBuyerDossierPublicationWithClient>[0]["client"];
@@ -23,7 +23,7 @@ export async function loadRecipientBuyerDossierWithClient(input: {
       items: { orderBy: { resourceReleaseId: "asc" }, include: { grant: { include: { request: true } } } } },
   });
   if (!dossier || !buyerDossierIdentityAllowsAccess({ ...input, dossier, at }) ||
-      !dossier.items.length || dossier.items.length > 5 ||
+      !buyerDossierItemCountAllowsAccess(dossier.items.length) ||
       new Set(dossier.items.map((item: { kind: string }) => item.kind)).size !== dossier.items.length) return null;
   const items = [];
   for (const item of dossier.items) {

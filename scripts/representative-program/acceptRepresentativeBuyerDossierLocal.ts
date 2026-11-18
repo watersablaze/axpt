@@ -1,4 +1,5 @@
 import { FRENCH_WARD_COMMERCIAL_INTAKE } from "../../src/domains/institutions/french-ward/commercial";
+import { commercialPapers, commercialPaperMetadata } from "../../src/domains/instruments/representative-program/commercial-utility-pack/commercial-papers/catalog";
 import { consumeInstitutionalAccessWithClient } from "../../src/domains/institutional-access/consumeInstitutionalAccessWithClient";
 import { SUPPORTING_DOCUMENTS } from "../../src/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/catalog";
 import { deliverRepresentativeBuyerDossierWithClient } from "../../src/domains/instruments/representative-program/commercial-utility-pack/application/deliverRepresentativeBuyerDossierWithClient";
@@ -249,6 +250,51 @@ async function main() {
   const fiveVisible=await loadRecipientBuyerDossierWithClient(recipient);
   assert.equal(fiveVisible?.items.length,5);assert.ok(fiveVisible?.items.every(item=>item.available));
   assert.ok(five.dossier.items.every((item:{canDownload:boolean})=>!item.canDownload));
+
+  // Six-material recipient acceptance: add the pinned Transaction Overview to
+  // the established five-material fixture. No recipient access follows from selection alone.
+  const tov = commercialPapers().find(paper => paper.key === "TRANSACTION_OVERVIEW");
+  assert.ok(tov, "TOV publication must be registered");
+  const tovId = prefix + "-tov-resource";
+  await client.commercialUtilityPackResourceRelease.create({ data: {
+    id: tovId, packageId, module: "DOCUMENTS", resourceType: "STRUCTURED_CONTENT",
+    resourceId: tov.reference, state: "RELEASED", canView: true, canTransmit: true,
+    metadata: commercialPaperMetadata(tov),
+  } });
+  const sixIds = [...fiveIds, tovId];
+  const sixReview = await resolveRepresentativeBuyerDossierSelectionWithClient({
+    client, userId: actorId, appointmentId, resourceReleaseIds: sixIds,
+  });
+  assert.equal(sixReview.allowed, true, "SIX_MATERIAL_SELECTION_DENIED");
+  if (!sixReview.allowed) throw new Error("SIX_MATERIAL_SELECTION_DENIED");
+  assert.equal(sixReview.publications.length, 6);
+  const six = await run({
+    ...input, resourceReleaseIds: sixIds, reviewHash: sixReview.reviewHash,
+    idempotencyKey: randomUUID(), recipientEmail: prefix + "-six@example.invalid",
+  });
+  assert.equal(six.dossier.items.length, 6);
+  const sixRecipient = {
+    client, dossierId: six.dossier.id,
+    userId: six.dossier.recipientUserId, email: six.dossier.recipientEmail,
+  };
+  const sixVisible = await loadRecipientBuyerDossierWithClient(sixRecipient);
+  assert.equal(sixVisible?.items.length, 6);
+  assert.ok(sixVisible.items.every(item => item.available && !item.canDownload));
+  assert.equal(new Set(sixVisible.items.map(item => item.reference)).size, 6);
+  const tovItem = six.dossier.items.find((item:{kind:string}) => item.kind === "TRANSACTION_OVERVIEW");
+  assert.ok(tovItem, "Six-material dossier includes TOV");
+  assert.equal(await loadRecipientBuyerDossierWithClient({...sixRecipient, userId: actorId}), null);
+  await client.institutionalAccessGrant.update({where:{id:tovItem.grantId},data:{revokedAt:new Date()}});
+  const sixPartiallyWithdrawn = await loadRecipientBuyerDossierWithClient(sixRecipient);
+  assert.equal(sixPartiallyWithdrawn?.items.length, 6);
+  assert.equal(sixPartiallyWithdrawn.items.filter(item => item.available).length, 5);
+  assert.equal(sixPartiallyWithdrawn.items.find(item => item.id === tovItem.id)?.available, false);
+  await client.institutionalAccessGrant.update({where:{id:tovItem.grantId},data:{revokedAt:null}});
+  assert.equal((await loadRecipientBuyerDossierWithClient(sixRecipient))?.items.filter(item => item.available).length, 6);
+  await client.representativeBuyerDossier.update({where:{id:six.dossier.id},data:{revokedAt:new Date()}});
+  assert.equal(await loadRecipientBuyerDossierWithClient(sixRecipient), null);
+  console.log("✓ Six-material real database dossier resolves six grants including TOV; wrong identity, individual grant revocation and whole-dossier revocation fail closed.");
+
   const supportingItems=five.dossier.items.filter((item:{kind:string})=>["DECLARATION_OF_TRUST","RESELLER_AGREEMENT","SANCTIONS_SCREENING"].includes(item.kind));
   assert.equal(supportingItems.length,3);
   const supportingGrants=await client.institutionalAccessGrant.findMany({where:{id:{in:supportingItems.map((item:{grantId:string})=>item.grantId)}}});
