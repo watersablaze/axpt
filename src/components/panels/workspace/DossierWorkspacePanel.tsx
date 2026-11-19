@@ -1238,6 +1238,7 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
                 />
 
                 <DossierKycReviewPanel
+                  key={`kyc-review-${dossier.id}-${refreshNonce}`}
                   dossierId={dossier.id}
                   currentState={dossier.state}
                   onChanged={() =>
