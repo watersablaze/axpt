@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { formatMatterQuantity } from "@/domains/institutions/french-ward/matters/formatMatterQuantity";
 import { revalidatePath } from "next/cache";
 import {
   notFound,
@@ -492,9 +493,7 @@ export default async function FrenchWardMatterPage({
 
               <dd>
                 {
-                  homeMatter.quantityKg
-                    ? `${homeMatter.quantityKg} kg`
-                    : "Not recorded"
+                  formatMatterQuantity(homeMatter.quantityKg) ?? "Not recorded"
                 }
               </dd>
             </div>
