@@ -171,9 +171,7 @@ export function ControlCenterShell() {
     )
   }
 
-  if (snapshotError && snapshot.timestamp === 0) {
-    return <div role="alert" className="p-6 text-amber-200">{snapshotError} Retrying automatically.</div>
-  }
+  const hasSnapshot = snapshot.timestamp !== 0
 
   return (
     <div className={styles.commandFrame}>
@@ -188,10 +186,12 @@ export function ControlCenterShell() {
     {snapshotError ? <div role="alert" className="p-4 text-amber-200">{snapshotError}</div> : null}
     <div className={styles.grid}>
       <div className={styles.left}>
-        <SystemHealthPanel
-          data={snapshot.system}
-          loading={loading}
-        />
+        {hasSnapshot ? (
+          <SystemHealthPanel
+            data={snapshot.system}
+            loading={loading}
+          />
+        ) : null}
 
         <ActiveIncidentPanel
           incidents={operationalState.incidents}
@@ -204,13 +204,17 @@ export function ControlCenterShell() {
           signals={operationalState.intelligence}
         />
 
-        <ETKPanel
-          data={snapshot.authority}
-        />
+        {hasSnapshot ? (
+          <ETKPanel
+            data={snapshot.authority}
+          />
+        ) : null}
 
-        <SpinePanel
-          data={snapshot.governance}
-        />
+        {hasSnapshot ? (
+          <SpinePanel
+            data={snapshot.governance}
+          />
+        ) : null}
       </div>
 
       <div className={styles.center}>
@@ -224,9 +228,11 @@ export function ControlCenterShell() {
 
         {mode === 'COMMAND' ? (
           <>
-            <ExecutionPanel
-              data={snapshot.execution}
-            />
+            {hasSnapshot ? (
+              <ExecutionPanel
+                data={snapshot.execution}
+              />
+            ) : null}
 
             <OpportunityQueuePanel
               onPromoted={
@@ -289,9 +295,11 @@ export function ControlCenterShell() {
       </div>
 
       <div className={styles.right}>
-        <TreasuryPanel
-          data={snapshot.treasury}
-        />
+        {hasSnapshot ? (
+          <TreasuryPanel
+            data={snapshot.treasury}
+          />
+        ) : null}
 
         <WalletPanel />
 
