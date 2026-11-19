@@ -15,6 +15,7 @@ import { readFile } from "node:fs/promises";
 import { FW_TOV_R04_PDF } from "@/domains/institutions/french-ward/documents/tovFrozenPdfDescriptor";
 import { resolveAuthorizedFrozenTovPdf } from "@/domains/institutions/french-ward/documents/resolveAuthorizedFrozenTovPdf";
 import { GsamArtifactVerificationError } from "@/domains/instruments/transaction-documents/gsamVerifiedArtifact";
+import { respondWithFrozenTovPdf } from "@/domains/institutions/french-ward/documents/respondWithFrozenTovPdf";
 
 async function main() {
 const path = process.argv[2];
@@ -101,7 +102,67 @@ await assert.rejects(
 );
 console.log("PASS altered PDF bytes denied");
 
+
 console.log("FW-CD-1A.1 NON-EMAIL REHEARSAL PASS");
+
+const success = await respondWithFrozenTovPdf(() =>
+  resolveAuthorizedFrozenTovPdf({ actor: admin, publication, reader }),
+);
+assert.equal(success.status, 200);
+assert.equal(success.headers.get("Content-Type"), "application/pdf");
+assert.equal(success.headers.get("Content-Disposition"), `attachment; filename="${FW_TOV_R04_PDF.downloadName}"`);
+assert.equal(success.headers.get("Content-Length"), String(FW_TOV_R04_PDF.byteLength));
+assert.equal(success.headers.get("Cache-Control"), "private, no-store");
+assert.equal(success.headers.get("X-Content-Type-Options"), "nosniff");
+assert.equal(success.headers.get("X-Robots-Tag"), "noindex, nofollow");
+const returned = new Uint8Array(await success.arrayBuffer());
+assert.equal(createHash("sha256").update(returned).digest("hex"), FW_TOV_R04_PDF.sha256);
+assert.deepEqual(returned, bytes);
+console.log("PASS HTTP 200: private attachment headers and exact PDF body");
+
+for (const actor of [null, { roles: [], permissions: [] }, { roles: ["REPRESENTATIVE"], permissions: [] }]) {
+  let reads = 0;
+  const denied = await respondWithFrozenTovPdf(() =>
+    resolveAuthorizedFrozenTovPdf({
+      actor,
+      publication,
+      reader: { read: async () => { reads++; return bytes; } },
+    }),
+  );
+  assert.equal(denied.status, 404);
+  assert.equal(reads, 0);
+  assert.equal(denied.headers.get("Content-Type"), "text/plain;charset=UTF-8");
+  assert.equal(denied.headers.get("Content-Disposition"), null);
+  assert.equal(denied.headers.get("Cache-Control"), "private, no-store");
+  assert.equal(await denied.text(), "Not found");
+}
+console.log("PASS HTTP 404: absent and non-admin principal, no storage read or attachment");
+
+for (const badReader of [
+  null,
+  { read: async () => { throw new Error("Object missing"); } },
+  { read: async () => altered },
+]) {
+  const errors: unknown[] = [];
+  const failure = await respondWithFrozenTovPdf(
+    () => resolveAuthorizedFrozenTovPdf({ actor: admin, publication, reader: badReader }),
+    (error) => { errors.push(error); },
+  );
+  assert.equal(failure.status, 503);
+  assert.equal(failure.headers.get("Content-Disposition"), null);
+  assert.equal(failure.headers.get("Cache-Control"), "private, no-store");
+  assert.equal(await failure.text(), "Document unavailable");
+  assert.equal(errors.length, 1);
+}
+console.log("PASS HTTP 503: missing storage/object and altered PDF fail closed");
+
+const invalid = await respondWithFrozenTovPdf(async () => ({
+  bytes, filename: "unapproved.pdf", sha256: FW_TOV_R04_PDF.sha256,
+}));
+assert.equal(invalid.status, 503);
+assert.equal(invalid.headers.get("Content-Disposition"), null);
+console.log("PASS HTTP 503: invalid attachment descriptor blocked");
+console.log("FW-CD-1A.2 HTTP CONTRACT REHEARSAL PASS");
 
 }
 
