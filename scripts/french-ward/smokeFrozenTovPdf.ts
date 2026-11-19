@@ -16,6 +16,7 @@ import { FW_TOV_R04_PDF } from "@/domains/institutions/french-ward/documents/tov
 import { resolveAuthorizedFrozenTovPdf } from "@/domains/institutions/french-ward/documents/resolveAuthorizedFrozenTovPdf";
 import { GsamArtifactVerificationError } from "@/domains/instruments/transaction-documents/gsamVerifiedArtifact";
 
+async function main() {
 const path = process.argv[2];
 if (!path) throw new Error("Pass the local accepted TOV PDF file path as the single argument");
 
@@ -101,3 +102,10 @@ await assert.rejects(
 console.log("PASS altered PDF bytes denied");
 
 console.log("FW-CD-1A.1 NON-EMAIL REHEARSAL PASS");
+
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});
