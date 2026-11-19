@@ -21,12 +21,13 @@ export default function ControlCenterModeSwitcher({
   onChange,
 }: Props) {
   return (
-    <div className="rounded-xl border border-neutral-800 bg-neutral-950 p-2">
+    <div className="rounded border border-neutral-800 bg-neutral-950 p-0.5">
       <div className="grid grid-cols-3 gap-1">
         {modes.map((item) => (
           <button
             key={item}
             type="button"
+            aria-pressed={item === mode}
             onClick={() => onChange(item)}
             className={
               item === mode
