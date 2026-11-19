@@ -183,6 +183,15 @@ export default function HomeWorkspaceShell({
     | "ATTENTION"
   >("ALL");
 
+  const promotionIntakes = actions.promoteIntakeToOpportunity
+    ? home.matters.filter(
+        (matter) =>
+          matter.recordKind === "INTAKE" &&
+          matter.reference.startsWith("AXPT-MAT-") &&
+          (matter.state === "UNDER_REVIEW" || matter.state === "QUALIFIED"),
+      )
+    : [];
+
   const visibleMatters = useMemo(
     () =>
       home.matters.filter((matter) => {
@@ -2402,12 +2411,37 @@ export default function HomeWorkspaceShell({
                         : "UNAVAILABLE"}
                   </strong>
 
-                  <p>
-                    Promotion is a distinct
-                    governing passage. Operative
-                    execution appears only when
-                    its exact authority exists.
-                  </p>
+                  {actions.promoteIntakeToOpportunity ? (
+                    <>
+                      <p>
+                        Open a Matter to see its intake review status.
+                        Promotion requires qualification in AXPT Admin.
+                      </p>
+                      {promotionIntakes.length ? (
+                        <ul aria-label="Intakes in review or qualified">
+                          {promotionIntakes.map((matter) => (
+                            <li key={matter.reference}>
+                              <Link
+                                className={styles.openMatter}
+                                href={`/french-ward/matters/${encodeURIComponent(matter.reference)}`}
+                                prefetch={false}
+                              >
+                                Open {matter.title} →
+                              </Link>
+                              <p>
+                                {matter.reference} ·{" "}
+                                {matter.state === "QUALIFIED" ? "Qualified" : "Under Review"}
+                              </p>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>No intakes under review or qualified in the current Matters list.</p>
+                      )}
+                    </>
+                  ) : (
+                    <p>Promotion requires French-Ward promotion authority.</p>
+                  )}
                 </section>
               ) : null}
 
