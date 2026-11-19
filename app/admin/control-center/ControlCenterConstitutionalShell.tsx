@@ -160,7 +160,7 @@ export default function ControlCenterConstitutionalShell({
   return (
     <section className={styles.shell}>
       <header className={styles.axis}>
-        <div className={styles.identity}>
+        <div className="sr-only">
           <span>CONTROL CENTER</span>
           <strong>INSTITUTIONAL CONTROL PLANE</strong>
         </div>
@@ -243,12 +243,12 @@ export default function ControlCenterConstitutionalShell({
           </nav>
         </details>
 
-        <div className={styles.location}>
+        {pathname !== '/admin/control-center' ? <div className={styles.location}>
           <span>{location.label}</span>
           {location.description ? (
             <p>{location.description}</p>
           ) : null}
-        </div>
+        </div> : null}
       </header>
 
       <div className={`${styles.content} ${
