@@ -77,9 +77,9 @@ async function main() {
       const project = (id: string) => loadPrincipalUserWithClient(tx, id);
       const adminUser = await project("fixture-actor");
       assert.ok(adminUser);
-      assert.deepEqual(adminUser.userRoles.map(r => r.role.key), ["ADMIN_PLATFORM"]);
-      assert.equal(isAdmin({roles: adminUser.userRoles.map(r => r.role.key)}), true);
-      assert.deepEqual(adminUser.userRoles[0].role.rolePermissions.map(p => p.permission.key), ["admin.access"]);
+      assert.deepEqual(adminUser.userRoles.map((r: { role: { key: string } }) => r.role.key), ["ADMIN_PLATFORM"]);
+      assert.equal(isAdmin({roles: adminUser.userRoles.map((r: { role: { key: string } }) => r.role.key)}), true);
+      assert.deepEqual(adminUser.userRoles[0].role.rolePermissions.map((p: { permission: { key: string } }) => p.permission.key), ["admin.access"]);
       console.log("PASS real SQL: active admin role and permission projected");
 
       await tx.$executeRawUnsafe(`
@@ -89,7 +89,7 @@ async function main() {
       let user = await project("fixture-actor");
       assert.ok(user);
       assert.equal(user.userRoles.length, 0);
-      assert.equal(isAdmin({ roles: user.userRoles.map(r => r.role.key) }), false);
+      assert.equal(isAdmin({ roles: user.userRoles.map((r: { role: { key: string } }) => r.role.key) }), false);
       console.log("PASS real SQL: inactive admin assignment suppressed");
 
       await tx.$executeRawUnsafe(`
@@ -99,7 +99,7 @@ async function main() {
       user = await project("fixture-actor");
       assert.ok(user);
       assert.equal(user.userRoles.length, 0);
-      assert.equal(isAdmin({ roles: user.userRoles.map(r => r.role.key) }), false);
+      assert.equal(isAdmin({ roles: user.userRoles.map((r: { role: { key: string } }) => r.role.key) }), false);
       console.log("PASS real SQL: revoked admin assignment suppressed");
 
       assert.equal(await project("absent-user"), null);
@@ -110,7 +110,7 @@ async function main() {
         expiresAt:Date|null; invalidatedAt:Date|null; endedAt:Date|null
       }>>`SELECT * FROM public."Session"`;
       assert.equal(records.length, 4);
-      const byId = Object.fromEntries(records.map(r => [r.tokenId,r]));
+      const byId = Object.fromEntries(records.map((r: { tokenId: string; userId: string; status: string; expiresAt: Date | null; invalidatedAt: Date | null; endedAt: Date | null }) => [r.tokenId, r]));
       const now = new Date();
       assert.equal(isActivePersistedSession(byId.valid,"fixture-actor",now),true);
       for (const id of ["revoked","ended","expired"]) {
