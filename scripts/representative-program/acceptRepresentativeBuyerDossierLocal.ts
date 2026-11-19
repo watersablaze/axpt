@@ -407,6 +407,24 @@ async function main() {
   assert.equal((await resolveInstitutionalAccessWithClient({...loiAccess,identity:{...loiIdentity,userId:actorId}})).allowed,false);
   const loiReception={client,dossierId:loiDossier.dossier.id,...loiIdentity};
   assert.equal((await loadRecipientBuyerDossierWithClient(loiReception))?.loiAccess?.available,true);
+
+  const previousLoiExpiry = loiDossier.dossier.expiresAt.toISOString();
+  const extendedLoi = await extendRepresentativeBuyerDossierWithClient({
+    client, dossierId: loiDossier.dossier.id, operatorUserId: actorId,
+    days: 14, expectedExpiresAt: previousLoiExpiry,
+  });
+  assert.equal(extendedLoi.extendedGrantCount, 3, "Two publications and the LOI grant extended together");
+  assert.equal((await client.institutionalAccessGrant.findUniqueOrThrow({
+    where: { id: loiDossier.dossier.loiAccessGrantId! },
+  })).expiresAt.toISOString(), extendedLoi.expiresAt);
+  assert.equal((await loadRecipientBuyerDossierWithClient(loiReception))?.loiAccess?.available, true);
+  assert.equal((await resolveInstitutionalAccessWithClient(loiAccess)).allowed, true);
+  await assert.rejects(() => extendRepresentativeBuyerDossierWithClient({
+    client, dossierId: loiDossier.dossier.id, operatorUserId: actorId,
+    days: 14, expectedExpiresAt: previousLoiExpiry,
+  }), /BUYER_DOSSIER_EXTENSION_UNAVAILABLE/);
+  console.log("✓ Optional LOI grant and its two publication grants extend atomically, retain access, and reject stale replay.");
+
   const submitLoi=()=>consumeInstitutionalAccessWithClient({client,identity:loiIdentity,scope:"LOI_INTAKE_ACCESS",
     action:"SUBMIT_INTAKE",resourceReference:FRENCH_WARD_COMMERCIAL_INTAKE.reference,
     resourceVersion:FRENCH_WARD_COMMERCIAL_INTAKE.version,execute:async tx=>{
