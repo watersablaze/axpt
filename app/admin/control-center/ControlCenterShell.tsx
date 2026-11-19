@@ -200,9 +200,11 @@ export function ControlCenterShell() {
           }
         />
 
-        <IntelligenceSummaryPanel
-          signals={operationalState.intelligence}
-        />
+        {hasSnapshot && !snapshotError ? (
+          <IntelligenceSummaryPanel
+            signals={operationalState.intelligence}
+          />
+        ) : null}
 
         {hasSnapshot ? (
           <ETKPanel
