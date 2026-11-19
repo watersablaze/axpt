@@ -8,7 +8,7 @@
  * No email, session issuance, cookies, storage access or deployment.
  */
 import assert from "node:assert/strict";
-import { Prisma, PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { loadPrincipalUserWithClient } from "@/domains/auth/loadPrincipalUserWithClient";
 import { isAdmin } from "@/domains/auth/isAdmin";
 import { isActivePersistedSession } from "@/lib/auth/sessionRecordPolicy";
@@ -26,7 +26,7 @@ async function main() {
   const db = new PrismaClient({ datasources: { db: { url: rawUrl } } });
   const rollbackMarker = "FW_CD1A4_INTENTIONAL_ROLLBACK";
   try {
-    await db.$transaction(async (tx: Prisma.TransactionClient) => {
+    await db.$transaction(async (tx: Pick<PrismaClient, "$queryRaw" | "$executeRawUnsafe">) => {
       // Empty database only. Refuse to touch an existing application schema.
       const found = await tx.$queryRaw<Array<{ count: bigint }>>`
         SELECT count(*)::bigint AS count
