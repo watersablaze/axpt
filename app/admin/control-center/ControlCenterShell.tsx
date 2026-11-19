@@ -9,11 +9,9 @@ import type { ControlCenterSnapshot } from '@/components/panels/contracts/contro
 
 import ExecutionPanel from '@/components/panels/ExecutionPanel'
 import TreasuryPanel from '@/components/panels/TreasuryPanel'
-import WalletPanel from '@/components/panels/WalletPanel'
 import SpinePanel from '@/components/panels/SpinePanel'
 import ETKPanel from '@/components/panels/ETKPanel'
 import SystemHealthPanel from '@/components/panels/SystemHealthPanel'
-import ActionPanel from '@/components/panels/ActionPanel'
 import IntelligenceSummaryPanel from '@/components/panels/IntelligenceSummaryPanel'
 import ActiveIncidentPanel from '@/components/panels/ActiveIncidentPanel'
 import IncidentActionPanel from '@/components/panels/IncidentActionPanel'
@@ -171,6 +169,7 @@ export function ControlCenterShell() {
     )
   }
 
+  const dossierOpen = mode === 'EXECUTION' && Boolean(focusedDossierId)
   const hasSnapshot = snapshot.timestamp !== 0
 
   return (
@@ -180,12 +179,12 @@ export function ControlCenterShell() {
         {operationalState.error} Last complete refresh: {new Date(operationalState.lastSuccessfulAt!).toLocaleTimeString()}.
       </div>
     ) : null}
-    <div className="border-b border-cyan-200/10 px-4 py-2 text-xs text-neutral-400">
-      Treasury counts reflect recorded queue states. Unconnected telemetry is shown as “Not measured”.
-    </div>
-    {snapshotError ? <div role="alert" className="p-4 text-amber-200">{snapshotError}</div> : null}
-    <div className={styles.grid}>
-      <div className={styles.left}>
+    <div className={`${styles.grid} ${dossierOpen || !hasSnapshot ? styles.twoColumns : ''}`}>
+      <details className={styles.left}>
+        <summary>{snapshotError ? "Telemetry unavailable" : "Operational context"}</summary>
+        {snapshotError ? (
+          <p role="status" className="text-xs text-amber-200">{snapshotError}</p>
+        ) : null}
         {hasSnapshot ? (
           <SystemHealthPanel
             data={snapshot.system}
@@ -217,7 +216,7 @@ export function ControlCenterShell() {
             data={snapshot.governance}
           />
         ) : null}
-      </div>
+      </details>
 
       <div className={styles.center}>
         <div className={styles.modeBar}>
@@ -296,17 +295,11 @@ export function ControlCenterShell() {
         </div>
       </div>
 
-      <div className={styles.right}>
-        {hasSnapshot ? (
-          <TreasuryPanel
-            data={snapshot.treasury}
-          />
-        ) : null}
-
-        <WalletPanel />
-
-        <ActionPanel />
-      </div>
+      {hasSnapshot && !dossierOpen ? (
+        <aside className={styles.right} aria-label="Treasury telemetry">
+          <TreasuryPanel data={snapshot.treasury} />
+        </aside>
+      ) : null}
     </div>
     </div>
   )
