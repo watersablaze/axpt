@@ -3,6 +3,7 @@ import type {
 } from "next";
 
 import Link from "next/link";
+import { isAdmin } from "@/domains/auth/isAdmin";
 
 import styles from "../../home.module.css";
 import {
@@ -62,9 +63,7 @@ FrenchWardHomeTovDocumentPage() {
     });
 
   const administrativeReview =
-    principal.roles.includes(
-      "ADMIN_PLATFORM",
-    );
+    isAdmin(principal);
 
   if (
     !standing?.active &&
@@ -99,6 +98,23 @@ FrenchWardHomeTovDocumentPage() {
         <span>
           Transaction Overview
         </span>
+        {administrativeReview ? (
+          <a
+            href="/api/admin/french-ward/documents/tov/pdf"
+            download="FW-TOV-2026-001-Edition01-R04.pdf"
+            style={{
+              color: "#ecf3ed",
+              border: "1px solid #7e9894",
+              borderRadius: 6,
+              padding: "8px 12px",
+              textDecoration: "none",
+              fontSize: 12,
+              fontWeight: 600,
+            }}
+          >
+            Download approved PDF
+          </a>
+        ) : null}
       </nav>
 
       <TovPublicationView />
