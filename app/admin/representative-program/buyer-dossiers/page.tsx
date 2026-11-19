@@ -54,11 +54,15 @@ export default async function BuyerDossiersPage({
       recipientOrganization: true, purpose: true, createdAt: true, expiresAt: true,
       revokedAt: true, recipientDeliveryStatus: true, adminDeliveryStatus: true,
       participant: { select: { displayName: true } },
-      items: { select: { grant: { select: { revokedAt: true, expiresAt: true } } } },
-      loiAccessGrant: { select: { revokedAt: true, expiresAt: true } },
+      items: { select: { grant: { select: { revokedAt: true, expiresAt: true, firstAccessAt: true } } } },
+      loiAccessGrant: { select: { revokedAt: true, expiresAt: true, firstAccessAt: true } },
     },
   });
-  const mapped = rows.map(row => ({ ...row, access: accessStanding(row, now) }));
+  const mapped = rows.map(row => ({
+    ...row,
+    access: accessStanding(row, now),
+    accessedCount: row.items.filter(item => item.grant.firstAccessAt !== null).length,
+  }));
   const visible = mapped.filter(row =>
     filter === "current" ? row.access === "Valid"
     : filter === "historical" ? ["Expired", "Revoked"].includes(row.access)
@@ -84,36 +88,36 @@ export default async function BuyerDossiersPage({
         <h1 className="font-serif text-3xl tracking-tight sm:text-4xl">Buyer Dossiers</h1>
         <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-400">Documentary issuance, recipient authorization, and delivery oversight. An accepted notice is not proof that a recipient viewed a document.</p>
       </header>
-      <div className="mb-6 grid gap-3 sm:grid-cols-3">
-        <div className="rounded-lg border border-slate-700 bg-[#131e27] p-4">
+      <div className="mb-3 grid gap-2 sm:grid-cols-3">
+        <div className="rounded-md border border-slate-700 bg-[#131e27] px-3 py-2.5">
           <p className="text-xs uppercase tracking-widest text-slate-400">Visible dossiers</p>
-          <p className="mt-2 text-2xl font-semibold">{mapped.length}</p>
+          <p className="mt-1 text-xl font-semibold">{mapped.length}</p>
         </div>
-        <div className="rounded-lg border border-slate-700 bg-[#131e27] p-4">
+        <div className="rounded-md border border-slate-700 bg-[#131e27] px-3 py-2.5">
           <p className="text-xs uppercase tracking-widest text-slate-400">Valid access</p>
-          <p className="mt-2 text-2xl font-semibold">{mapped.filter(row => row.access === "Valid").length}</p>
+          <p className="mt-1 text-xl font-semibold">{mapped.filter(row => row.access === "Valid").length}</p>
         </div>
-        <div className="rounded-lg border border-slate-700 bg-[#131e27] p-4">
+        <div className="rounded-md border border-slate-700 bg-[#131e27] px-3 py-2.5">
           <p className="text-xs uppercase tracking-widest text-slate-400">Delivery attention</p>
-          <p className="mt-2 text-2xl font-semibold">{mapped.filter(row => ["FAILED", "DELIVERY_UNKNOWN", "SENDING"].includes(row.recipientDeliveryStatus)).length}</p>
+          <p className="mt-1 text-xl font-semibold">{mapped.filter(row => ["FAILED", "DELIVERY_UNKNOWN", "SENDING"].includes(row.recipientDeliveryStatus)).length}</p>
         </div>
       </div>
-      <p className="mb-6 text-xs text-slate-500">Counts cover this query's latest 50 records, not the full institutional register. Valid means the dossier and grant dates are current; publication availability is rechecked separately.</p>
-      <form method="GET" className="mb-5 flex flex-wrap items-end gap-3">
+      <p className="mb-4 text-xs text-slate-500">Counts cover this query's latest 50 records, not the full institutional register. Valid means the dossier and grant dates are current; publication availability is rechecked separately.</p>
+      <form method="GET" className="mb-3 flex flex-wrap items-end gap-2">
         <label className="flex min-w-[220px] flex-1 flex-col gap-2 text-xs text-slate-300">
           Search recipient, organization, representative, or dossier ID
           <input name="q" defaultValue={q} maxLength={120} placeholder="Search dossiers"
-            className="w-full rounded-md border border-slate-600 bg-[#101923] px-3 py-3 text-sm text-white placeholder:text-slate-500"/>
+            className="w-full rounded-md border border-slate-600 bg-[#101923] px-3 py-2 text-sm text-white placeholder:text-slate-500"/>
         </label>
         <input type="hidden" name="filter" value={filter}/>
-        <button type="submit" className="rounded-md border border-slate-400 px-5 py-3 text-sm font-semibold hover:bg-slate-800">Search</button>
+        <button type="submit" className="rounded-md border border-slate-400 px-4 py-2 text-sm font-semibold hover:bg-slate-800">Search</button>
         {q && <Link href="/admin/representative-program/buyer-dossiers" className="px-2 py-3 text-sm text-slate-300 underline">Clear</Link>}
       </form>
-      <nav aria-label="Dossier status filters" className="mb-5 flex flex-wrap gap-2">
+      <nav aria-label="Dossier status filters" className="mb-3 flex flex-wrap gap-1.5">
         {tabs.map(tab => <Link key={tab.key}
           href={`?filter=${tab.key}${q ? "&q=" + encodeURIComponent(q) : ""}`}
           aria-current={filter === tab.key ? "page" : undefined}
-          className={`rounded-md border px-3 py-2 text-xs font-medium ${filter === tab.key ? "border-slate-200 bg-slate-200 text-slate-950" : "border-slate-700 text-slate-300 hover:border-slate-400"}`}>
+          className={`rounded-md border px-2.5 py-1.5 text-xs font-medium ${filter === tab.key ? "border-slate-200 bg-slate-200 text-slate-950" : "border-slate-700 text-slate-300 hover:border-slate-400"}`}>
           {tab.label}
         </Link>)}
       </nav>
@@ -124,7 +128,7 @@ export default async function BuyerDossiersPage({
           <div className="col-span-3 hidden sm:block">Delivery</div>
           <div className="col-span-6 sm:col-span-2">Issued / detail</div>
         </div>
-        {visible.map(row => <article key={row.id} className="grid grid-cols-12 gap-3 border-b border-slate-800 bg-[#0f1821] px-4 py-5 last:border-0 hover:bg-[#182530]">
+        {visible.map(row => <article key={row.id} className="grid grid-cols-12 gap-3 border-b border-slate-800 bg-[#0f1821] px-4 py-3 last:border-0 hover:bg-[#182530]">
           <div className="col-span-6 sm:col-span-4">
             <Link href={`/admin/representative-program/buyer-dossiers/${encodeURIComponent(row.id)}`} className="font-semibold text-slate-100 underline-offset-4 hover:underline">{row.recipientName}</Link>
             <p className="mt-1 break-all text-xs text-slate-400">{row.recipientEmail}</p>
@@ -132,12 +136,12 @@ export default async function BuyerDossiersPage({
           </div>
           <div className="col-span-3 hidden sm:block">
             <p className={row.access === "Valid" ? "font-medium text-emerald-300" : "font-medium text-amber-200"}>{row.access}</p>
-            <p className="mt-1 text-xs text-slate-400">{row.items.length} publication{row.items.length === 1 ? "" : "s"} · LOI {row.loiAccessGrant ? "included" : "not included"}</p>
-            <p className="mt-1 text-xs text-slate-500">Expires {formatDate(row.expiresAt)} UTC</p>
+            <p className="mt-1 text-xs text-slate-400">{row.items.length} grants · {row.accessedCount} first-access timestamps · LOI {row.loiAccessGrant ? "granted" : "not granted"}</p>
+            <p className="mt-0.5 text-xs text-slate-500">Expires {formatDate(row.expiresAt)} UTC</p>
           </div>
           <div className="col-span-3 hidden sm:block">
-            <p className="text-sm">{row.recipientDeliveryStatus.replaceAll("_", " ")}</p>
-            <p className="mt-1 text-xs text-slate-400">Recipient notice · provider status</p>
+            <p className={`text-sm font-medium ${["FAILED", "DELIVERY_UNKNOWN", "SENDING"].includes(row.recipientDeliveryStatus) ? "text-amber-200" : "text-slate-200"}`}>{row.recipientDeliveryStatus.replaceAll("_", " ")}</p>
+            <p className="mt-0.5 text-xs text-slate-400">Recipient notice · provider status</p>
           </div>
           <div className="col-span-6 sm:col-span-2">
             <p className="text-xs text-slate-400">{formatDate(row.createdAt)}</p>

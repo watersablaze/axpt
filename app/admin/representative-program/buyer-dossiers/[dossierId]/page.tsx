@@ -67,6 +67,14 @@ export default async function BuyerDossierRecordPage({
     row.expiresAt <= now ? "Expired" :
     row.items.length === 0 || row.items.length > 6 ||
     allGrants.some(grant => grant.revokedAt || grant.expiresAt <= now) ? "Restricted" : "Valid";
+  const currentPublicationGrants = row.items.filter(item =>
+    !item.grant.revokedAt && item.grant.expiresAt > now).length;
+  const accessedPublicationGrants = row.items.filter(item =>
+    item.grant.firstAccessAt !== null).length;
+  const loiStanding = !row.loiAccessGrant ? "Not granted" :
+    row.loiAccessGrant.revokedAt ? "Revoked" :
+    row.loiAccessGrant.expiresAt <= now ? "Expired" : "Current";
+  const deliveryAttention = ["FAILED", "DELIVERY_UNKNOWN", "SENDING"].includes(row.recipientDeliveryStatus);
   const canManageAccess = principal.permissions.includes(PERMISSIONS.INSTITUTIONAL_ACCESS_MANAGE);
   const canExtend = access === "Valid";
   const canRetryNotice = canExtend &&
@@ -94,62 +102,111 @@ export default async function BuyerDossierRecordPage({
         <p className="mt-4 break-all font-mono text-xs text-slate-500">Dossier ID · {row.id}</p>
       </header>
 
-      <div className="mt-7 grid gap-6 lg:grid-cols-[minmax(0,1fr)_300px]">
-        <div className="space-y-6">
-          <section className="rounded-lg border border-slate-700 bg-[#111c25] p-5 sm:p-6">
+      {/* Compact dossier overview: recorded grants and events, not publication verification. */}
+      <section aria-label="Dossier overview" className="mt-4 grid grid-cols-2 gap-2 lg:grid-cols-4">
+        {[
+          { label: "Current publication grants", value: `${currentPublicationGrants}/${row.items.length}` },
+          { label: "Access timestamps recorded", value: `${accessedPublicationGrants}/${row.items.length}` },
+          { label: "Recipient notice", value: row.recipientDeliveryStatus.replaceAll("_", " "), alert: deliveryAttention },
+          { label: "LOI grant", value: loiStanding },
+        ].map(metric => <div key={metric.label} className="min-w-0 rounded-md border border-slate-700 bg-[#131e27] px-3 py-2">
+          <p className="text-[10px] uppercase tracking-wide text-slate-400">{metric.label}</p>
+          <p className={`mt-1 truncate text-sm font-semibold ${metric.alert ? "text-amber-200" : "text-slate-100"}`}>{metric.value}</p>
+        </div>)}
+      </section>
+      <p className="mt-2 text-xs text-slate-500">Scope of record · Grant standing, recipient access timestamps and notice-provider status are distinct. None establishes publication availability, buyer authority or transaction acceptance.</p>
+
+      <div className="mt-4 grid gap-4 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="space-y-4">
+          <section className="rounded-lg border border-slate-700 bg-[#111c25] p-4 sm:p-5">
             <h2 className="font-serif text-xl">01 · Identity & issuance</h2>
             <p className="mt-2 text-xs text-slate-400">This record establishes a recipient invitation, not verified authority to act for a buyer or distribute materials onward.</p>
-            <dl className="mt-5 grid gap-x-6 gap-y-5 sm:grid-cols-2">
-              <div><dt className="text-xs uppercase tracking-widest text-slate-500">Recipient email</dt><dd className="mt-1 break-all text-sm">{row.recipientEmail}</dd></div>
-              <div><dt className="text-xs uppercase tracking-widest text-slate-500">Recipient capacity</dt><dd className="mt-1 text-sm">Invited dossier recipient</dd></div>
-              <div><dt className="text-xs uppercase tracking-widest text-slate-500">Representative</dt><dd className="mt-1 text-sm">{row.participant.displayName}</dd></div>
-              <div><dt className="text-xs uppercase tracking-widest text-slate-500">Issuance channel</dt><dd className="mt-1 text-sm">Representative Program</dd></div>
-              <div><dt className="text-xs uppercase tracking-widest text-slate-500">Issued at</dt><dd className="mt-1 text-sm">{dateUTC(row.createdAt)}</dd></div>
-              <div><dt className="text-xs uppercase tracking-widest text-slate-500">Access expires</dt><dd className="mt-1 text-sm">{dateUTC(row.expiresAt)}</dd></div>
-              <div><dt className="text-xs uppercase tracking-widest text-slate-500">Last record update</dt><dd className="mt-1 text-sm">{dateUTC(row.updatedAt)}</dd></div>
-              <div><dt className="text-xs uppercase tracking-widest text-slate-500">Revoked</dt><dd className="mt-1 text-sm">{row.revokedAt ? dateUTC(row.revokedAt) : "No recorded revocation"}</dd></div>
+            <dl className="mt-3 grid gap-x-5 gap-y-3 sm:grid-cols-2">
+              <div>
+                <dt className="text-[11px] uppercase tracking-wide text-slate-500">Recipient email</dt>
+                <dd className="mt-1 break-all text-sm">{row.recipientEmail}</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] uppercase tracking-wide text-slate-500">Representative</dt>
+                <dd className="mt-1 text-sm">{row.participant.displayName}</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] uppercase tracking-wide text-slate-500">Issued at</dt>
+                <dd className="mt-1 text-sm">{dateUTC(row.createdAt)}</dd>
+              </div>
+              <div>
+                <dt className="text-[11px] uppercase tracking-wide text-slate-500">Access expires</dt>
+                <dd className="mt-1 text-sm">{dateUTC(row.expiresAt)}</dd>
+              </div>
             </dl>
-            <div className="mt-5 border-t border-slate-700 pt-4">
+            <details className="mt-3 border-t border-slate-700/70 pt-2">
+              <summary className="cursor-pointer text-xs text-slate-300">
+                Additional record details
+              </summary>
+              <dl className="mt-3 grid gap-x-5 gap-y-3 sm:grid-cols-2">
+                <div>
+                  <dt className="text-xs text-slate-500">Recipient capacity</dt>
+                  <dd className="mt-1 text-sm">Invited dossier recipient</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-slate-500">Issuance channel</dt>
+                  <dd className="mt-1 text-sm">Representative Program</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-slate-500">Last record update</dt>
+                  <dd className="mt-1 text-sm">{dateUTC(row.updatedAt)}</dd>
+                </div>
+                <div>
+                  <dt className="text-xs text-slate-500">Revocation record</dt>
+                  <dd className="mt-1 text-sm">{row.revokedAt ? dateUTC(row.revokedAt) : "No recorded revocation"}</dd>
+                </div>
+              </dl>
+            </details>
+            <div className="mt-4 border-t border-slate-700 pt-3">
               <p className="text-xs uppercase tracking-widest text-slate-500">Recorded purpose (verbatim)</p>
               <p className="mt-2 whitespace-pre-wrap text-sm leading-6">{row.purpose}</p>
             </div>
           </section>
 
-          <section className="rounded-lg border border-slate-700 bg-[#111c25] p-5 sm:p-6">
+          <section className="rounded-lg border border-slate-700 bg-[#111c25] p-4 sm:p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <h2 className="font-serif text-xl">02 · Documentary manifest</h2>
               <span className="text-xs text-slate-400">{row.items.length} selected publication{row.items.length === 1 ? "" : "s"}</span>
             </div>
-            <p className="mt-2 text-xs leading-5 text-slate-400">Each material retains its own reference, edition, content fingerprint, and access grant. Publication access is not permission to redistribute.</p>
-            <div className="mt-5 space-y-3">
+            <p className="mt-2 text-xs leading-5 text-slate-400">Expand a row for edition, grant timing, retention and technical evidence. Current grant does not certify resource availability.</p>
+            <div className="mt-3 overflow-hidden rounded-md border border-slate-700 bg-[#0d1720]">
               {row.items.map((item, index) => {
                 const state = item.grant.revokedAt ? "Revoked" :
-                  item.grant.expiresAt <= now ? "Expired" : "Active";
-                return <article key={item.id} className="rounded-md border border-slate-700 bg-[#0d1720] p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-xs text-slate-500">{String(index+1).padStart(2, "0")} · {item.kind.replaceAll("_", " ")}</p>
-                      <h3 className="mt-1 text-sm font-semibold">{item.label}</h3>
-                    </div>
+                  item.grant.expiresAt <= now ? "Expired" : "Current grant";
+                return <details key={item.id} className="group border-b border-slate-700/70 last:border-b-0">
+                  <summary className="flex cursor-pointer list-none flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2.5 hover:bg-slate-800/40 [&::-webkit-details-marker]:hidden">
+                    <span className="w-5 shrink-0 text-[11px] text-slate-500">{String(index + 1).padStart(2, "0")}</span>
+                    <span className="min-w-[160px] flex-1 text-sm font-medium">{item.label}</span>
+                    <span className="text-xs text-slate-400">{item.grant.firstAccessAt ? "Timestamp recorded" : "No timestamp recorded"}</span>
                     <Standing value={state}/>
+                    <span aria-hidden="true" className="text-xs text-slate-400 group-open:rotate-90">▸</span>
+                  </summary>
+                  <div className="border-t border-slate-800 px-3 pb-3 pt-3 text-xs">
+                    <dl className="grid gap-x-5 gap-y-3 text-slate-400 sm:grid-cols-2">
+                      <div><dt>Publication identity</dt><dd className="mt-1 break-all text-slate-200">{item.resourceReference} · Edition {item.resourceVersion}</dd></div>
+                      <div><dt>Grant expires</dt><dd className="mt-1 text-slate-200">{dateUTC(item.grant.expiresAt)}</dd></div>
+                      <div><dt>Recipient retention</dt><dd className="mt-1 text-slate-200">{item.canDownload ? "Download permitted by grant record" : "View only; no download grant"}</dd></div>
+                      <div><dt>First recorded access</dt><dd className="mt-1 text-slate-200">{item.grant.firstAccessAt ? dateUTC(item.grant.firstAccessAt) : "Not recorded"}</dd></div>
+                      <div><dt>Last recorded access</dt><dd className="mt-1 text-slate-200">{item.grant.lastAccessAt ? dateUTC(item.grant.lastAccessAt) : "Not recorded"}</dd></div>
+                      <div><dt>Grant issued</dt><dd className="mt-1 text-slate-200">{dateUTC(item.grant.issuedAt)}</dd></div>
+                    </dl>
+                    <details className="mt-3 border-t border-slate-800 pt-2 text-slate-400">
+                      <summary className="cursor-pointer text-slate-300">Technical identifiers</summary>
+                      <p className="mt-2 break-all">Grant · {item.grant.id}</p>
+                      <p className="mt-1 break-all">Content fingerprint · {item.recipientContentHash}</p>
+                    </details>
                   </div>
-                  <dl className="mt-3 grid gap-2 text-xs text-slate-400 sm:grid-cols-2">
-                    <div><dt>Publication identity</dt><dd className="mt-1 break-all text-slate-200">{item.resourceReference} · Edition {item.resourceVersion}</dd></div>
-                    <div><dt>Grant expires</dt><dd className="mt-1 text-slate-200">{dateUTC(item.grant.expiresAt)}</dd></div>
-                    <div><dt>Recipient retention</dt><dd className="mt-1 text-slate-200">{item.canDownload ? "Download permitted by grant record" : "View only; no download grant"}</dd></div>
-                    <div><dt>First recorded access</dt><dd className="mt-1 text-slate-200">{item.grant.firstAccessAt ? dateUTC(item.grant.firstAccessAt) : "Not recorded"}</dd></div>
-                  </dl>
-                  <details className="mt-3 border-t border-slate-800 pt-3 text-xs text-slate-400">
-                    <summary className="cursor-pointer text-slate-300">Technical record identifiers</summary>
-                    <p className="mt-2 break-all">Grant · {item.grant.id}</p>
-                    <p className="mt-1 break-all">Content fingerprint · {item.recipientContentHash}</p>
-                  </details>
-                </article>;
+                </details>;
               })}
             </div>
           </section>
 
-          <section className="rounded-lg border border-slate-700 bg-[#111c25] p-5 sm:p-6">
+          <section className="rounded-lg border border-slate-700 bg-[#111c25] p-4 sm:p-5">
             <h2 className="font-serif text-xl">03 · Commercial Intake</h2>
             {row.loiAccessGrant ? <div className="mt-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
@@ -163,12 +220,12 @@ export default async function BuyerDossierRecordPage({
           </section>
         </div>
 
-        <aside className="space-y-6">
+        <aside className="space-y-4">
           <section className="rounded-lg border border-slate-700 bg-[#111c25] p-5">
             <h2 className="font-serif text-xl">04 · Delivery</h2>
-            <p className="mt-3 text-xs text-slate-400">Provider acceptance is not proof of inbox receipt, reading, comprehension, or agreement.</p>
+            <p className="mt-2 text-xs text-slate-400">Notice-provider status only; not proof of reading or agreement.</p>
             <dl className="mt-4 space-y-4 text-sm">
-              <div><dt className="text-xs uppercase tracking-widest text-slate-500">Recipient notice</dt><dd className="mt-1">{row.recipientDeliveryStatus.replaceAll("_", " ")}</dd>
+              <div><dt className="text-xs uppercase tracking-widest text-slate-500">Recipient notice</dt><dd className={`mt-1 ${deliveryAttention ? "font-semibold text-amber-200" : ""}`}>{row.recipientDeliveryStatus.replaceAll("_", " ")}</dd>
                 {row.recipientDeliveryError && <p className="mt-1 text-xs text-amber-200">Recorded error · {row.recipientDeliveryError}</p>}</div>
               <div><dt className="text-xs uppercase tracking-widest text-slate-500">Admin notice</dt><dd className="mt-1">{row.adminDeliveryStatus.replaceAll("_", " ")}</dd>
                 {row.adminDeliveryError && <p className="mt-1 text-xs text-amber-200">Recorded error · {row.adminDeliveryError}</p>}</div>
@@ -179,7 +236,7 @@ export default async function BuyerDossierRecordPage({
           <section className="rounded-lg border border-slate-700 bg-[#111c25] p-5">
             <h2 className="font-serif text-xl">05 · Recipient evidence</h2>
             <p className="mt-3 text-sm text-slate-300">
-              {row.items.some(item => item.grant.firstAccessAt) ? "One or more publication grants record access." : "No publication first-access timestamps are recorded."}
+              {accessedPublicationGrants} of {row.items.length} publication grants have recorded first-access timestamps.
             </p>
             <p className="mt-2 text-xs leading-5 text-slate-400">These fields are access evidence only. They do not establish document acceptance or buyer qualification. Full event reconciliation belongs to a separate evidence release.</p>
           </section>
