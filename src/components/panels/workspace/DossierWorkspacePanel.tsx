@@ -17,7 +17,6 @@ import { DossierKycReviewPanel } from "./DossierKycReviewPanel";
 import { DossierIssuanceApprovalPanel } from "./DossierIssuanceApprovalPanel";
 import TransitionActionBar from "./TransitionActionBar";
 import DossierCommandPanel from "./DossierCommandPanel";
-import DossierMissionPanel from "./DossierMissionPanel";
 import DossierWorkspaceTabs, {
   type DossierWorkspaceTab,
 } from "./DossierWorkspaceTabs";
@@ -907,6 +906,12 @@ function buildActiveWorkQueue(dossier: DossierWorkspace): WorkQueueItem[] {
   return queue.slice(0, 5);
 }
 
+function formatDossierState(state: string) {
+  return state.split("_").map((word) =>
+    word === "KYC" || word === "SPA" ? word : word.charAt(0) + word.slice(1).toLowerCase()
+  ).join(" ");
+}
+
 function ActiveWorkQueue({
   dossier,
   onSelectTab,
@@ -953,7 +958,7 @@ function ActiveWorkQueue({
         </div>
       </div>
 
-      <div className="mt-3 grid gap-2 xl:grid-cols-2">
+      <div className="mt-3 grid gap-2">
         {queue.map((item) => (
           <div
             key={`${item.label}-${item.detail}`}
@@ -1160,6 +1165,8 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
     return null;
   }
 
+  const sourceIntake = dossier?.sourceOpportunities[0]?.sourceIntake;
+
   return (
     <section className="rounded-xl border border-neutral-800 bg-neutral-950 p-3">
       {loading ? (
@@ -1186,288 +1193,308 @@ export default function DossierWorkspacePanel({ dossierId }: Props) {
             reference={dossier.reference}
             title={dossier.title}
             state={dossier.state}
-            sourceOpportunity={dossier.sourceOpportunities[0] ?? null}
           />
 
-          <DossierMissionPanel
-            commodity={dossier.commodity}
-            quantityKg={dossier.quantityKg}
-            origin={dossier.origin}
-            settlement={dossier.settlement}
-            currentState={dossier.state}
-            nextStates={dossier.nextStates}
-            sourceOpportunity={dossier.sourceOpportunities[0] ?? null}
-          />
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded border border-cyan-900 bg-cyan-950/20 px-3 py-2 text-sm">
+            {dossier.nextStates.length > 0 ? (
+              <>
+                <p>Next from {formatDossierState(dossier.state)}: {formatDossierState(
+                  dossier.availableTransitions.find((transition) => transition.recommended)?.toState ??
+                    dossier.nextStates[0],
+                )}</p>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("EXECUTION")}
+                  className="border px-3 py-1 text-cyan-200"
+                >
+                  Review transition
+                </button>
+              </>
+            ) : <p>No state transitions are currently available.</p>}
+          </div>
 
           <OperatorPathStrip activeTab={activeTab} onSelectTab={setActiveTab} />
 
-          {activeTab === "OVERVIEW" ? (
-            <div className="space-y-3">
-              <DossierBriefSummary dossier={dossier} />
+          <div className="grid items-start gap-3 xl:grid-cols-[minmax(0,1fr)_minmax(200px,250px)]">
+          <div className="min-w-0 space-y-3">
+            {activeTab === "OVERVIEW" ? (
+              <div className="space-y-3">
+                <DossierBriefSummary dossier={dossier} />
 
-              <DossierOverviewCard
-                commodity={dossier.commodity}
-                quantityKg={dossier.quantityKg}
-                origin={dossier.origin}
-                refinery={dossier.refinery}
-                settlement={dossier.settlement}
-                parties={dossier.parties}
-              />
+                <DossierOverviewCard
+                  commodity={dossier.commodity}
+                  quantityKg={dossier.quantityKg}
+                  origin={dossier.origin}
+                  refinery={dossier.refinery}
+                  settlement={dossier.settlement}
+                  parties={dossier.parties}
+                />
 
-              <DossierSourceIntakePanel
-                sourceIntake={
-                  dossier.sourceOpportunities[0]?.sourceIntake ??
-                  null
-                }
-              />
+                <DossierSourceIntakePanel
+                  sourceIntake={
+                    dossier.sourceOpportunities[0]?.sourceIntake ??
+                    null
+                  }
+                />
 
-              <DossierKycReviewPanel
-                dossierId={dossier.id}
-                currentState={dossier.state}
-                onChanged={() =>
-                  setRefreshNonce(
-                    (value) => value + 1,
-                  )
-                }
-              />
+                <DossierKycReviewPanel
+                  dossierId={dossier.id}
+                  currentState={dossier.state}
+                  onChanged={() =>
+                    setRefreshNonce(
+                      (value) => value + 1,
+                    )
+                  }
+                />
 
-              <div id="party-identity-review" className="scroll-mt-4" />
-              <DossierPartyCompletionPanel
-                dossierId={dossier.id}
-                parties={dossier.parties}
-                onPartyChanged={() => setRefreshNonce((value) => value + 1)}
-              />
-            </div>
-          ) : null}
+                <div id="party-identity-review" className="scroll-mt-4" />
+                <DossierPartyCompletionPanel
+                  dossierId={dossier.id}
+                  parties={dossier.parties}
+                  onPartyChanged={() => setRefreshNonce((value) => value + 1)}
+                />
+              </div>
+            ) : null}
 
-          {activeTab === "EXECUTION" ? (
-            <div className="space-y-3">
-              <DossierCommandPanel
-                currentState={dossier.state}
-                nextStates={dossier.nextStates}
-                pendingApprovalCount={dossier.pendingApprovalCount}
-                executedInstrumentCount={dossier.executedInstrumentCount}
-                partyReadiness={getPartyReadiness(dossier.parties)}
-                documentReadiness={getDocumentReadiness(dossier.instruments)}
-                onSelectExecution={() => setActiveTab("EXECUTION")}
-                onSelectDocuments={() => setActiveTab("DOCUMENTS")}
-                onSelectTimeline={() => setActiveTab("TIMELINE")}
-              />
+            {activeTab === "EXECUTION" ? (
+              <div className="space-y-3">
+                <TransitionActionBar
+                  dossierId={dossier.id}
+                  nextStates={dossier.nextStates}
+                  onTransitioned={async () => {
+                    setRefreshNonce((value) => value + 1);
+                  }}
+                />
 
-              <div className="rounded-xl border border-neutral-800 bg-black/20 p-3">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
-                      Profile-Aware Next Moves
+                <DossierCommandPanel
+                  currentState={dossier.state}
+                  nextStates={dossier.nextStates}
+                  pendingApprovalCount={dossier.pendingApprovalCount}
+                  executedInstrumentCount={dossier.executedInstrumentCount}
+                  partyReadiness={getPartyReadiness(dossier.parties)}
+                  documentReadiness={getDocumentReadiness(dossier.instruments)}
+                  onSelectExecution={() => setActiveTab("EXECUTION")}
+                  onSelectDocuments={() => setActiveTab("DOCUMENTS")}
+                  onSelectTimeline={() => setActiveTab("TIMELINE")}
+                />
+
+                <div className="rounded-xl border border-neutral-800 bg-black/20 p-3">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
+                        Profile-Aware Next Moves
+                      </div>
+
+                      <p className="mt-1 text-[11px] leading-relaxed text-neutral-500">
+                        Available transitions are filtered by the dossier
+                        execution profile, so non-escrow deals are not pushed into
+                        the escrow lane.
+                      </p>
                     </div>
 
-                    <p className="mt-1 text-[11px] leading-relaxed text-neutral-500">
-                      Available transitions are filtered by the dossier
-                      execution profile, so non-escrow deals are not pushed into
-                      the escrow lane.
-                    </p>
+                    <div className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300">
+                      {dossier.executionProfileLabel}
+                    </div>
                   </div>
 
-                  <div className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300">
-                    {dossier.executionProfileLabel}
-                  </div>
+                  {dossier.availableTransitions.length === 0 ? (
+                    <div className="mt-3 rounded border border-amber-900 bg-amber-950/20 p-2 text-xs text-amber-300">
+                      No profile-aware next moves are currently available.
+                    </div>
+                  ) : (
+                    <div className="mt-3 grid gap-2">
+                      {dossier.availableTransitions.map((transition) => (
+                        <div
+                          key={transition.transitionKey}
+                          className="rounded border border-neutral-800 bg-black/30 p-2 text-xs"
+                        >
+                          <div className="flex flex-wrap items-start justify-between gap-3">
+                            <div>
+                              <div className="font-medium text-white">
+                                {transition.label}
+                              </div>
+
+                              <div className="mt-1 text-[10px] uppercase tracking-wide text-neutral-600">
+                                {transition.fromState} → {transition.toState}
+                              </div>
+                            </div>
+
+                            <div
+                              className={`rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${
+                                transition.recommended
+                                  ? "border-emerald-900 bg-emerald-950/20 text-emerald-300"
+                                  : "border-neutral-800 bg-black/30 text-neutral-400"
+                              }`}
+                            >
+                              {transition.recommended
+                                ? "Recommended"
+                                : "Available"}
+                            </div>
+                          </div>
+
+                          <p className="mt-2 text-[11px] leading-relaxed text-neutral-500">
+                            {transition.reason}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                {dossier.availableTransitions.length === 0 ? (
-                  <div className="mt-3 rounded border border-amber-900 bg-amber-950/20 p-2 text-xs text-amber-300">
-                    No profile-aware next moves are currently available.
+                <DossierExecutionCard
+                  currentState={dossier.state}
+                  nextStates={dossier.nextStates}
+                  transitionCount={dossier.transitionCount}
+                  executedInstrumentCount={dossier.executedInstrumentCount}
+                  pendingApprovalCount={dossier.pendingApprovalCount}
+                  partyReadiness={getPartyReadiness(dossier.parties)}
+                  documentReadiness={getDocumentReadiness(dossier.instruments)}
+                />
+
+                <div className="rounded-xl border border-neutral-800 bg-black/20 p-3">
+                  <div className="flex items-center justify-between gap-3">
+                    <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
+                      Approval Gates
+                    </div>
+
+                    <div className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
+                      {dossier.approvalRequirements.length} Requirements
+                    </div>
                   </div>
-                ) : (
-                  <div className="mt-3 grid gap-2">
-                    {dossier.availableTransitions.map((transition) => (
-                      <div
-                        key={transition.transitionKey}
-                        className="rounded border border-neutral-800 bg-black/30 p-2 text-xs"
-                      >
-                        <div className="flex flex-wrap items-start justify-between gap-3">
-                          <div>
-                            <div className="font-medium text-white">
-                              {transition.label}
+
+                  {dossier.approvalRequirements.length === 0 ? (
+                    <div className="mt-3 text-xs text-neutral-500">
+                      No approval gates attached.
+                    </div>
+                  ) : (
+                    <div className="mt-3 space-y-2">
+                      {dossier.approvalRequirements.map((requirement) => (
+                        <div
+                          key={requirement.id}
+                          className="rounded border border-neutral-800 bg-black/30 p-2 text-xs"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div>
+                              <div className="font-medium text-white">
+                                {requirement.transitionKey}
+                              </div>
+
+                              <div className="mt-1 text-[10px] uppercase tracking-wide text-neutral-600">
+                                {requirement.requiredRole} · Required:{" "}
+                                {requirement.requiredCount}
+                              </div>
                             </div>
 
-                            <div className="mt-1 text-[10px] uppercase tracking-wide text-neutral-600">
-                              {transition.fromState} → {transition.toState}
+                            <div className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
+                              {requirement.status}
                             </div>
-                          </div>
-
-                          <div
-                            className={`rounded border px-2 py-1 text-[10px] uppercase tracking-wide ${
-                              transition.recommended
-                                ? "border-emerald-900 bg-emerald-950/20 text-emerald-300"
-                                : "border-neutral-800 bg-black/30 text-neutral-400"
-                            }`}
-                          >
-                            {transition.recommended
-                              ? "Recommended"
-                              : "Available"}
                           </div>
                         </div>
-
-                        <p className="mt-2 text-[11px] leading-relaxed text-neutral-500">
-                          {transition.reason}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
+            ) : null}
 
-              <DossierExecutionCard
-                currentState={dossier.state}
-                nextStates={dossier.nextStates}
-                transitionCount={dossier.transitionCount}
-                executedInstrumentCount={dossier.executedInstrumentCount}
-                pendingApprovalCount={dossier.pendingApprovalCount}
-                partyReadiness={getPartyReadiness(dossier.parties)}
-                documentReadiness={getDocumentReadiness(dossier.instruments)}
-              />
+            {activeTab === "TIMELINE" ? (
+              <>
+                {sourceIntake?.promotedBy ? (
+                  <p className="text-xs text-neutral-400">
+                    Intake promoted by {sourceIntake.promotedBy}
+                    {sourceIntake.promotedAt
+                      ? ` · ${new Date(sourceIntake.promotedAt).toLocaleString()}`
+                      : ""}
+                  </p>
+                ) : null}
+                <DossierTimelinePanel currentState={dossier.state} events={dossier.events} />
+              </>
+            ) : null}
 
-              <TransitionActionBar
-                dossierId={dossier.id}
-                nextStates={dossier.nextStates}
-                onTransitioned={async () => {
-                  setRefreshNonce((value) => value + 1);
-                }}
-              />
-
-              <div className="rounded-xl border border-neutral-800 bg-black/20 p-3">
-                <div className="flex items-center justify-between gap-3">
+            {activeTab === "DOCUMENTS" ? (
+              <div className="space-y-3">
+                <section className="rounded-xl border border-neutral-800 bg-black/20 p-3">
                   <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
-                    Approval Gates
+                    Readiness Workbench
                   </div>
 
-                  <div className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
-                    {dossier.approvalRequirements.length} Requirements
-                  </div>
-                </div>
+                  <h3 className="mt-1 text-sm font-semibold text-white">
+                    Prepare the dossier before external issuance or execution
+                  </h3>
 
-                {dossier.approvalRequirements.length === 0 ? (
-                  <div className="mt-3 text-xs text-neutral-500">
-                    No approval gates attached.
-                  </div>
-                ) : (
-                  <div className="mt-3 space-y-2">
-                    {dossier.approvalRequirements.map((requirement) => (
-                      <div
-                        key={requirement.id}
-                        className="rounded border border-neutral-800 bg-black/30 p-2 text-xs"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <div className="font-medium text-white">
-                              {requirement.transitionKey}
-                            </div>
+                  <p className="mt-1 max-w-3xl text-xs leading-relaxed text-neutral-500">
+                    This area gathers the operator inputs that determine whether
+                    the dossier is ready: commercial terms, internal coordinates,
+                    release conditions, issuance approval, and document data
+                    readiness.
+                  </p>
+                </section>
 
-                            <div className="mt-1 text-[10px] uppercase tracking-wide text-neutral-600">
-                              {requirement.requiredRole} · Required:{" "}
-                              {requirement.requiredCount}
-                            </div>
-                          </div>
 
-                          <div className="rounded border border-neutral-800 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400">
-                            {requirement.status}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                <DossierSourceContextPanel
+                  dossierId={dossier.id}
+                  origin={dossier.origin}
+                  refinery={dossier.refinery}
+                  settlement={dossier.settlement}
+                  onSourceChanged={() => setRefreshNonce((value) => value + 1)}
+                />
+
+                <div id="commercial-terms-review" className="scroll-mt-4" />
+                <DossierTermsPanel
+                  dossierId={dossier.id}
+                  onTermsChanged={() => setRefreshNonce((value) => value + 1)}
+                />
+
+                <div id="coordinate-vault" className="scroll-mt-4" />
+                <DossierBankCoordinatesPanel
+                  dossierId={dossier.id}
+                  onCoordinatesChanged={() =>
+                    setRefreshNonce((value) => value + 1)
+                  }
+                />
+
+                <div id="release-gate" className="scroll-mt-4" />
+                <DossierReleaseConditionsPanel
+                  dossierId={dossier.id}
+                  onReleaseConditionsChanged={() =>
+                    setRefreshNonce((value) => value + 1)
+                  }
+                />
+
+                <div id="issuance-gate" className="scroll-mt-4" />
+                <DossierIssuanceApprovalPanel
+                  dossierId={dossier.id}
+                  instruments={dossier.instruments}
+                  onApprovalChanged={() => setRefreshNonce((value) => value + 1)}
+                />
+
+                <div id="document-readiness" className="scroll-mt-4" />
+                <DossierDocumentsPanel
+                  key={`documents-${dossier.id}-${refreshNonce}`}
+                  dossierId={dossier.id}
+                  dossier={{
+                    commodity: dossier.commodity,
+                    origin: dossier.origin,
+                    quantityKg: dossier.quantityKg,
+                    refinery: dossier.refinery,
+                    settlement: dossier.settlement,
+                    executionProfile: dossier.executionProfile,
+                    executionProfileLabel: dossier.executionProfileLabel,
+                  }}
+                  parties={dossier.parties}
+                  terms={dossier.terms}
+                  instruments={dossier.instruments}
+                  onInstrumentChanged={() =>
+                    setRefreshNonce((value) => value + 1)
+                  }
+                />
               </div>
-            </div>
-          ) : null}
-
-          {activeTab === "TIMELINE" ? (
-            <DossierTimelinePanel
-              currentState={dossier.state}
-              events={dossier.events}
-            />
-          ) : null}
-
-          {activeTab === "DOCUMENTS" ? (
-            <div className="space-y-3">
-              <section className="rounded-xl border border-neutral-800 bg-black/20 p-3">
-                <div className="text-[10px] uppercase tracking-[0.18em] text-neutral-500">
-                  Readiness Workbench
-                </div>
-
-                <h3 className="mt-1 text-sm font-semibold text-white">
-                  Prepare the dossier before external issuance or execution
-                </h3>
-
-                <p className="mt-1 max-w-3xl text-xs leading-relaxed text-neutral-500">
-                  This area gathers the operator inputs that determine whether
-                  the dossier is ready: commercial terms, internal coordinates,
-                  release conditions, issuance approval, and document data
-                  readiness.
-                </p>
-              </section>
-
-              <ActiveWorkQueue dossier={dossier} onSelectTab={setActiveTab} />
-
-              <DossierSourceContextPanel
-                dossierId={dossier.id}
-                origin={dossier.origin}
-                refinery={dossier.refinery}
-                settlement={dossier.settlement}
-                onSourceChanged={() => setRefreshNonce((value) => value + 1)}
-              />
-
-              <div id="commercial-terms-review" className="scroll-mt-4" />
-              <DossierTermsPanel
-                dossierId={dossier.id}
-                onTermsChanged={() => setRefreshNonce((value) => value + 1)}
-              />
-
-              <div id="coordinate-vault" className="scroll-mt-4" />
-              <DossierBankCoordinatesPanel
-                dossierId={dossier.id}
-                onCoordinatesChanged={() =>
-                  setRefreshNonce((value) => value + 1)
-                }
-              />
-
-              <div id="release-gate" className="scroll-mt-4" />
-              <DossierReleaseConditionsPanel
-                dossierId={dossier.id}
-                onReleaseConditionsChanged={() =>
-                  setRefreshNonce((value) => value + 1)
-                }
-              />
-
-              <div id="issuance-gate" className="scroll-mt-4" />
-              <DossierIssuanceApprovalPanel
-                dossierId={dossier.id}
-                instruments={dossier.instruments}
-                onApprovalChanged={() => setRefreshNonce((value) => value + 1)}
-              />
-
-              <div id="document-readiness" className="scroll-mt-4" />
-              <DossierDocumentsPanel
-                key={`documents-${dossier.id}-${refreshNonce}`}
-                dossierId={dossier.id}
-                dossier={{
-                  commodity: dossier.commodity,
-                  origin: dossier.origin,
-                  quantityKg: dossier.quantityKg,
-                  refinery: dossier.refinery,
-                  settlement: dossier.settlement,
-                  executionProfile: dossier.executionProfile,
-                  executionProfileLabel: dossier.executionProfileLabel,
-                }}
-                parties={dossier.parties}
-                terms={dossier.terms}
-                instruments={dossier.instruments}
-                onInstrumentChanged={() =>
-                  setRefreshNonce((value) => value + 1)
-                }
-              />
-            </div>
-          ) : null}
+            ) : null}
+          </div>
+          <aside aria-label="Dossier readiness">
+            <ActiveWorkQueue dossier={dossier} onSelectTab={setActiveTab} />
+          </aside>
+          </div>
         </div>
       ) : null}
     </section>
