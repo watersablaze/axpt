@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import HomeWorkspaceShell from "./HomeWorkspaceShell";
+import { buyerLifecycleRehearsalMatters } from "../matters/buyerLifecycleRehearsal";
 import { createPassageRehearsalMatters } from "./passageRehearsal";
 
 import { getPrincipal } from "@/domains/auth/getPrincipal";
@@ -35,6 +36,7 @@ export default async function FrenchWardHomePage({
   searchParams?: Promise<{
     module?: string;
     passageRehearsal?: string;
+    buyerLifecycleRehearsal?: string;
   }>;
 }) {
   const principal = await getPrincipal();
@@ -226,9 +228,13 @@ export default async function FrenchWardHomePage({
             },
     });
 
+  const rehearsal = process.env.NODE_ENV === "development" &&
+    resolvedSearchParams?.buyerLifecycleRehearsal === "1" &&
+    (adminReview || Boolean(governingStanding?.active));
+
   return (
     <HomeWorkspaceShell
-      home={home}
+      home={rehearsal ? { ...home, matters: buyerLifecycleRehearsalMatters() } : home}
       passageRehearsal={
         process.env.NODE_ENV === "development" &&
         resolvedSearchParams?.passageRehearsal === "1"
@@ -236,7 +242,7 @@ export default async function FrenchWardHomePage({
           : undefined
       }
       actions={actions}
-      initialModule={initialModule}
+      initialModule={rehearsal ? "matters" : initialModule}
       arpAppointments={arpAppointments?.map((appointment) => ({
         ...appointment,
         effectiveAt: appointment.effectiveAt?.toISOString() ?? null,

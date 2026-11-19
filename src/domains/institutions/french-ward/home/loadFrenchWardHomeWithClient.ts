@@ -438,7 +438,7 @@ export async function loadFrenchWardHomeWithClient(params: {
    * It no longer determines which Intake Matters appear in the
    * participant Matter field.
    */
-  const durableIntakeMatterRecords =
+  const durableMatterRecords =
     await client.institutionalMatter.findMany({
       where: {
         institutionalDomain:
@@ -453,8 +453,7 @@ export async function loadFrenchWardHomeWithClient(params: {
         matterKind:
           "COMMERCIAL_TRANSACTION",
 
-        currentRecordKind:
-          "INTAKE",
+        currentRecordKind: { in: ["INTAKE", "OPPORTUNITY", "DOSSIER"] },
       },
 
       orderBy: {
@@ -471,9 +470,9 @@ export async function loadFrenchWardHomeWithClient(params: {
       },
     });
 
-  const loadedDurableIntakeMatters =
+  const loadedDurableMatters =
     await Promise.all(
-      durableIntakeMatterRecords.map(
+      durableMatterRecords.map(
         async (matter: { reference: string }) => {
           const loaded =
             await loadFrenchWardMatterWithClient({
@@ -505,7 +504,7 @@ export async function loadFrenchWardHomeWithClient(params: {
 
   const intakeMatters:
     FrenchWardHomeMatter[] =
-      loadedDurableIntakeMatters.map(
+      loadedDurableMatters.map(
         loaded => ({
           ...loaded.homeMatter,
           passageMovements: [...loaded.movement]
@@ -522,7 +521,7 @@ export async function loadFrenchWardHomeWithClient(params: {
    */
   const intakeMatterByCanonicalIntakeId =
     new Map(
-      loadedDurableIntakeMatters.map(
+      loadedDurableMatters.map(
         loaded => [
           loaded.matter.canonicalRecord.id,
           loaded,
@@ -530,9 +529,12 @@ export async function loadFrenchWardHomeWithClient(params: {
       ),
     );
 
+  const durableOpportunityIds = new Set(
+    loadedDurableMatters.map(loaded => loaded.currentOpportunityId),
+  );
   const opportunityMatters:
     FrenchWardHomeMatter[] =
-    opportunities.map((opportunity) => {
+    opportunities.filter(opportunity => !durableOpportunityIds.has(opportunity.id)).map((opportunity) => {
       const parties: FrenchWardHomeMatter["parties"] =
         [];
 
@@ -569,9 +571,10 @@ export async function loadFrenchWardHomeWithClient(params: {
       };
     });
 
+  const durableDossierIds = new Set(loadedDurableMatters.map(loaded => loaded.currentDossierId));
   const dossierMatters:
     FrenchWardHomeMatter[] =
-    typedDossiers.map((dossier) => {
+    typedDossiers.filter(dossier => !durableDossierIds.has(dossier.id)).map((dossier) => {
       const event = dossier.events[0];
 
       return {
@@ -707,6 +710,9 @@ export async function loadFrenchWardHomeWithClient(params: {
 
   const recentMovement = [
     ...intakeMovement,
+    ...loadedDurableMatters
+      .filter(loaded => loaded.currentOpportunityId)
+      .flatMap(loaded => loaded.movement),
     ...dossierMovement,
   ]
     .sort(

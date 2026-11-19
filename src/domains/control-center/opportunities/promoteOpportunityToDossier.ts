@@ -1,7 +1,5 @@
 import { prisma } from "@/lib/prisma";
 
-import { createOpportunityEvent } from "./createOpportunityEvent";
-
 type Input = {
   opportunityId: string;
   operatorEmail: string;
@@ -9,7 +7,14 @@ type Input = {
 
 type PromotionTransaction = Pick<
   typeof prisma,
-  "transactionDossier" | "opportunity" | "transactionDossierEvent"
+  | "$queryRaw"
+  | "transactionDossier"
+  | "opportunity"
+  | "opportunityEvent"
+  | "transactionDossierEvent"
+  | "institutionalMatter"
+  | "institutionalMatterRecord"
+  | "institutionalMatterEvent"
 >;
 
 type DossierPartySeed = {
@@ -296,59 +301,85 @@ function buildPartySeeds(input: {
   return parties;
 }
 
+async function advanceFrenchWardMatter(
+  tx: PromotionTransaction,
+  opportunityId: string,
+  dossier: { id: string; reference: string },
+  actor: string,
+) {
+  const source = await tx.institutionalMatterRecord.findUnique({
+    where: { recordKind_recordId: { recordKind: "OPPORTUNITY", recordId: opportunityId } },
+    include: { matter: true },
+  });
+
+  const matter = source?.matter;
+  if (
+    !matter ||
+    matter.institutionalDomain !== "FRENCH_WARD" ||
+    matter.institutionalPrincipal !== "French-Ward, Inc." ||
+    matter.coordinationEnvironment !== "AXPT" ||
+    matter.matterKind !== "COMMERCIAL_TRANSACTION"
+  ) return;
+
+  if (matter.currentRecordKind === "DOSSIER") {
+    const linked = await tx.institutionalMatterRecord.findUnique({
+      where: { recordKind_recordId: { recordKind: "DOSSIER", recordId: dossier.id } },
+    });
+    if (
+      matter.currentRecordId === dossier.id &&
+      matter.currentRecordReference === dossier.reference &&
+      linked?.matterId === matter.id &&
+      linked.recordReference === dossier.reference
+    ) return;
+
+    throw new Error("FW_MATTER_DOSSIER_IDENTITY_MISMATCH");
+  }
+
+  const advanced = await tx.institutionalMatter.updateMany({
+    where: {
+      id: matter.id,
+      currentRecordKind: "OPPORTUNITY",
+      currentRecordId: opportunityId,
+      currentRecordReference: source.recordReference,
+    },
+    data: {
+      currentRecordKind: "DOSSIER",
+      currentRecordId: dossier.id,
+      currentRecordReference: dossier.reference,
+    },
+  });
+  if (advanced.count !== 1) throw new Error("FW_MATTER_DOSSIER_ADVANCEMENT_CONFLICT");
+
+  await tx.institutionalMatterRecord.create({
+    data: {
+      matterId: matter.id,
+      recordKind: "DOSSIER",
+      recordId: dossier.id,
+      recordReference: dossier.reference,
+      linkedBy: actor,
+    },
+  });
+
+  await tx.institutionalMatterEvent.create({
+    data: {
+      matterId: matter.id,
+      eventType: "CURRENT_RECORD_ADVANCED",
+      actor,
+      message: "Matter advanced from Opportunity to Dossier.",
+      metadata: { opportunityId, dossierId: dossier.id, dossierReference: dossier.reference },
+    },
+  });
+}
+
 export async function promoteOpportunityToDossier({
   opportunityId,
   operatorEmail,
 }: Input): Promise<OpportunityPromotionResult> {
-  const opportunity = await prisma.opportunity.findUnique({
-    where: {
-      id: opportunityId,
-    },
-    include: {
-      promotedDossier: true,
-    },
-  });
-
-  if (!opportunity) {
-    throw new Error("OPPORTUNITY_NOT_FOUND");
-  }
-
-  if (opportunity.promotedDossierId && opportunity.promotedDossier) {
-    return {
-      opportunityId: opportunity.id,
-      dossierId: opportunity.promotedDossierId,
-      reference: opportunity.promotedDossier.reference,
-      alreadyPromoted: true,
-    };
-  }
-
-  if (opportunity.promotedDossierId) {
-    const promotedDossier = await prisma.transactionDossier.findUnique({
-      where: {
-        id: opportunity.promotedDossierId,
-      },
-    });
-
-    if (promotedDossier) {
-      return {
-        opportunityId: opportunity.id,
-        dossierId: promotedDossier.id,
-        reference: promotedDossier.reference,
-        alreadyPromoted: true,
-      };
-    }
-  }
-
-  if (opportunity.status !== "APPROVED") {
-    throw new Error("OPPORTUNITY_NOT_APPROVED");
-  }
-
-  const reference = buildDossierReference();
-
   const result = await prisma.$transaction(async (tx: PromotionTransaction) => {
+    await tx.$queryRaw`SELECT id FROM "Opportunity" WHERE id = ${opportunityId} FOR UPDATE`;
     const latestOpportunity = await tx.opportunity.findUnique({
       where: {
-        id: opportunity.id,
+        id: opportunityId,
       },
       include: {
         promotedDossier: true,
@@ -464,6 +495,7 @@ export async function promoteOpportunityToDossier({
       latestOpportunity.promotedDossierId &&
       latestOpportunity.promotedDossier
     ) {
+      await advanceFrenchWardMatter(tx, opportunityId, latestOpportunity.promotedDossier, operatorEmail);
       return {
         dossier: latestOpportunity.promotedDossier,
         alreadyPromoted: true,
@@ -474,6 +506,7 @@ export async function promoteOpportunityToDossier({
       throw new Error("OPPORTUNITY_NOT_APPROVED");
     }
 
+    const reference = buildDossierReference();
     const quantityKg = normalizeQuantityKg(latestOpportunity.quantityKg);
 
     const partySeeds = buildPartySeeds({
@@ -803,28 +836,22 @@ export async function promoteOpportunityToDossier({
       });
     }
 
-    return {
-      dossier,
-      alreadyPromoted: false,
-    };
-  });
-
-  if (!result.alreadyPromoted) {
-    await createOpportunityEvent({
-      opportunityId: opportunity.id,
-      type: "OPPORTUNITY_PROMOTED",
-      actor: operatorEmail,
-      message: "Opportunity promoted into transaction dossier.",
-      metadata: {
-        source: "opportunity.promotion",
-        dossierId: result.dossier.id,
-        reference: result.dossier.reference,
+    await advanceFrenchWardMatter(tx, opportunityId, dossier, operatorEmail);
+    await tx.opportunityEvent.create({
+      data: {
+        opportunityId,
+        type: "OPPORTUNITY_PROMOTED",
+        actor: operatorEmail,
+        message: "Opportunity promoted into transaction dossier.",
+        metadata: { source: "opportunity.promotion", dossierId: dossier.id, reference },
       },
     });
-  }
+
+    return { dossier, alreadyPromoted: false };
+  });
 
   return {
-    opportunityId: opportunity.id,
+    opportunityId,
     dossierId: result.dossier.id,
     reference: result.dossier.reference,
     alreadyPromoted: result.alreadyPromoted,

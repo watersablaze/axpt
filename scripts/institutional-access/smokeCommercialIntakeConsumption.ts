@@ -21,13 +21,12 @@ async function main() {
   let grantFirstAccessCount =
     0;
 
-  let lockCount =
-    0;
+  const lockQueries: string[] = [];
 
   const tx = {
     $queryRaw:
-      async () => {
-        lockCount++;
+      async (query: TemplateStringsArray) => {
+        lockQueries.push(query.join("?"));
         return [];
       },
 
@@ -296,10 +295,9 @@ async function main() {
     1,
   );
 
-  assert.equal(
-    lockCount,
-    1,
-  );
+  assert.equal(lockQueries.length, 2);
+  assert.match(lockQueries[0], /FROM "User"[\s\S]*FOR UPDATE/);
+  assert.match(lockQueries[1], /FROM "RepresentativeBuyerDossier"[\s\S]*FOR SHARE OF d/);
 
   assert.equal(
     grantUpdateCount,

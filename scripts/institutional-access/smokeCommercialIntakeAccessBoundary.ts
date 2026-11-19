@@ -13,6 +13,11 @@ const api =
     "utf8",
   );
 
+const submitter = fs.readFileSync(
+  "src/domains/institutions/french-ward/commercial/submitFrenchWardCommercialIntakeWithAccess.ts",
+  "utf8",
+);
+
 const requestRoute =
   fs.readFileSync(
     "app/api/french-ward/transaction-intake/access-request/route.ts",
@@ -26,17 +31,17 @@ assert.match(
 
 assert.match(
   page,
-  /FRENCH_WARD_COMMERCIAL_INTAKE/,
+  /resolveFrenchWardCommercialIntakeRequestAccessWithClient/,
 );
 
 assert.match(
   page,
-  /CommercialIntakeAccessRequest/,
+  /allowed=\{access.allowed\}/,
 );
 
 assert.match(
   api,
-  /consumeInstitutionalAccessWithClient/,
+  /submitFrenchWardCommercialIntakeWithAccess/,
 );
 
 assert.match(
@@ -45,14 +50,16 @@ assert.match(
 );
 
 assert.match(
-  api,
+  submitter,
   /InstitutionalAccessDeniedError/,
 );
 
 assert.match(
-  api,
-  /tx\.transactionIntake\.create/,
+  submitter,
+  /execute:\s*async \(tx\) => \{[\s\S]*?tx\.transactionIntake\.create[\s\S]*?tx\.institutionalMatter\.create/,
 );
+
+assert.match(submitter, /scope:\s*FRENCH_WARD_COMMERCIAL_INTAKE\s*\.accessScope/);
 
 assert.match(
   requestRoute,

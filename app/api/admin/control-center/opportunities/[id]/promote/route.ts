@@ -1,3 +1,5 @@
+import { isAdmin } from "@/domains/auth/isAdmin";
+import { isSameOriginMutation } from "@/domains/auth/isSameOriginMutation";
 import { NextResponse } from 'next/server'
 import { getPrincipal } from '@/domains/auth/getPrincipal'
 
@@ -12,7 +14,7 @@ type RouteContext = {
 }
 
 export async function POST(
-  _request: Request,
+  request: Request,
   context: RouteContext
 ) {
   const principal = await getPrincipal()
@@ -25,6 +27,10 @@ export async function POST(
       },
       { status: 401 }
     )
+  }
+
+  if (!isAdmin(principal) || !isSameOriginMutation(request)) {
+    return NextResponse.json({ ok: false, error: "FORBIDDEN" }, { status: 403 });
   }
 
   const { id } = await context.params

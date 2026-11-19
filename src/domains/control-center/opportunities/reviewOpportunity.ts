@@ -80,6 +80,7 @@ export async function reviewOpportunity({
   }
 
   return prisma.$transaction(async (tx: typeof prisma) => {
+    await tx.$queryRaw`SELECT id FROM "Opportunity" WHERE id = ${opportunityId} FOR UPDATE`;
     const opportunity =
       await tx.opportunity.findUnique({
         where: {

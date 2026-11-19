@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { formatMatterQuantity } from "@/domains/institutions/french-ward/matters/formatMatterQuantity";
 
 import {
   useMemo,
@@ -182,6 +183,15 @@ export default function HomeWorkspaceShell({
     | "DOSSIER"
     | "ATTENTION"
   >("ALL");
+
+  const promotionIntakes = actions.promoteIntakeToOpportunity
+    ? home.matters.filter(
+        (matter) =>
+          matter.recordKind === "INTAKE" &&
+          matter.reference.startsWith("AXPT-MAT-") &&
+          (matter.state === "UNDER_REVIEW" || matter.state === "QUALIFIED"),
+      )
+    : [];
 
   const visibleMatters = useMemo(
     () =>
@@ -900,9 +910,7 @@ export default function HomeWorkspaceShell({
                           Quantity
                         </dt>
                         <dd>
-                          {home.matters[0]
-                            .quantityKg ??
-                            "—"}
+                          {formatMatterQuantity(home.matters[0].quantityKg) ?? "—"}
                         </dd>
                       </div>
                     </dl>
@@ -925,9 +933,7 @@ export default function HomeWorkspaceShell({
           {activeModule ===
           "matters" ? (
             <section
-              className={
-                styles.moduleStage
-              }
+              className={`${styles.moduleStage} ${styles.mattersStage}`}
               aria-labelledby="matters-title"
             >
               <header
@@ -1228,12 +1234,9 @@ export default function HomeWorkspaceShell({
                                 </span>
                               ) : null}
 
-                              {matter.quantityKg ? (
+                              {formatMatterQuantity(matter.quantityKg) ? (
                                 <span>
-                                  {
-                                    matter.quantityKg
-                                  }
-                                  {" kg"}
+                                  {formatMatterQuantity(matter.quantityKg)}
                                 </span>
                               ) : null}
 
@@ -2404,12 +2407,37 @@ export default function HomeWorkspaceShell({
                         : "UNAVAILABLE"}
                   </strong>
 
-                  <p>
-                    Promotion is a distinct
-                    governing passage. Operative
-                    execution appears only when
-                    its exact authority exists.
-                  </p>
+                  {actions.promoteIntakeToOpportunity ? (
+                    <>
+                      <p>
+                        Open a Matter to see its intake review status.
+                        Promotion requires qualification in AXPT Admin.
+                      </p>
+                      {promotionIntakes.length ? (
+                        <ul aria-label="Intakes in review or qualified">
+                          {promotionIntakes.map((matter) => (
+                            <li key={matter.reference}>
+                              <Link
+                                className={styles.openMatter}
+                                href={`/french-ward/matters/${encodeURIComponent(matter.reference)}`}
+                                prefetch={false}
+                              >
+                                Open {matter.title} →
+                              </Link>
+                              <p>
+                                {matter.reference} ·{" "}
+                                {matter.state === "QUALIFIED" ? "Qualified" : "Under Review"}
+                              </p>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p>No intakes under review or qualified in the current Matters list.</p>
+                      )}
+                    </>
+                  ) : (
+                    <p>Promotion requires French-Ward promotion authority.</p>
+                  )}
                 </section>
               ) : null}
 
