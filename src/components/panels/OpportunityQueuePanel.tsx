@@ -431,6 +431,12 @@ export default function OpportunityQueuePanel({
                         </button>
                       ) : null}
 
+                      {opportunity.status !== "APPROVED" ? (
+                        <p className="text-xs text-neutral-400">
+                          Approve this Opportunity to create its Dossier.
+                        </p>
+                      ) : null}
+
                       <button
                         type="button"
                         disabled={
