@@ -68,11 +68,44 @@ function isVercelNonProductionRuntime(): boolean {
   )
 }
 
+function isLocalRehearsalDatabase(value: string | undefined): boolean {
+  try {
+    const url = new URL(value ?? '');
+    return (
+      (url.protocol === 'postgres:' || url.protocol === 'postgresql:') &&
+      (url.hostname === '127.0.0.1' || url.hostname === 'localhost') &&
+      url.port === '5433' &&
+      url.pathname === '/axpt_fw_loi_rehearsal' &&
+      !url.searchParams.has('host')
+    );
+  } catch {
+    return false;
+  }
+}
+
+function isRehearsalRecipient(email: string): boolean {
+  return (
+    email === 'buyer-link-check-01@example.invalid' ||
+    email.endsWith('@fw-http-rehearsal.invalid')
+  );
+}
+
 export function createInstitutionalPinRequestDependencies(
   decisionTime: Date,
 ): InstitutionalPinRequestDependencies {
+  const terminalRequested = process.env.FW_REHEARSAL_PIN_TRANSPORT === 'terminal';
+  const terminalEnabled =
+    terminalRequested &&
+    process.env.NODE_ENV === 'development' &&
+    !process.env.VERCEL &&
+    !process.env.VERCEL_ENV &&
+    isLocalRehearsalDatabase(process.env.DATABASE_URL) &&
+    isLocalRehearsalDatabase(process.env.DIRECT_URL);
+
   return {
     transportReady() {
+      if (terminalRequested) return terminalEnabled;
+
       if (isVercelNonProductionRuntime()) {
         return false
       }
@@ -83,6 +116,10 @@ export function createInstitutionalPinRequestDependencies(
     },
 
     async findCandidate(email) {
+      if (terminalRequested && (!terminalEnabled || !isRehearsalRecipient(email))) {
+        return null;
+      }
+
       const user =
         await prisma.user.findUnique({
           where: {
@@ -190,6 +227,15 @@ export function createInstitutionalPinRequestDependencies(
     },
 
     async deliver(input) {
+      if (terminalRequested) {
+        if (!terminalEnabled || !isRehearsalRecipient(input.email)) {
+          throw new Error('INSTITUTIONAL_PIN_REHEARSAL_DELIVERY_DISABLED');
+        }
+
+        console.info('[auth/login/request] Rehearsal PIN', input.email, input.pin);
+        return;
+      }
+
       if (isVercelNonProductionRuntime()) {
         throw new Error(
           'INSTITUTIONAL_PIN_PREVIEW_DELIVERY_DISABLED',
