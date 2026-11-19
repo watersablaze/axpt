@@ -442,7 +442,7 @@ async function main() {
   await client.representativeBuyerDossier.update({where:{id:loiDossier.dossier.id},data:{revokedAt:null,expiresAt:new Date(0)}});
   assert.equal((await resolveInstitutionalAccessWithClient(loiAccess)).allowed,false);
   await assert.rejects(submitLoi,/INSTITUTIONAL_ACCESS_DENIED/);
-  await client.representativeBuyerDossier.update({where:{id:loiDossier.dossier.id},data:{expiresAt:loiGrant.expiresAt}});
+  await client.representativeBuyerDossier.update({where:{id:loiDossier.dossier.id},data:{expiresAt:new Date(extendedLoi.expiresAt)}});
   await client.institutionalAccessGrant.update({where:{id:loiGrant.id},data:{revokedAt:new Date()}});
   assert.equal((await resolveInstitutionalAccessWithClient(loiAccess)).allowed,false);
   assert.equal((await loadRecipientBuyerDossierWithClient(loiReception))?.loiAccess?.available,false);
