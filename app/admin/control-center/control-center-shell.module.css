@@ -374,11 +374,8 @@
   .location { padding-inline: 14px; }
 }
 
-/* Fixed Command frame */
 .commandContent {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  overflow: auto;
 }
 
 /* Compact mobile domain navigation */
