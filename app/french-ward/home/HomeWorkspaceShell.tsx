@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { formatMatterQuantity } from "@/domains/institutions/french-ward/matters/formatMatterQuantity";
 
 import {
   useMemo,
@@ -909,9 +910,7 @@ export default function HomeWorkspaceShell({
                           Quantity
                         </dt>
                         <dd>
-                          {home.matters[0]
-                            .quantityKg ??
-                            "—"}
+                          {formatMatterQuantity(home.matters[0].quantityKg) ?? "—"}
                         </dd>
                       </div>
                     </dl>
@@ -1235,12 +1234,9 @@ export default function HomeWorkspaceShell({
                                 </span>
                               ) : null}
 
-                              {matter.quantityKg ? (
+                              {formatMatterQuantity(matter.quantityKg) ? (
                                 <span>
-                                  {
-                                    matter.quantityKg
-                                  }
-                                  {" kg"}
+                                  {formatMatterQuantity(matter.quantityKg)}
                                 </span>
                               ) : null}
 
