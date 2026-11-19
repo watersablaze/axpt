@@ -68,7 +68,7 @@ export default async function BuyerDossiersPage({
   );
   const tabs = [
     { key: "all", label: "All" },
-    { key: "current", label: "Valid access" },
+    { key: "current", label: "Current grants" },
     { key: "historical", label: "Expired / revoked" },
     { key: "attention", label: "Needs attention" },
   ];
@@ -98,7 +98,7 @@ export default async function BuyerDossiersPage({
           <p className="mt-2 text-2xl font-semibold">{mapped.filter(row => ["FAILED", "DELIVERY_UNKNOWN", "SENDING"].includes(row.recipientDeliveryStatus)).length}</p>
         </div>
       </div>
-      <p className="mb-6 text-xs text-slate-500">Counts cover this query's latest 50 records, not the full institutional register.</p>
+      <p className="mb-6 text-xs text-slate-500">Counts cover this query's latest 50 records, not the full institutional register. Valid means the dossier and grant dates are current; publication availability is rechecked separately.</p>
       <form method="GET" className="mb-5 flex flex-wrap items-end gap-3">
         <label className="flex min-w-[220px] flex-1 flex-col gap-2 text-xs text-slate-300">
           Search recipient, organization, representative, or dossier ID
