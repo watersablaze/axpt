@@ -192,7 +192,7 @@ export default async function BuyerDossierRecordPage({
               canExtend={canExtend} canRetryNotice={canRetryNotice}
             />
           </section>}
-          <p className="text-xs leading-5 text-slate-500">Commercial transaction standing, buyer authority, and onward distribution rights are not determined by this dossier.</p>
+          <p className="text-xs leading-5 text-slate-500">Dossier and grant dates do not prove current publication availability; the recipient resolver verifies each resource. Commercial transaction standing, buyer authority, and onward distribution rights are not determined by this dossier.</p>
         </aside>
       </div>
     </div>
