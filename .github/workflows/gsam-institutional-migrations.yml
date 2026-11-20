@@ -161,6 +161,7 @@ jobs:
             psql "$DATABASE_URL" -X -A -t -q \
               -v ON_ERROR_STOP=1 \
               -c "
+                BEGIN READ ONLY;
                 SELECT
                   (SELECT COUNT(*)
                    FROM public._prisma_migrations
@@ -179,6 +180,7 @@ jobs:
                   to_regclass(
                     'public.\"GsamInstitutionalParticipation\"'
                   ) IS NULL;
+                COMMIT;
               "
           )"
 
@@ -206,6 +208,7 @@ jobs:
             psql "$DATABASE_URL" -X -A -t -q \
               -v ON_ERROR_STOP=1 \
               -c "
+                BEGIN READ ONLY;
                 SELECT
                   (SELECT COUNT(*)
                    FROM public._prisma_migrations
@@ -226,6 +229,7 @@ jobs:
                   to_regclass(
                     'public.\"GsamInstitutionalParticipation\"'
                   ) IS NOT NULL;
+                COMMIT;
               "
           )"
 

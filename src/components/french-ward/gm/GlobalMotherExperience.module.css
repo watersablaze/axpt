@@ -1,0 +1,939 @@
+
+.experience { --gm-cream: #eee7d7; --gm-gold: #ccb581; position: relative; min-height: 100svh; display: flex; flex-direction: column; background: radial-gradient(ellipse at 42% 35%, #24433666, transparent 68%), #0b211b; color: var(--gm-cream); }
+.experience * { box-sizing: border-box; }
+.atmosphere, .axis { display: none; }
+.utility, .footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: .7rem 1.5rem; padding: 1.2rem clamp(1.2rem,4vw,3rem); font-size: .63rem; letter-spacing: .14em; line-height: 1.5; text-transform: uppercase; color: #b6c3b9; }
+.utility { border-bottom: 1px solid #ccb58120; }
+.footer { border-top: 1px solid #ccb58120; margin-top: auto; }
+.stage { width: min(100%,56rem); margin: auto; padding: clamp(2.5rem,6vh,4.5rem) clamp(1.4rem,5vw,3rem); }
+.stageKicker { margin: 0 0 1.25rem; color: var(--gm-gold); font-size: .66rem; letter-spacing: .16em; text-transform: uppercase; }
+.stage h1 { max-width: 45rem; margin: 0; font-family: Baskerville, Georgia, serif; font-size: clamp(2.2rem,4.3vw,3.15rem); font-weight: 400; line-height: 1.12; letter-spacing: -.025em; }
+.gatePrelude { display: flex; justify-content: flex-start; margin-bottom: 1.4rem; }
+.seal { position: relative; width: 44px; height: 44px; border: 1px solid #ccb58145; border-radius: 50%; }
+.seal::before { content: ''; position: absolute; inset: 9px; border: 1px solid #ccb58180; transform: rotate(45deg); }
+.seal span:first-child { position: absolute; top: 21px; left: 5px; right: 5px; height: 1px; background: #ccb58155; }
+.seal span:nth-child(2) { position: absolute; left: 21px; top: 5px; bottom: 5px; width: 1px; background: #ccb58155; }
+.prepared { margin: 1.8rem 0 0; padding: 1.2rem 0 0; border-top: 1px solid #ccb58120; }
+.prepared > span { color: var(--gm-gold); font-size: .64rem; letter-spacing: .13em; text-transform: uppercase; }
+.prepared h2 { margin: .65rem 0 .4rem; font-family: Baskerville, Georgia, serif; font-size: clamp(1.3rem,2.7vw,1.85rem); font-weight: 400; line-height: 1.3; overflow-wrap: anywhere; }
+.prepared p { margin: .25rem 0; color: #ccd3c9; font-size: .95rem; line-height: 1.6; overflow-wrap: anywhere; }
+.gateStatement { max-width: 39rem; margin: 1.4rem 0 1.6rem; }
+.gateStatement p, .folioLead { margin: 0; color: #d0d7cd; font-size: 1rem; line-height: 1.7; }
+.primaryAction { min-height: 48px; border: 1px solid #ccb581; border-radius: 3px; padding: .9rem 1.3rem; background: #e8dfc8; color: #173329; font: inherit; font-size: .8rem; font-weight: 500; letter-spacing: .065em; cursor: pointer; }
+.primaryAction:hover { background: #f2eadb; }
+.primaryAction:focus-visible { outline: 2px solid #ccb581; outline-offset: 5px; }
+.thresholdNotice, .folioBoundary { max-width: 40rem; margin: 1rem 0 0; color: #bfcabf; font-size: .85rem; line-height: 1.65; }
+.folioLead { max-width: 39rem; margin-top: 1.25rem; }
+.folioColumns { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 2rem; margin: 1.8rem 0 0; padding-top: 1.4rem; border-top: 1px solid #ccb58120; }
+.folioColumns span { color: var(--gm-gold); font-size: .63rem; letter-spacing: .13em; text-transform: uppercase; }
+.folioColumns p { margin: .6rem 0 0; color: #ccd3c9; font-size: .93rem; line-height: 1.65; }
+.openingFolio .primaryAction { margin-top: 1.5rem; }
+.frameworkField { min-height: 100svh; background: #0d1e2b; }
+@media(max-width:620px) { .folioColumns { grid-template-columns: 1fr; gap: 1.2rem; } .stage { padding-block: 2.5rem; } .primaryAction { width: 100%; } }
+
+/* Chamber plaque: an inset, softly reflective typographic container. */
+.stage { width: min(calc(100% - 2rem),52rem); margin: 2rem auto; padding: clamp(1.5rem,4vw,3rem); text-align: center; border: 1px solid #c7d7cb28; border-radius: 12px; background: linear-gradient(135deg,#a9c7b815,#12372b55 48%,#e5d7ad08); box-shadow: inset 0 1px #e5eddc25,inset 0 -1px #071a1470,0 24px 70px #05140e44; }
+.stage h1 { margin-inline: auto; font-size: clamp(1.85rem,3.7vw,2.65rem); line-height: 1.2; }
+.gatePrelude { justify-content: center; }
+.prepared { border-top: 0; padding-top: .5rem; margin-top: 1.4rem; }
+.prepared p:last-child { font-size: .8rem; color: #b4c5b9; }
+.gateStatement,.folioLead,.thresholdNotice,.folioBoundary { margin-inline: auto; }
+.folioColumns { text-align: left; background: #03181030; border: 1px solid #c7d7cb18; border-radius: 6px; padding: 1.15rem; gap: 1.3rem; }
+.inscription { margin: 0 auto 1.8rem; text-align: center; font-family: Baskerville,Georgia,serif; font-size: 1.05rem; color: #d8caa8; }
+.inscription cite { display: block; margin-top: .5rem; font: normal .6rem Arial,sans-serif; letter-spacing: .1em; text-transform: uppercase; color: #aebfb3; }
+@media(max-width:620px) { .stage { margin-block: 1.2rem; } }
+
+/* The portal is held between two rails, open above and below. */
+.stage { border-top: 0; border-bottom: 0; border-radius: 0; box-shadow: none; background: linear-gradient(90deg,#a9c7b807,transparent 35%,transparent 65%,#a9c7b807); }
+.stage h1 { font-size: clamp(1.9rem,3.8vw,2.8rem); line-height: 1.2; text-wrap: balance; }
+.stage h1 > span,.stage h1 > em { display: block; }
+.stage h1 em { font-weight: 400; color: #d7cba9; font-size: .91em; line-height: 1.35; }
+.stage h1:focus { outline: none; }
+.stageKicker { margin-bottom: 1rem; }
+.chamberSigil { display: block; width: 112px; height: 63px; object-fit: contain; }
+.prepared { margin-top: 1.5rem; }
+.prepared h2 { margin-top: .45rem; }
+.gateStatement { margin-top: 1.5rem; margin-bottom: 1.4rem; }
+.folioColumns { background: transparent; border: 0; border-radius: 0; padding: 1rem 0; border-top: 1px solid #c7d7cb18; }
+.folioColumns > div + div { border-left: 1px solid #c7d7cb18; padding-left: 1.3rem; }
+.topAction { background: transparent; color: #c7d1c7; border: 0; min-height: 44px; padding: .4rem .6rem; cursor: pointer; font: inherit; font-size: .63rem; letter-spacing: .04em; }
+.topAction:focus-visible { outline: 2px solid #ccb581; outline-offset: 3px; }
+.departing .stage { opacity: 0; transform: translateY(-5px); transition: opacity 320ms ease,transform 320ms ease; }
+.transitionStatus { position: fixed; bottom: 5rem; left: 0; right: 0; text-align: center; color: #d7cba9; font-size: .8rem; }
+.frameworkField { animation: frameworkArrival 550ms ease-out both; }
+@keyframes frameworkArrival { from { opacity: 0; } to { opacity: 1; } }
+.primaryAction:disabled { cursor: wait; opacity: .65; }
+@media(max-width:620px) { .folioColumns > div + div { border-left: 0; padding-left: 0; } .stage { padding-inline: 1.1rem; } }
+@media(prefers-reduced-motion:reduce) { .frameworkField { animation: none; } .departing .stage { transition: none; transform: none; } }
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+ .utility > span,.footer > span,.stage h1 > span { background-image: linear-gradient(110deg,#eee7d7 0%,#eee7d7 43%,#f8efd7 48%,#eee7d7 53%,#eee7d7 100%); background-size: 260% 100%; background-position: 100% 0; -webkit-background-clip: text; background-clip: text; color: transparent; animation: chamberGlimmer 24s linear infinite; }
+}
+@keyframes chamberGlimmer { 0%,84% { background-position: 100% 0; } 94%,100% { background-position: 0% 0; } }
+@media(prefers-reduced-motion:reduce) { .utility > span,.footer > span,.stage h1 > span { animation: none; background: none; color: #eee7d7; } }
+
+/* Water-blue reception: a compact institutional briefing. */
+.experience {
+  --gm-cream: #183e52;
+  --gm-gold: #496779;
+  color: #183e52;
+  background:
+    radial-gradient(ellipse at 25% 15%, #f4fcff99, transparent 65%),
+    linear-gradient(145deg, #c7e0e8, #a9cbd8 65%, #91b8ca);
+}
+.utility, .footer {
+  color: #3c6072;
+  border-color: #335b7026;
+}
+.stage {
+  width: min(calc(100% - 2rem), 68rem);
+  display: grid;
+  grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+  column-gap: clamp(1.5rem, 4vw, 3rem);
+  row-gap: 1rem;
+  text-align: left;
+  margin: auto;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  border-color: #3f687b40;
+  background: linear-gradient(90deg, #ffffff12, transparent 65%);
+}
+.stage > * { grid-column: 1; }
+.stage .prepared {
+  grid-column: 2;
+  grid-row: 2 / span 3;
+  align-self: start;
+  margin: 0;
+  padding: 1rem 0 1rem 1.5rem;
+  border-left: 1px solid #416a7c40;
+}
+.gatePrelude { justify-content: flex-start; margin: 0; }
+.stageKicker { margin: 0; color: #466579; }
+.stage h1 {
+  margin: 0;
+  font-weight: 600;
+  font-size: clamp(1.9rem, 3.3vw, 2.6rem);
+  line-height: 1.15;
+}
+.stage h1 em {
+  color: #365e73;
+  font-size: .86em;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.3;
+}
+.prepared h2 { font-weight: 600; color: #21495f; }
+.prepared p, .prepared p:last-child { color: #416476; }
+.gateStatement, .folioLead {
+  margin: 0;
+  max-width: 35rem;
+}
+.gateStatement p, .folioLead {
+  color: #294f63;
+  font-size: .98rem;
+  line-height: 1.6;
+}
+.stage .folioColumns {
+  grid-column: 1 / -1;
+  margin: .5rem 0 0;
+  padding: 1rem 0;
+  border-color: #416a7c30;
+}
+.folioColumns span { color: #365e73; font-weight: 600; }
+.folioColumns p { color: #34586c; }
+.folioColumns > div + div { border-color: #416a7c30; }
+.primaryAction {
+  justify-self: start;
+  min-width: 13rem;
+  color: #183e52;
+  background: #f5fcff38;
+  border: 1px solid #f6fcff99;
+  border-radius: 6px;
+  box-shadow: inset 0 1px 0 #ffffff80, 0 5px 16px #254e6210;
+  backdrop-filter: blur(8px);
+  transition: background-color 180ms ease, box-shadow 180ms ease;
+}
+.primaryAction:hover:not(:disabled) {
+  background: #f5fcff75;
+  box-shadow: inset 0 1px 0 #ffffff, 0 0 20px #e4f8ff80;
+}
+.primaryAction:focus-visible { outline-color: #214f69; }
+.openingFolio .primaryAction { margin-top: 0; }
+.thresholdNotice, .folioBoundary {
+  color: #48697a;
+  font-size: .73rem;
+  line-height: 1.5;
+  margin: 0;
+  max-width: 34rem;
+}
+.openingFolio .folioBoundary { grid-row: 7; }
+.inscription {
+  margin: 1.4rem auto;
+  font-size: .95rem;
+  color: #365e73;
+}
+.inscription cite, .topAction, .transitionStatus { color: #48697a; }
+.utility > span, .footer > span, .stage h1 > span {
+  animation: none;
+  background: none;
+  color: inherit;
+}
+@media(max-width:760px) {
+  .stage {
+    grid-template-columns: 1fr;
+    margin: 1.25rem auto;
+    row-gap: .9rem;
+  }
+  .stage .prepared {
+    grid-column: 1;
+    grid-row: auto;
+    padding: .9rem 0;
+    border-left: 0;
+    border-top: 1px solid #416a7c30;
+  }
+  .stage .folioColumns { grid-template-columns: 1fr; }
+  .folioColumns > div + div { border-left: 0; padding-left: 0; }
+  .openingFolio .folioBoundary { grid-row: auto; }
+  .primaryAction { width: 100%; }
+}
+@media(prefers-reduced-motion:reduce) {
+  .primaryAction { transition: none; }
+}
+
+/* =========================================================
+   GM V4 — RECEPTION DISCIPLINE
+   Identity → Instruction → Action
+   ========================================================= */
+
+.experience {
+  background:
+    radial-gradient(
+      ellipse at 28% 10%,
+      rgba(238, 250, 255, .42),
+      transparent 52%
+    ),
+    linear-gradient(
+      150deg,
+      #bdd8e3 0%,
+      #9fc5d4 56%,
+      #88afc1 100%
+    );
+}
+
+/* environmental metadata recedes */
+.utility,
+.footer {
+  padding:
+    .9rem
+    clamp(1.15rem, 4vw, 2.6rem);
+
+  color:
+    rgba(29, 72, 93, .72);
+
+  font-size:
+    .56rem;
+
+  letter-spacing:
+    .16em;
+}
+
+.utility {
+  background:
+    rgba(224, 242, 248, .13);
+
+  border-bottom-color:
+    rgba(34, 83, 105, .13);
+}
+
+.footer {
+  background:
+    rgba(99, 151, 174, .08);
+
+  border-top-color:
+    rgba(34, 83, 105, .13);
+}
+
+/* ---------------------------------------------------------
+   SHARED RECEPTION PLANE
+   --------------------------------------------------------- */
+
+.stage {
+  width:
+    min(calc(100% - 2.4rem), 61rem);
+
+  margin:
+    clamp(1.6rem, 4vh, 3rem)
+    auto;
+
+  padding:
+    clamp(2rem, 5vw, 3.5rem);
+
+  column-gap:
+    clamp(2rem, 5vw, 4rem);
+
+  row-gap:
+    .85rem;
+
+  border:
+    1px solid
+    rgba(42, 88, 109, .18);
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(241, 248, 248, .37),
+      rgba(211, 231, 235, .18)
+    );
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255, 255, 255, .38);
+}
+
+/* quiet rails rather than a framed card */
+.stage::before,
+.stage::after {
+  content: "";
+
+  position: absolute;
+  top: 2.4rem;
+  bottom: 2.4rem;
+
+  width: 1px;
+
+  background:
+    rgba(45, 91, 112, .16);
+}
+
+.stage::before {
+  left: 0;
+}
+
+.stage::after {
+  right: 0;
+}
+
+/* give the eye a single starting point */
+.stageKicker {
+  color:
+    rgba(39, 83, 104, .74);
+
+  font-size:
+    .59rem;
+
+  letter-spacing:
+    .17em;
+}
+
+.stage h1 {
+  max-width:
+    38rem;
+
+  color:
+    #173f54;
+
+  font-size:
+    clamp(2rem, 4vw, 3.15rem);
+
+  line-height:
+    1.04;
+
+  letter-spacing:
+    -.025em;
+}
+
+.stage h1 em {
+  color:
+    #376478;
+
+  font-size:
+    .82em;
+
+  line-height:
+    1.22;
+}
+
+/* ---------------------------------------------------------
+   GATE
+   --------------------------------------------------------- */
+
+.gate {
+  grid-template-columns:
+    minmax(0, 1.45fr)
+    minmax(14rem, .75fr);
+}
+
+.gatePrelude {
+  margin-bottom:
+    .35rem;
+}
+
+.chamberSigil {
+  width:
+    84px;
+
+  height:
+    48px;
+
+  opacity:
+    .88;
+}
+
+.gate .prepared {
+  grid-column:
+    2;
+
+  grid-row:
+    2 / span 3;
+
+  margin:
+    0;
+
+  padding:
+    .45rem
+    0
+    .45rem
+    1.5rem;
+
+  border-left:
+    1px solid
+    rgba(42, 88, 109, .19);
+
+  border-top:
+    0;
+}
+
+.prepared > span {
+  color:
+    rgba(41, 80, 99, .72);
+
+  font-size:
+    .56rem;
+
+  letter-spacing:
+    .15em;
+}
+
+.prepared h2 {
+  margin:
+    .48rem
+    0
+    .25rem;
+
+  color:
+    #234c60;
+
+  font-size:
+    clamp(1.18rem, 2.2vw, 1.55rem);
+
+  line-height:
+    1.22;
+}
+
+.prepared p {
+  margin:
+    .12rem
+    0;
+
+  color:
+    #476b7c;
+
+  font-size:
+    .79rem;
+
+  line-height:
+    1.45;
+}
+
+.gateStatement {
+  max-width:
+    32rem;
+
+  margin:
+    .55rem
+    0
+    .7rem;
+}
+
+.gateStatement p {
+  color:
+    #294f63;
+
+  font-size:
+    .94rem;
+
+  line-height:
+    1.55;
+}
+
+/* action is the final visual event */
+.primaryAction {
+  min-height:
+    50px;
+
+  min-width:
+    14rem;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, .7);
+
+  border-radius:
+    4px;
+
+  background:
+    rgba(241, 250, 253, .32);
+
+  color:
+    #173f54;
+
+  box-shadow:
+    inset 0 1px 0
+      rgba(255,255,255,.72);
+
+  backdrop-filter:
+    blur(8px);
+
+  -webkit-backdrop-filter:
+    blur(8px);
+}
+
+.thresholdNotice {
+  max-width:
+    31rem;
+
+  color:
+    rgba(44, 78, 94, .76);
+
+  font-size:
+    .68rem;
+
+  line-height:
+    1.48;
+}
+
+/* ---------------------------------------------------------
+   OPENING FOLIO
+   --------------------------------------------------------- */
+
+.openingFolio {
+  grid-template-columns:
+    minmax(0, 1fr);
+
+  max-width:
+    54rem;
+
+  background:
+    linear-gradient(
+      145deg,
+      rgba(244, 249, 246, .44),
+      rgba(213, 230, 231, .20)
+    );
+}
+
+.openingFolio > * {
+  grid-column:
+    1;
+}
+
+.openingFolio h1 {
+  max-width:
+    35rem;
+}
+
+.folioLead {
+  max-width:
+    34rem;
+
+  margin-top:
+    .45rem;
+
+  color:
+    #31586b;
+
+  font-size:
+    .9rem;
+
+  line-height:
+    1.55;
+}
+
+/*
+ * Recipient becomes metadata rather than
+ * a second headline on the opening folio.
+ */
+.openingFolio .prepared {
+  display:
+    flex;
+
+  flex-wrap:
+    wrap;
+
+  align-items:
+    baseline;
+
+  gap:
+    .25rem
+    .7rem;
+
+  margin:
+    .8rem
+    0
+    0;
+
+  padding:
+    .75rem
+    0;
+
+  border-top:
+    1px solid
+    rgba(45, 91, 112, .15);
+
+  border-bottom:
+    1px solid
+    rgba(45, 91, 112, .15);
+}
+
+.openingFolio .prepared > span {
+  flex:
+    0 0 100%;
+}
+
+.openingFolio .prepared h2 {
+  margin:
+    .15rem
+    0;
+
+  font-size:
+    1rem;
+}
+
+.openingFolio .prepared p {
+  margin:
+    .15rem
+    0;
+
+  font-size:
+    .72rem;
+}
+
+.openingFolio .prepared p + p::before {
+  content:
+    "·";
+
+  margin-right:
+    .65rem;
+
+  color:
+    rgba(46, 88, 107, .45);
+}
+
+/*
+ * Read / Respond becomes a guide strip,
+ * not another large content section.
+ */
+.openingFolio .folioColumns {
+  display:
+    grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap:
+    0;
+
+  margin:
+    .7rem
+    0
+    0;
+
+  padding:
+    .7rem
+    0;
+
+  border-top:
+    0;
+
+  border-bottom:
+    1px solid
+    rgba(45, 91, 112, .15);
+}
+
+.openingFolio .folioColumns > div {
+  padding:
+    .15rem
+    1rem
+    .15rem
+    0;
+}
+
+.openingFolio .folioColumns > div + div {
+  padding-left:
+    1rem;
+
+  border-left:
+    1px solid
+    rgba(45, 91, 112, .16);
+}
+
+.openingFolio .folioColumns span {
+  color:
+    #335f73;
+
+  font-size:
+    .55rem;
+
+  letter-spacing:
+    .16em;
+}
+
+.openingFolio .folioColumns p {
+  margin-top:
+    .35rem;
+
+  color:
+    #3e6171;
+
+  font-size:
+    .77rem;
+
+  line-height:
+    1.45;
+}
+
+.openingFolio .folioBoundary {
+  margin-top:
+    .25rem;
+
+  color:
+    rgba(51, 86, 102, .72);
+
+  font-size:
+    .66rem;
+
+  line-height:
+    1.45;
+}
+
+.openingFolio .primaryAction {
+  margin-top:
+    .7rem;
+
+  justify-self:
+    start;
+}
+
+/* quote becomes an atmospheric seal, not another section */
+.inscription {
+  margin:
+    .5rem
+    auto
+    1.1rem;
+
+  color:
+    rgba(40, 78, 96, .65);
+
+  font-size:
+    .85rem;
+}
+
+.inscription cite {
+  margin-top:
+    .3rem;
+
+  color:
+    rgba(49, 87, 104, .62);
+
+  font-size:
+    .52rem;
+}
+
+/* ---------------------------------------------------------
+   MOBILE
+   --------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .utility {
+    padding:
+      .85rem
+      1.15rem;
+
+    gap:
+      .35rem;
+  }
+
+  .utility span {
+    flex:
+      0 0 100%;
+  }
+
+  .stage {
+    width:
+      calc(100% - 1.2rem);
+
+    margin:
+      .8rem
+      auto;
+
+    padding:
+      1.65rem
+      1.25rem
+      1.75rem;
+
+    row-gap:
+      .7rem;
+  }
+
+  .stage::before,
+  .stage::after {
+    top:
+      1.3rem;
+
+    bottom:
+      1.3rem;
+  }
+
+  .gate,
+  .openingFolio {
+    grid-template-columns:
+      1fr;
+  }
+
+  .gate .prepared {
+    grid-column:
+      1;
+
+    grid-row:
+      auto;
+
+    margin-top:
+      .55rem;
+
+    padding:
+      .65rem
+      0;
+
+    border-left:
+      0;
+
+    border-top:
+      1px solid
+      rgba(45, 91, 112, .15);
+
+    border-bottom:
+      1px solid
+      rgba(45, 91, 112, .15);
+  }
+
+  .gateStatement {
+    margin-top:
+      .4rem;
+  }
+
+  .openingFolio .prepared {
+    gap:
+      .1rem
+      .45rem;
+  }
+
+  .openingFolio .prepared p:last-child {
+    flex:
+      0 0 100%;
+  }
+
+  .openingFolio .prepared p + p::before {
+    content:
+      none;
+  }
+
+  .openingFolio .folioColumns {
+    grid-template-columns:
+      1fr;
+
+    padding:
+      .5rem
+      0;
+  }
+
+  .openingFolio .folioColumns > div {
+    padding:
+      .55rem
+      0;
+  }
+
+  .openingFolio .folioColumns > div + div {
+    padding-left:
+      0;
+
+    border-left:
+      0;
+
+    border-top:
+      1px solid
+      rgba(45, 91, 112, .12);
+  }
+
+  .primaryAction {
+    width:
+      100%;
+  }
+
+  .footer {
+    padding:
+      .8rem
+      1.15rem;
+  }
+
+  .footer .topAction {
+    display:
+      none;
+  }
+}
+
+/* GM V4 — opening folio desktop repair. */
+@media (min-width: 761px) {
+  .openingFolio {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .openingFolio > * {
+    grid-column: 1;
+  }
+
+  .openingFolio .prepared,
+  .openingFolio .folioColumns,
+  .openingFolio .folioBoundary,
+  .openingFolio .primaryAction {
+    grid-column: 1;
+    grid-row: auto;
+    min-width: 0;
+  }
+
+  .openingFolio .prepared,
+  .openingFolio .folioColumns {
+    width: 100%;
+  }
+}
+
+/* GM V4 — canonical identity names retain one line per presented name. */
+.prepared h2 > span {
+  display: block;
+}
+
+/* GM V4 — desktop Prepared For metadata stack. */
+@media (min-width: 761px) {
+  .openingFolio .prepared {
+    display: block;
+  }
+
+  .openingFolio .prepared h2 {
+    margin: .35rem 0 .22rem;
+  }
+
+  .openingFolio .prepared p {
+    margin: .12rem 0 0;
+  }
+
+  .openingFolio .prepared p + p::before {
+    content: none;
+  }
+}

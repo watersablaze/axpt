@@ -1,0 +1,3 @@
+ALTER TABLE "FrenchWardBulletinPost"
+  ADD COLUMN IF NOT EXISTS "pdfName" TEXT,
+  ADD COLUMN IF NOT EXISTS "pdfBytes" BYTEA;

@@ -54,7 +54,7 @@ export async function POST(
     const status =
       message === 'OPPORTUNITY_NOT_FOUND'
         ? 404
-        : message === 'OPPORTUNITY_NOT_PROMOTABLE'
+        : message === 'OPPORTUNITY_NOT_APPROVED'
           ? 409
           : 500
 

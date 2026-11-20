@@ -88,7 +88,7 @@ export default function FrenchWardSurface() {
             >
               <Link
                 className={styles.entry}
-                href="/french-ward#profile"
+                href="/french-ward"
               >
                 <span className={styles.entryNumber}>01</span>
 
@@ -104,23 +104,6 @@ export default function FrenchWardSurface() {
                 </span>
               </Link>
 
-              <Link
-                className={styles.entry}
-                href="/french-ward#field-notes"
-              >
-                <span className={styles.entryNumber}>02</span>
-
-                <span className={styles.entryLabel}>
-                  Field Note 001
-                </span>
-
-                <span
-                  className={styles.entryArrow}
-                  aria-hidden="true"
-                >
-                  →
-                </span>
-              </Link>
             </nav>
           </section>
         </div>

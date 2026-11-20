@@ -39,7 +39,7 @@ export async function POST(req: Request) {
 
   const token = await createSessionToken({
     userId: user.id,
-    tier: user.tier as any,
+    tier: user.tier ?? 'operations',
     roles: user.userRoles.map(
       (userRole: { role: { key: string } }) => userRole.role.key
     ),

@@ -1,0 +1,106 @@
+.shell {
+  min-height: 100vh;
+  padding: clamp(22px, 3.5vw, 48px);
+  background: #08111b;
+  color: #e7edf5;
+  font-family: system-ui, sans-serif;
+}
+.header { max-width: 960px; margin: 0 auto 32px; }
+.eyebrow {
+  color: #aebfd2;
+  font-size: 11px;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+}
+.header h1 {
+  margin: 16px 0 10px;
+  font-size: clamp(26px, 3vw, 40px);
+  font-weight: 450;
+  line-height: 1.1;
+}
+.intro {
+  max-width: 720px;
+  color: #afc0d1;
+  font-size: 14px;
+  line-height: 1.65;
+}
+.status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+.status span {
+  border: 1px solid #35485b;
+  padding: 6px 9px;
+  color: #c2d1df;
+  font-size: 10px;
+  letter-spacing: .13em;
+}
+.grid {
+  max-width: 960px;
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.card {
+  min-width: 0;
+  background: #101e2c;
+  border: 1px solid #34495d;
+  padding: clamp(20px, 2.5vw, 28px);
+}
+.card h2 {
+  margin: 15px 0 4px;
+  font-size: clamp(29px, 3.5vw, 43px);
+  font-weight: 400;
+}
+.type { color: #d2dce7; }
+.reference {
+  color: #a5b6c9;
+  overflow-wrap: anywhere;
+  font-size: 12px;
+  margin: 15px 0;
+}
+.actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.actions a {
+  display: inline-block;
+  padding: 9px 12px;
+  font-size: 13px;
+  text-decoration: none;
+}
+.primary { background: #d2b47b; color: #111820; }
+.secondary {
+  border: 1px solid #71879c;
+  color: #e7edf5;
+}
+.details {
+  max-width: 960px;
+  margin: 28px auto 0;
+  padding-top: 30px;
+  border-top: 1px solid #34495d;
+}
+.details h2 { font-size: 19px; font-weight: 500; }
+.details p {
+  max-width: 800px;
+  color: #afc0d1;
+  line-height: 1.7;
+}
+.footer {
+  max-width: 960px;
+  margin: 32px auto 0;
+  padding-top: 22px;
+  border-top: 1px solid #34495d;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  color: #98adbf;
+  font-size: 12px;
+}
+.footer a { color: #d2b47b; }
+@media (max-width: 680px) {
+  .grid { grid-template-columns: 1fr; }
+  .actions { flex-direction: column; }
+  .actions a { text-align: center; }
+}

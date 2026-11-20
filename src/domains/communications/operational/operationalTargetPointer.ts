@@ -233,6 +233,72 @@ export async function requireCommunicationOperationalTargetExists({
       return
     }
 
+    case "REPRESENTATIVE_PROGRAM_PARTICIPANT": {
+      const target =
+        await tx.representativeProgramParticipant.findUnique({
+          where: {
+            id:
+              targetId,
+          },
+          select: {
+            id:
+              true,
+          },
+        })
+
+      if (!target) {
+        throw new Error(
+          "COMMUNICATION_OPERATIONAL_TARGET_NOT_FOUND"
+        )
+      }
+
+      return
+    }
+
+    case "REPRESENTATIVE_APPOINTMENT": {
+      const target =
+        await tx.representativeProgramAppointment.findUnique({
+          where: {
+            id:
+              targetId,
+          },
+          select: {
+            id:
+              true,
+          },
+        })
+
+      if (!target) {
+        throw new Error(
+          "COMMUNICATION_OPERATIONAL_TARGET_NOT_FOUND"
+        )
+      }
+
+      return
+    }
+
+    case "COMMERCIAL_UTILITY_PACK_RESOURCE_RELEASE": {
+      const target =
+        await tx.commercialUtilityPackResourceRelease.findUnique({
+          where: {
+            id:
+              targetId,
+          },
+          select: {
+            id:
+              true,
+          },
+        })
+
+      if (!target) {
+        throw new Error(
+          "COMMUNICATION_OPERATIONAL_TARGET_NOT_FOUND"
+        )
+      }
+
+      return
+    }
+
     case "TREASURY_GATEWAY_AGGREGATE": {
       const target =
         await tx.treasuryGatewayAggregate.findUnique({

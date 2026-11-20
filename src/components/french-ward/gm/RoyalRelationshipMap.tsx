@@ -38,7 +38,7 @@ export function RoyalRelationshipMap() {
 
         <article className={`${styles.node} ${styles.greatMother}`}>
           <span className={styles.nodeEyebrow}>Royal Principal</span>
-          <h3>Great Mother</h3>
+          <h3>Global Mother</h3>
           <p>Originating invitation and Royal relationship.</p>
         </article>
 

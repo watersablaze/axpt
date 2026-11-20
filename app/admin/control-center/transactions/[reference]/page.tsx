@@ -1,0 +1,514 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+
+import DigitalSettlementOperatorPage from "../../instruments/digital-settlement/[reference]/page";
+import { TransactionDocumentUploadControl } from "@/components/admin/transactions/TransactionDocumentUploadControl";
+import { TransactionAudienceAccessControl } from "@/components/admin/transactions/TransactionAudienceAccessControl";
+import {
+  INDERAKSH_TRANSACTION_CONTINUITY,
+  INDERAKSH_TRANSACTION_REFERENCE,
+} from "@/domains/instruments/definitions/inderakshTransactionContinuity";
+import { DSI_REFERENCE } from "@/domains/instruments/definitions/digitalSettlementV1Definition";
+import { loadIssuedTransactionDocument } from "@/domains/instruments/transaction-documents/contracts";
+
+export const dynamic = "force-dynamic";
+
+const views = [
+  ["overview", "Overview"],
+  ["documents", "Documents"],
+  ["settlement", "Settlement Control"],
+  ["access", "Access & Communications"],
+  ["evidence", "Evidence / Reconciliation"],
+  ["history", "History"],
+] as const;
+
+type Props = {
+  params: Promise<{ reference: string }>;
+  searchParams: Promise<{ view?: string }>;
+};
+
+export default async function TransactionOperatorPage({
+  params,
+  searchParams,
+}: Props) {
+  const { reference } = await params;
+
+  if (reference !== INDERAKSH_TRANSACTION_REFERENCE) {
+    notFound();
+  }
+
+  const requested = (await searchParams).view;
+  const view = views.find(([key]) => key === requested)?.[0] ?? "overview";
+  const path = `/admin/control-center/transactions/${reference}`;
+
+  const documents =
+    INDERAKSH_TRANSACTION_CONTINUITY.governingDocuments.filter(
+      (item) => item.kind !== "DSI",
+    );
+
+  let documentStoreError: string | null = null;
+  let issuedDocuments: {
+    SPA: Awaited<ReturnType<typeof loadIssuedTransactionDocument>>;
+    COMMERCIAL_SCHEDULE: Awaited<ReturnType<typeof loadIssuedTransactionDocument>>;
+  } = {
+    SPA: null,
+    COMMERCIAL_SCHEDULE: null,
+  };
+
+  if (view === "documents") {
+    try {
+      const [spa, commercialSchedule] = await Promise.all([
+        loadIssuedTransactionDocument(reference, "SPA"),
+        loadIssuedTransactionDocument(reference, "COMMERCIAL_SCHEDULE"),
+      ]);
+
+      issuedDocuments = {
+        SPA: spa,
+        COMMERCIAL_SCHEDULE: commercialSchedule,
+      };
+    } catch (error) {
+      console.error("[TRANSACTION_DOCUMENT_STORE_READ_FAILED]", error);
+      documentStoreError =
+        error instanceof Error
+          ? error.message
+          : "Private document store is presently unavailable.";
+    }
+  }
+
+  let settlementControl: Awaited<ReturnType<typeof DigitalSettlementOperatorPage>> | null = null;
+  let settlementControlError: string | null = null;
+
+  if (view === "settlement") {
+    try {
+      settlementControl = await DigitalSettlementOperatorPage({
+        params: Promise.resolve({ reference: DSI_REFERENCE }),
+      });
+    } catch (error) {
+      console.error("[TRANSACTION_SETTLEMENT_CONTROL_LOAD_FAILED]", error);
+      settlementControlError =
+        error instanceof Error
+          ? error.message
+          : "Settlement Control is presently unavailable.";
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-[#090d0c] text-stone-100">
+      <header className="relative z-20 border-b border-stone-800 bg-[#090d0c]/88 backdrop-blur-xl backdrop-saturate-125">
+        <div className="mx-auto hidden max-w-7xl px-4 sm:block sm:px-6 lg:px-8">
+          <div className="flex min-h-11 flex-wrap items-center justify-between gap-x-6 gap-y-2 py-2.5">
+            <div className="flex min-w-0 flex-wrap items-center gap-x-5 gap-y-1 text-[9px] uppercase tracking-[0.12em]">
+              <span className="text-amber-300">Documents · Review</span>
+              <span className="text-stone-300">Execution · Not Released</span>
+              <span className="text-cyan-300">Settlement · Active</span>
+              <span className="text-rose-300">Authority · Verification only</span>
+            </div>
+
+            <span className="shrink-0 border border-amber-900/60 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-amber-300">
+              Operator Control
+            </span>
+          </div>
+        </div>
+
+        <details className="group sm:hidden">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-4 border-b border-amber-900/20 bg-[linear-gradient(90deg,rgba(12,27,22,0.78),rgba(9,16,14,0.62))] px-4 py-3 backdrop-blur-xl [&::-webkit-details-marker]:hidden">
+            <div className="min-w-0">
+              <p className="truncate text-[9px] uppercase tracking-[0.14em] text-amber-200/70">
+                Transaction control · current state
+              </p>
+            </div>
+
+            <span
+              aria-hidden="true"
+              className="shrink-0 text-base leading-none text-amber-300 transition-transform group-open:rotate-45"
+            >
+              +
+            </span>
+          </summary>
+
+          <div className="border-b border-amber-900/20 bg-[#08100d]/72 px-4 py-4 shadow-[0_12px_28px_rgba(0,0,0,0.16)] backdrop-blur-2xl backdrop-saturate-150">
+            <p className="text-[9px] uppercase tracking-[0.2em] text-amber-300">
+              Transaction state
+            </p>
+
+            <p className="mt-1 text-[11px] leading-5 text-stone-400">
+              Operator controls and current authority posture
+            </p>
+
+            <div className="mt-3 inline-flex rounded-sm border border-amber-900/70 px-2.5 py-1.5 text-[9px] uppercase tracking-[0.14em] text-amber-300">
+              Operator Control
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 border-t border-stone-800/80 pt-3 text-[9px] uppercase tracking-[0.1em]">
+              <span className="text-amber-300">
+                Documents · Review
+              </span>
+              <span className="text-stone-300">
+                Execution · Not Released
+              </span>
+              <span className="text-cyan-300">
+                Settlement · Active
+              </span>
+              <span className="text-rose-300">
+                Authority · Verification only
+              </span>
+            </div>
+          </div>
+        </details>
+      </header>
+
+      <div className="mx-auto grid min-w-0 max-w-7xl grid-cols-[minmax(0,1fr)] gap-0 px-4 pb-12 sm:px-6 lg:min-h-[calc(100dvh-173px)] lg:grid-cols-[220px_minmax(0,1fr)] lg:px-8 lg:pb-0">
+        <aside className="sticky top-[var(--cc-mobile-crown-height)] z-30 min-w-0 border-b border-amber-900/25 bg-[#09100d] py-3 shadow-[0_12px_30px_rgba(0,0,0,0.18)] backdrop-blur-2xl backdrop-saturate-150 lg:top-[var(--cc-crown-height)] lg:z-30 lg:self-start lg:border-b-0 lg:border-r lg:border-stone-800 lg:bg-[#07100c]/82 lg:py-5 lg:shadow-[8px_0_28px_rgba(0,0,0,0.18)] lg:backdrop-blur-2xl lg:backdrop-saturate-150">
+          <nav
+            aria-label="Operator transaction workspaces"
+            className="flex gap-1 overflow-x-auto pr-0 lg:flex-col lg:overflow-visible lg:pr-4"
+          >
+            {views.map(([key, label]) => (
+              <Link
+                key={key}
+                aria-current={view === key ? "page" : undefined}
+                className={
+                  view === key
+                    ? "whitespace-nowrap border-l-2 border-amber-300 bg-[rgba(94,67,24,0.20)] px-3 py-2 text-xs text-amber-50 shadow-[inset_0_0_0_1px_rgba(245,208,117,0.035)]"
+                    : "whitespace-nowrap border-l-2 border-transparent px-3 py-2 text-xs text-stone-400 hover:bg-white/[0.03] hover:text-white"
+                }
+                href={`${path}?view=${key}`}
+              >
+                {label}
+              </Link>
+            ))}
+          </nav>
+
+          <div className="mt-6 hidden border-t border-stone-800 pt-4 pr-4 text-[10px] leading-5 text-stone-500 lg:block">
+            <p className="uppercase tracking-[0.14em] text-stone-600">
+              Control doctrine
+            </p>
+            <p className="mt-2">
+              Machine observes → operator recognizes → system records.
+            </p>
+          </div>
+        </aside>
+
+        <main className="min-w-0 pt-7 pb-5 lg:py-5 lg:pl-6">
+          {view === "overview" ? (
+            <section className="space-y-4" aria-label="Transaction control overview">
+              <div className="border-b border-stone-800 pb-4">
+                <p className="text-[10px] uppercase tracking-[0.18em] text-stone-500">
+                  Current action
+                </p>
+                <h2 className="mt-1 text-base font-medium text-white">
+                  Provide SPA + Commercial Schedule for counterparty review; confirm Buyer signing authority before execution release.
+                </h2>
+                <p className="mt-1 max-w-3xl text-xs leading-5 text-stone-500">
+                  The DSI settlement layer remains independently active. Agreement execution and
+                  settlement authority are intentionally separate states.
+                </p>
+              </div>
+
+              <div className="grid gap-px overflow-hidden rounded-lg border border-stone-800 bg-stone-800 md:grid-cols-2 xl:grid-cols-4">
+                <div className="bg-[#0d1210] p-4">
+                  <p className="text-[10px] uppercase tracking-wide text-stone-500">Agreement</p>
+                  <p className="mt-1 text-sm text-white">Awaiting execution</p>
+                  <p className="mt-1 text-[11px] text-amber-300">Signatory confirmation required</p>
+                </div>
+                <div className="bg-[#0d1210] p-4">
+                  <p className="text-[10px] uppercase tracking-wide text-stone-500">Documents</p>
+                  <p className="mt-1 text-sm text-white">SPA + CP review copies</p>
+                  <p className="mt-1 text-[11px] text-stone-500">Review publication pending</p>
+                </div>
+                <div className="bg-[#0d1210] p-4">
+                  <p className="text-[10px] uppercase tracking-wide text-stone-500">Settlement</p>
+                  <p className="mt-1 text-sm text-white">Active</p>
+                  <p className="mt-1 text-[11px] text-cyan-300">Verification authority only</p>
+                </div>
+                <div className="bg-[#0d1210] p-4">
+                  <p className="text-[10px] uppercase tracking-wide text-stone-500">DSI</p>
+                  <p className="mt-1 font-mono text-sm text-white">{DSI_REFERENCE}</p>
+                  <p className="mt-1 text-[11px] text-stone-500">Existing authority preserved</p>
+                </div>
+              </div>
+
+              <div className="grid gap-4 xl:grid-cols-[1.25fr_0.75fr]">
+                <section className="rounded-lg border border-stone-800 bg-black/20 p-4">
+                  <p className="text-[10px] uppercase tracking-[0.16em] text-stone-500">
+                    Transaction
+                  </p>
+                  <dl className="mt-3 grid gap-3 text-xs sm:grid-cols-2">
+                    <div>
+                      <dt className="text-stone-500">Buyer / Seller</dt>
+                      <dd className="mt-1 text-white">Inderaksh Gold Refinery FZ-LLC / French-Ward, Inc.</dd>
+                    </div>
+                    <div>
+                      <dt className="text-stone-500">Quantity / Corridor</dt>
+                      <dd className="mt-1 text-white">50 KG · Mali → Dubai · CIP / Air Freight</dd>
+                    </div>
+                    <div>
+                      <dt className="text-stone-500">Pricing</dt>
+                      <dd className="mt-1 text-white">18 Sep 2026 LBMA PM · less 10%</dd>
+                    </div>
+                    <div>
+                      <dt className="text-stone-500">Current transfer authority</dt>
+                      <dd className="mt-1 text-white">Verification transfer only · 50 USDT</dd>
+                    </div>
+                  </dl>
+                </section>
+
+                <section className="rounded-lg border border-amber-900/50 bg-amber-950/10 p-4">
+                  <p className="text-[10px] uppercase tracking-[0.16em] text-amber-400">
+                    Attention
+                  </p>
+                  <p className="mt-2 text-sm text-white">Buyer Signatory Confirmation Required</p>
+                  <p className="mt-2 text-xs leading-5 text-stone-400">
+                    Corey Keller is identified as Vice President / Buyer Representative. Confirm
+                    authority to execute or obtain the authorized alternate before execution.
+                  </p>
+                </section>
+              </div>
+            </section>
+          ) : null}
+
+          {view === "documents" ? (
+            <section className="space-y-4" aria-label="Governing document control">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em] text-stone-500">
+                  Governing documents
+                </p>
+                <h2 className="mt-1 text-base font-medium text-white">
+                  Review transaction documents
+                </h2>
+              </div>
+
+              <div className="overflow-hidden rounded-lg border border-stone-800">
+                {documents.map((item) => (
+                  <article
+                    key={item.reference}
+                    className="grid gap-3 border-b border-stone-800 bg-black/20 p-4 last:border-b-0 md:grid-cols-[minmax(0,1fr)_auto] md:items-center"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-[10px] uppercase tracking-wide text-stone-500">{item.role}</p>
+                      <h3 className="mt-1 text-sm text-white">{item.title}</h3>
+                      <p className="mt-1 break-all font-mono text-[11px] text-stone-400">{item.reference}</p>
+                    </div>
+                    <div className="flex flex-col items-start gap-2 md:items-end">
+                      <div className="text-[10px] uppercase tracking-wide text-amber-300">
+                        {item.publicationState} · {item.status}
+                      </div>
+                      {issuedDocuments[item.kind as "SPA" | "COMMERCIAL_SCHEDULE"] ? (
+                        <>
+                          <div className="flex flex-wrap gap-2">
+                            <Link
+                              href={`/api/admin/transactions/${encodeURIComponent(reference)}/documents/${item.kind}`}
+                              target="_blank"
+                              rel="noreferrer"
+                              className="rounded border border-stone-700 px-3 py-1.5 text-[10px] uppercase tracking-wide text-stone-300 hover:border-amber-700 hover:text-amber-300"
+                            >
+                              View
+                            </Link>
+                            <Link
+                              href={`/api/admin/transactions/${encodeURIComponent(reference)}/documents/${item.kind}?mode=download`}
+                              className="rounded border border-stone-700 px-3 py-1.5 text-[10px] uppercase tracking-wide text-stone-300 hover:border-amber-700 hover:text-amber-300"
+                            >
+                              Download
+                            </Link>
+                            <button
+                              type="button"
+                              disabled
+                              title="Executed-copy recording is the next governed lifecycle step."
+                              className="rounded border border-stone-800 px-3 py-1.5 text-[10px] uppercase tracking-wide text-stone-600 disabled:cursor-not-allowed"
+                            >
+                              Record Executed Copy
+                            </button>
+                          </div>
+                          <p className="max-w-sm break-all text-right font-mono text-[9px] text-stone-600">
+                            SHA-256 {issuedDocuments[item.kind as "SPA" | "COMMERCIAL_SCHEDULE"]?.sha256}
+                          </p>
+                          {issuedDocuments[item.kind as "SPA" | "COMMERCIAL_SCHEDULE"]?.status === "REVIEW" ? (
+                            <TransactionDocumentUploadControl
+                              transactionReference={reference}
+                              documentKind={item.kind as "SPA" | "COMMERCIAL_SCHEDULE"}
+                              label="Publish Revised Review PDF"
+                            />
+                          ) : null}
+                        </>
+                      ) : (
+                        <TransactionDocumentUploadControl
+                          transactionReference={reference}
+                          documentKind={item.kind as "SPA" | "COMMERCIAL_SCHEDULE"}
+                          label="Publish Review PDF"
+                        />
+                      )}
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              <div className="rounded border border-amber-900/40 bg-amber-950/10 p-3 text-xs leading-5 text-stone-400">
+                {documentStoreError
+                  ? `Private document store check failed closed: ${documentStoreError}`
+                  : issuedDocuments.SPA && issuedDocuments.COMMERCIAL_SCHEDULE
+                    ? "Both governed review PDFs are bound to the private transaction store and protected by recorded SHA-256 integrity hashes."
+                    : "Publish each canonical REVIEW COPY. Revised review PDFs advance the version and preserve the previous copy; execution copies remain a separate lifecycle step."}
+              </div>
+            </section>
+          ) : null}
+
+          {view === "settlement" ? (
+            <section className="space-y-4" aria-label="Settlement control">
+              {settlementControlError ? (
+                <div className="rounded-lg border border-rose-900/60 bg-rose-950/10 p-4">
+                  <p className="text-[10px] uppercase tracking-[0.16em] text-rose-300">
+                    Settlement Control unavailable
+                  </p>
+                  <p className="mt-2 text-xs leading-5 text-stone-400">
+                    The transaction shell remains authoritative and no settlement state
+                    has been changed. Legacy DSI control failed closed:
+                    {" "}{settlementControlError}
+                  </p>
+                  <Link
+                    href={`/admin/control-center/instruments/digital-settlement/${DSI_REFERENCE}`}
+                    className="mt-3 inline-flex rounded border border-stone-700 px-3 py-2 text-[10px] uppercase tracking-wide text-stone-300"
+                  >
+                    Open legacy DSI operator surface
+                  </Link>
+                </div>
+              ) : (
+                settlementControl
+              )}
+            </section>
+          ) : null}
+
+          {view === "access" ? (
+            <section className="space-y-4">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em] text-stone-500">
+                  Access & communications
+                </p>
+                <h2 className="mt-1 text-base font-medium text-white">
+                  Role-scoped private transaction access
+                </h2>
+                <p className="mt-2 max-w-3xl text-xs leading-5 text-stone-500">
+                  Five individual V2 credentials resolve into five audience-specific
+                  transaction surfaces. Access remains separate from operator authority.
+                </p>
+              </div>
+
+              <Link
+                href={`/admin/control-center/instruments/digital-settlement/${DSI_REFERENCE}`}
+                className="inline-flex rounded border border-stone-700 px-3 py-2 text-[10px] uppercase tracking-wide text-stone-300"
+              >
+                Open DSI operator surface
+              </Link>
+
+              <TransactionAudienceAccessControl
+                reference={DSI_REFERENCE}
+                transactionReference={reference}
+              />
+            </section>
+          ) : null}
+
+          {view === "evidence" ? (
+            <section className="space-y-3">
+              <p className="text-[10px] uppercase tracking-[0.18em] text-stone-500">
+                Evidence / reconciliation
+              </p>
+              <h2 className="text-base font-medium text-white">
+                Observation, verification and recognition remain separate.
+              </h2>
+              <p className="max-w-3xl text-xs leading-5 text-stone-500">
+                Use Settlement Control for the bounded observer, canonical chain evidence,
+                operator recognition and TAP authorization.
+              </p>
+              <Link
+                href={`${path}?view=settlement`}
+                className="inline-flex rounded border border-cyan-900 px-3 py-2 text-[10px] uppercase tracking-wide text-cyan-300"
+              >
+                Open Settlement Control
+              </Link>
+            </section>
+          ) : null}
+
+          {view === "history" ? (
+            <section className="space-y-4">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.18em] text-stone-500">
+                  History
+                </p>
+                <h2 className="mt-1 text-base font-medium text-white">
+                  Transaction event register
+                </h2>
+                <p className="mt-2 max-w-3xl text-xs leading-5 text-stone-500">
+                  The transaction register carries the first canonical milestone directly.
+                  The Preview database has been reconciled to the DSI verification-recognition
+                  schema, and Settlement Control is available within this transaction workspace.
+                </p>
+              </div>
+
+              <div className="overflow-hidden rounded-lg border border-stone-800">
+                <article className="grid gap-3 border-b border-stone-800 bg-black/20 p-4 md:grid-cols-[150px_minmax(0,1fr)_auto] md:items-start">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wide text-stone-500">
+                      25 Sep 2026
+                    </p>
+                    <p className="mt-1 text-[11px] text-stone-600">
+                      Initial settlement event
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm text-white">
+                      Digital Settlement Instrument issued
+                    </h3>
+                    <p className="mt-1 font-mono text-[11px] text-stone-400">
+                      {DSI_REFERENCE}
+                    </p>
+                    <p className="mt-2 max-w-2xl text-xs leading-5 text-stone-500">
+                      French-Ward established the transaction-specific DSI and placed the
+                      settlement lifecycle at AWAITING VERIFICATION TRANSFER. No remaining
+                      TAP authority was created by issuance.
+                    </p>
+                  </div>
+
+                  <div className="text-[10px] uppercase tracking-wide text-cyan-300">
+                    Recorded
+                  </div>
+                </article>
+
+                <article className="grid gap-3 bg-black/20 p-4 md:grid-cols-[150px_minmax(0,1fr)_auto] md:items-start">
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wide text-stone-500">
+                      Current
+                    </p>
+                    <p className="mt-1 text-[11px] text-stone-600">
+                      Document phase
+                    </p>
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm text-white">
+                      Counterparty review opened
+                    </h3>
+                    <p className="mt-2 max-w-2xl text-xs leading-5 text-stone-500">
+                      SPA and Commercial Schedule are staged as REVIEW COPY · NOT FOR EXECUTION.
+                      Execution copies have not been released and Buyer signatory authority
+                      remains to be confirmed.
+                    </p>
+                  </div>
+
+                  <div className="text-[10px] uppercase tracking-wide text-amber-300">
+                    Active
+                  </div>
+                </article>
+              </div>
+
+              <div className="rounded border border-stone-800 bg-black/10 p-3 text-xs leading-5 text-stone-500">
+                DSI settlement control is now integrated into this transaction workspace.
+                Verification-recognition schema reconciliation was completed on the Preview
+                database without changing settlement state or transfer authority.
+              </div>
+            </section>
+          ) : null}
+        </main>
+      </div>
+    </div>
+  );
+}

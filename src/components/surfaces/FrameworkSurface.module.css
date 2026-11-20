@@ -187,14 +187,14 @@
 
   position: relative;
 
-  margin-top: clamp(48px, 6vh, 76px);
+  margin-top: clamp(40px, 5vh, 62px);
 
   display: grid;
   grid-template-columns:
-    minmax(118px, .28fr)
+    minmax(108px, .24fr)
     minmax(0, 1fr);
 
-  column-gap: clamp(34px, 4.5vw, 64px);
+  column-gap: clamp(24px, 3.2vw, 44px);
 
   align-items: start;
 }
@@ -286,9 +286,9 @@
   display: flex;
   flex-direction: column;
 
-  gap: clamp(30px, 3.8vh, 46px);
+  gap: clamp(26px, 3.2vh, 38px);
 
-  width: min(100%, 520px);
+  width: min(100%, 540px);
 }
 
 .dependency {
@@ -324,7 +324,7 @@
 }
 
 .dependency:nth-child(2) {
-  margin-left: clamp(34px, 4.5vw, 66px);
+  margin-left: clamp(22px, 3vw, 44px);
 
   transform:
     translate3d(-5px, 1px, 0)
@@ -332,7 +332,7 @@
 }
 
 .dependency:nth-child(3) {
-  margin-left: clamp(82px, 9vw, 132px);
+  margin-left: clamp(50px, 5.8vw, 86px);
 
   transform:
     translate3d(6px, 2px, 0)
@@ -485,13 +485,13 @@
 ───────────────────────────────────── */
 
 .establishedPosition {
-  grid-column: 7 / 11;
+  grid-column: 6 / 11;
 
   position: relative;
 
   min-height: clamp(96px, 12vh, 138px);
 
-  margin-top: clamp(24px, 3vh, 40px);
+  margin-top: clamp(18px, 2.3vh, 30px);
 
   display: flex;
   align-items: center;
@@ -507,7 +507,7 @@
 
   gap: 14px;
 
-  margin-top: clamp(18px, 2.2vh, 30px);
+  margin-top: clamp(12px, 1.6vh, 22px);
 
   padding: 8px 0;
 }
@@ -2704,6 +2704,87 @@
 
   .axisDefinition {
     margin-top: 10px;
+  }
+
+}
+
+/* ─────────────────────────────────────
+   AXPT R9 — FRAMEWORK MOBILE FINAL AUTHORITY
+
+   Mobile relational law:
+
+   three surrounding conditions
+   → one established coordinate
+   → one documentary definition
+
+   Geometry remains canonical.
+
+   Readability is strengthened without
+   turning the field into a literal diagram.
+
+   Traces remain subordinate but perceptible.
+
+   Desktop authority is byte-preserved.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /*
+    CONDITION LABELS
+  */
+
+  .mobileNode h3 {
+    font-size: .47rem;
+
+    letter-spacing: .135em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .80);
+  }
+
+
+  /*
+    CONDITION LANGUAGE
+  */
+
+  .mobileNode p {
+    font-size: .78rem;
+    line-height: 1.38;
+
+    color:
+      rgba(var(--axpt-silver), .64);
+  }
+
+
+  /*
+    RELATIONAL TRACES
+  */
+
+  .mobileTrace {
+    opacity: .46;
+
+    background:
+      linear-gradient(
+        90deg,
+        transparent,
+        rgba(var(--axpt-mineral-green), .30),
+        rgba(var(--axpt-silver), .10),
+        transparent
+      );
+  }
+
+
+  /*
+    AXIS LABEL
+  */
+
+  .mobileAxisLabel {
+    font-size: .44rem;
+
+    letter-spacing: .18em;
+
+    color:
+      rgba(var(--axpt-mineral-green), .78);
   }
 
 }

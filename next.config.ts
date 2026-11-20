@@ -5,6 +5,38 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   productionBrowserSourceMaps: false,
 
+  outputFileTracingIncludes: {
+    "/admin/instruments/french-ward-profile/preview/html": [
+      "./package.json",
+      "./src/components/french-ward/profile/FrenchWardInstitutionalProfileView.module.css",
+      "./public/french-ward/fw-profile-open-passage.webp",
+      "./node_modules/react/**/*",
+      "./node_modules/.pnpm/react@*/node_modules/react/**/*",
+      "./node_modules/react-dom/**/*",
+      "./node_modules/.pnpm/react-dom@*/node_modules/react-dom/**/*",
+      "./node_modules/scheduler/**/*",
+      "./node_modules/.pnpm/scheduler@*/node_modules/scheduler/**/*",
+    ],
+    "/api/representative/commercial-utility-packs/resources/*/profile": [
+      "./package.json",
+      "./src/components/french-ward/profile/FrenchWardInstitutionalProfileView.module.css",
+      "./public/french-ward/fw-profile-open-passage.webp",
+      "./node_modules/react/**/*",
+      "./node_modules/.pnpm/react@*/node_modules/react/**/*",
+      "./node_modules/react-dom/**/*",
+      "./node_modules/.pnpm/react-dom@*/node_modules/react-dom/**/*",
+      "./node_modules/scheduler/**/*",
+      "./node_modules/.pnpm/scheduler@*/node_modules/scheduler/**/*",
+    ],
+    "/representative/materials/*/reader": [
+      "./node_modules/@axpt/source-authority-join/**/*",
+    ],
+    "/api/admin/representative-program/appointments/credential": [
+      "./private-assets/arp/jamal-ward-signature.png",
+      "./private-assets/arp/french-ward-seal.png",
+    ],
+  },
+
   /*
    * Local mobile visual-QA builds may proceed
    * while unrelated worktree TypeScript is in

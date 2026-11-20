@@ -1,0 +1,112 @@
+import CommercialPaperReview from "../../../CommercialPaperReview";
+import { loadRepresentativeCommercialPaper } from "@/domains/instruments/representative-program/commercial-utility-pack/commercial-papers/loadRepresentativeCommercialPaper";
+import { withSourceAuthorityJoinGraph } from "@/infrastructure/db/sourceAuthorityJoinGraph";
+import { createLocalReadTiming } from "@/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/localReadTiming";
+import CupReaderReady from "../../../CupReaderReady";
+import CupReaderStatus from "../../../CupReaderStatus";
+import CupPdfReader from "../../../CupPdfReader";
+import { loadRepresentativeSupportingDocumentWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/loadRepresentativeSupportingDocumentWithClient";
+import boundaries from "../../../resources/[resourceReleaseId]/operating-boundaries.module.css";
+import { notFound, redirect } from "next/navigation";
+import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { isAdmin } from "@/domains/auth/isAdmin";
+import { prisma } from "@/infrastructure/db/prisma";
+import { FrenchWardInstitutionalProfileView } from
+  "@/components/french-ward/profile/FrenchWardInstitutionalProfileView";
+import { InstrumentShell } from "@/components/instruments/InstrumentShell";
+import { SourceAuthorityPresentation } from
+  "@/components/instruments/source-authority/SourceAuthorityPresentation";
+import { loadRepresentativeCommercialUtilityPackResourceWithClient } from
+  "@/domains/instruments/representative-program/commercial-utility-pack/application/loadRepresentativeCommercialUtilityPackResourceWithClient";
+import { loadRepresentativeCommercialUtilityPackInstitutionalResourceWithClient } from
+  "@/domains/instruments/representative-program/commercial-utility-pack/application/loadRepresentativeCommercialUtilityPackInstitutionalResourceWithClient";
+import { resolveRepresentativeCommercialUtilityPackConsumptionWithClient } from
+  "@/domains/instruments/representative-program/commercial-utility-pack/application/resolveRepresentativeCommercialUtilityPackConsumptionWithClient";
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
+export default async function CupPublicationReader({ params, searchParams }: {
+  params: Promise<{ resourceReleaseId: string }>;
+  searchParams: Promise<{ previewParticipantId?: string | string[]; renderer?: string | string[]; embedded?: string | string[] }>;
+}) {
+  const timing = createLocalReadTiming();
+  const { resourceReleaseId } = await params;
+  const query = await searchParams;
+  const previewParticipantId = query.previewParticipantId;
+  const renderer = query.renderer;
+  const embedded = query.embedded === "1";
+  if (renderer !== undefined && renderer !== "structured" && renderer !== "institutional") notFound();
+  if (!resourceReleaseId || resourceReleaseId.length > 191) notFound();
+  const principal = await timing.measure("principal", () => getPrincipal());
+  if (!principal) {
+    if (embedded) return <main style={{ height: "100dvh", margin: 0 }}>
+      <CupReaderReady state="error" />
+      <CupReaderStatus error="Your session is unavailable. Sign in and reopen this material." />
+    </main>;
+    redirect("/login?next=" + encodeURIComponent("/representative"));
+  }
+  let userId = principal.userId;
+  if (previewParticipantId !== undefined) {
+    if (typeof previewParticipantId !== "string" || !previewParticipantId ||
+        previewParticipantId.length > 191 || !isAdmin(principal)) notFound();
+    const participant = await timing.measure("participant", () => prisma.representativeProgramParticipant.findUnique({
+      where: { id: previewParticipantId }, select: { userId: true },
+    }));
+    if (!participant?.userId) notFound();
+    userId = participant.userId;
+  }
+  const decision = await timing.measure("authorization", () => resolveRepresentativeCommercialUtilityPackConsumptionWithClient({
+    client: prisma, userId, resourceReleaseId, action: "VIEW",
+  }));
+  if (!decision.allowed) notFound();
+  const input = { client: prisma, userId, resourceReleaseId };
+  const commercialPaper = await loadRepresentativeCommercialPaper(input);
+  if (commercialPaper) return <><ReaderTiming value={timing.value()} /><CupReaderReady /><CommercialPaperReview paper={commercialPaper} /></>;
+
+  const api = previewParticipantId
+    ? "/api/admin/representative-program/participants/" + encodeURIComponent(previewParticipantId) +
+      "/workspace-preview/resources/" + encodeURIComponent(resourceReleaseId)
+    : "/api/representative/commercial-utility-packs/resources/" + encodeURIComponent(resourceReleaseId);
+  const supporting = renderer === undefined ? await timing.measure("supporting_lookup", () => loadRepresentativeSupportingDocumentWithClient(input)) : null;
+  if (supporting) return <main style={{ margin: 0, background: "#0b1b24", color: "#eef1e9" }}>
+    <p style={{ padding: "12px 18px", margin: 0, fontSize: 12 }}>{supporting.publication.disclosureNote}</p>
+    <CupPdfReader title={supporting.publication.title} href={api + "/supporting-document?mode=inline"} />
+  </main>;
+  const resource = renderer !== "institutional" ? await timing.measure("publication", () => loadRepresentativeCommercialUtilityPackResourceWithClient(input)) : null;
+  if (resource?.kind === "INSTITUTIONAL_PROFILE") return <main className="min-h-screen bg-[#0c1d25] p-4 text-[#eee7da]">
+    <ReaderTiming value={timing.value()} /><CupReaderReady />
+    <FrenchWardInstitutionalProfileView profile={resource.content} packageReference={resource.packageReference} />
+  </main>;
+  if (resource?.kind === "OPERATING_BOUNDARIES") {
+    const content = resource.content;
+    return <main className={boundaries.page}><ReaderTiming value={timing.value()} /><CupReaderReady /><article className={boundaries.record}>
+      <h1 className={boundaries.title}>{content.title}</h1>
+      <p className={boundaries.reference}>{content.reference} · Version {content.version}</p>
+      <p className={boundaries.scope}>{content.scope}</p>
+      <p className={boundaries.authority}>{content.authorityStatement}</p>
+      {content.boundaries.map(boundary => <section key={boundary.key} className={boundaries.section}>
+        <h2 className={boundaries.sectionTitle}>{boundary.title}</h2>
+        <p className={boundaries.statement}>{boundary.statement}</p>
+        <p className={boundaries.instruction}>{boundary.representativeInstruction}</p>
+      </section>)}
+    </article></main>;
+  }
+  const institutional = renderer !== "structured" ? await timing.measure("publication", () => loadRepresentativeCommercialUtilityPackInstitutionalResourceWithClient({ ...input, client: withSourceAuthorityJoinGraph(input.client), onReadTiming: timing.record })) : null;
+  if (institutional?.kind === "REPRESENTATIVE_PROGRAM_AGREEMENT") return <CupPdfReader fillViewport title="Executed Representative Agreement" href={api + "/document?mode=inline"} />;
+  if (institutional?.kind !== "SOURCE_AUTHORITY" || institutional.presentation.audience !== "REPRESENTATIVE") notFound();
+  const projection = institutional.presentation;
+  const subject = projection.identity.subject;
+  return <><ReaderTiming value={timing.value()} /><CupReaderReady /><InstrumentShell eyebrow="Source Authority" classificationLabel="Governed Institutional Source Record"
+    brandLabel={subject.displayName} title="Source Authority Instrument"
+    subtitle={[subject.jurisdiction, subject.sector, subject.principalCommodityActivity.join(" · ")].join(" · ")}
+    reference={projection.identity.instrumentReference} version={String(projection.identity.versionNumber)}
+    status={projection.standing.replaceAll("_", " ")} movements={[]} showStatusRail={false}
+    hideHero density="compact" surface="archival">
+    <SourceAuthorityPresentation projection={projection} />
+  </InstrumentShell></>;
+}
+
+function ReaderTiming({ value }: { value: string }) {
+  return value ? <meta name="arp-reader-server-timing" content={value} /> : null;
+}

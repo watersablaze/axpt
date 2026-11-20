@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
+import { singleFlight } from '@/lib/control-center/singleFlight'
 
 import styles from './control-center.module.css'
 
@@ -43,16 +44,16 @@ const EMPTY_SNAPSHOT: ControlCenterSnapshot = {
   timestamp: 0,
 
   system: {
-    health: 0,
-    drift: 0,
-    stability: 0,
-    status: 'WATCH',
+    health: null,
+    drift: null,
+    stability: null,
+    status: 'UNKNOWN',
   },
 
   execution: {
     pending: 0,
-    successRate: 0,
-    activeJobs: 0,
+    successRate: null,
+    activeJobs: null,
   },
 
   treasury: {
@@ -62,8 +63,8 @@ const EMPTY_SNAPSHOT: ControlCenterSnapshot = {
   },
 
   reconciliation: {
-    driftScore: 0,
-    anomalies: 0,
+    driftScore: null,
+    anomalies: null,
     lastSync: null,
   },
 
@@ -74,9 +75,9 @@ const EMPTY_SNAPSHOT: ControlCenterSnapshot = {
   },
 
   governance: {
-    riskScore: 0,
-    activeLocks: 0,
-    riskLevel: 'LOW',
+    riskScore: null,
+    activeLocks: null,
+    riskLevel: 'UNKNOWN',
   },
 
   authority: {
@@ -97,6 +98,8 @@ export function ControlCenterShell() {
   const [loading, setLoading] =
     useState(true)
 
+  const [snapshotError, setSnapshotError] = useState<string | null>(null)
+
   async function loadSnapshot() {
     try {
       const res = await fetch(
@@ -106,12 +109,16 @@ export function ControlCenterShell() {
         }
       )
 
+      if (!res.ok) throw new Error(`CONTROL_CENTER_HTTP_${res.status}`)
       const json = await res.json()
+      if (!json?.ok || !json?.snapshot) throw new Error('CONTROL_CENTER_RESPONSE_INVALID')
+      setSnapshotError(null)
 
       if (json?.snapshot) {
         setSnapshot(json.snapshot)
       }
     } catch (err) {
+      setSnapshotError('Control Center telemetry is unavailable. Any previously loaded values are stale.')
       console.error(
         '[CONTROL_CENTER_LOAD_FAILED]',
         err
@@ -122,11 +129,12 @@ export function ControlCenterShell() {
   }
 
   useEffect(() => {
-    loadSnapshot()
+    const refresh = singleFlight(loadSnapshot)
+    void refresh()
 
     const interval = window.setInterval(() => {
-      void loadSnapshot()
-    }, 5000)
+      if (document.visibilityState === 'visible') void refresh()
+    }, 30000)
 
     return () => {
       window.clearInterval(interval)
@@ -154,7 +162,30 @@ export function ControlCenterShell() {
     }, 0)
   }
 
+  if (operationalState.error && operationalState.lastSuccessfulAt === null) {
+    return (
+      <div role="alert" className="p-6 text-amber-200">
+        Operational records could not be loaded. This does not mean the queues are empty.
+        Retrying automatically every thirty seconds while visible.
+      </div>
+    )
+  }
+
+  if (snapshotError && snapshot.timestamp === 0) {
+    return <div role="alert" className="p-6 text-amber-200">{snapshotError} Retrying automatically.</div>
+  }
+
   return (
+    <div className={styles.commandFrame}>
+    {operationalState.error ? (
+      <div role="alert" className="border-b border-amber-200/20 bg-amber-100/5 px-4 py-3 text-xs text-amber-100">
+        {operationalState.error} Last complete refresh: {new Date(operationalState.lastSuccessfulAt!).toLocaleTimeString()}.
+      </div>
+    ) : null}
+    <div className="border-b border-cyan-200/10 px-4 py-2 text-xs text-neutral-400">
+      Treasury counts reflect recorded queue states. Unconnected telemetry is shown as “Not measured”.
+    </div>
+    {snapshotError ? <div role="alert" className="p-4 text-amber-200">{snapshotError}</div> : null}
     <div className={styles.grid}>
       <div className={styles.left}>
         <SystemHealthPanel
@@ -183,10 +214,13 @@ export function ControlCenterShell() {
       </div>
 
       <div className={styles.center}>
-        <ControlCenterModeSwitcher
-          mode={mode}
-          onChange={setMode}
-        />
+        <div className={styles.modeBar}>
+          <ControlCenterModeSwitcher
+            mode={mode}
+            onChange={setMode}
+          />
+        </div>
+        <div className={styles.stage}>
 
         {mode === 'COMMAND' ? (
           <>
@@ -251,6 +285,7 @@ export function ControlCenterShell() {
             )}
           </>
         ) : null}
+        </div>
       </div>
 
       <div className={styles.right}>
@@ -262,6 +297,7 @@ export function ControlCenterShell() {
 
         <ActionPanel />
       </div>
+    </div>
     </div>
   )
 }

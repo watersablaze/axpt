@@ -1,0 +1,193 @@
+.field {
+  --ink: #29281f;
+  --muted: #625d50;
+  --bronze: #785f38;
+  --rule: rgba(75, 67, 48, 0.2);
+  width: 100%;
+  padding: 0 clamp(0.75rem, 2.2vw, 1.5rem) 2.5rem;
+  color: var(--ink);
+}
+.field * { box-sizing: border-box; }
+.field h3, .field h4, .field p { margin-top: 0; }
+.registry, .bridge, .convergence, .anchor { margin-top: clamp(1.65rem, 3.5vw, 2.65rem); }
+.registry { margin-top: 0; }
+.label {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.8rem 0;
+  border-bottom: 1px solid var(--rule);
+  color: #684f2e;
+  font-size: 0.65rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+.twoColumns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1.4rem, 4vw, 3rem);
+  padding: clamp(1.15rem, 2.4vw, 1.85rem) 0;
+}
+.twoColumns > p, .twoColumns > div > p:not(.eyebrow):not(.identities), .note {
+  color: var(--muted);
+  line-height: 1.52;
+}
+.twoColumns > p { align-self: end; margin-bottom: 0; }
+.eyebrow {
+  color: var(--bronze);
+  font-size: 0.67rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.field h3, .field h4, .identities, .close, .doctrine { font-family: Georgia, "Times New Roman", serif; font-weight: 400; }
+.field h3 { font-size: clamp(1.9rem, 3.5vw, 3.05rem); line-height: 1.08; margin-bottom: 0.7rem; }
+.field h4 { font-size: clamp(1.3rem, 2vw, 1.8rem); line-height: 1.2; margin-bottom: 0.7rem; overflow-wrap: anywhere; }
+.identities { color: var(--muted); line-height: 1.5; }
+.bridge .twoColumns > div + div, .convergence .twoColumns > div + div {
+  border-left: 1px solid var(--rule);
+  padding-left: clamp(1.4rem, 4vw, 3rem);
+}
+.convergence {
+  padding: 0 clamp(1rem, 2.8vw, 2rem) clamp(1.3rem, 3vw, 2rem);
+  border: 1px solid var(--rule);
+  background: rgba(255, 250, 237, 0.13);
+}
+.convergence h3 { margin: 1.4rem 0 0; font-size: clamp(1.7rem, 3.1vw, 2.5rem); }
+.convergence .twoColumns { padding-bottom: 1rem; }
+.note { border-top: 1px solid var(--rule); padding-top: 1rem; margin-bottom: 0; font-size: 0.9rem; }
+.anchor { border-top: 2px solid var(--bronze); }
+.anchor .label { border-bottom: 0; }
+.anchor .twoColumns { padding-top: 1.2rem; padding-bottom: 0; }
+.doctrine {
+  margin-top: clamp(1.8rem, 3vw, 2.5rem);
+  padding: clamp(1.5rem, 3vw, 2.25rem);
+  border-left: 3px solid #a37c3e;
+  background: #172820;
+  color: #eee5d0;
+}
+.doctrine span {
+  display: block;
+  margin-bottom: 0.85rem;
+  color: #cba76c;
+  font-family: Arial, sans-serif;
+  font-size: 0.64rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.doctrine p {
+  max-width: 36rem;
+  margin-bottom: 0;
+  color: #eee5d0;
+  font-size: clamp(1.4rem, 2.3vw, 1.9rem);
+  line-height: 1.23;
+}
+@media (max-width: 700px) {
+  .twoColumns { grid-template-columns: 1fr; }
+  .bridge .twoColumns > div + div, .convergence .twoColumns > div + div {
+    border-left: 0;
+    border-top: 1px solid var(--rule);
+    padding-left: 0;
+    padding-top: 1.5rem;
+  }
+  .label { flex-wrap: wrap; }
+}
+
+/* Article I's principal names take a more precise title face. */
+.field h3,
+.field h4 {
+  font-family: Baskerville, "Times New Roman", serif;
+  letter-spacing: -0.018em;
+}
+
+.registry h3 {
+  font-size: clamp(1.95rem, 3.1vw, 2.75rem);
+  line-height: 1.09;
+}
+
+/* The article reads as a sequence of clauses, not separate landing sections. */
+.field { padding-bottom: 1.7rem; }
+.registry, .bridge, .convergence, .anchor { margin-top: clamp(1.15rem, 2.2vw, 1.7rem); }
+.registry { margin-top: 0; }
+.twoColumns { gap: clamp(1rem, 2.5vw, 2rem); padding: clamp(0.85rem, 1.7vw, 1.2rem) 0; }
+.bridge .twoColumns > div + div,
+.convergence .twoColumns > div + div { padding-left: clamp(1rem, 2.5vw, 2rem); }
+.convergence { padding-bottom: clamp(0.9rem, 1.8vw, 1.25rem); }
+.convergence h3 { margin-top: 1rem; }
+.doctrine { margin-top: 1.4rem; padding: clamp(0.9rem, 1.7vw, 1.3rem); }
+.doctrine span { margin-bottom: 0.45rem; }
+.doctrine p { font-size: clamp(1.08rem, 1.65vw, 1.38rem); line-height: 1.3; }
+@media (max-width: 700px) {
+  .bridge .twoColumns > div + div,
+  .convergence .twoColumns > div + div { padding-left: 0; padding-top: 1rem; }
+}
+
+/* Recognition carries a quiet mineral wash; the custodial proposal has warmth. */
+.registry {
+  padding: 0 clamp(0.8rem, 1.5vw, 1.35rem);
+  background: linear-gradient(120deg, rgba(77, 100, 77, 0.095), rgba(77, 100, 77, 0.025) 70%);
+  border-left: 2px solid rgba(76, 100, 75, 0.42);
+}
+.convergence {
+  background: linear-gradient(125deg, rgba(158, 132, 89, 0.09), rgba(255, 250, 237, 0.08) 72%);
+  border-color: rgba(120, 95, 56, 0.27);
+}
+
+/* GM visual pass: focused reading and deliberation. */
+
+.field { --muted: #505b61; --rule: #33465820; padding: 0 0 1rem; font-size: 1rem; }
+.registry, .bridge, .convergence, .anchor { padding: 0; border: 0; background: transparent; margin-top: 2rem; }
+.registry { margin-top: 0; }
+.label { justify-content: flex-start; gap: .8rem; padding: .65rem 0; border: 0; color: #75603d; font-size: .62rem; }
+.twoColumns { grid-template-columns: minmax(0,1fr); gap: .85rem; padding: .85rem 0 0; }
+.twoColumns > p { align-self: auto; }
+.twoColumns > p, .twoColumns > div > p:not(.eyebrow):not(.identities), .note { line-height: 1.7; }
+.field h3, .registry h3, .convergence h3 { font-size: clamp(1.45rem,2.5vw,1.9rem); margin: .3rem 0 .7rem; line-height: 1.25; }
+.field h4 { font-size: clamp(1.25rem,2vw,1.55rem); line-height: 1.3; }
+.eyebrow { font-size: .62rem; line-height: 1.6; margin-bottom: .4rem; }
+.identities { font-size: 1rem; line-height: 1.6; margin-bottom: 0; }
+.bridge .twoColumns > div + div, .convergence .twoColumns > div + div { padding: 1.1rem 0 0; border: 0; border-top: 1px solid var(--rule); }
+.note { border: 0; padding-top: .65rem; font-size: .95rem; }
+.doctrine { background: #1a3041; border-left: 2px solid #b29a69; border-radius: 0 3px 3px 0; }
+
+.registry { padding: 1rem 1.2rem; border-radius: 5px; background: linear-gradient(115deg,#64869b12,transparent); border-left: 2px solid #64869b55; }
+.convergence { padding: 1rem 1.2rem; border: 1px solid #997c4930; border-radius: 6px; background: linear-gradient(120deg,#c5ac7620,#fffaf00c); }
+.twoColumns > p,.twoColumns > div > p:not(.eyebrow):not(.identities),.note { line-height: 1.58; }
+.field h3,.field h4 { color: #233f51; }
+
+
+/* Canonical article closing principle — shared across Articles I–V. */
+.doctrine {
+  margin-top: clamp(2rem, 4vw, 3rem);
+  padding: clamp(1.3rem, 2.5vw, 1.75rem);
+  border: 1px solid rgba(185, 153, 92, .18);
+  border-left: 3px solid rgba(204, 181, 129, .78);
+  border-radius: 2px;
+  background:
+    radial-gradient(ellipse at 14% 0, rgba(53, 83, 103, .22), transparent 54%),
+    linear-gradient(135deg, #101f2d, #09151f 72%);
+  box-shadow:
+    inset 0 1px 0 rgba(235, 226, 199, .035),
+    0 14px 30px rgba(9, 20, 29, .08);
+  color: #f0e9db;
+}
+.doctrine span {
+  display: block;
+  margin-bottom: .7rem;
+  color: #d2b979;
+  font-family: Arial, sans-serif;
+  font-size: .63rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.doctrine p {
+  max-width: 52rem;
+  margin: 0;
+  color: #f0e9db;
+  font-family: Baskerville, Georgia, "Times New Roman", serif;
+  font-size: clamp(1.08rem, 1.8vw, 1.32rem);
+  font-weight: 400;
+  line-height: 1.46;
+}
+@media (max-width: 560px) {
+  .doctrine { padding: 1.15rem 1rem 1.3rem; }
+}

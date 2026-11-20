@@ -65,27 +65,35 @@ function normalizeLimit(limit: number | undefined) {
  * createdAt is the realtime freshness clock.
  * sourceOccurredAt remains the timeline chronology clock.
  */
-export async function loadCommunicationReflectionRealtimeSignalsWithClient({
+export async function loadCommunicationReflectionRealtimeSignalsForMemberWithClient({
   client,
-  principal,
+  userId,
   since,
   limit,
+  conversationIds,
 }: {
   client: CommunicationsDatabaseClient;
 
-  principal: Principal;
+  userId: string;
 
   since: Date;
 
   limit?: number;
-}): Promise<CommunicationReflectionRealtimeRecord[]> {
-  authorityKernel.require(principal, PERMISSIONS.COMMUNICATIONS_ACCESS);
 
+  conversationIds?: readonly string[];
+}): Promise<CommunicationReflectionRealtimeRecord[]> {
   if (Number.isNaN(since.getTime())) {
     throw new Error("COMMUNICATION_REFLECTION_REALTIME_CURSOR_INVALID");
   }
 
   const boundedLimit = normalizeLimit(limit);
+
+  if (
+    conversationIds &&
+    conversationIds.length === 0
+  ) {
+    return [];
+  }
 
   /*
    * Membership and ACTIVE status are resolved
@@ -102,9 +110,17 @@ export async function loadCommunicationReflectionRealtimeSignalsWithClient({
         conversation: {
           status: "ACTIVE",
 
+          ...(conversationIds
+            ? {
+                id: {
+                  in: [...conversationIds],
+                },
+              }
+            : {}),
+
           members: {
             some: {
-              userId: principal.userId,
+              userId,
 
               leftAt: null,
             },
@@ -161,4 +177,31 @@ export async function loadCommunicationReflectionRealtimeSignalsWithClient({
       createdAt: reflection.createdAt.toISOString(),
     },
   }));
+}
+
+export async function loadCommunicationReflectionRealtimeSignalsWithClient({
+  client,
+  principal,
+  since,
+  limit,
+}: {
+  client: CommunicationsDatabaseClient;
+
+  principal: Principal;
+
+  since: Date;
+
+  limit?: number;
+}): Promise<CommunicationReflectionRealtimeRecord[]> {
+  authorityKernel.require(
+    principal,
+    PERMISSIONS.COMMUNICATIONS_ACCESS,
+  );
+
+  return loadCommunicationReflectionRealtimeSignalsForMemberWithClient({
+    client,
+    userId: principal.userId,
+    since,
+    limit,
+  });
 }

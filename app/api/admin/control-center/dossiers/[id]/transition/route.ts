@@ -5,6 +5,7 @@ import { appendDomainEvent } from "@/core/events/appendDomainEvent";
 import { EventTypes } from "@/core/events/types";
 
 import { canTransitionDossier } from "@/domains/control-center/dossierStateMachine";
+import { getAvailableDossierTransitions } from "@/domains/control-center/getAvailableDossierTransitions";
 
 import { checkDossierArtifactGate } from "@/domains/control-center/dossierArtifactGates";
 
@@ -18,6 +19,7 @@ import { buildTransitionAuditRecord } from "@/domains/control-center/buildTransi
 
 import { getTransitionConsequences } from "@/domains/control-center/transitionConsequences";
 import { inferDossierExecutionProfile } from "@/domains/control-center/inferDossierExecutionProfile";
+import { isDossierExecutionLaneTarget } from "@/domains/control-center/dossiers/openDossierExecutionLane";
 
 type DossierTransitionBody = {
   toState?: string;
@@ -55,11 +57,21 @@ export async function PATCH(
       approvalRequirements: true,
       terms: true,
       parties: true,
+      events: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
       promotedOpportunities: {
         select: {
           id: true,
           source: true,
           title: true,
+          sourceTransactionIntake: {
+            select: {
+              transactionType: true,
+            },
+          },
         },
       },
     },
@@ -72,14 +84,38 @@ export async function PATCH(
     );
   }
 
+  const sourceTransactionType =
+    dossier.promotedOpportunities[0]?.sourceTransactionIntake
+      ?.transactionType ?? null;
+
   const executionProfile = inferDossierExecutionProfile({
     settlement: dossier.settlement,
-    transactionType: null,
+    transactionType: sourceTransactionType,
     terms: dossier.terms,
   });
 
   const fromState = dossier.state;
   const toState = body.toState as typeof dossier.state;
+
+  if (
+    fromState === "SPA_EXECUTED" &&
+    isDossierExecutionLaneTarget(toState)
+  ) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error:
+          "DOSSIER_EXECUTION_LANE_REQUIRES_CANONICAL_OPEN",
+        reason:
+          "Primary post-SPA execution lanes must be opened through the canonical execution-lane authority operation.",
+        fromState,
+        toState,
+      },
+      {
+        status: 409,
+      },
+    );
+  }
 
   if (!canTransitionDossier(fromState, toState)) {
     return NextResponse.json(
@@ -93,12 +129,43 @@ export async function PATCH(
     );
   }
 
+  const availableTransitions = getAvailableDossierTransitions({
+    state: fromState,
+    settlement: dossier.settlement,
+    transactionType: sourceTransactionType,
+    terms: dossier.terms,
+  });
+
+  const profileAllowsRequestedTransition =
+    availableTransitions.some(
+      (transition) => transition.toState === toState,
+    );
+
+  if (!profileAllowsRequestedTransition) {
+    return NextResponse.json(
+      {
+        ok: false,
+        error: "DOSSIER_PROFILE_TRANSITION_BLOCKED",
+        reason:
+          "Requested transition is structurally valid but is not available for the dossier execution profile.",
+        executionProfile,
+        fromState,
+        toState,
+        availableStates: availableTransitions.map(
+          (transition) => transition.toState,
+        ),
+      },
+      { status: 409 },
+    );
+  }
+
   const artifactGate = checkDossierArtifactGate({
     fromState,
     toState,
     instruments: dossier.instruments,
     parties: dossier.parties,
     sourceOpportunities: dossier.promotedOpportunities,
+    events: dossier.events,
     origin: dossier.origin,
     settlement: dossier.settlement,
     executionProfile,

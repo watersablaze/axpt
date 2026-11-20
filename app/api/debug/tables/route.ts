@@ -1,33 +1,21 @@
-// app/api/debug/tables/route.ts
-import { NextResponse } from 'next/server';
-import { prisma } from '@/infrastructure/db/prisma';
+import { NextResponse } from "next/server";
 
+export const dynamic = "force-dynamic";
+
+/**
+ * Disabled diagnostic endpoint.
+ * Database schema inspection must not be publicly exposed.
+ *
+ * BCM-3B.3E: fail closed for all environments.
+ */
 export async function GET() {
-  // if (process.env.NODE_ENV === 'production') return NextResponse.json({ ok:false }, { status: 404 });
-
-  try {
-    const [info] = await prisma.$queryRawUnsafe(`
-      SELECT
-        current_database()                       AS db,
-        current_schema()                          AS schema,
-        current_user                              AS "user",
-        current_setting('search_path', true)      AS search_path
-    `);
-
-    const tables = await prisma.$queryRawUnsafe(`
-      SELECT table_name
-      FROM information_schema.tables
-      WHERE table_schema = 'public'
-      ORDER BY table_name
-    `);
-
-    return NextResponse.json({
-      ok: true,
-      info,
-      count: tables.length,
-      tables: tables.map((t: any) => t.table_name),
-    });
-  } catch (e: any) {
-    return NextResponse.json({ ok: false, error: e?.message || 'unknown' }, { status: 500 });
-  }
+  return NextResponse.json(
+    { ok: false },
+    {
+      status: 404,
+      headers: {
+        "Cache-Control": "no-store",
+      },
+    },
+  );
 }
