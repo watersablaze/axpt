@@ -252,6 +252,23 @@ export async function promoteTransactionIntakeToOpportunity({
       throw new Error("TRANSACTION_INTAKE_NOT_FOUND");
     }
 
+    // FW-TXN-1B.8B: documentary registration is not
+    // independent commercial promotion authority.
+    const externalRegistration =
+      await tx.transactionIntakeEvent.findFirst({
+        where: {
+          intakeId: intake.id,
+          eventType: "EXTERNAL_INTAKE_REGISTERED",
+        },
+        select: { id: true },
+      });
+
+    if (externalRegistration) {
+      throw new Error(
+        "FW_TXN_EXTERNAL_PROMOTION_AUTHORITY_REQUIRED"
+      );
+    }
+
     if (intake.promotedOpportunityId) {
       if (!intake.promotedOpportunity) {
         throw new Error("PROMOTED_OPPORTUNITY_NOT_FOUND");

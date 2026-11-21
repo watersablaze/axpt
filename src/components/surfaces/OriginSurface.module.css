@@ -2638,306 +2638,6 @@
 
 
 /* ─────────────────────────────────────
-   AXPT V1 — THRESHOLD DESKTOP D2
-
-   CONTINUOUS REGISTRATION
-
-   Movement no longer disappears in order
-   to change coordinate.
-
-   The proposition remains materially
-   present while its position, scale,
-   density, and authority change.
-───────────────────────────────────── */
-
-@media (min-width: 981px) {
-
-  .thresholdSurface[data-settled="true"]
-  .primaryStatement {
-    animation:
-      thresholdDesktopContinuousRegister
-      1620ms
-      cubic-bezier(.16, 1, .3, 1)
-      both;
-  }
-
-}
-
-
-/* ─────────────────────────────────────
-   CONTINUOUS COORDINATE TRANSFER
-───────────────────────────────────── */
-
-@keyframes thresholdDesktopContinuousRegister {
-
-  /* original condition */
-
-  0%,
-  15% {
-    left:
-      var(--threshold-origin-left);
-
-    top:
-      var(--threshold-origin-top);
-
-    font-size:
-      var(--threshold-origin-size);
-
-    opacity: 1;
-
-    color:
-      rgba(var(--axpt-limestone), .95);
-
-    transform:
-      translate3d(0, 0, 0)
-      scale(1);
-
-    filter:
-      blur(0);
-  }
-
-
-  /*
-    Material pressure becomes visible,
-    but the proposition never disappears.
-  */
-
-  28% {
-    left:
-      calc(
-        var(--threshold-origin-left)
-        + 8%
-      );
-
-    top:
-      calc(
-        var(--threshold-origin-top)
-        + 8px
-      );
-
-    font-size:
-      calc(
-        var(--threshold-origin-size)
-        * .93
-      );
-
-    opacity: .82;
-
-    color:
-      rgba(var(--axpt-bronze), .82);
-
-    transform:
-      translate3d(4px, -1px, 0)
-      scale(.985);
-
-    filter:
-      blur(.45px);
-  }
-
-
-  /*
-    Coordinate transfer remains visible.
-    Lowest material density occurs here,
-    rather than complete disappearance.
-  */
-
-  46% {
-    left: 31%;
-
-    top: clamp(48px, 6vh, 72px);
-
-    font-size:
-      clamp(2.55rem, 4.15vw, 4.25rem);
-
-    opacity: .58;
-
-    color:
-      rgba(var(--axpt-oxide), .76);
-
-    transform:
-      translate3d(7px, -2px, 0)
-      scale(.965);
-
-    filter:
-      blur(.9px);
-  }
-
-
-  /*
-    Established coordinate begins
-    asserting itself.
-  */
-
-  64% {
-    left:
-      var(--threshold-settled-left);
-
-    top:
-      var(--threshold-settled-top);
-
-    font-size:
-      var(--threshold-settled-size);
-
-    opacity: .78;
-
-    color:
-      rgba(var(--axpt-limestone), .78);
-
-    transform:
-      translate3d(-2px, 2px, 0)
-      scale(.985);
-
-    filter:
-      blur(.35px);
-  }
-
-
-  82% {
-    left:
-      var(--threshold-settled-left);
-
-    top:
-      var(--threshold-settled-top);
-
-    font-size:
-      var(--threshold-settled-size);
-
-    opacity: .96;
-
-    color:
-      rgba(var(--axpt-limestone), .85);
-
-    transform:
-      translate3d(1px, 0, 0)
-      scale(1.004);
-
-    filter:
-      blur(.05px);
-  }
-
-
-  /* established condition */
-
-  100% {
-    left:
-      var(--threshold-settled-left);
-
-    top:
-      var(--threshold-settled-top);
-
-    font-size:
-      var(--threshold-settled-size);
-
-    opacity: 1;
-
-    color:
-      rgba(var(--axpt-limestone), .86);
-
-    transform:
-      translate3d(0, 0, 0)
-      scale(1);
-
-    filter:
-      blur(0);
-  }
-
-}
-
-
-/* ─────────────────────────────────────
-   AXPT V1 — THRESHOLD DESKTOP D3
-
-   DOCUMENTARY OPENING ORDER
-
-   01 declaration establishes
-   02 evidence of movement resolves
-   03 institutional position follows
-
-   Mobile chronology remains untouched.
-───────────────────────────────────── */
-
-@media (min-width: 981px) {
-
-  /*
-    01 / DECLARATION
-
-    D2 already owns 0 → 1620ms.
-    Nothing else should materially precede it.
-  */
-
-
-  /*
-    02 / OBSERVATION
-
-    Begin only as the proposition reaches
-    its established coordinate.
-  */
-
-  .thresholdSurface[data-settled="true"]
-  .currentText {
-    animation:
-      thresholdInscriptionResolve
-      1050ms
-      cubic-bezier(.22, 1, .36, 1)
-      1450ms
-      both;
-  }
-
-
-  .thresholdSurface[data-settled="true"]
-  .current::before {
-    animation:
-      thresholdDitherRegistration
-      1180ms
-      cubic-bezier(.22, 1, .36, 1)
-      1450ms
-      both;
-  }
-
-
-  /*
-    03 / INSTITUTIONAL POSITION
-
-    AXPT enters after the evidence of
-    movement has become legible.
-  */
-
-  .thresholdSurface[data-settled="true"]
-  .response {
-    animation:
-      thresholdResponseIgnition
-      1760ms
-      cubic-bezier(.22, 1, .36, 1)
-      2500ms
-      both;
-  }
-
-
-  .thresholdSurface[data-settled="true"]
-  .response::before {
-    animation:
-      thresholdRoomIllumination
-      1880ms
-      cubic-bezier(.16, 1, .3, 1)
-      2500ms
-      both;
-  }
-
-
-  .thresholdSurface[data-settled="true"]
-  .responseLabel {
-    animation:
-      thresholdResponseLabelRegister
-      1540ms
-      cubic-bezier(.22, 1, .36, 1)
-      2500ms
-      both;
-  }
-
-}
-
-
-/* ─────────────────────────────────────
    AXPT V1 — THRESHOLD D3C
 
    CRITICAL FIRST-PAINT CONSTITUTION
@@ -2986,6 +2686,56 @@
     48–68%  observation resolves
     72–94%  institutional response
   */
+
+
+  /*
+    SETTLED COMPOSITION GEOMETRY
+
+    The declaration retains primary authority.
+
+    Movement evidence becomes quieter and
+    occupies a slightly narrower register.
+
+    The institutional response rises toward
+    the evidence so the three states read as
+    one causal document rather than isolated
+    fragments.
+
+    Timing remains entirely D5-owned below.
+  */
+
+  .current {
+    width:
+      min(68%, 720px);
+
+    margin-left:
+      clamp(-22px, -1.6vw, -12px);
+
+    padding:
+      clamp(12px, 1.5vh, 18px)
+      0;
+  }
+
+
+  .currentText {
+    max-width: 36ch;
+
+    font-size:
+      clamp(1.08rem, 1.45vw, 1.38rem);
+
+    line-height: 1.34;
+
+    color:
+      rgba(var(--axpt-silver), .60);
+  }
+
+
+  .response {
+    margin-top:
+      clamp(48px, 5.8vh, 68px);
+
+    padding-top: 16px;
+  }
 
 
   /* 01 / DECLARATION */
@@ -3533,6 +3283,281 @@
   .thresholdSurface[data-settled="true"]
   .responseLabel {
     animation: none !important;
+  }
+
+}
+
+/* ─────────────────────────────────────
+   AXPT R9 — THRESHOLD MOBILE FINAL AUTHORITY
+
+   Mobile constitutional order:
+
+   01 proposition establishes
+   02 proposition changes coordinate
+   03 observation resolves
+   04 institutional position follows
+
+   The proposition remains dominant without
+   becoming a splash screen.
+
+   Observation operates as evidence rather
+   than a secondary headline.
+
+   Mobile movement preserves the desktop
+   principle of coordinate transfer at a
+   shorter, device-appropriate distance.
+
+   Desktop authority is byte-preserved.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /*
+    DECLARATION FIELD
+  */
+
+  .declaration {
+    min-height: 23svh;
+  }
+
+
+  /*
+    01 / PROPOSITION
+
+    Restrained display scale.
+
+    First paint begins slightly upper-left
+    and settles slightly right and lower.
+  */
+
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement {
+    max-width: 8.6ch;
+
+    font-size:
+      clamp(
+        3rem,
+        14.6vw,
+        3.55rem
+      );
+
+    line-height: .94;
+
+    letter-spacing: -.048em;
+  }
+
+
+  :global(html[data-document-ready="true"])
+  .thresholdSurface[data-settled="true"]
+  .primaryStatement {
+    visibility: visible;
+
+    animation:
+      thresholdMobileR9Proposition
+      3200ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  /*
+    02 / OBSERVATION
+
+    Evidentiary scale.
+  */
+
+  .currentText {
+    max-width: 27ch;
+
+    font-size:
+      clamp(
+        1rem,
+        4.4vw,
+        1.12rem
+      );
+
+    line-height: 1.42;
+
+    letter-spacing: -.006em;
+  }
+
+
+  :global(html[data-document-ready="true"])
+  .thresholdSurface[data-settled="true"]
+  .currentText {
+    visibility: hidden;
+
+    animation:
+      thresholdMobileR9Observation
+      3200ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  /*
+    03 / INSTITUTIONAL POSITION
+  */
+
+  :global(html[data-document-ready="true"])
+  .thresholdSurface[data-settled="true"]
+  .response {
+    visibility: hidden;
+
+    animation:
+      thresholdMobileR9Response
+      3200ms
+      cubic-bezier(.22, 1, .36, 1)
+      both;
+  }
+
+
+  /*
+    PROPOSITION COORDINATE TRANSFER
+  */
+
+  @keyframes thresholdMobileR9Proposition {
+
+    0%,
+    18% {
+      visibility: visible;
+      opacity: 1;
+
+      transform:
+        translate3d(-9px, -10px, 0);
+
+      filter: none;
+    }
+
+    28% {
+      opacity: .96;
+
+      transform:
+        translate3d(-5px, -7px, 0)
+        scale(.988);
+
+      filter:
+        blur(.25px);
+    }
+
+    43% {
+      opacity: .94;
+
+      transform:
+        translate3d(5px, 2px, 0)
+        scale(.992);
+
+      filter:
+        blur(.18px);
+    }
+
+    56%,
+    100% {
+      visibility: visible;
+      opacity: 1;
+
+      transform:
+        translate3d(9px, 6px, 0)
+        scale(1);
+
+      filter: none;
+    }
+
+  }
+
+
+  /*
+    OBSERVATION RESOLUTION
+  */
+
+  @keyframes thresholdMobileR9Observation {
+
+    0%,
+    48% {
+      visibility: hidden;
+      opacity: 0;
+
+      transform:
+        translate3d(0, 7px, 0);
+
+      filter:
+        blur(1px);
+    }
+
+    49% {
+      visibility: visible;
+      opacity: 0;
+    }
+
+    62% {
+      visibility: visible;
+      opacity: .46;
+
+      transform:
+        translate3d(0, 3px, 0);
+
+      filter:
+        blur(.30px);
+    }
+
+    74%,
+    100% {
+      visibility: visible;
+      opacity: 1;
+
+      transform:
+        translate3d(0, 0, 0);
+
+      filter: none;
+    }
+
+  }
+
+
+  /*
+    INSTITUTIONAL POSITION RESOLUTION
+  */
+
+  @keyframes thresholdMobileR9Response {
+
+    0%,
+    72% {
+      visibility: hidden;
+      opacity: 0;
+
+      transform:
+        translate3d(0, 7px, 0);
+
+      filter:
+        blur(.8px);
+    }
+
+    73% {
+      visibility: visible;
+      opacity: 0;
+    }
+
+    85% {
+      visibility: visible;
+      opacity: .48;
+
+      transform:
+        translate3d(0, 3px, 0);
+
+      filter: none;
+    }
+
+    96%,
+    100% {
+      visibility: visible;
+      opacity: 1;
+
+      transform:
+        translate3d(0, 0, 0);
+
+      filter: none;
+    }
+
   }
 
 }

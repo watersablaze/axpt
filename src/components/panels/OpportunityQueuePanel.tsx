@@ -56,6 +56,16 @@ type PromoteResponse = {
   error?: string;
 };
 
+type ReviewResponse = {
+  ok: boolean;
+  result?: {
+    opportunityId: string;
+    fromStatus: string;
+    toStatus: string;
+  };
+  error?: string;
+};
+
 function statusTone(status: string) {
   switch (status) {
     case "PROMOTED":
@@ -85,9 +95,14 @@ export default function OpportunityQueuePanel({
   const selectedOpportunityId = searchParams.get("opportunityId");
   const [opportunities, setOpportunities] = useState<OpportunityRecord[]>([]);
 
-  const [promotingId, setPromotingId] = useState<string | null>(null);
+  const [promotingId, setPromotingId] =
+    useState<string | null>(null);
 
-  const [error, setError] = useState<string | null>(null);
+  const [reviewingId, setReviewingId] =
+    useState<string | null>(null);
+
+  const [error, setError] =
+    useState<string | null>(null);
 
   async function loadOpportunities() {
     const res = await fetch("/api/admin/control-center/opportunities", {
@@ -105,6 +120,53 @@ export default function OpportunityQueuePanel({
   useEffect(() => {
     void loadOpportunities();
   }, []);
+
+  async function reviewOpportunity(
+    opportunityId: string,
+    status: string,
+  ) {
+    setReviewingId(opportunityId);
+    setError(null);
+
+    try {
+      const res = await fetch(
+        `/api/admin/control-center/opportunities/${opportunityId}/review`,
+        {
+          method: "POST",
+          cache: "no-store",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            status,
+          }),
+        },
+      );
+
+      const json =
+        (await res.json()) as ReviewResponse;
+
+      if (!res.ok || !json.ok) {
+        setError(
+          json.error ??
+            "OPPORTUNITY_REVIEW_FAILED",
+        );
+        return;
+      }
+
+      await loadOpportunities();
+    } catch (err) {
+      console.error(
+        "[OPPORTUNITY_REVIEW_FAILED]",
+        err,
+      );
+
+      setError("OPPORTUNITY_REVIEW_FAILED");
+    } finally {
+      setReviewingId(null);
+    }
+  }
 
   async function promoteOpportunity(opportunityId: string) {
     setPromotingId(opportunityId);
@@ -269,26 +331,134 @@ export default function OpportunityQueuePanel({
                   {linkedDossierId ? "DOSSIER CREATED" : opportunity.status}
                 </div>
 
-                <div className="flex items-center gap-2 lg:justify-end">
+                <div className="flex flex-wrap items-center gap-2 lg:justify-end">
                   {linkedDossierId ? (
                     <button
                       type="button"
-                      onClick={() => onOpenDossier?.(linkedDossierId)}
+                      onClick={() =>
+                        onOpenDossier?.(
+                          linkedDossierId,
+                        )
+                      }
                       className="rounded border border-neutral-700 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-300 hover:border-cyan-700 hover:text-cyan-300"
                     >
-                      {selected ? "Dossier Active" : "Open Dossier"}
+                      {selected
+                        ? "Dossier Active"
+                        : "Open Dossier"}
                     </button>
                   ) : (
-                    <button
-                      type="button"
-                      disabled={promoted || promotingId === opportunity.id}
-                      onClick={() => void promoteOpportunity(opportunity.id)}
-                      className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:bg-black/20 disabled:text-neutral-600"
-                    >
-                      {promotingId === opportunity.id
-                        ? "Promoting..."
-                        : "Create Dossier"}
-                    </button>
+                    <>
+                      {opportunity.status ===
+                      "INTAKE" ? (
+                        <button
+                          type="button"
+                          disabled={
+                            reviewingId ===
+                            opportunity.id
+                          }
+                          onClick={() =>
+                            void reviewOpportunity(
+                              opportunity.id,
+                              "UNDER_REVIEW",
+                            )
+                          }
+                          className="rounded border border-orange-900 bg-orange-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-orange-300 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          Start Review
+                        </button>
+                      ) : null}
+
+                      {opportunity.status ===
+                      "UNDER_REVIEW" ? (
+                        <>
+                          <button
+                            type="button"
+                            disabled={
+                              reviewingId ===
+                              opportunity.id
+                            }
+                            onClick={() =>
+                              void reviewOpportunity(
+                                opportunity.id,
+                                "APPROVED",
+                              )
+                            }
+                            className="rounded border border-emerald-900 bg-emerald-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-emerald-300 disabled:cursor-not-allowed disabled:opacity-40"
+                          >
+                            Approve
+                          </button>
+
+                          <button
+                            type="button"
+                            disabled={
+                              reviewingId ===
+                              opportunity.id
+                            }
+                            onClick={() =>
+                              void reviewOpportunity(
+                                opportunity.id,
+                                "REJECTED",
+                              )
+                            }
+                            className="rounded border border-red-900 bg-red-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-red-300 disabled:cursor-not-allowed disabled:opacity-40"
+                          >
+                            Reject
+                          </button>
+                        </>
+                      ) : null}
+
+                      {opportunity.status ===
+                        "REJECTED" ||
+                      opportunity.status ===
+                        "APPROVED" ||
+                      opportunity.status ===
+                        "ARCHIVED" ? (
+                        <button
+                          type="button"
+                          disabled={
+                            reviewingId ===
+                            opportunity.id
+                          }
+                          onClick={() =>
+                            void reviewOpportunity(
+                              opportunity.id,
+                              "UNDER_REVIEW",
+                            )
+                          }
+                          className="rounded border border-neutral-700 bg-black/30 px-2 py-1 text-[10px] uppercase tracking-wide text-neutral-400 disabled:cursor-not-allowed disabled:opacity-40"
+                        >
+                          Reopen Review
+                        </button>
+                      ) : null}
+
+                      <button
+                        type="button"
+                        disabled={
+                          promoted ||
+                          opportunity.status !==
+                            "APPROVED" ||
+                          promotingId ===
+                            opportunity.id
+                        }
+                        onClick={() =>
+                          void promoteOpportunity(
+                            opportunity.id,
+                          )
+                        }
+                        className="rounded border border-cyan-900 bg-cyan-950/20 px-2 py-1 text-[10px] uppercase tracking-wide text-cyan-300 disabled:cursor-not-allowed disabled:border-neutral-800 disabled:bg-black/20 disabled:text-neutral-600"
+                        title={
+                          opportunity.status ===
+                          "APPROVED"
+                            ? "Create governed transaction dossier"
+                            : "Opportunity approval is required before dossier creation"
+                        }
+                      >
+                        {promotingId ===
+                        opportunity.id
+                          ? "Promoting..."
+                          : "Create Dossier"}
+                      </button>
+                    </>
                   )}
                 </div>
               </div>

@@ -1,0 +1,487 @@
+.shell {
+  --cc-crown-height: 76px;
+  --cc-mobile-crown-height: 88px;
+  min-height: 100%;
+  width: 100%;
+  background: #05070a;
+  color: #e5e7eb;
+}
+
+.axis {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(10, 13, 14, 0.98),
+      rgba(5, 7, 10, 0.96)
+    );
+  backdrop-filter: blur(14px);
+}
+
+.identity {
+  display: flex;
+  align-items: baseline;
+  gap: 0.65rem;
+  padding: 0.65rem 0.9rem 0.45rem;
+}
+
+.identity span {
+  color: rgba(245, 208, 117, 0.88);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+}
+
+.identity strong {
+  color: rgba(255, 255, 255, 0.38);
+  font-size: 0.58rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+}
+
+.navigationRow {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.65rem;
+  overflow-x: auto;
+  padding: 0 0.9rem;
+  scrollbar-width: none;
+}
+
+.navigationRow::-webkit-scrollbar {
+  display: none;
+}
+
+.primaryNavigation,
+.secondaryNavigation {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.primaryNavigation a,
+.secondaryNavigation a {
+  position: relative;
+  display: block;
+  padding: 0.55rem 0.7rem 0.65rem;
+  color: rgba(255, 255, 255, 0.48);
+  font-size: 0.64rem;
+  font-weight: 500;
+  letter-spacing: 0.1em;
+  text-decoration: none;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.secondaryNavigation a {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.primaryNavigation a:hover,
+.secondaryNavigation a:hover {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.primaryNavigation a.active,
+.secondaryNavigation a.active {
+  color: rgba(255, 255, 255, 0.94);
+}
+
+.primaryNavigation a.active::after,
+.secondaryNavigation a.active::after {
+  position: absolute;
+  right: 0.7rem;
+  bottom: 0;
+  left: 0.7rem;
+  height: 1px;
+  background: rgba(245, 208, 117, 0.88);
+  content: '';
+}
+
+.axisDivider {
+  width: 1px;
+  height: 1rem;
+  flex: 0 0 1px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.location {
+  border-top: 1px solid rgba(255, 255, 255, 0.045);
+  padding: 0.42rem 0.9rem 0.48rem;
+  color: rgba(255, 255, 255, 0.28);
+  font-size: 0.54rem;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.content {
+  min-width: 0;
+}
+
+.mobileDisclosure {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  /*
+   * OperationsShell gives its scroll owner 12px of top padding.
+   * Consume that inset for Control Center so the sticky
+   * constitutional crown can clamp to the true scrollport edge.
+   *
+   * Recreate the same initial breathing room inside the CC
+   * document; it therefore scrolls away with the document
+   * instead of remaining as an exposed paint corridor.
+   */
+  .shell {
+    padding-top: 0.75rem;
+  }
+  .shell,
+  .axis,
+  .content {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .axis {
+    position: sticky;
+    top: 0;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(8, 14, 13, 0.985),
+        rgba(5, 9, 9, 0.965)
+      ),
+      #050909;
+    box-shadow:
+      0 1px 0 rgba(205, 169, 86, 0.08),
+      0 12px 30px rgba(0, 0, 0, 0.16);
+    backdrop-filter: blur(16px) saturate(112%);
+  }
+
+  .identity {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.06rem;
+    padding: 0.34rem 0.65rem 0.24rem;
+  }
+
+  .identity span {
+    font-size: 0.58rem;
+  }
+
+  .identity strong {
+    font-size: 0.52rem;
+  }
+
+  .desktopNavigation {
+    display: none;
+  }
+
+  .mobileDisclosure {
+    display: block;
+    border-top: 1px solid rgba(222, 184, 92, 0.12);
+    border-bottom: 1px solid rgba(222, 184, 92, 0.16);
+    background:
+      linear-gradient(
+        90deg,
+        rgba(74, 57, 25, 0.22),
+        rgba(20, 35, 29, 0.30) 52%,
+        rgba(8, 15, 13, 0.18)
+      );
+    box-shadow:
+      inset 0 1px 0 rgba(255, 235, 183, 0.025),
+      0 6px 20px rgba(0, 0, 0, 0.10);
+    backdrop-filter: blur(16px) saturate(125%);
+  }
+
+  .mobileDisclosure summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 0;
+    padding: 0.36rem 0.65rem;
+    color: rgba(250, 241, 218, 0.96);
+    cursor: pointer;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    list-style: none;
+    text-transform: uppercase;
+  }
+
+  .mobileDisclosure summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .disclosureMark {
+    flex: 0 0 auto;
+    color: rgba(245, 208, 117, 0.88);
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 1;
+    transition: transform 140ms ease;
+  }
+
+  .mobileDisclosure[open] .disclosureMark {
+    transform: rotate(45deg);
+  }
+
+  .mobileDomainNavigation {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid rgba(255, 255, 255, 0.055);
+    padding: 0.3rem 0.4rem 0.45rem;
+  }
+
+  .mobileDomainNavigation a {
+    position: relative;
+    min-width: 0;
+    padding: 0.52rem 0.45rem;
+    color: rgba(255, 255, 255, 0.42);
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.09em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+
+  .mobileDomainNavigation a.active {
+    color: rgba(255, 255, 255, 0.96);
+  }
+
+  .mobileDomainNavigation a.active::before {
+    position: absolute;
+    top: 0.45rem;
+    bottom: 0.45rem;
+    left: 0;
+    width: 1px;
+    background: rgba(245, 208, 117, 0.88);
+    content: '';
+  }
+
+  .location {
+    overflow: hidden;
+    border-top: 1px solid rgba(255, 255, 255, 0.045);
+    padding: 0.22rem 0.65rem 0.24rem;
+    font-size: 0.5rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* Control Center visual integration */
+.shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #0c1116;
+}
+.axis {
+  position: relative;
+  top: auto;
+  z-index: 20;
+  flex-shrink: 0;
+  background:
+    linear-gradient(105deg,rgba(127,101,164,.045),
+      rgba(93,157,175,.03) 60%,transparent),
+    #0c1116;
+  border-bottom: 1px solid rgba(147,177,193,.16);
+  box-shadow: none;
+  backdrop-filter: none;
+}
+.identity {
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  padding: 14px 20px 8px;
+}
+.identity span {
+  color: #c7dce6;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -.015em;
+}
+.identity strong {
+  color: #8196a2;
+  font-size: 10px;
+  letter-spacing: .06em;
+}
+.navigationRow { padding-inline: 12px; }
+.primaryNavigation a,
+.secondaryNavigation a {
+  padding: 10px 12px;
+  color: #8fa5b1;
+  font-size: 11px;
+  letter-spacing: .055em;
+}
+.primaryNavigation a:hover,
+.secondaryNavigation a:hover {
+  color: #d5eaf2;
+  background: rgba(130,184,204,.045);
+}
+.primaryNavigation a.active,
+.secondaryNavigation a.active {
+  color: #c5e6f0;
+  background: rgba(130,184,204,.065);
+}
+.primaryNavigation a.active::after,
+.secondaryNavigation a.active::after {
+  background: #87b8c9;
+}
+.location {
+  padding: 7px 20px;
+  color: #7e939f;
+  font-size: 9px;
+  letter-spacing: .065em;
+  border-top-color: rgba(147,177,193,.08);
+}
+.content {
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #496574 #101820;
+}
+.axis a:focus-visible,
+.mobileDisclosure summary:focus-visible {
+  outline: 2px solid #9bcbdc;
+  outline-offset: -2px;
+}
+@media(max-width:720px) {
+  .shell { padding-top: 0; }
+  .identity { padding: 10px 14px; }
+  .mobileDisclosure {
+    background: rgba(116,167,187,.035);
+    border-color: rgba(147,177,193,.14);
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+  .mobileDisclosure summary { color: #c7dce6; }
+  .mobileDomainNavigation a { color: #96acb9; }
+  .mobileDomainNavigation a.active { color: #d5edf5; }
+  .mobileDomainNavigation a.active::before { background: #87b8c9; }
+  .disclosureMark { color: #87b8c9; }
+  .location { padding-inline: 14px; }
+}
+
+/* Fixed Command frame */
+.commandContent {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Compact mobile domain navigation */
+@media(max-width:720px) {
+  .identity {padding:9px 14px; gap:4px 10px;}
+  .identity span {font-size:13px;}
+  .identity strong {font-size:9px;}
+  .location {padding:5px 14px; font-size:8px;}
+  .mobileDomainNavigation {
+    max-height:23dvh;
+    overflow-y:auto;
+    overscroll-behavior:contain;
+    scrollbar-width:thin;
+  }
+  .mobileDomainNavigation a {padding:9px 8px;}
+}
+
+/* CC-TXN-HEADER-1B · consolidated Control Center secondary surface bar */
+
+.location {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 18px;
+}
+
+.location > span {
+  flex: 0 0 auto;
+}
+
+.location > p {
+  min-width: 0;
+  margin: 0;
+  color: #708792;
+  font-size: 10px;
+  line-height: 1.45;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+@media (max-width: 900px) {
+  .location {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .location > p {
+    max-width: 100%;
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 720px) {
+  .location > p {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* CC-TXN-HEADER-1C · emphasize consolidated transaction location strip */
+
+.location {
+  min-height: 38px;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  border-top-color: rgba(147, 177, 193, .11);
+  border-bottom: 1px solid rgba(147, 177, 193, .12);
+  background:
+    linear-gradient(
+      90deg,
+      rgba(91, 142, 164, .07),
+      rgba(91, 142, 164, .018) 38%,
+      transparent 72%
+    );
+}
+
+.location > span {
+  color: #c7dce6;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .11em;
+  text-shadow: 0 0 18px rgba(135, 184, 201, .08);
+}
+
+.location > p {
+  color: #6f858f;
+  font-size: 9px;
+}
+
+@media (max-width: 720px) {
+  .location {
+    min-height: 34px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .location > span {
+    font-size: 9px;
+  }
+
+  .location > p {
+    font-size: 8px;
+  }
+}

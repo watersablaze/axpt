@@ -1,0 +1,154 @@
+import reading from "@/components/french-ward/profile/FrenchWardInstitutionalProfileView.module.css";
+import CommercialPaperReview from "../../CommercialPaperReview";
+import { loadRepresentativeCommercialPaper } from "@/domains/instruments/representative-program/commercial-utility-pack/commercial-papers/loadRepresentativeCommercialPaper";
+import { SupportingDocumentView } from "../../SupportingDocumentView";
+import { loadRepresentativeSupportingDocumentWithClient } from "@/domains/instruments/representative-program/commercial-utility-pack/supporting-documents/loadRepresentativeSupportingDocumentWithClient";
+import { resolveRepresentativeCommercialUtilityPackConsumptionWithClient } from
+  "@/domains/instruments/representative-program/commercial-utility-pack/application/resolveRepresentativeCommercialUtilityPackConsumptionWithClient";
+import { FrenchWardInstitutionalProfileView } from "@/components/french-ward/profile/FrenchWardInstitutionalProfileView";
+import Link from "next/link";
+import ProfileUseControls from "../../ProfileUseControls";
+import boundaries from "./operating-boundaries.module.css";
+import { notFound, redirect } from "next/navigation";
+import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { prisma } from "@/infrastructure/db/prisma";
+import { loadRepresentativeCommercialUtilityPackResourceWithClient } from
+  "@/domains/instruments/representative-program/commercial-utility-pack/application/loadRepresentativeCommercialUtilityPackResourceWithClient";
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
+export default async function RepresentativeResourcePage({
+  params,
+}: {
+  params: Promise<{ resourceReleaseId: string }>;
+}) {
+  const principal = await getPrincipal();
+  const { resourceReleaseId } = await params;
+
+  if (!principal) {
+    const next = `/representative/resources/${encodeURIComponent(resourceReleaseId)}`;
+    redirect(`/login?next=${encodeURIComponent(next)}`);
+  }
+
+  const consumption =
+    await resolveRepresentativeCommercialUtilityPackConsumptionWithClient({
+      client: prisma,
+      userId: principal.userId,
+      resourceReleaseId,
+      action: "VIEW",
+    });
+
+  if (!consumption.allowed) notFound();
+  const commercialPaper = await loadRepresentativeCommercialPaper({client: prisma, userId: principal.userId, resourceReleaseId});
+  if (commercialPaper) return <CommercialPaperReview paper={commercialPaper} />;
+
+  const supporting=await loadRepresentativeSupportingDocumentWithClient({client:prisma,userId:principal.userId,resourceReleaseId});
+  if (supporting) {
+    const publication=supporting.publication;
+    return <SupportingDocumentView title={publication.title} reference={publication.reference} version={publication.version}
+      note={publication.disclosureNote} backHref="/representative"
+      documentHref={`/api/representative/commercial-utility-packs/resources/${encodeURIComponent(resourceReleaseId)}/supporting-document?mode=inline`} />;
+  }
+
+  const resource =
+    await loadRepresentativeCommercialUtilityPackResourceWithClient({
+      client: prisma,
+      userId: principal.userId,
+      resourceReleaseId,
+    });
+
+  if (!resource) notFound();
+
+  const profileDownload = resource.kind === "INSTITUTIONAL_PROFILE"
+    ? await resolveRepresentativeCommercialUtilityPackConsumptionWithClient({
+        client: prisma,
+        userId: principal.userId,
+        resourceReleaseId,
+        action: "DOWNLOAD",
+      })
+    : null;
+
+  return (
+    <main
+      className={
+        resource.kind === "INSTITUTIONAL_PROFILE"
+          ? reading.readerPage
+          : boundaries.page
+      }
+    >
+      <div
+        className={
+          resource.kind === "INSTITUTIONAL_PROFILE"
+            ? reading.readerFrame
+            : boundaries.frame
+        }
+      >
+        <nav className={resource.kind === "INSTITUTIONAL_PROFILE" ? reading.readerChrome : undefined} aria-label="Resource navigation">
+          <Link href="/representative" className="text-sm text-[#d8c39b] underline underline-offset-4">← Back to Workspace</Link>
+        </nav>
+
+        <article
+          className={
+            resource.kind === "INSTITUTIONAL_PROFILE"
+              ? "mt-0"
+              : boundaries.record
+          }
+        >
+          {resource.kind !== "INSTITUTIONAL_PROFILE" ? <>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[#b99657]">French-Ward · Representative Field Resource</p>
+            <p className="mt-3 break-words font-mono text-xs text-[#8d8377]">{resource.packageReference}</p>
+          </> : null}
+
+          {resource.kind === "INSTITUTIONAL_PROFILE" ? (
+            <>
+            <ProfileUseControls resourceReleaseId={resourceReleaseId} />
+            <FrenchWardInstitutionalProfileView
+              profile={resource.content}
+              packageReference={resource.packageReference}
+              downloadHref={
+                profileDownload?.allowed
+                  ? `/api/representative/commercial-utility-packs/resources/${encodeURIComponent(resourceReleaseId)}/profile`
+                  : undefined
+              }
+            />
+            </>
+          ) : (
+            <>
+              <h1 className={boundaries.title}>
+                {resource.content.title}
+              </h1>
+              <p className={boundaries.reference}>
+                {resource.content.reference} · Version {resource.content.version}
+              </p>
+              <p className={boundaries.scope}>
+                {resource.content.scope}
+              </p>
+              <p className={boundaries.authority}>
+                {resource.content.authorityStatement}
+              </p>
+              {resource.content.boundaries.map(boundary => (
+                <section key={boundary.key} className={boundaries.section}>
+                  <h2 className={boundaries.sectionTitle}>
+                    {boundary.title}
+                  </h2>
+                  <p className={boundaries.statement}>
+                    {boundary.statement}
+                  </p>
+                  <p className={boundaries.instruction}>
+                    {boundary.representativeInstruction}
+                  </p>
+                </section>
+              ))}
+            </>
+          )}
+
+          <p className="mt-10 border-t border-[#392f27] pt-6 text-xs leading-6 text-[#8f8578]">
+            Resource access does not establish appointment or transaction authority.
+            Download, presentation, and transmission permissions remain separately governed.
+          </p>
+        </article>
+      </div>
+    </main>
+  );
+}

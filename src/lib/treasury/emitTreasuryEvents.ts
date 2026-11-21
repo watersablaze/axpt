@@ -4,7 +4,7 @@ import type { TransferRecord } from "./transfers"
 
 export async function emitTransferEvents(
   walletId: string,
-  transfers: TransferRecord[]
+  transfers: readonly TransferRecord[]
 ) {
   for (const tx of transfers.slice(0, 5)) {
     // 🔒 DEDUPE CHECK

@@ -36,43 +36,10 @@ export default function RootLayout({
           color: 'rgba(245, 242, 235, 0.92)',
         }}
       >
-        <head>
-          <script
-            dangerouslySetInnerHTML={{
-              __html: `
-                try {
-                  if (
-                    window.location.pathname === '/' &&
-                    !window.location.hash
-                  ) {
-                    history.scrollRestoration = 'manual';
-
-                    document.documentElement
-                      .setAttribute(
-                        'data-entry-normalizing',
-                        'true'
-                      );
-
-                    document.documentElement.style
-                      .scrollBehavior = 'auto';
-
-                    window.scrollTo(0, 0);
-                  }
-                } catch {}
-              `,
-            }}
-          />
-        </head>
-
       <body className={inter.className}>
         <OrganismStateProvider>
           <LayerProvider>
-            <div
-                id="app-content"
-                style={{
-                  visibility: 'hidden',
-                }}
-              >
+            <div id="app-content">
                 <DocumentReadyGate />
                 {children}
               </div>

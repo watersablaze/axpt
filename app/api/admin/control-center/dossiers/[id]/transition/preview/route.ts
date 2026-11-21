@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 
 import { canTransitionDossier } from "@/domains/control-center/dossierStateMachine";
+import { getAvailableDossierTransitions } from "@/domains/control-center/getAvailableDossierTransitions";
 
 import { checkDossierArtifactGate } from "@/domains/control-center/dossierArtifactGates";
 
@@ -45,11 +46,21 @@ export async function POST(
       approvalRequirements: true,
       terms: true,
       parties: true,
+      events: {
+        orderBy: {
+          createdAt: "desc",
+        },
+      },
       promotedOpportunities: {
         select: {
           id: true,
           source: true,
           title: true,
+          sourceTransactionIntake: {
+            select: {
+              transactionType: true,
+            },
+          },
         },
       },
     },
@@ -62,9 +73,13 @@ export async function POST(
     );
   }
 
+  const sourceTransactionType =
+    dossier.promotedOpportunities[0]?.sourceTransactionIntake
+      ?.transactionType ?? null;
+
   const executionProfile = inferDossierExecutionProfile({
     settlement: dossier.settlement,
-    transactionType: null,
+    transactionType: sourceTransactionType,
     terms: dossier.terms,
   });
 
@@ -73,32 +88,53 @@ export async function POST(
 
   const stateMachinePassed = canTransitionDossier(fromState, toState);
 
-  const artifactGate = stateMachinePassed
+  const availableTransitions = getAvailableDossierTransitions({
+    state: fromState,
+    settlement: dossier.settlement,
+    transactionType: sourceTransactionType,
+    terms: dossier.terms,
+  });
+
+  const profilePassed = availableTransitions.some(
+    (transition) => transition.toState === toState,
+  );
+
+  const artifactGate =
+    stateMachinePassed && profilePassed
     ? checkDossierArtifactGate({
         fromState,
         toState,
         instruments: dossier.instruments,
         parties: dossier.parties,
         sourceOpportunities: dossier.promotedOpportunities,
+        events: dossier.events,
         origin: dossier.origin,
         settlement: dossier.settlement,
         executionProfile,
       })
     : {
         passed: false,
-        blockingReason:
-          "Requested transition is not allowed by the dossier state machine.",
+        blockingReason: !stateMachinePassed
+          ? "Requested transition is not allowed by the dossier state machine."
+          : "Requested transition is not available for the dossier execution profile.",
         checks: [
           {
-            id: "state-machine",
-            label: "Valid state transition",
+            id: !stateMachinePassed
+              ? "state-machine"
+              : "execution-profile",
+            label: !stateMachinePassed
+              ? "Valid state transition"
+              : "Execution profile allows transition",
             passed: false,
-            detail: `${fromState} cannot transition to ${toState}.`,
+            detail: !stateMachinePassed
+              ? `${fromState} cannot transition to ${toState}.`
+              : `${toState} is not available for execution profile ${executionProfile}.`,
           },
         ],
       };
 
-  const approvalGate = stateMachinePassed
+  const approvalGate =
+    stateMachinePassed && profilePassed
     ? checkDossierApprovalGate({
         fromState,
         toState,
@@ -120,7 +156,10 @@ export async function POST(
       };
 
   const executable =
-    stateMachinePassed && artifactGate.passed && approvalGate.passed;
+    stateMachinePassed &&
+    profilePassed &&
+    artifactGate.passed &&
+    approvalGate.passed;
 
   return NextResponse.json({
     ok: true,
@@ -132,6 +171,13 @@ export async function POST(
       executable,
       stateMachine: {
         passed: stateMachinePassed,
+      },
+      profileGate: {
+        passed: profilePassed,
+        profile: executionProfile,
+        availableStates: availableTransitions.map(
+          (transition) => transition.toState,
+        ),
       },
       artifactGate,
       approvalGate,

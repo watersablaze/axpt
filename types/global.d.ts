@@ -11,6 +11,12 @@ declare module 'pdfkit' {
 }
 
 declare module '@prisma/client' {
+  // Temporary compatibility bridge to the generated schema.
+  // Does not define an independent institutional capacity enum.
+  export type FrenchWardInstitutionalCapacityClass =
+    import("@axpt/source-authority-join")
+      .$Enums.FrenchWardInstitutionalCapacityClass;
+
   // Minimal PartyRole export to satisfy imports; expand if/when roles are formalized.
   export enum PartyRole {
     OTHER = 'OTHER',
@@ -20,6 +26,11 @@ declare module '@prisma/client' {
   }
 
   interface PrismaClient {
+    frenchWardGoverningOfficer:
+      import("@axpt/source-authority-join")
+        .PrismaClient["frenchWardGoverningOfficer"];
+    transactionIntake: import("@axpt/source-authority-join").PrismaClient["transactionIntake"];
+    institutionalMatter: import("@axpt/source-authority-join").PrismaClient["institutionalMatter"];
     [prop: string]: any;
     liveStream: any;
     nommoState: any;

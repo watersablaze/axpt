@@ -4732,3 +4732,284 @@
   }
 
 }
+
+/* ─────────────────────────────────────
+   AXPT R9 — CIRCULATION MOBILE FINAL AUTHORITY
+
+   Mobile circulation law:
+
+   what moves
+   → governed circulation
+   → relationship remains attached
+   → doctrine
+   → carried consequence
+
+   One primary condition.
+   One subordinate companion.
+   One governed loop.
+
+   The moving pair enacts the doctrine:
+   what moves does not move alone.
+
+   Mobile retains one carried-forward
+   consequence rather than repeating the
+   fuller desktop documentary reading.
+
+   Desktop authority is byte-preserved.
+───────────────────────────────────── */
+
+@media (max-width: 680px) {
+
+  /*
+    PASSAGE APPROACH
+  */
+
+  .passageField {
+    margin:
+      10px
+      auto
+      8px;
+
+    padding:
+      7px
+      0
+      8px;
+  }
+
+
+  .passageRegistration {
+    margin-bottom: 5px;
+
+    color:
+      rgba(var(--axpt-mineral-cold), .68);
+  }
+
+
+  /*
+    RETIRE LEGACY MOBILE INCISION
+
+    The loop itself now demonstrates passage.
+  */
+
+  .passageField::before,
+  .passageRule {
+    display: none;
+  }
+
+
+  /*
+    CIRCULATION ORGANISM
+  */
+
+  .circulationFieldVisual {
+    width: 166px;
+    height: 58px;
+
+    margin:
+      0
+      auto
+      5px;
+  }
+
+
+  .circulationTrack {
+    width: 126px;
+    height: 42px;
+
+    border-color:
+      rgba(var(--axpt-mineral-cold), .075);
+
+    border-top-color:
+      rgba(var(--axpt-mineral-cold), .17);
+
+    border-left-color:
+      rgba(var(--axpt-mineral-green), .19);
+
+    border-right-color:
+      rgba(var(--axpt-bronze), .12);
+
+    border-bottom-color:
+      rgba(var(--axpt-mineral-green), .075);
+
+    opacity: .96;
+  }
+
+
+  /*
+    PRIMARY MOVING CONDITION
+  */
+
+  .circulationParticle {
+    position: absolute;
+
+    width: 5px;
+    height: 5px;
+
+    margin:
+      -2.5px
+      0
+      0
+      -2.5px;
+
+    background:
+      rgba(var(--axpt-mineral-cold), .78);
+
+    box-shadow:
+      0 0 13px
+      rgba(var(--axpt-mineral-cold), .21);
+
+    offset-path:
+      ellipse(
+        63px
+        21px
+        at
+        83px
+        29px
+      );
+
+    offset-rotate: auto;
+  }
+
+
+  /*
+    RELATIONAL COMPANION
+
+    Quieter, smaller, visibly attached.
+  */
+
+  .circulationParticle::after {
+    content: "";
+
+    position: absolute;
+
+    left: -12px;
+    top: 50%;
+
+    width: 3.5px;
+    height: 3.5px;
+
+    border-radius: 50%;
+
+    background:
+      rgba(var(--axpt-mineral-green), .68);
+
+    box-shadow:
+      0 0 9px
+      rgba(var(--axpt-mineral-green), .15);
+
+    transform:
+      translateY(-50%);
+
+    opacity: .88;
+  }
+
+
+  /*
+    RELATIONAL TETHER
+  */
+
+  .circulationParticle::before {
+    content: "";
+
+    position: absolute;
+
+    right: 100%;
+    top: 50%;
+
+    width: 10px;
+    height: 1px;
+
+    background:
+      linear-gradient(
+        90deg,
+        rgba(var(--axpt-mineral-green), .16),
+        rgba(var(--axpt-mineral-cold), .34)
+      );
+
+    transform:
+      translateY(-50%);
+
+    opacity: .76;
+  }
+
+
+  /*
+    DOCTRINE
+  */
+
+  .circulationDoctrine {
+    margin:
+      0
+      auto;
+
+    max-width: 21ch;
+
+    line-height: 1.34;
+
+    color:
+      rgba(var(--axpt-limestone), .82);
+  }
+
+
+  /*
+    CARRIED FORWARD
+
+    Mobile retains one institutional consequence.
+  */
+
+  .mobileCarriedField {
+    margin-bottom: 0;
+
+    padding-top: 9px;
+  }
+
+
+  .mobileCarriedRegistration {
+    margin-bottom: 7px;
+
+    font-size: .39rem;
+
+    letter-spacing: .16em;
+
+    opacity: .76;
+  }
+
+
+  .mobileRelationshipField {
+    gap: 0;
+  }
+
+
+  .mobileRelationship:nth-child(2) {
+    display: none;
+  }
+
+
+  .mobileRelationship h3 {
+    margin-bottom: 3px;
+
+    font-size: .40rem;
+
+    letter-spacing: .13em;
+
+    opacity: .86;
+  }
+
+
+  .mobileRelationship p {
+    max-width: 30ch;
+
+    font-size:
+      clamp(
+        .82rem,
+        3.45vw,
+        .89rem
+      );
+
+    line-height: 1.40;
+
+    color:
+      rgba(var(--axpt-silver), .57);
+  }
+
+}

@@ -1,46 +1,20 @@
-import type { Metadata } from 'next'
+import type { Metadata } from "next";
 
-import FWThreshold from '@/components/french-ward/FWThreshold'
-import FWInstitutionalRail from '@/components/french-ward/FWInstitutionalRail'
-import FWField from '@/components/french-ward/FWField'
-import FWArchive from '@/components/french-ward/FWArchive'
-import FWDoctrine from '@/components/french-ward/FWDoctrine'
-import FWFooter from '@/components/french-ward/FWFooter'
-
-import styles from './FrenchWardPage.module.css'
+import { projectFrenchWardInstitutionalProfile } from "@/domains/institutions/french-ward/projectFrenchWardInstitutionalProfile";
+import FWCorporateHome from "@/components/french-ward/FWCorporateHome";
 
 export const metadata: Metadata = {
-  title: 'French-Ward Field Notes — Trade, Authority & Passage',
+  title: "French-Ward — International Trade & Commercial Operations",
   description:
-    'French-Ward Field Notes examines the structures beneath trade: source authority, documentary readiness, lawful passage, settlement, and institutional continuity.',
+    "French-Ward, Inc. — international trade, source relationships, commercial documentation, delivery coordination, and settlement preparation.",
   openGraph: {
-    title: 'French-Ward Field Notes',
-    description:
-      'When Gold Exists but Passage Is Not Yet Governed — Field Note 001 from French-Ward.',
-    type: 'article',
+    title: "French-Ward, Inc.",
+    description: "International Trade & Commercial Operations",
+    type: "website",
   },
-}
+};
 
+/** Corporate presence, not a second rendering of the official publication. */
 export default function FrenchWardPage() {
-  return (
-    <main className={styles.page} id="french-ward">
-      <FWThreshold />
-
-      <section className={styles.body}>
-        <aside className={styles.railColumn}>
-          <FWInstitutionalRail />
-        </aside>
-
-        <div className={styles.fieldColumn}>
-          <FWField />
-        </div>
-      </section>
-
-      <FWArchive />
-
-      <FWDoctrine />
-
-      <FWFooter />
-    </main>
-  )
+  return <FWCorporateHome profile={projectFrenchWardInstitutionalProfile()} />;
 }

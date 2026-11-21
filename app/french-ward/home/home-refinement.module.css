@@ -1,0 +1,131 @@
+/* French-Ward Home presentation refinement V1.
+ * Only visual affordances; no change to authority or data.
+ */
+
+.awarenessEntry {
+  min-width: 178px;
+  min-height: 44px;
+  padding: 11px 14px;
+  border: 1px solid rgba(94, 183, 222, .48);
+  border-radius: 3px;
+  background: rgba(94, 183, 222, .095);
+  color: var(--bone);
+  justify-content: space-between;
+  text-align: left;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.awarenessEntry span {
+  color: var(--bone);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: .095em;
+}
+
+.awarenessEntry strong {
+  font-size: 17px;
+  color: #8fd2ed;
+}
+
+.awarenessEntry:hover,
+.awarenessEntry:focus-visible {
+  background: rgba(94, 183, 222, .17);
+  border-color: #8fd2ed;
+}
+
+.railControl {
+  min-height: 44px;
+  border: 1px solid rgba(94, 183, 222, .42);
+  padding: 9px 12px;
+  background: rgba(94, 183, 222, .10);
+  color: var(--bone);
+}
+
+.railControl span {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .1em;
+}
+
+.railControl strong {
+  color: #8fd2ed;
+  font-size: 17px;
+}
+
+.railControl:hover,
+.railControl:focus-visible {
+  border-color: #8fd2ed;
+  background: rgba(94, 183, 222, .19);
+}
+
+.awarenessEntry:focus-visible,
+.railControl:focus-visible {
+  outline: 2px solid #8fd2ed;
+  outline-offset: 3px;
+}
+
+@media (max-width: 900px) {
+  .railControl {
+    width: 100%;
+    min-height: 44px;
+    justify-content: space-between;
+  }
+}
+
+
+/* FW-R24C · Quiet entrance, explicit dismissal */
+.awarenessEntry {
+  min-width: 144px;
+  min-height: 34px;
+  padding: 6px 10px;
+}
+
+.awarenessEntry span {
+  font-size: 8px;
+  letter-spacing: .11em;
+}
+
+.awarenessEntry strong {
+  font-size: 13px;
+}
+
+.refinedRail[data-open="false"] .railControl {
+  min-height: 112px;
+  height: 112px;
+  padding: 12px 0;
+  border: 0;
+  background: transparent;
+  align-items: center;
+}
+
+.refinedRail[data-open="false"] .railControl span {
+  writing-mode: horizontal-tb;
+  transform: none;
+  font-size: 21px;
+  line-height: 1;
+  letter-spacing: 0;
+}
+
+.refinedRail[data-open="false"] .railControl strong {
+  display: none;
+}
+
+.refinedRail[data-open="true"] .railControl {
+  min-height: 44px;
+  border-color: #8fd2ed;
+  background: rgba(94, 183, 222, .16);
+}
+
+.refinedRail[data-open="true"] .railControl span {
+  font-size: 10px;
+}
+
+@media (max-width: 900px) {
+  .refinedRail[data-open="false"] .railControl {
+    height: 44px;
+    min-height: 44px;
+    flex-direction: row;
+    justify-content: flex-end;
+    padding: 8px 14px;
+  }
+}

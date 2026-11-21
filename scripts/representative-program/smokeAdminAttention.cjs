@@ -1,0 +1,20 @@
+const fs=require('fs'),vm=require('vm'),assert=require('assert/strict');
+const ts=require('typescript');
+const source=fs.readFileSync('src/domains/admin-incoming/loadAdminAttention.ts','utf8');
+const permissions={INSTITUTIONAL_ACCESS_MANAGE:'access',COMMUNICATIONS_ACCESS:'field'};
+const sandbox={exports:{},require:()=>({PERMISSIONS:permissions}),console};
+vm.runInNewContext(ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText,sandbox);
+const load=sandbox.exports.loadAdminAttention;
+(async()=>{
+ let accessCalls=0,fieldCalls=0,alertCalls=0;
+ const db={institutionalAccessRequest:{count:async()=>{accessCalls++;return 2}},transactionIntake:{count:async()=>3},frenchWardInquiry:{count:async()=>4},emailLog:{count:async()=>{alertCalls++;return 0}},communicationConversation:{findMany:async()=>{fieldCalls++;return [{messages:[{senderUserId:'rep',createdAt:new Date(2)}],members:[{lastReadMessage:null}]}]}}};
+ let r=await load(db,{userId:'admin',permissions:['access','field']},false);
+ assert.equal(r.pending,'11');assert.equal(r.field,'1');assert.equal(alertCalls,0);
+ r=await load(db,{userId:'admin',permissions:[]},false);assert.equal(r.pending,'7');assert.equal(r.field,undefined);assert.equal(accessCalls,2);assert.equal(fieldCalls,1);
+ db.frenchWardInquiry.count=async()=>{throw Error('db')};
+ r=await load(db,{userId:'admin',permissions:['field']},false);assert.equal(r.pending,null);assert.equal(r.field,'1');
+ db.communicationConversation.findMany=async()=>Array.from({length:101},()=>({messages:[{senderUserId:'rep',createdAt:new Date(2)}],members:[]}));
+ r=await load(db,{userId:'admin',permissions:['field']},false);assert.equal(r.field,'100 in latest 100');
+ db.communicationConversation.findMany=async()=>{throw Error('db')};r=await load(db,{userId:'admin',permissions:['field']},false);assert.equal(r.field,null);
+ console.log('ADMIN_ATTENTION_COUNTS_OK: shared totals, permission exclusions, partial failures, bounded field count and no header alert query. Simulated delegates only.');
+})().catch(e=>{console.error(e);process.exitCode=1});

@@ -71,7 +71,7 @@ export default function RepresentativeIssueKit({ representatives }: Props) {
 
   const publicIntakeLink =
     selectedRepresentative && origin
-      ? `${origin}/transaction-intake?${publicQuery}`
+      ? `${origin}/french-ward/transaction-intake?${publicQuery}`
       : "";
 
   const adminReferralLaneLink =

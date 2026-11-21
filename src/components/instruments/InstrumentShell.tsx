@@ -17,6 +17,20 @@ type InstrumentShellProps = {
   version: string;
   status: string;
   movements: Movement[];
+  recipient?: { name: string; institution: string; capacity: string } | null;
+  chamberParticipants?: {
+    id: string;
+    name: string;
+    institution: string;
+    capacity: string;
+    current: boolean;
+  }[];
+  classificationLabel?: string;
+  brandLabel?: string;
+  showStatusRail?: boolean;
+  hideHero?: boolean;
+  density?: "standard" | "compact" | "document";
+  surface?: "default" | "archival";
   children: ReactNode;
 };
 
@@ -28,45 +42,63 @@ export function InstrumentShell({
   version,
   status,
   movements,
+  classificationLabel = "Private Institutional Instrument",
+  brandLabel = "FRENCH-WARD",
+  showStatusRail = true,
+  hideHero = false,
+  density = "standard",
+  surface = "default",
   children,
 }: InstrumentShellProps) {
   return (
-    <main className={styles.shell}>
+    <main
+      className={`${styles.shell} ${
+        density === "compact"
+          ? styles.compact
+          : density === "document"
+            ? styles.document
+            : ""
+      } ${hideHero ? styles.withoutHero : ""} ${
+        surface === "archival" ? styles.archival : ""
+      }`}
+    >
       <div className={styles.field} aria-hidden="true" />
 
-      <header className={styles.hero}>
-        <div className={styles.utility}>
-          <span>{eyebrow}</span>
-          <span>Private Institutional Instrument</span>
-        </div>
-
-        <div className={styles.identity}>
-          <p className={styles.brand}>FRENCH-WARD</p>
-
-          <div className={styles.titleGroup}>
-            <h1>{title}</h1>
-            <p>{subtitle}</p>
+      {!hideHero ? (
+        <header className={styles.hero}>
+          <div className={styles.utility}>
+            <span>{eyebrow}</span>
+            <span>{classificationLabel}</span>
           </div>
 
-          <dl className={styles.meta}>
-            <div>
-              <dt>Reference</dt>
-              <dd>{reference}</dd>
-            </div>
-            <div>
-              <dt>Version</dt>
-              <dd>{version}</dd>
-            </div>
-            <div>
-              <dt>Status</dt>
-              <dd>{status}</dd>
-            </div>
-          </dl>
-        </div>
+          <div className={styles.identity}>
+            <p className={styles.brand}>{brandLabel}</p>
 
-        <InstrumentStatusRail />
-        <InstrumentMovementNav movements={movements} />
-      </header>
+            <div className={styles.titleGroup}>
+              <h1>{title}</h1>
+              <p>{subtitle}</p>
+            </div>
+
+            <dl className={styles.meta}>
+              <div>
+                <dt>Reference</dt>
+                <dd>{reference}</dd>
+              </div>
+              <div>
+                <dt>Version</dt>
+                <dd>{version}</dd>
+              </div>
+              <div>
+                <dt>Status</dt>
+                <dd>{status}</dd>
+              </div>
+            </dl>
+          </div>
+
+          {showStatusRail ? <InstrumentStatusRail /> : null}
+          {movements.length > 0 ? <InstrumentMovementNav movements={movements} /> : null}
+        </header>
+      ) : null}
 
       <div className={styles.content}>{children}</div>
     </main>

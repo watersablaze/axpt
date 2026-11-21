@@ -76,7 +76,7 @@ export default function RepresentativeLinkBuilder({ representatives }: Props) {
     ref: referralCode,
   });
 
-  const publicLink = `${origin}/transaction-intake${
+  const publicLink = `${origin}/french-ward/transaction-intake${
     publicQuery ? `?${publicQuery}` : ""
   }`;
 

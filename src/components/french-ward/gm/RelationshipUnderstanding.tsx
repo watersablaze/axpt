@@ -5,7 +5,7 @@ const items = [
     label: "Established",
     title: "Royal standing",
     body:
-      "Sufficient preliminary confirmation has been undertaken for the Great Mother’s Royal standing to be received in good faith.",
+      "Sufficient preliminary confirmation has been undertaken for the Global Mother’s Royal standing to be received in good faith.",
     state: "CONFIRMED",
   },
   {

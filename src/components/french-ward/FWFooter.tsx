@@ -24,15 +24,7 @@ export default function FWFooter() {
             AXPT
           </Link>
 
-          <Link href="#field-notes">
-            Field Notes
-          </Link>
-
-          <Link href="#archive">
-            Archive
-          </Link>
-
-          <Link href="/transaction-intake">
+          <Link href="/french-ward/transaction-intake">
             LOI / Intake
           </Link>
         </nav>

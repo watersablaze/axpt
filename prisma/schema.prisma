@@ -2,6 +2,13 @@ generator client {
   provider = "prisma-client-js"
 }
 
+// Separate generated client: relation joins must not change the main client defaults.
+generator sourceAuthorityJoinClient {
+  provider        = "prisma-client-js"
+  output          = "../node_modules/@axpt/source-authority-join"
+  previewFeatures = ["relationJoins"]
+}
+
 datasource db {
   provider  = "postgresql"
   url       = env("DATABASE_URL")
@@ -9,6 +16,13 @@ datasource db {
 }
 
 model User {
+  frenchWardBulletinPosts FrenchWardBulletinPost[]
+  buyerDossiersIssued RepresentativeBuyerDossier[] @relation("BuyerDossierActor")
+  buyerDossiersReceived RepresentativeBuyerDossier[] @relation("BuyerDossierRecipient")
+
+  profileIntroductionsIssued RepresentativeProfileIntroduction[] @relation("ProfileIntroductionActor")
+  profileIntroductionsReceived RepresentativeProfileIntroduction[] @relation("ProfileIntroductionRecipient")
+
   id                    String                   @id @default(cuid())
   username              String                   @unique
   passwordHash          String
@@ -52,16 +66,25 @@ model User {
   sessionLogs           SessionLog[]
   simProfiles           SimProfile[]
   stakes                Stake[]
+  globalMotherDraftingDecisions GlobalMotherDraftingDecision[] @relation("GlobalMotherDraftingDecisionActor")
   createdTokens         Token[]                  @relation("TokensCreatedBy")
   tokenIssuanceRequests TokenIssuanceRequest[]   @relation("RequestsByUser")
   transactions          Transaction[]
   userRoles             UserRole[]
+  frenchWardGoverningOfficer FrenchWardGoverningOfficer?
+  frenchWardInstitutionalParticipant FrenchWardInstitutionalParticipant?
+  frenchWardOrientationCompletions FrenchWardOrientationCompletion[]
+  frenchWardInstitutionalInvitationsIssued FrenchWardInstitutionalInvitation[] @relation("FrenchWardInstitutionalInvitationIssuer")
+  frenchWardInstitutionalInvitationsAccepted FrenchWardInstitutionalInvitation[] @relation("FrenchWardInstitutionalInvitationAcceptor")
+  frenchWardInstitutionalInvitationsRevoked FrenchWardInstitutionalInvitation[] @relation("FrenchWardInstitutionalInvitationRevoker")
 
   createdCommunicationConversations    CommunicationConversation[]    @relation("CommunicationConversationCreator")
   communicationMemberships             CommunicationMember[]          @relation("CommunicationMembership")
   sentCommunicationMessages            CommunicationMessage[]         @relation("CommunicationMessageSender")
   createdCommunicationOperationalRooms CommunicationOperationalRoom[] @relation("CommunicationOperationalRoomCreator")
   createdCommunicationOperationalLinks CommunicationOperationalLink[] @relation("CommunicationOperationalLinkCreator")
+  authoredCommunicationChamberRecords CommunicationChamberRecord[] @relation("CommunicationChamberRecordAuthor")
+  recordedCommunicationChamberRecords CommunicationChamberRecord[] @relation("CommunicationChamberRecordRecorder")
 
   institutionalInstrumentsCreated InstitutionalInstrument[] @relation("InstitutionalInstrumentCreator")
   instrumentVersionsCreated       InstrumentVersion[]       @relation("InstrumentVersionCreator")
@@ -69,8 +92,42 @@ model User {
   instrumentParties               InstrumentParty[]         @relation("InstrumentPartyUser")
   instrumentAccessGrantsReceived  InstrumentAccessGrant[]   @relation("InstrumentAccessRecipient")
   instrumentAccessGrantsIssued    InstrumentAccessGrant[]   @relation("InstrumentAccessIssuer")
+  instrumentResponseSets         InstrumentResponseSet[]    @relation("InstrumentResponseSetActor")
 
-  wallets Wallet?
+  instrumentAuthoritiesCreated InstrumentAuthority[]       @relation("InstrumentAuthorityCreator")
+  instrumentTransitionsActed   InstrumentStateTransition[] @relation("InstrumentTransitionActor")
+  instrumentEvidenceRecorded   InstrumentEvidence[]        @relation("InstrumentEvidenceRecorder")
+  instrumentRelationsCreated   InstrumentRelation[]        @relation("InstrumentRelationCreator")
+
+  sourceAuthorityRecognitionsActed SourceAuthorityRecognition[] @relation("SourceAuthorityRecognitionActor")
+
+  representativeProgramParticipants        RepresentativeProgramParticipant[]        @relation("RepresentativeProgramParticipantUser")
+  representativeProgramParticipantsCreated RepresentativeProgramParticipant[]        @relation("RepresentativeProgramParticipantCreator")
+  representativeProgramAppointmentsCreated RepresentativeProgramAppointment[]        @relation("RepresentativeProgramAppointmentCreator")
+  representativeProgramStandingActed       RepresentativeProgramStandingTransition[] @relation("RepresentativeProgramStandingActor")
+
+  representativeOnboardingIntakesCreated   RepresentativeOnboardingIntake[]     @relation("RepresentativeOnboardingIntakeCreator")
+  representativeOnboardingTransitionsActed RepresentativeOnboardingTransition[] @relation("RepresentativeOnboardingTransitionActor")
+
+  commercialUtilityPacksCreated           CommercialUtilityPack[]                @relation("CommercialUtilityPackCreator")
+  commercialUtilityPacksReleased          CommercialUtilityPack[]                @relation("CommercialUtilityPackReleaser")
+  commercialUtilityPackModulesReleased    CommercialUtilityPackModuleRelease[]   @relation("CommercialUtilityPackModuleReleaser")
+  commercialUtilityPackResourcesReleased  CommercialUtilityPackResourceRelease[] @relation("CommercialUtilityPackResourceReleaser")
+
+
+  institutionalAccessGrantsReceived InstitutionalAccessGrant[] @relation("InstitutionalAccessRecipient")
+  institutionalAccessGrantsIssued   InstitutionalAccessGrant[] @relation("InstitutionalAccessIssuer")
+  institutionalAccessRequestsDecided InstitutionalAccessRequest[] @relation("InstitutionalAccessDecisionActor")
+  institutionalAccessEventsActed    InstitutionalAccessEvent[] @relation("InstitutionalAccessEventActor")
+
+  wallets                                  Wallet?
+
+  gmChamberAdmissions         GlobalMotherChamberAdmission[] @relation("GMChamberAdmittedParticipant")
+  gmChamberCapacityVerifications GlobalMotherChamberAdmission[] @relation("GMChamberCapacityVerifier")
+  gmChamberAdmissionDecisions GlobalMotherChamberAdmission[] @relation("GMChamberAdmissionDecider")
+  gmChamberAdmissionRevocations GlobalMotherChamberAdmission[] @relation("GMChamberAdmissionRevoker")
+  gmChamberRoomBindings       GlobalMotherChamberRoomBinding[] @relation("GMChamberRoomBinder")
+  gmChamberRoomRevocations    GlobalMotherChamberRoomBinding[] @relation("GMChamberRoomRevoker")
 }
 
 // ============================================================================
@@ -91,9 +148,20 @@ model InstitutionalInstrument {
 
   createdBy User @relation("InstitutionalInstrumentCreator", fields: [createdByUserId], references: [id])
 
-  versions     InstrumentVersion[]
-  parties      InstrumentParty[]
-  accessGrants InstrumentAccessGrant[]
+  versions                         InstrumentVersion[]
+  parties                          InstrumentParty[]
+  accessGrants                     InstrumentAccessGrant[]
+  responseSets                     InstrumentResponseSet[]
+  draftingDecisions                GlobalMotherDraftingDecision[]
+  authorities                      InstrumentAuthority[]
+  stateTransitions                 InstrumentStateTransition[]
+  evidence                         InstrumentEvidence[]
+  outboundRelations                InstrumentRelation[]              @relation("InstrumentRelationSource")
+  inboundRelations                 InstrumentRelation[]              @relation("InstrumentRelationTarget")
+  digitalSettlementInstruction     DigitalSettlementInstruction?
+  sourceAuthorityRecord             SourceAuthorityRecord?
+  representativeProgramAppointment RepresentativeProgramAppointment?
+  representativeOnboardingMasterAgreement RepresentativeOnboardingIntake? @relation("RepresentativeOnboardingMasterAgreement")
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -102,6 +170,56 @@ model InstitutionalInstrument {
   @@index([status])
   @@index([createdByUserId])
   @@index([updatedAt])
+}
+
+model DigitalSettlementInstruction {
+  id                              String                         @id @default(cuid())
+  instrumentId                    String                         @unique
+  publicId                        String                         @unique
+  counterpartyName                String
+  counterpartyRepresentative      String?
+  commodity                       String                         @default("Au Dore Bars")
+  transactionDescription          String
+  settlementPurpose               String
+  proceduralBasis                 String
+  quantityKg                      Decimal                        @db.Decimal(18, 6)
+  pricingStatus                   DigitalSettlementPricingStatus @default(PENDING_FIXING)
+  pricingBasis                    String
+  spotDiscountPercentage          Decimal                        @default(10) @db.Decimal(7, 4)
+  spotBenchmark                   String?
+  spotPricePerKgUsd               Decimal?                       @db.Decimal(20, 2)
+  pricePerKgUsd                   Decimal?                       @db.Decimal(20, 2)
+  transactionValueUsd             Decimal?                       @db.Decimal(20, 2)
+  settlementPercentage            Decimal                        @db.Decimal(7, 4)
+  settlementAmountUsd             Decimal?                       @db.Decimal(20, 2)
+  priceFixedAt                    DateTime?
+  settlementAsset                 DigitalSettlementAsset
+  settlementNetwork               DigitalSettlementNetwork
+  receivingEntity                 String
+  receivingAddress                String?
+  receivingWalletId               String?
+  receivingWalletRole             String?
+  verificationAmountUsdt          Decimal                        @default(50) @db.Decimal(20, 6)
+  verificationTxHash              String?                        @unique
+  verificationObservationId       String?                        @unique
+  verificationInstrumentVersionId String?
+  verificationConfirmedAt         DateTime?
+  principalAuthorizedAt           DateTime?
+  settlementStatus                DigitalSettlementStatus        @default(PENDING_ISSUANCE)
+  settlementDetectedAt            DateTime?
+  settlementConfirmedAt           DateTime?
+
+  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+
+  verificationObservation       TreasurySettlementObservation? @relation("DigitalSettlementVerificationObservation", fields: [verificationObservationId], references: [id], onDelete: SetNull)
+  verificationInstrumentVersion InstrumentVersion?             @relation("DigitalSettlementVerificationInstrumentVersion", fields: [verificationInstrumentVersionId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([settlementStatus])
+  @@index([settlementAsset, settlementNetwork])
+  @@index([verificationInstrumentVersionId])
 }
 
 model InstrumentVersion {
@@ -117,6 +235,13 @@ model InstrumentVersion {
   createdBy  User                    @relation("InstrumentVersionCreator", fields: [createdByUserId], references: [id])
 
   propositions InstrumentProposition[]
+  accessGrants InstrumentAccessGrant[] @relation("InstrumentVersionAccessGrants")
+  responseSets InstrumentResponseSet[]
+  draftingDecisions GlobalMotherDraftingDecision[]
+
+  digitalSettlementVerifications DigitalSettlementInstruction[] @relation("DigitalSettlementVerificationInstrumentVersion")
+  sourceAuthorityAssertions       SourceAuthorityAssertion[]
+  sourceAuthorityProfileParticulars SourceAuthorityProfileParticulars[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -172,6 +297,48 @@ model InstrumentResponse {
   @@index([responseType])
 }
 
+model InstrumentResponseSet {
+  id String @id @default(cuid())
+  instrumentId String
+  versionId String
+  grantId String
+  actorUserId String
+  submissionKey String
+  contentHash String
+  representedInstitution String
+  representativeCapacity String
+  positions Json
+  recordedAt DateTime @default(now())
+
+  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+  version InstrumentVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  grant InstrumentAccessGrant @relation(fields: [grantId], references: [id], onDelete: Restrict)
+  actor User @relation("InstrumentResponseSetActor", fields: [actorUserId], references: [id])
+
+  @@unique([versionId, actorUserId, submissionKey])
+  @@unique([versionId, actorUserId])
+  @@index([instrumentId, recordedAt])
+  @@index([grantId])
+}
+
+model GlobalMotherDraftingDecision {
+  id String @id @default(cuid())
+  instrumentId String
+  versionId String
+  actorUserId String
+  decisionKey String @unique
+  standing String
+  reviewedReceiptIds Json
+  rationale String
+  recordedAt DateTime @default(now())
+
+  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+  version InstrumentVersion @relation(fields: [versionId], references: [id], onDelete: Restrict)
+  actor User @relation("GlobalMotherDraftingDecisionActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([versionId, recordedAt])
+}
+
 model InstrumentParty {
   id             String              @id @default(cuid())
   instrumentId   String
@@ -183,6 +350,9 @@ model InstrumentParty {
   instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
   user       User?                   @relation("InstrumentPartyUser", fields: [userId], references: [id], onDelete: SetNull)
 
+  authorities                      InstrumentAuthority[]
+  representativeProgramAppointment RepresentativeProgramAppointment?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -191,14 +361,17 @@ model InstrumentParty {
 }
 
 model InstrumentAccessGrant {
-  id              String                @id @default(cuid())
-  instrumentId    String
-  recipientUserId String?
-  recipientName   String?
-  recipientRole   InstrumentPartyRole
-  accessLevel     InstrumentAccessLevel
-  codeHash        String?               @unique
-  issuedByUserId  String
+  id                  String                @id @default(cuid())
+  instrumentId        String
+  instrumentVersionId String?
+  recipientUserId     String?
+  recipientName       String?
+  representedInstitution String?
+  representativeCapacity String?
+  recipientRole       InstrumentPartyRole
+  accessLevel         InstrumentAccessLevel
+  codeHash            String?               @unique
+  issuedByUserId      String
 
   issuedAt      DateTime  @default(now())
   expiresAt     DateTime?
@@ -206,23 +379,716 @@ model InstrumentAccessGrant {
   firstAccessAt DateTime?
   lastAccessAt  DateTime?
 
-  instrument    InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
-  recipientUser User?                   @relation("InstrumentAccessRecipient", fields: [recipientUserId], references: [id], onDelete: SetNull)
-  issuedBy      User                    @relation("InstrumentAccessIssuer", fields: [issuedByUserId], references: [id])
+  instrument        InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  instrumentVersion InstrumentVersion?      @relation("InstrumentVersionAccessGrants", fields: [instrumentVersionId], references: [id], onDelete: SetNull)
+  recipientUser     User?                   @relation("InstrumentAccessRecipient", fields: [recipientUserId], references: [id], onDelete: SetNull)
+  issuedBy          User                    @relation("InstrumentAccessIssuer", fields: [issuedByUserId], references: [id])
+  responseSets InstrumentResponseSet[]
+  recipientChallenge GlobalMotherRecipientChallenge?
 
   @@index([instrumentId, accessLevel])
+  @@index([instrumentVersionId])
   @@index([recipientUserId])
   @@index([issuedByUserId])
   @@index([expiresAt])
   @@index([revokedAt])
 }
 
+model InstrumentAuthority {
+  id              String                   @id @default(cuid())
+  instrumentId    String
+  authorityKey    String
+  title           String
+  authorityClass  InstrumentAuthorityClass
+  holderPartyId   String?
+  action          String
+  conditions      Json?
+  effectiveAt     DateTime                 @default(now())
+  expiresAt       DateTime?
+  revokedAt       DateTime?
+  createdByUserId String
+
+  instrument  InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  holderParty InstrumentParty?        @relation(fields: [holderPartyId], references: [id], onDelete: SetNull)
+  createdBy   User                    @relation("InstrumentAuthorityCreator", fields: [createdByUserId], references: [id])
+
+  transitions InstrumentStateTransition[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([instrumentId, authorityKey])
+  @@index([instrumentId, authorityClass])
+  @@index([holderPartyId])
+  @@index([revokedAt])
+}
+
+model InstrumentStateTransition {
+  id           String                         @id @default(cuid())
+  instrumentId String
+  fromStatus   InstitutionalInstrumentStatus?
+  toStatus     InstitutionalInstrumentStatus
+  actorUserId  String
+  authorityId  String?
+  reason       String?
+  metadata     Json?
+  occurredAt   DateTime                       @default(now())
+
+  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  actor      User                    @relation("InstrumentTransitionActor", fields: [actorUserId], references: [id])
+  authority  InstrumentAuthority?    @relation(fields: [authorityId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([instrumentId, occurredAt])
+  @@index([instrumentId, toStatus])
+  @@index([actorUserId])
+  @@index([authorityId])
+}
+
+model InstrumentEvidence {
+  id               String                    @id @default(cuid())
+  instrumentId     String
+  evidenceType     InstrumentEvidenceType
+  subjectType      InstrumentEvidenceSubject
+  subjectId        String?
+  title            String
+  uri              String?
+  contentHash      String?
+  metadata         Json?
+  recordedByUserId String
+  recordedAt       DateTime                  @default(now())
+
+  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Cascade)
+  recordedBy User                    @relation("InstrumentEvidenceRecorder", fields: [recordedByUserId], references: [id])
+
+  sourceAuthorityRecognitionEvidence SourceAuthorityRecognitionEvidence[]
+
+  sourceAuthorityAdmissions SourceAuthorityEvidenceAdmission[]
+
+  createdAt DateTime @default(now())
+
+  @@index([instrumentId, evidenceType])
+  @@index([instrumentId, subjectType, subjectId])
+  @@index([contentHash])
+  @@index([recordedAt])
+}
+
+model InstrumentRelation {
+  id                 String                 @id @default(cuid())
+  sourceInstrumentId String
+  targetInstrumentId String
+  relationType       InstrumentRelationType
+  label              String?
+  metadata           Json?
+  createdByUserId    String
+
+  sourceInstrument InstitutionalInstrument @relation("InstrumentRelationSource", fields: [sourceInstrumentId], references: [id], onDelete: Cascade)
+  targetInstrument InstitutionalInstrument @relation("InstrumentRelationTarget", fields: [targetInstrumentId], references: [id], onDelete: Cascade)
+  createdBy        User                    @relation("InstrumentRelationCreator", fields: [createdByUserId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([sourceInstrumentId, targetInstrumentId, relationType])
+  @@index([sourceInstrumentId, relationType])
+  @@index([targetInstrumentId, relationType])
+  @@index([createdByUserId])
+}
+
+// ============================================================================
+// SOURCE AUTHORITY
+// Specialized persistence for source-side institutional assertions,
+// capabilities, documentary recognition, and recognition lineage.
+//
+// Source Authority records do not confer sovereign authority,
+// transaction authority, commodity availability, allocation, title,
+// regulatory approval, export authorization, or settlement authority.
+// ============================================================================
+
+model SourceAuthorityRecord {
+  id                         String   @id @default(cuid())
+  instrumentId               String   @unique
+  subjectDisplayName         String
+  jurisdiction               String
+  institutionalCapacity      String
+  operatingBase              String?
+  sector                     String?
+  principalCommodityActivity String[]
+
+  instrument InstitutionalInstrument @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+
+  assertions SourceAuthorityAssertion[]
+
+  profileParticulars SourceAuthorityProfileParticulars[]
+
+  evidenceAdmissions SourceAuthorityEvidenceAdmission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([subjectDisplayName])
+  @@index([jurisdiction])
+}
+
+model SourceAuthorityProfileParticulars {
+  id                String @id @default(cuid())
+  sourceAuthorityId String
+  versionId         String
+
+  documentReference String
+  documentVersion   String
+  documentStatus    String
+
+  registrationReference String?
+  registrationStanding  String
+
+  registeredAddress                 String?
+  authorizedRepresentativeName      String?
+  authorizedRepresentativeCapacity  String?
+  officialContact                   String?
+
+  sourceAuthority SourceAuthorityRecord @relation(fields: [sourceAuthorityId], references: [id], onDelete: Restrict)
+  version         InstrumentVersion     @relation(fields: [versionId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sourceAuthorityId, versionId])
+  @@index([versionId])
+  @@index([documentReference])
+}
+
+model SourceAuthorityAssertion {
+  id                String                        @id @default(cuid())
+  sourceAuthorityId String
+  versionId         String
+  reference         String
+  assertionClass    SourceAuthorityAssertionClass
+  title             String
+  statement         String
+  scope             String?
+  ordinal           Int
+
+  sourceAuthority SourceAuthorityRecord @relation(fields: [sourceAuthorityId], references: [id], onDelete: Cascade)
+  version         InstrumentVersion     @relation(fields: [versionId], references: [id], onDelete: Restrict)
+
+  capabilities SourceAuthorityCapability[]
+  recognitions SourceAuthorityRecognition[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([versionId, reference])
+  @@unique([versionId, ordinal])
+  @@index([sourceAuthorityId, assertionClass])
+  @@index([sourceAuthorityId, versionId])
+}
+
+model SourceAuthorityCapability {
+  id            String                       @id @default(cuid())
+  assertionId   String
+  capabilityKey SourceAuthorityCapabilityKey
+  title         String
+  description   String
+
+  assertion SourceAuthorityAssertion @relation(fields: [assertionId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([assertionId, capabilityKey])
+  @@index([capabilityKey])
+}
+
+model SourceAuthorityRecognition {
+  id                      String                            @id @default(cuid())
+  assertionId             String
+  outcome                 SourceAuthorityRecognitionOutcome
+  limitation              String?
+  reason                  String?
+  actorUserId             String
+  supersedesRecognitionId String?                           @unique
+  currentSlot             SourceAuthorityRecognitionCurrentSlot?
+  occurredAt              DateTime                          @default(now())
+
+  assertion SourceAuthorityAssertion @relation(fields: [assertionId], references: [id], onDelete: Cascade)
+  actor     User                     @relation("SourceAuthorityRecognitionActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  supersedes SourceAuthorityRecognition? @relation("SourceAuthorityRecognitionSupersession", fields: [supersedesRecognitionId], references: [id], onDelete: SetNull)
+  supersededBy SourceAuthorityRecognition? @relation("SourceAuthorityRecognitionSupersession")
+
+  evidenceLinks SourceAuthorityRecognitionEvidence[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([assertionId, currentSlot])
+  @@index([assertionId, occurredAt])
+  @@index([actorUserId, occurredAt])
+  @@index([outcome])
+}
+
+model SourceAuthorityEvidenceAdmission {
+  id                String                      @id @default(cuid())
+  sourceAuthorityId String
+  evidenceRole      String
+  admissionKey      String
+  evidenceId        String?                     @unique
+
+  sourceAuthority SourceAuthorityRecord @relation(fields: [sourceAuthorityId], references: [id], onDelete: Cascade)
+  evidence        InstrumentEvidence?   @relation(fields: [evidenceId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([sourceAuthorityId, evidenceRole])
+  @@index([sourceAuthorityId, admissionKey])
+  @@index([sourceAuthorityId, createdAt])
+}
+
+model SourceAuthorityRecognitionEvidence {
+  recognitionId String
+  evidenceId    String
+
+  recognition SourceAuthorityRecognition @relation(fields: [recognitionId], references: [id], onDelete: Cascade)
+  evidence    InstrumentEvidence         @relation(fields: [evidenceId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+
+  @@id([recognitionId, evidenceId])
+  @@index([evidenceId])
+}
+
+// ============================================================================
+// AUTHORIZED REPRESENTATION PROGRAM
+// Program participant identity, docket, appointment and standing spine.
+// Program Standing is intentionally distinct from InstitutionalInstrumentStatus.
+// Appointment Class is intentionally distinct from InstrumentAuthority.
+// ============================================================================
+
+model RepresentativeProgramDocketSequence {
+  year       Int      @id
+  nextNumber Int      @default(1)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model RepresentativeProgramParticipant {
+  buyerDossiers RepresentativeBuyerDossier[]
+
+  profileIntroductions RepresentativeProfileIntroduction[]
+
+  id              String                        @id @default(cuid())
+  docketReference String                        @unique
+  userId          String?                       @unique
+  displayName     String
+  standing        RepresentativeProgramStanding
+  admittedAt      DateTime?
+  createdByUserId String
+
+  user      User? @relation("RepresentativeProgramParticipantUser", fields: [userId], references: [id], onDelete: SetNull)
+  createdBy User  @relation("RepresentativeProgramParticipantCreator", fields: [createdByUserId], references: [id])
+
+  appointments          RepresentativeProgramAppointment[]
+  standingTransitions   RepresentativeProgramStandingTransition[]
+  onboardingIntake      RepresentativeOnboardingIntake? @relation("RepresentativeOnboardingAdmission")
+  commercialUtilityPacks CommercialUtilityPack[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([standing])
+  @@index([createdByUserId])
+}
+
+model RepresentativeProgramAppointment {
+  buyerDossiers RepresentativeBuyerDossier[]
+
+  profileIntroductions RepresentativeProfileIntroduction[]
+
+  id                String                         @id @default(cuid())
+  participantId     String
+  instrumentId      String                         @unique
+  instrumentPartyId String                         @unique
+  appointmentClass  RepresentativeAppointmentClass
+  scope             Json?
+  effectiveAt       DateTime?
+  expiresAt         DateTime?
+  endedAt           DateTime?
+  createdByUserId   String
+
+  participant     RepresentativeProgramParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  instrument      InstitutionalInstrument          @relation(fields: [instrumentId], references: [id], onDelete: Restrict)
+  instrumentParty InstrumentParty                  @relation(fields: [instrumentPartyId], references: [id], onDelete: Restrict)
+  createdBy       User                             @relation("RepresentativeProgramAppointmentCreator", fields: [createdByUserId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([participantId])
+  @@index([appointmentClass])
+  @@index([effectiveAt])
+  @@index([expiresAt])
+  @@index([endedAt])
+}
+
+model RepresentativeProgramStandingTransition {
+  id            String                         @id @default(cuid())
+  participantId String
+  fromStanding  RepresentativeProgramStanding?
+  toStanding    RepresentativeProgramStanding
+  actorUserId   String
+  reason        String?
+  metadata      Json?
+  occurredAt    DateTime                       @default(now())
+
+  participant RepresentativeProgramParticipant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  actor       User                             @relation("RepresentativeProgramStandingActor", fields: [actorUserId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([participantId, occurredAt])
+  @@index([participantId, toStanding])
+  @@index([actorUserId])
+}
+
+// ============================================================================
+// COMMERCIAL UTILITY PACK
+// Representative-specific governed composition envelope.
+//
+// CUP is not an InstitutionalInstrument and does not own the canonical truth
+// of resources it presents. It persists package identity, module release state,
+// resource release state, and representative-facing permissions.
+// ============================================================================
+
+model CommercialUtilityPack {
+  id               String                            @id @default(cuid())
+  reference        String                            @unique
+  participantId    String
+  version          Int                               @default(1)
+  state            CommercialUtilityPackState        @default(PREPARING)
+  releaseState     CommercialUtilityPackReleaseState @default(WITHHELD)
+  audience         CommercialUtilityPackAudience     @default(REPRESENTATIVE)
+  createdByUserId  String
+  releasedByUserId String?
+  releasedAt       DateTime?
+  withdrawnAt      DateTime?
+  metadata         Json?
+
+  participant RepresentativeProgramParticipant @relation(fields: [participantId], references: [id], onDelete: Restrict)
+  createdBy   User                             @relation("CommercialUtilityPackCreator", fields: [createdByUserId], references: [id])
+  releasedBy  User?                            @relation("CommercialUtilityPackReleaser", fields: [releasedByUserId], references: [id], onDelete: SetNull)
+
+  modules   CommercialUtilityPackModuleRelease[]
+  resources CommercialUtilityPackResourceRelease[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([participantId, version])
+  @@index([participantId, state])
+  @@index([releaseState])
+  @@index([createdByUserId])
+  @@index([releasedByUserId])
+}
+
+model CommercialUtilityPackModuleRelease {
+  id               String                           @id @default(cuid())
+  packageId        String
+  module           CommercialUtilityPackModule
+  state            CommercialUtilityPackModuleState @default(WITHHELD)
+  releasedByUserId String?
+  releasedAt       DateTime?
+  metadata         Json?
+
+  package    CommercialUtilityPack @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  releasedBy User?                 @relation("CommercialUtilityPackModuleReleaser", fields: [releasedByUserId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([packageId, module])
+  @@index([packageId, state])
+  @@index([releasedByUserId])
+}
+
+model CommercialUtilityPackResourceRelease {
+  buyerDossierItems RepresentativeBuyerDossierItem[]
+
+  profileIntroductions RepresentativeProfileIntroduction[]
+
+  id               String                              @id @default(cuid())
+  packageId        String
+  module           CommercialUtilityPackModule
+  resourceType     CommercialUtilityPackResourceType
+  resourceId       String
+  state            CommercialUtilityPackResourceState @default(WITHHELD)
+  label            String?
+  canView          Boolean                             @default(true)
+  canDownload      Boolean                             @default(false)
+  canPresent       Boolean                             @default(false)
+  canTransmit      Boolean                             @default(false)
+  releasedByUserId String?
+  releasedAt       DateTime?
+  metadata         Json?
+
+  package    CommercialUtilityPack @relation(fields: [packageId], references: [id], onDelete: Cascade)
+  releasedBy User?                 @relation("CommercialUtilityPackResourceReleaser", fields: [releasedByUserId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([packageId, module, resourceType, resourceId])
+  @@index([packageId, module, state])
+  @@index([resourceType, resourceId])
+  @@index([releasedByUserId])
+}
+
+enum CommercialUtilityPackState {
+  PREPARING
+  CURRENT
+  SUPERSEDED
+  WITHDRAWN
+}
+
+enum CommercialUtilityPackReleaseState {
+  WITHHELD
+  PARTIAL
+  RELEASED
+}
+
+enum CommercialUtilityPackAudience {
+  REPRESENTATIVE
+}
+
+enum CommercialUtilityPackModule {
+  REPRESENTATION
+  COMMERCIAL_PARAMETERS
+  DOCUMENTS
+  OPERATING_BOUNDARIES
+}
+
+enum CommercialUtilityPackModuleState {
+  WITHHELD
+  READY
+  RELEASED
+}
+
+enum CommercialUtilityPackResourceType {
+  INSTITUTIONAL_INSTRUMENT
+  DOCUMENT
+  STRUCTURED_CONTENT
+}
+
+enum CommercialUtilityPackResourceState {
+  WITHHELD
+  RELEASED
+  SUPERSEDED
+  WITHDRAWN
+}
+
+model RepresentativeOnboardingIntake {
+  id        String @id @default(cuid())
+  reference String @unique
+
+  status                RepresentativeOnboardingStatus      @default(DRAFT)
+  qualificationDecision RepresentativeQualificationDecision @default(PENDING)
+
+  candidateDisplayName String
+  candidateEmail       String
+  submission           Json?
+
+  internalNotes String?
+
+  // Candidate-facing private access.
+  // Raw access tokens must never be persisted.
+  accessTokenHash String?   @unique
+  accessIssuedAt  DateTime?
+  accessExpiresAt DateTime?
+  accessRevokedAt DateTime?
+
+  submittedAt     DateTime?
+  reviewStartedAt DateTime?
+  qualifiedAt     DateTime?
+  admittedAt      DateTime?
+
+  admittedParticipantId String? @unique
+  masterAgreementInstrumentId String? @unique
+  createdByUserId       String?
+
+  admittedParticipant RepresentativeProgramParticipant? @relation("RepresentativeOnboardingAdmission", fields: [admittedParticipantId], references: [id], onDelete: Restrict)
+  masterAgreementInstrument InstitutionalInstrument? @relation("RepresentativeOnboardingMasterAgreement", fields: [masterAgreementInstrumentId], references: [id], onDelete: Restrict)
+
+  createdBy User? @relation("RepresentativeOnboardingIntakeCreator", fields: [createdByUserId], references: [id], onDelete: SetNull)
+
+  transitions RepresentativeOnboardingTransition[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([qualificationDecision])
+  @@index([candidateEmail])
+  @@index([createdByUserId])
+  @@index([createdAt])
+}
+
+model RepresentativeOnboardingTransition {
+  id       String @id @default(cuid())
+  intakeId String
+
+  fromStatus RepresentativeOnboardingStatus?
+  toStatus   RepresentativeOnboardingStatus
+
+  actorUserId String?
+  reason      String?
+  metadata    Json?
+  occurredAt  DateTime @default(now())
+
+  intake RepresentativeOnboardingIntake @relation(fields: [intakeId], references: [id], onDelete: Cascade)
+
+  actor User? @relation("RepresentativeOnboardingTransitionActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+
+  @@index([intakeId, occurredAt])
+  @@index([intakeId, toStatus])
+  @@index([actorUserId])
+}
+
+enum RepresentativeAppointmentClass {
+  REGISTERED_COMMERCIAL_INTRODUCER
+  AUTHORIZED_COMMERCIAL_REPRESENTATIVE
+  TRANSACTION_REPRESENTATIVE
+  COMMERCIAL_MANDATE
+}
+
+enum RepresentativeProgramStanding {
+  PROVISIONAL
+  ACTIVE
+  RESTRICTED
+  SUSPENDED
+  EXPIRED
+  WITHDRAWN
+  REVOKED
+}
+
+enum RepresentativeOnboardingStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  QUALIFIED
+  RETURNED_FOR_COMPLETION
+  DECLINED
+  ADMITTED
+}
+
+enum RepresentativeQualificationDecision {
+  PENDING
+  QUALIFIED
+  RETURN_FOR_COMPLETION
+  DECLINED
+}
+
+enum InstrumentAuthorityClass {
+  RESERVED
+  JOINT
+  DELEGATED
+  PROHIBITED
+}
+
+enum InstrumentEvidenceType {
+  DOCUMENT
+  ATTESTATION
+  EXTERNAL_RECORD
+  DIGITAL_PROOF
+  COMMERCIAL_RECORD
+  SETTLEMENT_PROOF
+  OTHER
+}
+
+enum InstrumentEvidenceSubject {
+  INSTRUMENT
+  VERSION
+  PROPOSITION
+  AUTHORITY
+  TRANSITION
+  RELATION
+  EXECUTION
+}
+
+enum InstrumentRelationType {
+  GOVERNS
+  IMPLEMENTS
+  DERIVES_FROM
+  SUPERSEDES
+  SUPPORTS
+  SETTLES
+  REFERENCES
+}
+
+enum SourceAuthorityAssertionClass {
+  INSTITUTIONAL_IDENTITY
+  SOURCE_AUTHORITY
+  OPERATIONAL_CAPABILITY
+  COMMERCIAL_RELATIONSHIP
+  SOVEREIGN_CONTEXT
+  INSTRUMENT_BOUNDARY
+}
+
+enum SourceAuthorityCapabilityKey {
+  MINERAL_PRODUCTION_AGGREGATION
+  COMMODITY_PREPARATION_SOURCE_COORDINATION
+  COMMERCIAL_PREPARATION
+  EXPORT_LOGISTICS_COORDINATION
+  COUNTERPARTY_ENGAGEMENT
+  DOCUMENTARY_REGULATORY_SUPPORT
+}
+
+enum SourceAuthorityRecognitionOutcome {
+  RECOGNIZED
+  RECOGNIZED_WITH_LIMITATION
+  NOT_RECOGNIZED
+}
+
+enum SourceAuthorityRecognitionCurrentSlot {
+  CURRENT
+}
+
 enum InstitutionalInstrumentKind {
   ROYAL_CUSTODIAL_FRAMEWORK
   REPRESENTATIVE_MANDATE
+  REPRESENTATIVE_PROGRAM_AGREEMENT
+  REPRESENTATIVE_APPOINTMENT
   LETTER_OF_INTENT
   COOPERATION_FRAMEWORK
+  DIGITAL_SETTLEMENT_INSTRUCTION
+  SOURCE_AUTHORITY
   GENERAL
+}
+
+enum DigitalSettlementAsset {
+  USDT
+}
+
+enum DigitalSettlementNetwork {
+  ETHEREUM_ERC20
+}
+
+enum DigitalSettlementPricingStatus {
+  PENDING_FIXING
+  FIXED
+}
+
+enum DigitalSettlementStatus {
+  PENDING_ISSUANCE
+  AWAITING_VERIFICATION_TRANSFER
+  VERIFICATION_CONFIRMED
+  AWAITING_TRANSFER
+  DETECTED
+  CONFIRMING
+  CONFIRMED
+  FAILED_REVIEW
+  CANCELLED
 }
 
 enum InstitutionalInstrumentStatus {
@@ -388,11 +1254,14 @@ model RolePermission {
 }
 
 model PinLoginRequest {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  pinHash   String
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  id           String    @id @default(cuid())
+  email        String    @unique
+  pinHash      String
+  attemptCount Int       @default(0)
+  expiresAt    DateTime
+  consumedAt   DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }
 
 model Wallet {
@@ -500,6 +1369,94 @@ model TransactionIntake {
   financialReadiness String?
   documentsAvailable String?
   supportingNotes    String?
+
+  // ─────────────────────────────────────
+  // LOI V4 — COUNTERPARTY IDENTITY
+  // ─────────────────────────────────────
+
+  buyerRegistrationNumber     String?
+  buyerCountryOfIncorporation String?
+  buyerRegisteredAddress      String?
+  buyerBusinessAddress        String?
+  buyerCorporateEmail         String?
+  buyerCorporatePhone         String?
+
+  buyerRepresentativeName         String?
+  buyerRepresentativeTitle        String?
+  buyerRepresentativeEntity       String?
+  buyerRepresentativeEmail        String?
+  buyerRepresentativePhone        String?
+  buyerRepresentativeRelationship String?
+
+  authorityToRepresent Boolean @default(false)
+  authorityToNegotiate Boolean @default(false)
+  authorityToSign      Boolean @default(false)
+  authorityOther       String?
+
+  externalParticipants Json?
+
+  // ─────────────────────────────────────
+  // LOI V4 — TRANSACTION PROFILE
+  // ─────────────────────────────────────
+
+  requestedPurity        String?
+  transactionPurpose     String?
+  transactionWindow      String?
+  continuingSupplyIntent String?
+  recurringQuantity      String?
+  recurringFrequency     String?
+  desiredTerm            String?
+  destinationStatus      String?
+  buyerRequirements      String?
+
+  // ─────────────────────────────────────
+  // LOI V4 — DELIVERY / ASSAY
+  // ─────────────────────────────────────
+
+  deliveryPathway             String?
+  deliveryPoint               String?
+  buyerRepresentativesPresent String?
+  buyerRepresentative1        String?
+  buyerRepresentative2        String?
+  refineryJurisdiction        String?
+  assayPosture                String?
+  additionalAssayRequirements String?
+
+  // ─────────────────────────────────────
+  // LOI V4 — SETTLEMENT
+  // ─────────────────────────────────────
+
+  settlementPathway                     String?
+  settlementRail                        String?
+  settlementCurrencyAsset               String?
+  settlementTimingRequirement           String?
+  bankMessageFormat                     String?
+  digitalAsset                          String?
+  digitalAssetNetwork                   String?
+  additionalSettlementAuthorityRequired String?
+  additionalSettlementAuthorityDetail   String?
+  financialCapacityStatus               String?
+
+  // ─────────────────────────────────────
+  // LOI V4 — READINESS / COMPLIANCE
+  // ─────────────────────────────────────
+
+  incorporationRecordAvailable Boolean @default(false)
+  kybRecordAvailable           Boolean @default(false)
+  representativeIdAvailable    Boolean @default(false)
+  authorityDocumentAvailable   Boolean @default(false)
+
+  specialComplianceRequirements String?
+  specialComplianceDetail       String?
+
+  // ─────────────────────────────────────
+  // LOI V4 — AUTHORIZED SUBMISSION
+  // ─────────────────────────────────────
+
+  authorizedSubmitterEntity         String?
+  authorizedSubmitterRepresentative String?
+  authorizedSubmitterPosition       String?
+  authorizedSubmissionDate          String?
 
   referralCode            String?
   referredByName          String?
@@ -2455,6 +3412,23 @@ enum CommunicationMessageKind {
   DOCUMENT_REFERENCE
 }
 
+enum CommunicationChamberClass {
+  ADDRESS
+  NOTICE
+  PETITION
+  ACKNOWLEDGMENT
+  RESPONSE
+  DECISION_NOTICE
+}
+
+enum CommunicationChamberAddresseeType {
+  CHAMBER
+  COUNCIL
+  PARTICIPANT
+  PARTICIPANTS
+  OFFICE
+}
+
 model CommunicationConversation {
   id     String                          @id @default(cuid())
   kind   CommunicationConversationKind
@@ -2473,6 +3447,7 @@ model CommunicationConversation {
   members         CommunicationMember[]
   messages        CommunicationMessage[]
   operationalRoom CommunicationOperationalRoom?
+  chamberRecords  CommunicationChamberRecord[]
 
   @@index([createdByUserId, createdAt])
   @@index([status, updatedAt])
@@ -2513,13 +3488,66 @@ model CommunicationMessage {
   workflowTargetId      String?
 
   conversation CommunicationConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
-  sender       User                      @relation("CommunicationMessageSender", fields: [senderUserId], references: [id])
-  readMarkers  CommunicationMember[]     @relation("CommunicationLastReadMessage")
+  sender        User                        @relation("CommunicationMessageSender", fields: [senderUserId], references: [id])
+  readMarkers   CommunicationMember[]       @relation("CommunicationLastReadMessage")
+  chamberRecord CommunicationChamberRecord?
 
   @@unique([conversationId, senderUserId, clientMessageId])
   @@index([conversationId, createdAt])
   @@index([senderUserId, createdAt])
   @@index([workflowTargetType, workflowTargetSubtype, workflowTargetId])
+}
+
+model CommunicationChamberRecord {
+  id String @id @default(cuid())
+
+  messageId         String @unique
+  conversationId    String
+  operationalRoomId String
+
+  communicationClass CommunicationChamberClass
+  subject            String
+
+  authorUserId    String
+  enteredByUserId String
+
+  // Frozen institutional capacity statement at record entry.
+  // This is not an authority grant and is not inferred from RBAC.
+  authorCapacityKey   String
+  authorCapacityLabel String
+
+  // V1 formal audience snapshot. This deliberately avoids
+  // inventing a universal Chamber or Office aggregate.
+  addresseeType     CommunicationChamberAddresseeType
+  addresseeSnapshot Json
+
+  // SHA-256 digest of the exact persisted CommunicationMessage.body.
+  bodyHash String
+
+  enteredIntoRecordAt DateTime @default(now())
+  createdAt           DateTime @default(now())
+
+  respondsToRecordId String?
+  supersedesRecordId String?
+
+  message         CommunicationMessage         @relation(fields: [messageId], references: [id], onDelete: Restrict)
+  conversation    CommunicationConversation    @relation(fields: [conversationId], references: [id], onDelete: Restrict)
+  operationalRoom CommunicationOperationalRoom @relation(fields: [operationalRoomId], references: [id], onDelete: Restrict)
+
+  author    User @relation("CommunicationChamberRecordAuthor", fields: [authorUserId], references: [id], onDelete: Restrict)
+  enteredBy User @relation("CommunicationChamberRecordRecorder", fields: [enteredByUserId], references: [id], onDelete: Restrict)
+
+  respondsTo CommunicationChamberRecord?  @relation("CommunicationChamberResponse", fields: [respondsToRecordId], references: [id], onDelete: Restrict)
+  responses  CommunicationChamberRecord[] @relation("CommunicationChamberResponse")
+
+  supersedes   CommunicationChamberRecord?  @relation("CommunicationChamberSupersession", fields: [supersedesRecordId], references: [id], onDelete: Restrict)
+  supersededBy CommunicationChamberRecord[] @relation("CommunicationChamberSupersession")
+
+  @@index([conversationId, enteredIntoRecordAt])
+  @@index([operationalRoomId, enteredIntoRecordAt])
+  @@index([authorUserId, enteredIntoRecordAt])
+  @@index([enteredByUserId, enteredIntoRecordAt])
+  @@index([communicationClass, enteredIntoRecordAt])
 }
 
 enum CommunicationOperationalRoomClass {
@@ -2537,6 +3565,9 @@ enum CommunicationOperationalTargetType {
   TRANSACTION_DOSSIER
   TRANSACTION
   TREASURY_GATEWAY_AGGREGATE
+  REPRESENTATIVE_PROGRAM_PARTICIPANT
+  REPRESENTATIVE_APPOINTMENT
+  COMMERCIAL_UTILITY_PACK_RESOURCE_RELEASE
 }
 
 model CommunicationOperationalRoom {
@@ -2554,8 +3585,10 @@ model CommunicationOperationalRoom {
 
   createdBy User @relation("CommunicationOperationalRoomCreator", fields: [createdByUserId], references: [id])
 
-  links       CommunicationOperationalLink[]
-  reflections CommunicationOperationalReflection[]
+  links          CommunicationOperationalLink[]
+  reflections    CommunicationOperationalReflection[]
+  globalMotherChamberBinding GlobalMotherChamberRoomBinding?
+  chamberRecords CommunicationChamberRecord[]
 
   @@unique([createdByUserId, clientRoomId])
   @@index([roomClass, updatedAt])
@@ -2667,4 +3700,818 @@ model TreasuryGatewayEvent {
   @@index([aggregateType, aggregateId, sequence])
   @@index([correlationId])
   @@index([eventType, recordedAt])
+}
+
+enum TreasurySettlementObservationDirection {
+  IN
+  OUT
+}
+
+enum TreasurySettlementObservationStatus {
+  DETECTED
+  VALIDATED
+  CONFIRMING
+  CONFIRMED
+  FAILED
+  ORPHANED
+}
+
+model TreasurySettlementObservation {
+  id String @id @default(cuid())
+
+  chainId Int
+  network String
+
+  tokenContractAddress String
+
+  txHash   String
+  logIndex Int
+
+  blockNumber BigInt
+  blockHash   String?
+
+  fromAddress String
+  toAddress   String
+
+  amountBaseUnits Decimal @db.Decimal(78, 0)
+
+  direction TreasurySettlementObservationDirection
+  status    TreasurySettlementObservationStatus    @default(DETECTED)
+
+  detectedAt     DateTime
+  chainTimestamp DateTime?
+  validatedAt    DateTime?
+  confirmedAt    DateTime?
+
+  confirmationCount     Int @default(0)
+  requiredConfirmations Int
+
+  digitalSettlementVerification DigitalSettlementInstruction? @relation("DigitalSettlementVerificationObservation")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([chainId, txHash, logIndex])
+  @@index([chainId, tokenContractAddress, toAddress, status])
+  @@index([status, blockNumber])
+  @@index([txHash])
+}
+
+model TreasurySettlementObservationCursor {
+  id String @id @default(cuid())
+
+  chainId Int
+  network String
+
+  tokenContractAddress String
+  watchedAddress       String
+
+  lastScannedBlock     BigInt
+  lastScannedBlockHash String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([chainId, tokenContractAddress, watchedAddress])
+  @@index([chainId, updatedAt])
+}
+model GlobalMotherRecipientChallenge {
+  grantId         String    @id
+  recipientUserId String
+  email           String
+  pinHash         String
+  nonceHash       String
+  attemptCount    Int       @default(0)
+  expiresAt       DateTime
+  consumedAt      DateTime?
+  sentAt          DateTime
+  windowStartedAt DateTime
+  sendCount       Int       @default(1)
+  grant InstrumentAccessGrant @relation(fields: [grantId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+}
+
+
+ // ============================================================================
+ // FRENCH-WARD INSTITUTIONAL ACCESS
+ // Publication and commercial intake access; independent of ARP authority.
+ // ============================================================================
+
+enum InstitutionalAccessScope {
+  SOURCE_AUTHORITY_VIEW
+  SUPPORTING_DOCUMENT_VIEW
+  PROFILE_VIEW
+  LOI_INTAKE_ACCESS
+}
+
+enum InstitutionalAccessRequestStatus {
+  PENDING
+  APPROVED
+  DECLINED
+  WITHDRAWN
+}
+
+enum InstitutionalAccessEventType {
+  REQUESTED
+  APPROVED
+  DECLINED
+  WITHDRAWN
+  GRANTED
+  REVOKED
+  VIEWED
+  INTAKE_SUBMITTED
+}
+
+model InstitutionalAccessRequest {
+  id                   String @id @default(cuid())
+  requesterName        String
+  requesterEmail       String
+  institutionalAffiliation String
+  requesterCapacity    String
+  purpose              String
+  scope                InstitutionalAccessScope
+  resourceReference    String
+  resourceVersion      Int
+  status               InstitutionalAccessRequestStatus @default(PENDING)
+  decisionPolicy       String?
+  decisionReason       String?
+  decidedByUserId      String?
+  decidedAt            DateTime?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  decidedBy User? @relation("InstitutionalAccessDecisionActor", fields: [decidedByUserId], references: [id], onDelete: Restrict)
+  grant     InstitutionalAccessGrant?
+  events    InstitutionalAccessEvent[]
+
+  @@index([status, createdAt])
+  @@index([requesterEmail, scope])
+}
+
+model InstitutionalAccessGrant {
+  buyerDossierLoi RepresentativeBuyerDossier? @relation("BuyerDossierLoi")
+  buyerDossierItem RepresentativeBuyerDossierItem?
+
+  representativeIntroduction RepresentativeProfileIntroduction?
+
+  id                String @id @default(cuid())
+  requestId         String @unique
+  recipientUserId   String
+  recipientEmail    String
+  scope             InstitutionalAccessScope
+  resourceReference String
+  resourceVersion   Int
+  issuedByUserId    String
+  issuedAt          DateTime @default(now())
+  expiresAt         DateTime
+  revokedAt         DateTime?
+  firstAccessAt     DateTime?
+  lastAccessAt      DateTime?
+
+  request   InstitutionalAccessRequest @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  recipient User @relation("InstitutionalAccessRecipient", fields: [recipientUserId], references: [id], onDelete: Restrict)
+  issuedBy  User @relation("InstitutionalAccessIssuer", fields: [issuedByUserId], references: [id], onDelete: Restrict)
+  events    InstitutionalAccessEvent[]
+
+  @@index([recipientUserId, scope, expiresAt])
+  @@index([resourceReference, resourceVersion])
+}
+
+model InstitutionalAccessEvent {
+  id          String @id @default(cuid())
+  requestId   String
+  grantId     String?
+  type        InstitutionalAccessEventType
+  actorUserId String?
+  reason      String?
+  metadata    Json?
+  occurredAt  DateTime @default(now())
+
+  request InstitutionalAccessRequest @relation(fields: [requestId], references: [id], onDelete: Restrict)
+  grant   InstitutionalAccessGrant? @relation(fields: [grantId], references: [id], onDelete: Restrict)
+  actor   User? @relation("InstitutionalAccessEventActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+
+  @@index([requestId, occurredAt])
+  @@index([grantId, occurredAt])
+}
+
+enum RepresentativeProfileDeliveryStatus {
+  QUEUED
+  SENDING
+  ACCEPTED
+  FAILED
+  DELIVERY_UNKNOWN
+  LOGGED_ONLY
+}
+
+model RepresentativeProfileIntroduction {
+  id                    String @id @default(cuid())
+  actorUserId           String
+  participantId         String
+  appointmentId         String
+  resourceReleaseId     String
+  grantId               String @unique
+  recipientUserId       String
+  recipientName         String
+  recipientEmail        String
+  recipientOrganization String
+  purpose               String
+  resourceReference     String
+  resourceVersion       Int
+  policy                String
+  authoritySnapshot     Json
+  idempotencyKey        String
+  inputHash             String
+
+  recipientDeliveryStatus RepresentativeProfileDeliveryStatus @default(QUEUED)
+  recipientMessageId      String?
+  recipientAttemptedAt    DateTime?
+  recipientDeliveryError  String?
+
+  adminDeliveryStatus RepresentativeProfileDeliveryStatus @default(QUEUED)
+  adminRecipients     String[]
+  adminMessageId      String?
+  adminAttemptedAt    DateTime?
+  adminDeliveryError  String?
+
+  actor           User                                 @relation("ProfileIntroductionActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+  recipient       User                                 @relation("ProfileIntroductionRecipient", fields: [recipientUserId], references: [id], onDelete: Restrict)
+  participant     RepresentativeProgramParticipant     @relation(fields: [participantId], references: [id], onDelete: Restrict)
+  appointment     RepresentativeProgramAppointment     @relation(fields: [appointmentId], references: [id], onDelete: Restrict)
+  resourceRelease CommercialUtilityPackResourceRelease @relation(fields: [resourceReleaseId], references: [id], onDelete: Restrict)
+  grant           InstitutionalAccessGrant             @relation(fields: [grantId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([actorUserId, idempotencyKey])
+  @@index([participantId, createdAt])
+  @@index([recipientEmail, resourceReference, resourceVersion])
+  @@index([recipientDeliveryStatus, createdAt])
+  @@index([adminDeliveryStatus, createdAt])
+}
+
+
+// Selected buyer publications. Existing Profile-only introductions remain independent.
+model RepresentativeBuyerDossier {
+  loiAccessGrantId String? @unique
+  loiAccessGrant InstitutionalAccessGrant? @relation("BuyerDossierLoi", fields: [loiAccessGrantId], references: [id], onDelete: Restrict)
+  id String @id @default(cuid())
+  actorUserId String
+  participantId String
+  appointmentId String
+  recipientUserId String
+  recipientName String
+  recipientEmail String
+  recipientOrganization String
+  purpose String
+  policy String
+  reviewHash String
+  inputHash String
+  idempotencyKey String
+  authoritySnapshot Json
+  expiresAt DateTime
+  revokedAt DateTime?
+  recipientDeliveryStatus RepresentativeProfileDeliveryStatus @default(QUEUED)
+  recipientMessageId String?
+  recipientAttemptedAt DateTime?
+  recipientDeliveryError String?
+  adminDeliveryStatus RepresentativeProfileDeliveryStatus @default(QUEUED)
+  adminRecipients String[]
+  adminMessageId String?
+  adminAttemptedAt DateTime?
+  adminDeliveryError String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  actor User @relation("BuyerDossierActor", fields: [actorUserId], references: [id], onDelete: Restrict)
+  recipient User @relation("BuyerDossierRecipient", fields: [recipientUserId], references: [id], onDelete: Restrict)
+  participant RepresentativeProgramParticipant @relation(fields: [participantId], references: [id], onDelete: Restrict)
+  appointment RepresentativeProgramAppointment @relation(fields: [appointmentId], references: [id], onDelete: Restrict)
+  items RepresentativeBuyerDossierItem[]
+  @@unique([actorUserId, idempotencyKey])
+  @@index([participantId, createdAt])
+  @@index([recipientUserId, expiresAt])
+  @@index([recipientDeliveryStatus, createdAt])
+  @@index([adminDeliveryStatus, createdAt])
+}
+
+model RepresentativeBuyerDossierItem {
+  id String @id @default(cuid())
+  dossierId String
+  resourceReleaseId String
+  grantId String @unique
+  kind String
+  resourceReference String
+  resourceVersion Int
+  label String
+  recipientContentHash String
+  // Buyer retention is a separate release decision, not inherited personal download.
+  canDownload Boolean @default(false)
+  createdAt DateTime @default(now())
+  dossier RepresentativeBuyerDossier @relation(fields: [dossierId], references: [id], onDelete: Restrict)
+  resourceRelease CommercialUtilityPackResourceRelease @relation(fields: [resourceReleaseId], references: [id], onDelete: Restrict)
+  grant InstitutionalAccessGrant @relation(fields: [grantId], references: [id], onDelete: Restrict)
+  @@unique([dossierId, resourceReleaseId])
+  @@unique([dossierId, resourceReference])
+}
+
+// Durable French-Ward public inquiries; alert delivery is a separate record.
+model FrenchWardInquiry {
+  id           String   @id @default(uuid())
+  name         String
+  email        String
+  organization String
+  subject      String
+  message      String
+  status       String   @default("OPEN")
+  revision     Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  events       FrenchWardInquiryEvent[]
+
+  @@index([status, createdAt])
+}
+
+model FrenchWardInquiryEvent {
+  id          String   @id @default(uuid())
+  inquiryId   String
+  inquiry     FrenchWardInquiry @relation(fields: [inquiryId], references: [id], onDelete: Restrict)
+  actorUserId String?
+  fromStatus  String?
+  toStatus    String
+  note        String
+  createdAt   DateTime @default(now())
+
+  @@index([inquiryId, createdAt])
+}
+
+// GSAM-3L3B1 CANDIDATE REGISTRY — non-issuing documentary preservation only.
+// Immutable hash/storage records; issuance/grants require a separate, reviewed design.
+model GsamScoEdition {
+  id                 String                @id @default(cuid())
+  reference          String                @unique
+  quantityMt         Int
+  sourceSha256       String
+  pdfSha256          String
+  htmlSha256         String
+  pdfStorageKey      String?
+  htmlStorageKey     String?
+  state              String                @default("CANDIDATE")
+  createdAt          DateTime              @default(now())
+  events             GsamScoEditionEvent[]
+
+  @@index([state, createdAt])
+}
+
+model GsamScoEditionEvent {
+  id                 String          @id @default(cuid())
+  editionId          String
+  eventType          String
+  eventDetail        Json?
+  occurredAt         DateTime        @default(now())
+  edition            GsamScoEdition  @relation(fields: [editionId], references: [id], onDelete: Restrict)
+
+  @@index([editionId, occurredAt])
+}
+
+model GsamEmailDelivery {
+  id String @id @default(cuid())
+  key String @unique
+  recipientEmail String
+  grantIds String[]
+  actorUserId String
+  status String
+  messageId String?
+  error String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  @@index([status, createdAt])
+}
+
+// Explicit recipient notice; independent of Profile approval and grant issuance.
+model ProfileAccessNoticeDelivery {
+  id             String   @id @default(cuid())
+  deliveryKey    String   @unique
+  requestId      String
+  grantId        String
+  actorUserId    String
+  recipientEmail String
+  status         String
+  messageId      String?
+  error          String?
+  attemptedAt    DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([requestId, attemptedAt])
+  @@index([grantId, attemptedAt])
+  @@index([status, attemptedAt])
+}
+
+model GlobalMotherChamberAdmission {
+  id                  String   @id @default(cuid())
+  instrumentReference String
+  cycleLabel          String
+  participantKey      String
+  institution         String
+  capacity            String
+
+  participantUserId   String?
+  capacityEvidenceReference String?
+  capacityVerifiedByUserId   String?
+  capacityVerifiedAt DateTime?
+
+  standing            String   @default("PREPARED")
+  admittedByUserId    String?
+  admittedAt          DateTime?
+  decisionReason      String?
+
+  revokedByUserId     String?
+  revokedAt           DateTime?
+  revocationReason    String?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  participant User? @relation("GMChamberAdmittedParticipant", fields: [participantUserId], references: [id], onDelete: Restrict)
+  capacityVerifier User? @relation("GMChamberCapacityVerifier", fields: [capacityVerifiedByUserId], references: [id], onDelete: Restrict)
+  admittedBy User? @relation("GMChamberAdmissionDecider", fields: [admittedByUserId], references: [id], onDelete: Restrict)
+  revokedBy User? @relation("GMChamberAdmissionRevoker", fields: [revokedByUserId], references: [id], onDelete: Restrict)
+
+  @@unique([instrumentReference, cycleLabel, participantKey])
+  @@index([participantUserId, standing])
+  @@index([standing, revokedAt])
+}
+
+model GlobalMotherChamberRoomBinding {
+  id                  String   @id @default(cuid())
+  instrumentReference String
+  cycleLabel          String
+
+  operationalRoomId   String?  @unique
+  standing            String   @default("PREPARED")
+
+  boundByUserId       String?
+  boundAt             DateTime?
+  bindingReason       String?
+
+  revokedByUserId     String?
+  revokedAt           DateTime?
+  revocationReason    String?
+
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  operationalRoom CommunicationOperationalRoom? @relation(fields: [operationalRoomId], references: [id], onDelete: Restrict)
+  boundBy User? @relation("GMChamberRoomBinder", fields: [boundByUserId], references: [id], onDelete: Restrict)
+  revokedBy User? @relation("GMChamberRoomRevoker", fields: [revokedByUserId], references: [id], onDelete: Restrict)
+
+  @@unique([instrumentReference, cycleLabel])
+  @@index([standing, revokedAt])
+}
+
+model GsamInstitutionalParticipation {
+  id                      String   @id @default(cuid())
+  reference               String   @unique
+  institutionLegalName    String
+  representativeName      String
+  representativeCapacity  String
+  governingBasis          String
+  programScope            String
+  custodialContext        String?
+  documentationStatus     String   @default("PENDING_REVIEW")
+  accessStatus            String   @default("NOT_PROVISIONED")
+  createdByUserId         String?
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  @@index([institutionLegalName])
+  @@index([documentationStatus])
+}
+
+/// French-Ward institutional governing standing.
+///
+/// This record identifies a person recognized by French-Ward in a governing
+/// officer capacity. It does not itself grant AXPT permissions, commercial
+/// authority, instrument authority, or resource access.
+model FrenchWardOrientationCompletion {
+  id                 String   @id @default(cuid())
+  userId             String
+  orientationVersion String
+  completedAt        DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, orientationVersion])
+  @@index([orientationVersion, completedAt])
+}
+
+enum FrenchWardInstitutionalCapacityClass {
+  STRATEGIC
+  OPERATIONS
+  FIDUCIARY
+}
+
+/// Durable French-Ward internal institutional recognition.
+///
+/// This record establishes that an existing canonical AXPT User is
+/// recognized as a participant inside French-Ward in a specific
+/// institutional capacity.
+///
+/// It does NOT itself grant:
+/// - AXPT roles or permissions;
+/// - French-Ward governing standing;
+/// - commercial action authority;
+/// - instrument authority;
+/// - institutional resource access.
+model FrenchWardInstitutionalParticipant {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+
+  /// Stable French-Ward participant identity, independent of AXPT User.id.
+  reference           String   @unique
+
+  displayName         String
+  institutionalTitle  String
+  secondaryTitle      String?
+
+  capacityClass       FrenchWardInstitutionalCapacityClass
+
+  /// Documentary or institutional basis relied upon for recognition.
+  recognitionBasis    String
+
+  /// Optional historical or documentary provenance pointer.
+  /// Provenance is evidence and does not itself create authority.
+  provenanceReference String?
+
+  status              String   @default("ACTIVE")
+
+  recognizedAt        DateTime @default(now())
+  endedAt             DateTime?
+
+  createdByUserId     String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user                User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([status])
+  @@index([capacityClass, status])
+  @@index([displayName])
+  @@index([provenanceReference])
+}
+
+/// Controlled invitation into French-Ward internal institutional participation.
+///
+/// An invitation records French-Ward's intention to recognize a specific
+/// person in a specific institutional capacity if that invitation is accepted.
+///
+/// It does NOT itself grant:
+/// - authentication eligibility;
+/// - AXPT roles or permissions;
+/// - French-Ward governing standing;
+/// - commercial action authority;
+/// - instrument authority;
+/// - institutional resource access.
+///
+/// Raw credential material is never persisted.
+model FrenchWardInstitutionalInvitation {
+  id                   String   @id @default(cuid())
+  reference            String   @unique
+
+  recipientEmail       String
+  recipientDisplayName String
+
+  /// Intended eventual French-Ward participant reference.
+  /// Multiple invitations may target the same participant identity when
+  /// an earlier invitation expires or is revoked.
+  participantReference String
+
+  institutionalTitle   String
+  secondaryTitle       String?
+  capacityClass        FrenchWardInstitutionalCapacityClass
+
+  recognitionBasis     String
+  provenanceReference  String?
+
+  credentialHash       String   @unique
+  expiresAt            DateTime
+
+  issuedByUserId       String
+  issuedAt             DateTime @default(now())
+
+  acceptedByUserId     String?
+  acceptedAt           DateTime?
+
+  revokedByUserId      String?
+  revokedAt             DateTime?
+  revocationReason     String?
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  issuedBy   User  @relation("FrenchWardInstitutionalInvitationIssuer", fields: [issuedByUserId], references: [id], onDelete: Restrict)
+  acceptedBy User? @relation("FrenchWardInstitutionalInvitationAcceptor", fields: [acceptedByUserId], references: [id], onDelete: Restrict)
+  revokedBy  User? @relation("FrenchWardInstitutionalInvitationRevoker", fields: [revokedByUserId], references: [id], onDelete: Restrict)
+
+  @@index([recipientEmail, expiresAt])
+  @@index([participantReference, issuedAt])
+  @@index([issuedByUserId, issuedAt])
+  @@index([acceptedByUserId, acceptedAt])
+  @@index([revokedAt, expiresAt])
+}
+
+model FrenchWardGoverningOfficer {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+
+  /// Stable French-Ward governance identity, independent of AXPT User.id.
+  reference           String   @unique
+
+  displayName         String
+  institutionalTitle  String
+  secondaryTitle      String?
+
+  /// Documentary or institutional basis relied upon for this recognition.
+  governingBasis      String
+
+  /// Optional provenance pointer to a legacy/operational source such as
+  /// IntakeRepresentative code FW-REP-001. This is evidence, not authority.
+  provenanceReference String?
+
+  status              String   @default("ACTIVE")
+
+  recognizedAt        DateTime @default(now())
+  endedAt             DateTime?
+
+  createdByUserId     String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  user                User     @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([status])
+  @@index([displayName])
+  @@index([provenanceReference])
+}
+
+// FW Phase A · Institutional Matter Foundation
+
+enum InstitutionalMatterKind {
+  COMMERCIAL_TRANSACTION
+}
+
+enum InstitutionalMatterRecordKind {
+  INTAKE
+  OPPORTUNITY
+  DOSSIER
+}
+
+enum InstitutionalMatterEventType {
+  MATTER_ESTABLISHED
+  RECORD_LINKED
+  CURRENT_RECORD_ADVANCED
+}
+
+model InstitutionalMatter {
+  id        String @id @default(cuid())
+  reference String @unique
+
+  institutionalDomain     String
+  institutionalPrincipal  String
+  coordinationEnvironment String
+
+  matterKind InstitutionalMatterKind
+
+  currentRecordKind      InstitutionalMatterRecordKind
+  currentRecordId        String
+  currentRecordReference String
+
+  records InstitutionalMatterRecord[]
+  events  InstitutionalMatterEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([institutionalDomain, matterKind])
+  @@index([institutionalPrincipal])
+  @@index([currentRecordKind, currentRecordId])
+  @@index([updatedAt])
+}
+
+model InstitutionalMatterRecord {
+  id String @id @default(cuid())
+
+  matterId String
+
+  recordKind      InstitutionalMatterRecordKind
+  recordId        String
+  recordReference String
+
+  linkedBy String?
+  linkedAt DateTime @default(now())
+
+  matter InstitutionalMatter @relation(fields: [matterId], references: [id], onDelete: Cascade)
+
+  @@unique([recordKind, recordId])
+  @@unique([recordKind, recordReference])
+  @@index([matterId, linkedAt])
+  @@index([recordReference])
+}
+
+model InstitutionalMatterEvent {
+  id String @id @default(cuid())
+
+  matterId String
+
+  eventType InstitutionalMatterEventType
+
+  actor    String?
+  message  String?
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  matter InstitutionalMatter @relation(fields: [matterId], references: [id], onDelete: Cascade)
+
+  @@index([matterId, createdAt])
+  @@index([eventType])
+  @@index([actor])
+}
+
+model FrenchWardLoiInvitation {
+  id                   String   @id @default(cuid())
+  actorUserId          String
+  governingReference   String
+
+  requestId            String   @unique
+  grantId              String   @unique
+  recipientUserId      String
+
+  recipientName        String
+  recipientEmail       String
+  recipientOrganization String
+  purpose              String
+
+  policy               String
+  inputHash            String
+  idempotencyKey       String
+
+  expiresAt            DateTime
+  revokedAt            DateTime?
+
+  /// Public recipient credential. Raw credential material is never persisted.
+  credentialHash       String?  @unique
+  credentialIssuedAt   DateTime?
+
+  deliveryStatus       String   @default("QUEUED")
+  messageId            String?
+  deliveryError        String?
+  attemptedAt          DateTime?
+
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  @@unique([actorUserId, idempotencyKey])
+  @@index([recipientEmail, expiresAt])
+  @@index([deliveryStatus, createdAt])
+  @@index([actorUserId, createdAt])
+}
+
+/// One non-replayable delivery claim for one institutional invitation.
+/// This record never contains the raw bearer credential or access URL.
+/// FAILED or DELIVERY_UNKNOWN require governed invitation revocation
+/// and new issuance, not reconstruction of the original credential.
+model FrenchWardInstitutionalInvitationDelivery {
+  id                String   @id @default(uuid())
+  invitationId      String   @unique
+  deliveryKey       String   @unique
+  issuerUserId      String
+  recipientEmail    String
+  status            String
+  providerMessageId String?
+  providerErrorCode String?
+  claimedAt         DateTime @default(now())
+  resolvedAt        DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([status, claimedAt])
+  @@index([issuerUserId, claimedAt])
+}
+
+model FrenchWardBulletinPost {
+  id           String    @id @default(cuid())
+  authorUserId String
+  author       User      @relation(fields: [authorUserId], references: [id], onDelete: Restrict)
+  title        String
+  body         String
+  publishedAt  DateTime?
+  urgent       Boolean   @default(false)
+  pdfName      String?
+  pdfBytes     Bytes?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  @@index([publishedAt, id])
 }

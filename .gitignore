@@ -114,3 +114,6 @@ temp/
 # =========================================================
 
 frontend/tsconfig.json
+.vercel
+.env*
+/private-assets/arp/

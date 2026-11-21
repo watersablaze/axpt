@@ -58,6 +58,9 @@ export const EventTypes = {
   DOSSIER_STATE_TRANSITIONED:
   'DOSSIER_STATE_TRANSITIONED',
 
+  DOSSIER_EXECUTION_LANE_OPENED:
+  'DOSSIER_EXECUTION_LANE_OPENED',
+
   /*
   ─────────────────────────────
   SECURITY
