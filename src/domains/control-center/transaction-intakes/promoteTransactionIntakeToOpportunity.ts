@@ -250,11 +250,14 @@ export async function promoteTransactionIntakeToOpportunity({
   ) throw new Error("FW_TXN_PROMOTION_ADMIN_AUTHORITY_REQUIRED");
 
   return prisma.$transaction(async (tx) => {
-    // Lock per intake before reading eligibility, so competing promotions
-    // cannot each create an opportunity from the same source record.
-    await tx.$queryRaw`
-      SELECT 1 AS acquired FROM pg_advisory_xact_lock(hashtextextended(${intakeId}, 0))
+    // Serialize competing promotion requests on the actual intake row.
+    // Row locking, qualification, and writes share one transaction.
+    const locked = await tx.$queryRaw<Array<{ id: string }>>`
+      SELECT "id" FROM "TransactionIntake"
+      WHERE "id" = ${intakeId}
+      FOR UPDATE
     `;
+    if (locked.length !== 1) throw new Error("TRANSACTION_INTAKE_NOT_FOUND");
 
     const operator = await tx.user.findUnique({
       where: { id: principal.userId },
