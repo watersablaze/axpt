@@ -1,10 +1,15 @@
 import { prisma } from "@/lib/prisma";
+import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { PERMISSIONS } from "@/domains/auth/permissions";
+import {
+  FRENCH_WARD_ACTION,
+  resolveFrenchWardActionAuthorityWithClient,
+} from "@/domains/institutions/french-ward/governance/resolveFrenchWardActionAuthorityWithClient";
 
 import type { OpportunitySource } from "@/domains/control-center/opportunities/types";
 
 type PromoteTransactionIntakeInput = {
   intakeId: string;
-  actorEmail?: string | null;
 };
 
 type PromotedOpportunityResult = {
@@ -236,9 +241,38 @@ function buildOpportunityNotes(input: {
 
 export async function promoteTransactionIntakeToOpportunity({
   intakeId,
-  actorEmail,
 }: PromoteTransactionIntakeInput): Promise<PromotedOpportunityResult> {
-  return prisma.$transaction(async (tx: typeof prisma) => {
+  const principal = await getPrincipal();
+  if (!principal) throw new Error("FW_TXN_PROMOTION_UNAUTHENTICATED");
+  if (
+    !principal.roles.includes("ADMIN_PLATFORM") ||
+    !principal.permissions.includes(PERMISSIONS.ADMIN_SURFACE_ACCESS)
+  ) throw new Error("FW_TXN_PROMOTION_ADMIN_AUTHORITY_REQUIRED");
+
+  return prisma.$transaction(async (tx) => {
+    // Lock per intake before reading eligibility, so competing promotions
+    // cannot each create an opportunity from the same source record.
+    await tx.$queryRaw`
+      SELECT pg_advisory_xact_lock(hashtextextended(${intakeId}, 0))
+    `;
+
+    const operator = await tx.user.findUnique({
+      where: { id: principal.userId },
+      select: { isAdmin: true },
+    });
+    if (!operator?.isAdmin) {
+      throw new Error("FW_TXN_PROMOTION_ADMIN_AUTHORITY_REQUIRED");
+    }
+
+    const authority = await resolveFrenchWardActionAuthorityWithClient({
+      client: tx,
+      userId: principal.userId,
+      action: FRENCH_WARD_ACTION.PROMOTE_INTAKE_TO_OPPORTUNITY,
+    });
+    if (!authority.allowed) {
+      throw new Error("FW_TXN_PROMOTION_GOVERNING_AUTHORITY_REQUIRED");
+    }
+
     const intake = await tx.transactionIntake.findUnique({
       where: {
         id: intakeId,
@@ -322,6 +356,21 @@ export async function promoteTransactionIntakeToOpportunity({
       transactionType: intake.transactionType,
     });
 
+    // Claim this exact qualified version before creating downstream state.
+    // A failed claim rolls back the entire transaction without new events.
+    const claim = await tx.transactionIntake.updateMany({
+      where: {
+        id: intake.id,
+        status: "QUALIFIED",
+        promotedOpportunityId: null,
+        updatedAt: intake.updatedAt,
+      },
+      data: { status: "PROMOTED_TO_OPPORTUNITY" },
+    });
+    if (claim.count !== 1) {
+      throw new Error("TRANSACTION_INTAKE_PROMOTION_STALE");
+    }
+
     const opportunity = await tx.opportunity.create({
       data: {
         title,
@@ -376,7 +425,7 @@ export async function promoteTransactionIntakeToOpportunity({
       data: {
         opportunityId: opportunity.id,
         type: "OPPORTUNITY_CREATED",
-        actor: actorEmail ?? null,
+        actor: principal.email,
         message: "Opportunity promoted from transaction intake.",
         metadata: {
           source: "transaction-intake.promotion",
@@ -389,14 +438,11 @@ export async function promoteTransactionIntakeToOpportunity({
     });
 
     await tx.transactionIntake.update({
-      where: {
-        id: intake.id,
-      },
+      where: { id: intake.id },
       data: {
-        status: "PROMOTED_TO_OPPORTUNITY",
         promotedOpportunityId: opportunity.id,
         promotedAt: new Date(),
-        promotedBy: actorEmail ?? null,
+        promotedBy: principal.email,
       },
     });
 
@@ -406,7 +452,7 @@ export async function promoteTransactionIntakeToOpportunity({
         eventType: "PROMOTED_TO_OPPORTUNITY",
         fromStatus: intake.status,
         toStatus: "PROMOTED_TO_OPPORTUNITY",
-        actor: actorEmail ?? null,
+        actor: principal.email,
         note: `Promoted to opportunity ${opportunity.title}.`,
       },
     });
