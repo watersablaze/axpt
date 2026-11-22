@@ -93,7 +93,15 @@ async function run() {
   }});
   await denied(promote({intakeId:intake.id}), "FW_TXN_PROMOTION_GOVERNING_AUTHORITY_REQUIRED");
   await client.frenchWardGoverningOfficer.update({where:{userId},data:{status:"ACTIVE"}});
-  console.log("PASS inactive governing standing rejected");
+  await client.frenchWardGoverningOfficer.update({
+    where:{userId}, data:{reference:"FW-GOV-OTHER-"+nonce}
+  });
+  await denied(promote({intakeId:intake.id}), "FW_TXN_PROMOTION_GOVERNING_AUTHORITY_REQUIRED");
+  await client.frenchWardGoverningOfficer.update({
+    where:{userId}, data:{reference:"FW-GOV-002"}
+  });
+  await unchanged(intake.id);
+  console.log("PASS missing, inactive and non-FW-GOV-002 standing rejected");
 
   const external = await makeIntake("EXTERNAL");
   await client.transactionIntakeEvent.create({data:{
