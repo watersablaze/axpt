@@ -2,5 +2,42 @@ export * from "./contracts";
 export * from "./eventTypes";
 export * from "./stream";
 export * from "./definitions/greatMotherV1Definition";
+export * from "./definitions/digitalSettlementV1Definition";
 export * from "./bootstrap/bootstrapGreatMotherV1";
 export * from "./bootstrap/bootstrapGreatMotherV1WithClient";
+export * from "./bootstrap/bootstrapDigitalSettlementV1WithClient";
+export * from "./commands/issueDigitalSettlementInstructionWithClient";
+export * from "./commands/confirmDigitalSettlementVerificationWithClient";
+export * from "./commands/authorizeDigitalSettlementPrincipalWithClient";
+export * from "./commands/issueInstrumentAccessGrantWithClient";
+export * from "./commands/revokeInstrumentAccessGrantWithClient";
+export * from "./access/accessToken";
+export * from "./invariants/digitalSettlementCommercialSnapshot";
+export * from "./commands/supersedeDigitalSettlementWithV2FinancierRevisionWithClient";
+export * from "./commands/issueDigitalSettlementV2AccessGrantsWithClient";
+export * from "./communications/digitalSettlementV2DeliveryAssembly";
+export * from "./communications/deliverDigitalSettlementEmail";
+export * from "./communications/digitalSettlementV2DeliveryRequests";
+export * from "./communications/sendDigitalSettlementV2Deliveries";
+export * from "./commands/issueDigitalSettlementV2FinancierRevisionWithClient";
+export * from "./representative-program";
+export * from "./commands/recordInstrumentAuthorityWithClient";
+export * from "./commands/revokeInstrumentAuthorityWithClient";
+export * from "./commands/transitionInstrumentStateWithClient";
+export * from "./commands/recordInstrumentEvidenceWithClient";
+export * from "./commands/createInstrumentRelationWithClient";
+export * from "./governance/runInstrumentGovernanceTransaction";
+
+export * from "./commands/recordInstrumentResponseWithClient";
+
+export * from "./invariants/deriveInstrumentPropositionResolution";
+
+export * from "./queries/loadInstrumentDeliberationWithClient";
+
+export * from "./queries/resolveInstitutionalInstrumentAccessWithClient";
+
+export * from "./commands/ensureInstrumentParticipantIdentityWithClient";
+
+export * from "./commands/submitInstrumentResponseWithTokenWithClient";
+export * from "./representative-program";
+export * from "./source-authority";

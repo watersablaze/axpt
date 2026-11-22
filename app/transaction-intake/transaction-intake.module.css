@@ -1,195 +1,3972 @@
 .page {
+  --fw-blue: #10242f;
+  --fw-blue-deep: #0c1b23;
+  --fw-blue-soft: #172f3b;
+
+  --bone: #e4dfd4;
+  --bone-light: #eeeae1;
+  --paper: #e9e5dc;
+  --field: #f0ede6;
+
+  --ink: #14262f;
+  --muted: rgba(20, 38, 47, 0.58);
+
+  --bronze: #9a7b43;
+  --bronze-bright: #ba9654;
+
+  --rule: rgba(20, 38, 47, 0.18);
+  --rule-dark: rgba(20, 38, 47, 0.32);
+  --blue-rule: rgba(238, 234, 225, 0.13);
+
   min-height: 100vh;
-  background:
-    linear-gradient(180deg, rgba(15, 23, 42, 0.98), #020617 42%, #000);
-  color: #fff;
-  padding: 3rem 1.25rem;
+
+  background: var(--bone);
+  color: var(--ink);
+
+  font-family:
+    "Roboto",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
 }
 
-.hero,
-.form,
-.successCard {
-  width: min(980px, 100%);
-  margin: 0 auto;
+/* ─────────────────────────────
+   ISSUER MASTHEAD
+───────────────────────────── */
+
+.instrumentMasthead {
+  background: var(--fw-blue-deep);
+  color: var(--bone-light);
+
+  border-bottom: 1px solid var(--blue-rule);
 }
+
+.mastheadInner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 3rem;
+
+  width: min(1120px, calc(100% - 64px));
+
+  margin: 0 auto;
+
+  padding: 1.4rem 0;
+}
+
+.issuer p,
+.issuer span,
+.documentMeta span,
+.documentMeta strong {
+  margin: 0;
+
+  text-transform: uppercase;
+}
+
+.issuer p {
+  font-size: 0.66rem;
+  font-weight: 600;
+
+  letter-spacing: 0.17em;
+
+  color: rgba(238, 234, 225, 0.92);
+}
+
+.issuer span {
+  display: block;
+
+  margin-top: 0.28rem;
+
+  font-size: 0.45rem;
+  font-weight: 500;
+
+  letter-spacing: 0.16em;
+
+  color: var(--bronze-bright);
+}
+
+.documentMeta {
+  display: flex;
+  align-items: center;
+
+  gap: 1.1rem;
+
+  text-align: right;
+}
+
+.documentMeta span {
+  font-size: 0.45rem;
+  font-weight: 500;
+
+  letter-spacing: 0.14em;
+
+  color: rgba(238, 234, 225, 0.48);
+}
+
+.documentMeta strong {
+  font-size: 0.5rem;
+  font-weight: 600;
+
+  letter-spacing: 0.14em;
+
+  color: rgba(238, 234, 225, 0.82);
+}
+
+/* ─────────────────────────────
+   TITLE CHAMBER
+───────────────────────────── */
 
 .hero {
-  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+
+  min-height: 430px;
+
+  padding:
+    clamp(5.5rem, 9vw, 8rem)
+    2rem;
+
+  background:
+    linear-gradient(
+      rgba(238, 234, 225, 0.024) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      180deg,
+      var(--fw-blue-soft),
+      var(--fw-blue)
+    );
+
+  background-size:
+    100% 38px,
+    100% 100%;
+
+  color: var(--bone-light);
 }
 
-.kicker {
-  color: #aab0bd;
-  font-size: 0.72rem;
-  letter-spacing: 0.24em;
-  text-transform: uppercase;
-  margin-bottom: 0.75rem;
+.heroInner {
+  width: min(900px, 100%);
+
+  margin: 0 auto;
+
+  text-align: center;
 }
 
-.hero h1,
-.successCard h2 {
-  font-size: clamp(2rem, 3vw, 3.25rem);
-  line-height: 1.05;
+.kicker,
+.stageCode {
   margin: 0;
+
+  font-size: 0.53rem;
+  line-height: 1.3;
+
+  font-weight: 600;
+
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+
+  color: var(--bronze-bright);
 }
 
-.hero p,
-.successCard p {
-  max-width: 760px;
-  color: #d6d9e0;
-  line-height: 1.65;
+.hero h1 {
+  margin:
+    1.3rem
+    0
+    1.5rem;
+
+  font-size: clamp(2.8rem, 5.5vw, 5.5rem);
+  line-height: 0.96;
+
+  font-weight: 500;
+
+  letter-spacing: -0.055em;
 }
 
-.notice {
-  margin-top: 1.25rem;
-  max-width: 900px;
-  border: 1px solid rgba(245, 158, 11, 0.36);
-  background: rgba(245, 158, 11, 0.075);
-  color: #f8e2b4;
-  border-radius: 0.9rem;
-  padding: 0.95rem;
-  line-height: 1.55;
+.hero h1 span {
+  display: block;
+
+  margin-top: 0.3rem;
+
+  font-weight: 300;
+
+  color: rgba(238, 234, 225, 0.73);
 }
+
+.heroLead {
+  max-width: 660px;
+
+  margin: 0 auto;
+
+  font-size: clamp(1rem, 1.7vw, 1.25rem);
+  line-height: 1.6;
+
+  color: rgba(238, 234, 225, 0.65);
+}
+
+/* ─────────────────────────────
+   DOCUMENT NAVIGATION
+───────────────────────────── */
+
+.instrumentNav {
+  position: sticky;
+  top: 0;
+
+  z-index: 20;
+
+  background: rgba(12, 27, 35, 0.97);
+
+  border-top: 1px solid var(--blue-rule);
+  border-bottom: 1px solid var(--blue-rule);
+
+  backdrop-filter: blur(8px);
+}
+
+.instrumentNav > div {
+  display: flex;
+  justify-content: center;
+
+  gap: clamp(1rem, 3vw, 2.5rem);
+
+  width: min(1120px, calc(100% - 48px));
+
+  margin: 0 auto;
+
+  overflow-x: auto;
+}
+
+.instrumentNav a {
+  flex: 0 0 auto;
+
+  padding: 1rem 0;
+
+  font-size: 0.47rem;
+
+  font-weight: 500;
+
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+
+  color: rgba(238, 234, 225, 0.48);
+
+  text-decoration: none;
+
+  transition: color 140ms ease;
+}
+
+.instrumentNav a:hover {
+  color: rgba(238, 234, 225, 0.92);
+}
+
+/* ─────────────────────────────
+   FORM BODY
+───────────────────────────── */
 
 .form {
+  width: min(960px, calc(100% - 64px));
+
+  margin: 0 auto;
+
+  padding:
+    clamp(4rem, 7vw, 6.5rem)
+    0
+    clamp(6rem, 9vw, 8rem);
+}
+
+.section {
+  scroll-margin-top: 80px;
+
+  padding:
+    0
+    0
+    clamp(4.75rem, 7vw, 6rem);
+
+  margin-bottom: clamp(4.5rem, 7vw, 6rem);
+
+  border-bottom: 1px solid var(--rule-dark);
+}
+
+.section:last-of-type {
+  margin-bottom: 3rem;
+}
+
+.sectionHeader {
   display: grid;
-  gap: 0.9rem;
+
+  grid-template-columns: 3rem minmax(0, 1fr);
+
+  gap: 1rem;
+
+  align-items: start;
+
+  padding-bottom: 1.25rem;
+
+  margin-bottom: clamp(2rem, 4vw, 3rem);
+
+  border-bottom: 1px solid var(--rule-dark);
 }
 
-.section,
-.successCard {
-  border: 1px solid rgba(148, 163, 184, 0.2);
-  background: rgba(15, 23, 42, 0.72);
-  border-radius: 1rem;
-  padding: 1.1rem;
+.sectionHeader > span {
+  padding-top: 0.18rem;
+
+  font-size: 0.58rem;
+  font-weight: 600;
+
+  letter-spacing: 0.16em;
+
+  color: var(--bronze);
 }
 
-.section h2 {
-  margin: 0 0 0.85rem;
-  font-size: 1.1rem;
+.sectionHeader h2 {
+  margin: 0.4rem 0 0;
+
+  font-size: clamp(1.55rem, 2.4vw, 2.2rem);
+  line-height: 1.06;
+
+  font-weight: 450;
+
+  letter-spacing: -0.035em;
+}
+
+.sectionHeader .stageCode {
+  color: rgba(20, 38, 47, 0.48);
+}
+
+/* ─────────────────────────────
+   STATUS NOTICE
+───────────────────────────── */
+
+.instrumentNotice {
+  display: grid;
+
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+
+  gap: clamp(2rem, 5vw, 5rem);
+
+  padding:
+    1.5rem
+    0;
+
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.instrumentNotice p {
+  margin: 0;
+
+  font-size: 0.79rem;
+  line-height: 1.65;
+
+  color: var(--muted);
+}
+
+.progression {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 0.7rem;
+
+  padding: 1.4rem 0;
+
+  margin-bottom: 2.75rem;
+
+  border-bottom: 1px solid var(--rule);
+}
+
+.progression span {
+  font-size: 0.5rem;
+  font-weight: 600;
+
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+
+  color: rgba(20, 38, 47, 0.58);
+}
+
+.progression i {
+  font-style: normal;
+
+  color: var(--bronze);
+}
+
+/* ─────────────────────────────
+   SUBSECTIONS
+───────────────────────────── */
+
+.subheading {
+  margin:
+    3rem
+    0
+    1.25rem;
+
+  padding-bottom: 0.65rem;
+
+  border-bottom: 1px solid var(--rule);
+
+  font-size: 0.65rem;
+  line-height: 1.3;
+
+  font-weight: 600;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  color: rgba(20, 38, 47, 0.72);
 }
 
 .helper {
-  margin: -0.35rem 0 1rem;
-  color: #94a3b8;
-  font-size: 0.9rem;
-  line-height: 1.55;
+  max-width: 720px;
+
+  margin:
+    -0.25rem
+    0
+    1.75rem;
+
+  font-size: 0.72rem;
+  line-height: 1.6;
+
+  color: var(--muted);
 }
+
+/* ─────────────────────────────
+   FIELD GRID
+───────────────────────────── */
 
 .grid {
   display: grid;
-  gap: 0.9rem;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
 
-.checkboxGrid {
-  display: grid;
-  gap: 0.75rem;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-bottom: 1rem;
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap:
+    1.55rem
+    2.25rem;
 }
 
 .wide {
-  grid-column: span 3;
+  grid-column: 1 / -1;
+}
+
+.grid label,
+.choiceBlock > label {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.48rem;
+
+  min-width: 0;
+
+  font-size: 0.57rem;
+  line-height: 1.35;
+
+  font-weight: 600;
+
+  letter-spacing: 0.065em;
+  text-transform: uppercase;
+
+  color: rgba(20, 38, 47, 0.62);
+}
+
+/* ─────────────────────────────
+   INPUT CONSTITUTION
+   intentionally NOT bubbly
+───────────────────────────── */
+
+.grid input,
+.grid select,
+.grid textarea,
+.choiceBlock input,
+.choiceBlock select,
+.choiceBlock textarea {
+  width: 100%;
+
+  box-sizing: border-box;
+
+  border:
+    1px solid
+    rgba(20, 38, 47, 0.24);
+
+  border-radius: 0;
+
+  outline: none;
+
+  background: rgba(240, 237, 230, 0.72);
+
+  color: var(--ink);
+
+  font-family:
+    "Roboto",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 0.86rem;
+
+  font-weight: 400;
+
+  letter-spacing: 0;
+
+  text-transform: none;
+
+  box-shadow: none;
+
+  appearance: none;
+
+  transition:
+    border-color 120ms ease,
+    background 120ms ease;
+}
+
+.grid input,
+.grid select,
+.choiceBlock input,
+.choiceBlock select {
+  min-height: 44px;
+
+  padding:
+    0
+    0.8rem;
+}
+
+.grid textarea,
+.choiceBlock textarea {
+  min-height: 110px;
+
+  padding: 0.75rem 0.8rem;
+
+  resize: vertical;
+}
+
+.grid select,
+.choiceBlock select {
+  padding-right: 2.3rem;
+
+  background-image:
+    linear-gradient(
+      45deg,
+      transparent 50%,
+      rgba(20, 38, 47, 0.55) 50%
+    ),
+    linear-gradient(
+      135deg,
+      rgba(20, 38, 47, 0.55) 50%,
+      transparent 50%
+    );
+
+  background-position:
+    calc(100% - 16px) 19px,
+    calc(100% - 11px) 19px;
+
+  background-size:
+    5px 5px,
+    5px 5px;
+
+  background-repeat: no-repeat;
+}
+
+.grid input:focus,
+.grid select:focus,
+.grid textarea:focus,
+.choiceBlock input:focus,
+.choiceBlock select:focus,
+.choiceBlock textarea:focus {
+  border-color: var(--bronze);
+
+  background: rgba(244, 241, 234, 0.98);
+
+  box-shadow:
+    inset 0 -2px 0
+    rgba(154, 123, 67, 0.72);
+}
+
+.grid input::placeholder,
+.grid textarea::placeholder {
+  color: rgba(20, 38, 47, 0.3);
+}
+
+/* ─────────────────────────────
+   CHOICE / AUTHORITY BLOCK
+───────────────────────────── */
+
+.choiceBlock {
+  margin-top: 2rem;
+
+  padding:
+    1.5rem
+    0;
+
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.choiceLabel {
+  margin:
+    0
+    0
+    1rem;
+
+  font-size: 0.57rem;
+
+  font-weight: 600;
+
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+
+  color: rgba(20, 38, 47, 0.64);
+}
+
+/* ─────────────────────────────
+   CHECKBOXES
+───────────────────────────── */
+
+.checkboxGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 0;
+
+  margin-bottom: 1.6rem;
+
+  border-top: 1px solid var(--rule);
+}
+
+.checkbox {
+  display: grid;
+
+  grid-template-columns: 1rem 1fr;
+
+  gap: 0.8rem;
+
+  align-items: start;
+
+  padding:
+    0.9rem
+    1.2rem
+    0.9rem
+    0;
+
+  border-bottom: 1px solid var(--rule);
+
+  font-size: 0.75rem;
+  line-height: 1.5;
+
+  color: rgba(20, 38, 47, 0.7);
+
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.checkbox:nth-child(odd) {
+  border-right: 1px solid var(--rule);
+
+  padding-right: 1.5rem;
+}
+
+.checkbox:nth-child(even) {
+  padding-left: 1.5rem;
+}
+
+.checkbox input {
+  width: 14px;
+  height: 14px;
+
+  margin: 0.16rem 0 0;
+
+  border:
+    1px solid
+    rgba(20, 38, 47, 0.46);
+
+  border-radius: 0;
+
+  appearance: none;
+
+  background: transparent;
+
+  cursor: pointer;
+}
+
+.checkbox input:checked {
+  border-color: var(--bronze);
+
+  background:
+    linear-gradient(
+      135deg,
+      transparent 35%,
+      var(--bronze) 35%,
+      var(--bronze) 58%,
+      transparent 58%
+    );
+}
+
+/* ─────────────────────────────
+   DECLARATIONS
+───────────────────────────── */
+
+.declarations {
+  margin-top: 2.5rem;
+
+  border-top: 1px solid var(--rule-dark);
+}
+
+.declarations .checkbox {
+  grid-template-columns: 1rem 1fr;
+
+  padding:
+    1.15rem
+    0;
+
+  border-right: 0;
+}
+
+/* ─────────────────────────────
+   SUBMISSION
+───────────────────────────── */
+
+.submitArea {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 3rem;
+
+  padding:
+    2rem
+    0;
+
+  border-top: 1px solid var(--rule-dark);
+  border-bottom: 1px solid var(--rule-dark);
+}
+
+.submitNote {
+  max-width: 520px;
+
+  margin:
+    0.5rem
+    0
+    0;
+
+  font-size: 0.7rem;
+  line-height: 1.5;
+
+  color: var(--muted);
+}
+
+.submit {
+  flex: 0 0 auto;
+
+  min-width: 190px;
+
+  min-height: 48px;
+
+  padding:
+    0
+    1.4rem;
+
+  border:
+    1px solid
+    var(--fw-blue);
+
+  border-radius: 0;
+
+  background: var(--fw-blue);
+
+  color: var(--bone-light);
+
+  font-family:
+    "Roboto",
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+
+  font-size: 0.55rem;
+
+  font-weight: 600;
+
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+
+  cursor: pointer;
+
+  transition:
+    background 140ms ease,
+    color 140ms ease;
+}
+
+.submit:hover {
+  background: transparent;
+
+  color: var(--fw-blue);
+}
+
+.submit:disabled {
+  opacity: 0.42;
+
+  cursor: wait;
+}
+
+/* ─────────────────────────────
+   ERROR / SUCCESS
+───────────────────────────── */
+
+.error {
+  margin:
+    1.5rem
+    0;
+
+  padding:
+    1rem
+    1.1rem;
+
+  border:
+    1px solid
+    rgba(128, 44, 38, 0.42);
+
+  border-radius: 0;
+
+  background:
+    rgba(128, 44, 38, 0.045);
+
+  font-size: 0.74rem;
+  line-height: 1.5;
+
+  color: #722f2a;
+}
+
+.successCard {
+  width: min(760px, calc(100% - 48px));
+
+  margin:
+    clamp(5rem, 10vw, 9rem)
+    auto;
+
+  padding:
+    clamp(3rem, 6vw, 5rem);
+
+  border:
+    1px solid
+    var(--rule-dark);
+
+  border-radius: 0;
+
+  background: var(--paper);
+
+  text-align: center;
+}
+
+.successCard h2 {
+  margin:
+    1rem
+    0;
+
+  font-size: clamp(1.8rem, 3vw, 2.7rem);
+
+  font-weight: 450;
+
+  letter-spacing: -0.035em;
+}
+
+.successCard > p {
+  font-size: 0.85rem;
+  line-height: 1.6;
+
+  color: var(--muted);
+}
+
+.reference {
+  margin:
+    2rem
+    0;
+
+  padding:
+    1.2rem;
+
+  border-top:
+    1px solid
+    var(--bronze);
+
+  border-bottom:
+    1px solid
+    var(--bronze);
+
+  font-size: clamp(1rem, 2vw, 1.3rem);
+
+  font-weight: 600;
+
+  letter-spacing: 0.1em;
+}
+
+.muted {
+  max-width: 620px;
+
+  margin:
+    1.5rem
+    auto
+    0;
+}
+
+/* ─────────────────────────────
+   RESPONSIVE
+───────────────────────────── */
+
+@media (max-width: 760px) {
+  .mastheadInner {
+    width: calc(100% - 32px);
+
+    align-items: flex-start;
+  }
+
+  .documentMeta {
+    display: block;
+  }
+
+  .documentMeta strong {
+    display: block;
+
+    margin-top: 0.3rem;
+  }
+
+  .form {
+    width: calc(100% - 32px);
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wide {
+    grid-column: auto;
+  }
+
+  .instrumentNotice {
+    grid-template-columns: 1fr;
+
+    gap: 1rem;
+  }
+
+  .checkboxGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkbox:nth-child(odd) {
+    border-right: 0;
+
+    padding-right: 0;
+  }
+
+  .checkbox:nth-child(even) {
+    padding-left: 0;
+  }
+
+  .progression {
+    justify-content: flex-start;
+
+    overflow-x: auto;
+  }
+
+  .submitArea {
+    align-items: stretch;
+
+    flex-direction: column;
+  }
+
+  .submit {
+    width: 100%;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero {
+    min-height: 360px;
+
+    padding:
+      5rem
+      1rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 13vw, 4rem);
+  }
+
+  .mastheadInner {
+    flex-direction: column;
+
+    gap: 1rem;
+  }
+
+  .sectionHeader {
+    grid-template-columns: 2rem 1fr;
+  }
+}
+
+/* ─────────────────────────────
+   V4 FINAL SCALE / DENSITY PASS
+───────────────────────────── */
+
+.form {
+  width: min(1040px, calc(100% - 48px));
+}
+
+.section {
+  padding-bottom: clamp(3.5rem, 5vw, 4.75rem);
+  margin-bottom: clamp(3.5rem, 5vw, 4.75rem);
+}
+
+.sectionHeader {
+  margin-bottom: clamp(1.75rem, 3vw, 2.5rem);
+}
+
+.sectionHeader h2 {
+  font-size: clamp(1.8rem, 2.8vw, 2.5rem);
+  font-weight: 500;
+}
+
+.sectionHeader .stageCode {
+  font-size: 0.58rem;
+}
+
+.grid {
+  gap:
+    1.25rem
+    1.75rem;
+}
+
+.grid label,
+.choiceBlock > label {
+  font-size: 0.62rem;
+  letter-spacing: 0.055em;
+}
+
+.grid input,
+.grid select,
+.grid textarea,
+.choiceBlock input,
+.choiceBlock select,
+.choiceBlock textarea {
+  font-size: 0.92rem;
+}
+
+.grid input,
+.grid select,
+.choiceBlock input,
+.choiceBlock select {
+  min-height: 48px;
+}
+
+.grid textarea,
+.choiceBlock textarea {
+  min-height: 120px;
+}
+
+.helper {
+  font-size: 0.78rem;
+  line-height: 1.65;
+}
+
+.subheading {
+  font-size: 0.7rem;
+}
+
+.checkbox {
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.instrumentNotice p {
+  font-size: 0.84rem;
+}
+
+.practiceRow strong,
+.stage strong {
+  letter-spacing: 0.06em;
+}
+
+.progression {
+  margin-bottom: 2.25rem;
+}
+
+.submitNote {
+  font-size: 0.76rem;
+}
+
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .wide {
+    grid-column: auto;
+  }
+
+  .checkboxGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .checkbox:nth-child(odd) {
+    border-right: 0;
+    padding-right: 0;
+  }
+
+  .checkbox:nth-child(even) {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .form {
+    width: calc(100% - 28px);
+  }
+
+  .section {
+    padding-bottom: 3rem;
+    margin-bottom: 3rem;
+  }
+
+  .sectionHeader {
+    grid-template-columns: 1.8rem 1fr;
+  }
+
+  .sectionHeader h2 {
+    font-size: 1.65rem;
+  }
+
+  .grid input,
+  .grid select,
+  .choiceBlock input,
+  .choiceBlock select {
+    min-height: 50px;
+  }
+
+  .heroLead {
+    font-size: 0.95rem;
+  }
+
+  .instrumentNav a {
+    font-size: 0.5rem;
+  }
+}
+
+/* ─────────────────────────────
+   V4 FINAL TONAL CALIBRATION
+───────────────────────────── */
+
+.page {
+  --bone: #ddd7ca;
+  --bone-light: #ece7dc;
+  --paper: #e4ded2;
+  --field: #ebe6db;
+}
+
+.grid label,
+.choiceBlock > label {
+  font-size: 0.66rem;
+}
+
+.grid input,
+.grid select,
+.grid textarea,
+.choiceBlock input,
+.choiceBlock select,
+.choiceBlock textarea {
+  font-size: 0.96rem;
+}
+
+.helper {
+  font-size: 0.82rem;
+}
+
+.instrumentNotice p {
+  font-size: 0.88rem;
+}
+
+.checkbox {
+  font-size: 0.84rem;
+}
+
+.profileCopy,
+.submitNote {
+  font-size: 0.8rem;
+}
+
+.sectionHeader .stageCode,
+.stageCode {
+  letter-spacing: 0.17em;
+}
+
+/* ─────────────────────────────
+   ISSUER AUTHORITY MARK
+───────────────────────────── */
+
+.issuer {
+  display: flex;
+  align-items: center;
+
+  gap: 0.85rem;
+}
+
+.issuerSeal {
+  width: 38px;
+  height: 38px;
+
+  object-fit: contain;
+
+  opacity: 0.72;
+
+  filter: grayscale(1) brightness(1.55);
+}
+
+/* ─────────────────────────────
+   V4 COMPLETER CONFIDENCE PASS
+───────────────────────────── */
+
+.progression {
+  padding:
+    1.15rem
+    1.25rem;
+
+  background:
+    rgba(20, 38, 47, 0.025);
+
+  border-top:
+    1px solid
+    rgba(154, 123, 67, 0.34);
+
+  border-bottom:
+    1px solid
+    rgba(154, 123, 67, 0.34);
+}
+
+.progression span {
+  font-size: 0.56rem;
+  font-weight: 700;
+
+  color: rgba(20, 38, 47, 0.72);
+}
+
+.progression i {
+  font-size: 0.8rem;
+
+  color: #a98545;
+}
+
+.fieldHelp,
+.choiceHelp {
+  display: block;
+
+  margin-top: 0.18rem;
+
+  font-size: 0.68rem;
+  line-height: 1.48;
+
+  font-weight: 400;
+
+  letter-spacing: 0;
+  text-transform: none;
+
+  color: rgba(20, 38, 47, 0.48);
+}
+
+.choiceHelp {
+  max-width: 720px;
+
+  margin:
+    -0.3rem
+    0
+    1.1rem;
+}
+
+.conditionalGroup {
+  grid-column: 1 / -1;
+
+  margin:
+    0.35rem
+    0
+    0.45rem;
+
+  padding:
+    1.2rem
+    0
+    0;
+
+  border-top:
+    1px solid
+    rgba(154, 123, 67, 0.36);
+}
+
+.conditionalLabel {
+  margin:
+    0
+    0
+    1rem;
+
+  font-size: 0.56rem;
+
+  font-weight: 700;
+
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+
+  color: #8f713d;
+}
+
+.conditionalGrid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap:
+    1.25rem
+    1.75rem;
+}
+
+.conditionalGrid label {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.48rem;
+
+  font-size: 0.66rem;
+
+  font-weight: 600;
+
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+
+  color: rgba(20, 38, 47, 0.62);
+}
+
+.conditionalGrid input,
+.conditionalGrid select {
+  width: 100%;
+
+  min-height: 48px;
+
+  box-sizing: border-box;
+
+  padding:
+    0
+    0.8rem;
+
+  border:
+    1px solid
+    rgba(20, 38, 47, 0.24);
+
+  border-radius: 0;
+
+  outline: none;
+
+  background:
+    rgba(240, 237, 230, 0.72);
+
+  color: var(--ink);
+
+  font: inherit;
+
+  font-size: 0.96rem;
+
+  font-weight: 400;
+
+  letter-spacing: 0;
+  text-transform: none;
+
+  box-shadow: none;
+}
+
+.conditionalGrid input:focus,
+.conditionalGrid select:focus {
+  border-color: var(--bronze);
+
+  background:
+    rgba(244, 241, 234, 0.98);
+
+  box-shadow:
+    inset 0 -2px 0
+    rgba(154, 123, 67, 0.72);
+}
+
+.grid input[readonly] {
+  background:
+    rgba(20, 38, 47, 0.035);
+
+  color:
+    rgba(20, 38, 47, 0.62);
+
+  cursor: default;
+}
+
+@media (max-width: 860px) {
+  .conditionalGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─────────────────────────────
+   V4 FINAL NAV + CHECKBOX POLISH
+───────────────────────────── */
+
+/* Masthead identity / meta */
+
+.issuer p {
+  font-size: 0.72rem;
+}
+
+.issuer span {
+  font-size: 0.5rem;
+}
+
+.documentMeta span {
+  font-size: 0.5rem;
+}
+
+.documentMeta strong {
+  font-size: 0.56rem;
+}
+
+/* Horizontal section navigation */
+
+.instrumentNav a {
+  font-size: 0.56rem;
+  font-weight: 600;
+
+  letter-spacing: 0.12em;
+}
+
+/* Slightly more room around nav */
+
+.instrumentNav > div {
+  gap: clamp(1.15rem, 3vw, 2.7rem);
+}
+
+.instrumentNav a {
+  padding: 1.05rem 0;
+}
+
+/* Checkbox geometry + alignment */
+
+.checkbox {
+  grid-template-columns: 18px minmax(0, 1fr);
+
+  align-items: start;
+
+  gap: 0.75rem;
+}
+
+.checkbox input {
+  width: 16px;
+  height: 16px;
+
+  min-width: 16px;
+  min-height: 16px;
+
+  margin: 0.05rem 0 0;
+
+  border:
+    1px solid
+    rgba(20, 38, 47, 0.5);
+
+  border-radius: 0;
+
+  aspect-ratio: 1 / 1;
+}
+
+/* Keep long checkbox labels visually connected */
+
+.checkbox {
+  line-height: 1.42;
+}
+
+/* Slightly firmer checked state */
+
+.checkbox input:checked {
+  border-color: var(--bronze);
+
+  background:
+    linear-gradient(
+      135deg,
+      transparent 31%,
+      var(--bronze) 31%,
+      var(--bronze) 59%,
+      transparent 59%
+    );
+}
+
+/* ─────────────────────────────
+   V4 FINAL NAV + CHECKBOX POLISH
+───────────────────────────── */
+
+/* Masthead identity / meta */
+
+.issuer p {
+  font-size: 0.72rem;
+}
+
+.issuer span {
+  font-size: 0.5rem;
+}
+
+.documentMeta span {
+  font-size: 0.5rem;
+}
+
+.documentMeta strong {
+  font-size: 0.56rem;
+}
+
+/* Horizontal section navigation */
+
+.instrumentNav a {
+  font-size: 0.56rem;
+  font-weight: 600;
+
+  letter-spacing: 0.12em;
+}
+
+/* Slightly more room around nav */
+
+.instrumentNav > div {
+  gap: clamp(1.15rem, 3vw, 2.7rem);
+}
+
+.instrumentNav a {
+  padding: 1.05rem 0;
+}
+
+/* Checkbox geometry + alignment */
+
+.checkbox {
+  grid-template-columns: 18px minmax(0, 1fr);
+
+  align-items: start;
+
+  gap: 0.75rem;
+}
+
+.checkbox input {
+  width: 16px;
+  height: 16px;
+
+  min-width: 16px;
+  min-height: 16px;
+
+  margin: 0.05rem 0 0;
+
+  border:
+    1px solid
+    rgba(20, 38, 47, 0.5);
+
+  border-radius: 0;
+
+  aspect-ratio: 1 / 1;
+}
+
+/* Keep long checkbox labels visually connected */
+
+.checkbox {
+  line-height: 1.42;
+}
+
+/* Slightly firmer checked state */
+
+.checkbox input:checked {
+  border-color: var(--bronze);
+
+  background:
+    linear-gradient(
+      135deg,
+      transparent 31%,
+      var(--bronze) 31%,
+      var(--bronze) 59%,
+      transparent 59%
+    );
+}
+
+/* ─────────────────────────────
+   FRENCH-WARD RETURN RAIL
+───────────────────────────── */
+
+.returnRail {
+  width: min(1040px, calc(100% - 64px));
+
+  margin: 0 auto;
+
+  padding:
+    1rem
+    0
+    0;
+}
+
+.returnRail a {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 0.55rem;
+
+  color: rgba(231, 225, 213, 0.58);
+
+  font-size: 0.54rem;
+  font-weight: 600;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  text-decoration: none;
+
+  transition:
+    color 150ms ease,
+    gap 150ms ease;
+}
+
+.returnRail a > span:first-child {
+  color: var(--bronze);
+}
+
+.returnRail a:hover {
+  gap: 0.72rem;
+
+  color: rgba(239, 234, 224, 0.9);
+}
+
+@media (max-width: 560px) {
+  .returnRail {
+    width: calc(100% - 32px);
+  }
+}
+
+/* ─────────────────────────────
+   FW RETURN — MASTHEAD INGRESS
+───────────────────────────── */
+
+.returnRail {
+  display: none;
+}
+
+.masthead {
+  position: relative;
+}
+
+.returnLink {
+  position: absolute;
+
+  left: max(
+    32px,
+    calc((100% - 1040px) / 2)
+  );
+
+  top: 0.85rem;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 0.48rem;
+
+  color: rgba(231, 225, 213, 0.42);
+
+  font-size: 0.5rem;
+  font-weight: 600;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  text-decoration: none;
+
+  transition:
+    color 150ms ease,
+    gap 150ms ease;
+}
+
+.returnLink span:first-child {
+  color: var(--bronze);
+}
+
+.returnLink:hover {
+  gap: 0.65rem;
+
+  color: rgba(239, 234, 224, 0.82);
+}
+
+@media (max-width: 560px) {
+  .returnLink {
+    left: 16px;
+  }
+}
+
+/* ─────────────────────────────
+   FW RETURN — INTEGRATED MASTHEAD
+───────────────────────────── */
+
+.returnRail {
+  display: none;
+}
+
+.mastheadInner {
+  position: relative;
+}
+
+.returnLink {
+  position: absolute;
+
+  left: 0;
+  top: -1.65rem;
+
+  display: inline-flex;
+  align-items: center;
+
+  gap: 0.48rem;
+
+  color: rgba(231, 225, 213, 0.38);
+
+  font-size: 0.49rem;
+  font-weight: 600;
+
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+
+  text-decoration: none;
+
+  transition:
+    color 150ms ease,
+    gap 150ms ease;
+}
+
+.returnLink span:first-child {
+  color: var(--bronze);
+}
+
+.returnLink:hover {
+  gap: 0.65rem;
+  color: rgba(239, 234, 224, 0.78);
+}
+
+@media (max-width: 680px) {
+  .returnLink {
+    top: -1.45rem;
+  }
+}
+
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-1 — Institutional Profile visual convergence
+
+   Presentation only.
+   No form structure, field identity, validation, access,
+   submission, or transaction semantics are changed.
+
+   Direction:
+   - continuous French-Ward publication field
+   - open-passage cover language
+   - mineral blue / restrained gold
+   - quieter operational form controls
+   - publication hierarchy rather than generic web-form cards
+   ═════════════════════════════════════════════════════════════ */
+
+.page {
+  --fw-blue: #83bedb;
+  --fw-blue-deep: #081118;
+  --fw-blue-soft: #101c25;
+
+  --bone: #dce4e2;
+  --bone-light: #f1f2ee;
+  --paper: #15242e;
+  --field: rgba(13, 28, 38, 0.28);
+
+  --ink: #e9ece9;
+  --muted: #aabac2;
+
+  --bronze: #bd9e6f;
+  --bronze-bright: #c0a577;
+
+  --rule: rgba(122, 169, 189, 0.21);
+  --rule-dark: rgba(122, 169, 189, 0.32);
+  --blue-rule: rgba(122, 169, 189, 0.24);
+
+  background:
+    linear-gradient(
+      180deg,
+      #081118 0,
+      #101c25 470px,
+      #15242e 980px,
+      #182a34 100%
+    );
+
+  color: var(--ink);
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+}
+
+
+/* ─────────────────────────────
+   ISSUER / DOCUMENT REGISTER
+   ───────────────────────────── */
+
+.instrumentMasthead {
+  background: #081118;
+  color: #e9ece9;
+
+  border-bottom:
+    1px solid
+    rgba(190, 174, 143, 0.24);
+}
+
+.mastheadInner {
+  width:
+    min(
+      1020px,
+      calc(100% - 48px)
+    );
+
+  padding:
+    1.05rem
+    0;
+
+  gap: 2rem;
+}
+
+.returnLink {
+  color: #91b4c5;
+}
+
+.returnLink:hover,
+.returnLink:focus-visible {
+  color: #e3eef2;
+}
+
+.issuer p {
+  color: #e2e5e2;
+
+  font-size: 0.62rem;
+  letter-spacing: 0.15em;
+}
+
+.issuer span {
+  color: #bd9e6f;
+
+  font-size: 0.47rem;
+  letter-spacing: 0.14em;
+}
+
+.issuerSeal {
+  opacity: 0.88;
+}
+
+.documentMeta span {
+  color: #8ea5b0;
+}
+
+.documentMeta strong {
+  color: #d0b482;
+}
+
+
+/* ─────────────────────────────
+   COVER / OPEN PASSAGE
+   ───────────────────────────── */
+
+.hero {
+  align-items: stretch;
+
+  min-height:
+    clamp(
+      390px,
+      53vh,
+      520px
+    );
+
+  padding:
+    clamp(3.8rem, 7vw, 6.2rem)
+    clamp(24px, 5.7vw, 72px);
+
+  background:
+    linear-gradient(
+      90deg,
+      #081118 0%,
+      rgba(8, 17, 24, 0.99) 28%,
+      rgba(8, 17, 24, 0.91) 43%,
+      rgba(8, 17, 24, 0.61) 59%,
+      rgba(8, 17, 24, 0.16) 80%,
+      rgba(8, 17, 24, 0.06) 100%
+    ),
+    url("/french-ward/fw-profile-open-passage.webp")
+      right center / auto 103%
+      no-repeat,
+    #081118;
+
+  color: #f1f2ee;
+}
+
+.heroInner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  width:
+    min(
+      1020px,
+      100%
+    );
+
+  margin:
+    0 auto;
+
+  text-align: left;
+}
+
+.kicker,
+.stageCode {
+  color: #c0a577;
+
+  font-size: 0.56rem;
+  letter-spacing: 0.16em;
+}
+
+.hero h1 {
+  width:
+    min(
+      760px,
+      100%
+    );
+
+  margin:
+    1.05rem
+    0
+    1.35rem;
+
+  color: #f1f2ee;
+
+  font-size:
+    clamp(
+      2.6rem,
+      5vw,
+      4.9rem
+    );
+
+  line-height: 1.03;
+
+  font-weight: 600;
+
+  letter-spacing: -0.025em;
+
+  text-transform: uppercase;
+
+  text-shadow:
+    0 1px 12px
+    rgba(0, 0, 0, 0.23);
+}
+
+.hero h1 span {
+  margin-top: 0.18rem;
+
+  color: #a9c9d6;
+
+  font-weight: 400;
+}
+
+.heroLead {
+  max-width: 47ch;
+
+  margin: 0;
+
+  color: #c8d7dc;
+
+  font-size:
+    clamp(
+      0.9rem,
+      1.3vw,
+      1rem
+    );
+
+  line-height: 1.72;
+}
+
+
+/* ─────────────────────────────
+   DOCUMENT NAVIGATION
+   ───────────────────────────── */
+
+.instrumentNav {
+  top: 0;
+
+  background:
+    rgba(
+      12,
+      25,
+      33,
+      0.97
+    );
+
+  border-top:
+    1px solid
+    rgba(122, 169, 189, 0.16);
+
+  border-bottom:
+    1px solid
+    rgba(122, 169, 189, 0.25);
+
+  backdrop-filter:
+    blur(10px);
+}
+
+.instrumentNav > div {
+  justify-content: flex-start;
+
+  width:
+    min(
+      1020px,
+      calc(100% - 48px)
+    );
+}
+
+.instrumentNav a {
+  color: #8fa7b2;
+
+  font-size: 0.48rem;
+}
+
+.instrumentNav a:hover,
+.instrumentNav a:focus-visible {
+  color: #e4eff3;
+}
+
+
+/* ─────────────────────────────
+   FORM PUBLICATION FIELD
+   ───────────────────────────── */
+
+.form {
+  width:
+    min(
+      1020px,
+      calc(100% - 48px)
+    );
+
+  padding:
+    clamp(3.1rem, 5vw, 4.8rem)
+    0
+    clamp(5rem, 8vw, 7rem);
+}
+
+.section {
+  padding-bottom:
+    clamp(
+      3.4rem,
+      5vw,
+      4.8rem
+    );
+
+  margin-bottom:
+    clamp(
+      3.4rem,
+      5vw,
+      4.8rem
+    );
+
+  border-bottom:
+    1px solid
+    var(--rule);
+}
+
+.sectionHeader {
+  grid-template-columns:
+    36px
+    minmax(0, 1fr);
+
+  gap: 17px;
+
+  padding-bottom:
+    1.35rem;
+
+  margin-bottom:
+    clamp(
+      1.8rem,
+      3vw,
+      2.6rem
+    );
+
+  border-bottom:
+    1px solid
+    var(--rule-dark);
+}
+
+.sectionHeader > span {
+  color: #bd9e6f;
+
+  font-size: 0.62rem;
+}
+
+.sectionHeader .stageCode {
+  color: #8daebb;
+}
+
+.sectionHeader h2 {
+  margin:
+    0.3rem
+    0
+    0;
+
+  color: #e9ece9;
+
+  font-size:
+    clamp(
+      1.35rem,
+      2vw,
+      1.8rem
+    );
+
+  line-height: 1.25;
+
+  font-weight: 500;
+
+  letter-spacing: 0.035em;
+
+  text-transform: uppercase;
+}
+
+
+/* ─────────────────────────────
+   STATUS / GOVERNING CONTEXT
+   ───────────────────────────── */
+
+.instrumentNotice {
+  border-top:
+    1px solid
+    var(--rule);
+
+  border-bottom:
+    1px solid
+    var(--rule);
+}
+
+.instrumentNotice p {
+  color: #aebdc5;
+}
+
+.progression {
+  border-bottom:
+    1px solid
+    var(--rule);
+}
+
+.progression span {
+  color: #91a6b0;
+}
+
+.progression i {
+  color: #c0a577;
+}
+
+
+/* ─────────────────────────────
+   SUBSECTION LANGUAGE
+   ───────────────────────────── */
+
+.subheading {
+  border-bottom:
+    1px solid
+    var(--rule);
+
+  color: #c8d5d9;
+
+  letter-spacing: 0.13em;
+}
+
+.helper {
+  color: #98acb5;
+}
+
+
+/* ─────────────────────────────
+   FORM REGISTER
+   ───────────────────────────── */
+
+.grid {
+  gap:
+    1.45rem
+    2.35rem;
+}
+
+.grid label,
+.choiceBlock > label {
+  color: #b9a27c;
+
+  font-size: 0.58rem;
+
+  letter-spacing: 0.095em;
+}
+
+.grid input,
+.grid select,
+.grid textarea,
+.choiceBlock input,
+.choiceBlock select,
+.choiceBlock textarea {
+  border: 0;
+
+  border-bottom:
+    1px solid
+    rgba(113, 151, 172, 0.52);
+
+  background:
+    rgba(
+      13,
+      28,
+      38,
+      0.14
+    );
+
+  color: #edf2f3;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  box-shadow: none;
+
+  transition:
+    border-color 150ms ease,
+    background-color 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.grid input,
+.grid select,
+.choiceBlock input,
+.choiceBlock select {
+  min-height: 43px;
+
+  padding:
+    0
+    0.35rem;
+}
+
+.grid textarea,
+.choiceBlock textarea {
+  padding:
+    0.7rem
+    0.35rem;
+
+  min-height: 100px;
+}
+
+.grid input:hover,
+.grid select:hover,
+.grid textarea:hover,
+.choiceBlock input:hover,
+.choiceBlock select:hover,
+.choiceBlock textarea:hover {
+  border-bottom-color:
+    rgba(
+      158,
+      198,
+      217,
+      0.78
+    );
+}
+
+.grid input:focus,
+.grid select:focus,
+.grid textarea:focus,
+.choiceBlock input:focus,
+.choiceBlock select:focus,
+.choiceBlock textarea:focus {
+  border-color:
+    #a6d9f1;
+
+  background:
+    rgba(
+      30,
+      76,
+      99,
+      0.11
+    );
+
+  box-shadow:
+    0 1px 0
+    #a6d9f1;
+}
+
+.grid input::placeholder,
+.grid textarea::placeholder,
+.choiceBlock input::placeholder,
+.choiceBlock textarea::placeholder {
+  color: #7f96a2;
+}
+
+.grid select,
+.choiceBlock select {
+  background-image:
+    linear-gradient(
+      45deg,
+      transparent 50%,
+      #8fb5c5 50%
+    ),
+    linear-gradient(
+      135deg,
+      #8fb5c5 50%,
+      transparent 50%
+    );
+}
+
+
+/* ─────────────────────────────
+   CHOICE / AUTHORITY REGISTER
+   ───────────────────────────── */
+
+.choiceBlock {
+  border-top:
+    1px solid
+    var(--rule);
+
+  border-bottom:
+    1px solid
+    var(--rule);
+}
+
+.choiceLabel {
+  color: #b9a27c;
+}
+
+.checkboxGrid {
+  border-top:
+    1px solid
+    var(--rule);
+}
+
+.checkbox {
+  border-bottom:
+    1px solid
+    var(--rule);
+
+  color: #c3d0d4;
+}
+
+.checkbox:nth-child(odd) {
+  border-right:
+    1px solid
+    var(--rule);
+}
+
+.checkbox input {
+  border-color:
+    #7693a1;
+
+  background:
+    transparent;
+}
+
+.checkbox input:checked {
+  border-color:
+    #c0a577;
+
+  background:
+    linear-gradient(
+      135deg,
+      transparent 35%,
+      #c0a577 35%,
+      #c0a577 58%,
+      transparent 58%
+    );
+}
+
+.declarations {
+  border-top:
+    1px solid
+    var(--rule-dark);
+}
+
+
+/* ─────────────────────────────
+   SUBMISSION REGISTER
+   ───────────────────────────── */
+
+.submitArea {
+  border-top:
+    1px solid
+    var(--rule-dark);
+
+  border-bottom:
+    1px solid
+    var(--rule-dark);
+}
+
+.submitNote {
+  color: #9eafb7;
+}
+
+.submit {
+  min-width: 190px;
+
+  border: 0;
+
+  border-bottom:
+    1px solid
+    #83bedb;
+
+  background:
+    transparent;
+
+  color: #e2eef3;
+
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
+
+  letter-spacing: 0.15em;
+}
+
+.submit::after {
+  content: "  ↗";
+
+  color: #8cc8e4;
+
+  font-size: 0.9rem;
+}
+
+.submit:hover,
+.submit:focus-visible {
+  border-bottom-color:
+    #d6c29b;
+
+  background:
+    rgba(
+      42,
+      101,
+      130,
+      0.12
+    );
+
+  color: #fff;
+}
+
+
+/* ─────────────────────────────
+   SUCCESS / ERROR
+   ───────────────────────────── */
+
+.error {
+  border:
+    1px solid
+    rgba(
+      196,
+      112,
+      99,
+      0.35
+    );
+
+  background:
+    rgba(
+      100,
+      40,
+      36,
+      0.13
+    );
+
+  color: #efb6aa;
+}
+
+.successCard {
+  border:
+    1px solid
+    var(--rule-dark);
+
+  background:
+    linear-gradient(
+      180deg,
+      #101c25,
+      #15242e
+    );
+
+  color: #e9ece9;
+}
+
+.successCard h2 {
+  color: #f0f2ef;
+}
+
+.successCard > p,
+.muted {
+  color: #aebdc5;
+}
+
+.reference {
+  border-top:
+    1px solid
+    #c0a577;
+
+  border-bottom:
+    1px solid
+    #c0a577;
+
+  color: #d9c39c;
+}
+
+
+/* ─────────────────────────────
+   RESPONSIVE PROFILE CONVERGENCE
+   ───────────────────────────── */
+
+@media (max-width: 760px) {
+  .mastheadInner,
+  .instrumentNav > div,
+  .form {
+    width:
+      calc(100% - 36px);
+  }
+
+  .hero {
+    min-height: 390px;
+
+    padding:
+      3.7rem
+      22px;
+
+    background:
+      linear-gradient(
+        90deg,
+        #081118 0%,
+        rgba(8, 17, 24, 0.95) 48%,
+        rgba(8, 17, 24, 0.71) 100%
+      ),
+      url("/french-ward/fw-profile-open-passage.webp")
+        74% center / auto 100%
+        no-repeat,
+      #081118;
+  }
+
+  .hero h1 {
+    font-size:
+      clamp(
+        2.3rem,
+        9vw,
+        3.7rem
+      );
+  }
+
+  .checkbox:nth-child(odd) {
+    border-right: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero {
+    background:
+      radial-gradient(
+        ellipse 80% 55%
+        at 100% 87%,
+        rgba(48, 100, 134, 0.23),
+        transparent 90%
+      ),
+      linear-gradient(
+        120deg,
+        #081118,
+        #10212b
+      );
+  }
+
+  .hero h1 {
+    letter-spacing:
+      -0.035em;
+  }
+
+  .sectionHeader {
+    grid-template-columns:
+      29px
+      minmax(0, 1fr);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .grid input,
+  .grid select,
+  .grid textarea,
+  .choiceBlock input,
+  .choiceBlock select,
+  .choiceBlock textarea,
+  .submit {
+    transition: none;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-2 — Intake restraint pass
+
+   Purpose:
+   - keep the LOI in the French-Ward visual family
+   - stop behaving like the Institutional Profile publication
+   - reduce ceremony before the form
+   - increase operational density
+   - preserve all existing form structure and semantics
+   ═════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────
+   PAGE / FORM FIELD
+───────────────────────────── */
+
+.page {
+  background:
+    linear-gradient(
+      180deg,
+      #0d1921 0,
+      #13232d 220px,
+      #192d37 620px,
+      #1a2e38 100%
+    );
+}
+
+/* ─────────────────────────────
+   COMPACT INTAKE HERO
+───────────────────────────── */
+
+.hero {
+  min-height: 0;
+
+  padding:
+    clamp(2.4rem, 4vw, 3.5rem)
+    2rem
+    clamp(2.6rem, 4.5vw, 3.8rem);
+
+  background:
+    radial-gradient(
+      ellipse 44% 110% at 88% 54%,
+      rgba(63, 130, 162, 0.17),
+      transparent 72%
+    ),
+    linear-gradient(
+      105deg,
+      #091219 0%,
+      #0d1b24 58%,
+      #122934 100%
+    );
+
+  border-bottom:
+    1px solid
+    rgba(107, 161, 188, 0.24);
+}
+
+.heroInner {
+  width: min(1120px, calc(100% - 64px));
+  margin: 0 auto;
+
+  text-align: left;
+}
+
+.kicker {
+  font-size: 0.49rem;
+  letter-spacing: 0.17em;
+
+  color: #bda06f;
+}
+
+.hero h1 {
+  max-width: 760px;
+
+  margin:
+    0.72rem
+    0
+    0.75rem;
+
+  font-size:
+    clamp(2rem, 4vw, 3.55rem);
+
+  line-height: 0.99;
+
+  font-weight: 520;
+
+  letter-spacing: -0.042em;
+}
+
+.hero h1 span {
+  margin-top: 0.12rem;
+
+  font-weight: 330;
+
+  color: #8fc0d6;
+}
+
+.heroLead {
+  max-width: 560px;
+
+  margin: 0;
+
+  font-size:
+    clamp(0.76rem, 1.15vw, 0.91rem);
+
+  line-height: 1.52;
+
+  color: rgba(219, 231, 237, 0.66);
+}
+
+/* ─────────────────────────────
+   NAV — QUIETER TRANSITION
+───────────────────────────── */
+
+.instrumentNav {
+  background:
+    rgba(15, 30, 39, 0.97);
+
+  border-top: 0;
+
+  border-bottom:
+    1px solid
+    rgba(107, 161, 188, 0.19);
+}
+
+.instrumentNav > div {
+  justify-content: flex-start;
+
+  width:
+    min(1040px, calc(100% - 64px));
+
+  gap:
+    clamp(1rem, 2.3vw, 1.8rem);
+}
+
+.instrumentNav a {
+  padding:
+    0.72rem
+    0;
+
+  font-size: 0.44rem;
+
+  color:
+    rgba(209, 225, 232, 0.49);
+}
+
+/* ─────────────────────────────
+   FORM DENSITY
+───────────────────────────── */
+
+.form {
+  width:
+    min(1040px, calc(100% - 64px));
+
+  padding:
+    clamp(2.2rem, 4vw, 3.25rem)
+    0
+    clamp(3.5rem, 6vw, 5rem);
+}
+
+.section {
+  padding-bottom:
+    clamp(2.2rem, 3.5vw, 3rem);
+
+  margin-bottom:
+    clamp(2.2rem, 3.6vw, 3.15rem);
+
+  border-bottom-color:
+    rgba(120, 164, 184, 0.22);
+}
+
+.section:last-of-type {
+  margin-bottom: 1.5rem;
+}
+
+.sectionHeader {
+  grid-template-columns:
+    2.2rem minmax(0, 1fr);
+
+  gap: 0.65rem;
+
+  padding-bottom: 0.72rem;
+
+  margin-bottom:
+    clamp(1.15rem, 2vw, 1.6rem);
+
+  border-bottom-color:
+    rgba(116, 164, 187, 0.27);
+}
+
+.sectionHeader > span {
+  padding-top: 0.1rem;
+
+  font-size: 0.5rem;
+}
+
+.sectionHeader h2 {
+  margin-top: 0.2rem;
+
+  font-size:
+    clamp(1.18rem, 1.8vw, 1.55rem);
+
+  line-height: 1.08;
+
+  letter-spacing: -0.024em;
+}
+
+/* ─────────────────────────────
+   STATUS / PROGRESSION
+───────────────────────────── */
+
+.instrumentNotice {
+  gap:
+    clamp(1.1rem, 2.4vw, 2.4rem);
+
+  padding:
+    0.9rem
+    0;
+}
+
+.instrumentNotice p {
+  font-size: 0.72rem;
+  line-height: 1.52;
+}
+
+.progression {
+  gap: 0.55rem;
+
+  padding:
+    0.82rem
+    0;
+
+  margin-bottom: 1.45rem;
+}
+
+.progression span {
+  font-size: 0.45rem;
+}
+
+/* ─────────────────────────────
+   SUBSECTIONS / HELPERS
+───────────────────────────── */
+
+.subheading {
+  margin:
+    1.8rem
+    0
+    0.85rem;
+
+  padding-bottom: 0.45rem;
+
+  font-size: 0.58rem;
+}
+
+.helper {
+  max-width: 680px;
+
+  margin:
+    -0.1rem
+    0
+    1rem;
+
+  font-size: 0.67rem;
+  line-height: 1.48;
+}
+
+/* ─────────────────────────────
+   INPUT SYSTEM
+───────────────────────────── */
+
+.grid {
+  column-gap:
+    clamp(1.25rem, 2.4vw, 2rem);
+
+  row-gap:
+    0.92rem;
+}
+
+.field,
+.grid > label {
+  gap: 0.35rem;
 }
 
 .form label {
-  display: grid;
-  gap: 0.45rem;
-  color: #cfd5df;
-  font-size: 0.9rem;
+  font-size: 0.56rem;
+  letter-spacing: 0.11em;
 }
 
 .form input,
 .form select,
 .form textarea {
-  width: 100%;
-  border: 1px solid rgba(148, 163, 184, 0.22);
-  border-radius: 0.72rem;
-  background: rgba(2, 6, 23, 0.94);
-  color: #fff;
-  padding: 0.78rem 0.9rem;
-  font: inherit;
+  min-height: 34px;
+
+  padding:
+    0.38rem
+    0.05rem
+    0.45rem;
+
+  background:
+    rgba(225, 239, 245, 0.025);
+
+  border-bottom-color:
+    rgba(120, 169, 192, 0.42);
+
+  color: #e5edf0;
 }
 
 .form textarea {
-  resize: vertical;
+  min-height: 66px;
+
+  padding-top: 0.5rem;
+}
+
+.form input:focus,
+.form select:focus,
+.form textarea:focus {
+  background:
+    rgba(101, 165, 195, 0.065);
+
+  border-bottom-color:
+    #90c7df;
+}
+
+/* ─────────────────────────────
+   CHECKBOXES
+───────────────────────────── */
+
+.choiceLabel {
+  margin-bottom: 0.65rem;
+}
+
+.checkboxGrid {
+  margin-bottom: 1rem;
 }
 
 .checkbox {
-  display: flex !important;
-  grid-template-columns: auto 1fr;
-  align-items: flex-start;
-  gap: 0.7rem !important;
-  margin-top: 0.75rem;
-  line-height: 1.5;
+  gap: 0.62rem;
+
+  padding:
+    0.58rem
+    0.9rem
+    0.58rem
+    0;
+
+  font-size: 0.69rem;
+  line-height: 1.4;
 }
 
-.checkbox input {
-  width: auto;
-  margin-top: 0.2rem;
+.checkbox:nth-child(odd) {
+  padding-right: 1rem;
+}
+
+.checkbox:nth-child(even) {
+  padding-left: 1rem;
+}
+
+.declarations {
+  margin-top: 1.45rem;
+}
+
+.declarations .checkbox {
+  padding:
+    0.72rem
+    0;
+}
+
+/* ─────────────────────────────
+   SUBMISSION
+───────────────────────────── */
+
+.submitArea {
+  gap: 2rem;
+
+  padding:
+    1.25rem
+    0;
+}
+
+.submitNote {
+  max-width: 600px;
+
+  margin-top: 0.25rem;
+
+  font-size: 0.66rem;
+  line-height: 1.45;
 }
 
 .submit {
-  justify-self: start;
-  border: 1px solid rgba(245, 158, 11, 0.7);
-  border-radius: 999px;
-  background: rgba(245, 158, 11, 0.13);
-  color: #f9d58b;
-  padding: 0.9rem 1.25rem;
-  font-weight: 700;
+  min-width: 164px;
+  min-height: 40px;
+}
+
+/* ─────────────────────────────
+   MOBILE
+───────────────────────────── */
+
+@media (max-width: 760px) {
+  .hero {
+    padding:
+      2.2rem
+      1rem
+      2.4rem;
+  }
+
+  .heroInner {
+    width: calc(100% - 16px);
+  }
+
+  .hero h1 {
+    font-size:
+      clamp(1.8rem, 8.6vw, 2.7rem);
+  }
+
+  .heroLead {
+    max-width: 46ch;
+  }
+
+  .form,
+  .instrumentNav > div {
+    width: calc(100% - 32px);
+  }
+
+  .section {
+    padding-bottom: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .sectionHeader {
+    margin-bottom: 1.1rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .hero {
+    min-height: 0;
+
+    padding:
+      1.85rem
+      0.75rem
+      2rem;
+
+    background:
+      linear-gradient(
+        115deg,
+        #091219,
+        #10242e
+      );
+  }
+
+  .hero h1 {
+    font-size:
+      clamp(1.65rem, 9vw, 2.25rem);
+  }
+
+  .heroLead {
+    font-size: 0.75rem;
+  }
+
+  .form {
+    padding-top: 1.7rem;
+  }
+
+  .sectionHeader {
+    grid-template-columns:
+      1.8rem minmax(0, 1fr);
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-3 — Working surface + desktop navigation rail
+
+   - restore mineral select surfaces
+   - distinguish the intake working field from the page ground
+   - fix section navigation at left on desktop
+   - retain compact operational rhythm
+   ═════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────
+   FORM WORKING SURFACE
+───────────────────────────── */
+
+.form {
+  position: relative;
+
+  width:
+    min(1040px, calc(100% - 64px));
+
+  padding:
+    clamp(2.3rem, 4vw, 3.3rem)
+    clamp(1.5rem, 3vw, 2.6rem)
+    clamp(3.5rem, 6vw, 5rem);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(49, 78, 92, 0.22),
+      rgba(37, 67, 81, 0.18) 36%,
+      rgba(34, 63, 77, 0.13) 100%
+    );
+
+  border-left:
+    1px solid
+    rgba(126, 170, 190, 0.14);
+
+  border-right:
+    1px solid
+    rgba(126, 170, 190, 0.1);
+
+  box-shadow:
+    inset 0 1px 0 rgba(159, 196, 212, 0.05);
+}
+
+/* Keep individual fields quieter than selects,
+   but distinct from the surrounding working surface. */
+
+.form input,
+.form textarea {
+  background:
+    rgba(9, 24, 32, 0.18);
+
+  border-bottom-color:
+    rgba(135, 180, 201, 0.46);
+}
+
+.form input:hover,
+.form textarea:hover {
+  background:
+    rgba(29, 62, 76, 0.2);
+}
+
+.form input:focus,
+.form textarea:focus {
+  background:
+    rgba(70, 119, 141, 0.13);
+}
+
+/* ─────────────────────────────
+   SELECTS — RESTORE MINERAL SURFACE
+───────────────────────────── */
+
+.form select {
+  min-height: 34px;
+
+  padding:
+    0.4rem
+    2rem
+    0.4rem
+    0.55rem;
+
+  background:
+    linear-gradient(
+      180deg,
+      #aacbd9,
+      #9ec2d1
+    );
+
+  border: 0;
+
+  border-bottom:
+    1px solid
+    #77a8bd;
+
+  color:
+    #10242f;
+
+  font-weight: 520;
+
+  box-shadow:
+    inset 0 -1px 0
+    rgba(15, 47, 61, 0.16);
+
   cursor: pointer;
 }
 
-.submit:disabled {
-  opacity: 0.65;
-  cursor: wait;
+.form select:hover {
+  background:
+    linear-gradient(
+      180deg,
+      #b6d4df,
+      #a7cad7
+    );
 }
 
-.error {
-  border: 1px solid rgba(248, 113, 113, 0.5);
-  background: rgba(127, 29, 29, 0.28);
-  color: #fecaca;
-  border-radius: 1rem;
-  padding: 1rem;
+.form select:focus {
+  background:
+    linear-gradient(
+      180deg,
+      #bedbe5,
+      #acd0dc
+    );
+
+  border-bottom-color:
+    #d5edf6;
+
+  outline:
+    1px solid
+    rgba(163, 211, 230, 0.48);
+
+  outline-offset: 2px;
 }
 
-.successCard {
-  margin-top: 2rem;
-}
+/* ─────────────────────────────
+   DESKTOP LEFT NAVIGATION RAIL
+───────────────────────────── */
 
-.reference {
-  display: inline-block;
-  margin: 1rem 0;
-  border: 1px solid rgba(245, 158, 11, 0.5);
-  border-radius: 0.9rem;
-  background: rgba(245, 158, 11, 0.1);
-  color: #f9d58b;
-  font-family:
-    ui-monospace,
-    SFMono-Regular,
-    Menlo,
-    Monaco,
-    Consolas,
-    monospace;
-  font-size: 1.15rem;
-  padding: 0.85rem 1rem;
-}
+@media (min-width: 1180px) {
+  .instrumentNav {
+    position: fixed;
 
-.muted {
-  color: #aab0bd !important;
-}
+    top: 50%;
+    left:
+      max(
+        1.4rem,
+        calc((100vw - 1420px) / 2)
+      );
 
-@media (max-width: 860px) {
-  .page {
-    padding: 2rem 1rem;
+    z-index: 30;
+
+    width: 132px;
+
+    transform:
+      translateY(-50%);
+
+    background:
+      rgba(9, 21, 29, 0.62);
+
+    border: 0;
+
+    border-left:
+      1px solid
+      rgba(120, 169, 192, 0.25);
+
+    backdrop-filter:
+      blur(10px);
   }
 
-  .grid,
+  .instrumentNav > div {
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: flex-start;
+
+    width: 100%;
+
+    gap: 0;
+
+    padding:
+      0.45rem
+      0
+      0.45rem
+      0.8rem;
+
+    overflow: visible;
+  }
+
+  .instrumentNav a {
+    display: block;
+
+    width: 100%;
+
+    padding:
+      0.5rem
+      0;
+
+    font-size: 0.43rem;
+
+    line-height: 1.25;
+
+    letter-spacing: 0.11em;
+
+    color:
+      rgba(193, 216, 226, 0.46);
+  }
+
+  .instrumentNav a:hover,
+  .instrumentNav a:focus-visible {
+    color:
+      #9dcde1;
+  }
+}
+
+/* Horizontal nav remains the mobile/tablet behavior. */
+
+@media (max-width: 1179px) {
+  .instrumentNav {
+    position: sticky;
+
+    top: 0;
+
+    width: auto;
+
+    transform: none;
+  }
+
+  .instrumentNav > div {
+    flex-direction: row;
+  }
+}
+
+/* ─────────────────────────────
+   SMALL-SCREEN WORKING SURFACE
+───────────────────────────── */
+
+@media (max-width: 760px) {
+  .form {
+    width:
+      calc(100% - 24px);
+
+    padding:
+      1.8rem
+      1rem
+      3rem;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-4 — Final restraint polish
+
+   - blend desktop index rail into surrounding field
+   - soften working-surface perimeter
+   - slightly restrain mineral select emphasis
+   ═════════════════════════════════════════════════════════════ */
+
+/* Working field should read as a zone, not a card. */
+
+.form {
+  border-left-color:
+    rgba(126, 170, 190, 0.09);
+
+  border-right-color:
+    rgba(126, 170, 190, 0.055);
+
+  box-shadow:
+    inset 0 1px 0 rgba(159, 196, 212, 0.04),
+    inset 24px 0 38px -38px rgba(134, 190, 214, 0.16),
+    inset -24px 0 38px -38px rgba(134, 190, 214, 0.1);
+}
+
+/* Keep selects distinctive without becoming the dominant object. */
+
+.form select {
+  background:
+    linear-gradient(
+      180deg,
+      #a5c7d5,
+      #99bdcc
+    );
+}
+
+.form select:hover {
+  background:
+    linear-gradient(
+      180deg,
+      #afceda,
+      #a1c5d2
+    );
+}
+
+/* Desktop document index: fade into the intake field. */
+
+@media (min-width: 1180px) {
+  .instrumentNav {
+    width: 136px;
+
+    background:
+      linear-gradient(
+        90deg,
+        rgba(7, 19, 26, 0.78) 0%,
+        rgba(9, 23, 31, 0.59) 58%,
+        rgba(11, 27, 36, 0.18) 88%,
+        transparent 100%
+      );
+
+    border-left:
+      1px solid
+      rgba(126, 174, 195, 0.18);
+
+    box-shadow:
+      10px 0 30px
+      rgba(3, 12, 17, 0.12);
+
+    backdrop-filter:
+      blur(7px);
+  }
+
+  .instrumentNav > div {
+    padding:
+      0.55rem
+      1.15rem
+      0.55rem
+      0.72rem;
+  }
+
+  .instrumentNav a {
+    color:
+      rgba(191, 214, 224, 0.43);
+  }
+
+  .instrumentNav a:hover,
+  .instrumentNav a:focus-visible {
+    color: #a4d0e2;
+
+    transform:
+      translateX(2px);
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-5 — lighter field / near-transparent rail
+   Presentation only.
+   ═════════════════════════════════════════════════════════════ */
+
+@media (min-width: 1180px) {
+  .instrumentNav {
+    background:
+      linear-gradient(
+        90deg,
+        rgba(8, 20, 28, 0.42) 0%,
+        rgba(8, 20, 28, 0.24) 58%,
+        rgba(8, 20, 28, 0.08) 86%,
+        rgba(8, 20, 28, 0.01) 100%
+      );
+
+    border-left:
+      1px solid rgba(132, 178, 198, 0.11);
+
+    box-shadow:
+      8px 0 24px rgba(3, 10, 16, 0.08);
+
+    backdrop-filter:
+      blur(4px);
+  }
+}
+
+/* Lighten the working form surface slightly more blue. */
+.form {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(30, 56, 71, 0.94) 0%,
+      rgba(28, 53, 68, 0.95) 100%
+    );
+}
+
+/* Keep the field distinct but softer. */
+.form::before {
+  opacity: 0.42;
+}
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-6 — Mobile alignment + guidance readability
+
+   - improve descriptive/helper contrast everywhere
+   - align mobile working surface and section geometry
+   - preserve current desktop hierarchy
+   ═════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────
+   GUIDANCE / DESCRIPTION CONTRAST
+───────────────────────────── */
+
+.helper,
+.instrumentNotice p,
+.submitNote,
+.profileCopy,
+.form p {
+  color:
+    rgba(205, 221, 229, 0.76);
+}
+
+.helper {
+  font-size: 0.7rem;
+  line-height: 1.52;
+}
+
+.instrumentNotice p {
+  color:
+    rgba(214, 227, 233, 0.78);
+}
+
+.choiceLabel {
+  color:
+    rgba(216, 229, 235, 0.78);
+}
+
+.checkbox {
+  color:
+    rgba(218, 229, 234, 0.86);
+}
+
+/* Placeholder text should remain subordinate,
+   but visibly readable. */
+
+.form input::placeholder,
+.form textarea::placeholder {
+  color:
+    rgba(190, 209, 219, 0.58);
+
+  opacity: 1;
+}
+
+/* ─────────────────────────────
+   MOBILE ALIGNMENT
+───────────────────────────── */
+
+@media (max-width: 760px) {
+  .form {
+    width: 100%;
+
+    margin: 0;
+
+    padding:
+      1.7rem
+      1.35rem
+      3rem;
+
+    border-left: 0;
+    border-right: 0;
+  }
+
+  .instrumentNav > div {
+    width: 100%;
+
+    padding:
+      0
+      1.15rem;
+  }
+
+  .sectionHeader {
+    grid-template-columns:
+      2rem minmax(0, 1fr);
+
+    gap: 0.55rem;
+  }
+
+  .sectionHeader h2 {
+    font-size:
+      clamp(1.35rem, 5.7vw, 1.8rem);
+
+    line-height: 1.08;
+  }
+
+  .sectionHeader > span {
+    padding-top: 0.12rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+
+    row-gap: 0.9rem;
+  }
+
+  .wide {
+    grid-column: auto;
+  }
+
+  .subheading {
+    margin-top: 1.55rem;
+  }
+
+  .helper {
+    margin-bottom: 0.9rem;
+  }
+
   .checkboxGrid {
     grid-template-columns: 1fr;
   }
 
-  .wide {
-    grid-column: span 1;
+  .checkbox,
+  .checkbox:nth-child(odd),
+  .checkbox:nth-child(even) {
+    padding:
+      0.72rem
+      0;
+
+    border-right: 0;
   }
+
+  .checkbox {
+    grid-template-columns:
+      1.25rem minmax(0, 1fr);
+
+    gap: 0.7rem;
+  }
+
+  .checkbox input {
+    margin-top: 0.12rem;
+  }
+
+  .submitArea {
+    align-items: stretch;
+
+    flex-direction: column;
+
+    gap: 1rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .form {
+    padding:
+      1.45rem
+      1rem
+      2.75rem;
+  }
+
+  .instrumentNav > div {
+    padding:
+      0
+      0.9rem;
+  }
+
+  .instrumentNav a {
+    padding:
+      0.68rem
+      0;
+
+    font-size: 0.42rem;
+  }
+
+  .section {
+    padding-bottom: 1.75rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .sectionHeader {
+    grid-template-columns:
+      1.7rem minmax(0, 1fr);
+
+    margin-bottom: 1rem;
+  }
+
+  .sectionHeader h2 {
+    font-size:
+      clamp(1.28rem, 6.2vw, 1.65rem);
+  }
+
+  .helper,
+  .instrumentNotice p,
+  .submitNote {
+    font-size: 0.69rem;
+    line-height: 1.5;
+  }
+
+  .checkbox {
+    font-size: 0.68rem;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-7 — Raise helper/descriptive copy to white
+   Target only explanatory guidance text.
+   ═════════════════════════════════════════════════════════════ */
+
+.helper,
+.fieldHint,
+.supportingText,
+.sectionNote,
+.instrumentNotice p,
+.submitNote,
+.authorityHint,
+.readinessHint,
+.complianceHint,
+.form p {
+  color: rgba(235, 242, 246, 0.92);
+}
+
+/* If helper text sits directly after a field/input block,
+   keep it clearly readable. */
+.grid p,
+.choiceBlock p,
+.section p {
+  color: rgba(235, 242, 246, 0.92);
+}
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-8 — Guidance copy contrast
+   Raise field/choice/section instructions to readable light tone.
+   ═════════════════════════════════════════════════════════════ */
+
+.fieldHelp,
+.choiceHelp,
+.helper {
+  color: rgba(244, 248, 250, 0.94);
+}
+
+.fieldHelp {
+  font-size: 0.66rem;
+  line-height: 1.45;
+}
+
+.choiceHelp,
+.helper {
+  color: rgba(235, 242, 246, 0.9);
+}
+
+/* ═════════════════════════════════════════════════════════════
+   FW-LOI-VIS-9 — Checkbox state clarity
+   Unchecked must visibly read empty; checked must visibly read selected.
+   ═════════════════════════════════════════════════════════════ */
+
+.checkbox input[type="checkbox"] {
+  appearance: none;
+
+  width: 16px;
+  height: 16px;
+
+  margin-top: 0.12rem;
+
+  border:
+    1px solid
+    rgba(205, 225, 234, 0.72);
+
+  background: transparent;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(9, 25, 33, 0.18);
+
+  cursor: pointer;
+}
+
+.checkbox input[type="checkbox"]:hover {
+  border-color: #a7d3e5;
+
+  background:
+    rgba(126, 183, 207, 0.08);
+}
+
+.checkbox input[type="checkbox"]:checked {
+  border-color: #d2b47b;
+
+  background:
+    linear-gradient(
+      135deg,
+      transparent 0 38%,
+      #f4e1b5 38% 47%,
+      transparent 47% 100%
+    ),
+    linear-gradient(
+      45deg,
+      transparent 0 46%,
+      #f4e1b5 46% 56%,
+      transparent 56% 100%
+    ),
+    #9a7b43;
+
+  box-shadow:
+    0 0 0 1px rgba(210, 180, 123, 0.18);
+}
+
+.checkbox input[type="checkbox"]:focus-visible {
+  outline:
+    2px solid
+    rgba(151, 205, 226, 0.82);
+
+  outline-offset: 3px;
+}
+
+/* L1 — shared commercial intake reading and operating surface. */
+.page {background:radial-gradient(ellipse at 85% 8%,rgba(171,152,113,.09),transparent 36%),#0b1a23 !important;}
+.instrumentMasthead {background:linear-gradient(110deg,rgba(27,42,49,.95),rgba(11,25,34,.94)) !important;border-bottom:1px solid rgba(202,208,201,.28) !important;}
+.mastheadInner {width:min(1120px,calc(100% - 48px)) !important;padding:12px 0 !important;gap:18px !important;}
+.issuerSeal {width:32px !important;height:32px !important;object-fit:contain;}
+.issuer {gap:10px !important;}
+.issuer p {font-size:12px !important;letter-spacing:.09em;}
+.issuer span {font-size:9px !important;line-height:1.5;}
+.returnLink {font-size:12px !important;white-space:nowrap;}
+.documentMeta {font-size:10px !important;line-height:1.6;}
+.hero {padding:0 !important;background:radial-gradient(ellipse at 75% 35%,rgba(190,165,116,.10),transparent 65%),linear-gradient(120deg,#10232d,#172e39) !important;}
+.heroInner {width:min(1020px,calc(100% - 48px)) !important;padding:48px 0 42px !important;margin-inline:auto !important;}
+.kicker {font-size:10px !important;letter-spacing:.16em !important;color:#c9b38b !important;}
+.hero h1 {font-family:Georgia,'Times New Roman',serif !important;font-weight:400 !important;font-size:clamp(34px,4.6vw,55px) !important;line-height:1.12 !important;letter-spacing:-.025em !important;margin:16px 0 0 !important;color:#e7d4b2 !important;}
+.hero h1 span {font-family:Arial,Helvetica,sans-serif !important;font-size:clamp(18px,2vw,24px) !important;line-height:1.4 !important;letter-spacing:.01em !important;margin-top:12px !important;color:#e3e9e7 !important;}
+.heroLead {max-width:62ch !important;font-size:15px !important;line-height:1.75 !important;margin-top:22px !important;color:#d2dedf !important;}
+.instrumentNav {position:sticky !important;top:0 !important;left:auto !important;right:auto !important;width:100% !important;transform:none !important;z-index:30 !important;border:0 !important;border-block:1px solid rgba(178,193,197,.23) !important;border-radius:0 !important;background:rgba(13,29,38,.97) !important;box-shadow:0 4px 14px #0002 !important;}
+.instrumentNav>div {display:flex !important;flex-direction:row !important;justify-content:center !important;gap:0 !important;width:min(1100px,100%) !important;max-width:none !important;padding:0 12px !important;margin-inline:auto !important;overflow-x:auto !important;}
+.instrumentNav a {flex:1 0 auto !important;min-height:48px !important;padding:15px 13px !important;border:0 !important;border-bottom:2px solid transparent !important;background:transparent !important;outline:0;font-size:11px !important;line-height:1.5 !important;letter-spacing:.025em !important;color:#d6dfde !important;text-align:center !important;text-transform:none !important;white-space:nowrap;}
+.instrumentNav a:hover {color:#f1debb !important;border-bottom-color:#baa071 !important;background:#ffffff05 !important;}
+.instrumentNav a:focus-visible,.returnLink:focus-visible,.previewReturn:focus-visible {outline:2px solid #b4d9e5 !important;outline-offset:-3px !important;}
+.form {width:min(1020px,calc(100% - 48px)) !important;max-width:1020px !important;margin:0 auto !important;padding:36px 0 56px !important;border:0 !important;border-radius:0 !important;box-shadow:none !important;background:transparent !important;}
+.form::before {display:none !important;}
+.section {scroll-margin-top:72px !important;padding-bottom:32px !important;margin-bottom:34px !important;border-bottom:1px solid rgba(178,196,198,.22) !important;border-radius:0 !important;box-shadow:none !important;}
+.sectionHeader {gap:14px !important;margin-bottom:22px !important;}
+.sectionHeader h2 {font-size:clamp(20px,2.2vw,26px) !important;line-height:1.35 !important;}
+.grid {gap:20px 24px !important;}
+.grid label,.choiceBlock>label {font-size:12px !important;line-height:1.55 !important;}
+.fieldHelp,.choiceHelp,.helper {font-size:12px !important;line-height:1.65 !important;color:#c9d8db !important;}
+.grid input,.grid select,.grid textarea {font-size:16px !important;min-height:44px;line-height:1.5 !important;}
+.previewNotice {margin:0 auto;padding:14px 24px;width:min(1068px,100%);font:12px/1.65 Arial,Helvetica,sans-serif;color:#cbd7da;border-left:2px solid #b9a073;background:#b9a07309;}
+.previewNotice p {margin:4px 0 0;}
+.previewReturn {color:#e6c999;text-decoration:underline;text-underline-offset:3px;}
+@media(max-width:760px) {
+ .mastheadInner {width:calc(100% - 32px) !important;display:grid !important;grid-template-columns:1fr auto !important;gap:10px 14px !important;}
+ .returnLink {grid-column:1/-1;}
+ .issuer p {font-size:11px !important;}
+ .issuer span {font-size:8px !important;max-width:23ch;}
+ .documentMeta {text-align:right !important;max-width:18ch;font-size:8px !important;}
+ .heroInner {width:calc(100% - 36px) !important;padding:32px 0 30px !important;}
+ .heroLead {font-size:14px !important;}
+ .instrumentNav>div {justify-content:flex-start !important;padding-inline:8px !important;}
+ .instrumentNav a {font-size:11px !important;padding-inline:13px !important;}
+ .form {width:100% !important;padding:26px 18px 42px !important;}
+ .section {margin-bottom:28px !important;padding-bottom:26px !important;}
+ .sectionHeader {grid-template-columns:28px minmax(0,1fr) !important;gap:10px !important;}
+ .grid {grid-template-columns:minmax(0,1fr) !important;gap:19px !important;}
+}
+@media print {.instrumentNav,.previewNotice {display:none !important;}.form {width:100% !important;}.section {scroll-margin-top:0 !important;}}
+
+/* L2 — documentary architecture: one working sheet, graphite typography, ivory fields. */
+.page {--ink:#26343a;--muted:#586269;--rule:rgba(69,68,58,.18);--rule-dark:rgba(69,68,58,.28);background:#101e26 !important;}
+.hero {background:linear-gradient(115deg,#e9e3d6,#f3eee3 65%,#e9e3d6) !important;border-bottom:1px solid #aaa08c;}
+.heroInner {width:min(1020px,calc(100% - 48px)) !important;padding:26px 0 25px !important;}
+.hero .kicker {color:#796744 !important;font-size:10px !important;letter-spacing:.14em !important;}
+.hero h1 {color:#25343c !important;font-family:Georgia,'Times New Roman',serif !important;font-size:clamp(29px,3.4vw,39px) !important;line-height:1.15 !important;margin-top:11px !important;letter-spacing:-.015em !important;}
+.hero h1 span {display:inline !important;font:inherit !important;color:inherit !important;margin:0 !important;}
+.hero h1 span::before {content:" ";}
+.hero .heroLead {color:#536068 !important;font-size:13px !important;line-height:1.7 !important;margin-top:12px !important;max-width:78ch !important;}
+.page .form {width:min(1120px,100%) !important;max-width:1120px !important;background:#f1ece1 !important;color:#26343a !important;padding:34px clamp(24px,4.5vw,50px) 42px !important;margin:0 auto !important;border-inline:1px solid rgba(203,193,173,.55) !important;box-shadow:0 12px 35px #0002 !important;}
+.page .form .section {padding:0 0 28px !important;margin:0 0 28px !important;background:transparent !important;border-bottom:1px solid #bfb7a7 !important;box-shadow:none !important;}
+.page .form .sectionHeader {display:grid !important;grid-template-columns:36px minmax(0,1fr) !important;gap:15px !important;align-items:start !important;padding:0 0 15px !important;margin:0 0 22px !important;border-bottom:1px solid #d4cbbc !important;background:transparent !important;}
+.page .form .sectionHeader>span {font:400 22px/1.35 Georgia,'Times New Roman',serif !important;color:#927a50 !important;border:0 !important;background:transparent !important;box-shadow:none !important;}
+.page .form .sectionHeader h2 {font:500 clamp(18px,2vw,23px)/1.35 Arial,Helvetica,sans-serif !important;letter-spacing:.005em !important;text-transform:none !important;color:#283a43 !important;margin:3px 0 0 !important;}
+.page .form .sectionHeader .stageCode,.page .form .stageCode {font-size:10px !important;line-height:1.5 !important;letter-spacing:.10em !important;color:#806d4b !important;}
+.page .form p,.page .form .section p,.page .form .grid p {color:#4d5b62 !important;}
+.page .form .subheading {font:600 11px/1.55 Arial,Helvetica,sans-serif !important;letter-spacing:.09em !important;text-transform:uppercase !important;color:#675c48 !important;margin:24px 0 15px !important;padding-bottom:8px !important;border-bottom:1px solid #d9d0c0 !important;}
+.page .form .grid,.page .form .conditionalGrid {gap:19px 24px !important;}
+.page .form .grid label,.page .form .conditionalGrid label,.page .form .choiceLabel {font:500 12px/1.55 Arial,Helvetica,sans-serif !important;color:#35464e !important;letter-spacing:.01em !important;text-transform:none !important;}
+.page .form .grid input,.page .form .grid select,.page .form .grid textarea,.page .form .conditionalGrid input,.page .form .conditionalGrid select,.page .form .conditionalGrid textarea {width:100%;border:1px solid #b7b3a7 !important;border-bottom-color:#96978e !important;border-radius:2px !important;box-shadow:inset 0 1px 2px #00000004 !important;background:#fcfaf4 !important;color:#24343e !important;font:400 16px/1.5 Arial,Helvetica,sans-serif !important;padding:10px 12px !important;min-height:44px;}
+.page .form input::placeholder,.page .form textarea::placeholder {color:#7c807d !important;opacity:1 !important;}
+.page .form select option {background:#fcfaf4 !important;color:#24343e !important;}
+.page .form input:focus-visible,.page .form select:focus-visible,.page .form textarea:focus-visible {outline:2px solid #4b7182 !important;outline-offset:2px !important;border-color:#4b7182 !important;}
+.page .form input[readonly] {background:#e8e3d8 !important;color:#56646a !important;}
+.page .form .fieldHelp,.page .form .choiceHelp,.page .form .helper {font:400 12px/1.65 Arial,Helvetica,sans-serif !important;color:#5e696d !important;opacity:1 !important;}
+.page .form .instrumentNotice {background:#e7e2d6 !important;border:0 !important;border-left:2px solid #9a8359 !important;border-radius:0 !important;padding:15px 18px !important;box-shadow:none !important;}
+.page .form .instrumentNotice p {font-size:13px !important;line-height:1.75 !important;color:#43545c !important;}
+.page .form .progression {border-block:1px solid #d0c7b7 !important;background:transparent !important;padding:12px 0 !important;box-shadow:none !important;}
+.page .form .progression span,.page .form .progression strong {color:#4f6066 !important;}
+.page .form .progression i {color:#9a8359 !important;}
+.page .form .choiceBlock,.page .form .conditionalGroup {background:#eae5da !important;border:1px solid #d4cbbb !important;border-radius:0 !important;box-shadow:none !important;padding:16px 18px !important;}
+.page .form .conditionalLabel {color:#726243 !important;font-size:11px !important;}
+.page .form .checkboxGrid {gap:0 !important;border-top:1px solid #d3cabb;}
+.page .form .checkbox {background:transparent !important;color:#3d4d54 !important;border:0 !important;border-bottom:1px solid #d3cabb !important;border-radius:0 !important;padding:13px 12px !important;box-shadow:none !important;font:400 13px/1.7 Arial,Helvetica,sans-serif !important;}
+.page .form .checkbox input[type="checkbox"] {appearance:auto !important;accent-color:#75603d;width:16px !important;height:16px !important;min-height:0 !important;background:transparent !important;box-shadow:none !important;margin-top:3px;flex:none;}
+.page .form .declarations {padding:14px 0 0 !important;border-top:1px solid #b3a78f !important;background:transparent !important;}
+.page .form .declarations .checkbox {font-size:12px !important;line-height:1.75 !important;}
+.page .form .submitArea {display:flex !important;align-items:center !important;justify-content:space-between !important;gap:22px !important;padding:23px 0 0 !important;border-top:2px solid #8c7b5b !important;background:transparent !important;}
+.page .form .submitNote {max-width:64ch !important;font-size:12px !important;line-height:1.7 !important;color:#56636a !important;}
+.page .form .submit {flex:none;min-height:46px !important;background:#223b47 !important;border:1px solid #192f3a !important;border-radius:2px !important;color:#f4ecdc !important;box-shadow:none !important;font-size:12px !important;letter-spacing:.04em !important;}
+.page .form .submit:hover {background:#304f5b !important;}
+.page .form .submit:disabled {opacity:.58 !important;cursor:not-allowed !important;}
+.page .form fieldset:disabled input,.page .form fieldset:disabled select,.page .form fieldset:disabled textarea {opacity:1 !important;-webkit-text-fill-color:#46555c !important;background-color:#eae6dc !important;}
+.page .form .error {color:#812f27 !important;background:#f1ded8 !important;border:1px solid #b87c6a !important;}
+.previewNotice {background:#142832 !important;}
+@media(max-width:760px) {
+ .heroInner {width:calc(100% - 36px) !important;padding:22px 0 !important;}
+ .hero h1 {font-size:29px !important;}
+ .hero h1 span {display:block !important;margin-top:5px !important;font-size:23px !important;}
+ .hero h1 span::before {content:none;}
+ .page .form {padding:26px 18px 32px !important;border-inline:0 !important;}
+ .page .form .sectionHeader {grid-template-columns:27px minmax(0,1fr) !important;gap:10px !important;}
+ .page .form .checkboxGrid,.page .form .conditionalGrid {grid-template-columns:minmax(0,1fr) !important;}
+ .page .form .submitArea {flex-direction:column !important;align-items:stretch !important;}
+ .page .form .submit {width:100%;}
+}
+@media print {.page,.page .form,.hero {background:white !important;box-shadow:none !important;}.page .form .section {break-inside:auto;}.page .form .sectionHeader {break-after:avoid;}.page .form .submitArea {display:none !important;}}
+
+/* L3 — reset inherited rail widths and keep the instrument title together. */
+.page .hero h1 {white-space:nowrap !important;max-width:none !important;width:100% !important;font-size:clamp(22px,3.05vw,35px) !important;text-shadow:none !important;letter-spacing:-.025em !important;}
+.page .heroInner {text-align:left !important;}
+.page .heroLead {margin-left:0 !important;margin-right:0 !important;}
+.page .instrumentNav {height:auto !important;min-height:48px !important;overflow:visible !important;}
+.page .instrumentNav>div {width:min(1100px,100%) !important;max-width:100% !important;justify-content:center !important;align-items:stretch !important;overflow-x:auto !important;overflow-y:hidden !important;}
+.page .instrumentNav a {display:block !important;width:auto !important;min-width:0 !important;max-width:none !important;flex:1 0 auto !important;transform:none !important;position:static !important;}
+@media(max-width:760px) {
+ .page .hero h1 {font-size:clamp(13px,3.65vw,27px) !important;letter-spacing:-.035em !important;}
+ .page .instrumentNav>div {justify-content:flex-start !important;}
+ .page .instrumentNav a {flex:0 0 auto !important;padding-inline:14px !important;}
+}
+
+/* L4 — mobile issuer strip, prominent short title and complete section index. */
+.page .hero h1 .desktopTitle {display:inline !important;font:inherit !important;letter-spacing:inherit !important;margin:0 !important;}
+.page .hero h1 .desktopTitle::before {content:none !important;}
+.page .hero h1 .mobileTitle {display:none !important;}
+@media(max-width:760px) {
+ .page .mastheadInner {display:flex !important;flex-wrap:nowrap !important;width:calc(100% - 32px) !important;gap:12px !important;min-height:62px !important;padding:11px 0 !important;}
+ .page .instrumentMasthead .returnLink {display:none !important;}
+ .page .issuer {min-width:0;gap:9px !important;}
+ .page .issuerSeal {width:28px !important;height:28px !important;flex:none;}
+ .page .issuer p {font-size:11px !important;line-height:1.4 !important;letter-spacing:.055em !important;white-space:nowrap;}
+ .page .issuer span,.page .documentMeta>span {display:none !important;}
+ .page .documentMeta {flex:none !important;margin-left:auto !important;max-width:none !important;white-space:nowrap;}
+ .page .documentMeta strong {font-size:10px !important;letter-spacing:.08em !important;}
+ .page .heroInner {padding:24px 0 23px !important;}
+ .page .hero .kicker {font-size:9px !important;line-height:1.6 !important;letter-spacing:.10em !important;}
+ .page .hero h1 {white-space:normal !important;margin:13px 0 0 !important;font-size:32px !important;line-height:1.12 !important;}
+ .page .hero h1 .desktopTitle {display:none !important;}
+ .page .hero h1 .mobileTitle {display:flex !important;flex-direction:column;gap:5px;margin:0 !important;font:inherit !important;}
+ .page .hero h1 .mobileTitle::before,.page .hero h1 .mobileTitle span::before {content:none !important;}
+ .page .hero h1 .mobileTitle strong {font:400 39px/1 Georgia,'Times New Roman',serif !important;letter-spacing:.015em;}
+ .page .hero h1 .mobileTitle span {display:block !important;margin:0 !important;font:400 27px/1.2 Georgia,'Times New Roman',serif !important;letter-spacing:-.02em !important;}
+ .page .hero .heroLead {font-size:14px !important;line-height:1.7 !important;margin-top:16px !important;max-width:42ch !important;}
+ .page .instrumentNav>div {display:grid !important;grid-template-columns:repeat(4,minmax(0,1fr)) !important;gap:0 !important;padding:4px 8px !important;overflow:visible !important;width:100% !important;}
+ .page .instrumentNav a {display:flex !important;align-items:center !important;justify-content:center !important;width:auto !important;min-width:0 !important;min-height:42px !important;padding:7px 3px !important;font-size:11px !important;line-height:1.3 !important;letter-spacing:0 !important;white-space:normal !important;border-bottom:1px solid #ffffff12 !important;}
+ .page .form .section {scroll-margin-top:106px !important;}
+ .page .form .sectionHeader h2 {font-size:21px !important;line-height:1.35 !important;}
+ .page .form .instrumentNotice {padding:14px 15px !important;}
+ .page .form .instrumentNotice p {font-size:13px !important;line-height:1.75 !important;}
+ .page .form .progression {display:flex !important;flex-wrap:wrap !important;justify-content:flex-start !important;gap:7px 10px !important;padding:13px 0 !important;overflow:visible !important;}
+ .page .form .progression span {flex:none !important;font-size:9px !important;line-height:1.65 !important;letter-spacing:.055em !important;}
+ .page .form .progression i {flex:none !important;font-size:12px !important;}
+ .page .form .grid label {font-size:13px !important;}
+ .page .form .fieldHelp,.page .form .helper,.page .form .choiceHelp {font-size:13px !important;line-height:1.65 !important;}
+}
+@media print {.page .hero h1 .mobileTitle {display:none !important;}.page .hero h1 .desktopTitle {display:inline !important;}}
+
+/* L5 — distinct selectors, documentary checkboxes and quiet example text. */
+.page .form .grid select,.page .form .conditionalGrid select,.page .form .choiceBlock select {
+ appearance:none !important;
+ -webkit-appearance:none !important;
+ border:1px solid #9b927e !important;
+ border-bottom:2px solid #927b52 !important;
+ background-color:#f8f4e9 !important;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='38' height='26' viewBox='0 0 38 26'%3E%3Cpath d='M1 2v22' stroke='%23c8bdA7'/%3E%3Cpath d='m14 10 5 5 5-5' fill='none' stroke='%23725e38' stroke-width='1.8' stroke-linecap='square'/%3E%3C/svg%3E") !important;
+ background-repeat:no-repeat !important;
+ background-position:right 8px center !important;
+ background-size:38px 26px !important;
+ padding-right:55px !important;
+ cursor:pointer;
+ box-shadow:inset 0 1px 0 #ffffffaa,0 1px 2px #302a1910 !important;
+}
+.page .form .grid select:hover,.page .form .conditionalGrid select:hover,.page .form .choiceBlock select:hover {border-color:#75613f !important;background-color:#f2ecdc !important;}
+.page .form .grid input::placeholder,.page .form .grid textarea::placeholder,.page .form .conditionalGrid input::placeholder,.page .form .conditionalGrid textarea::placeholder {
+ color:rgba(71,82,86,.43) !important;
+ opacity:1 !important;
+ font-weight:400 !important;
+ font-style:italic;
+}
+.page .form .grid input:disabled::placeholder,.page .form .grid textarea:disabled::placeholder {
+ color:rgba(71,82,86,.43) !important;
+ -webkit-text-fill-color:rgba(71,82,86,.43) !important;
+}
+.page .form .checkbox input[type="checkbox"] {
+ appearance:none !important;
+ -webkit-appearance:none !important;
+ display:inline-grid;
+ place-content:center;
+ flex:none;
+ width:18px !important;
+ height:18px !important;
+ min-width:18px !important;
+ min-height:18px !important;
+ padding:0 !important;
+ margin:3px 0 0 !important;
+ border:1px solid #897956 !important;
+ border-radius:2px !important;
+ background:#fcfaf4 !important;
+ box-shadow:inset 0 1px 2px #493e2310 !important;
+ cursor:pointer;
+ opacity:1 !important;
+}
+.page .form .checkbox input[type="checkbox"]:checked {
+ border-color:#786139 !important;
+ background-color:#927849 !important;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='m4 9 3 3 7-7' fill='none' stroke='%23fff8e6' stroke-width='1.8' stroke-linecap='square'/%3E%3C/svg%3E") !important;
+ background-position:center !important;
+ background-repeat:no-repeat !important;
+ background-size:18px 18px !important;
+ box-shadow:0 0 0 2px #a68a5220 !important;
+}
+.page .form .checkbox input[type="checkbox"]:focus-visible {outline:2px solid #4b7182 !important;outline-offset:3px !important;}
+.page .form .checkbox:has(input:checked) {background:#a68a520b !important;}
+.page .form .checkbox input[type="checkbox"]:disabled {cursor:default;}
+@media(forced-colors:active) {
+ .page .form .checkbox input[type="checkbox"] {appearance:auto !important;-webkit-appearance:auto !important;background:none !important;forced-color-adjust:auto;}
+ .page .form .grid select,.page .form .conditionalGrid select,.page .form .choiceBlock select {appearance:auto !important;-webkit-appearance:auto !important;background-image:none !important;}
 }

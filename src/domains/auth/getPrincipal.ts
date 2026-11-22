@@ -1,10 +1,20 @@
+import { loadPrincipalUserWithClient } from './loadPrincipalUserWithClient'
+import { resolveInstitutionalVisitorSignInWithClient } from '../institutional-access/resolveInstitutionalVisitorSignInWithClient'
+import { cache } from 'react'
 import { prisma } from '@/infrastructure/db/prisma'
 import { getSessionFromCookie } from '@/lib/auth/session'
 
 import type { Principal } from './types'
 import type { PermissionKey } from './permissions'
+import { resolveRepresentativeSessionValidity } from './resolveRepresentativeSessionValidity'
+import {
+  resolveFrenchWardGoverningSessionValidityWithClient,
+} from './resolveFrenchWardGoverningSessionValidityWithClient'
+import {
+  resolveFrenchWardInstitutionalSessionValidityWithClient,
+} from './resolveFrenchWardInstitutionalSessionValidityWithClient'
 
-export async function getPrincipal(): Promise<Principal | null> {
+export const getPrincipal = cache(async function getPrincipal(): Promise<Principal | null> {
   const session = await getSessionFromCookie()
 
   console.log('[auth/getPrincipal] resolving principal', {
@@ -17,30 +27,8 @@ export async function getPrincipal(): Promise<Principal | null> {
     return null
   }
 
-  const user = await prisma.user.findUnique({
-    where: {
-      id: session.userId,
-    },
-    include: {
-      userRoles: {
-        where: {
-          isActive: true,
-          revokedAt: null,
-        },
-        include: {
-          role: {
-            include: {
-              rolePermissions: {
-                include: {
-                  permission: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  })
+  const user = await loadPrincipalUserWithClient(prisma, session.userId)
+
 
   if (!user) {
     console.log('[auth/getPrincipal] user not found for session')
@@ -57,17 +45,88 @@ export async function getPrincipal(): Promise<Principal | null> {
         (userRole: {
           role: {
             rolePermissions: Array<{
-              permission: { key: PermissionKey }
+              permission: { key: string }
             }>
           }
         }) =>
           userRole.role.rolePermissions.map(
-            (rolePermission: { permission: { key: PermissionKey } }) =>
-              rolePermission.permission.key
+            (rolePermission: { permission: { key: string } }) =>
+              rolePermission.permission.key as PermissionKey
           )
       )
     )
   )
+
+  const sessionRemainsValid =
+    resolveRepresentativeSessionValidity({
+      sessionTier:
+        session.tier,
+      roles,
+      permissions,
+      representativeProgramParticipants:
+        user.representativeProgramParticipants,
+    })
+
+
+  const governingSessionRemainsValid =
+    await resolveFrenchWardGoverningSessionValidityWithClient({
+      client: prisma,
+      sessionTier: session.tier,
+      userId: user.id,
+    })
+
+  if (!governingSessionRemainsValid) {
+    console.log(
+      '[auth/getPrincipal] French-Ward governing session no longer eligible',
+      {
+        userId: user.id,
+      },
+    )
+
+    return null
+  }
+
+  const institutionalSessionRemainsValid =
+    await resolveFrenchWardInstitutionalSessionValidityWithClient({
+      client: prisma,
+      sessionTier: session.tier,
+      userId: user.id,
+    })
+
+  if (!institutionalSessionRemainsValid) {
+    console.log(
+      '[auth/getPrincipal] French-Ward institutional session no longer eligible',
+      {
+        userId: user.id,
+      },
+    )
+
+    return null
+  }
+
+  if (session.tier === 'institutional-visitor') {
+    const visitorEligibility = await resolveInstitutionalVisitorSignInWithClient({
+      client: prisma,
+      userId: user.id,
+      email: user.email,
+      roles,
+      permissions,
+      representativeProgramParticipants: user.representativeProgramParticipants,
+    })
+    if (!visitorEligibility.eligible) return null
+  }
+
+  if (!sessionRemainsValid) {
+    console.log(
+      '[auth/getPrincipal] representative session no longer eligible',
+      {
+        userId:
+          user.id,
+      },
+    )
+
+    return null
+  }
 
   console.log('[auth/getPrincipal] principal resolved', {
     email: user.email,
@@ -83,4 +142,4 @@ export async function getPrincipal(): Promise<Principal | null> {
     permissions,
     sessionId: null,
   }
-}
+})

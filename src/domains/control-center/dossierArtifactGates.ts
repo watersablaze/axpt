@@ -1,4 +1,13 @@
+import {
+  getSpaExecutionConfirmationStatus,
+} from "./dossiers/dossierSpaExecution";
+import {
+  getDossierKycConfirmationStatus,
+} from "./dossiers/dossierKycReview";
+
 type DossierInstrumentForGate = {
+  id: string;
+  version: string;
   type: string;
   status: string;
 };
@@ -9,6 +18,13 @@ type DossierPartyForGate = {
   representative?: string | null;
   country?: string | null;
   notes?: string | null;
+  createdAt?: Date | string | null;
+  updatedAt?: Date | string | null;
+};
+
+type DossierEventForGate = {
+  eventType: string;
+  createdAt: Date | string;
 };
 
 type DossierSourceOpportunityForGate = {
@@ -36,6 +52,7 @@ type ArtifactGateInput = {
   instruments?: DossierInstrumentForGate[];
   parties?: DossierPartyForGate[];
   sourceOpportunities?: DossierSourceOpportunityForGate[];
+  events?: DossierEventForGate[];
   origin?: string | null;
   settlement?: string | null;
   executionProfile?: string | null;
@@ -68,6 +85,7 @@ export function checkDossierArtifactGate({
   instruments = [],
   parties = [],
   sourceOpportunities = [],
+  events = [],
   origin = null,
   settlement = null,
   executionProfile = null,
@@ -77,6 +95,12 @@ export function checkDossierArtifactGate({
     const seller = parties.find((party) => party.role === "SELLER");
     const hasSellerParty = Boolean(seller?.legalName?.trim());
     const hasSourceTrace = sourceOpportunities.length > 0;
+
+    const kycConfirmation =
+      getDossierKycConfirmationStatus({
+        parties,
+        events,
+      });
 
     const checks: ArtifactGateCheck[] = [
       {
@@ -106,7 +130,21 @@ export function checkDossierArtifactGate({
             Boolean(party.notes?.trim()),
         ),
         detail:
-          "Go to Brief → Party Identity Review. Add representative, country, notes, or an operator confirmation note to at least one party record.",
+          "Go to Brief → Party Identity Review. Add representative, jurisdiction, and authority context before confirming the review.",
+      },
+      {
+        id: "kyc-review-disposition",
+        label: "KYC review disposition current",
+        passed: kycConfirmation.current,
+        detail: kycConfirmation.current
+          ? `Operator KYC review disposition is current${
+              kycConfirmation.confirmedAt
+                ? ` as of ${kycConfirmation.confirmedAt}`
+                : ""
+            }.`
+          : kycConfirmation.stale
+            ? "A previous KYC review disposition exists, but party records changed afterward. Reconfirm the review before SPA drafting."
+            : "An operator must explicitly confirm the KYC, party identity, authority, and source-context review threshold before SPA drafting.",
       },
     ];
 
@@ -116,7 +154,7 @@ export function checkDossierArtifactGate({
       passed: failed.length === 0,
       blockingReason:
         failed.length > 0
-          ? "SPA drafting requires buyer identity, source trace, and party review context. Resolve in Brief → Party Identity Review."
+          ? "SPA drafting requires buyer identity, source trace, party review context, and a current operator KYC review disposition."
           : undefined,
       checks,
     };
@@ -125,6 +163,13 @@ export function checkDossierArtifactGate({
   if (fromState === "SPA_DRAFTING" && toState === "SPA_EXECUTED") {
     const buyer = parties.find((party) => party.role === "BUYER");
     const seller = parties.find((party) => party.role === "SELLER");
+    const spa =
+      instruments.find((instrument) => instrument.type === "SPA") ?? null;
+    const spaExecutionConfirmation =
+      getSpaExecutionConfirmationStatus({
+        instrument: spa,
+        events,
+      });
 
     const checks: ArtifactGateCheck[] = [
       {
@@ -132,7 +177,19 @@ export function checkDossierArtifactGate({
         label: "SPA instrument executed",
         passed: hasExecutedInstrument(instruments, "SPA"),
         detail:
-          "Go to Readiness → Document Workbench. Create the SPA draft, activate it for review, then mark it executed before recording SPA_EXECUTED.",
+          "Go to Readiness → Document Workbench. Create the SPA draft, activate it for review, then confirm executed-agreement evidence before recording SPA_EXECUTED.",
+      },
+      {
+        id: "spa-execution-confirmation",
+        label: "Executed SPA evidence confirmed",
+        passed: spaExecutionConfirmation.current,
+        detail: spaExecutionConfirmation.current
+          ? `Canonical SPA execution confirmation is current${
+              spaExecutionConfirmation.confirmedAt
+                ? ` as of ${spaExecutionConfirmation.confirmedAt}`
+                : ""
+            }.`
+          : "SPA status alone is insufficient. Executed agreement evidence must be confirmed through the canonical SPA execution operation.",
       },
       {
         id: "buyer-party-present",
@@ -163,7 +220,7 @@ export function checkDossierArtifactGate({
       passed: failed.length === 0,
       blockingReason:
         failed.length > 0
-          ? "SPA execution requires an executed SPA, buyer party, seller party, and origin."
+          ? "SPA execution requires an executed SPA, current canonical execution confirmation, buyer party, seller party, and origin."
           : undefined,
       checks,
     };
@@ -172,18 +229,11 @@ export function checkDossierArtifactGate({
   if (fromState === "SPA_EXECUTED" && toState === "ESCROW_PENDING") {
     const checks: ArtifactGateCheck[] = [
       {
-        id: "escrow-setup-instruction",
-        label: "Escrow setup instruction active",
-        passed: hasActiveInstrument(instruments, "ESCROW_SETUP_INSTRUCTION"),
-        detail:
-          "Escrow Setup Instruction must be active or executed before the dossier can enter escrow pending.",
-      },
-      {
         id: "settlement-annex",
         label: "Settlement annex active",
         passed: hasActiveInstrument(instruments, "ANNEX_B_SETTLEMENT"),
         detail:
-          "Annex B Settlement must be active or executed before escrow setup is treated as operational.",
+          "Annex B Settlement must be active or executed before the escrow execution lane can be opened. The Escrow Setup Instruction is generated by the canonical lane-opening operation and is therefore not a prerequisite to opening the lane.",
       },
     ];
 
@@ -193,7 +243,7 @@ export function checkDossierArtifactGate({
       passed: failed.length === 0,
       blockingReason:
         failed.length > 0
-          ? "Escrow pending requires active escrow setup instruction and settlement annex."
+          ? "Escrow lane opening requires active settlement architecture."
           : undefined,
       checks,
     };

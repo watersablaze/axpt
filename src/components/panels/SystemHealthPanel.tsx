@@ -1,10 +1,7 @@
+import type { ControlCenterSnapshot } from "./contracts/controlCenter"
+
 type Props = {
-  data: {
-    health: number
-    drift: number
-    stability: number
-    status: string
-  }
+  data: ControlCenterSnapshot["system"]
   loading?: boolean
 }
 
@@ -20,7 +17,7 @@ export default function SystemHealthPanel({
         </h2>
 
         <div className="text-xs text-neutral-500">
-          {loading ? 'SYNCING' : data.status}
+          {loading ? 'SYNCING' : data.status === 'UNKNOWN' ? 'NOT MEASURED' : data.status}
         </div>
       </div>
 
@@ -30,8 +27,8 @@ export default function SystemHealthPanel({
             Health
           </div>
 
-          <div className="text-green-400">
-            {(data.health * 100).toFixed(0)}%
+          <div className="text-neutral-300">
+            {data.health === null ? "Not measured" : `${(data.health * 100).toFixed(0)}%`}
           </div>
         </div>
 
@@ -40,8 +37,8 @@ export default function SystemHealthPanel({
             Drift
           </div>
 
-          <div className="text-yellow-400">
-            {(data.drift * 100).toFixed(1)}%
+          <div className="text-neutral-300">
+            {data.drift === null ? "Not measured" : `${(data.drift * 100).toFixed(1)}%`}
           </div>
         </div>
 
@@ -50,8 +47,8 @@ export default function SystemHealthPanel({
             Stability
           </div>
 
-          <div className="text-cyan-400">
-            {(data.stability * 100).toFixed(0)}%
+          <div className="text-neutral-300">
+            {data.stability === null ? "Not measured" : `${(data.stability * 100).toFixed(0)}%`}
           </div>
         </div>
       </div>

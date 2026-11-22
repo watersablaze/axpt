@@ -74,7 +74,7 @@ function getRecipients() {
   return (
     process.env.TRANSACTION_INTAKE_ADMIN_EMAILS ||
     process.env.COUNCIL_EMAILS ||
-    ""
+    "connect@axpt.io"
   )
     .split(",")
     .map((email) => email.trim())

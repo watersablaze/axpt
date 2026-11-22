@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server'
+import { requirePermission } from '@/domains/auth/requirePermission'
+import { PERMISSIONS } from '@/domains/auth/permissions'
 import { runPredictiveEngine } from '@/domains/predictive/predictiveEngine'
 import { prisma } from '@/infrastructure/db/prisma'
 import { requireSystemHealthy } from '@/domains/system/requireSystemHealthy'
 
 export async function GET() {
+  await requirePermission(
+    PERMISSIONS.TREASURY_READ
+  )
+
   try {
     const events = await prisma.circuitEvent.findMany({
       where: {
@@ -56,6 +62,10 @@ export async function GET() {
 }
 
 export async function POST() {
+  await requirePermission(
+    PERMISSIONS.TREASURY_EXECUTE_INTENT
+  )
+
   try {
     const health = await requireSystemHealthy()
     if (!health.allowed) {

@@ -68,6 +68,11 @@ export function proxy(req: NextRequest) {
 
       const loginUrl = req.nextUrl.clone()
       loginUrl.pathname = '/login'
+      loginUrl.search = ''
+      loginUrl.searchParams.set(
+        'next',
+        `${pathname}${req.nextUrl.search}`
+      )
       return NextResponse.redirect(loginUrl)
     }
   }

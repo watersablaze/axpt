@@ -1,6 +1,7 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { singleFlight } from '@/lib/control-center/singleFlight'
 
 export type ControlCenterIncident = {
   id: string
@@ -268,8 +269,10 @@ export function useControlCenterOperationalState() {
     useState<ControlCenterOperatorIdentity | null>(null)
 
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+  const [lastSuccessfulAt, setLastSuccessfulAt] = useState<number | null>(null)
 
-  const refreshOperationalState = useCallback(async () => {
+  const [refreshOperationalState] = useState(() => singleFlight(async () => {
     try {
       const res = await fetch(
         '/api/admin/control-center/operational-state',
@@ -279,9 +282,13 @@ export function useControlCenterOperationalState() {
         }
       )
 
+      if (!res.ok) throw new Error(`OPERATIONAL_STATE_HTTP_${res.status}`)
       const json =
         (await res.json()) as OperationalStateResponse
 
+      if (!json.ok || !json.state) {
+        throw new Error('OPERATIONAL_STATE_RESPONSE_INVALID')
+      }
       const state = json.state
 
       setIncidents(
@@ -334,6 +341,7 @@ export function useControlCenterOperationalState() {
         }
       )
 
+      if (!registryRes.ok) throw new Error(`TRANSITION_REGISTRY_HTTP_${registryRes.status}`)
       const registryJson =
         (await registryRes.json()) as TransitionRegistryResponse
 
@@ -349,38 +357,33 @@ export function useControlCenterOperationalState() {
         }
       )
 
+      if (!identityRes.ok) throw new Error(`OPERATOR_IDENTITY_HTTP_${identityRes.status}`)
       const identityJson =
         (await identityRes.json()) as OperatorIdentityResponse
 
       setOperatorIdentity(
         identityJson.operator ?? null
       )
+      setError(null)
+      setLastSuccessfulAt(Date.now())
     } catch (err) {
       console.error(
         '[CONTROL_CENTER_OPERATIONAL_STATE_FAILED]',
         err
       )
 
-      setIncidents([])
-      setIntelligence([])
-      setActions([])
-      setTimeline([])
-      setOperatorActivity([])
-      setTransitionExecutionLedger([])
-      setDossiers([])
-      setTransitionRegistry(null)
-      setOperatorIdentity(null)
+      setError('Operational refresh failed. Previously loaded records may be stale.')
     } finally {
       setLoading(false)
     }
-  }, [])
+  }))
 
   useEffect(() => {
     refreshOperationalState()
 
     const interval = window.setInterval(
-      refreshOperationalState,
-      5000
+      () => { if (document.visibilityState === 'visible') void refreshOperationalState() },
+      30000
     )
 
     return () => window.clearInterval(interval)
@@ -397,6 +400,8 @@ export function useControlCenterOperationalState() {
     transitionRegistry,
     operatorIdentity,
     loading,
+    error,
+    lastSuccessfulAt,
     refreshOperationalState,
   }
 }

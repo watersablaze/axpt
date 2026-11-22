@@ -1,0 +1,361 @@
+/* ══════════════════════════════════════════════════════════
+   AXPT COMMUNICATIONS — CANONICAL PRESENTATION CONTRACT
+   Desktop → Medium → Phone
+   ══════════════════════════════════════════════════════════ */
+
+.console {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 0%;
+  overflow: hidden;
+}
+
+/* Directory */
+
+.directory {
+  display: flex;
+  width: 284px;
+  min-width: 0;
+  flex: 0 0 284px;
+  flex-direction: column;
+  border-right: 1px solid rgba(163, 163, 163, 0.30);
+}
+
+.mobileBack {
+  display: none;
+}
+
+/* Conversation stage */
+
+.stage {
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+  flex: 1 1 0%;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.threadMasthead {
+  flex: 0 0 auto;
+}
+
+.timeline {
+  min-height: 0;
+  scrollbar-width: thin;
+}
+
+.messageBubble {
+  width: fit-content;
+  max-width: min(76%, 760px);
+}
+
+.messageBubbleOwn {
+  max-width: min(66%, 680px);
+  margin-left: auto;
+}
+
+/* Composer */
+
+.composerShell {
+  width: 100%;
+}
+
+.composerMetaRow {
+  min-width: 0;
+}
+
+.composerBody {
+  display: block;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.composerEntryRow {
+  min-width: 0;
+}
+
+.sendButton {
+  width: 78px;
+  flex: 0 0 78px;
+}
+
+/* Room context */
+
+.contextOverlay {
+  display: none;
+}
+
+.contextInspector {
+  position: relative;
+  width: 360px;
+  max-width: 360px;
+  min-width: 0;
+  min-height: 0;
+  flex: 0 0 360px;
+  height: 100%;
+  overflow: hidden;
+  box-shadow: none;
+}
+
+/* Medium workspace:
+   Context remains in-flow.
+   Directory yields its width when Context is open. */
+
+@media (max-width: 1180px) and (min-width: 720px) {
+  .directory {
+    width: 270px;
+    flex-basis: 270px;
+  }
+
+  .directoryContextOpen {
+    display: none;
+  }
+
+  .contextInspector {
+    width: 340px;
+    max-width: 340px;
+    flex-basis: 340px;
+  }
+
+  .messageBubble {
+    max-width: min(82%, 700px);
+  }
+
+  .messageBubbleOwn {
+    max-width: min(72%, 620px);
+  }
+}
+
+/* Phone:
+   Directory → Thread → Context are distinct screens.
+   Nothing overlays anything. */
+
+@media (max-width: 719px) {
+  .directory {
+    width: 100%;
+    flex: 1 1 100%;
+    border-right: 0;
+  }
+
+  .directorySelected {
+    display: none;
+  }
+
+  .stageEmpty {
+    display: none;
+  }
+
+  .stageSelected {
+    display: flex;
+    width: 100%;
+    min-height: 0;
+    flex: 1 1 100%;
+    overflow: hidden;
+  }
+
+  .stageContextOpen {
+    display: none;
+  }
+
+  .mobileBack {
+    display: inline-flex;
+  }
+
+  .contextInspector {
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+    height: 100%;
+    min-height: 0;
+    flex: 1 1 100%;
+    border-left: 0;
+    box-shadow: none;
+  }
+
+  /* Thread masthead:
+     counterpart first, room metadata secondary. */
+
+  .threadMasthead {
+    padding: 9px 12px !important;
+    background: #090e13 !important;
+  }
+
+  .threadMasthead > div {
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  /* Correspondence rhythm */
+
+  .timeline {
+    padding: 14px 14px 18px !important;
+  }
+
+  .messageBubble,
+  .messageBubbleOwn {
+    width: auto;
+    max-width: 94%;
+    border-radius: 7px !important;
+  }
+
+  .messageBubbleOwn {
+    margin-left: auto;
+  }
+
+  /* Composer:
+     metadata stays subordinate to writing. */
+
+  .composerShell {
+    padding-top: 2px;
+  }
+
+  .composerMetaRow {
+    display: grid !important;
+    grid-template-columns: 84px minmax(0, 1fr);
+    align-items: center;
+    gap: 8px !important;
+    min-height: 32px;
+    padding: 4px 0 !important;
+  }
+
+  .composerMetaRow > span {
+    width: auto !important;
+    flex: 0 0 auto;
+    font-size: 7px !important;
+    letter-spacing: .13em !important;
+    color: rgba(163, 163, 163, .58) !important;
+  }
+
+  .composerMetaRow label {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .composerMetaRow select {
+    width: 100% !important;
+    max-width: none !important;
+    min-width: 0;
+    min-height: 30px;
+    padding: 3px 8px !important;
+    border-radius: 5px !important;
+    font-size: 9px !important;
+  }
+
+  .composerEntryRow {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) 72px;
+    align-items: stretch;
+    gap: 7px !important;
+    padding-top: 7px !important;
+  }
+
+  .composerBody {
+    width: 100%;
+    min-height: 54px !important;
+    max-height: 110px !important;
+    resize: none !important;
+    border-radius: 6px !important;
+  }
+
+  .sendButton {
+    width: 72px !important;
+    min-height: 54px !important;
+    flex-basis: 72px !important;
+    border-radius: 6px !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .timeline {
+    padding-inline: 11px !important;
+  }
+
+  .messageBubble,
+  .messageBubbleOwn {
+    max-width: 96%;
+  }
+
+  .composerMetaRow {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  .composerEntryRow {
+    grid-template-columns: minmax(0, 1fr) 64px;
+  }
+
+  .sendButton {
+    width: 64px !important;
+    flex-basis: 64px !important;
+  }
+}
+
+/* ADMIN-COMMS-1T · correspondence etiquette */
+
+.messageMeta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(163, 163, 163, .58);
+}
+
+.messageBubble {
+  border-color: rgba(148, 163, 184, .22) !important;
+  background: rgba(10, 15, 20, .72);
+  box-shadow: none !important;
+}
+
+.messageBubbleOwn {
+  border-color: rgba(103, 164, 183, .24) !important;
+  background: rgba(10, 19, 25, .82);
+  box-shadow: none !important;
+}
+
+.composerShell {
+  border-color: rgba(148, 163, 184, .18) !important;
+}
+
+.composerMetaRow {
+  border-color: rgba(148, 163, 184, .14) !important;
+}
+
+.composerBody {
+  border-color: rgba(148, 163, 184, .22) !important;
+  background: #0b1219 !important;
+}
+
+.sendButton {
+  border-color: rgba(103, 164, 183, .26) !important;
+  background: rgba(8, 24, 31, .84) !important;
+}
+
+.sendButton:hover:not(:disabled) {
+  border-color: rgba(125, 199, 219, .42) !important;
+  background: rgba(10, 31, 40, .92) !important;
+}
+
+@media (max-width: 719px) {
+  .threadMasthead {
+    border-color: rgba(148, 163, 184, .16) !important;
+  }
+
+  .messageBubble,
+  .messageBubbleOwn {
+    border-width: 1px !important;
+  }
+
+  .messageBubble {
+    border-color: rgba(148, 163, 184, .18) !important;
+  }
+
+  .messageBubbleOwn {
+    border-color: rgba(103, 164, 183, .24) !important;
+  }
+
+  .messageMeta {
+    gap: 5px;
+    font-size: 8px !important;
+    letter-spacing: .10em !important;
+  }
+}

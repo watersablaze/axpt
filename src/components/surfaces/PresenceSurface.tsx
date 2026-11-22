@@ -57,7 +57,7 @@ export default function PresenceSurface() {
                 </div>
 
                 <p className={styles.articleStatement}>
-                  What proceeds must remain accountable.
+                  Accountability remains attached to what proceeds.
                 </p>
               </article>
 
@@ -73,7 +73,7 @@ export default function PresenceSurface() {
                 </div>
 
                 <p className={styles.articleStatement}>
-                  What has been established must remain known.
+                  What is established remains available to the record.
                 </p>
               </article>
             </div>
@@ -119,7 +119,7 @@ export default function PresenceSurface() {
           </a>
 
           <span className={styles.attestationRight}>
-            Established authority governs what proceeds
+            Witness / Record / Seal
           </span>
         </footer>
       </div>

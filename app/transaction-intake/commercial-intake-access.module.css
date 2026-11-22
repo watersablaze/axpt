@@ -1,0 +1,2 @@
+/* Access reception only. The authorized LOI instrument keeps its own styles. */
+.page{box-sizing:border-box;min-height:100svh;padding:clamp(16px,4vw,48px) 0;background:radial-gradient(ellipse at 50% 0%,#5b4b38 0%,#171613 75%);color:#302b25;font-family:Arial,Helvetica,sans-serif}

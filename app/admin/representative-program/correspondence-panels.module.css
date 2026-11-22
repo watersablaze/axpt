@@ -1,0 +1,16 @@
+
+.panel { min-width:0; color:#d1d5db; }
+.composeGrid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; margin-top:20px; }
+.messageTool { min-width:0; padding:16px 0; border-top:2px solid #246879; }
+.messageTool:nth-child(2) { border-color:#47735f; }
+.history { margin-top:24px; padding:16px 0; border-top:1px solid #29333e; }
+.historyRow { padding:12px 0; border-bottom:1px solid #202a35; overflow-wrap:anywhere; }
+.deliveryStatus { font-size:10px; letter-spacing:.12em; color:#f4c77b; }
+.deliveryStatus[data-status="SENT"] { color:#79d8ad; }
+.deliveryStatus[data-status="FAILED"] { color:#fca5a5; }
+.recipient { margin-top:6px; color:#9ca3af; font-size:11px; overflow-wrap:anywhere; }
+.preview { margin-top:20px; padding-top:18px; border-top:2px solid #a18042; }
+.sectionTitle { font-size:13px; font-weight:600; color:#f4d397; margin-bottom:12px; }
+.emailFrame { width:100%; height:clamp(360px,65vh,720px); background:white; }
+.emptyPreview { margin-top:16px; color:#9ca3af; font-size:12px; line-height:1.7; }
+@container (max-width:650px) { .composeGrid { grid-template-columns:1fr; gap:8px; } }

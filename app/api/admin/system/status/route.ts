@@ -1,8 +1,14 @@
 import { NextResponse } from 'next/server'
+import { requirePermission } from '@/domains/auth/requirePermission'
+import { PERMISSIONS } from '@/domains/auth/permissions'
 import { prisma } from '@/infrastructure/db/prisma'
 import { detectSystemHealth } from '@/domains/system/detectSystemHealth'
 
 export async function GET() {
+  await requirePermission(
+    PERMISSIONS.TREASURY_READ
+  )
+
   try {
     const [systemState, governor, health] = await Promise.all([
       prisma.systemState.findUnique({

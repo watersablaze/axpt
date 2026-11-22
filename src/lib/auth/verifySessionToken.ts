@@ -1,27 +1,26 @@
-import { jwtVerify } from 'jose'
+import { prisma } from '@/infrastructure/db/prisma'
 import { SIGNING_SECRET } from '@/infrastructure/env/secrets'
 import type { SessionPayload } from '@/shared/types/auth'
+import {
+  verifySignedPersistedSession,
+} from './verifySignedPersistedSession'
 
 export async function verifySessionToken(
   token: string
 ): Promise<SessionPayload | null> {
-  try {
-    const { payload } = await jwtVerify(token, SIGNING_SECRET, {
-      algorithms: ['HS256'],
-      clockTolerance: 60,
-    })
-
-    if (
-      !payload.userId ||
-      !payload.email ||
-      !payload.tier ||
-      !payload.displayName
-    ) {
-      return null
-    }
-
-    return payload as unknown as SessionPayload
-  } catch {
-    return null
-  }
+  return verifySignedPersistedSession(
+    token,
+    SIGNING_SECRET,
+    async (tokenId) =>
+      prisma.session.findUnique({
+        where: { tokenId },
+        select: {
+          userId: true,
+          status: true,
+          expiresAt: true,
+          invalidatedAt: true,
+          endedAt: true,
+        },
+      }),
+  )
 }

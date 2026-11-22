@@ -1,0 +1,65 @@
+/* Public reception follows the full publication; qualified content remains protected. */
+.reception{box-sizing:border-box;position:relative;isolation:isolate;width:min(100%,920px);margin:0 auto;padding:clamp(26px,6vw,64px);color:#302b25;background:linear-gradient(150deg,rgba(255,255,255,.75),transparent 50%),#f3eee3;font-family:Arial,Helvetica,sans-serif;border-inline:1px solid #c6baa8;box-shadow:0 18px 70px #0003}
+.head{padding:22px 0 30px;border-top:1px solid #a99577;border-bottom:1px solid #c9bead}
+.kicker{margin:0 0 22px;color:#756044;font-size:10px;line-height:1.6;letter-spacing:.17em}
+.head h1{margin:0 0 20px;font:400 clamp(32px,5vw,54px)/1.08 Georgia,serif;letter-spacing:-.025em;text-wrap:balance}.head h1 span{color:#79634a}
+.head>p:last-child{max-width:58ch;margin:0;color:#61574a;font-size:14px;line-height:1.8}
+.signin{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;margin:25px 0;color:#6c6255;font-size:12px;line-height:1.6}.signin a{color:#54402b;text-underline-offset:4px}
+.registerSection{padding:24px;background:linear-gradient(135deg,#e9e0d0,#f4efe6);border:1px solid #c6b99f}
+.registerIndex{display:flex;justify-content:space-between;gap:16px;margin-bottom:26px;color:#756044;font-size:9px;line-height:1.7;letter-spacing:.13em}
+.form{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px 28px}.form label{display:flex;flex-direction:column;gap:8px;color:#65513b;font-size:10px;line-height:1.5;letter-spacing:.07em;text-transform:uppercase}
+.form input,.form textarea{box-sizing:border-box;min-width:0;width:100%;padding:12px 8px;border:0;border-bottom:1px solid #ab997f;border-radius:0;background:#ffffff50;color:#302b25;font:400 15px/1.5 Arial,Helvetica,sans-serif}.form textarea{resize:vertical;min-height:110px}.form input::placeholder,.form textarea::placeholder{color:#8d8170;opacity:.65}.form input:focus-visible,.form textarea:focus-visible{outline:2px solid #816341;outline-offset:3px}
+.full{grid-column:1/-1}.form button{grid-column:1/-1;width:fit-content;min-height:44px;padding:13px 20px;border:1px solid #6b5439;background:#30271f;color:#f6efdf;font:600 10px/1.5 Arial,Helvetica,sans-serif;letter-spacing:.1em;cursor:pointer}.form button:hover{background:#55412e}.form button:disabled{opacity:.6;cursor:wait}
+.error{grid-column:1/-1;color:#8b2921;font-size:13px;line-height:1.6}.notice{margin:22px 0;color:#796d5c;font-size:11px;line-height:1.8}.success{margin:28px 0;padding:24px;border:1px solid #9b9677;background:#e6e7da}.success p{font-size:14px;line-height:1.7}.returnNav{margin-top:28px;padding-top:20px;border-top:1px solid #c9bead}.returnNav a{color:#675039;font-size:10px;line-height:1.6;letter-spacing:.1em;text-decoration:none}.returnNav a span{margin-right:12px} .reception a:focus-visible,.form button:focus-visible{outline:2px solid #816341;outline-offset:5px}
+@media(max-width:600px){.reception{padding:28px 20px;border-inline:0}.head{padding-top:16px}.head h1{font-size:36px}.registerSection{padding:20px 14px}.registerIndex{font-size:8px;gap:10px}.registerIndex span:last-child{text-align:right}.form{grid-template-columns:1fr;gap:20px}.form input,.form textarea{font-size:16px}.signin{flex-direction:column}.form button{width:100%}}
+
+/* C2: compact shared reception, with comfortable mobile controls. */
+.reception{width:min(640px,calc(100% - 32px));padding:30px 34px;box-shadow:0 16px 60px #0003}
+.head{padding:14px 0 20px}.kicker{margin-bottom:16px;font-size:9px}
+.head h1{font-size:clamp(29px,3.5vw,38px);margin-bottom:14px;line-height:1.12}
+.head>p:last-child{font-size:12px;line-height:1.7}.signin{margin:17px 0;font-size:11px}
+.registerSection{padding:19px}.registerIndex{margin-bottom:19px;font-size:8px}
+.form{gap:16px 22px}.form label{font-size:9px;gap:5px}
+.form input,.form textarea{padding:9px 7px;font-size:14px;line-height:1.5}
+.form textarea{min-height:84px}.form button{padding:11px 16px;font-size:9px}
+.notice{margin:16px 0;font-size:10px;line-height:1.7}.returnNav{margin-top:19px;padding-top:16px}
+@media(max-width:600px){.reception{width:calc(100% - 24px);padding:24px 20px}.head h1{font-size:32px}.registerSection{padding:17px 13px}.form{gap:17px}.form input,.form textarea{font-size:16px;min-height:44px}.form textarea{min-height:88px}.registerIndex{flex-wrap:wrap}.registerIndex span:last-child{text-align:left}.signin{gap:7px}}
+
+
+/* FW commercial intake readiness gate · presentation only */
+.reception:has(.accessGrid){width:min(1120px,calc(100% - 32px));padding:clamp(24px,3.5vw,44px)}
+.reception:has(.accessGrid) .head>p:last-child{max-width:90ch}
+.reception:has(.accessGrid) .head h1{font-size:clamp(34px,4vw,48px)}
+.accessGrid{display:grid;grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr);gap:16px;align-items:stretch;margin-top:24px}
+.readinessPanel{min-width:0;padding:clamp(20px,2.6vw,30px);border:1px solid #c8b49b;background:linear-gradient(145deg,#e8d8c7 0%,#eee0d0 55%,#e6d4c1 100%)}
+.readinessKicker{margin:0 0 9px;color:#796449;font-size:9px;letter-spacing:.15em;text-transform:uppercase}
+.readinessPanel h2{margin:0 0 18px;color:#372b21;font:400 clamp(24px,2.4vw,30px)/1.2 Georgia,serif}
+.readinessItem{display:grid;grid-template-columns:48px minmax(0,1fr);gap:14px;padding:19px 0;border-top:1px solid #c6b39a}
+.readinessItem:last-child{padding-bottom:0}
+.readinessIcon{display:flex;width:41px;height:41px;align-items:center;justify-content:center;border-right:1px solid #bca587;padding-right:8px;color:#725538}
+.readinessIcon svg{width:25px;height:25px;flex:none}
+.readinessItem h3{margin:0 0 7px;color:#392a1c;font-size:11px;font-weight:700;line-height:1.4;letter-spacing:.075em;text-transform:uppercase}
+.readinessItem p{margin:0;color:#554737;font-size:12px;line-height:1.62}
+.requestColumn{min-width:0;padding:0 16px 16px;border:1px solid #d3c4b1;background:rgba(252,249,243,.24)}
+.requestColumn .signin{margin:0 -16px 16px;padding:15px 16px;border-bottom:1px solid #d3c4b1}
+.requestColumn .registerSection{padding:19px 17px}
+.requestColumn .registerIndex{margin-bottom:17px}
+.requestColumn .form{gap:15px 18px}
+.requestColumn .form textarea{min-height:86px}
+.requestColumn .success{margin:24px 0}
+.reception:has(.accessGrid) .notice{margin:18px 0 0}
+@media(max-width:850px){
+  .accessGrid{grid-template-columns:1fr}
+  .readinessPanel{padding:20px 22px}
+  .readinessItem{grid-template-columns:44px minmax(0,1fr);padding:15px 0}
+  .requestColumn{padding-bottom:18px}
+}
+@media(max-width:600px){
+  .reception:has(.accessGrid){width:calc(100% - 24px);padding:24px 18px}
+  .accessGrid{margin-top:18px;gap:12px}
+  .readinessPanel{padding:20px 16px}
+  .readinessItem p{font-size:12px}
+  .requestColumn{padding:0 10px 12px}
+  .requestColumn .signin{margin:0 -10px 14px;padding:14px 10px}
+  .requestColumn .registerSection{padding:16px 12px}
+}

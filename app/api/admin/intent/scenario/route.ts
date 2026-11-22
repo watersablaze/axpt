@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server'
+import { requirePermission } from '@/domains/auth/requirePermission'
+import { PERMISSIONS } from '@/domains/auth/permissions'
 import { buildScenarios } from '@/domains/scenario/scenarioEngine'
 
 export async function POST(req: Request) {
+  await requirePermission(
+    PERMISSIONS.TREASURY_READ
+  )
+
   try {
     const { intent, context } = await req.json()
 

@@ -87,6 +87,19 @@ export async function PATCH(
       )
     }
 
+    if (
+      message ===
+      'SPA_EXECUTION_REQUIRES_CANONICAL_CONFIRMATION'
+    ) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error: message,
+        },
+        { status: 409 }
+      )
+    }
+
     return NextResponse.json(
       {
         ok: false,

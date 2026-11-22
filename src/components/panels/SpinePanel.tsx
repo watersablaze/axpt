@@ -1,9 +1,7 @@
+import type { ControlCenterSnapshot } from "./contracts/controlCenter"
+
 type Props = {
-  data: {
-    riskScore: number
-    activeLocks: number
-    riskLevel: 'LOW' | 'MEDIUM' | 'HIGH'
-  }
+  data: ControlCenterSnapshot["governance"]
 }
 
 export default function SpinePanel({ data }: Props) {
@@ -18,8 +16,8 @@ export default function SpinePanel({ data }: Props) {
           <div className="text-xs text-neutral-500">
             Risk Level
           </div>
-          <div className="text-cyan-400">
-            {data.riskLevel}
+          <div className="text-neutral-300">
+            {data.riskLevel === "UNKNOWN" ? "Not measured" : data.riskLevel}
           </div>
         </div>
 
@@ -28,7 +26,7 @@ export default function SpinePanel({ data }: Props) {
             Risk Score
           </div>
           <div className="text-white">
-            {(data.riskScore * 100).toFixed(0)}%
+            {data.riskScore === null ? "Not measured" : `${(data.riskScore * 100).toFixed(0)}%`}
           </div>
         </div>
 
@@ -36,8 +34,8 @@ export default function SpinePanel({ data }: Props) {
           <div className="text-xs text-neutral-500">
             Active Locks
           </div>
-          <div className="text-yellow-400">
-            {data.activeLocks}
+          <div className="text-neutral-300">
+            {data.activeLocks ?? "Not measured"}
           </div>
         </div>
       </div>

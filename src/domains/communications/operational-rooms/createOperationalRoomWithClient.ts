@@ -188,15 +188,15 @@ function fingerprintRoomCreationRequest({
     .digest("hex")
 }
 
-export async function createOperationalRoomWithClient({
-  client,
+export async function createOperationalRoomInTransaction({
+  tx,
   principal,
   clientRoomId,
   title,
   roomClass,
   memberUserIds,
 }: {
-  client: CommunicationsDatabaseClient
+  tx: CommunicationsTransactionClient
   principal: Principal
   clientRoomId: string
   title: string
@@ -247,11 +247,12 @@ export async function createOperationalRoomWithClient({
     })
 
   /*
-   * Resolve durable history before revalidating
-   * present-day member eligibility.
+   * Durable room identity is resolved inside the caller's
+   * transaction so institutional commands may compose room
+   * establishment with their own governed binding.
    */
   const existing =
-    await client.communicationOperationalRoom.findUnique({
+    await tx.communicationOperationalRoom.findUnique({
       where: {
         createdByUserId_clientRoomId: {
           createdByUserId:
@@ -293,235 +294,273 @@ export async function createOperationalRoomWithClient({
     return {
       room,
       conversation,
-    }
+      created: false,
+    } as const
   }
 
-  try {
-    return await client.$transaction(
-      async (
-        tx: CommunicationsTransactionClient
-      ) => {
-        if (
-          additionalMemberUserIds.length >
-          0
-        ) {
-          const eligibleUsers =
-            await tx.user.findMany({
-              where: {
-                id: {
-                  in:
-                    additionalMemberUserIds,
-                },
+  if (
+    additionalMemberUserIds.length >
+    0
+  ) {
+    const eligibleUsers =
+      await tx.user.findMany({
+        where: {
+          id: {
+            in:
+              additionalMemberUserIds,
+          },
 
-                userRoles: {
+          userRoles: {
+            some: {
+              isActive:
+                true,
+
+              revokedAt:
+                null,
+
+              role: {
+                rolePermissions: {
                   some: {
-                    isActive:
-                      true,
-
-                    revokedAt:
-                      null,
-
-                    role: {
-                      rolePermissions: {
-                        some: {
-                          permission: {
-                            key:
-                              PERMISSIONS.COMMUNICATIONS_ACCESS,
-                          },
-                        },
-                      },
+                    permission: {
+                      key:
+                        PERMISSIONS.COMMUNICATIONS_ACCESS,
                     },
                   },
                 },
               },
-
-              select: {
-                id:
-                  true,
-              },
-            })
-
-          const eligibleIds =
-            new Set(
-              eligibleUsers.map(
-                (
-                  user: {
-                    id: string
-                  }
-                ) =>
-                  user.id
-              )
-            )
-
-          const ineligibleIds =
-            additionalMemberUserIds.filter(
-              userId =>
-                !eligibleIds.has(
-                  userId
-                )
-            )
-
-          if (
-            ineligibleIds.length >
-            0
-          ) {
-            throw new Error(
-              `COMMUNICATION_OPERATIONAL_ROOM_MEMBER_INELIGIBLE:${ineligibleIds.join(
-                ","
-              )}`
-            )
-          }
-        }
-
-        const conversation =
-          await tx.communicationConversation.create({
-            data: {
-              kind:
-                "GROUP",
-
-              status:
-                "ACTIVE",
-
-              title:
-                normalizedTitle,
-
-              createdByUserId:
-                principal.userId,
-
-              members: {
-                create: [
-                  {
-                    userId:
-                      principal.userId,
-
-                    role:
-                      "OWNER",
-                  },
-
-                  ...additionalMemberUserIds.map(
-                    userId => ({
-                      userId,
-
-                      role:
-                        "MEMBER" as const,
-                    })
-                  ),
-                ],
-              },
-
-              operationalRoom: {
-                create: {
-                  clientRoomId:
-                    normalizedClientRoomId,
-
-                  requestFingerprint,
-
-                  roomClass:
-                    normalizedRoomClass,
-
-                  createdByUserId:
-                    principal.userId,
-                },
-              },
             },
+          },
+        },
 
-            include: {
-              members:
-                true,
+        select: {
+          id:
+            true,
+        },
+      })
 
-              operationalRoom: {
-                include: {
-                  links:
-                    true,
-                },
-              },
-            },
-          })
+    const eligibleIds =
+      new Set(
+        eligibleUsers.map(
+          (
+            user: {
+              id: string
+            }
+          ) =>
+            user.id
+        )
+      )
 
-        const room =
-          conversation.operationalRoom
-
-        if (!room) {
-          throw new Error(
-            "COMMUNICATION_OPERATIONAL_ROOM_CREATE_FAILED"
+    const ineligibleIds =
+      additionalMemberUserIds.filter(
+        userId =>
+          !eligibleIds.has(
+            userId
           )
-        }
+      )
 
-        const occurredAt =
-          new Date()
+    if (
+      ineligibleIds.length >
+      0
+    ) {
+      throw new Error(
+        `COMMUNICATION_OPERATIONAL_ROOM_MEMBER_INELIGIBLE:${ineligibleIds.join(
+          ","
+        )}`
+      )
+    }
+  }
 
-        await tx.domainEvent.create({
-          data: {
-            streamType:
-              "COMMUNICATION_CONVERSATION",
+  const conversation =
+    await tx.communicationConversation.create({
+      data: {
+        kind:
+          "GROUP",
 
-            streamId:
-              conversation.id,
+        status:
+          "ACTIVE",
 
-            eventType:
-              COMMUNICATION_EVENT_TYPE
-                .CONVERSATION_CREATED,
+        title:
+          normalizedTitle,
 
-            payload: {
-              conversationId:
-                conversation.id,
+        createdByUserId:
+          principal.userId,
 
-              kind:
-                "GROUP",
-            },
-
-            metadata: {
-              actorUserId:
+        members: {
+          create: [
+            {
+              userId:
                 principal.userId,
+
+              role:
+                "OWNER",
             },
 
-            occurredAt,
+            ...additionalMemberUserIds.map(
+              userId => ({
+                userId,
+
+                role:
+                  "MEMBER" as const,
+              })
+            ),
+          ],
+        },
+
+        operationalRoom: {
+          create: {
+            clientRoomId:
+              normalizedClientRoomId,
+
+            requestFingerprint,
+
+            roomClass:
+              normalizedRoomClass,
+
+            createdByUserId:
+              principal.userId,
           },
-        })
+        },
+      },
 
-        await tx.domainEvent.create({
-          data: {
-            streamType:
-              "COMMUNICATION_OPERATIONAL_ROOM",
+      include: {
+        members:
+          true,
 
-            streamId:
-              room.id,
-
-            eventType:
-              COMMUNICATION_EVENT_TYPE
-                .OPERATIONAL_ROOM_CREATED,
-
-            payload: {
-              roomId:
-                room.id,
-
-              conversationId:
-                conversation.id,
-
-              roomClass:
-                room.roomClass,
-            },
-
-            metadata: {
-              actorUserId:
-                principal.userId,
-            },
-
-            occurredAt,
+        operationalRoom: {
+          include: {
+            links:
+              true,
           },
-        })
+        },
+      },
+    })
 
-        return {
-          room,
-          conversation,
-        }
-      }
+  const room =
+    conversation.operationalRoom
+
+  if (!room) {
+    throw new Error(
+      "COMMUNICATION_OPERATIONAL_ROOM_CREATE_FAILED"
     )
+  }
+
+  const occurredAt =
+    new Date()
+
+  await tx.domainEvent.create({
+    data: {
+      streamType:
+        "COMMUNICATION_CONVERSATION",
+
+      streamId:
+        conversation.id,
+
+      eventType:
+        COMMUNICATION_EVENT_TYPE
+          .CONVERSATION_CREATED,
+
+      payload: {
+        conversationId:
+          conversation.id,
+
+        kind:
+          "GROUP",
+      },
+
+      metadata: {
+        actorUserId:
+          principal.userId,
+      },
+
+      occurredAt,
+    },
+  })
+
+  await tx.domainEvent.create({
+    data: {
+      streamType:
+        "COMMUNICATION_OPERATIONAL_ROOM",
+
+      streamId:
+        room.id,
+
+      eventType:
+        COMMUNICATION_EVENT_TYPE
+          .OPERATIONAL_ROOM_CREATED,
+
+      payload: {
+        roomId:
+          room.id,
+
+        conversationId:
+          conversation.id,
+
+        roomClass:
+          room.roomClass,
+      },
+
+      metadata: {
+        actorUserId:
+          principal.userId,
+      },
+
+      occurredAt,
+    },
+  })
+
+  return {
+    room,
+    conversation,
+    created: true,
+  } as const
+}
+
+export async function createOperationalRoomWithClient({
+  client,
+  principal,
+  clientRoomId,
+  title,
+  roomClass,
+  memberUserIds,
+}: {
+  client: CommunicationsDatabaseClient
+  principal: Principal
+  clientRoomId: string
+  title: string
+  roomClass: string
+  memberUserIds: string[]
+}) {
+  async function perform() {
+    return client.$transaction(
+      async (
+        tx: CommunicationsTransactionClient
+      ) =>
+        createOperationalRoomInTransaction({
+          tx,
+          principal,
+          clientRoomId,
+          title,
+          roomClass,
+          memberUserIds,
+        })
+    )
+  }
+
+  try {
+    const result =
+      await perform()
+
+    return {
+      room:
+        result.room,
+      conversation:
+        result.conversation,
+    }
   } catch (error: unknown) {
     /*
-     * Concurrent identical creations may both
-     * pass the initial lookup. The compound
-     * unique key arbitrates the race.
+     * Concurrent identical creations may race on the
+     * deterministic room identity. Replay once against
+     * the database winner.
      */
     if (
       !isUniqueConstraintError(
@@ -531,52 +570,14 @@ export async function createOperationalRoomWithClient({
       throw error
     }
 
-    const winner =
-      await client.communicationOperationalRoom.findUnique({
-        where: {
-          createdByUserId_clientRoomId: {
-            createdByUserId:
-              principal.userId,
-
-            clientRoomId:
-              normalizedClientRoomId,
-          },
-        },
-
-        include: {
-          links:
-            true,
-
-          conversation: {
-            include: {
-              members:
-                true,
-            },
-          },
-        },
-      })
-
-    if (!winner) {
-      throw error
-    }
-
-    if (
-      winner.requestFingerprint !==
-      requestFingerprint
-    ) {
-      throw new Error(
-        "COMMUNICATION_OPERATIONAL_ROOM_IDEMPOTENCY_COLLISION"
-      )
-    }
-
-    const {
-      conversation,
-      ...room
-    } = winner
+    const result =
+      await perform()
 
     return {
-      room,
-      conversation,
+      room:
+        result.room,
+      conversation:
+        result.conversation,
     }
   }
 }
