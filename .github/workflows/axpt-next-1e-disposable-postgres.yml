@@ -53,6 +53,8 @@ jobs:
         run: pnpm exec prisma db push --skip-generate
       - name: TypeScript source qualification
         run: pnpm exec tsc --noEmit
+      - name: Verify independent private intake read authority
+        run: node --require tsx/cjs scripts/transactions/smokePrivateIntakeReadAuthority1E.cjs
       - name: Execute isolated review regressions
         run: node --require tsx/cjs scripts/transactions/smokeIntakeReviewAuthority1E.cjs
       - name: Execute isolated promotion regressions
