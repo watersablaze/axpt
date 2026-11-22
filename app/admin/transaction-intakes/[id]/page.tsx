@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { prisma } from "@/infrastructure/db/prisma";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { PERMISSIONS } from "@/domains/auth/permissions";
 import { promoteTransactionIntakeToOpportunity } from "@/domains/control-center/transaction-intakes/promoteTransactionIntakeToOpportunity";
 import {
   readExternalIntakeProvenance,
@@ -21,6 +22,17 @@ async function updateIntakeReview(formData: FormData) {
   const id = formData.get("id");
   const status = formData.get("status");
   const internalNotes = formData.get("internalNotes");
+  const expectedUpdatedAt = formData.get("expectedUpdatedAt");
+
+  const principal = await getPrincipal();
+  if (!principal) throw new Error("TRANSACTION_INTAKE_UNAUTHENTICATED");
+  if (
+    !principal.roles.includes("ADMIN_PLATFORM") ||
+    !principal.permissions.includes(PERMISSIONS.ADMIN_SURFACE_ACCESS)
+  ) throw new Error("TRANSACTION_INTAKE_REVIEW_FORBIDDEN");
+  if (typeof expectedUpdatedAt !== "string" || !Number.isFinite(Date.parse(expectedUpdatedAt))) {
+    throw new Error("TRANSACTION_INTAKE_REVIEW_VERSION_REQUIRED");
+  }
 
   if (typeof id !== "string") {
     return;
@@ -47,77 +59,76 @@ async function updateIntakeReview(formData: FormData) {
     return;
   }
 
-  const existing = await prisma.transactionIntake.findUnique({
-    where: { id },
-    select: {
-      status: true,
-      internalNotes: true,
-    },
-  });
+  await prisma.$transaction(async (tx) => {
+    const operator = await tx.user.findUnique({
+      where: { id: principal.userId },
+      select: { isAdmin: true },
+    });
+    if (!operator?.isAdmin) {
+      throw new Error("TRANSACTION_INTAKE_REVIEW_FORBIDDEN");
+    }
 
-  if (!existing) {
-    return;
-  }
+    const existing = await tx.transactionIntake.findUnique({
+      where: { id },
+      select: { status: true, internalNotes: true, updatedAt: true },
+    });
+    if (!existing) throw new Error("TRANSACTION_INTAKE_NOT_FOUND");
 
-  if (
-    data.status &&
-    data.status !== existing.status &&
-    !canTransitionTransactionIntakeReviewStatus(
-      existing.status,
-      data.status,
-    )
-  ) {
-    throw new Error(
-      `TRANSACTION_INTAKE_REVIEW_TRANSITION_NOT_ALLOWED:${existing.status}:${data.status}`,
-    );
-  }
+    if (existing.updatedAt.toISOString() !== expectedUpdatedAt) {
+      throw new Error("TRANSACTION_INTAKE_REVIEW_STALE");
+    }
 
-  const principal = await getPrincipal();
-  const actor = principal?.email ?? "ADMIN";
+    if (
+      data.status &&
+      data.status !== existing.status &&
+      !canTransitionTransactionIntakeReviewStatus(existing.status, data.status)
+    ) {
+      throw new Error("TRANSACTION_INTAKE_REVIEW_TRANSITION_NOT_ALLOWED");
+    }
 
-  const events = [];
+    const statusChanged = Boolean(data.status && data.status !== existing.status);
+    const notesChanged =
+      typeof data.internalNotes !== "undefined" &&
+      data.internalNotes !== existing.internalNotes;
+    if (!statusChanged && !notesChanged) return;
 
-  if (data.status && data.status !== existing.status) {
-    events.push(
-      prisma.transactionIntakeEvent.create({
+    const claimed = await tx.transactionIntake.updateMany({
+      where: {
+        id,
+        status: existing.status,
+        updatedAt: existing.updatedAt,
+        promotedOpportunityId: null,
+      },
+      data,
+    });
+    if (claimed.count !== 1) {
+      throw new Error("TRANSACTION_INTAKE_REVIEW_STALE");
+    }
+
+    if (statusChanged) {
+      await tx.transactionIntakeEvent.create({
         data: {
           intakeId: id,
           eventType: "STATUS_CHANGED",
           fromStatus: existing.status,
           toStatus: data.status,
-          actor,
-          note:
-            typeof internalNotes === "string"
-              ? internalNotes.trim() || null
-              : null,
+          actor: principal.email,
+          note: typeof internalNotes === "string" ? internalNotes.trim() || null : null,
         },
-      }),
-    );
-  }
+      });
+    }
 
-  if (
-    typeof data.internalNotes !== "undefined" &&
-    data.internalNotes !== existing.internalNotes
-  ) {
-    events.push(
-      prisma.transactionIntakeEvent.create({
+    if (notesChanged) {
+      await tx.transactionIntakeEvent.create({
         data: {
           intakeId: id,
           eventType: "INTERNAL_NOTE_UPDATED",
-          actor,
+          actor: principal.email,
           note: data.internalNotes,
         },
-      }),
-    );
-  }
-
-  await prisma.$transaction([
-    prisma.transactionIntake.update({
-      where: { id },
-      data,
-    }),
-    ...events,
-  ]);
+      });
+    }
+  });
 
   revalidatePath("/admin/transaction-intakes");
   revalidatePath(`/admin/transaction-intakes/${id}`);
@@ -134,10 +145,8 @@ async function promoteIntakeToOpportunity(formData: FormData) {
 
   const principal = await getPrincipal();
 
-  await promoteTransactionIntakeToOpportunity({
-    intakeId: id,
-    actorEmail: principal?.email ?? "ADMIN",
-  });
+  if (!principal) throw new Error("TRANSACTION_INTAKE_UNAUTHENTICATED");
+  await promoteTransactionIntakeToOpportunity({ intakeId: id });
 
   revalidatePath("/admin/transaction-intakes");
   revalidatePath(`/admin/transaction-intakes/${id}`);
@@ -409,6 +418,7 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
 
           <form action={updateIntakeReview} className="mt-5 grid gap-4">
             <input type="hidden" name="id" value={intake.id} />
+            <input type="hidden" name="expectedUpdatedAt" value={intake.updatedAt.toISOString()} />
 
             <div className="grid gap-2">
               <span className="text-xs uppercase tracking-[0.18em] text-gray-500">
