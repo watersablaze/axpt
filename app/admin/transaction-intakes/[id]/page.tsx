@@ -135,6 +135,69 @@ async function updateIntakeReview(formData: FormData) {
   revalidatePath(`/admin/transaction-intakes/${id}`);
 }
 
+async function appendPostPromotionAnnotation(formData: FormData) {
+  "use server";
+
+  const principal = await getPrincipal();
+  if (!principal) throw new Error("TRANSACTION_INTAKE_UNAUTHENTICATED");
+  if (
+    !principal.roles.includes("ADMIN_PLATFORM") ||
+    !principal.permissions.includes(PERMISSIONS.ADMIN_SURFACE_ACCESS)
+  ) throw new Error("TRANSACTION_INTAKE_ANNOTATION_FORBIDDEN");
+
+  const id = formData.get("id");
+  const text = formData.get("annotation");
+  const expectedOpportunityId = formData.get("expectedOpportunityId");
+
+  if (typeof id !== "string" || !id.trim() ||
+      typeof expectedOpportunityId !== "string" || !expectedOpportunityId.trim()) {
+    throw new Error("TRANSACTION_INTAKE_ANNOTATION_INVALID_TARGET");
+  }
+  if (typeof text !== "string" || !text.trim() || text.trim().length > 4000) {
+    throw new Error("TRANSACTION_INTAKE_ANNOTATION_INVALID_CONTENT");
+  }
+
+  await prisma.$transaction(async (tx: typeof prisma) => {
+    const operator = await tx.user.findUnique({
+      where: { id: principal.userId },
+      select: { isAdmin: true },
+    });
+    if (!operator?.isAdmin) throw new Error("TRANSACTION_INTAKE_ANNOTATION_FORBIDDEN");
+
+    // Share the promotion row lock. An annotation cannot race a promotion
+    // and must identify the opportunity currently linked to the intake.
+    const rows = await tx.$queryRaw<Array<{ id: string }>>`
+      SELECT "id" FROM "TransactionIntake"
+      WHERE "id" = ${id}
+      FOR UPDATE
+    `;
+    if (rows.length !== 1) throw new Error("TRANSACTION_INTAKE_NOT_FOUND");
+
+    const intake = await tx.transactionIntake.findUnique({
+      where: { id },
+      select: { status: true, promotedOpportunityId: true },
+    });
+    if (
+      !intake?.promotedOpportunityId ||
+      intake.promotedOpportunityId !== expectedOpportunityId ||
+      !["PROMOTED_TO_OPPORTUNITY", "DOSSIER_READY", "PROMOTED_TO_DOSSIER"].includes(intake.status)
+    ) {
+      throw new Error("TRANSACTION_INTAKE_ANNOTATION_NOT_ELIGIBLE");
+    }
+
+    await tx.transactionIntakeEvent.create({
+      data: {
+        intakeId: id,
+        eventType: "POST_PROMOTION_ANNOTATION",
+        actor: principal.email,
+        note: text.trim(),
+      },
+    });
+  });
+
+  revalidatePath(`/admin/transaction-intakes/${id}`);
+}
+
 async function promoteIntakeToOpportunity(formData: FormData) {
   "use server";
 
@@ -417,6 +480,7 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
             Internal notes remain administrative.
           </p>
 
+          {!intake.promotedOpportunityId ? (
           <form action={updateIntakeReview} className="mt-5 grid gap-4">
             <input type="hidden" name="id" value={intake.id} />
             <input type="hidden" name="expectedUpdatedAt" value={intake.updatedAt.toISOString()} />
@@ -471,6 +535,43 @@ export default async function TransactionIntakeDetailPage({ params }: Props) {
               Save Review Update
             </button>
           </form>
+          ) : (
+            <div className="mt-5 grid gap-4">
+              <p className="text-xs leading-5 text-violet-200/75">
+                Review state is closed after promotion. Existing review notes
+                are preserved as source history; further observations are
+                recorded separately and cannot change the promoted opportunity.
+              </p>
+              <div className="rounded border border-neutral-800 bg-black p-3">
+                <p className="text-[10px] uppercase tracking-wider text-neutral-500">
+                  Original review notes
+                </p>
+                <p className="mt-2 whitespace-pre-wrap text-xs text-neutral-300">
+                  {intake.internalNotes || "No original notes recorded"}
+                </p>
+              </div>
+              <form action={appendPostPromotionAnnotation} className="grid gap-3">
+                <input type="hidden" name="id" value={intake.id} />
+                <input type="hidden" name="expectedOpportunityId" value={intake.promotedOpportunityId} />
+                <label className="grid gap-2">
+                  <span className="text-xs uppercase tracking-wider text-neutral-500">
+                    Post-promotion administrative annotation
+                  </span>
+                  <textarea
+                    name="annotation"
+                    required
+                    maxLength={4000}
+                    rows={4}
+                    className="w-full resize-y border border-neutral-700 bg-[#080d11] p-3 text-xs text-neutral-200"
+                    placeholder="Record an attributable observation without altering the promoted record"
+                  />
+                </label>
+                <button type="submit" className="inline-flex min-h-9 w-fit items-center border border-amber-700/50 px-3 text-[10px] uppercase tracking-wider text-amber-100">
+                  Append Annotation
+                </button>
+              </form>
+            </div>
+          )}
 
           <div className="mt-6 rounded border border-gray-800 bg-black p-4">
             <div className="flex flex-wrap items-start justify-between gap-4">
