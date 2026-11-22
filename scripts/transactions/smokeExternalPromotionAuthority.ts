@@ -119,9 +119,8 @@ async function run() {
   await assert.rejects(
     promoteTransactionIntakeToOpportunity({
       intakeId: receipt.intakeId,
-      actorEmail: `${adminId}@example.test`,
     }),
-    /FW_TXN_EXTERNAL_PROMOTION_AUTHORITY_REQUIRED/,
+    /FW_TXN_PROMOTION_UNAUTHENTICATED/,
   );
 
   const after = await prisma.transactionIntake.findUniqueOrThrow({
@@ -148,8 +147,8 @@ async function run() {
     0,
   );
 
-  console.log("PASS: QUALIFIED external intake promotion rejected");
-  console.log("PASS: no opportunity, linkage or promotion events");
+  console.log("PASS: unauthed promotion rejected before external intake evaluation");
+  console.log("PASS: authorization denial left opportunity, linkage and events unchanged");
 }
 
 async function cleanup() {
