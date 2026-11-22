@@ -96,6 +96,7 @@ async function updateIntakeReview(formData: FormData) {
       where: {
         id,
         status: existing.status,
+        internalNotes: existing.internalNotes,
         updatedAt: existing.updatedAt,
         promotedOpportunityId: null,
       },
