@@ -1,5 +1,8 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { prisma } from "@/infrastructure/db/prisma";
+import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { canReadTransactionIntakeWithClient } from "@/domains/control-center/transaction-intakes/canReadTransactionIntakeWithClient";
 import RepresentativeLinkBuilder from "./RepresentativeLinkBuilder";
 import { RecentIntakeEmailLogPanel } from "./RecentIntakeEmailLogPanel";
 import {
@@ -33,6 +36,12 @@ function buildStatusHref(status: string) {
 export default async function TransactionIntakesAdminPage({
   searchParams,
 }: Props) {
+  // Fail closed before accessing private intake, identity or history records.
+  const principal = await getPrincipal();
+  if (!(await canReadTransactionIntakeWithClient({ principal, client: prisma }))) {
+    notFound();
+  }
+
   const params = await searchParams;
 
   const selectedStatus =
