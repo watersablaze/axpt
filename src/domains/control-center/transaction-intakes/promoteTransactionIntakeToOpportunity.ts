@@ -249,7 +249,7 @@ export async function promoteTransactionIntakeToOpportunity({
     !principal.permissions.includes(PERMISSIONS.ADMIN_SURFACE_ACCESS)
   ) throw new Error("FW_TXN_PROMOTION_ADMIN_AUTHORITY_REQUIRED");
 
-  return prisma.$transaction(async (tx) => {
+  return prisma.$transaction(async (tx: typeof prisma) => {
     // Serialize competing promotion requests on the actual intake row.
     // Row locking, qualification, and writes share one transaction.
     const locked = await tx.$queryRaw<Array<{ id: string }>>`
