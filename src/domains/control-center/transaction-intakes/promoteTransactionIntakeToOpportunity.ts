@@ -253,7 +253,7 @@ export async function promoteTransactionIntakeToOpportunity({
     // Lock per intake before reading eligibility, so competing promotions
     // cannot each create an opportunity from the same source record.
     await tx.$queryRaw`
-      SELECT pg_advisory_xact_lock(hashtextextended(${intakeId}, 0))
+      SELECT 1 AS acquired FROM pg_advisory_xact_lock(hashtextextended(${intakeId}, 0))
     `;
 
     const operator = await tx.user.findUnique({
