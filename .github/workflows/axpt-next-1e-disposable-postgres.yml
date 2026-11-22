@@ -57,3 +57,5 @@ jobs:
         run: node --require tsx/cjs scripts/transactions/smokeIntakeReviewAuthority1E.cjs
       - name: Execute isolated promotion regressions
         run: node --require tsx/cjs scripts/transactions/smokeIntakePromotionAuthority1E.cjs
+      - name: Execute append-only annotation regressions
+        run: node --require tsx/cjs scripts/transactions/smokePostPromotionAnnotation1E.cjs
