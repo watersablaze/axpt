@@ -1,0 +1,57 @@
+name: AXPT NEXT 1E Disposable Intake Regression
+
+on:
+  push:
+    branches:
+      - security/axpt-next-1e-intake-mutation-20261122
+
+permissions:
+  contents: read
+
+jobs:
+  disposable-postgres:
+    name: Disposable PostgreSQL intake authority
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_USER: axpt
+          POSTGRES_PASSWORD: synthetic_only
+          POSTGRES_DB: axpt_fw_txn_1e_test
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U axpt -d axpt_fw_txn_1e_test"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://axpt:synthetic_only@127.0.0.1:5433/axpt_fw_txn_1e_test
+      DIRECT_URL: postgresql://axpt:synthetic_only@127.0.0.1:5433/axpt_fw_txn_1e_test
+      FW_TXN_1E_ACCEPT_DB: axpt_fw_txn_1e_test
+      NODE_ENV: test
+    steps:
+      - name: Checkout exact isolated branch revision
+        uses: actions/checkout@11bd71901bbe5b163ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Node 24
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: "24.3.0"
+      - name: Install exact package manager
+        run: |
+          corepack enable
+          corepack prepare pnpm@8.15.5 --activate
+      - name: Install source dependencies without lifecycle scripts
+        run: pnpm install --frozen-lockfile --ignore-scripts
+      - name: Generate isolated Prisma clients
+        run: pnpm exec prisma generate
+      - name: Initialize ephemeral PostgreSQL from schema
+        run: pnpm exec prisma db push --skip-generate
+      - name: TypeScript source qualification
+        run: pnpm exec tsc --noEmit
+      - name: Execute isolated promotion regressions
+        run: node --require tsx/cjs scripts/transactions/smokeIntakePromotionAuthority1E.cjs
