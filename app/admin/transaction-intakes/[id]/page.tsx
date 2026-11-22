@@ -59,7 +59,7 @@ async function updateIntakeReview(formData: FormData) {
     return;
   }
 
-  await prisma.$transaction(async (tx) => {
+  await prisma.$transaction(async (tx: typeof prisma) => {
     const operator = await tx.user.findUnique({
       where: { id: principal.userId },
       select: { isAdmin: true },
