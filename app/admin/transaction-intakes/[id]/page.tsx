@@ -3,6 +3,7 @@ import { revalidatePath } from "next/cache";
 import { notFound } from "next/navigation";
 import { prisma } from "@/infrastructure/db/prisma";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { canReadTransactionIntakeWithClient } from "@/domains/control-center/transaction-intakes/canReadTransactionIntakeWithClient";
 import { PERMISSIONS } from "@/domains/auth/permissions";
 import { promoteTransactionIntakeToOpportunity } from "@/domains/control-center/transaction-intakes/promoteTransactionIntakeToOpportunity";
 import {
@@ -272,6 +273,12 @@ function Section({
 }
 
 export default async function TransactionIntakeDetailPage({ params }: Props) {
+  // Fail closed before accessing private intake, identity or history records.
+  const principal = await getPrincipal();
+  if (!(await canReadTransactionIntakeWithClient({ principal, client: prisma }))) {
+    notFound();
+  }
+
   const { id } = await params;
 
   const intake = await prisma.transactionIntake.findUnique({
