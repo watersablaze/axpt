@@ -125,7 +125,7 @@ export function BulletinBoard({
   }
 
   return (
-    <div data-bulletin-board data-bulletin-index-layout className="min-w-0 overflow-hidden rounded-sm border border-[#d4c7ad] bg-[#f7f2e8] pb-0 text-[#222b2e]">
+    <div data-bulletin-board data-bulletin-index-layout className="min-w-0 overflow-hidden rounded-sm border border-[#d4c7ad] bg-[#f7f2e8] pb-0 text-[#222b2e]" style={{ display: "block" }}>
       <header className="border-b border-[#c8b89a] bg-[#eae0cd] px-5 pb-6 pt-7 sm:px-8 sm:pt-9">
         <div className="flex flex-wrap items-center justify-between gap-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#63553f]">
           <span>French-Ward / Institutional Communications</span>
