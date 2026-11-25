@@ -597,7 +597,7 @@ async function main() {
     "Reader was incorrectly shown draft management",
   );
 
-  await reader.getByText("The Bulletin", { exact: true }).waitFor();
+  await reader.getByText("Published notices", { exact: true }).waitFor();
   const archiveHeading = reader.getByRole("heading", {
     name: "Notice Archive",
     exact: true,
@@ -648,7 +648,22 @@ async function main() {
     console.log("R1.9 ARCHIVE_VISIBILITY_DIAGNOSTIC", JSON.stringify(visibility));
     throw error;
   }
-  console.log("PASS R1.9 editorial masthead and reader-only controls");
+  const edition = await reader.evaluate(() => {
+    const board = document.querySelector("[data-fw-bulletin-posts]");
+    const articleTitle = document.querySelector("#bulletin-latest article h3");
+    const archive = document.querySelector("#bulletin-updates");
+    return {
+      extraPageHeadings: board?.querySelectorAll("h1").length ?? -1,
+      articleTitleSize: articleTitle
+        ? parseFloat(getComputedStyle(articleTitle).fontSize)
+        : 0,
+      archiveWidth: archive?.getBoundingClientRect().width ?? 0,
+    };
+  });
+  assert.equal(edition.extraPageHeadings, 0);
+  assert.ok(edition.articleTitleSize > 0 && edition.articleTitleSize <= 30);
+  assert.ok(edition.archiveWidth > 150);
+  console.log("PASS restrained posts hierarchy and reader-only controls");
 
   // This test runs on loopback, so the browser clipboard API is
   // available after granting exact clipboard permissions.
@@ -683,12 +698,21 @@ async function main() {
       document.documentElement.clientWidth + 2
   );
   assert.equal(mobileOverflow, false, "Mobile editorial board overflow");
-  await reader.getByText("The Bulletin", { exact: true }).waitFor();
-  console.log("PASS R1.9 mobile width and editorial content");
+  await reader.getByText("Published notices", { exact: true }).waitFor();
+  const mobileOrder = await reader.evaluate(() => {
+    const archive = document.getElementById("bulletin-updates");
+    const reading = document.getElementById("bulletin-latest");
+    if (!archive || !reading) return false;
+    const a = archive.getBoundingClientRect();
+    const b = reading.getBoundingClientRect();
+    return a.width > 200 && b.width > 200 && a.top < b.top;
+  });
+  assert.ok(mobileOrder, "Mobile index must precede reading pane");
+  console.log("PASS R1.9 mobile width, index order and editorial content");
 
   await reader.setViewportSize({ width: 1280, height: 800 });
   const desktopLayout = await reader.evaluate(() => {
-    const board = document.querySelector("[data-bulletin-board]");
+    const board = document.querySelector("[data-fw-bulletin-posts]");
     const reading = document.getElementById("bulletin-latest");
     const archive = document.getElementById("bulletin-updates");
     return {
