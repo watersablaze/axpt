@@ -34,6 +34,7 @@ export default async function FrenchWardHomePage({
 }: {
   searchParams?: Promise<{
     module?: string;
+    post?: string;
     passageRehearsal?: string;
   }>;
 }) {
@@ -43,9 +44,19 @@ export default async function FrenchWardHomePage({
     await searchParams;
 
   if (!principal) {
-    redirect(
-      "/login?next=%2Ffrench-ward%2Fhome",
-    );
+    const requestedPost =
+      resolvedSearchParams?.module === "bulletin" &&
+      typeof resolvedSearchParams.post === "string" &&
+      resolvedSearchParams.post.length > 0 &&
+      resolvedSearchParams.post.length <= 128
+        ? resolvedSearchParams.post
+        : null;
+
+    const returnPath = requestedPost
+      ? `/french-ward/home?module=bulletin&post=${encodeURIComponent(requestedPost)}`
+      : "/french-ward/home";
+
+    redirect(`/login?next=${encodeURIComponent(returnPath)}`);
   }
 
   const governingStanding =
@@ -237,6 +248,13 @@ export default async function FrenchWardHomePage({
       }
       actions={actions}
       initialModule={initialModule}
+      initialBulletinPostId={
+        initialModule === "bulletin" &&
+        typeof resolvedSearchParams?.post === "string" &&
+        resolvedSearchParams.post.length <= 128
+          ? resolvedSearchParams.post
+          : undefined
+      }
       arpAppointments={arpAppointments?.map((appointment) => ({
         ...appointment,
         effectiveAt: appointment.effectiveAt?.toISOString() ?? null,

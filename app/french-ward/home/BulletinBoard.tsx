@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { BulletinEditorialBody } from "./BulletinEditorialBody";
 
 type BulletinPost = {
   id: string;
@@ -61,15 +62,40 @@ function BulletinPdf({ post }: { post: BulletinPost }) {
   );
 }
 
-export function BulletinBoard({ posts }: { posts: readonly BulletinPost[] }) {
-  const [selectedId, setSelectedId] = useState<string | null>(null);
+export function BulletinBoard({
+  posts,
+  initialPostId,
+}: {
+  posts: readonly BulletinPost[];
+  initialPostId?: string;
+}) {
+  const [selectedId, setSelectedId] = useState<string | null>(
+    initialPostId ?? null,
+  );
   const [latest] = posts;
-  const selected = posts.find((post) => post.id === selectedId) ?? latest;
+  const requestedId = selectedId;
+  const requestedPost = requestedId
+    ? posts.find((post) => post.id === requestedId)
+    : undefined;
+  const requestedPostMissing =
+    Boolean(requestedId) && !requestedPost;
+  const selected = requestedId ? requestedPost : latest;
   const welcome = posts.find((post) => post.title === "Welcome Post");
   const urgent = posts.filter((post) => post.urgent);
 
   function openPost(id: string) {
+    if (!posts.some((post) => post.id === id)) return;
     setSelectedId(id);
+
+    const url = new URL(window.location.href);
+    url.searchParams.set("module", "bulletin");
+    url.searchParams.set("post", id);
+    window.history.replaceState(
+      window.history.state,
+      "",
+      url.pathname + url.search + url.hash,
+    );
+
     const reader = document.getElementById("bulletin-latest");
     reader?.focus({ preventScroll: true });
     reader?.closest<HTMLElement>("[data-fw-workspace-center]")?.scrollTo({
@@ -111,9 +137,22 @@ export function BulletinBoard({ posts }: { posts: readonly BulletinPost[] }) {
             <h3 className="break-words font-serif text-lg font-semibold leading-snug" style={{ color: "#162c34" }}>
               {selected.title}
             </h3>
-            <p className={bodyClass}>{selected.body}</p>
+            <div className={bodyClass}>
+              <BulletinEditorialBody body={selected.body} />
+            </div>
             <BulletinPdf post={selected} />
+            <a
+              className="mt-4 inline-block text-sm underline underline-offset-4"
+              href={`/french-ward/home?module=bulletin&post=${encodeURIComponent(selected.id)}`}
+            >
+              Direct link to this notice
+            </a>
           </article>
+        ) : requestedPostMissing ? (
+          <p role="status" className={quietClass}>
+            The requested bulletin is unavailable or is no longer published.
+            Select another available update from the index.
+          </p>
         ) : (
           <p className={quietClass}>No updates published yet.</p>
         )}
