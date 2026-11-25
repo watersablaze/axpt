@@ -27,7 +27,7 @@ type Props = {
   passageRehearsal?: FrenchWardHomeProjection["matters"];
   initialModule?: ModuleId;
   initialBulletinPostId?: string;
-  canPublishBulletin: boolean;
+  canPublishBulletin?: boolean;
   arpAppointments: readonly ArpRegisterEntry[] | null;
   bulletinPosts: readonly {
     id: string;
