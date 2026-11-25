@@ -1,5 +1,10 @@
 import { revalidatePath } from "next/cache";
 import BulletinSuccessNotice from "./BulletinSuccessNotice";
+import { BulletinEditorialBody } from "../../../french-ward/home/BulletinEditorialBody";
+import BulletinEditorialComposer from "./BulletinEditorialComposer";
+import {
+  prepareBulletinSubmission,
+} from "../../../french-ward/home/bulletinEditorial";
 import { notFound, redirect } from "next/navigation";
 import { getPrincipal } from "@/domains/auth/getPrincipal";
 import { PERMISSIONS } from "@/domains/auth/permissions";
@@ -28,10 +33,18 @@ async function savePost(
   const errorSeparator = edit ? "&" : "?";
   const title = formData.get("title");
   const body = formData.get("body");
+  const bodyFormat = formData.get("bodyFormat");
+
+  const storedBody = prepareBulletinSubmission(
+    body,
+    bodyFormat,
+  );
 
   if (
-    typeof title !== "string" || !title.trim() || title.length > 160 ||
-    typeof body !== "string" || !body.trim() || body.length > 12000
+    typeof title !== "string" ||
+    !title.trim() ||
+    title.length > 160 ||
+    storedBody === null
   ) {
     redirect(`${formPath}${errorSeparator}error=invalid-draft`);
   }
@@ -59,7 +72,7 @@ async function savePost(
 
   const data = {
     title: title.trim(),
-    body: body.trim(),
+    body: storedBody,
     urgent: formData.get("urgent") === "on",
     ...attachment,
   };
@@ -208,17 +221,9 @@ export default async function BulletinEditor({
           Title
           <input name="title" defaultValue={editedPost?.title} required maxLength={160} className={fieldClass} />
         </label>
-        <label className="grid min-w-0 gap-2 text-sm">
-          Body
-          <textarea
-            name="body"
-            defaultValue={editedPost?.body}
-            required
-            maxLength={12000}
-            rows={7}
-            className={`${fieldClass} resize-y [overflow-wrap:anywhere]`}
-          />
-        </label>
+        <BulletinEditorialComposer
+          initialBody={editedPost?.body}
+        />
         {error === "invalid-pdf" && (
           <p role="alert" className="text-sm text-amber-200">Choose a PDF up to 750 KiB.</p>
         )}
@@ -254,7 +259,7 @@ export default async function BulletinEditor({
           <article key={post.id} className={`space-y-3 ${cardClass}`}>
             <h3 className="font-semibold [overflow-wrap:anywhere]">{post.title}</h3>
             {post.urgent && <p className="text-sm text-amber-200">Marked urgent</p>}
-            <p className="whitespace-pre-wrap text-sm leading-relaxed [overflow-wrap:anywhere]">{post.body}</p>
+            <BulletinEditorialBody body={post.body} />
             {post.pdfName && (
               <p className="text-sm text-white/75 [overflow-wrap:anywhere]">Attached PDF: {post.pdfName}</p>
             )}
@@ -284,7 +289,7 @@ export default async function BulletinEditor({
             >
               Edit
             </a>
-            <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed [overflow-wrap:anywhere]">{post.body}</p>
+            <div className="mt-3"><BulletinEditorialBody body={post.body} /></div>
             {post.pdfName && (
               <p className="mt-3 text-sm text-white/75 [overflow-wrap:anywhere]">Attached PDF: {post.pdfName}</p>
             )}
