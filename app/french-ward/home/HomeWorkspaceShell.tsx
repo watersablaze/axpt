@@ -27,6 +27,7 @@ type Props = {
   passageRehearsal?: FrenchWardHomeProjection["matters"];
   initialModule?: ModuleId;
   initialBulletinPostId?: string;
+  canPublishBulletin: boolean;
   arpAppointments: readonly ArpRegisterEntry[] | null;
   bulletinPosts: readonly {
     id: string;
@@ -124,6 +125,7 @@ export default function HomeWorkspaceShell({
   actions,
   initialModule = "home",
   initialBulletinPostId,
+  canPublishBulletin,
   bulletinPosts,
   arpAppointments,
   passageRehearsal,
@@ -619,6 +621,7 @@ export default function HomeWorkspaceShell({
             <BulletinBoard
               posts={bulletinPosts}
               initialPostId={initialBulletinPostId}
+              canPublish={canPublishBulletin}
             />
           ) : null}
 
