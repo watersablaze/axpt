@@ -125,7 +125,7 @@ export default function HomeWorkspaceShell({
   actions,
   initialModule = "home",
   initialBulletinPostId,
-  canPublishBulletin,
+  canPublishBulletin = false,
   bulletinPosts,
   arpAppointments,
   passageRehearsal,
