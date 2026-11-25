@@ -598,7 +598,56 @@ async function main() {
   );
 
   await reader.getByText("The Bulletin", { exact: true }).waitFor();
-  await reader.getByText("Notice Archive", { exact: true }).waitFor();
+  const archiveHeading = reader.getByRole("heading", {
+    name: "Notice Archive",
+    exact: true,
+  });
+
+  try {
+    await archiveHeading.waitFor({
+      state: "visible",
+      timeout: 12000,
+    });
+  } catch (error) {
+    const visibility = await reader.evaluate(() => {
+      const heading = document.getElementById("bulletin-updates-title");
+      const chain: Array<Record<string, unknown>> = [];
+      let current: Element | null = heading;
+
+      for (let i = 0; current && i < 8; i++) {
+        const computed = window.getComputedStyle(current);
+        const box = current.getBoundingClientRect();
+        chain.push({
+          tag: current.tagName,
+          id: current.id || null,
+          className: typeof current.className === "string"
+            ? current.className.slice(0, 100) : "",
+          display: computed.display,
+          visibility: computed.visibility,
+          opacity: computed.opacity,
+          contentVisibility: computed.contentVisibility,
+          width: Math.round(box.width),
+          height: Math.round(box.height),
+          offsetWidth: (current as HTMLElement).offsetWidth,
+          offsetHeight: (current as HTMLElement).offsetHeight,
+        });
+        current = current.parentElement;
+      }
+
+      return {
+        chain,
+        viewport: {
+          width: innerWidth,
+          height: innerHeight,
+        },
+        archiveTextExists: Boolean(
+          heading?.textContent?.includes("Notice Archive")
+        ),
+      };
+    });
+    console.log("R1.9 ARCHIVE_VISIBILITY_DIAGNOSTIC", JSON.stringify(visibility));
+    throw error;
+  }
   console.log("PASS R1.9 editorial masthead and reader-only controls");
 
   // This test runs on loopback, so the browser clipboard API is
