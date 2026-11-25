@@ -208,7 +208,24 @@ export function BulletinBoard({
         )}
       </section>
 
-      <aside data-bulletin-rail aria-label="Priority notices and archive" className="min-w-0 bg-[#efe6d4] xl:border-l xl:border-[#ded0b7]">
+      <aside
+        data-bulletin-rail
+        aria-label="Priority notices and archive"
+        className="min-w-0 xl:border-l xl:border-[#ded0b7]"
+        style={{
+          // The old Bulletin assigns this rail to a named grid area
+          // on the board root. This new layout nests its own grid.
+          gridArea: "auto",
+          display: "block",
+          width: "100%",
+          marginBlockStart: 0,
+          padding: 0,
+          border: 0,
+          borderRadius: 0,
+          background: "#efe6d4",
+          color: "#243a48",
+        }}
+      >
         <section id="bulletin-urgent" aria-labelledby="bulletin-urgent-title" className="border-b border-[#c8b89a] px-5 py-6 sm:px-8">
           <h2 id="bulletin-urgent-title" className="text-sm font-semibold" style={{ color: "#733c27" }}>
             Priority Notices
