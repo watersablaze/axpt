@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { formatMatterQuantity } from "@/domains/institutions/french-ward/matters/formatMatterQuantity";
+import { revalidatePath } from "next/cache";
 import {
   notFound,
   redirect,
 } from "next/navigation";
 
 import { getPrincipal } from "@/domains/auth/getPrincipal";
+import { isAdmin } from "@/domains/auth/isAdmin";
+import { PERMISSIONS } from "@/domains/auth/permissions";
 import {
   loadCurrentFrenchWardGoverningStandingWithClient,
 } from "@/domains/institutions/french-ward/governance/loadCurrentFrenchWardGoverningStandingWithClient";
@@ -16,6 +20,19 @@ import {
   loadCurrentFrenchWardInstitutionalParticipantWithClient,
 } from "@/domains/institutions/french-ward/participants/loadCurrentFrenchWardInstitutionalParticipantWithClient";
 import { prisma } from "@/lib/prisma";
+import { promoteTransactionIntakeToOpportunity } from "@/domains/control-center/transaction-intakes/promoteTransactionIntakeToOpportunity";
+import {
+  FRENCH_WARD_ACTION,
+  resolveFrenchWardActionAuthorityWithClient,
+} from "@/domains/institutions/french-ward/governance/resolveFrenchWardActionAuthorityWithClient";
+
+function resolvePromotionAuthority(userId: string) {
+  return resolveFrenchWardActionAuthorityWithClient({
+    client: prisma,
+    userId,
+    action: FRENCH_WARD_ACTION.PROMOTE_INTAKE_TO_OPPORTUNITY,
+  });
+}
 
 import styles from "./matter.module.css";
 
@@ -139,8 +156,7 @@ export default async function FrenchWardMatterPage({
     notFound();
   }
 
-  const loaded =
-    await loadFrenchWardMatterWithClient({
+  const loaded = await loadFrenchWardMatterWithClient({
       client:
         prisma,
 
@@ -157,6 +173,93 @@ export default async function FrenchWardMatterPage({
     homeMatter,
     movement,
   } = loaded;
+
+  const isPersistedIntake = homeMatter.recordKind === "INTAKE";
+  const promotionAuthority = isPersistedIntake
+    ? await resolvePromotionAuthority(principal.userId)
+    : null;
+  const qualified = (loaded.intakeStatus ?? homeMatter.state) === "QUALIFIED";
+  const externalRegistration = promotionAuthority?.allowed && qualified
+    ? await prisma.transactionIntakeEvent.findFirst({
+        where: {
+          intakeId: matter.canonicalRecord.id,
+          eventType: "EXTERNAL_INTAKE_REGISTERED",
+        },
+        select: { id: true },
+      })
+    : null;
+  const canPromote = promotionAuthority?.allowed && qualified && !externalRegistration;
+
+  async function promoteMatter() {
+    "use server";
+
+    const actor = await getPrincipal();
+    if (!actor || !(await resolvePromotionAuthority(actor.userId)).allowed) {
+      notFound();
+    }
+
+    const current = await loadFrenchWardMatterWithClient({
+      client: prisma,
+      matterReference: reference,
+    });
+    if (!current) {
+      notFound();
+    }
+
+    await promoteTransactionIntakeToOpportunity({
+      intakeId: current.matter.canonicalRecord.id,
+      actorEmail: actor.email,
+      expectedMatterId: current.matter.id,
+    });
+
+    const matterPath = `/french-ward/matters/${encodeURIComponent(reference)}`;
+    revalidatePath("/french-ward/home");
+    revalidatePath(matterPath);
+    revalidatePath("/admin/transaction-intakes");
+    revalidatePath(`/admin/transaction-intakes/${encodeURIComponent(current.matter.canonicalRecord.id)}`);
+    revalidatePath("/admin/control-center");
+    redirect(matterPath);
+  }
+
+  const canManageAccess = isAdmin(principal) && principal.permissions.includes(
+    PERMISSIONS.INSTITUTIONAL_ACCESS_MANAGE,
+  );
+  const submissionEvents = canManageAccess
+    ? await prisma.institutionalAccessEvent.findMany({
+        where: {
+          type: "INTAKE_SUBMITTED",
+          request: { scope: "LOI_INTAKE_ACCESS" },
+          grant: { is: { scope: "LOI_INTAKE_ACCESS" } },
+          AND: [
+            { metadata: { path: ["intakeId"], equals: matter.canonicalRecord.id } },
+            { metadata: { path: ["intakeReference"], equals: matter.canonicalRecord.reference } },
+          ],
+        },
+        select: {
+          requestId: true,
+          request: { select: { status: true } },
+          grant: { select: { requestId: true, revokedAt: true, expiresAt: true } },
+        },
+        take: 2,
+      })
+    : [];
+  const [submission] = submissionEvents;
+  const recordedAccess =
+    submissionEvents.length === 1 &&
+    submission?.grant &&
+    submission.grant.requestId === submission.requestId
+      ? {
+          requestId: submission.requestId,
+          requestStatus: submission.request.status,
+          grantStatus: submission.grant.revokedAt
+            ? "Revoked"
+            : submission.grant.expiresAt <= new Date()
+              ? "Expired"
+              : "Unexpired",
+        }
+      : null;
+
+  const linkedAccess = recordedAccess;
 
   const participant =
     governingStanding?.active
@@ -288,7 +391,7 @@ export default async function FrenchWardMatterPage({
         >
           <div>
             <dt>
-              Stage
+              Matter stage
             </dt>
 
             <dd>
@@ -300,7 +403,9 @@ export default async function FrenchWardMatterPage({
 
           <div>
             <dt>
-              State
+              {homeMatter.recordKind === "DOSSIER"
+                ? "Dossier status"
+                : homeMatter.recordKind === "OPPORTUNITY" ? "Opportunity status" : "Intake review status"}
             </dt>
 
             <dd>
@@ -317,9 +422,7 @@ export default async function FrenchWardMatterPage({
 
             <dd>
               {
-                matter
-                  .canonicalRecord
-                  .kind
+                homeMatter.recordKind
               }
             </dd>
           </div>
@@ -389,8 +492,7 @@ export default async function FrenchWardMatterPage({
 
               <dd>
                 {
-                  homeMatter.quantityKg ??
-                  "Not recorded"
+                  formatMatterQuantity(homeMatter.quantityKg) ?? "Not recorded"
                 }
               </dd>
             </div>
@@ -481,11 +583,11 @@ export default async function FrenchWardMatterPage({
                 styles.index
               }
             >
-              03 / Current Record
+              03 / Buyer Lifecycle
             </p>
 
             <h2>
-              Current Record
+              Buyer Lifecycle
             </h2>
           </div>
 
@@ -522,17 +624,76 @@ export default async function FrenchWardMatterPage({
           </div>
         </div>
 
+        <dl className={styles.facts}>
+          <div>
+            <dt>Intake review status</dt>
+            <dd>{humanize(loaded.intakeStatus ?? homeMatter.state)}</dd>
+          </div>
+          {loaded.currentDossierReference ? (
+            <div>
+              <dt>Current Dossier reference</dt>
+              <dd>{loaded.currentDossierReference}</dd>
+            </div>
+          ) : null}
+          {linkedAccess ? (
+            <>
+              <div>
+                <dt>Access request</dt>
+                <dd>{humanize(linkedAccess.requestStatus)}</dd>
+              </div>
+              <div>
+                <dt>Submission grant</dt>
+                <dd>{linkedAccess.grantStatus}</dd>
+              </div>
+            </>
+          ) : null}
+        </dl>
+
+        {promotionAuthority?.allowed ? (
+          canPromote ? (
+            <form action={promoteMatter}>
+              <button type="submit" className={styles.promoteButton}>
+                Promote to Opportunity
+              </button>
+            </form>
+          ) : (
+            <p className={styles.recordNote}>
+              {externalRegistration
+                ? "Externally registered intakes require a separate promotion authorization."
+                : "Promotion is available after the intake is qualified in AXPT Admin."}
+            </p>
+          )
+        ) : null}
+
+        {canManageAccess ? (
+          linkedAccess ? (
+            <p className={styles.recordNote}>
+              <Link
+                className={styles.back}
+                href={`/admin/institutional-access?requestId=${encodeURIComponent(linkedAccess.requestId)}`}
+              >
+                Open access request →
+              </Link>
+            </p>
+          ) : (
+            <p className={styles.recordNote}>
+              {submissionEvents.length > 1
+                ? "Multiple access records match this intake."
+                : "No linked access record."}
+            </p>
+          )
+        ) : null}
+
         <p
           className={
             styles.recordNote
           }
         >
-          This Intake currently
-          holds the Matter&apos;s
-          transaction record. The
-          Matter remains continuous
-          as the transaction
-          progresses.
+          {homeMatter.recordKind === "OPPORTUNITY"
+            ? "This intake remains the original record for the Matter’s current Opportunity."
+            : homeMatter.recordKind === "DOSSIER"
+              ? "This intake remains the original record for the Matter’s current Dossier."
+              : "This intake currently holds the Matter’s transaction record."}
         </p>
       </section>
 

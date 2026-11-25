@@ -349,7 +349,6 @@
   top: 18px;
   bottom: 42px;
   display: grid;
-  grid-template-rows: repeat(10, 1fr);
   border-left: 1px solid var(--line-strong);
 }
 
