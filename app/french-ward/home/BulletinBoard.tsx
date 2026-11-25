@@ -65,13 +65,16 @@ function BulletinPdf({ post }: { post: BulletinPost }) {
 export function BulletinBoard({
   posts,
   initialPostId,
+  canPublish = false,
 }: {
   posts: readonly BulletinPost[];
   initialPostId?: string;
+  canPublish?: boolean;
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(
     initialPostId ?? null,
   );
+  const [linkState, setLinkState] = useState<"idle" | "copied" | "failed">("idle");
   const [latest] = posts;
   const requestedId = selectedId;
   const requestedPost = requestedId
@@ -86,6 +89,7 @@ export function BulletinBoard({
   function openPost(id: string) {
     if (!posts.some((post) => post.id === id)) return;
     setSelectedId(id);
+    setLinkState("idle");
 
     const url = new URL(window.location.href);
     url.searchParams.set("module", "bulletin");
@@ -107,46 +111,93 @@ export function BulletinBoard({
     }
   }
 
+
+  async function copyPostLink() {
+    if (!selected) return;
+    const url = new URL("/french-ward/home", window.location.origin);
+    url.searchParams.set("module", "bulletin");
+    url.searchParams.set("post", selected.id);
+    try {
+      await navigator.clipboard.writeText(url.toString());
+      setLinkState("copied");
+    } catch {
+      setLinkState("failed");
+    }
+  }
+
   return (
-    <div data-bulletin-board data-bulletin-index-layout className="min-w-0 pb-8 text-[#222b2e]">
-      <nav aria-label="Bulletin Board sections" className="flex flex-wrap items-center gap-2 px-3 py-3 text-sm font-semibold sm:px-6">
-        <a href="#bulletin-urgent" className={linkClass}>Urgent</a>
+    <div data-bulletin-board data-bulletin-index-layout className="min-w-0 overflow-hidden rounded-sm border border-[#d4c7ad] bg-[#f7f2e8] pb-0 text-[#222b2e]">
+      <header className="border-b border-[#c8b89a] bg-[#eae0cd] px-5 pb-6 pt-7 sm:px-8 sm:pt-9">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#63553f]">
+          <span>French-Ward / Institutional Communications</span>
+          <span>Officers' Edition</span>
+        </div>
+        <div className="mt-5 flex flex-wrap items-end justify-between gap-5">
+          <div className="min-w-0">
+            <p className="font-serif text-4xl leading-tight text-[#20313a] sm:text-5xl">The Bulletin</p>
+            <p className="mt-2 max-w-[54ch] text-sm leading-relaxed text-[#5b564a]">
+              Notices, perspectives and matters requiring the attention of our institutional field.
+            </p>
+          </div>
+          {canPublish && (
+            <div className="flex flex-wrap gap-2" aria-label="Publisher actions">
+              <a href="/admin/french-ward/bulletin" className="inline-flex items-center rounded-sm bg-[#293a41] px-4 py-2.5 text-sm font-semibold text-[#f7f0e3] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
+                Compose notice
+              </a>
+              <a href="/admin/french-ward/bulletin#bulletin-drafts" className="inline-flex items-center rounded-sm border border-[#86785e] px-4 py-2.5 text-sm font-semibold text-[#293a41] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
+                Manage drafts
+              </a>
+            </div>
+          )}
+        </div>
+      </header>
+      <nav aria-label="Bulletin Board sections" className="flex flex-wrap items-center gap-4 border-b border-[#d4c7ad] bg-[#f7f2e8] px-5 py-3 text-xs font-semibold uppercase tracking-[0.1em] text-[#504431] sm:px-8">
+        <a href="#bulletin-urgent" className={linkClass}>Priority</a>
         {latest && (
           <button type="button" className={`${linkClass} cursor-pointer`} onClick={() => openPost(latest.id)}>
             Latest
           </button>
         )}
-        <a href="#bulletin-updates" className={linkClass}>All updates</a>
+        <a href="#bulletin-updates" className={linkClass}>Archive</a>
       </nav>
+      <div className="grid min-w-0 grid-cols-1 gap-0 bg-[#f7f2e8] xl:grid-cols-[minmax(0,1fr)_minmax(220px,29%)]">
+
 
       <section
         id="bulletin-latest"
         tabIndex={-1}
         aria-labelledby="bulletin-reading-title"
         data-welcome-reading={selected && welcome?.id === selected.id ? "" : undefined}
-        className={sectionClass}
+        className="min-w-0 border-b border-[#d4c7ad] px-5 pb-12 pt-9 sm:px-8 sm:pt-12 xl:border-b-0 xl:border-r"
       >
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm text-[#66563e]">
           <h2 id="bulletin-reading-title" className="text-sm font-semibold" style={{ color: "#504431" }}>
-            {selected ? (selected.id === latest?.id ? "Latest update" : "Update") : "Latest update"}
+            {selected ? (selected.id === latest?.id ? "Current Dispatch" : "From the Archive") : "Current Dispatch"}
           </h2>
           {selected && <PublishedDate value={selected.publishedAt} />}
         </div>
         {selected ? (
-          <article className="mt-3">
-            <h3 className="break-words font-serif text-lg font-semibold leading-snug" style={{ color: "#162c34" }}>
+          <article className="mt-7 max-w-[76ch]">
+            <h3 className="break-words font-serif text-3xl font-semibold leading-tight sm:text-4xl" style={{ color: "#162c34" }}>
               {selected.title}
             </h3>
             <div className={bodyClass}>
               <BulletinEditorialBody body={selected.body} />
             </div>
             <BulletinPdf post={selected} />
-            <a
-              className="mt-4 inline-block text-sm underline underline-offset-4"
-              href={`/french-ward/home?module=bulletin&post=${encodeURIComponent(selected.id)}`}
-            >
-              Direct link to this notice
-            </a>
+            <div className="mt-8 flex flex-wrap items-center gap-3 border-t border-[#c8b89a] pt-5">
+              <button type="button" onClick={copyPostLink}
+                className="rounded-sm border border-[#6a5d49] bg-[#f0e7d5] px-4 py-2 text-sm font-semibold text-[#293a41] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
+                Copy notice link
+              </button>
+              <span role="status" aria-live="polite" className="text-xs text-[#5b564a]">
+                {linkState === "copied" ? "Link copied — share with an authorized officer." : linkState === "failed" ? "Clipboard unavailable. Use Open link to copy the URL." : "Individual notice · restricted to authorized readers"}
+              </span>
+              <a className="text-sm underline underline-offset-4"
+                href={`/french-ward/home?module=bulletin&post=${encodeURIComponent(selected.id)}`}>
+                Open link
+              </a>
+            </div>
           </article>
         ) : requestedPostMissing ? (
           <p role="status" className={quietClass}>
@@ -158,10 +209,10 @@ export function BulletinBoard({
         )}
       </section>
 
-      <aside data-bulletin-rail aria-label="Urgent notices and update index">
-        <section id="bulletin-urgent" aria-labelledby="bulletin-urgent-title" className={sectionClass}>
+      <aside data-bulletin-rail aria-label="Priority notices and archive" className="min-w-0 bg-[#efe6d4] xl:border-l xl:border-[#ded0b7]">
+        <section id="bulletin-urgent" aria-labelledby="bulletin-urgent-title" className="border-b border-[#c8b89a] px-5 py-6 sm:px-8">
           <h2 id="bulletin-urgent-title" className="text-sm font-semibold" style={{ color: "#733c27" }}>
-            Urgent
+            Priority Notices
           </h2>
           {urgent.length ? (
             <ul className="mt-2 divide-y divide-[#c8b89a]">
@@ -193,9 +244,9 @@ export function BulletinBoard({
           </button>
         )}
 
-        <section id="bulletin-updates" aria-labelledby="bulletin-updates-title">
+        <section id="bulletin-updates" aria-labelledby="bulletin-updates-title" className="px-5 py-7 sm:px-8">
           <h2 id="bulletin-updates-title" className="text-sm font-semibold" style={{ color: "#243a48" }}>
-            All updates
+            Notice Archive
           </h2>
           {posts.length ? (
             <ul data-bulletin-index aria-labelledby="bulletin-updates-title" tabIndex={0}>
@@ -220,6 +271,7 @@ export function BulletinBoard({
           )}
         </section>
       </aside>
+      </div>
     </div>
   );
 }
