@@ -15,6 +15,7 @@ export default function ControlCenterTransactionsPage() {
       showHeading={false}
       rail={<nav aria-label="Transaction registry index">
         <h2>Records · {transactions.length}</h2>
+        <Link href="/admin/transaction-intakes">Transaction Intakes</Link>
         {transactions.map((transaction) => <a key={transaction.reference} href={`#${encodeURIComponent("transaction-" + transaction.reference)}`}>
           {transaction.reference}
         </a>)}

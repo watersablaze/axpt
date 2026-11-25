@@ -24,19 +24,15 @@ const PASSAGE = [
   { key: "ESCROW", states: ["ESCROW_PENDING", "ESCROW_FUNDED"] },
   { key: "SPA", states: ["SPA_DRAFTING", "SPA_EXECUTED"] },
   { key: "KYC", states: ["KYC_REVIEW"] },
+  { key: "OPPORTUNITY", states: [] },
   { key: "INTAKE", states: ["INTAKE_PENDING"] },
 ] as const;
 
 function passageIndex(
   matter: FrenchWardHomeMatter,
 ) {
-  if (
-    matter.recordKind === "INTAKE" &&
-    matter.stage === "RECEIVED"
-  ) {
-    return PASSAGE.findIndex(
-      (level) => level.key === "INTAKE",
-    );
+  if (matter.recordKind === "INTAKE" || matter.recordKind === "OPPORTUNITY") {
+    return PASSAGE.findIndex((level) => level.key === matter.recordKind);
   }
 
   return PASSAGE.findIndex((level) =>
@@ -314,7 +310,7 @@ export default function MatterPassageField({
               </span>
             </div>
 
-            <div className={styles.passageLevels}>
+            <div className={styles.passageLevels} style={{ gridTemplateRows: `repeat(${PASSAGE.length}, 1fr)` }}>
               {PASSAGE.map((level, levelIndex) => (
                 <div
                   className={styles.passageLevel}
