@@ -625,7 +625,7 @@ async function main() {
           display: computed.display,
           visibility: computed.visibility,
           opacity: computed.opacity,
-          contentVisibility: computed.contentVisibility,
+          contentVisibility: computed.getPropertyValue("content-visibility"),
           width: Math.round(box.width),
           height: Math.round(box.height),
           offsetWidth: (current as HTMLElement).offsetWidth,
