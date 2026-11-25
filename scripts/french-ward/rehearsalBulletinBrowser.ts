@@ -19,7 +19,16 @@ assert.equal(url.port, "5433");
 assert.equal(url.username, "axpt");
 assert.equal(url.pathname, `/${database}`);
 assert.ok(url.password);
-assert.equal(url.search, "");
+// Keep the rehearsal destination fixed while permitting only the
+// known Prisma/PostgreSQL local connection options.
+const expectedParams = new URLSearchParams([
+  ["schema", "public"],
+  ["sslmode", "disable"],
+]);
+assert.equal(url.searchParams.size, expectedParams.size);
+for (const [key, value] of expectedParams) {
+  assert.deepEqual(url.searchParams.getAll(key), [value]);
+}
 
 const db = new PrismaClient();
 const origin = "http://127.0.0.1:3187";
