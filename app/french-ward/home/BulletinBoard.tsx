@@ -14,7 +14,7 @@ type BulletinPost = {
 
 const publicationDate = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
-  month: "long",
+  month: "short",
   year: "numeric",
   timeZone: "UTC",
 });
@@ -23,40 +23,21 @@ function PublishedDate({ value }: { value: string }) {
   return <time dateTime={value}>{publicationDate.format(new Date(value))}</time>;
 }
 
-const sectionClass = "scroll-mt-4 border-t border-[#c8b89a] px-5 py-5 sm:px-8";
-const linkClass = "rounded-sm px-2 py-1 underline underline-offset-4 focus-visible:outline focus-visible:outline-2";
-const bodyClass = "mt-3 max-w-[72ch] whitespace-pre-wrap break-words text-base leading-relaxed";
-const quietClass = "mt-2 text-sm text-[#66563e]";
-
 function BulletinPdf({ post }: { post: BulletinPost }) {
   if (!post.pdfName) return null;
 
   return (
-    <div className="mt-4 grid min-w-0 max-w-[72ch] grid-cols-1 items-center gap-3 rounded-sm border border-[#c8b89a] bg-[#f0e7d5] p-3 sm:grid-cols-[minmax(0,1fr)_auto]">
+    <div className="mt-6 flex min-w-0 flex-wrap items-center justify-between gap-3 border-y border-[#d9dedb] py-3 text-sm">
       <div className="min-w-0">
-        <p className="text-xs font-semibold text-[#594c3b]">PDF attachment</p>
-        <p className="mt-1 text-sm text-[#222b2e] [overflow-wrap:anywhere]">
-          {post.pdfName}
-        </p>
+        <p className="text-xs font-semibold text-[#59676b]">Attached document</p>
+        <p className="mt-1 break-all text-[#26353b]">{post.pdfName}</p>
       </div>
-      <div className="flex flex-wrap gap-2">
-        <a
-          href={`/french-ward/bulletin/${encodeURIComponent(post.id)}/pdf?view=1`}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="View PDF in a new tab"
-          className="rounded-sm border border-[#4b352c] px-3 py-2 text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-          style={{ backgroundColor: "#4b352c", color: "#fff7e9" }}
-        >
-          View PDF ↗
-        </a>
-        <a
-          href={`/french-ward/bulletin/${encodeURIComponent(post.id)}/pdf`}
-          download
-          className="rounded-sm border border-[#806452] px-3 py-2 text-sm font-semibold text-[#33251f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-        >
-          Download PDF
-        </a>
+      <div className="flex flex-wrap gap-4">
+        <a href={`/french-ward/bulletin/${encodeURIComponent(post.id)}/pdf?view=1`}
+          target="_blank" rel="noopener noreferrer" aria-label="View PDF in a new tab"
+          className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2">View PDF</a>
+        <a href={`/french-ward/bulletin/${encodeURIComponent(post.id)}/pdf`}
+          download className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2">Download</a>
       </div>
     </div>
   );
@@ -65,36 +46,29 @@ function BulletinPdf({ post }: { post: BulletinPost }) {
 export function BulletinBoard({
   posts,
   initialPostId,
+  canPublish = false,
 }: {
   posts: readonly BulletinPost[];
   initialPostId?: string;
+  canPublish?: boolean;
 }) {
-  const [selectedId, setSelectedId] = useState<string | null>(
-    initialPostId ?? null,
-  );
+  const [selectedId, setSelectedId] = useState<string | null>(initialPostId ?? null);
+  const [linkState, setLinkState] = useState<"idle" | "copied" | "failed">("idle");
   const [latest] = posts;
-  const requestedId = selectedId;
-  const requestedPost = requestedId
-    ? posts.find((post) => post.id === requestedId)
-    : undefined;
-  const requestedPostMissing =
-    Boolean(requestedId) && !requestedPost;
-  const selected = requestedId ? requestedPost : latest;
-  const welcome = posts.find((post) => post.title === "Welcome Post");
+  const requestedPost = selectedId ? posts.find((post) => post.id === selectedId) : undefined;
+  const requestedPostMissing = Boolean(selectedId) && !requestedPost;
+  const selected = selectedId ? requestedPost : latest;
   const urgent = posts.filter((post) => post.urgent);
 
   function openPost(id: string) {
     if (!posts.some((post) => post.id === id)) return;
     setSelectedId(id);
+    setLinkState("idle");
 
     const url = new URL(window.location.href);
     url.searchParams.set("module", "bulletin");
     url.searchParams.set("post", id);
-    window.history.replaceState(
-      window.history.state,
-      "",
-      url.pathname + url.search + url.hash,
-    );
+    window.history.replaceState(window.history.state, "", url.pathname + url.search + url.hash);
 
     const reader = document.getElementById("bulletin-latest");
     reader?.focus({ preventScroll: true });
@@ -102,124 +76,139 @@ export function BulletinBoard({
       top: 0,
       behavior: "instant",
     });
-    if (window.scrollY > 0) {
-      window.scrollTo({ top: 0, behavior: "instant" });
+    if (window.scrollY > 0) window.scrollTo({ top: 0, behavior: "instant" });
+  }
+
+  async function copyPostLink() {
+    if (!selected) return;
+    const url = new URL("/french-ward/home", window.location.origin);
+    url.searchParams.set("module", "bulletin");
+    url.searchParams.set("post", selected.id);
+    try {
+      await navigator.clipboard.writeText(url.toString());
+      setLinkState("copied");
+    } catch {
+      setLinkState("failed");
     }
   }
 
   return (
-    <div data-bulletin-board data-bulletin-index-layout className="min-w-0 pb-8 text-[#222b2e]">
-      <nav aria-label="Bulletin Board sections" className="flex flex-wrap items-center gap-2 px-3 py-3 text-sm font-semibold sm:px-6">
-        <a href="#bulletin-urgent" className={linkClass}>Urgent</a>
-        {latest && (
-          <button type="button" className={`${linkClass} cursor-pointer`} onClick={() => openPost(latest.id)}>
-            Latest
-          </button>
-        )}
-        <a href="#bulletin-updates" className={linkClass}>All updates</a>
-      </nav>
-
-      <section
-        id="bulletin-latest"
-        tabIndex={-1}
-        aria-labelledby="bulletin-reading-title"
-        data-welcome-reading={selected && welcome?.id === selected.id ? "" : undefined}
-        className={sectionClass}
-      >
-        <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm text-[#66563e]">
-          <h2 id="bulletin-reading-title" className="text-sm font-semibold" style={{ color: "#504431" }}>
-            {selected ? (selected.id === latest?.id ? "Latest update" : "Update") : "Latest update"}
-          </h2>
-          {selected && <PublishedDate value={selected.publishedAt} />}
+    <div data-fw-bulletin-posts className="min-w-0 overflow-hidden border border-[#c9d1d2] bg-[#f9faf8] text-[#26343a]" style={{ display: "block" }}>
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#d8dede] bg-[#f0f3f1] px-4 py-3 sm:px-6">
+        <div className="flex min-w-0 flex-wrap items-baseline gap-x-4 gap-y-1">
+          <span className="text-sm font-semibold">Published notices</span>
+          <span className="text-xs text-[#647278]">{posts.length} {posts.length === 1 ? "post" : "posts"}</span>
         </div>
-        {selected ? (
-          <article className="mt-3">
-            <h3 className="break-words font-serif text-lg font-semibold leading-snug" style={{ color: "#162c34" }}>
-              {selected.title}
-            </h3>
-            <div className={bodyClass}>
-              <BulletinEditorialBody body={selected.body} />
-            </div>
-            <BulletinPdf post={selected} />
-            <a
-              className="mt-4 inline-block text-sm underline underline-offset-4"
-              href={`/french-ward/home?module=bulletin&post=${encodeURIComponent(selected.id)}`}
-            >
-              Direct link to this notice
+        {canPublish && (
+          <div className="flex flex-wrap items-center gap-4 text-xs font-semibold" aria-label="Publisher actions">
+            <a href="/admin/french-ward/bulletin" className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2">
+              Compose notice
             </a>
-          </article>
-        ) : requestedPostMissing ? (
-          <p role="status" className={quietClass}>
-            The requested bulletin is unavailable or is no longer published.
-            Select another available update from the index.
-          </p>
-        ) : (
-          <p className={quietClass}>No updates published yet.</p>
+            <a href="/admin/french-ward/bulletin#bulletin-drafts" className="underline underline-offset-4 focus-visible:outline focus-visible:outline-2">
+              Manage drafts
+            </a>
+          </div>
         )}
-      </section>
+      </div>
 
-      <aside data-bulletin-rail aria-label="Urgent notices and update index">
-        <section id="bulletin-urgent" aria-labelledby="bulletin-urgent-title" className={sectionClass}>
-          <h2 id="bulletin-urgent-title" className="text-sm font-semibold" style={{ color: "#733c27" }}>
-            Urgent
-          </h2>
-          {urgent.length ? (
-            <ul className="mt-2 divide-y divide-[#c8b89a]">
-              {urgent.map((post) => (
-                <li key={post.id}>
-                  <button
-                    type="button"
-                    onClick={() => openPost(post.id)}
-                    className="cursor-pointer py-2 text-left text-sm font-semibold underline underline-offset-4 [overflow-wrap:anywhere]"
-                  >
-                    {post.title}
-                  </button>
-                </li>
-              ))}
-            </ul>
+      <div className="grid min-w-0 grid-cols-1 lg:grid-cols-[minmax(200px,30%)_minmax(0,1fr)]">
+        <aside aria-label="Bulletin post index" className="min-w-0 border-b border-[#d8dede] bg-[#f5f7f5] lg:border-b-0 lg:border-r">
+          <section id="bulletin-updates" aria-labelledby="bulletin-updates-title" className="min-w-0">
+            <div className="flex items-center justify-between border-b border-[#e1e5e3] px-4 py-3 sm:px-5">
+              <h2 id="bulletin-updates-title" className="text-xs font-semibold text-[#48585d]">Notice Archive</h2>
+              {latest && (
+                <button type="button" onClick={() => openPost(latest.id)}
+                  className="text-xs underline underline-offset-4 focus-visible:outline focus-visible:outline-2">Latest</button>
+              )}
+            </div>
+            {posts.length ? (
+              <ul data-bulletin-index aria-labelledby="bulletin-updates-title"
+                className="max-h-[40vh] overflow-y-auto lg:max-h-[70vh]">
+                {posts.map((post) => (
+                  <li key={post.id} className="border-b border-[#e2e7e5] last:border-b-0">
+                    <button type="button"
+                      aria-current={selected?.id === post.id ? "true" : undefined}
+                      onClick={() => openPost(post.id)}
+                      className={`block w-full border-l-[3px] px-4 py-3 text-left transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] sm:px-5 ${selected?.id === post.id
+                        ? "border-l-[#53747d] bg-[#e7eeee]"
+                        : "border-l-transparent hover:bg-[#edf2ef]"}`}>
+                      <span className="block break-words text-sm font-medium leading-snug">{post.title}</span>
+                      <span className="mt-1 block text-xs text-[#65767b]">
+                        <PublishedDate value={post.publishedAt} />
+                        {post.urgent && <span className="ml-2 font-semibold text-[#874d37]">Priority</span>}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="px-4 py-5 text-sm text-[#647278] sm:px-5">No published posts.</p>
+            )}
+          </section>
+          {urgent.length > 0 && (
+            <section id="bulletin-urgent" aria-labelledby="bulletin-urgent-title"
+              className="border-t border-[#d8dede] px-4 py-4 sm:px-5">
+              <h2 id="bulletin-urgent-title" className="text-xs font-semibold text-[#874d37]">
+                Priority notices
+              </h2>
+              <ul className="mt-2 space-y-2">
+                {urgent.map((post) => (
+                  <li key={post.id}>
+                    <button type="button" onClick={() => openPost(post.id)}
+                      className="text-left text-sm underline underline-offset-4 focus-visible:outline focus-visible:outline-2">
+                      {post.title}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+        </aside>
+
+        <section id="bulletin-latest" tabIndex={-1} aria-labelledby="bulletin-reading-title"
+          className="min-w-0 px-4 pb-9 pt-5 sm:px-7 sm:pt-7">
+          <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-[#dce2e0] pb-3 text-xs text-[#657278]">
+            <h2 id="bulletin-reading-title" className="font-semibold text-[#46585e]">
+              {selected ? "Notice" : "Reading area"}
+            </h2>
+            {selected && <PublishedDate value={selected.publishedAt} />}
+          </div>
+
+          {selected ? (
+            <article className="mt-5 min-w-0 max-w-[74ch]">
+              <h3 className="break-words text-xl font-semibold leading-snug tracking-[-0.015em] text-[#26343a] sm:text-2xl">
+                {selected.title}
+              </h3>
+              <div className="mt-5 min-w-0 break-words text-[15px] leading-[1.7] text-[#29383d]">
+                <BulletinEditorialBody body={selected.body} />
+              </div>
+              <BulletinPdf post={selected} />
+              <div className="mt-7 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-[#dce2e0] pt-4">
+                <button type="button" onClick={copyPostLink}
+                  className="text-xs font-semibold underline underline-offset-4 focus-visible:outline focus-visible:outline-2">
+                  Copy notice link
+                </button>
+                <a href={`/french-ward/home?module=bulletin&post=${encodeURIComponent(selected.id)}`}
+                  className="text-xs underline underline-offset-4 focus-visible:outline focus-visible:outline-2">Open link</a>
+                <span role="status" aria-live="polite" className="text-xs text-[#657278]">
+                  {linkState === "copied"
+                    ? "Link copied — share with an authorized officer."
+                    : linkState === "failed"
+                      ? "Clipboard unavailable. Use Open link to copy the URL."
+                      : "Authorized readers only"}
+                </span>
+              </div>
+            </article>
+          ) : requestedPostMissing ? (
+            <p role="status" className="mt-5 text-sm text-[#657278]">
+              The requested bulletin is unavailable or is no longer published.
+              Select another available update from the index.
+            </p>
           ) : (
-            <p className={quietClass}>Nothing urgent right now.</p>
+            <p className="mt-5 text-sm text-[#657278]">Select a post to read.</p>
           )}
         </section>
-
-        {welcome && (
-          <button
-            type="button"
-            data-bulletin-welcome
-            className="w-full cursor-pointer text-left text-sm font-semibold focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2"
-            onClick={() => openPost(welcome.id)}
-          >
-            Read the welcome post
-          </button>
-        )}
-
-        <section id="bulletin-updates" aria-labelledby="bulletin-updates-title">
-          <h2 id="bulletin-updates-title" className="text-sm font-semibold" style={{ color: "#243a48" }}>
-            All updates
-          </h2>
-          {posts.length ? (
-            <ul data-bulletin-index aria-labelledby="bulletin-updates-title" tabIndex={0}>
-              {posts.map((post) => (
-                <li key={post.id}>
-                  <button
-                    type="button"
-                    aria-current={selected?.id === post.id ? "true" : undefined}
-                    onClick={() => openPost(post.id)}
-                  >
-                    <span className="font-semibold">{post.title}</span>
-                    <span className="block text-xs text-[#465d6a]">
-                      <PublishedDate value={post.publishedAt} />
-                      {post.urgent && <span className="ml-2 text-[#733c27]">Urgent</span>}
-                    </span>
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className={quietClass}>Published updates will appear here.</p>
-          )}
-        </section>
-      </aside>
+      </div>
     </div>
   );
 }

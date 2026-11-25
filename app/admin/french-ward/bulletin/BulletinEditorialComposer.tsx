@@ -29,7 +29,7 @@ const tools = [
   { label: "List", before: "- ", after: "" },
   { label: "Numbered", before: "1. ", after: "" },
   { label: "Quote", before: "> ", after: "" },
-  { label: "Divider", before: "\n---\n", after: "" },
+  { label: "Divider", before: "\n\n---\n\n", after: "" },
 ];
 
 export default function BulletinEditorialComposer({

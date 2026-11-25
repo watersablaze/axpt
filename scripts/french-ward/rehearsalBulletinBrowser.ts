@@ -19,7 +19,16 @@ assert.equal(url.port, "5433");
 assert.equal(url.username, "axpt");
 assert.equal(url.pathname, `/${database}`);
 assert.ok(url.password);
-assert.equal(url.search, "");
+// Keep the rehearsal destination fixed while permitting only the
+// known Prisma/PostgreSQL local connection options.
+const expectedParams = new URLSearchParams([
+  ["schema", "public"],
+  ["sslmode", "disable"],
+]);
+assert.equal(url.searchParams.size, expectedParams.size);
+for (const [key, value] of expectedParams) {
+  assert.deepEqual(url.searchParams.getAll(key), [value]);
+}
 
 const db = new PrismaClient();
 const origin = "http://127.0.0.1:3187";
@@ -418,6 +427,33 @@ async function main() {
 
   console.log("PASS styled editorial toolbar activated");
 
+  // R1.9: The Divider tool must produce an actual horizontal
+  // rule rather than turning the preceding line into a heading.
+  const dividerTool = publisher.getByRole("button", {
+    name: "Divider",
+    exact: true,
+  });
+  await hydrationInput.fill("And if there is");
+  await hydrationInput.evaluate((element) => {
+    const field = element as HTMLTextAreaElement;
+    field.focus();
+    field.setSelectionRange(field.value.length, field.value.length);
+  });
+  await dividerTool.click();
+  await publisher.locator(
+    'section[aria-label="Bulletin preview"] hr',
+  ).waitFor({ state: "visible" });
+  const dividerText = await hydrationInput.inputValue();
+  assert.match(dividerText, /And if there is\n\n---\n\n/);
+  assert.equal(
+    await publisher.locator(
+      'section[aria-label="Bulletin preview"] h2',
+    ).filter({ hasText: "And if there is" }).count(),
+    0,
+  );
+  console.log("PASS R1.9 divider renders a rule, not a heading");
+
+  await hydrationInput.fill("");
   await headingTool.click();
 
   await publisher.locator('input[name="title"]')
@@ -547,6 +583,167 @@ async function main() {
   console.log("PASS direct-link opening and styled officer rendering");
 
   // -------------------------------------------------
+  // R1.9. Officer reading experience and publish boundary.
+  // -------------------------------------------------
+
+  assert.equal(
+    await reader.getByRole("link", { name: "Compose notice" }).count(),
+    0,
+    "Reader was incorrectly shown publisher entry",
+  );
+  assert.equal(
+    await reader.getByRole("link", { name: "Manage drafts" }).count(),
+    0,
+    "Reader was incorrectly shown draft management",
+  );
+
+  await reader.getByText("Published notices", { exact: true }).waitFor();
+  const archiveHeading = reader.getByRole("heading", {
+    name: "Notice Archive",
+    exact: true,
+  });
+
+  try {
+    await archiveHeading.waitFor({
+      state: "visible",
+      timeout: 12000,
+    });
+  } catch (error) {
+    const visibility = await reader.evaluate(() => {
+      const heading = document.getElementById("bulletin-updates-title");
+      const chain: Array<Record<string, unknown>> = [];
+      let current: Element | null = heading;
+
+      for (let i = 0; current && i < 8; i++) {
+        const computed = window.getComputedStyle(current);
+        const box = current.getBoundingClientRect();
+        chain.push({
+          tag: current.tagName,
+          id: current.id || null,
+          className: typeof current.className === "string"
+            ? current.className.slice(0, 100) : "",
+          display: computed.display,
+          visibility: computed.visibility,
+          opacity: computed.opacity,
+          contentVisibility: computed.getPropertyValue("content-visibility"),
+          width: Math.round(box.width),
+          height: Math.round(box.height),
+          offsetWidth: (current as HTMLElement).offsetWidth,
+          offsetHeight: (current as HTMLElement).offsetHeight,
+        });
+        current = current.parentElement;
+      }
+
+      return {
+        chain,
+        viewport: {
+          width: innerWidth,
+          height: innerHeight,
+        },
+        archiveTextExists: Boolean(
+          heading?.textContent?.includes("Notice Archive")
+        ),
+      };
+    });
+    console.log("R1.9 ARCHIVE_VISIBILITY_DIAGNOSTIC", JSON.stringify(visibility));
+    throw error;
+  }
+  const edition = await reader.evaluate(() => {
+    const board = document.querySelector("[data-fw-bulletin-posts]");
+    const articleTitle = document.querySelector("#bulletin-latest article h3");
+    const archive = document.querySelector("#bulletin-updates");
+    return {
+      extraPageHeadings: board?.querySelectorAll("h1").length ?? -1,
+      articleTitleSize: articleTitle
+        ? parseFloat(getComputedStyle(articleTitle).fontSize)
+        : 0,
+      archiveWidth: archive?.getBoundingClientRect().width ?? 0,
+    };
+  });
+  assert.equal(edition.extraPageHeadings, 0);
+  assert.ok(edition.articleTitleSize > 0 && edition.articleTitleSize <= 30);
+  assert.ok(edition.archiveWidth > 150);
+  console.log("PASS restrained posts hierarchy and reader-only controls");
+
+  // This test runs on loopback, so the browser clipboard API is
+  // available after granting exact clipboard permissions.
+  await readerContext.grantPermissions([
+    "clipboard-read",
+    "clipboard-write",
+  ]);
+  await reader.getByRole("button", {
+    name: "Copy notice link",
+  }).click();
+  await reader.getByRole("status")
+    .filter({ hasText: "Link copied" }).waitFor();
+
+  const copiedNoticeUrl = await reader.evaluate(async () =>
+    navigator.clipboard.readText()
+  );
+  assert.equal(copiedNoticeUrl, origin + directLink);
+  console.log("PASS R1.9 copy link yields exact published notice URL");
+
+  await reader.getByRole("button", {
+    name: title,
+  }).last().click();
+  assert.equal(
+    new URL(reader.url()).searchParams.get("post"),
+    draft.id,
+  );
+  console.log("PASS R1.9 archive selection preserves post identity");
+
+  await reader.setViewportSize({ width: 390, height: 844 });
+  const mobileOverflow = await reader.evaluate(() =>
+    document.documentElement.scrollWidth >
+      document.documentElement.clientWidth + 2
+  );
+  assert.equal(mobileOverflow, false, "Mobile editorial board overflow");
+  await reader.getByText("Published notices", { exact: true }).waitFor();
+  const mobileOrder = await reader.evaluate(() => {
+    const archive = document.getElementById("bulletin-updates");
+    const reading = document.getElementById("bulletin-latest");
+    if (!archive || !reading) return false;
+    const a = archive.getBoundingClientRect();
+    const b = reading.getBoundingClientRect();
+    return a.width > 200 && b.width > 200 && a.top < b.top;
+  });
+  assert.ok(mobileOrder, "Mobile index must precede reading pane");
+  console.log("PASS R1.9 mobile width, index order and editorial content");
+
+  await reader.setViewportSize({ width: 1280, height: 800 });
+  const desktopLayout = await reader.evaluate(() => {
+    const board = document.querySelector("[data-fw-bulletin-posts]");
+    const reading = document.getElementById("bulletin-latest");
+    const archive = document.getElementById("bulletin-updates");
+    return {
+      boardDisplay: board ? getComputedStyle(board).display : null,
+      readingWidth: reading?.getBoundingClientRect().width ?? 0,
+      archiveWidth: archive?.getBoundingClientRect().width ?? 0,
+      pageOverflow:
+        document.documentElement.scrollWidth >
+        document.documentElement.clientWidth + 2,
+    };
+  });
+  assert.equal(desktopLayout.boardDisplay, "block");
+  assert.ok(desktopLayout.readingWidth > 300);
+  assert.ok(desktopLayout.archiveWidth > 150);
+  assert.equal(desktopLayout.pageOverflow, false);
+  console.log("PASS R1.9 desktop layout without horizontal overflow");
+
+  await publisher.goto(board);
+  await publisher.getByRole("link", {
+    name: "Compose notice",
+  }).waitFor();
+  await publisher.getByRole("link", {
+    name: "Manage drafts",
+  }).waitFor();
+  await publisher.getByRole("link", {
+    name: "Compose notice",
+  }).click();
+  await publisher.waitForURL(/\/admin\/french-ward\/bulletin/);
+  console.log("PASS R1.9 authorized publisher enters canonical editor");
+
+  // -------------------------------------------------
   // 6. Edit through actual publisher interface.
   // -------------------------------------------------
 
@@ -652,7 +849,7 @@ async function main() {
   );
 
 
-  console.log("7/7 browser publication stages PASS");
+  console.log("7/7 publication stages + R1.9 editorial acceptance PASS");
 }
 
 async function cleanup() {

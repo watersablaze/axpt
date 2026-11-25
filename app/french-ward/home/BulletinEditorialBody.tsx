@@ -39,7 +39,7 @@ export function BulletinEditorialBody({ body }: Props) {
   }
 
   return (
-    <div className="max-w-[72ch] break-words text-base leading-relaxed">
+    <div className="max-w-[72ch] break-words text-[15px] leading-[1.7]">
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         skipHtml
@@ -48,17 +48,17 @@ export function BulletinEditorialBody({ body }: Props) {
         urlTransform={(url) => safeBulletinHref(url) ?? ""}
         components={{
           h2: ({ children }) => (
-            <h2 className="mb-3 mt-6 font-serif text-xl font-semibold">
+            <h2 className="mb-2 mt-6 text-base font-semibold text-[#293a40]">
               {children}
             </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="mb-2 mt-5 font-semibold">
+            <h3 className="mb-2 mt-5 text-[15px] font-semibold text-[#34454a]">
               {children}
             </h3>
           ),
           h4: ({ children }) => (
-            <h4 className="mb-2 mt-4 font-semibold">
+            <h4 className="mb-2 mt-4 text-[15px] font-semibold">
               {children}
             </h4>
           ),
