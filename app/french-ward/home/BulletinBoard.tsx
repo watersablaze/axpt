@@ -168,6 +168,7 @@ export function BulletinBoard({
         aria-labelledby="bulletin-reading-title"
         data-welcome-reading={selected && welcome?.id === selected.id ? "" : undefined}
         className="min-w-0 border-b border-[#d4c7ad] px-5 pb-12 pt-9 sm:px-8 sm:pt-12 xl:border-b-0 xl:border-r"
+        style={{ gridArea: "auto" }}
       >
         <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-sm text-[#66563e]">
           <h2 id="bulletin-reading-title" className="text-sm font-semibold" style={{ color: "#504431" }}>
