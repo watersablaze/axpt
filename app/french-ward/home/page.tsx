@@ -260,6 +260,7 @@ export default async function FrenchWardHomePage({
         effectiveAt: appointment.effectiveAt?.toISOString() ?? null,
         expiresAt: appointment.expiresAt?.toISOString() ?? null,
       })) ?? null}
+      canPublishBulletin={principal.permissions.includes(PERMISSIONS.FRENCH_WARD_BULLETIN_PUBLISH)}
       bulletinPosts={bulletinPosts?.flatMap((post) =>
         post.publishedAt
           ? [{ ...post, publishedAt: post.publishedAt.toISOString() }]
