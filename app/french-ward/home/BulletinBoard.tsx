@@ -23,7 +23,6 @@ function PublishedDate({ value }: { value: string }) {
   return <time dateTime={value}>{publicationDate.format(new Date(value))}</time>;
 }
 
-const sectionClass = "scroll-mt-4 border-t border-[#c8b89a] px-5 py-5 sm:px-8";
 const linkClass = "rounded-sm px-2 py-1 underline underline-offset-4 focus-visible:outline focus-visible:outline-2";
 const bodyClass = "mt-3 max-w-[72ch] whitespace-pre-wrap break-words text-base leading-relaxed";
 const quietClass = "mt-2 text-sm text-[#66563e]";
