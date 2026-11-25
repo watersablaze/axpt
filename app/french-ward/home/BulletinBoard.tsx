@@ -150,7 +150,7 @@ export function BulletinBoard({
           )}
         </div>
       </header>
-      <nav aria-label="Bulletin Board sections" className="flex flex-wrap items-center gap-4 border-b border-[#d4c7ad] bg-[#f7f2e8] px-5 py-3 text-xs font-semibold uppercase tracking-[0.1em] text-[#504431] sm:px-8">
+      <nav aria-label="Bulletin Board sections" className="flex flex-wrap items-center gap-4 border-b border-[#d4c7ad] bg-[#f7f2e8] px-5 py-3 text-xs font-semibold uppercase tracking-[0.1em] text-[#504431] sm:px-8" style={{ paddingInline: "clamp(1.25rem, 2.8vw, 2rem)" }}>
         <a href="#bulletin-urgent" className={linkClass}>Priority</a>
         {latest && (
           <button type="button" className={`${linkClass} cursor-pointer`} onClick={() => openPost(latest.id)}>
