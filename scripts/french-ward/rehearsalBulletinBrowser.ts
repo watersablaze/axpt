@@ -435,7 +435,7 @@ async function main() {
     'section[aria-label="Bulletin preview"] hr',
   ).waitFor({ state: "visible" });
   const dividerText = await hydrationInput.inputValue();
-  assert.match(dividerText, /And if there is\\n\\n---\\n\\n/);
+  assert.match(dividerText, /And if there is\n\n---\n\n/);
   assert.equal(
     await publisher.locator(
       'section[aria-label="Bulletin preview"] h2',
@@ -658,7 +658,7 @@ async function main() {
   await publisher.getByRole("link", {
     name: "Compose notice",
   }).click();
-  await publisher.waitForURL(/\\/admin\\/french-ward\\/bulletin/);
+  await publisher.waitForURL(/\/admin\/french-ward\/bulletin/);
   console.log("PASS R1.9 authorized publisher enters canonical editor");
 
   // -------------------------------------------------
