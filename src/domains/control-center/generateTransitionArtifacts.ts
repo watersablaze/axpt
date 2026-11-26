@@ -1,4 +1,4 @@
-import { prisma } from '@/lib/prisma'
+import { InstrumentStatus, InstrumentType, type PrismaClient } from "@axpt/source-authority-join"
 import { EventTypes } from '@/core/events/types'
 
 import {
@@ -17,13 +17,21 @@ type Input = {
   operatorEmail: string
 }
 
-export async function generateTransitionArtifacts({
+export async function generateTransitionArtifacts(input: Input) {
+  const { prisma } = await import("@/lib/prisma")
+  return generateTransitionArtifactsWithClient(prisma, input)
+}
+
+export async function generateTransitionArtifactsWithClient(
+  client: Pick<PrismaClient, "transactionDossierInstrument" | "transactionDossierEvent">,
+  {
   dossierId,
   reference,
   fromState,
   toState,
   operatorEmail,
-}: Input) {
+  }: Input,
+) {
   const transitionKey = getTransitionKey(
     fromState,
     toState
@@ -42,23 +50,29 @@ export async function generateTransitionArtifacts({
   const generatedArtifacts = []
 
   for (const artifact of artifactTemplates) {
+    const type = Object.values(InstrumentType).find((value) => value === artifact.type)
+    const status = Object.values(InstrumentStatus).find((value) => value === artifact.status)
+    if (!type || !status) {
+      throw new Error(`INVALID_TRANSITION_ARTIFACT_TEMPLATE: ${artifact.type}/${artifact.status}`)
+    }
+
     const existing =
-      await prisma.transactionDossierInstrument.findFirst({
+      await client.transactionDossierInstrument.findFirst({
         where: {
           dossierId,
-          type: artifact.type,
+          type,
           version: artifact.version,
         },
       })
 
     const instrument =
       existing ??
-      await prisma.transactionDossierInstrument.create({
+      await client.transactionDossierInstrument.create({
         data: {
           dossierId,
-          type: artifact.type,
+          type,
           title: artifact.title,
-          status: artifact.status,
+          status,
           version: artifact.version,
           notes:
             `Generated from ${fromState} → ${toState} for ${reference} by ${operatorEmail}.`,
@@ -66,7 +80,7 @@ export async function generateTransitionArtifacts({
       })
 
     const event =
-      await prisma.transactionDossierEvent.create({
+      await client.transactionDossierEvent.create({
         data: {
           dossierId,
           eventType: EventTypes.INSTRUMENT_GENERATED,

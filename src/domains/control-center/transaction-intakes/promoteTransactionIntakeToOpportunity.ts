@@ -1,4 +1,10 @@
-import { prisma } from "@/lib/prisma";
+import type { PrismaClient as GeneratedPrismaClient } from "@axpt/source-authority-join";
+import { verifySignedPersistedSession } from "@/lib/auth/verifySignedPersistedSession";
+import { FRENCH_WARD_INSTITUTIONAL_PROFILE } from "@/domains/institutions/french-ward/canonicalInstitutionalProfile";
+import {
+  FRENCH_WARD_ACTION,
+  resolveFrenchWardActionAuthorityWithClient,
+} from "@/domains/institutions/french-ward/governance/resolveFrenchWardActionAuthorityWithClient";
 
 import type { OpportunitySource } from "@/domains/control-center/opportunities/types";
 
@@ -236,7 +242,7 @@ function buildOpportunityNotes(input: {
 }
 
 async function advanceFrenchWardMatter(
-  tx: typeof prisma,
+  tx: PromotionTransaction,
   intake: { id: string; reference: string },
   opportunityId: string,
   actor: string | null,
@@ -309,195 +315,346 @@ async function advanceFrenchWardMatter(
   });
 }
 
-export async function promoteTransactionIntakeToOpportunity({
-  intakeId,
-  actorEmail,
-  expectedMatterId,
-}: PromoteTransactionIntakeInput): Promise<PromotedOpportunityResult> {
-  return prisma.$transaction(async (tx: typeof prisma) => {
-    await tx.$queryRaw`SELECT id FROM "TransactionIntake" WHERE id = ${intakeId} FOR UPDATE`;
-    const intake = await tx.transactionIntake.findUnique({
-      where: {
-        id: intakeId,
-      },
-      include: {
-        promotedOpportunity: true,
-      },
-    });
+type ExternalPromotionInput = {
+  client: Pick<GeneratedPrismaClient, "$transaction">;
+  intakeId: string;
+  matterId: string;
+  adoptionDecisionId: string;
+  sessionToken: string;
+  signingSecret: Parameters<typeof verifySignedPersistedSession>[1];
+};
 
-    if (!intake) {
-      throw new Error("TRANSACTION_INTAKE_NOT_FOUND");
-    }
+type PromotionTransaction = Pick<
+  GeneratedPrismaClient,
+  | "$queryRaw"
+  | "session"
+  | "frenchWardGoverningOfficer"
+  | "transactionIntake"
+  | "transactionIntakeEvent"
+  | "opportunity"
+  | "opportunityEvent"
+  | "institutionalMatter"
+  | "institutionalMatterRecord"
+  | "institutionalMatterEvent"
+  | "externalTransactionIntakeAdoption"
+>;
 
-    // FW-TXN-1B.8B: documentary registration is not
-    // independent commercial promotion authority.
-    const externalRegistration =
-      await tx.transactionIntakeEvent.findFirst({
-        where: {
-          intakeId: intake.id,
-          eventType: "EXTERNAL_INTAKE_REGISTERED",
+export async function authorizeExternalPromotion(
+  tx: Pick<PromotionTransaction, "$queryRaw" | "session" | "frenchWardGoverningOfficer">,
+  input: Pick<ExternalPromotionInput, "sessionToken" | "signingSecret">,
+) {
+  const session = await verifySignedPersistedSession(
+    input.sessionToken,
+    input.signingSecret,
+    async (tokenId) => {
+      await tx.$queryRaw`
+        SELECT id FROM "Session" WHERE "tokenId" = ${tokenId} FOR UPDATE
+      `;
+      return tx.session.findUnique({
+        where: { tokenId },
+        select: {
+          userId: true,
+          status: true,
+          expiresAt: true,
+          invalidatedAt: true,
+          endedAt: true,
         },
-        select: { id: true },
       });
+    },
+  );
+  if (!session?.userId) {
+    throw new Error("FW_EXTERNAL_PROMOTION_SESSION_REQUIRED");
+  }
 
-    if (externalRegistration) {
-      throw new Error(
-        "FW_TXN_EXTERNAL_PROMOTION_AUTHORITY_REQUIRED"
-      );
-    }
+  await tx.$queryRaw`
+    SELECT id FROM "FrenchWardGoverningOfficer"
+    WHERE "userId" = ${session.userId} FOR UPDATE
+  `;
+  const authority = await resolveFrenchWardActionAuthorityWithClient({
+    client: tx,
+    userId: session.userId,
+    action: FRENCH_WARD_ACTION.PROMOTE_INTAKE_TO_OPPORTUNITY,
+  });
+  if (!authority.allowed) {
+    throw new Error("FW_EXTERNAL_PROMOTION_GOVERNING_AUTHORITY_REQUIRED");
+  }
 
-    if (intake.promotedOpportunityId) {
-      if (!intake.promotedOpportunity) {
-        throw new Error("PROMOTED_OPPORTUNITY_NOT_FOUND");
-      }
+  const grants = await tx.$queryRaw<Array<{ allowed: boolean }>>`
+    SELECT true AS allowed
+    FROM "UserRole" ur
+    JOIN "RolePermission" rp ON rp."roleId" = ur."roleId"
+    JOIN "Permission" p ON p.id = rp."permissionId"
+    WHERE ur."userId" = ${session.userId}
+      AND ur."isActive" = true
+      AND ur."revokedAt" IS NULL
+      AND p.key = 'TRANSACTION_INTAKE_PROMOTE'
+    FOR SHARE OF ur, rp, p
+  `;
+  if (grants.length === 0) {
+    throw new Error("FW_EXTERNAL_PROMOTION_PERMISSION_REQUIRED");
+  }
 
-      await advanceFrenchWardMatter(tx, intake, intake.promotedOpportunity.id, actorEmail ?? null, expectedMatterId);
+  return session;
+}
 
-      return {
-        intakeId: intake.id,
-        intakeReference: intake.reference,
-        opportunityId: intake.promotedOpportunity.id,
-        opportunityTitle: intake.promotedOpportunity.title,
-        alreadyPromoted: true,
-      };
-    }
+export async function promoteTransactionIntakeToOpportunity(
+  input: PromoteTransactionIntakeInput,
+): Promise<PromotedOpportunityResult> {
+  const { prisma } = await import("@/lib/prisma");
+  return promoteTransactionIntakeToOpportunityWithClient(prisma, input);
+}
 
-    if (intake.status !== "QUALIFIED") {
-      throw new Error("TRANSACTION_INTAKE_NOT_QUALIFIED");
-    }
+export async function promoteTransactionIntakeToOpportunityWithClient(
+  client: Pick<GeneratedPrismaClient, "$transaction">,
+  input: PromoteTransactionIntakeInput,
+): Promise<PromotedOpportunityResult> {
+  return client.$transaction((tx: PromotionTransaction) => promoteIntake(tx, input));
+}
 
-    const representedPartyType =
-      clean(intake.representedPartyType)?.toUpperCase() ?? null;
-
-    const buyerName =
-      representedPartyType === "BUYER"
-        ? firstClean(intake.representedPartyName, intake.buyerName)
-        : clean(intake.buyerName);
-
-    const sellerName =
-      representedPartyType === "SELLER"
-        ? firstClean(intake.representedPartyName, intake.sellerName)
-        : clean(intake.sellerName);
-
-    const quantityKg = firstClean(
-      intake.quantity,
-      intake.trialQuantity,
-      intake.monthlyQuantity,
+export async function promoteAdoptedExternalTransactionIntakeToOpportunity(
+  input: ExternalPromotionInput,
+): Promise<PromotedOpportunityResult> {
+  return input.client.$transaction(async (tx: PromotionTransaction) => {
+    const session = await authorizeExternalPromotion(tx, input);
+    return promoteIntake(
+      tx,
+      {
+        intakeId: input.intakeId,
+        expectedMatterId: input.matterId,
+        actorEmail: session.email,
+      },
+      { decisionId: input.adoptionDecisionId, actorUserId: session.userId },
     );
+  });
+}
 
-    const title = buildOpportunityTitle({
-      reference: intake.reference,
-      program: intake.program,
-      commodity: intake.commodity,
-      quantity: quantityKg,
-      transactionType: intake.transactionType,
-      destination: intake.destination,
-    });
+async function promoteIntake(
+  tx: PromotionTransaction,
+  { intakeId, actorEmail, expectedMatterId }: PromoteTransactionIntakeInput,
+  adoption?: { decisionId: string; actorUserId: string },
+): Promise<PromotedOpportunityResult> {
+  await tx.$queryRaw`SELECT id FROM "TransactionIntake" WHERE id = ${intakeId} FOR UPDATE`;
+  const intake = await tx.transactionIntake.findUnique({
+    where: {
+      id: intakeId,
+    },
+    include: {
+      promotedOpportunity: true,
+    },
+  });
 
-    const source = determineOpportunitySource({
-      referralCode: intake.referralCode,
-      referredByName: intake.referredByName,
-      sourceUrl: intake.sourceUrl,
-      transactionType: intake.transactionType,
-    });
+  if (!intake) {
+    throw new Error("TRANSACTION_INTAKE_NOT_FOUND");
+  }
 
-    const opportunity = await tx.opportunity.create({
-      data: {
-        title,
-        source,
-        status: "INTAKE",
-        commodity: clean(intake.commodity),
-        buyerName,
-        sellerName,
-        origin: clean(intake.origin),
-        destination: clean(intake.destination),
-        quantityKg,
-        notes: buildOpportunityNotes({
-          reference: intake.reference,
-          submitterName: intake.submitterName,
-          submitterEmail: intake.submitterEmail,
-          submitterCompany: intake.submitterCompany,
-          submitterRole: intake.submitterRole,
-          buyerName,
-          sellerName,
-          representedPartyType: intake.representedPartyType,
-          representedPartyName: intake.representedPartyName,
-          authorizationStatus: intake.authorizationStatus,
-          program: intake.program,
-          transactionType: intake.transactionType,
-          deliveryTerms: intake.deliveryTerms,
-          settlementMethod: intake.settlementMethod,
-          expectedTimeline: intake.expectedTimeline,
-          commodity: intake.commodity,
-          quantity: intake.quantity,
-          trialQuantity: intake.trialQuantity,
-          monthlyQuantity: intake.monthlyQuantity,
-          origin: intake.origin,
-          destination: intake.destination,
-          financialReadiness: intake.financialReadiness,
-          documentsAvailable: intake.documentsAvailable,
-          refineryPreference: intake.refineryPreference,
-          referralCode: intake.referralCode,
-          referredByName: intake.referredByName,
-          referredByCompany: intake.referredByCompany,
-          referredByEmail: intake.referredByEmail,
-          referredByPhone: intake.referredByPhone,
-          referredByRole: intake.referredByRole,
-          referralConfirmed: intake.referralConfirmed,
-          compensationExpectation: intake.compensationExpectation,
-          supportingNotes: intake.supportingNotes,
-          sourceUrl: intake.sourceUrl,
-        }),
-      },
-    });
-
-    await tx.opportunityEvent.create({
-      data: {
-        opportunityId: opportunity.id,
-        type: "OPPORTUNITY_CREATED",
-        actor: actorEmail ?? null,
-        message: "Opportunity promoted from transaction intake.",
-        metadata: {
-          source: "transaction-intake.promotion",
-          intakeId: intake.id,
-          intakeReference: intake.reference,
-          intakeStatus: intake.status,
-          opportunitySource: source,
-        },
-      },
-    });
-
-    await tx.transactionIntake.update({
+  // FW-TXN-1B.8B: documentary registration is not
+  // independent commercial promotion authority.
+  const externalRegistration =
+    await tx.transactionIntakeEvent.findFirst({
       where: {
-        id: intake.id,
-      },
-      data: {
-        status: "PROMOTED_TO_OPPORTUNITY",
-        promotedOpportunityId: opportunity.id,
-        promotedAt: new Date(),
-        promotedBy: actorEmail ?? null,
-      },
-    });
-
-    await tx.transactionIntakeEvent.create({
-      data: {
         intakeId: intake.id,
-        eventType: "PROMOTED_TO_OPPORTUNITY",
-        fromStatus: intake.status,
-        toStatus: "PROMOTED_TO_OPPORTUNITY",
-        actor: actorEmail ?? null,
-        note: `Promoted to opportunity ${opportunity.title}.`,
+        eventType: "EXTERNAL_INTAKE_REGISTERED",
       },
+      select: { id: true },
     });
 
-    await advanceFrenchWardMatter(tx, intake, opportunity.id, actorEmail ?? null, expectedMatterId);
+  if (externalRegistration && !adoption) {
+    throw new Error("FW_TXN_EXTERNAL_PROMOTION_AUTHORITY_REQUIRED");
+  }
+
+  if (adoption) {
+    if (!expectedMatterId || !externalRegistration) {
+      throw new Error("FW_EXTERNAL_PROMOTION_ADOPTION_MISMATCH");
+    }
+
+    await tx.$queryRaw`
+      SELECT id FROM "InstitutionalMatter"
+      WHERE id = ${expectedMatterId} FOR UPDATE
+    `;
+    await tx.$queryRaw`
+      SELECT id FROM "InstitutionalMatterRecord"
+      WHERE "recordKind" = 'INTAKE' AND "recordId" = ${intakeId} FOR UPDATE
+    `;
+
+    const decision = await tx.externalTransactionIntakeAdoption.findUnique({
+      where: { intakeId },
+    });
+    const binding = await tx.institutionalMatterRecord.findUnique({
+      where: { recordKind_recordId: { recordKind: "INTAKE", recordId: intakeId } },
+    });
+    const principalReference = FRENCH_WARD_INSTITUTIONAL_PROFILE.reference;
+
+    if (
+      !decision ||
+      decision.id !== adoption.decisionId ||
+      decision.matterId !== expectedMatterId ||
+      decision.canonicalPrincipalReference !== principalReference ||
+      decision.externalRegistrationEventId !== externalRegistration.id ||
+      !binding ||
+      binding.matterId !== expectedMatterId ||
+      binding.recordReference !== intake.reference ||
+      binding.canonicalPrincipalReference !== principalReference ||
+      !binding.canonicalBindingEvidenceReference
+    ) {
+      throw new Error("FW_EXTERNAL_PROMOTION_ADOPTION_MISMATCH");
+    }
+  }
+
+  if (intake.promotedOpportunityId) {
+    if (!intake.promotedOpportunity) {
+      throw new Error("PROMOTED_OPPORTUNITY_NOT_FOUND");
+    }
+
+    await advanceFrenchWardMatter(tx, intake, intake.promotedOpportunity.id, actorEmail ?? null, expectedMatterId);
 
     return {
       intakeId: intake.id,
       intakeReference: intake.reference,
-      opportunityId: opportunity.id,
-      opportunityTitle: opportunity.title,
-      alreadyPromoted: false,
+      opportunityId: intake.promotedOpportunity.id,
+      opportunityTitle: intake.promotedOpportunity.title,
+      alreadyPromoted: true,
     };
+  }
+
+  if (intake.status !== "QUALIFIED") {
+    throw new Error("TRANSACTION_INTAKE_NOT_QUALIFIED");
+  }
+
+  const representedPartyType =
+    clean(intake.representedPartyType)?.toUpperCase() ?? null;
+
+  const buyerName =
+    representedPartyType === "BUYER"
+      ? firstClean(intake.representedPartyName, intake.buyerName)
+      : clean(intake.buyerName);
+
+  const sellerName =
+    representedPartyType === "SELLER"
+      ? firstClean(intake.representedPartyName, intake.sellerName)
+      : clean(intake.sellerName);
+
+  const quantityKg = firstClean(
+    intake.quantity,
+    intake.trialQuantity,
+    intake.monthlyQuantity,
+  );
+
+  const title = buildOpportunityTitle({
+    reference: intake.reference,
+    program: intake.program,
+    commodity: intake.commodity,
+    quantity: quantityKg,
+    transactionType: intake.transactionType,
+    destination: intake.destination,
   });
+
+  const source = determineOpportunitySource({
+    referralCode: intake.referralCode,
+    referredByName: intake.referredByName,
+    sourceUrl: intake.sourceUrl,
+    transactionType: intake.transactionType,
+  });
+
+  const opportunity = await tx.opportunity.create({
+    data: {
+      title,
+      source,
+      status: "INTAKE",
+      commodity: clean(intake.commodity),
+      buyerName,
+      sellerName,
+      origin: clean(intake.origin),
+      destination: clean(intake.destination),
+      quantityKg,
+      notes: buildOpportunityNotes({
+        reference: intake.reference,
+        submitterName: intake.submitterName,
+        submitterEmail: intake.submitterEmail,
+        submitterCompany: intake.submitterCompany,
+        submitterRole: intake.submitterRole,
+        buyerName,
+        sellerName,
+        representedPartyType: intake.representedPartyType,
+        representedPartyName: intake.representedPartyName,
+        authorizationStatus: intake.authorizationStatus,
+        program: intake.program,
+        transactionType: intake.transactionType,
+        deliveryTerms: intake.deliveryTerms,
+        settlementMethod: intake.settlementMethod,
+        expectedTimeline: intake.expectedTimeline,
+        commodity: intake.commodity,
+        quantity: intake.quantity,
+        trialQuantity: intake.trialQuantity,
+        monthlyQuantity: intake.monthlyQuantity,
+        origin: intake.origin,
+        destination: intake.destination,
+        financialReadiness: intake.financialReadiness,
+        documentsAvailable: intake.documentsAvailable,
+        refineryPreference: intake.refineryPreference,
+        referralCode: intake.referralCode,
+        referredByName: intake.referredByName,
+        referredByCompany: intake.referredByCompany,
+        referredByEmail: intake.referredByEmail,
+        referredByPhone: intake.referredByPhone,
+        referredByRole: intake.referredByRole,
+        referralConfirmed: intake.referralConfirmed,
+        compensationExpectation: intake.compensationExpectation,
+        supportingNotes: intake.supportingNotes,
+        sourceUrl: intake.sourceUrl,
+      }),
+    },
+  });
+
+  await tx.opportunityEvent.create({
+    data: {
+      opportunityId: opportunity.id,
+      type: "OPPORTUNITY_CREATED",
+      actor: actorEmail ?? null,
+      message: "Opportunity promoted from transaction intake.",
+      metadata: {
+        source: "transaction-intake.promotion",
+        ...(adoption ? {
+          adoptionDecisionId: adoption.decisionId,
+          actorUserId: adoption.actorUserId,
+        } : {}),
+        intakeId: intake.id,
+        intakeReference: intake.reference,
+        intakeStatus: intake.status,
+        opportunitySource: source,
+      },
+    },
+  });
+
+  await tx.transactionIntake.update({
+    where: {
+      id: intake.id,
+    },
+    data: {
+      status: "PROMOTED_TO_OPPORTUNITY",
+      promotedOpportunityId: opportunity.id,
+      promotedAt: new Date(),
+      promotedBy: actorEmail ?? null,
+    },
+  });
+
+  await tx.transactionIntakeEvent.create({
+    data: {
+      intakeId: intake.id,
+      eventType: "PROMOTED_TO_OPPORTUNITY",
+      fromStatus: intake.status,
+      toStatus: "PROMOTED_TO_OPPORTUNITY",
+      actor: actorEmail ?? null,
+      note: `Promoted to opportunity ${opportunity.title}.`,
+    },
+  });
+
+  await advanceFrenchWardMatter(tx, intake, opportunity.id, actorEmail ?? null, expectedMatterId);
+
+  return {
+    intakeId: intake.id,
+    intakeReference: intake.reference,
+    opportunityId: opportunity.id,
+    opportunityTitle: opportunity.title,
+    alreadyPromoted: false,
+  };
 }

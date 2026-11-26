@@ -1335,6 +1335,8 @@ model Transaction {
 }
 
 model TransactionIntake {
+  externalAdoption ExternalTransactionIntakeAdoption?
+
   id        String @id @default(cuid())
   reference String @unique
 
@@ -4368,12 +4370,15 @@ enum InstitutionalMatterRecordKind {
 }
 
 enum InstitutionalMatterEventType {
+  EXTERNAL_INTAKE_ADOPTED
   MATTER_ESTABLISHED
   RECORD_LINKED
   CURRENT_RECORD_ADVANCED
 }
 
 model InstitutionalMatter {
+  externalIntakeAdoptions ExternalTransactionIntakeAdoption[]
+
   id        String @id @default(cuid())
   reference String @unique
 
@@ -4399,7 +4404,29 @@ model InstitutionalMatter {
   @@index([updatedAt])
 }
 
+model ExternalTransactionIntakeAdoption {
+  id                          String   @id @default(cuid())
+  intakeId                    String   @unique
+  matterId                    String
+  canonicalPrincipalReference String
+  externalRegistrationEventId String
+  issuerUserId                String
+  governingReference          String
+  policyVersion               String
+  decisionFingerprint         String
+  evidence                    Json
+  recordedAt                  DateTime @default(now())
+
+  intake TransactionIntake   @relation(fields: [intakeId], references: [id], onDelete: Restrict)
+  matter InstitutionalMatter @relation(fields: [matterId], references: [id], onDelete: Restrict)
+
+  @@index([matterId])
+}
+
 model InstitutionalMatterRecord {
+  canonicalPrincipalReference String?
+  canonicalBindingEvidenceReference String?
+
   id String @id @default(cuid())
 
   matterId String
