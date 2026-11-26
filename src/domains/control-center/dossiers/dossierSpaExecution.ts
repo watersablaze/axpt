@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import type { prisma } from "@/lib/prisma";
 
 type PrismaTransactionClient = Omit<
   typeof prisma,
@@ -152,6 +152,7 @@ export async function confirmDossierSpaExecution({
   evidenceReference: string;
   fileUrl?: string | null;
 }) {
+  const { prisma } = await import("@/lib/prisma");
   const normalizedBuyerSignatory =
     normalizeRequiredText(
       buyerSignatory,

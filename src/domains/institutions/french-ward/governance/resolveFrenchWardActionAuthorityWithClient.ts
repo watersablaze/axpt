@@ -14,6 +14,9 @@ export const FRENCH_WARD_ACTION = {
   REGISTER_BUYER_TRANSACTION:
     "REGISTER_BUYER_TRANSACTION",
 
+  ADOPT_EXTERNAL_TRANSACTION_INTAKE:
+    "ADOPT_EXTERNAL_TRANSACTION_INTAKE",
+
   PROMOTE_INTAKE_TO_OPPORTUNITY:
     "PROMOTE_INTAKE_TO_OPPORTUNITY",
 } as const;
@@ -73,7 +76,8 @@ const FRENCH_WARD_PROMOTION_GOVERNING_REFERENCE =
  * - every active French-Ward governing officer may send an LOI;
  * - every active French-Ward governing officer may register a buyer /
  *   transaction introduction;
- * - Intake -> Opportunity promotion is reserved to FW-GOV-002.
+ * - External Intake adoption and Intake -> Opportunity promotion are
+ *   reserved to FW-GOV-002 and resolved as distinct actions.
  */
 export async function resolveFrenchWardActionAuthorityWithClient(
   params: {
@@ -143,8 +147,8 @@ export async function resolveFrenchWardActionAuthorityWithClient(
   }
 
   if (
-    params.action ===
-      FRENCH_WARD_ACTION.PROMOTE_INTAKE_TO_OPPORTUNITY &&
+    (action === FRENCH_WARD_ACTION.PROMOTE_INTAKE_TO_OPPORTUNITY ||
+      action === FRENCH_WARD_ACTION.ADOPT_EXTERNAL_TRANSACTION_INTAKE) &&
     standing.reference !==
       FRENCH_WARD_PROMOTION_GOVERNING_REFERENCE
   ) {

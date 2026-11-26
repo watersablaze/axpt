@@ -1,6 +1,6 @@
-import { prisma } from "@/lib/prisma";
-
-import { createOpportunityEvent } from "./createOpportunityEvent";
+import type { PrismaClient } from "@axpt/source-authority-join";
+import { FRENCH_WARD_INSTITUTIONAL_PROFILE } from "@/domains/institutions/french-ward/canonicalInstitutionalProfile";
+import { authorizeExternalPromotion } from "../transaction-intakes/promoteTransactionIntakeToOpportunity";
 
 type Input = {
   opportunityId: string;
@@ -8,8 +8,19 @@ type Input = {
 };
 
 type PromotionTransaction = Pick<
-  typeof prisma,
-  "transactionDossier" | "opportunity" | "transactionDossierEvent"
+  PrismaClient,
+  | "$queryRaw"
+  | "transactionDossier"
+  | "opportunity"
+  | "opportunityEvent"
+  | "transactionDossierEvent"
+  | "institutionalMatter"
+  | "institutionalMatterRecord"
+  | "institutionalMatterEvent"
+  | "externalTransactionIntakeAdoption"
+  | "transactionIntakeEvent"
+  | "session"
+  | "frenchWardGoverningOfficer"
 >;
 
 type DossierPartySeed = {
@@ -296,59 +307,53 @@ function buildPartySeeds(input: {
   return parties;
 }
 
-export async function promoteOpportunityToDossier({
-  opportunityId,
-  operatorEmail,
-}: Input): Promise<OpportunityPromotionResult> {
-  const opportunity = await prisma.opportunity.findUnique({
-    where: {
-      id: opportunityId,
-    },
-    include: {
-      promotedDossier: true,
-    },
-  });
+export async function promoteOpportunityToDossier(
+  input: Input,
+): Promise<OpportunityPromotionResult> {
+  const { prisma } = await import("@/lib/prisma");
+  return promoteOpportunityToDossierWithClient(prisma, input);
+}
 
-  if (!opportunity) {
-    throw new Error("OPPORTUNITY_NOT_FOUND");
-  }
+type ExternalDossierAuthorization =
+  Parameters<typeof authorizeExternalPromotion>[1] & {
+    adoptionDecisionId: string;
+  };
 
-  if (opportunity.promotedDossierId && opportunity.promotedDossier) {
-    return {
-      opportunityId: opportunity.id,
-      dossierId: opportunity.promotedDossierId,
-      reference: opportunity.promotedDossier.reference,
-      alreadyPromoted: true,
-    };
-  }
+export async function promoteOpportunityToDossierWithClient(
+  client: Pick<PrismaClient, "$transaction">,
+  input: Input,
+): Promise<OpportunityPromotionResult> {
+  return promoteDossier(client, input);
+}
 
-  if (opportunity.promotedDossierId) {
-    const promotedDossier = await prisma.transactionDossier.findUnique({
-      where: {
-        id: opportunity.promotedDossierId,
-      },
-    });
+export async function promoteAdoptedOpportunityToDossierWithClient(
+  client: Pick<PrismaClient, "$transaction">,
+  opportunityId: string,
+  authorization: ExternalDossierAuthorization,
+): Promise<OpportunityPromotionResult> {
+  return promoteDossier(client, { opportunityId }, authorization);
+}
 
-    if (promotedDossier) {
-      return {
-        opportunityId: opportunity.id,
-        dossierId: promotedDossier.id,
-        reference: promotedDossier.reference,
-        alreadyPromoted: true,
-      };
+async function promoteDossier(
+  client: Pick<PrismaClient, "$transaction">,
+  input: Pick<Input, "opportunityId"> & Partial<Pick<Input, "operatorEmail">>,
+  authorization?: ExternalDossierAuthorization,
+): Promise<OpportunityPromotionResult> {
+  const { opportunityId } = input;
+  const result = await client.$transaction(async (tx: PromotionTransaction) => {
+    const session = authorization
+      ? await authorizeExternalPromotion(tx, authorization)
+      : null;
+    const operatorEmail = session ? session.email : input.operatorEmail;
+    if (!operatorEmail) {
+      throw new Error("FW_DOSSIER_OPERATOR_EMAIL_REQUIRED");
     }
-  }
-
-  if (opportunity.status !== "APPROVED") {
-    throw new Error("OPPORTUNITY_NOT_APPROVED");
-  }
-
-  const reference = buildDossierReference();
-
-  const result = await prisma.$transaction(async (tx: PromotionTransaction) => {
+    await tx.$queryRaw`
+      SELECT id FROM "Opportunity" WHERE id = ${opportunityId} FOR UPDATE
+    `;
     const latestOpportunity = await tx.opportunity.findUnique({
       where: {
-        id: opportunity.id,
+        id: opportunityId,
       },
       include: {
         promotedDossier: true,
@@ -460,10 +465,91 @@ export async function promoteOpportunityToDossier({
       throw new Error("OPPORTUNITY_NOT_FOUND");
     }
 
+    const opportunityLink = await tx.institutionalMatterRecord.findUnique({
+      where: {
+        recordKind_recordId: { recordKind: "OPPORTUNITY", recordId: opportunityId },
+      },
+      include: { matter: true },
+    });
+    const fwMatter = opportunityLink?.matter.institutionalDomain === "FRENCH_WARD"
+      ? opportunityLink.matter
+      : null;
+
+    const sourceIntake = latestOpportunity.sourceTransactionIntake;
+    const registrations = sourceIntake
+      ? await tx.transactionIntakeEvent.findMany({
+          where: { intakeId: sourceIntake.id, eventType: "EXTERNAL_INTAKE_REGISTERED" },
+          select: { id: true },
+          take: 2,
+        })
+      : [];
+    if (registrations.length > 0 && !authorization) {
+      throw new Error("FW_EXTERNAL_DOSSIER_AUTHORITY_REQUIRED");
+    }
+    if (authorization && (!sourceIntake || !fwMatter || registrations.length !== 1)) {
+      throw new Error("FW_DOSSIER_ADOPTION_MISMATCH");
+    }
+
+    if (fwMatter) {
+      await tx.$queryRaw`
+        SELECT id FROM "InstitutionalMatter" WHERE id = ${fwMatter.id} FOR UPDATE
+      `;
+      const intake = latestOpportunity.sourceTransactionIntake;
+      const intakeLink = intake && await tx.institutionalMatterRecord.findUnique({
+        where: { recordKind_recordId: { recordKind: "INTAKE", recordId: intake.id } },
+      });
+      if (
+        fwMatter.coordinationEnvironment !== "AXPT" ||
+        fwMatter.matterKind !== "COMMERCIAL_TRANSACTION" ||
+        opportunityLink?.recordReference !== opportunityId ||
+        !intake ||
+        intakeLink?.matterId !== fwMatter.id ||
+        intakeLink.recordReference !== intake.reference
+      ) {
+        throw new Error("FW_DOSSIER_MATTER_LINEAGE_MISMATCH");
+      }
+
+      if (authorization) {
+        const decision = await tx.externalTransactionIntakeAdoption.findUnique({
+          where: { id: authorization.adoptionDecisionId },
+        });
+        const principalReference = FRENCH_WARD_INSTITUTIONAL_PROFILE.reference;
+        if (
+          !decision ||
+          decision.intakeId !== intake.id ||
+          decision.matterId !== fwMatter.id ||
+          decision.externalRegistrationEventId !== registrations[0]?.id ||
+          decision.canonicalPrincipalReference !== principalReference ||
+          intakeLink.canonicalPrincipalReference !== principalReference ||
+          !intakeLink.canonicalBindingEvidenceReference
+        ) {
+          throw new Error("FW_DOSSIER_ADOPTION_MISMATCH");
+        }
+      }
+    }
+
+    if (latestOpportunity.promotedDossierId && !latestOpportunity.promotedDossier) {
+      throw new Error("PROMOTED_DOSSIER_NOT_FOUND");
+    }
     if (
       latestOpportunity.promotedDossierId &&
       latestOpportunity.promotedDossier
     ) {
+      if (fwMatter) {
+        const dossierLink = await tx.institutionalMatterRecord.findUnique({
+          where: {
+            recordKind_recordId: {
+              recordKind: "DOSSIER", recordId: latestOpportunity.promotedDossierId,
+            },
+          },
+        });
+        if (
+          dossierLink?.matterId !== fwMatter.id ||
+          dossierLink.recordReference !== latestOpportunity.promotedDossier.reference
+        ) {
+          throw new Error("FW_DOSSIER_MATTER_LINEAGE_MISMATCH");
+        }
+      }
       return {
         dossier: latestOpportunity.promotedDossier,
         alreadyPromoted: true,
@@ -528,7 +614,7 @@ export async function promoteOpportunityToDossier({
 
     const dossier = await tx.transactionDossier.create({
       data: {
-        reference,
+        reference: buildDossierReference(),
         title: latestOpportunity.title,
         state: "INTAKE_PENDING",
         commodity: latestOpportunity.commodity,
@@ -573,6 +659,10 @@ export async function promoteOpportunityToDossier({
           source: "opportunity.promotion",
           opportunityId: latestOpportunity.id,
           opportunityTitle: latestOpportunity.title,
+          ...(authorization && session ? {
+            adoptionDecisionId: authorization.adoptionDecisionId,
+            actorUserId: session.userId,
+          } : {}),
           seededPartyCount: partySeeds.length,
           seededTerms: termsSeed
             ? Object.entries(termsSeed)
@@ -803,28 +893,62 @@ export async function promoteOpportunityToDossier({
       });
     }
 
-    return {
-      dossier,
-      alreadyPromoted: false,
-    };
-  });
+    if (fwMatter) {
+      const advanced = await tx.institutionalMatter.updateMany({
+        where: {
+          id: fwMatter.id,
+          currentRecordKind: "OPPORTUNITY",
+          currentRecordId: opportunityId,
+          currentRecordReference: opportunityId,
+        },
+        data: {
+          currentRecordKind: "DOSSIER",
+          currentRecordId: dossier.id,
+          currentRecordReference: dossier.reference,
+        },
+      });
+      if (advanced.count !== 1) {
+        throw new Error("FW_DOSSIER_MATTER_ADVANCEMENT_CONFLICT");
+      }
+      await tx.institutionalMatterRecord.create({
+        data: {
+          matterId: fwMatter.id,
+          recordKind: "DOSSIER",
+          recordId: dossier.id,
+          recordReference: dossier.reference,
+          linkedBy: operatorEmail,
+        },
+      });
+      await tx.institutionalMatterEvent.create({
+        data: {
+          matterId: fwMatter.id,
+          eventType: "CURRENT_RECORD_ADVANCED",
+          actor: operatorEmail,
+          message: "Matter advanced from Opportunity to Dossier.",
+          metadata: { opportunityId, dossierId: dossier.id, dossierReference: dossier.reference },
+        },
+      });
+    }
 
-  if (!result.alreadyPromoted) {
-    await createOpportunityEvent({
-      opportunityId: opportunity.id,
-      type: "OPPORTUNITY_PROMOTED",
-      actor: operatorEmail,
-      message: "Opportunity promoted into transaction dossier.",
-      metadata: {
-        source: "opportunity.promotion",
-        dossierId: result.dossier.id,
-        reference: result.dossier.reference,
+    await tx.opportunityEvent.create({
+      data: {
+        opportunityId,
+        type: "OPPORTUNITY_PROMOTED",
+        actor: operatorEmail,
+        message: "Opportunity promoted into transaction dossier.",
+        metadata: {
+          source: "opportunity.promotion",
+          dossierId: dossier.id,
+          reference: dossier.reference,
+        },
       },
     });
-  }
+
+    return { dossier, alreadyPromoted: false };
+  });
 
   return {
-    opportunityId: opportunity.id,
+    opportunityId,
     dossierId: result.dossier.id,
     reference: result.dossier.reference,
     alreadyPromoted: result.alreadyPromoted,

@@ -34,6 +34,7 @@ function resolvePromotionAuthority(userId: string) {
   });
 }
 
+import ExternalIntakeWorkflow from "./ExternalIntakeWorkflow";
 import styles from "./matter.module.css";
 
 export const dynamic =
@@ -189,6 +190,48 @@ export default async function FrenchWardMatterPage({
       })
     : null;
   const canPromote = promotionAuthority?.allowed && qualified && !externalRegistration;
+
+  const workflowAuthority = await resolvePromotionAuthority(principal.userId);
+  const workflowBinding = workflowAuthority.allowed
+    ? await prisma.institutionalMatterRecord.findFirst({
+        where: {
+          recordKind: "INTAKE",
+          recordId: matter.canonicalRecord.id,
+          recordReference: matter.canonicalRecord.reference,
+          canonicalPrincipalReference: "FW-PROFILE-2026-001",
+          canonicalBindingEvidenceReference: { not: null },
+          matter: { reference },
+        },
+        select: { matterId: true, recordId: true },
+      })
+    : null;
+  const workflowDecision = workflowBinding
+    ? await prisma.externalTransactionIntakeAdoption.findUnique({
+        where: { intakeId: workflowBinding.recordId },
+        select: { id: true, matterId: true },
+      })
+    : null;
+  const workflowOpportunity = workflowDecision && loaded.currentOpportunityId
+    ? await prisma.opportunity.findUnique({
+        where: { id: loaded.currentOpportunityId },
+        select: { id: true, status: true },
+      })
+    : null;
+  const workflowRegistration = workflowBinding
+    ? await prisma.transactionIntakeEvent.findFirst({
+        where: {
+          intakeId: workflowBinding.recordId,
+          eventType: "EXTERNAL_INTAKE_REGISTERED",
+        },
+        select: { id: true },
+      })
+    : null;
+  const showExternalWorkflow = Boolean(
+    workflowBinding && workflowRegistration &&
+    (workflowDecision
+      ? workflowDecision.matterId === workflowBinding.matterId
+      : isPersistedIntake && qualified),
+  );
 
   async function promoteMatter() {
     "use server";
@@ -649,7 +692,18 @@ export default async function FrenchWardMatterPage({
           ) : null}
         </dl>
 
-        {promotionAuthority?.allowed ? (
+        {showExternalWorkflow && workflowBinding ? (
+          <ExternalIntakeWorkflow
+            key={`${homeMatter.recordKind}:${homeMatter.state}:${workflowDecision?.id ?? ""}:${workflowOpportunity?.status ?? ""}`}
+            intakeId={workflowBinding.recordId}
+            matterId={workflowBinding.matterId}
+            adoptionDecisionId={workflowDecision?.id ?? null}
+            opportunityId={workflowOpportunity?.id ?? null}
+            opportunityApproved={workflowOpportunity?.status === "APPROVED"}
+            dossierId={loaded.currentDossierId ?? null}
+            state={homeMatter.state}
+          />
+        ) : promotionAuthority?.allowed ? (
           canPromote ? (
             <form action={promoteMatter}>
               <button type="submit" className={styles.promoteButton}>
